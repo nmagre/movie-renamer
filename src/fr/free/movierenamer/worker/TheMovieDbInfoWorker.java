@@ -34,7 +34,7 @@ import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.tmdbResult;
+import fr.free.movierenamer.ui.res.tmdbResult;
 
 /**
  *
@@ -94,8 +94,7 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
             movie.addFanart(res.getFanarts().get(i));
           }
         }
-      } catch (IOException ex) {//A refaire (not in EDT)
-        JOptionPane.showMessageDialog(null, "Can't retreive Movie info\n" + "Try to refresh", "Error", JOptionPane.ERROR_MESSAGE);
+      } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       } catch (InterruptedException ex) {
         setting.getLogger().log(Level.WARNING, ex.toString());
@@ -103,8 +102,8 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
       } catch (IllegalArgumentException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      
-      if (movie.getMovieDBId().equals(Utils.EMPTY)) return null;
+
+      if (movie.getMovieDBId().equals(Utils.EMPTY)) return movie;
       XMLParser<MovieInfo> movieinfo = new XMLParser<MovieInfo>(setting.imdbAPIUrlMovieInf + xmlUrl + movie.getMovieDBId(), MovieInfo.class);
       /*try {
         movie.setMovieInfo(movieinfo.parseXml());

@@ -24,8 +24,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -35,6 +34,7 @@ public class HttpGet {
 
   private URL url;
   private URL realURL;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   public HttpGet() {
   }
@@ -63,7 +63,7 @@ public class HttpGet {
     url = new URL(uri);
   }
 
-  public String sendGetRequest(boolean fakeUserAgent) {
+  public String sendGetRequest(boolean fakeUserAgent) throws Exception {
     if (url == null) return null;
     realURL = null;
     String result = null;
@@ -89,7 +89,7 @@ public class HttpGet {
       rd.close();
       result = sb.toString();
     } catch (Exception e) {//It is running on EDT ? (a refaire)
-      JOptionPane.showMessageDialog(new JFrame(), e, "HTTP Get Error", JOptionPane.ERROR_MESSAGE);
+      throw new Exception("HTTP Get "+ bundle.getString("error") + Utils.SPACE + ":" + e);
     }
     return result;
   }

@@ -73,6 +73,8 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
           case FANART:
             moviePnl.addFanartToList(image, arrayImage.get(i));
             break;
+          default:
+            continue;
         }
       } catch (IOException ex) {
         setting.getLogger().log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());

@@ -37,6 +37,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.worker.ListFilesWorker;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -46,7 +47,8 @@ public class DropFile implements DropTargetListener {
 
   private Settings setting;
   private JFrame parent;
-  private MovieRenamer.fileWorkerListener listener;
+  private MovieRenamer.FileWorkerListener listener;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private FilenameFilter folderFilter = new FilenameFilter() {
 
     @Override
@@ -55,7 +57,7 @@ public class DropFile implements DropTargetListener {
     }
   };
 
-  public DropFile(Settings setting, MovieRenamer.fileWorkerListener listener, JFrame parent) {
+  public DropFile(Settings setting, MovieRenamer.FileWorkerListener listener, JFrame parent) {
     this.setting = setting;
     this.parent = parent;
     this.listener = listener;
@@ -90,10 +92,6 @@ public class DropFile implements DropTargetListener {
 
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
-        System.out.println(dropedFile);
-        if(data.isDataFlavorSupported(DataFlavor.imageFlavor)){
-          System.out.println("DROPPED FILE IS AN IMAGE");
-        }
 
         for (int i = 0; i < res.length; i++) {
           String file = URLDecoder.decode(res[i].replace("file://", "").replace("\n", ""), "UTF-8");
@@ -107,9 +105,9 @@ public class DropFile implements DropTargetListener {
       setMovies(files);
 
     } catch (UnsupportedFlavorException e) {
-      JOptionPane.showMessageDialog(parent, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(parent, e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(parent, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(parent, e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
     } finally {
       evt.dropComplete(true);
     }
@@ -118,16 +116,18 @@ public class DropFile implements DropTargetListener {
   public void setMovies(ArrayList<File> files) {
     boolean subFolders = false;
     int count = 0;
-    for (File file : files) {
-      if (file.isDirectory()) {
-        File[] subDir = file.listFiles(folderFilter);
-        if (subDir != null) {
-          count += subDir.length;
-          if (subDir.length > 0)
-            if (!subFolders) {//A refaire (running in EDT ?)
-              int n = JOptionPane.showConfirmDialog(parent, "One or more folder(s) contain subfolder(s)\nWould you like to scan subfolder(s) ?", "Question", JOptionPane.YES_NO_OPTION);
-              subFolders = !(n != 0);
-            }
+    if(!setting.scanSubfolder){
+      for (File file : files) {
+        if (file.isDirectory()) {
+          File[] subDir = file.listFiles(folderFilter);
+          if (subDir != null) {
+            count += subDir.length;
+            if (subDir.length > 0)
+              if (!subFolders) {//A refaire (running in EDT ?)
+                int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+                subFolders = !(n != 0);
+              }
+          }
         }
       }
     }

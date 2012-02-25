@@ -25,30 +25,49 @@ import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbParser;
+import java.awt.Component;
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author duffy
  */
-public class ImdbInfoWorker extends SwingWorker<MovieInfo, Void> {
+public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
 
   private HttpGet http;
   private ImdbParser imdbParser;
+  private Component parent;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
-  public ImdbInfoWorker(String imdbId, String imdbUrl, boolean french, Settings setting) throws MalformedURLException {
-    http = new HttpGet(imdbUrl + imdbId + "/combined");
-    System.out.println(imdbUrl + imdbId + "/combined");
+  public ImdbInfoWorker(Component parent, String imdbId, Settings setting) throws MalformedURLException {
+    this.parent = parent;
+    boolean french = setting.locale.equals("fr");
+    http = new HttpGet((french ? setting.imdbMovieUrl_fr:setting.imdbMovieUrl) + imdbId + "/combined");
     imdbParser = new ImdbParser(french, setting);
   }
 
   @Override
   protected MovieInfo doInBackground() {
     setProgress(0);
-    String res = http.sendGetRequest(true);
+    String res = null;
+    try{
+      res = http.sendGetRequest(true);
+    }
+    catch(Exception e){
+      publish(e.getMessage());
+      return null;
+    }
     setProgress(80);
     MovieInfo mvi = imdbParser.getMovieInfo(res);
     setProgress(100);
     System.out.println(mvi);
     return mvi;
+  }
+
+  @Override
+  protected void process(List<String> chunks) {
+    JOptionPane.showMessageDialog(parent, chunks.get(0), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

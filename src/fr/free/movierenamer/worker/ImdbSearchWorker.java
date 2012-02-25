@@ -33,25 +33,33 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
-import fr.free.movierenamer.utils.ImdbSearchResult;
+import fr.free.movierenamer.ui.res.ImdbSearchResult;
 import fr.free.movierenamer.parser.ImdbParser;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import java.awt.Component;
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.swing.JOptionPane;
 
 /**
  * Class imdbSearchThread
  * @author Nicolas Magré
  */
-public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, Void> {
+public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, String> {
 
   private String searchTitle;
   private Settings setting;
   private HttpGet http;
   private ImdbParser imdbParser;
+  private Component parent;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
-  public ImdbSearchWorker(String searchTitle, boolean french, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
+  public ImdbSearchWorker(Component parent, String searchTitle, boolean french, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
+    this.parent = parent;
     this.searchTitle = searchTitle;
     this.setting = setting;
-    http = new HttpGet((french ? setting.imdbSearchUrl_fr:setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
+    http = new HttpGet((french ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
     imdbParser = new ImdbParser(french, setting);
   }
 
@@ -60,14 +68,20 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, V
     ArrayList<ImdbSearchResult> imdbSearchResult = new ArrayList<ImdbSearchResult>();
 
     setProgress(0);
-    String searchres = http.sendGetRequest(true);
+    String searchres = null;
+    try {
+      searchres = http.sendGetRequest(true);
+    } catch (Exception e) {
+      publish(e.getMessage());
+      return null;
+    }
     setProgress(30);
     setting.getLogger().log(Level.INFO, "Search : {0}", searchTitle);
 
     if (searchres != null && !searchres.contains("<b>No Matches.</b>")) {
       boolean searchPage = !http.getURL().toString().matches("http://www.imdb.(com|fr)/title/tt\\d+/");
       imdbSearchResult = imdbParser.parse(searchres, searchPage);
-      
+
       int i = 0;
       for (ImdbSearchResult imsres : imdbSearchResult) {
         String thumb = imsres.getThumb();
@@ -75,6 +89,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, V
           Icon icon = getHttpImageIcon(thumb);
           if (icon != null) imsres.setIcon(icon);
         }
+        if (imsres.getIcon() == null) imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.gif", getClass())));
         setProgress(30 + (int) (++i * 70) / imdbSearchResult.size());
       }
     }
@@ -82,6 +97,11 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, V
     setProgress(100);
     setting.getLogger().log(Level.INFO, "found : {0} Movies", imdbSearchResult.size());
     return imdbSearchResult;
+  }
+
+  @Override
+  protected void process(List<String> chunks) {
+    JOptionPane.showMessageDialog(parent, chunks.get(0), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 
   private Icon getHttpImageIcon(String url) {

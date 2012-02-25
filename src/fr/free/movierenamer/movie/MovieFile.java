@@ -35,12 +35,14 @@ public class MovieFile implements IIconList {
   private File file;
   private boolean renamed;
   private boolean warning;
+  private boolean showPath;
 
 
-  public MovieFile(File file, boolean renamed, boolean warning){
+  public MovieFile(File file, boolean renamed, boolean warning, boolean showPath){
     this.file = file;
     this.renamed = renamed;
     this.warning = warning;
+    this.showPath = showPath;
   }
 
   public File getFile(){
@@ -64,6 +66,6 @@ public class MovieFile implements IIconList {
 
   @Override
   public String toString(){
-    return file.getName();
+    return (showPath ? file.toString():file.getName());
   }
 }

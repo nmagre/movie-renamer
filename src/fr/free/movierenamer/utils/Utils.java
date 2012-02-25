@@ -19,8 +19,6 @@
  ******************************************************************************/
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.Main;
-import fr.free.movierenamer.utils.Settings;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
@@ -29,14 +27,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -49,9 +49,20 @@ public class Utils {
   public static final String ENDLINE = "\n";
   public static final String EMPTY = "";
   public static final String DOT = ".";
-  public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Main.class));
-  public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Main.class));
-  
+  public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
+  public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
+  public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
+
+  public static String getRbTok(String propToken) {
+    String msg = "";
+    try {
+      msg = rb.getString(propToken);
+    } catch (MissingResourceException e) {
+      System.err.println("Token ".concat(propToken).concat(" not in Propertyfile!"));
+    }
+    return msg;
+  }
+
   public static String getOsName() {
     if (OS == null)
       OS = System.getProperty("os.name");
@@ -75,10 +86,11 @@ public class Utils {
     res = res.replaceAll(" $", "");
     return res;
   }
-  
+
   public static boolean checkFile(String fileName, Settings setting) {
     if (!fileName.contains(DOT))
       return false;
+    if(!setting.useExtensionFilter) return true;
     String ext = fileName.substring(fileName.lastIndexOf(DOT) + 1);
     for (int i = 0; i < setting.extensions.length; i++) {
       if (ext.equals(setting.extensions[i]))
@@ -167,7 +179,7 @@ public class Utils {
     return true;
   }
 
-  public static boolean createFilePath(String fileName) {
+  public static boolean createFilePath(String fileName) {//Vraiment nimp (A refaire)
     boolean ret = true;
     File f = new File(fileName);
     if (!f.exists())
@@ -188,31 +200,40 @@ public class Utils {
     byte[] thanksToNetscape = null;
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     InputStream in = cls.getResourceAsStream(fileName);
-
+    
     try {
       int length = in.available();
       thanksToNetscape = new byte[length];
       in.read(thanksToNetscape);
       image = toolkit.createImage(thanksToNetscape);
+      
     } catch (Exception ex) {
-      //setting.getLogger().log(Level.SEVERE, null, ex + " " + fileName);
-      return null;
+      Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      try {
+        in.close();
+      } catch (IOException ex) {
+        Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
     return image;
   }
 
-  public static void deleteDirectory(File racine) {
+  public static boolean deleteDirectory(File racine) {//Humm et le root est supprimé ? (A tester)
+    boolean del = true;
     for (File fils : racine.listFiles()) {
       if (fils.isDirectory())
-        deleteDirectory(fils);
+        if(!deleteDirectory(fils)) del = false;
       else
-        fils.delete();
+        if(!fils.delete()) del = false;
     }
+    return del;
   }
 
-  public static void copyFile(File sourceFile, File destFile) throws IOException {
+  public static boolean copyFile(File sourceFile, File destFile) throws IOException {
+    boolean cpFile = false;
     if (!destFile.exists())
-      destFile.createNewFile();
+      cpFile = destFile.createNewFile();
 
     FileChannel source = null;
     FileChannel destination = null;
@@ -226,6 +247,7 @@ public class Utils {
       if (destination != null)
         destination.close();
     }
+    return cpFile;
   }
 
   public static void copyStream(InputStream is, OutputStream os) {
@@ -242,7 +264,7 @@ public class Utils {
     }
   }
 
-  private static void downloadFile(String url, String fileName) {
+  /*private static void downloadFile(String url, String fileName) {
     InputStream is = null;
     try {
       URL uri = new URL(url);
@@ -269,19 +291,20 @@ public class Utils {
         JOptionPane.showMessageDialog(null, "Close Downloaded File Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
       }
     }
-  }
+  }*/
 
-  public static boolean restartApplication(Object classInJarFile) {
+  public static boolean restartApplication(Class<?> classInJarFile) {
     String javaBin = System.getProperty("java.home") + "/bin/java";
     File jarFile;
     try {
-      jarFile = new File(classInJarFile.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+      jarFile = new File(classInJarFile.getProtectionDomain().getCodeSource().getLocation().toURI());
     } catch (Exception e) {
       e.printStackTrace();
       return false;
     }
 
     /* is it a jar file? */
+    System.out.println(jarFile);
     if (!jarFile.getName().endsWith(".jar"))
       return false;
     String toExec[] = new String[]{javaBin, "-jar", jarFile.getPath()};
@@ -291,7 +314,6 @@ public class Utils {
       e.printStackTrace();
       return false;
     }
-    System.exit(0);
     return true;
   }
 
@@ -329,9 +351,11 @@ public class Utils {
     return stringBuffer.toString();
   }
 
-  public static String getStackTrace(String exception, StackTraceElement[] ste){
-      String res = exception + "\n";
-      for(int i=0;i<ste.length;i++) res += "    " + ste[i].toString() + "\n";
-      return res;
+  public static String getStackTrace(String exception, StackTraceElement[] ste) {
+    String res = exception + "\n";
+    for (int i = 0; i < ste.length; i++) {
+      res += "    " + ste[i].toString() + "\n";
+    }
+    return res;
   }
 }

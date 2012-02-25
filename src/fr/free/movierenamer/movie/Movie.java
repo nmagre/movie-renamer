@@ -307,64 +307,65 @@ public class Movie {
    */
   public String getNFOFromMovie() {//parcourir 3 fois la liste des acteurs = pas terrible (a refaire)
 
-    String nfo = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n";
-    nfo += "  <title>" + Utils.escapeXML(movieinfo.getTitle()) + "</title>\n";
-    nfo += "  <originaltitle>" + Utils.escapeXML(movieinfo.getOrigTitle()) + "</originaltitle>\n";
-    nfo += "  <sorttitle>" + Utils.escapeXML(movieinfo.getTitle()) + "</sorttitle>\n";
-    nfo += "  <set>" + Utils.escapeXML(movieinfo.getSet()) + "</set>\n";
-    nfo += "  <rating>" + Utils.escapeXML(movieinfo.getRating()) + "</rating>\n";
-    nfo += "  <year>" + Utils.escapeXML(movieinfo.getYear()) + "</year>\n";
-    nfo += "  <plot>" + Utils.escapeXML(movieinfo.getSynopsis()) + "</plot>\n";
-    nfo += "  <outline>" + Utils.escapeXML(movieinfo.getSynopsis()) + "</outline>\n";
-    nfo += "  <tagline>" + Utils.escapeXML(movieinfo.getTagline()) + "</tagline>\n";
-    nfo += "  <runtime>" + (movieinfo.getRuntime() == -1 ? "":movieinfo.getRuntime()) + "</runtime>\n";
-    nfo += "  <id>" + imdbId + "</id>\n";
-    nfo += printArrayString(movieinfo.getGenres(), "genre", "  ");
-    nfo += printArrayString(movieinfo.getCountries(), "country", "  ");
-    nfo += printArrayString(movieinfo.getStudios(), "studio", "  ");
+    StringBuilder nfo = new StringBuilder();
+    nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n");
+    nfo.append("  <title>").append(Utils.escapeXML(movieinfo.getTitle())).append("</title>\n");
+    nfo.append("  <originaltitle>").append(Utils.escapeXML(movieinfo.getOrigTitle())).append("</originaltitle>\n");
+    nfo.append("  <sorttitle>").append(Utils.escapeXML(movieinfo.getTitle())).append("</sorttitle>\n");
+    nfo.append("  <set>").append(Utils.escapeXML(movieinfo.getSet())).append("</set>\n");
+    nfo.append("  <rating>").append(Utils.escapeXML(movieinfo.getRating())).append("</rating>\n");
+    nfo.append("  <year>").append(Utils.escapeXML(movieinfo.getYear())).append("</year>\n");
+    nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
+    nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</outline>\n");
+    nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
+    nfo.append("  <runtime>").append(movieinfo.getRuntime() == -1 ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <id>").append(imdbId).append("</id>\n");
+    nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
+    nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
+    nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
 
     for (int i = 0; i < movieinfo.getActors().size(); i++) {
-      if (movieinfo.getActors().get(i).getJob().equals("Writer"))
-        nfo += "  <credits>" + Utils.escapeXML(movieinfo.getActors().get(i).getName()) + "</credits>\n";
+      if (movieinfo.getActors().get(i).getJob() == MoviePerson.WRITER)
+        nfo.append("  <credits>").append(Utils.escapeXML(movieinfo.getActors().get(i).getName())).append("</credits>\n");
     }
 
     for (int i = 0; i < movieinfo.getActors().size(); i++) {
-      if (movieinfo.getActors().get(i).getJob().equals("Director"))
-        nfo += "  <director>" + Utils.escapeXML(movieinfo.getActors().get(i).getName()) + "</director>\n";
+      if (movieinfo.getActors().get(i).getJob() == MoviePerson.DIRECTOR)
+        nfo.append("  <director>").append(Utils.escapeXML(movieinfo.getActors().get(i).getName())).append("</director>\n");
     }
 
-    nfo += "  <trailer>" + movieinfo.getTrailer() + "</trailer>\n";
+    nfo.append("  <trailer>").append(movieinfo.getTrailer()).append("</trailer>\n");
 
     for (int i = 0; i < movieinfo.getActors().size(); i++) {
-      if (!movieinfo.getActors().get(i).getJob().equals("Actor")) continue;
-      nfo += "  <actor>\n";
-      nfo += "    <name>" + Utils.escapeXML(movieinfo.getActors().get(i).getName()) + "</name>\n";
+      if (movieinfo.getActors().get(i).getJob() != MoviePerson.ACTOR) continue;
+      nfo.append("  <actor>\n");
+      nfo.append("    <name>").append(Utils.escapeXML(movieinfo.getActors().get(i).getName())).append("</name>\n");
       for (int j = 0; j < movieinfo.getActors().get(i).getRoles().size(); j++) {
-        nfo += "    <role>" + Utils.escapeXML(movieinfo.getActors().get(i).getRoles().get(j)) + "</role>\n";
+        nfo.append("    <role>").append(Utils.escapeXML(movieinfo.getActors().get(i).getRoles().get(j))).append("</role>\n");
       }
-      nfo += "    <thumb>" + movieinfo.getActors().get(i).getThumb() + "</thumb>\n";
-      nfo += "  </actor>\n";
+      nfo.append("    <thumb>").append(movieinfo.getActors().get(i).getThumb()).append("</thumb>\n");
+      nfo.append("  </actor>\n");
     }
 
     for (int i = 0; i < thumbs.size(); i++) {
-      nfo += "  <thumb preview=\"" + thumbs.get(i).getThumbUrl() + "\">" + thumbs.get(i).getOrigUrl() + "</thumb>\n";
+      nfo.append("  <thumb preview=\"").append(thumbs.get(i).getThumbUrl()).append("\">").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
-    nfo += "  <fanart>\n";
+    nfo.append("  <fanart>\n");
     for (int i = 0; i < fanarts.size(); i++) {
-      nfo += "    <thumb preview=\"" + fanarts.get(i).getThumbUrl() + "\">" + fanarts.get(i).getOrigUrl() + "</thumb>\n";
+      nfo.append("    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>\n");
     }
-    nfo += "  </fanart>\n";
-    nfo += "</movie>";
-    return nfo;
+    nfo.append("  </fanart>\n");
+    nfo.append("</movie>");
+    return nfo.toString();
   }
 
   private String printArrayString(ArrayList<String> arrayString, String tag, String level) {
-    String res = "";
+    StringBuilder res = new StringBuilder();
     for (int i = 0; i < arrayString.size(); i++) {
-      res += level + "<" + tag + ">" + Utils.escapeXML(arrayString.get(i)) + "</" + tag + ">\n";
+      res.append(level).append("<").append(tag).append(">").append(Utils.escapeXML(arrayString.get(i))).append("</").append(tag).append(">\n");
     }
-    return res;
+    return res.toString();
   }
 
   @Override

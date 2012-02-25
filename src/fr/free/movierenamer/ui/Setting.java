@@ -19,6 +19,7 @@
  ******************************************************************************/
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.Main;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -119,6 +120,19 @@ public class Setting extends JDialog {
     });
 
     // General Setting
+    useExtensionFilterChk.setSelected(setting.useExtensionFilter);
+    showMovieFilePathChk.setSelected(setting.showMovieFilePath);
+    scanSubfolderChk.setSelected(setting.scanSubfolder);
+    hideNotAMovieFileChk.setSelected(setting.hideNotAMovieFile);
+
+
+    englishRbtn.setSelected(!setting.locale.equals("fr"));
+    frenchRbtn.setSelected(setting.locale.equals("fr"));
+
+
+
+
+
     thumbGroup.setSelected(rBtnThumbList[setting.thumbSize].getModel(), true);
     fanartGroup.setSelected(rBtnFanartList[setting.fanartSize].getModel(), true);
     displayAppResultCheckBox.setSelected(setting.displayApproximateResult);
@@ -205,17 +219,17 @@ public class Setting extends JDialog {
     helpSearchBtn = new JButton();
     displayThumbResultChk = new JCheckBox();
     jPanel13 = new JPanel();
-    jRadioButton3 = new JRadioButton();
-    jRadioButton4 = new JRadioButton();
+    englishRbtn = new JRadioButton();
+    frenchRbtn = new JRadioButton();
     jLabel1 = new JLabel();
     jPanel4 = new JPanel();
     jCheckBox8 = new JCheckBox();
     jPanel10 = new JPanel();
-    jCheckBox5 = new JCheckBox();
-    jCheckBox7 = new JCheckBox();
-    jCheckBox6 = new JCheckBox();
-    jCheckBox9 = new JCheckBox();
-    jCheckBox10 = new JCheckBox();
+    useExtensionFilterChk = new JCheckBox();
+    showMovieFilePathChk = new JCheckBox();
+    scanSubfolderChk = new JCheckBox();
+    hideNotAMovieFileChk = new JCheckBox();
+    hideRenamedMovieChk = new JCheckBox();
     helpSearchBtn2 = new JButton();
     jCheckBox16 = new JCheckBox();
     jPanel17 = new JPanel();
@@ -366,14 +380,14 @@ public class Setting extends JDialog {
     jPanel13.setBorder(BorderFactory.createTitledBorder(null, "Language", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
     jPanel13.setToolTipText("Under development");
 
-    languageGroup.add(jRadioButton3);
-    jRadioButton3.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    jRadioButton3.setSelected(true);
-    jRadioButton3.setText("English");
+    languageGroup.add(englishRbtn);
+    englishRbtn.setFont(new Font("Ubuntu", 0, 12));
+    englishRbtn.setSelected(true);
+    englishRbtn.setText("English");
 
-    languageGroup.add(jRadioButton4);
-    jRadioButton4.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    jRadioButton4.setText("French");
+    languageGroup.add(frenchRbtn);
+    frenchRbtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    frenchRbtn.setText("French");
 
     jLabel1.setFont(new Font("Ubuntu", 1, 12));
     jLabel1.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png"))); // NOI18N
@@ -386,9 +400,9 @@ public class Setting extends JDialog {
       jPanel13Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel13Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jRadioButton3)
+        .addComponent(englishRbtn)
         .addGap(18, 18, 18)
-        .addComponent(jRadioButton4)
+        .addComponent(frenchRbtn)
         .addPreferredGap(ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
         .addComponent(jLabel1)
         .addContainerGap())
@@ -396,8 +410,8 @@ public class Setting extends JDialog {
     jPanel13Layout.setVerticalGroup(
       jPanel13Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel13Layout.createParallelGroup(Alignment.BASELINE)
-        .addComponent(jRadioButton3)
-        .addComponent(jRadioButton4)
+        .addComponent(englishRbtn)
+        .addComponent(frenchRbtn)
         .addComponent(jLabel1))
     );
 
@@ -426,15 +440,15 @@ public class Setting extends JDialog {
 
     jPanel10.setBorder(BorderFactory.createTitledBorder(null, "Movie file list", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
 
-    jCheckBox5.setText("Use extension filter");
+    useExtensionFilterChk.setText("Use extension filter");
 
-    jCheckBox7.setText("Show movie file path");
+    showMovieFilePathChk.setText("Show movie file path");
 
-    jCheckBox6.setText("Scan subfolders");
+    scanSubfolderChk.setText("Scan subfolders");
 
-    jCheckBox9.setText("Hide not a movie files");
+    hideNotAMovieFileChk.setText("Hide not a movie files");
 
-    jCheckBox10.setText("Hide renamed movie");
+    hideRenamedMovieChk.setText("Hide renamed movie");
 
     helpSearchBtn2.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png"))); // NOI18N
     helpSearchBtn2.setToolTipText("Help");
@@ -443,6 +457,7 @@ public class Setting extends JDialog {
     helpSearchBtn2.setPreferredSize(new Dimension(26, 26));
 
     jCheckBox16.setText("Destination folder");
+    jCheckBox16.setEnabled(false);
 
     GroupLayout jPanel10Layout = new GroupLayout(jPanel10);
     jPanel10.setLayout(jPanel10Layout);
@@ -451,32 +466,32 @@ public class Setting extends JDialog {
       .addGroup(jPanel10Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel10Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jCheckBox5)
-          .addComponent(jCheckBox7)
-          .addComponent(jCheckBox6))
+          .addComponent(useExtensionFilterChk)
+          .addComponent(showMovieFilePathChk)
+          .addComponent(scanSubfolderChk))
         .addGap(20, 20, 20)
         .addGroup(jPanel10Layout.createParallelGroup(Alignment.LEADING)
           .addComponent(jCheckBox16)
           .addGroup(jPanel10Layout.createSequentialGroup()
-            .addComponent(jCheckBox9)
+            .addComponent(hideNotAMovieFileChk)
             .addPreferredGap(ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
             .addComponent(helpSearchBtn2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-          .addComponent(jCheckBox10))
+          .addComponent(hideRenamedMovieChk))
         .addContainerGap())
     );
     jPanel10Layout.setVerticalGroup(
       jPanel10Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel10Layout.createSequentialGroup()
         .addGroup(jPanel10Layout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(jCheckBox5)
-          .addComponent(jCheckBox9))
+          .addComponent(useExtensionFilterChk)
+          .addComponent(hideNotAMovieFileChk))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addGroup(jPanel10Layout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(jCheckBox10)
-          .addComponent(jCheckBox7))
+          .addComponent(hideRenamedMovieChk)
+          .addComponent(showMovieFilePathChk))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addGroup(jPanel10Layout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(jCheckBox6)
+          .addComponent(scanSubfolderChk)
           .addComponent(jCheckBox16)))
       .addComponent(helpSearchBtn2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
     );
@@ -1285,8 +1300,14 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_CancelBtnMouseReleased
 
   private void saveBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_saveBtnMouseReleased
+    boolean restartApp = false;
+    
     // General Setting
-
+    setting.useExtensionFilter = useExtensionFilterChk.isSelected();
+    setting.showMovieFilePath = showMovieFilePathChk.isSelected();
+    setting.scanSubfolder = scanSubfolderChk.isSelected();
+    setting.hideNotAMovieFile = hideNotAMovieFileChk.isSelected();
+    
     for (int i = 0; i < rBtnThumbList.length; i++) {
       if (rBtnThumbList[i].isSelected())
         setting.thumbSize = i;
@@ -1301,6 +1322,15 @@ public class Setting extends JDialog {
     setting.nbResult = limitResultComboBox.getSelectedIndex();
     setting.displayThumbResult = displayThumbResultChk.isSelected();
 
+    boolean langFr = setting.locale.equals("fr");
+    if(langFr != frenchRbtn.isSelected()){
+      setting.locale = (frenchRbtn.isSelected() ? "fr":"en");
+      int n = JOptionPane.showConfirmDialog(this, Settings.softName + " need to restart for apply language change\nWould you like to restart now ?", "Question", JOptionPane.YES_NO_OPTION);
+      if(n == JOptionPane.YES_OPTION){
+        restartApp = true;
+      }
+    }
+
     // Movie Files
     setting.movieFilenameFormat = formatField.getText();
     setting.createMovieDirectory = createDirChk.isSelected();
@@ -1312,6 +1342,11 @@ public class Setting extends JDialog {
     setting.nameFilters = filters;
 
     setting.saveSetting();
+    
+    if(restartApp){
+      if(!Utils.restartApplication(Main.class))JOptionPane.showMessageDialog(this, "\nUnable to restart Movie Renamer\nPlease restart it manually", "Error", JOptionPane.ERROR_MESSAGE);
+      else System.exit(0);
+    }
     dispose();
   }//GEN-LAST:event_saveBtnMouseReleased
 
@@ -1487,18 +1522,22 @@ public class Setting extends JDialog {
   private ButtonGroup createDirGroup;
   private JCheckBox displayAppResultCheckBox;
   private JCheckBox displayThumbResultChk;
+  private JRadioButton englishRbtn;
   private JList extentionJlist;
   private JLabel fanartCacheLbl;
   private ButtonGroup fanartGroup;
   private JList filterJlist;
   private JPanel filtersPnl;
   private JTextField formatField;
+  private JRadioButton frenchRbtn;
   private JPanel generalPnl;
   private JButton helpBtn;
   private JButton helpBtn1;
   private JButton helpBtn2;
   private JButton helpSearchBtn;
   private JButton helpSearchBtn2;
+  private JCheckBox hideNotAMovieFileChk;
+  private JCheckBox hideRenamedMovieChk;
   private ButtonGroup interfaceGroup;
   private JButton jButton1;
   private JButton jButton2;
@@ -1507,7 +1546,6 @@ public class Setting extends JDialog {
   private JButton jButton5;
   private JButton jButton6;
   private JCheckBox jCheckBox1;
-  private JCheckBox jCheckBox10;
   private JCheckBox jCheckBox11;
   private JCheckBox jCheckBox12;
   private JCheckBox jCheckBox13;
@@ -1517,11 +1555,7 @@ public class Setting extends JDialog {
   private JCheckBox jCheckBox2;
   private JCheckBox jCheckBox3;
   private JCheckBox jCheckBox4;
-  private JCheckBox jCheckBox5;
-  private JCheckBox jCheckBox6;
-  private JCheckBox jCheckBox7;
   private JCheckBox jCheckBox8;
-  private JCheckBox jCheckBox9;
   private JLabel jLabel1;
   private JLabel jLabel10;
   private JLabel jLabel14;
@@ -1550,8 +1584,6 @@ public class Setting extends JDialog {
   private JPanel jPanel8;
   private JPanel jPanel9;
   private JRadioButton jRadioButton1;
-  private JRadioButton jRadioButton3;
-  private JRadioButton jRadioButton4;
   private JScrollPane jScrollPane1;
   private JScrollPane jScrollPane2;
   private JTabbedPane jTabbedPane1;
@@ -1568,12 +1600,15 @@ public class Setting extends JDialog {
   private JButton removeFilterBtn;
   private JRadioButton renamedMovieTitleRBtn;
   private JButton saveBtn;
+  private JCheckBox scanSubfolderChk;
+  private JCheckBox showMovieFilePathChk;
   private JTextField testField;
   private JLabel thumbCacheLbl;
   private JComboBox thumbExtCbBox;
   private JRadioButton thumbFanartSizeRBtn;
   private ButtonGroup thumbGroup;
   private JRadioButton thumbThumbSizeRBtn;
+  private JCheckBox useExtensionFilterChk;
   private JLabel xmlLbl;
   private ButtonGroup youtubeGroup;
   // End of variables declaration//GEN-END:variables

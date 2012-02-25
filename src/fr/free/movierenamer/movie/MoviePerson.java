@@ -20,16 +20,22 @@
 
 package fr.free.movierenamer.movie;
 
+import fr.free.movierenamer.utils.ActionNotValidException;
 import java.util.ArrayList;
 
 /**
  * Class MoviePerson
- * @author duffy
+ * @author Nicolas Magré
  */
 public class MoviePerson {
+
+  public static final int ACTOR = 0;
+  public static final int DIRECTOR = 1;
+  public static final int WRITER = 2;
+
   private String name;
   private String thumb;
-  private String job;// Actor, Realisator
+  private int job;// Actor, Realisator
   private ArrayList<String> roles;// just for actor
 
   /**
@@ -38,7 +44,7 @@ public class MoviePerson {
    * @param thumb Person thumbnail
    * @param job Person job (actor,director,writer,...)
    */
-  public MoviePerson(String name, String thumb, String job){
+  public MoviePerson(String name, String thumb, int job){
     this.name = name;
     this.thumb = thumb;
     this.job = job;
@@ -65,7 +71,7 @@ public class MoviePerson {
    * Get job
    * @return Person job
    */
-  public String getJob(){
+  public int getJob(){
     return job;
   }
   
@@ -80,8 +86,10 @@ public class MoviePerson {
   /**
    * Add role (only for actors)
    * @param role Role
+   * @throws ActionNotValidException
    */
-  public void addRole(String role) {
-    roles.add(role);
+  public void addRole(String role) throws ActionNotValidException {
+    if(job != ACTOR) throw new ActionNotValidException("Only actor can have a role");
+    else roles.add(role);
   }
 }

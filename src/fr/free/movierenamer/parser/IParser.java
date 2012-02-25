@@ -22,9 +22,9 @@ package fr.free.movierenamer.parser;
 import org.xml.sax.ContentHandler;
 
 /**
- *
- * @param <T>
- * @author duffy
+ * Interface for XML parser
+ * @param <T> XML object to parse
+ * @author Nicolas Magré
  */
 public interface IParser<T> extends ContentHandler {
   public T getObject();

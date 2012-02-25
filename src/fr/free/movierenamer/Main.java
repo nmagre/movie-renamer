@@ -26,11 +26,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.ui.MovieRenamer;
+import java.util.Locale;
 
 /**
  *
@@ -41,37 +40,6 @@ public class Main {
   private static MovieRenamer mvr;
 
   public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException {
-
-    try {
-      UIManager.put("FileChooser.openDialogTitleText", "Open");
-      UIManager.put("FileChooser.lookInLabelText", "Look In");
-      UIManager.put("FileChooser.openButtonText", "Open");
-      UIManager.put("FileChooser.cancelButtonText", "Cancel");
-      UIManager.put("FileChooser.fileNameLabelText", "FileName");
-      UIManager.put("FileChooser.filesOfTypeLabelText", "Files Type");
-      UIManager.put("FileChooser.openButtonToolTipText", "Open Selected File");
-      UIManager.put("FileChooser.cancelButtonToolTipText", "Cancel");
-      UIManager.put("FileChooser.fileNameHeaderText", "FileName");
-      UIManager.put("FileChooser.upFolderToolTipText", "Up One Level");
-      UIManager.put("FileChooser.homeFolderToolTipText", "Desktop");
-      UIManager.put("FileChooser.newFolderToolTipText", "Create New Folder");
-      UIManager.put("FileChooser.listViewButtonToolTipText", "List");
-      UIManager.put("FileChooser.newFolderButtonText", "Create New Folder");
-      UIManager.put("FileChooser.renameFileButtonText", "Rename File");
-      UIManager.put("FileChooser.deleteFileButtonText", "Delete File");
-      UIManager.put("FileChooser.filterLabelText", "Files Type");
-      UIManager.put("FileChooser.detailsViewButtonToolTipText", "Details");
-      UIManager.put("FileChooser.fileSizeHeaderText", "Size");
-      UIManager.put("FileChooser.fileDateHeaderText", "Modified Date");
-
-      UIManager.put("OptionPane.cancelButtonText", "Cancel");
-      UIManager.put("OptionPane.noButtonText", "No");
-      UIManager.put("OptionPane.okButtonText", "Ok");
-      UIManager.put("OptionPane.yesButtonText", "Yes");
-    } catch (Exception e) {
-      JOptionPane.showMessageDialog(new JFrame(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-      // return;
-    }
 
     final Settings setting = loadSetting();
     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -92,6 +60,14 @@ public class Main {
       try {
         XMLParser<Settings> mmp = new XMLParser<Settings>(setting.configFile, Settings.class);
         setting = mmp.parseXml();
+        if (setting.locale.equals("")) {
+          if (!Locale.getDefault().getLanguage().equals("fr")) setting.locale = "en";
+          else setting.locale = "fr";
+          saved = setting.saveSetting();
+          setting.xmlVersion = setting.getVersion();
+          setting.xmlError = false;
+        }
+        Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR"):Locale.ENGLISH));
         if (!setting.getVersion().equals(setting.xmlVersion) || setting.xmlError)
           saved = setting.saveSetting();
       } catch (IOException ex) {

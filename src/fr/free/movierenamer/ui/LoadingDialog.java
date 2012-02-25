@@ -21,20 +21,15 @@ package fr.free.movierenamer.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 import fr.free.movierenamer.utils.Loading;
+import java.beans.PropertyChangeListener;
 
 /**
  *
@@ -70,6 +65,10 @@ public class LoadingDialog extends JDialog {
     pack();
     setModal(true);
     setLocationRelativeTo(parent);
+  }
+
+  public boolean isShown(){
+    return isVisible();
   }
 
   public synchronized void setValue(final int value, final int idWorker) {

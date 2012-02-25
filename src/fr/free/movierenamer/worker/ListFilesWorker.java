@@ -75,7 +75,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
         getFiles(movies, files.get(i));
       } else
         if (Utils.checkFile(files.get(i).getName(), setting))
-          movies.add(new MovieFile(files.get(i), false, !isMovie(files.get(i))));
+          movies.add(new MovieFile(files.get(i), false, !isMovie(files.get(i)), setting.showMovieFilePath));
     }
     Collections.sort(movies, new MyFileComparable());
     return movies;
@@ -96,7 +96,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
         }
       }
       else if(Utils.checkFile(listFiles[i].getName(), setting))
-        movies.add(new MovieFile(listFiles[i], false, !isMovie(listFiles[i])));
+        movies.add(new MovieFile(listFiles[i], false, !isMovie(listFiles[i]), setting.showMovieFilePath));
     }
   }
 
@@ -120,7 +120,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
     return false;
   }
 
-  private class MyFileComparable implements Comparator<MovieFile> {
+  private static class MyFileComparable implements Comparator<MovieFile> {
 
     @Override
     public int compare(MovieFile s1, MovieFile s2) {

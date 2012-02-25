@@ -19,6 +19,7 @@
  ******************************************************************************/
 package fr.free.movierenamer.movie;
 
+import fr.free.movierenamer.utils.ActionNotValidException;
 import java.util.ArrayList;
 import fr.free.movierenamer.utils.Utils;
 
@@ -193,7 +194,7 @@ public class MovieInfo {
     return res;
   }
 
-  public void addRole(String actor, String role) {
+  public void addRole(String actor, String role) throws ActionNotValidException {
     for (int i = 0; i < actors.size(); i++) {
       if (actors.get(i).getName().equals(actor)) {
         actors.get(i).addRole(role);
@@ -203,19 +204,19 @@ public class MovieInfo {
   }
 
   public String getDirectors() {
-    String res = "";
+    StringBuilder res = new StringBuilder();
     for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob().equals("Director"))
-        res += " | " + actors.get(i).getName();
+      if (actors.get(i).getJob() == MoviePerson.DIRECTOR)
+        res.append(" | ").append(actors.get(i).getName());
     }
-    if (!res.equals(Utils.EMPTY)) res = res.substring(3);
-    return res;
+    if (res.length() == 0) res.delete(0, 2);
+    return res.toString();
   }
 
-  public String getWriters() {
+  public String getWriters() {//A refaire (string concat in loop)
     String res = "";
     for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob().equals("Writer"))
+      if (actors.get(i).getJob() == MoviePerson.WRITER)
         res += " | " + actors.get(i).getName();
     }
     if (!res.equals(Utils.EMPTY)) res = res.substring(3);
@@ -225,13 +226,13 @@ public class MovieInfo {
   public String getFirstDirector() {
     String res = "";
     for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob().equals("Director"))
+      if (actors.get(i).getJob() == MoviePerson.DIRECTOR)
         return actors.get(i).getName();
     }
     return res;
   }
 
-  public String getGenresString() {
+  public String getGenresString() {//A refaire (string concat in loop)
     String res = "";
     for (int i = 0; i < genres.size(); i++) {
       res += " | " + genres.get(i);
@@ -240,7 +241,7 @@ public class MovieInfo {
     return res;
   }
 
-  public String getCountriesString() {
+  public String getCountriesString() {//A refaire (string concat in loop)
     String res = "";
     for (int i = 0; i < countries.size(); i++) {
       res += " | " + countries.get(i);
@@ -258,7 +259,7 @@ public class MovieInfo {
   }
 
   @Override
-  public String toString(){
+  public String toString(){//A refaire (string concat in loop)
     String res = title + "\n";
     res += "  ImdbId : " + movieDBId +"\n";
     res += "  Trailer : " + trailer +"\n";
@@ -276,7 +277,7 @@ public class MovieInfo {
     res += "  Writer : " + getWriters() + "\n";
     res += "  Actor :\n";
     for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob().equals("Actor"))
+      if (actors.get(i).getJob() == MoviePerson.ACTOR)
         res += "    " + actors.get(i).getName() + " : " + actors.get(i).getRoles() + "\n";
     }
 

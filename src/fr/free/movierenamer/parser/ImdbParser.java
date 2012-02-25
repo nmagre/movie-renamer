@@ -25,15 +25,16 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import fr.free.movierenamer.utils.ImdbSearchResult;
+import fr.free.movierenamer.ui.res.ImdbSearchResult;
 import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.movie.MoviePerson;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.utils.Settings;
 
 /**
- *
- * @author duffy
+ * Imdb http page parser
+ * @author Nicolas Magré
  */
 public class ImdbParser {
   
@@ -41,45 +42,51 @@ public class ImdbParser {
   private boolean french;
     
   // Search Page Pattern
-  private final String MOVIEIMDBPATTERN = ">\\d+.<\\/td>.*?a href=.\\/title\\/tt\\d+\\/.[^>]*>([^<]*).*?\\((\\d+).*?\\)";
-  private final String MOVIENAMEPATTERN = ";\">";
-  private final String IMDBIDPATTERN = "tt\\d+";
-  private final String MOVIETHUMB = "/title/IMDBID/';.><img src=.http://ia.media-imdb.com/images/.*?. width=.\\d+. height=.\\d+. border=.\\d.>";
-  private final String POPULARPATTERN_EN = ".*?Popular Titles.*?Displaying (\\d+).*";
-  private final String POPULARPATTERN_FR = ".*?Titres Populaires.*?Affichant (\\d+)(.*)";
-  private final String EXACTPATTERN_EN = "Titles \\(Exact Matches.*?Displaying (\\d+)(.*)";
-  private final String EXACTPATTERN_FR = "Titres \\(R&#xE9;sultats Exacts.*?Affichant (\\d+)(.*)";
-  private final String PARTIALPATTERN_EN = "Titles \\(Partial.*?Displaying (\\d+)(.*)";
-  private final String PARTIALPATTERN_FR = "Titres \\(R&#xE9;sultats Partiels.*?Affichant (\\d+)(.*)";
-  private final String APPROXIMATEPATTERN_EN = "Titles \\(Approx.*?Displaying (\\d+)(.*)";  
-  private final String APPROXIMATEPATTERN_FR = "Titres \\(R&#xE9;sultats Approximatif.*?Affichant (\\d+)(.*)";
+  private static final String MOVIEIMDBPATTERN = ">\\d+.<\\/td>.*?a href=.\\/title\\/tt\\d+\\/.[^>]*>([^<]*).*?\\((\\d+).*?\\)";
+  private static final String MOVIENAMEPATTERN = ";\">";
+  private static final String IMDBIDPATTERN = "tt\\d+";
+  private static final String MOVIETHUMB = "/title/IMDBID/';.><img src=.http://ia.media-imdb.com/images/.*?. width=.\\d+. height=.\\d+. border=.\\d.>";
+  private static final String POPULARPATTERN_EN = ".*?Popular Titles.*?Displaying (\\d+).*";
+  private static final String POPULARPATTERN_FR = ".*?Titres Populaires.*?Affichant (\\d+)(.*)";
+  private static final String EXACTPATTERN_EN = "Titles \\(Exact Matches.*?Displaying (\\d+)(.*)";
+  private static final String EXACTPATTERN_FR = "Titres \\(R&#xE9;sultats Exacts.*?Affichant (\\d+)(.*)";
+  private static final String PARTIALPATTERN_EN = "Titles \\(Partial.*?Displaying (\\d+)(.*)";
+  private static final String PARTIALPATTERN_FR = "Titres \\(R&#xE9;sultats Partiels.*?Affichant (\\d+)(.*)";
+  private static final String APPROXIMATEPATTERN_EN = "Titles \\(Approx.*?Displaying (\\d+)(.*)";
+  private static final String APPROXIMATEPATTERN_FR = "Titres \\(R&#xE9;sultats Approximatif.*?Affichant (\\d+)(.*)";
   
   // Movie Page Pattern
-  private final String IMDBMOVIETITLE = "<meta property=.og:title. content=?(.*?) \\(.*\\d\\d\\d\\d.*\\)";
-  private final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
+  private static final String IMDBMOVIETITLE = "<meta property=.og:title. content=?(.*?) \\(.*\\d\\d\\d\\d.*\\)";
+  private static final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
   
   // Movie Page Combined Pattern
-  private final String IMDBMOVIETITLE_1 = "<title>.* \\(.*\\d\\d\\d\\d\\.*\\)</title>";
-  private final String IMDBMOVIEORIGTITLE = "<span class=\"title-extra\">.*</i></span>";
-  private final String IMDBMOVIEORUNTIME = "<h5>(Runtime|Dur&#xE9;e):</h5><div class=\".*\">\\d+ min";
-  private final String IMDBMOVIERATING = "<b>.[\\.,]./10</b>";
-  private final String IMDBMOVIEVOTES = "<a href=\".*\" class=\".*\">.* votes</a>";
-  private final String IMDBMOVIEDIRECTOR = "src='/rg/directorlist/position-\\d+/images/b.gif.link=name/nm\\d+/';\">.*</a>";
-  private final String IMDBMOVIEWRITER = "src='/rg/writerlist/position-\\d/images/b.gif.link=name/nm\\d+/';\".*</a>";
-  private final String IMDBMOVIEGENRE = "<a href=\"/Sections/Genres/.*/\">.*keywords";
-  private final String IMDBMOVIEGENRE_FR = "";
-  private final String IMDBMOVIETAGLINE = "<div class=\"info-content\">\n.*<a class=\".*\" href=\"/title/tt\\d+/taglines\"";
-  private final String IMDBMOVIEPLOT = "<div class=.info-content.>\n.*(\n?)<a class=..*. href=./title/tt\\d+/plotsummary.";
-  private final String IMDBMOVIECAST = "<h3>Cast</h3>.*</table></div>";
-  private final String IMDBMOVIEACTOR = "/?;\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>";
-  private final String IMDBMOVIECOUNTRY = "<h5>Country:</h5><div class=\".*\"><a href=\".*\">(.*)</a></div>";
-  private final String IMDBMOVIESTUDIO = "<h5>Company:</h5><div class=..*.><a href=..*.>(.*)</a><a";
+  private static final String IMDBMOVIETITLE_1 = "<title>.* \\(.*\\d\\d\\d\\d\\.*\\)</title>";
+  private static final String IMDBMOVIEORIGTITLE = "<span class=\"title-extra\">.*</i></span>";
+  private static final String IMDBMOVIEORUNTIME = "<h5>(Runtime|Dur&#xE9;e):</h5><div class=\".*\">\\d+ min";
+  private static final String IMDBMOVIERATING = "<b>.[\\.,]./10</b>";
+  private static final String IMDBMOVIEVOTES = "<a href=\".*\" class=\".*\">.* votes</a>";
+  private static final String IMDBMOVIEDIRECTOR = "src='/rg/directorlist/position-\\d+/images/b.gif.link=name/nm\\d+/';\">.*</a>";
+  private static final String IMDBMOVIEWRITER = "src='/rg/writerlist/position-\\d/images/b.gif.link=name/nm\\d+/';\".*</a>";
+  private static final String IMDBMOVIEGENRE = "<a href=\"/Sections/Genres/.*/\">.*keywords";
+  private static final String IMDBMOVIEGENRE_FR = "<h5>Genre:</h5>\n<div class=.info-content.>\n.*\n</div>";
+  private static final String IMDBMOVIETAGLINE = "<div class=\"info-content\">\n.*<a class=\".*\" href=\"/title/tt\\d+/taglines\"";
+  private static final String IMDBMOVIEPLOT = "<div class=.info-content.>\n.*(\n?)<a class=..*. href=./title/tt\\d+/plotsummary.";
+  private static final String IMDBMOVIECAST = "<h3>Cast</h3>.*</table></div>";
+  private static final String IMDBMOVIEACTOR = "/?;\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>";
+  private static final String IMDBMOVIECOUNTRY = "<h5>Country:</h5><div class=\".*\"><a href=\".*\">(.*)</a></div>";
+  private static final String IMDBMOVIESTUDIO = "<h5>Company:</h5><div class=..*.><a href=..*.>(.*)</a><a";
 
   public ImdbParser(boolean french, Settings setting){
       this.setting = setting;
       this.french = french;
   }
-  
+
+  /**
+   * Parse imdb page to get movies title
+   * @param htmlSearchRes Imdb search page or imdb movie page
+   * @param searchPage Is a imdb search page or imdb movie page
+   * @return Array of ImdbSearchResult
+   */
   public ArrayList<ImdbSearchResult> parse(String htmlSearchRes, boolean searchPage) {
     ArrayList<ImdbSearchResult> found = new ArrayList<ImdbSearchResult>();
     int limit = setting.nbResultList[setting.nbResult];
@@ -98,6 +105,15 @@ public class ImdbParser {
     return found;
   }
 
+  /**
+   * Get movies title by result type in Imdb search page
+   * @param htmlSearchRes Imdb search page
+   * @param searchPattern Pattern of result to retreive
+   * @param limit Limitation of returned result
+   * @param french Is imdb french page
+   * @param type Type of result search
+   * @return Array of ImdbSearchResult
+   */
   private ArrayList<ImdbSearchResult> findMovies(String htmlSearchRes, String searchPattern, int limit, boolean french, String type) {
     ArrayList<ImdbSearchResult> found = new ArrayList<ImdbSearchResult>();
     Pattern pattern = Pattern.compile(searchPattern);
@@ -162,6 +178,11 @@ public class ImdbParser {
     return found;
   }
 
+  /**
+   * Get movie title in imdb movie page
+   * @param moviePage Imdb movie page
+   * @param found Array to put the results in
+   */
   private void getMovie(String moviePage, ArrayList<ImdbSearchResult> found) {
     Pattern pattern = Pattern.compile(IMDBMOVIETITLE);
     Matcher titleMatcher = pattern.matcher(moviePage);
@@ -186,6 +207,11 @@ public class ImdbParser {
     }
   }
 
+  /**
+   * Get movie information in imdb movie page
+   * @param moviePage Imdb movie page
+   * @return Movie information
+   */
   public MovieInfo getMovieInfo(String moviePage) {
     MovieInfo movieInfo = new MovieInfo();
     try {
@@ -252,7 +278,7 @@ public class ImdbParser {
       while (searchMatcher.find()) {
         String director = searchMatcher.group();
         director = director.substring(director.indexOf(">") + 1, director.lastIndexOf("<"));
-        movieInfo.addActor(new MoviePerson(decodeXMLString(director), "", "Director"));
+        movieInfo.addActor(new MoviePerson(decodeXMLString(director), "", MoviePerson.DIRECTOR));
       }
 
       //Writers
@@ -261,7 +287,7 @@ public class ImdbParser {
       while (searchMatcher.find()) {
         String writer = searchMatcher.group();
         writer = writer.substring(writer.indexOf(">") + 1, writer.lastIndexOf("<"));
-        movieInfo.addActor(new MoviePerson(decodeXMLString(writer), "", "Writer"));
+        movieInfo.addActor(new MoviePerson(decodeXMLString(writer), "", MoviePerson.WRITER));
       }
 
       //TagLine
@@ -287,9 +313,10 @@ public class ImdbParser {
       pattern = Pattern.compile((french ? IMDBMOVIEGENRE_FR:IMDBMOVIEGENRE));
       searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
-        String[] genres = searchMatcher.group().split("\\|");
+        String found = french ? searchMatcher.group().split("\n")[2]:searchMatcher.group();
+        String[] genres = found.split("\\|");
         for (int i = 0; i < genres.length; i++) {
-          String genre = genres[i].substring(genres[i].indexOf(">") + 1, genres[i].indexOf("</a>"));
+          String genre = french ? genres[i].trim():genres[i].substring(genres[i].indexOf(">") + 1, genres[i].indexOf("</a>"));
           movieInfo.addGenre(decodeXMLString(genre));
         }
       }
@@ -312,19 +339,23 @@ public class ImdbParser {
 
             String name = matcher2.group().substring(matcher2.group().indexOf("onclick="), matcher2.group().indexOf("</a></td><td"));
             name = name.substring(name.indexOf(">") + 1);
-            MoviePerson actor = new MoviePerson(decodeXMLString(name), thumbactor, "Actor");
+            MoviePerson actor = new MoviePerson(decodeXMLString(name), thumbactor, MoviePerson.ACTOR);
             String role = matcher2.group().substring(matcher2.group().indexOf("class=\"char\""));
             role = role.substring(role.indexOf(">") + 1, role.indexOf("</td>"));
             if (role.contains("href=")) role = role.substring(role.indexOf(">") + 1);
-            if (role.contains("/")) {
-              String[] roles = role.split(" / ");
-              for (int j = 0; j < roles.length; j++) {
-                role = roles[j].replaceAll("</a>", "");
-                if (role.contains("href=")) role = role.substring(role.indexOf(">") + 1);
+            try {
+              if (role.contains("/")) {
+                String[] roles = role.split(" / ");
+                for (int j = 0; j < roles.length; j++) {
+                  role = roles[j].replaceAll("</a>", "");
+                  if (role.contains("href=")) role = role.substring(role.indexOf(">") + 1);
+                  actor.addRole(decodeXMLString(role));
+                }
+              } else
                 actor.addRole(decodeXMLString(role));
-              }
-            } else
-              actor.addRole(decodeXMLString(role));
+            } catch (ActionNotValidException e){
+              setting.getLogger().log(Level.SEVERE, e.getMessage());
+            }
             movieInfo.addActor(actor);
           }
         }
@@ -369,6 +400,11 @@ public class ImdbParser {
     return movieInfo;
   }
 
+  /**
+   * Decode XML encoded character in HTML page
+   * @param text String to decode
+   * @return String decoded in ISO-8859-1 charset
+   */
   private String decodeXMLString(String text) {
     try {
       text = text.replaceAll("&#x(\\w\\w);", "%$1");
