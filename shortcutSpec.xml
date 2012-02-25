@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<shortcuts>
+  <skipIfNotSupported/>
+  <programGroup defaultName="Movie Renamer"
+              location="applications"/>
+  <shortcut name="Movie Renamer"
+    target="$INSTALL_PATH\@JARFILE@"
+    description="Launch app"
+    workingDirectory="$INSTALL_PATH"
+    iconFile="$INSTALL_PATH\icon-32.ico"
+    initialState="normal"
+    programGroup="yes||no"
+    desktop="yes||no"
+    applications="yes||no"
+    startMenu="no"
+    startup="no">
+
+    <createForPack name="Core"/>
+  </shortcut>
+</shortcuts>
