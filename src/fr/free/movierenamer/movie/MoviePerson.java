@@ -79,7 +79,7 @@ public class MoviePerson {
    * Get roles
    * @return Person movie roles
    */
-  public ArrayList<String> getRoles(){
+  public ArrayList<String> getRoles() {
     return roles;
   }
 
@@ -91,5 +91,10 @@ public class MoviePerson {
   public void addRole(String role) throws ActionNotValidException {
     if(job != ACTOR) throw new ActionNotValidException("Only actor can have a role");
     else roles.add(role);
+  }
+
+  @Override
+  public String toString(){
+     return name;
   }
 }

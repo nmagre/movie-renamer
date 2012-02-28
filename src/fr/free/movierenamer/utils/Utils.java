@@ -19,6 +19,7 @@
  ******************************************************************************/
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.movie.MoviePerson;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
@@ -112,17 +113,23 @@ public class Utils {
   }
 
   public static String arrayToString(String[] array, String separator) {
-    String res = "";
+    StringBuilder res = new StringBuilder();
     if (array.length == 0)
-      return res;
+      return res.toString();
     for (int i = 0; i < array.length; i++) {
-      res += array[i] + ((i < (array.length - 1)) ? separator : "");
+      res.append(array[i]).append((i < (array.length - 1)) ? separator : "");
     }
-    return res;
+    return res.toString();
   }
 
   public static String arrayToString(ArrayList<String> array, String separator) {
     return arrayToString(array.toArray(new String[array.size()]), separator);
+  }
+
+  public static String arrayPersonnToString(ArrayList<MoviePerson> array, String separator) {
+    String[] arr = new String[array.size()];
+    for (int i=0;i<array.size();i++) arr[i] = array.get(i).toString();
+    return arrayToString(arr, separator);
   }
 
   public static String md5(String s) {
@@ -303,8 +310,6 @@ public class Utils {
       return false;
     }
 
-    /* is it a jar file? */
-    System.out.println(jarFile);
     if (!jarFile.getName().endsWith(".jar"))
       return false;
     String toExec[] = new String[]{javaBin, "-jar", jarFile.getPath()};
@@ -318,7 +323,7 @@ public class Utils {
   }
 
   public static String rot13(String text) {
-    String res = "";
+    StringBuilder res = new StringBuilder();
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       if (c >= 'a' && c <= 'm')
@@ -329,9 +334,9 @@ public class Utils {
         c += 13;
       else if (c >= 'A' && c <= 'Z')
         c -= 13;
-      res += c;
+      res.append(c);
     }
-    return res;
+    return res.toString();
   }
 
   public static String escapeXML(String text) {
@@ -352,10 +357,10 @@ public class Utils {
   }
 
   public static String getStackTrace(String exception, StackTraceElement[] ste) {
-    String res = exception + "\n";
+    StringBuilder res = new StringBuilder(exception + "\n");
     for (int i = 0; i < ste.length; i++) {
-      res += "    " + ste[i].toString() + "\n";
+      res.append("    ").append(ste[i].toString()).append("\n");
     }
-    return res;
+    return res.toString();
   }
 }

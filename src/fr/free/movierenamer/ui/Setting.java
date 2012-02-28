@@ -130,14 +130,16 @@ public class Setting extends JDialog {
     frenchRbtn.setSelected(setting.locale.equals("fr"));
 
 
-
-
-
     thumbGroup.setSelected(rBtnThumbList[setting.thumbSize].getModel(), true);
     fanartGroup.setSelected(rBtnFanartList[setting.fanartSize].getModel(), true);
     displayAppResultCheckBox.setSelected(setting.displayApproximateResult);
     limitResultComboBox.setSelectedIndex(setting.nbResult);
     displayThumbResultChk.setSelected(setting.displayThumbResult);
+
+    // Imdb
+    imdbFrRbtn.setSelected(setting.imdbFr);
+    imdbEnRbtn.setSelected(!setting.imdbFr);
+
 
     // Movie Files
     formatField.setText(setting.movieFilenameFormat);
@@ -210,6 +212,7 @@ public class Setting extends JDialog {
     ratingGroup = new ButtonGroup();
     languageGroup = new ButtonGroup();
     interfaceGroup = new ButtonGroup();
+    imdbLangGroup = new ButtonGroup();
     jTabbedPane1 = new JTabbedPane();
     generalPnl = new JPanel();
     jPanel6 = new JPanel();
@@ -269,6 +272,9 @@ public class Setting extends JDialog {
     origFanartSizeRBtn = new JRadioButton();
     midFanartSizeRBtn = new JRadioButton();
     thumbFanartSizeRBtn = new JRadioButton();
+    jPanel15 = new JPanel();
+    imdbFrRbtn = new JRadioButton();
+    imdbEnRbtn = new JRadioButton();
     filtersPnl = new JPanel();
     jPanel11 = new JPanel();
     removeExtensuionBtn = new JButton();
@@ -386,7 +392,7 @@ public class Setting extends JDialog {
     englishRbtn.setText("English");
 
     languageGroup.add(frenchRbtn);
-    frenchRbtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    frenchRbtn.setFont(new Font("Ubuntu", 0, 12));
     frenchRbtn.setText("French");
 
     jLabel1.setFont(new Font("Ubuntu", 1, 12));
@@ -869,6 +875,36 @@ public class Setting extends JDialog {
         .addContainerGap(14, Short.MAX_VALUE))
     );
 
+    jPanel15.setBorder(BorderFactory.createTitledBorder("Language"));
+
+    imdbLangGroup.add(imdbFrRbtn);
+    imdbFrRbtn.setSelected(true);
+    imdbFrRbtn.setText("French (imdb.fr)");
+
+    imdbLangGroup.add(imdbEnRbtn);
+    imdbEnRbtn.setText("English (imdb.com)");
+
+    GroupLayout jPanel15Layout = new GroupLayout(jPanel15);
+    jPanel15.setLayout(jPanel15Layout);
+    jPanel15Layout.setHorizontalGroup(
+      jPanel15Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(jPanel15Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(imdbFrRbtn)
+        .addGap(18, 18, 18)
+        .addComponent(imdbEnRbtn)
+        .addContainerGap(135, Short.MAX_VALUE))
+    );
+    jPanel15Layout.setVerticalGroup(
+      jPanel15Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(jPanel15Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel15Layout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(imdbFrRbtn)
+          .addComponent(imdbEnRbtn))
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
     GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
     jPanel3Layout.setHorizontalGroup(
@@ -877,17 +913,20 @@ public class Setting extends JDialog {
         .addContainerGap()
         .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
           .addComponent(jPanel14, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(jPanel5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel15, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
       jPanel3Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel3Layout.createSequentialGroup()
         .addContainerGap()
+        .addComponent(jPanel15, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jPanel14, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jPanel5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(169, Short.MAX_VALUE))
+        .addContainerGap(99, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Imdb", jPanel3);
@@ -1331,6 +1370,9 @@ public class Setting extends JDialog {
       }
     }
 
+    // Imdb
+    setting.imdbFr = imdbFrRbtn.isSelected();
+
     // Movie Files
     setting.movieFilenameFormat = formatField.getText();
     setting.createMovieDirectory = createDirChk.isSelected();
@@ -1401,7 +1443,6 @@ public class Setting extends JDialog {
     String s = (String) JOptionPane.showInputDialog(this, "Add", "Add Name Filter", JOptionPane.PLAIN_MESSAGE, null, null, null);
 
     if ((s != null) && (s.length() > 0)) {
-      System.out.println("ADD : " + s);
       filters = Arrays.copyOf(filters, filters.length + 1);
       filters[filters.length - 1] = s;
       loadList(filterJlist, filters);
@@ -1422,7 +1463,6 @@ public class Setting extends JDialog {
     String s = (String) JOptionPane.showInputDialog(this, "Add", "Add Extension filter", JOptionPane.PLAIN_MESSAGE, null, null, null);
 
     if ((s != null) && (s.length() > 0)) {
-      System.out.println("ADD : " + s);
       extensions = Arrays.copyOf(extensions, extensions.length + 1);
       extensions[extensions.length - 1] = s;
       loadList(extentionJlist, extensions);
@@ -1538,6 +1578,9 @@ public class Setting extends JDialog {
   private JButton helpSearchBtn2;
   private JCheckBox hideNotAMovieFileChk;
   private JCheckBox hideRenamedMovieChk;
+  private JRadioButton imdbEnRbtn;
+  private JRadioButton imdbFrRbtn;
+  private ButtonGroup imdbLangGroup;
   private ButtonGroup interfaceGroup;
   private JButton jButton1;
   private JButton jButton2;
@@ -1572,6 +1615,7 @@ public class Setting extends JDialog {
   private JPanel jPanel12;
   private JPanel jPanel13;
   private JPanel jPanel14;
+  private JPanel jPanel15;
   private JPanel jPanel16;
   private JPanel jPanel17;
   private JPanel jPanel19;

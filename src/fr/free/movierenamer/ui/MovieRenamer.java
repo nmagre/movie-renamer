@@ -19,6 +19,9 @@
  ******************************************************************************/
 package fr.free.movierenamer.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -27,12 +30,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
@@ -52,9 +49,13 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -81,6 +82,7 @@ import fr.free.movierenamer.utils.Loading;
 import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieFile;
 import fr.free.movierenamer.movie.MovieInfo;
+import fr.free.movierenamer.movie.MoviePerson;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.Utils;
@@ -203,7 +205,7 @@ public class MovieRenamer extends javax.swing.JFrame {
   private void searchMovieImdb(String searchTitle) {
     try {
       loadDial(true);
-      ImdbSearchWorker imdbsw = new ImdbSearchWorker(MovieRenamer.this, searchTitle, imdbFrChk.isSelected(), setting);
+      ImdbSearchWorker imdbsw = new ImdbSearchWorker(MovieRenamer.this, searchTitle, setting);
       imdbsw.addPropertyChangeListener(new SearchWorkerListener(imdbsw, searchResultList, searchResModel));
       imdbsw.execute();
     } catch (MalformedURLException ex) {
@@ -260,7 +262,6 @@ public class MovieRenamer extends javax.swing.JFrame {
     topTb = new JToolBar();
     openBtn = new JButton();
     separator = new Separator();
-    imdbFrChk = new JCheckBox();
     updateBtn = new JButton();
     settingBtn = new JButton();
     exitBtn = new JButton();
@@ -313,12 +314,6 @@ public class MovieRenamer extends javax.swing.JFrame {
     topTb.add(openBtn);
     topTb.add(separator);
     topTb.add(Box.createHorizontalGlue());
-
-    imdbFrChk.setText("Imdb FR");
-    imdbFrChk.setFocusable(false);
-    imdbFrChk.setHorizontalAlignment(SwingConstants.TRAILING);
-    imdbFrChk.setVerticalTextPosition(SwingConstants.BOTTOM);
-    topTb.add(imdbFrChk);
 
     updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png"))); // NOI18N
     updateBtn.setToolTipText(bundle.getString("updateBtn")); // NOI18N
@@ -388,13 +383,13 @@ public class MovieRenamer extends javax.swing.JFrame {
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-        .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+        .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addComponent(resultLbl)
-        .addContainerGap(434, Short.MAX_VALUE))
-      .addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+        .addContainerGap(501, Short.MAX_VALUE))
+      .addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(Alignment.LEADING)
@@ -416,11 +411,11 @@ public class MovieRenamer extends javax.swing.JFrame {
     centerPnl.setLayout(centerPnlLayout);
     centerPnlLayout.setHorizontalGroup(
       centerPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 855, Short.MAX_VALUE)
+      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
     );
     centerPnlLayout.setVerticalGroup(
       centerPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
     );
 
     getContentPane().add(centerPnl, BorderLayout.CENTER);
@@ -525,7 +520,6 @@ public class MovieRenamer extends javax.swing.JFrame {
     }//GEN-LAST:event_settingBtnActionPerformed
 
     private void infoPopMenuItemActionPerformed(ActionEvent evt) {//GEN-FIRST:event_infoPopMenuItemActionPerformed
-      System.out.println("Inof clicked");
       final JOptionPane optionPane = new JOptionPane(currentMovie.getNFOFromMovie());
 
       final JDialog dialog = new JDialog((JFrame) null, Utils.EMPTY);
@@ -547,7 +541,6 @@ public class MovieRenamer extends javax.swing.JFrame {
       File file = currentMovie.getFile();//Current File
       String newName = renamedField.getText();
       String newNameNoExt = newName.substring(0, newName.lastIndexOf(Utils.DOT));
-      System.out.println(file.getParent() + File.separator + newName);
       if (!file.getName().equals(newName)) {
         boolean success = file.renameTo(new File(file.getParent() + File.separator + newName));
         if (!success) JOptionPane.showMessageDialog(MovieRenamer.this, "Rename file failed", sError, JOptionPane.ERROR_MESSAGE);
@@ -694,6 +687,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         try {
           Object obj = imdbiw.get();
           if (obj == null) return;
+          
           if (obj instanceof MovieInfo) {
             currentMovie.setMovieInfo((MovieInfo) obj);
 
@@ -702,7 +696,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             renamedField.setEnabled(true);
             movieImagePnl.addMovie(currentMovie);
 
-            ActorWorker actor = new ActorWorker(currentMovie.getPersons(), movieImagePnl, setting);
+            ActorWorker actor = new ActorWorker(currentMovie.getPersons(MoviePerson.ACTOR), movieImagePnl, setting);
             actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
             actor.execute();
           }
@@ -752,7 +746,6 @@ public class MovieRenamer extends javax.swing.JFrame {
   private JButton exitBtn;
   private JCheckBox fanartChk;
   private JFileChooser fileChooser;
-  private JCheckBox imdbFrChk;
   private JMenuItem infoPopMenuItem;
   private JPanel jPanel1;
   private JScrollPane jScrollPane1;

@@ -215,6 +215,10 @@ public class XMLParser<T> {
               config.createMovieDirectory = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("movieDirRenamedTitle"))
               config.movieDirRenamedTitle = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("imdbInfo"))
+              config.imdbInfo = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("imdbFr"))
+              config.imdbFr = buffer.toString().equals(sZero);
 
           } catch (NullPointerException ex) {
             config.getLogger().log(Level.SEVERE, ex.getMessage());
@@ -323,7 +327,6 @@ public class XMLParser<T> {
       }
 
       if (name.equalsIgnoreCase("id")) {
-        System.out.println("Id found : " + buffer.toString());
         tmdbId = buffer.toString();
       }
 

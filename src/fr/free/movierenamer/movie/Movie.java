@@ -54,12 +54,19 @@ public class Movie {
     search = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
   }
 
+  /**
+   * Clear images and movie information
+   */
   public void clear() {
     this.clearFanarts();
     this.clearThumbs();
     movieinfo = new MovieInfo();
   }
 
+  /**
+   * Get movie file
+   * @return File of movie
+   */
   public File getFile() {
     return movieFile.getFile();
   }
@@ -72,10 +79,18 @@ public class Movie {
     return filteredFileName;
   }
 
+  /**
+   * Get genres string
+   * @return String of genres separataded by pipe
+   */
   public String getGenresString() {
     return movieinfo.getGenresString();
   }
 
+  /**
+   * Get countries string
+   * @return String of countries separated by pipe
+   */
   public String getCountriesString() {
     return movieinfo.getCountriesString();
   }
@@ -116,8 +131,8 @@ public class Movie {
    * Get the movie DB ID
    * @return The movie DB ID
    */
-  public String getMovieDBId() {
-    return movieinfo.getMovieDBId();
+  public String getImdbBId() {
+    return movieinfo.getImdbId();
   }
 
   /**
@@ -130,10 +145,21 @@ public class Movie {
 
   /**
    * Get array of movie person
+   * @param job Personn job
    * @return ArrayList of MoviePerson
    */
-  public ArrayList<MoviePerson> getPersons() {
-    return movieinfo.getActors();
+  public ArrayList<MoviePerson> getPersons(int job) {
+    switch(job){
+      case MoviePerson.ACTOR:
+        return movieinfo.getActors();
+      case MoviePerson.DIRECTOR:
+        return movieinfo.getDirectors();
+      case MoviePerson.WRITER:
+        return movieinfo.getWriters();
+      default:
+        break;
+    }
+    return null;
   }
 
   /**
@@ -217,7 +243,7 @@ public class Movie {
     String runtime = "";
     if (getRuntime() != -1) runtime += getRuntime();
     String[][] replace = new String[][]{{"<t>", getTitle()}, {"<tt>", getImdbId()}, {"<y>", getYear()},
-      {"<rt>", runtime}, {"<ra>", getRating()}, {"<d>", movieinfo.getDirectors()},
+      {"<rt>", runtime}, {"<ra>", getRating()}, {"<d>", movieinfo.getDirectorsString()},
       {"<d1>", movieinfo.getFirstDirector()}, {"<g>", movieinfo.getGenresString()},
       {"<g1>", movieinfo.getFirstGenreString()}};
     for (int i = 0; i < replace.length; i++) {
@@ -229,6 +255,10 @@ public class Movie {
     return regExp + "." + ext;
   }
 
+  /**
+   * Get Imdb title
+   * @return Movie Imdb title
+   */
   public String getImdbTitle() {
     return imdbTitle;
   }
@@ -249,10 +279,18 @@ public class Movie {
     fanarts.add(fanart);
   }
 
+  /**
+   * Set movie title
+   * @param title Movie title to set
+   */
   public void setTitle(String title) {
     movieinfo.setTitle(title);
   }
 
+  /**
+   * Set Imdb search string
+   * @param search movie to search on Imdb
+   */
   public void setSearch(String search) {
     this.search = search;
   }
@@ -266,37 +304,48 @@ public class Movie {
   }
 
   /**
-   * Set movie the movie DB ID
-   * @param movieDBId Movie the movie DB ID
-   */
-  public void setMovieDBId(String movieDBId) {
-    movieinfo.setMovieDBId(movieDBId);
-  }
-
-  /**
    * Set imdb ID
    * @param imdbId Imdb ID
    */
   public void setImdbId(String imdbId) {
     this.imdbId = imdbId;
+    movieinfo.setImdbId(imdbId);
   }
 
+  /**
+   * Clear thumbs list
+   */
   public void clearThumbs() {
     thumbs.clear();
   }
 
+  /**
+   * Cleanr fanart list
+   */
   public void clearFanarts() {
     fanarts.clear();
   }
 
+  /**
+   * Set imdb title
+   * @param imdbTitle
+   */
   public void setImdbTitle(String imdbTitle) {
     this.imdbTitle = imdbTitle;
   }
 
+  /**
+   * Set thumbs list
+   * @param thumbs Array of thumbs
+   */
   public void setThumbs(ArrayList<MovieImage> thumbs){
     this.thumbs = thumbs;
   }
 
+  /**
+   * Set fanarts list
+   * @param fanarts Array of fanarts
+   */
   public void setFanarts(ArrayList<MovieImage> fanarts){
     this.fanarts = fanarts;
   }
@@ -305,7 +354,7 @@ public class Movie {
    * Generate XBMC NFO file
    * @return Xbmc NFO file
    */
-  public String getNFOFromMovie() {//parcourir 3 fois la liste des acteurs = pas terrible (a refaire)
+  public String getNFOFromMovie() {
 
     StringBuilder nfo = new StringBuilder();
     nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n");
@@ -324,26 +373,26 @@ public class Movie {
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
     nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
 
-    for (int i = 0; i < movieinfo.getActors().size(); i++) {
-      if (movieinfo.getActors().get(i).getJob() == MoviePerson.WRITER)
-        nfo.append("  <credits>").append(Utils.escapeXML(movieinfo.getActors().get(i).getName())).append("</credits>\n");
+    ArrayList<MoviePerson> personn = movieinfo.getWriters();
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <credits>").append(Utils.escapeXML(personn.get(i).getName())).append("</credits>\n");
     }
 
-    for (int i = 0; i < movieinfo.getActors().size(); i++) {
-      if (movieinfo.getActors().get(i).getJob() == MoviePerson.DIRECTOR)
-        nfo.append("  <director>").append(Utils.escapeXML(movieinfo.getActors().get(i).getName())).append("</director>\n");
+    personn = movieinfo.getDirectors();
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
     }
 
     nfo.append("  <trailer>").append(movieinfo.getTrailer()).append("</trailer>\n");
 
-    for (int i = 0; i < movieinfo.getActors().size(); i++) {
-      if (movieinfo.getActors().get(i).getJob() != MoviePerson.ACTOR) continue;
+    personn = movieinfo.getActors();
+    for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <actor>\n");
-      nfo.append("    <name>").append(Utils.escapeXML(movieinfo.getActors().get(i).getName())).append("</name>\n");
-      for (int j = 0; j < movieinfo.getActors().get(i).getRoles().size(); j++) {
-        nfo.append("    <role>").append(Utils.escapeXML(movieinfo.getActors().get(i).getRoles().get(j))).append("</role>\n");
+      nfo.append("    <name>").append(Utils.escapeXML(personn.get(i).getName())).append("</name>\n");
+      for (int j = 0; j < personn.get(i).getRoles().size(); j++) {
+        nfo.append("    <role>").append(Utils.escapeXML(personn.get(i).getRoles().get(j))).append("</role>\n");
       }
-      nfo.append("    <thumb>").append(movieinfo.getActors().get(i).getThumb()).append("</thumb>\n");
+      nfo.append("    <thumb>").append(personn.get(i).getThumb()).append("</thumb>\n");
       nfo.append("  </actor>\n");
     }
 

@@ -27,8 +27,8 @@ import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.utils.Utils;
 
 /**
- *
- * @author duffy
+ * Class MovieFile
+ * @author Nicolas Magré
  */
 public class MovieFile implements IIconList {
 
@@ -37,7 +37,13 @@ public class MovieFile implements IIconList {
   private boolean warning;
   private boolean showPath;
 
-
+  /**
+   * Constructor arguments
+   * @param file A movie file
+   * @param renamed Already rename
+   * @param warning Warning on the file
+   * @param showPath Display path in toString()
+   */
   public MovieFile(File file, boolean renamed, boolean warning, boolean showPath){
     this.file = file;
     this.renamed = renamed;
@@ -45,6 +51,10 @@ public class MovieFile implements IIconList {
     this.showPath = showPath;
   }
 
+  /**
+   * Get file
+   * @return File 
+   */
   public File getFile(){
     return file;
   }

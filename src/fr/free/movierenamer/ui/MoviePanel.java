@@ -59,6 +59,7 @@ import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.utils.Settings;
+import javax.swing.Icon;
 
 /**
  *
@@ -72,6 +73,9 @@ public class MoviePanel extends javax.swing.JPanel {
   public Dimension thumbListDim = new Dimension(60, 90);
   public Dimension fanartListDim = new Dimension(200, 90);
   public Dimension actorListDim = new Dimension(60, 90);
+  private final Icon STAR = new ImageIcon(getClass().getResource("/image/star.png"));
+  private final Icon STAR_HALF = new ImageIcon(getClass().getResource("/image/star-half.png"));
+  private final Icon STAR_EMPTY = new ImageIcon(getClass().getResource("/image/star-empty.png"));
   private Image img;
   private ArrayList<MovieImage> thumbs;
   private ArrayList<MovieImage> fanarts;
@@ -105,7 +109,7 @@ public class MoviePanel extends javax.swing.JPanel {
       @Override
       public void mouseClicked(MouseEvent e) {//A refaire (http request in EDT)
         int index = thumbnailsList.locationToIndex(e.getPoint());
-        if (index != -1) {
+        if (index != -1)
           try {
             URL url = new URL(thumbs.get(index).getOrigUrl().replace(".png", ".jpg")); // API bug, png is jpg on server
             Image img = setting.cache.getImage(url, Cache.thumb);
@@ -113,13 +117,11 @@ public class MoviePanel extends javax.swing.JPanel {
               setting.cache.add(url.openStream(), url.toString(), Cache.thumb);
               img = setting.cache.getImage(url, Cache.thumb);
             }
-            if (img != null) {
+            if (img != null)
               jLabel7.setIcon(new ImageIcon(img.getScaledInstance(jLabel7.getWidth(), jLabel7.getHeight(), Image.SCALE_DEFAULT)));
-            }
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
-        }
       }
     };
     thumbnailsList.addMouseListener(mouseListener);
@@ -165,7 +167,7 @@ public class MoviePanel extends javax.swing.JPanel {
       @Override
       public void run() {
         thumbs.add(mvImg);
-        if (thumbnailModel.isEmpty()) {
+        if (thumbnailModel.isEmpty())
           try {
             URL url = new URL(thumbs.get(0).getOrigUrl().replace(".png", ".jpg")); // API bug, png is jpg on server
             Image img = setting.cache.getImage(url, Cache.thumb);
@@ -173,19 +175,15 @@ public class MoviePanel extends javax.swing.JPanel {
               setting.cache.add(url.openStream(), url.toString(), Cache.thumb);
               img = setting.cache.getImage(url, Cache.thumb);
             }
-            if (img != null) {
+            if (img != null)
               jLabel7.setIcon(new ImageIcon(img.getScaledInstance(jLabel7.getWidth(), jLabel7.getHeight(), Image.SCALE_DEFAULT)));
-            }
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
-        }
-        if (thumb != null) {
+        if (thumb != null)
           thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
-        }
-        if (!thumbnailModel.isEmpty()) {
+        if (!thumbnailModel.isEmpty())
           thumbnailsList.setSelectedIndex(0);
-        }
       }
     });
   }
@@ -212,12 +210,10 @@ public class MoviePanel extends javax.swing.JPanel {
           jPanel3.repaint();
         }
 
-        if (fanart != null) {
+        if (fanart != null)
           fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
-        }
-        if (!fanartModel.isEmpty()) {
+        if (!fanartModel.isEmpty())
           fanartList.setSelectedIndex(0);
-        }
       }
     });
   }
@@ -227,9 +223,8 @@ public class MoviePanel extends javax.swing.JPanel {
 
       @Override
       public void run() {
-        if (actorImg != null) {
+        if (actorImg != null)
           actorModel.addElement(new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc));
-        }
         else actorModel.addElement(actor);
       }
     });
@@ -254,6 +249,12 @@ public class MoviePanel extends javax.swing.JPanel {
         origTitleField.setText("");
         countryField.setText("");
         jLabel7.setIcon(null);
+        star.setIcon(STAR_EMPTY);
+        star1.setIcon(STAR_EMPTY);
+        star2.setIcon(STAR_EMPTY);
+        star3.setIcon(STAR_EMPTY);
+        star4.setIcon(STAR_EMPTY);
+
         validate();
         repaint();
       }
@@ -271,8 +272,50 @@ public class MoviePanel extends javax.swing.JPanel {
         jTextArea1.setText(movie.getSynopsis());
         origTitleField.setText(movie.getOrigTitle());
         countryField.setText(movie.getCountriesString());
+        setRate(Double.parseDouble(movie.getRating()));
       }
     });
+  }
+
+  private void setRate(Double rate) {
+    if (rate < 0.00) return;
+    if (rate > 5.00) rate /= 2;
+    int n = rate.intValue();
+    switch (n) {
+      case 0:
+        break;
+      case 1:
+        star.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) star1.setIcon(STAR_HALF);
+        break;
+      case 2:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) star2.setIcon(STAR_HALF);
+        break;
+      case 3:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        star2.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) star3.setIcon(STAR_HALF);
+        break;
+      case 4:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        star2.setIcon(STAR);
+        star3.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) star4.setIcon(STAR_HALF);
+        break;
+      case 5:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        star2.setIcon(STAR);
+        star3.setIcon(STAR);
+        star4.setIcon(STAR);
+        break;
+      default:
+        return;
+    }
   }
 
   public URL getSelectedThumb() {
@@ -346,11 +389,11 @@ public class MoviePanel extends javax.swing.JPanel {
     jScrollPane3 = new JScrollPane();
     actorList = new JList();
     jLabel7 = new JLabel();
-    jLabel2 = new JLabel();
-    jLabel3 = new JLabel();
-    jLabel4 = new JLabel();
-    jLabel5 = new JLabel();
-    jLabel6 = new JLabel();
+    star4 = new JLabel();
+    star3 = new JLabel();
+    star2 = new JLabel();
+    star1 = new JLabel();
+    star = new JLabel();
 
     setLayout(new BorderLayout());
 
@@ -485,11 +528,11 @@ public class MoviePanel extends javax.swing.JPanel {
 
     jLabel7.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
-    jLabel2.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
-    jLabel3.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
-    jLabel4.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
-    jLabel5.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
-    jLabel6.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+    star4.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+    star3.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+    star2.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+    star1.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+    star.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
     GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -498,11 +541,11 @@ public class MoviePanel extends javax.swing.JPanel {
         .addGap(28, 28, 28)
         .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
           .addGroup(jPanel1Layout.createSequentialGroup()
-            .addComponent(jLabel6)
-            .addComponent(jLabel5)
-            .addComponent(jLabel4)
-            .addComponent(jLabel3)
-            .addComponent(jLabel2))
+            .addComponent(star)
+            .addComponent(star1)
+            .addComponent(star2)
+            .addComponent(star3)
+            .addComponent(star4))
           .addComponent(jLabel7, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
@@ -512,11 +555,11 @@ public class MoviePanel extends javax.swing.JPanel {
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jLabel6)
-          .addComponent(jLabel5)
-          .addComponent(jLabel4)
-          .addComponent(jLabel3)
-          .addComponent(jLabel2))
+          .addComponent(star)
+          .addComponent(star1)
+          .addComponent(star2)
+          .addComponent(star3)
+          .addComponent(star4))
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jLabel7, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE)
         .addGap(22, 22, 22))
@@ -531,11 +574,6 @@ public class MoviePanel extends javax.swing.JPanel {
   private final JList fanartList = new JList();
   private JScrollPane fanartsScrollPane;
   private JTextField genreField;
-  private JLabel jLabel2;
-  private JLabel jLabel3;
-  private JLabel jLabel4;
-  private JLabel jLabel5;
-  private JLabel jLabel6;
   private JLabel jLabel7;
   private JPanel jPanel1;
   private JPanel jPanel2;
@@ -548,6 +586,11 @@ public class MoviePanel extends javax.swing.JPanel {
   private JTabbedPane movieTabbedPane;
   private JTextField origTitleField;
   private JTextField runtimeField;
+  private JLabel star;
+  private JLabel star1;
+  private JLabel star2;
+  private JLabel star3;
+  private JLabel star4;
   private final JList thumbnailsList = new JList(){
     // This method is called as the cursor moves within the list.
     public String getToolTipText(MouseEvent evt) {

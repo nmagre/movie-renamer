@@ -71,14 +71,14 @@ public class ImdbParser {
   private static final String IMDBMOVIEGENRE_FR = "<h5>Genre:</h5>\n<div class=.info-content.>\n.*\n</div>";
   private static final String IMDBMOVIETAGLINE = "<div class=\"info-content\">\n.*<a class=\".*\" href=\"/title/tt\\d+/taglines\"";
   private static final String IMDBMOVIEPLOT = "<div class=.info-content.>\n.*(\n?)<a class=..*. href=./title/tt\\d+/plotsummary.";
-  private static final String IMDBMOVIECAST = "<h3>Cast</h3>.*</table></div>";
+  private static final String IMDBMOVIECAST = "<h3>((Cast)|(Ensemble))</h3>.*";
   private static final String IMDBMOVIEACTOR = "/?;\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>";
-  private static final String IMDBMOVIECOUNTRY = "<h5>Country:</h5><div class=\".*\"><a href=\".*\">(.*)</a></div>";
+  private static final String IMDBMOVIECOUNTRY = "<h5>((Country:)|(Pays:))</h5><div class=\".*\"><a href=\".*\">(.*)</div></div>";
   private static final String IMDBMOVIESTUDIO = "<h5>Company:</h5><div class=..*.><a href=..*.>(.*)</a><a";
 
-  public ImdbParser(boolean french, Settings setting){
+  public ImdbParser(Settings setting){
       this.setting = setting;
-      this.french = french;
+      this.french = setting.imdbFr;
   }
 
   /**
@@ -134,7 +134,6 @@ public class ImdbParser {
             movieImdbMatcher = pattern.matcher(grps[i]);
 
             int nbMovie = Integer.parseInt(grps[i].substring(grps[i].lastIndexOf(start) + start.length(), grps[i].lastIndexOf(stop) - 1));
-            System.out.println(nbMovie);
             while (movieImdbMatcher.find()) {
 
               pattern = Pattern.compile(MOVIENAMEPATTERN);
@@ -278,7 +277,7 @@ public class ImdbParser {
       while (searchMatcher.find()) {
         String director = searchMatcher.group();
         director = director.substring(director.indexOf(">") + 1, director.lastIndexOf("<"));
-        movieInfo.addActor(new MoviePerson(decodeXMLString(director), "", MoviePerson.DIRECTOR));
+        movieInfo.addDirector(new MoviePerson(decodeXMLString(director), "", MoviePerson.DIRECTOR));
       }
 
       //Writers
@@ -287,7 +286,7 @@ public class ImdbParser {
       while (searchMatcher.find()) {
         String writer = searchMatcher.group();
         writer = writer.substring(writer.indexOf(">") + 1, writer.lastIndexOf("<"));
-        movieInfo.addActor(new MoviePerson(decodeXMLString(writer), "", MoviePerson.WRITER));
+        movieInfo.addWriter(new MoviePerson(decodeXMLString(writer), "", MoviePerson.WRITER));
       }
 
       //TagLine
@@ -364,7 +363,7 @@ public class ImdbParser {
       //Countries
       pattern = Pattern.compile(IMDBMOVIECOUNTRY);
       searchMatcher = pattern.matcher(moviePage);
-      while (searchMatcher.find()) {
+      if (searchMatcher.find()) {
         String country = searchMatcher.group();
         country = country.substring(country.indexOf("<a"), country.lastIndexOf("</a>"));
         if (country.contains(" | ")) {

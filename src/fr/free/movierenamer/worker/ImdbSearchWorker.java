@@ -55,12 +55,12 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, S
   private Component parent;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
-  public ImdbSearchWorker(Component parent, String searchTitle, boolean french, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
+  public ImdbSearchWorker(Component parent, String searchTitle, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
     this.parent = parent;
     this.searchTitle = searchTitle;
     this.setting = setting;
-    http = new HttpGet((french ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
-    imdbParser = new ImdbParser(french, setting);
+    http = new HttpGet((setting.imdbFr ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
+    imdbParser = new ImdbParser(setting);
   }
 
   @Override

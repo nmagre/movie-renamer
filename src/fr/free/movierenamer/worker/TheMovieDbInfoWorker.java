@@ -81,7 +81,7 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
       XMLParser<tmdbResult> mmp = new XMLParser<tmdbResult>(f.getAbsolutePath(), tmdbResult.class);
       try {
         tmdbResult res = mmp.parseXml();
-        if (!res.getId().equals("")) movie.setMovieDBId(res.getId());
+        //if (!res.getId().equals("")) movie.setMovieDBId(res.getId());
         if (res.getThumbs() != null) {
           setting.getLogger().log(Level.INFO, "  {0} Thumbs", "" + res.getThumbs().size());
           for (int i = 0; i < res.getThumbs().size(); i++) {
@@ -103,8 +103,8 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
 
-      if (movie.getMovieDBId().equals(Utils.EMPTY)) return movie;
-      XMLParser<MovieInfo> movieinfo = new XMLParser<MovieInfo>(setting.imdbAPIUrlMovieInf + xmlUrl + movie.getMovieDBId(), MovieInfo.class);
+      /*if (movie.getMovieDBId().equals(Utils.EMPTY))*/ return movie;
+      //XMLParser<MovieInfo> movieinfo = new XMLParser<MovieInfo>(setting.imdbAPIUrlMovieInf + xmlUrl + movie.getMovieDBId(), MovieInfo.class);
       /*try {
         movie.setMovieInfo(movieinfo.parseXml());
       } catch (IOException ex) {

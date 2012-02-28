@@ -136,6 +136,7 @@ public class Settings {
   public boolean createMovieDirectory = false;
   public boolean movieDirRenamedTitle = false;
   public boolean imdbInfo = true;
+  public boolean imdbFr = false;
 
   public Settings() {
     Utils.createFilePath(configFile);
@@ -188,6 +189,7 @@ public class Settings {
       out.write("    <createMovieDirectory>" + (createMovieDirectory ? 0 : 1) + "</createMovieDirectory>" + endl);
       out.write("    <movieDirRenamedTitle>" + (movieDirRenamedTitle ? 0 : 1) + "</movieDirRenamedTitle>" + endl);
       out.write("    <imdbInfo>" + (imdbInfo ? 0 : 1) + "</imdbInfo>" + endl);
+      out.write("    <imdbFr>" + (imdbFr ? 0 : 1) + "</imdbFr>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

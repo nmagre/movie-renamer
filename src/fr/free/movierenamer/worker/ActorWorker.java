@@ -36,73 +36,47 @@ import javax.swing.SwingWorker;
  */
 public class ActorWorker extends SwingWorker<Void, Void> {
 
-    private List<MoviePerson> actors;
-    private Settings setting;
-    private MoviePanel moviePnl;
+  private List<MoviePerson> actors;
+  private Settings setting;
+  private MoviePanel moviePnl;
 
-    public ActorWorker(List<MoviePerson> actors, MoviePanel moviePnl, Settings setting) {
-        this.actors = actors;
-        this.moviePnl = moviePnl;
-        this.setting = setting;
-    }
+  public ActorWorker(List<MoviePerson> actors, MoviePanel moviePnl, Settings setting) {
+    this.actors = actors;
+    this.moviePnl = moviePnl;
+    this.setting = setting;
+  }
 
-    @Override
-    protected Void doInBackground() {//A refaire (string concat in loop)
-        String director = "";
-        String writer = "";
-        setProgress(0);
-        for (int i = 0; i < actors.size(); i++) {
-          switch (actors.get(i).getJob()){
-            case MoviePerson.DIRECTOR:
-              director += " | " + actors.get(i).getName();
-              break;
-            case MoviePerson.WRITER:
-              writer += " | " + actors.get(i).getName();
-              break;
-            case MoviePerson.ACTOR:
-              boolean added = false;
-              if (!actors.get(i).getThumb().equals(Utils.EMPTY)) {
-                  try {
-                      URL url = new URL(actors.get(i).getThumb().replace("SY214_SX314", "SY60_SX90").replace(".png", ".jpg"));
-                      Image image = setting.cache.getImage(url, Cache.actor);
-                      if (image == null) {
-                          setting.cache.add(url.openStream(), url.toString(), Cache.actor);
-                          image = setting.cache.getImage(url, Cache.actor);
-                      }
-                      String desc = "<html><h1>" + actors.get(i).getName() + "</h1>";
-                      desc += "<img src=\"file:" + setting.cache.get(url, Cache.actor).getAbsolutePath() + "\"><br>";
-                      for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
-                          desc += "<br>" + actors.get(i).getRoles().get(j);
-                      }
-                      desc += "</html>";
-                      moviePnl.addActorToList(actors.get(i).getName(), image, desc);
-                      added = true;
-                  } catch (IOException ex) {
-                  }
-              }
-              if (!added) {
-                  Image image = Utils.getImageFromJAR("/image/unknown.png", getClass());
-                  String desc = "<html><h1>" + actors.get(i).getName() + "</h1>";
-                  for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
-                      desc += "<br>" + actors.get(i).getRoles().get(j);
-                  }
-                  desc += "</html>";
-                  moviePnl.addActorToList(actors.get(i).getName(), image, desc);
-                }
-              break;
-            default: break;
-            
+  @Override
+  protected Void doInBackground() {
+    setProgress(0);
+    for (int i = 0; i < actors.size(); i++) {
+      Image image = null;
+      URL url = null;
+
+      if (!actors.get(i).getThumb().equals(Utils.EMPTY)) {
+        try {
+          url = new URL(actors.get(i).getThumb().replace("SY214_SX314", "SY60_SX90").replace(".png", ".jpg"));
+          image = setting.cache.getImage(url, Cache.actor);
+          if (image == null) {
+            setting.cache.add(url.openStream(), url.toString(), Cache.actor);
+            image = setting.cache.getImage(url, Cache.actor);
           }
-          setProgress((i *100)/actors.size());
+        } catch (IOException ex) {
+          ex.printStackTrace();
         }
 
-        if (!writer.equals("")) {
-            writer = writer.substring(3);
+        if (image == null) image = Utils.getImageFromJAR("/image/unknown.png", getClass());
+        StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
+        if (url != null) desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.actor).getAbsolutePath()).append("\"><br>");
+        for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
+          desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
-        if (!director.equals("")) {
-            director = director.substring(3);
-        }
-        setProgress(100);
-        return null;
+        desc.append("</html>");
+        moviePnl.addActorToList(actors.get(i).getName(), image, desc.toString());
+      }
+      setProgress((i * 100) / actors.size());
     }
+    setProgress(100);
+    return null;
+  }
 }

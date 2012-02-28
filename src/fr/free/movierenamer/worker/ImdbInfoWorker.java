@@ -39,13 +39,14 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
   private HttpGet http;
   private ImdbParser imdbParser;
   private Component parent;
+  private String imdbId;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   public ImdbInfoWorker(Component parent, String imdbId, Settings setting) throws MalformedURLException {
     this.parent = parent;
-    boolean french = setting.locale.equals("fr");
-    http = new HttpGet((french ? setting.imdbMovieUrl_fr:setting.imdbMovieUrl) + imdbId + "/combined");
-    imdbParser = new ImdbParser(french, setting);
+    http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr:setting.imdbMovieUrl) + imdbId + "/combined");
+    imdbParser = new ImdbParser(setting);
+    this.imdbId = imdbId;
   }
 
   @Override
@@ -57,10 +58,12 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     }
     catch(Exception e){
       publish(e.getMessage());
+      setProgress(100);
       return null;
     }
     setProgress(80);
     MovieInfo mvi = imdbParser.getMovieInfo(res);
+    mvi.setImdbId(imdbId);
     setProgress(100);
     System.out.println(mvi);
     return mvi;

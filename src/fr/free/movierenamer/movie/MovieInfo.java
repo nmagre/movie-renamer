@@ -30,7 +30,7 @@ import fr.free.movierenamer.utils.Utils;
 public class MovieInfo {
 
   private String title;
-  private String movieDBId;
+  private String imdbId;
   private String trailer;
   private String synopsis;
   private String tagline;
@@ -43,11 +43,13 @@ public class MovieInfo {
   private ArrayList<String> genres;
   private ArrayList<String> studios;
   private ArrayList<MoviePerson> actors;
+  private ArrayList<MoviePerson> directors;
+  private ArrayList<MoviePerson> writers;
   private ArrayList<String> countries;
 
   public MovieInfo() {
     title = "";
-    movieDBId = "";
+    imdbId = "";
     trailer = "";
     synopsis = "";
     tagline = "";
@@ -60,6 +62,8 @@ public class MovieInfo {
     genres = new ArrayList<String>();
     studios = new ArrayList<String>();
     actors = new ArrayList<MoviePerson>();
+    directors = new ArrayList<MoviePerson>();
+    writers = new ArrayList<MoviePerson>();
     countries = new ArrayList<String>();
   }
 
@@ -67,8 +71,8 @@ public class MovieInfo {
     return title;
   }
 
-  public String getMovieDBId() {
-    return movieDBId;
+  public String getImdbId() {
+    return imdbId;
   }
 
   public String getTrailer() {
@@ -119,16 +123,67 @@ public class MovieInfo {
     return actors;
   }
 
+  public ArrayList<MoviePerson> getDirectors() {
+    return directors;
+  }
+
+  public ArrayList<MoviePerson> getWriters() {
+    return writers;
+  }
+
   public ArrayList<String> getCountries() {
     return countries;
+  }
+
+  public String getDirectorsString(){
+    return Utils.arrayPersonnToString(directors, " | ");
+  }
+
+  public String getWritersString(){
+    return Utils.arrayPersonnToString(writers, " | ");
+  }
+
+  public String getGenresString() {
+    return Utils.arrayToString(genres, " | ");
+  }
+
+  public String getCountriesString() {
+    return Utils.arrayToString(countries, " | ");
+  }
+
+  public String getFirstDirector() {
+    String res = "";
+    for (int i = 0; i < directors.size(); i++) {
+      return directors.get(i).getName();
+    }
+    return res;
+  }
+
+  public String getFirstGenreString() {
+    String res = "";
+    for (int i = 0; i < genres.size(); i++) {
+      return genres.get(i);
+    }
+    return res;
+  }
+
+  public MoviePerson getActorByName(String actor) {
+    MoviePerson res = null;
+    for (int i = 0; i < actors.size(); i++) {
+      if (actors.get(i).getName().equals(actor)) {
+        res = actors.get(i);
+        break;
+      }
+    }
+    return res;
   }
 
   public void setTitle(String title) {
     this.title = title;
   }
 
-  public void setMovieDBId(String movieDBId) {
-    this.movieDBId = movieDBId;
+  public void setImdbId(String imdbId) {
+    this.imdbId = imdbId;
   }
 
   public void setTrailer(String trailer) {
@@ -162,7 +217,7 @@ public class MovieInfo {
   public void setVotes(String votes) {
     this.votes = votes;
   }
-  
+
   public void setSet(String set) {
     this.set = set;
   }
@@ -179,19 +234,16 @@ public class MovieInfo {
     actors.add(actor);
   }
 
-  public void addCountry(String country) {
-    countries.add(country);
+  public void addDirector(MoviePerson director) {
+    directors.add(director);
   }
 
-  public MoviePerson getActorByName(String actor) {
-    MoviePerson res = null;
-    for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getName().equals(actor)) {
-        res = actors.get(i);
-        break;
-      }
-    }
-    return res;
+  public void addWriter(MoviePerson writer) {
+    writers.add(writer);
+  }
+
+  public void addCountry(String country) {
+    countries.add(country);
   }
 
   public void addRole(String actor, String role) throws ActionNotValidException {
@@ -203,84 +255,29 @@ public class MovieInfo {
     }
   }
 
-  public String getDirectors() {
-    StringBuilder res = new StringBuilder();
-    for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob() == MoviePerson.DIRECTOR)
-        res.append(" | ").append(actors.get(i).getName());
-    }
-    if (res.length() == 0) res.delete(0, 2);
-    return res.toString();
-  }
-
-  public String getWriters() {//A refaire (string concat in loop)
-    String res = "";
-    for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob() == MoviePerson.WRITER)
-        res += " | " + actors.get(i).getName();
-    }
-    if (!res.equals(Utils.EMPTY)) res = res.substring(3);
-    return res;
-  }
-
-  public String getFirstDirector() {
-    String res = "";
-    for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob() == MoviePerson.DIRECTOR)
-        return actors.get(i).getName();
-    }
-    return res;
-  }
-
-  public String getGenresString() {//A refaire (string concat in loop)
-    String res = "";
-    for (int i = 0; i < genres.size(); i++) {
-      res += " | " + genres.get(i);
-    }
-    if (!res.equals(Utils.EMPTY)) res = res.substring(3);
-    return res;
-  }
-
-  public String getCountriesString() {//A refaire (string concat in loop)
-    String res = "";
-    for (int i = 0; i < countries.size(); i++) {
-      res += " | " + countries.get(i);
-    }
-    if (!res.equals(Utils.EMPTY)) res = res.substring(3);
-    return res;
-  }
-
-  public String getFirstGenreString() {
-    String res = "";
-    for (int i = 0; i < genres.size(); i++) {
-      return genres.get(i);
-    }
-    return res;
-  }
-
   @Override
-  public String toString(){//A refaire (string concat in loop)
-    String res = title + "\n";
-    res += "  ImdbId : " + movieDBId +"\n";
-    res += "  Trailer : " + trailer +"\n";
-    res += "  Synopsis : " + synopsis +"\n";
-    res += "  Tagline : " + tagline +"\n";
-    res += "  OrigTitle : " + origTitle +"\n";
-    res += "  Rating : " + rating +"\n";
-    res += "  Runtime : " + runtime +"\n";
-    res += "  Year : " + year +"\n";
-    res += "  Vote : " + votes +"\n";
-    res += "  Genre : " + Utils.arrayToString(genres, " | ") +"\n";
-    res += "  Studio : " + Utils.arrayToString(studios, " | ") +"\n";
-    res += "  Country : " + Utils.arrayToString(countries, " | ") +"\n";
-    res += "  Director : " + getDirectors() + "\n";
-    res += "  Writer : " + getWriters() + "\n";
-    res += "  Actor :\n";
+  public String toString() {
+    StringBuilder res = new StringBuilder();
+    res.append(title).append(Utils.ENDLINE);
+    res.append("  ImdbId : ").append(imdbId).append(Utils.ENDLINE);
+    res.append("  Trailer : ").append(trailer).append(Utils.ENDLINE);
+    res.append("  Synopsis : ").append(synopsis).append(Utils.ENDLINE);
+    res.append("  Tagline : ").append(tagline).append(Utils.ENDLINE);
+    res.append("  OrigTitle : ").append(origTitle).append(Utils.ENDLINE);
+    res.append("  Rating : ").append(rating).append(Utils.ENDLINE);
+    res.append("  Runtime : ").append(runtime).append(Utils.ENDLINE);
+    res.append("  Year : ").append(year).append(Utils.ENDLINE);
+    res.append("  Vote : ").append(votes).append(Utils.ENDLINE);
+    res.append("  Genre : ").append(Utils.arrayToString(genres, " | ")).append(Utils.ENDLINE);
+    res.append("  Studio : ").append(Utils.arrayToString(studios, " | ")).append(Utils.ENDLINE);
+    res.append("  Country : ").append(Utils.arrayToString(countries, " | ")).append(Utils.ENDLINE);
+    res.append("  Director : ").append(getDirectorsString()).append(Utils.ENDLINE);
+    res.append("  Writer : ").append(getWritersString()).append(Utils.ENDLINE);
+    res.append("  Actor :\n");
     for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getJob() == MoviePerson.ACTOR)
-        res += "    " + actors.get(i).getName() + " : " + actors.get(i).getRoles() + "\n";
+      res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);
     }
 
-    return res;
+    return res.toString();
   }
 }
