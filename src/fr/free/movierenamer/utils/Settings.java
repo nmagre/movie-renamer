@@ -83,11 +83,6 @@ public class Settings {
     {"Western", "Western"}
   };
   
-  //Interface type
-  public static final int SIMPLE = 0 ;
-  public static final int COMPLETE = 1;
-  public static final int CUSTOM = 2;
-
   //Change
   public boolean interfaceChanged = false;
 
@@ -111,8 +106,7 @@ public class Settings {
   
   public String xmlVersion = "";
   public boolean xmlError = false;
-
-  public int interfaceType = 1;
+  
   public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
   public int thumbSize = 0;
   public int fanartSize = 0;
@@ -125,9 +119,7 @@ public class Settings {
   public boolean useExtensionFilter = true;
   public boolean showMovieFilePath = false;
   public boolean scanSubfolder = false;
-  public boolean hideNotAMovieFile = false;
-  public boolean hideRenamedMovie = false;
-  
+  public boolean hideRenamedMovie = false;  
   public boolean displayApproximateResult = false;
   public boolean displayThumbResult = true;
   public boolean downThumb = true;
@@ -136,7 +128,15 @@ public class Settings {
   public boolean createMovieDirectory = false;
   public boolean movieDirRenamedTitle = false;
   public boolean imdbInfo = true;
-  public boolean imdbFr = false;
+  public boolean imdbFr = false;  
+  public boolean selectFrstMovie = false;
+  public boolean selectFrstRes = true;
+  public boolean movieInfoPanel = true;
+  public boolean actorImage = true;
+  public boolean thumb = true;
+  public boolean fanart = true;
+  public boolean checkUpdate = false;
+  
 
   public Settings() {
     Utils.createFilePath(configFile);
@@ -165,7 +165,6 @@ public class Settings {
 
       // Variables
       out.write("    <locale>" + locale + "</locale>" + endl);
-      out.write("    <interfaceType>" + interfaceType + "</interfaceType>" + endl);
       out.write("    <nameFilters>" + Utils.arrayToString(nameFilters, "/_") + "</nameFilters>" + endl);
       out.write("    <extensions>" + Utils.arrayToString(extensions, "/_") + "</extensions>" + endl);
       out.write("    <thumbSize>" + thumbSize + "</thumbSize>" + endl);
@@ -179,7 +178,6 @@ public class Settings {
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);
       out.write("    <showMovieFilePath>" + (showMovieFilePath ? 0 : 1) + "</showMovieFilePath>" + endl);
       out.write("    <scanSubfolder>" + (scanSubfolder ? 0 : 1) + "</scanSubfolder>" + endl);
-      out.write("    <hideNotAMovieFile>" + (hideNotAMovieFile ? 0 : 1) + "</hideNotAMovieFile>" + endl);
       out.write("    <hideRenamedMovie>" + (hideRenamedMovie ? 0 : 1) + "</hideRenamedMovie>" + endl);
       out.write("    <displayApproximateResult>" + (displayApproximateResult ? 0 : 1) + "</displayApproximateResult>" + endl);
       out.write("    <displayThumbResult>" + (displayThumbResult ? 0 : 1) + "</displayThumbResult>" + endl);
@@ -190,6 +188,13 @@ public class Settings {
       out.write("    <movieDirRenamedTitle>" + (movieDirRenamedTitle ? 0 : 1) + "</movieDirRenamedTitle>" + endl);
       out.write("    <imdbInfo>" + (imdbInfo ? 0 : 1) + "</imdbInfo>" + endl);
       out.write("    <imdbFr>" + (imdbFr ? 0 : 1) + "</imdbFr>" + endl);
+      out.write("    <selectFrstMovie>" + (selectFrstMovie ? 0 : 1) + "</selectFrstMovie>" + endl);
+      out.write("    <selectFrstRes>" + (selectFrstRes ? 0 : 1) + "</selectFrstRes>" + endl);
+      out.write("    <movieInfoPanel>" + (movieInfoPanel ? 0 : 1) + "</movieInfoPanel>" + endl);
+      out.write("    <actorImage>" + (actorImage ? 0 : 1) + "</actorImage>" + endl);
+      out.write("    <thumb>" + (thumb ? 0 : 1) + "</thumb>" + endl);
+      out.write("    <fanart>" + (fanart ? 0 : 1) + "</fanart>" + endl);
+      out.write("    <checkUpdate>" + (checkUpdate ? 0 : 1) + "</checkUpdate>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

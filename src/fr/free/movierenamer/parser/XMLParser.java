@@ -168,8 +168,6 @@ public class XMLParser<T> {
               config.extensions = res.split("/_");
             }
             try {
-              if (name.equalsIgnoreCase("interfaceType"))
-                config.interfaceType = Integer.parseInt(buffer.toString());
               if (name.equalsIgnoreCase("thumbSize"))
                 config.thumbSize = Integer.parseInt(buffer.toString());
               if (name.equalsIgnoreCase("fanartSize"))
@@ -197,8 +195,6 @@ public class XMLParser<T> {
               config.showMovieFilePath = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("scanSubfolder"))
               config.scanSubfolder = buffer.toString().equals(sZero);
-            if (name.equalsIgnoreCase("hideNotAMovieFile"))
-              config.hideNotAMovieFile = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("hideRenamedMovie"))
               config.hideRenamedMovie = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("displayApproximateResult"))
@@ -219,6 +215,20 @@ public class XMLParser<T> {
               config.imdbInfo = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("imdbFr"))
               config.imdbFr = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("selectFrstMovie"))
+              config.selectFrstMovie = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("selectFrstRes"))
+              config.selectFrstRes = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("movieInfoPanel"))
+              config.movieInfoPanel = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("actorImage"))
+              config.actorImage = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("thumb"))
+              config.thumb = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("fanart"))
+              config.fanart = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("checkUpdate"))
+              config.checkUpdate = buffer.toString().equals(sZero);
 
           } catch (NullPointerException ex) {
             config.getLogger().log(Level.SEVERE, ex.getMessage());
@@ -326,9 +336,8 @@ public class XMLParser<T> {
             fanarts.add(currentMovieImage);
       }
 
-      if (name.equalsIgnoreCase("id")) {
+      if (name.equalsIgnoreCase("id"))
         tmdbId = buffer.toString();
-      }
 
       buffer = null;
     }

@@ -26,6 +26,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -56,9 +58,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.TitledBorder;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import java.awt.Component;
+import javax.swing.border.TitledBorder;
 
 /**
  *
@@ -85,8 +88,9 @@ public class Setting extends JDialog {
 
   /** Creates new form Setting
    * @param setting
+   * @param parent
    */
-  public Setting(Settings setting) {
+  public Setting(Settings setting, Component parent) {
     bundle = ResourceBundle.getBundle("fr.free.movierenamer/i18n/Bundle");
     initComponents();
 
@@ -120,12 +124,16 @@ public class Setting extends JDialog {
     });
 
     // General Setting
-    useExtensionFilterChk.setSelected(setting.useExtensionFilter);
+    selectFirstMovieChk.setSelected(setting.selectFrstMovie);
+    selectFirstResChk.setSelected(setting.selectFrstRes);
+    displayThumbResultChk.setSelected(setting.displayThumbResult);
+    scanSubfolderChk.setSelected(setting.scanSubfolder);    
+    useExtensionFilterChk.setSelected(setting.useExtensionFilter);    
     showMovieFilePathChk.setSelected(setting.showMovieFilePath);
-    scanSubfolderChk.setSelected(setting.scanSubfolder);
-    hideNotAMovieFileChk.setSelected(setting.hideNotAMovieFile);
-
-
+    movieInfoPanelChk.setSelected(setting.movieInfoPanel);
+    actorImageChk.setSelected(setting.actorImage);
+    thumbsChk.setSelected(setting.thumb);
+    fanartsChk.setSelected(setting.fanart);
     englishRbtn.setSelected(!setting.locale.equals("fr"));
     frenchRbtn.setSelected(setting.locale.equals("fr"));
 
@@ -134,7 +142,7 @@ public class Setting extends JDialog {
     fanartGroup.setSelected(rBtnFanartList[setting.fanartSize].getModel(), true);
     displayAppResultCheckBox.setSelected(setting.displayApproximateResult);
     limitResultComboBox.setSelectedIndex(setting.nbResult);
-    displayThumbResultChk.setSelected(setting.displayThumbResult);
+    
 
     // Imdb
     imdbFrRbtn.setSelected(setting.imdbFr);
@@ -182,6 +190,7 @@ public class Setting extends JDialog {
 
     setTitle("Movie Renamer Settings " + setting.getVersion());
     setModal(true);
+    setLocationRelativeTo(parent);
   }
 
   private void loadList(JList jlist, String[] array) {
@@ -213,36 +222,25 @@ public class Setting extends JDialog {
     languageGroup = new ButtonGroup();
     interfaceGroup = new ButtonGroup();
     imdbLangGroup = new ButtonGroup();
-    jTabbedPane1 = new JTabbedPane();
+    settingTabPan = new JTabbedPane();
     generalPnl = new JPanel();
-    jPanel6 = new JPanel();
-    displayAppResultCheckBox = new JCheckBox();
-    limitResultComboBox = new JComboBox();
-    jLabel14 = new JLabel();
-    helpSearchBtn = new JButton();
-    displayThumbResultChk = new JCheckBox();
-    jPanel13 = new JPanel();
+    languagePnl = new JPanel();
     englishRbtn = new JRadioButton();
     frenchRbtn = new JRadioButton();
-    jLabel1 = new JLabel();
-    jPanel4 = new JPanel();
-    jCheckBox8 = new JCheckBox();
-    jPanel10 = new JPanel();
+    lwarningLbl = new JLabel();
+    updatePnl = new JPanel();
+    checkUpdateChk = new JCheckBox();
+    interfacePnl = new JPanel();
+    selectFirstMovieChk = new JCheckBox();
+    selectFirstResChk = new JCheckBox();
+    displayThumbResultChk = new JCheckBox();
+    actorImageChk = new JCheckBox();
+    movieInfoPanelChk = new JCheckBox();
+    thumbsChk = new JCheckBox();
+    fanartsChk = new JCheckBox();
     useExtensionFilterChk = new JCheckBox();
     showMovieFilePathChk = new JCheckBox();
     scanSubfolderChk = new JCheckBox();
-    hideNotAMovieFileChk = new JCheckBox();
-    hideRenamedMovieChk = new JCheckBox();
-    helpSearchBtn2 = new JButton();
-    jCheckBox16 = new JCheckBox();
-    jPanel17 = new JPanel();
-    jPanel19 = new JPanel();
-    jCheckBox4 = new JCheckBox();
-    jCheckBox11 = new JCheckBox();
-    jCheckBox12 = new JCheckBox();
-    jCheckBox13 = new JCheckBox();
-    jCheckBox14 = new JCheckBox();
-    jCheckBox15 = new JCheckBox();
     MovieFilesPnl = new JPanel();
     jPanel2 = new JPanel();
     movieTitleRBtn = new JRadioButton();
@@ -254,15 +252,10 @@ public class Setting extends JDialog {
     formatField = new JTextField();
     jLabel3 = new JLabel();
     helpBtn = new JButton();
-    jRadioButton1 = new JRadioButton();
     jPanel9 = new JPanel();
     thumbExtCbBox = new JComboBox();
     jLabel6 = new JLabel();
     jPanel3 = new JPanel();
-    jPanel14 = new JPanel();
-    jCheckBox3 = new JCheckBox();
-    jCheckBox2 = new JCheckBox();
-    jCheckBox1 = new JCheckBox();
     jPanel5 = new JPanel();
     thumbThumbSizeRBtn = new JRadioButton();
     midThumbSizeRBtn = new JRadioButton();
@@ -275,6 +268,11 @@ public class Setting extends JDialog {
     jPanel15 = new JPanel();
     imdbFrRbtn = new JRadioButton();
     imdbEnRbtn = new JRadioButton();
+    jPanel6 = new JPanel();
+    displayAppResultCheckBox = new JCheckBox();
+    limitResultComboBox = new JComboBox();
+    jLabel14 = new JLabel();
+    helpSearchBtn = new JButton();
     filtersPnl = new JPanel();
     jPanel11 = new JPanel();
     removeExtensuionBtn = new JButton();
@@ -312,194 +310,156 @@ public class Setting extends JDialog {
 
     setTitle("Movie Renamer Settings");
     setResizable(false);
-
-
-    jPanel6.setBorder(BorderFactory.createTitledBorder(null, "Imdb search", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
-    displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));
-    displayAppResultCheckBox.setText("Show approximate result");
-    displayAppResultCheckBox.setToolTipText("Display approximate result even if some movies are found");
-    displayAppResultCheckBox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        displayAppResultCheckBoxActionPerformed(evt);
-      }
-    });
-
-    limitResultComboBox.setFont(new Font("Ubuntu", 1, 12));
-    limitResultComboBox.setModel(new DefaultComboBoxModel(new String[] { "All", "5", "10", "15", "20", "30" }));
-
-    jLabel14.setFont(new Font("Ubuntu", 0, 12));
-    jLabel14.setText("results for each result type (Popular,Exact,...)");
-
-    helpSearchBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png"))); // NOI18N
-    helpSearchBtn.setToolTipText("Help");
-    helpSearchBtn.setMaximumSize(new Dimension(26, 26));
-    helpSearchBtn.setMinimumSize(new Dimension(26, 26));
-    helpSearchBtn.setPreferredSize(new Dimension(26, 26));
-    helpSearchBtn.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        helpSearchBtnMouseReleased(evt);
-      }
-    });
-    helpSearchBtn.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        helpSearchBtnActionPerformed(evt);
-      }
-    });
-
-    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));
-    displayThumbResultChk.setText("Show image in result list");
-    displayThumbResultChk.setToolTipText("Displays movie thumbnails in search results");
-
-    GroupLayout jPanel6Layout = new GroupLayout(jPanel6);
-    jPanel6.setLayout(jPanel6Layout);
-    jPanel6Layout.setHorizontalGroup(
-      jPanel6Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel6Layout.createSequentialGroup()
-        .addGap(36, 36, 36)
-        .addGroup(jPanel6Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(displayThumbResultChk)
-          .addComponent(displayAppResultCheckBox)
-          .addGroup(jPanel6Layout.createSequentialGroup()
-            .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(jLabel14)
-            .addPreferredGap(ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
-            .addComponent(helpSearchBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap())
-    );
-    jPanel6Layout.setVerticalGroup(
-      jPanel6Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel6Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel6Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(helpSearchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addGroup(jPanel6Layout.createParallelGroup(Alignment.BASELINE)
-            .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel14)))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(displayAppResultCheckBox)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(displayThumbResultChk)
-        .addContainerGap(14, Short.MAX_VALUE))
-    );
-
-    jPanel13.setBorder(BorderFactory.createTitledBorder(null, "Language", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
-    jPanel13.setToolTipText("Under development");
+    ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+    languagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
+    languagePnl.setToolTipText("Under development");
 
     languageGroup.add(englishRbtn);
     englishRbtn.setFont(new Font("Ubuntu", 0, 12));
     englishRbtn.setSelected(true);
-    englishRbtn.setText("English");
+    englishRbtn.setText(bundle.getString("english")); // NOI18N
 
     languageGroup.add(frenchRbtn);
     frenchRbtn.setFont(new Font("Ubuntu", 0, 12));
-    frenchRbtn.setText("French");
+    frenchRbtn.setText(bundle.getString("french")); // NOI18N
 
-    jLabel1.setFont(new Font("Ubuntu", 1, 12));
-    jLabel1.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png"))); // NOI18N
-    jLabel1.setText("Need restart");
+    lwarningLbl.setFont(new Font("Ubuntu", 1, 12));
+    lwarningLbl.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png"))); // NOI18N
+    lwarningLbl.setText(bundle.getString("needRestart")); // NOI18N
 
-    GroupLayout jPanel13Layout = new GroupLayout(jPanel13);
-    jPanel13.setLayout(jPanel13Layout);
+    GroupLayout languagePnlLayout = new GroupLayout(languagePnl);
+    languagePnl.setLayout(languagePnlLayout);
 
-    jPanel13Layout.setHorizontalGroup(
-      jPanel13Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel13Layout.createSequentialGroup()
+    languagePnlLayout.setHorizontalGroup(
+      languagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(languagePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(englishRbtn)
         .addGap(18, 18, 18)
         .addComponent(frenchRbtn)
-        .addPreferredGap(ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
-        .addComponent(jLabel1)
+        .addPreferredGap(ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
+        .addComponent(lwarningLbl)
         .addContainerGap())
     );
-    jPanel13Layout.setVerticalGroup(
-      jPanel13Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel13Layout.createParallelGroup(Alignment.BASELINE)
+    languagePnlLayout.setVerticalGroup(
+      languagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(languagePnlLayout.createParallelGroup(Alignment.BASELINE)
         .addComponent(englishRbtn)
         .addComponent(frenchRbtn)
-        .addComponent(jLabel1))
+        .addComponent(lwarningLbl))
     );
 
-    jPanel4.setBorder(BorderFactory.createTitledBorder(null, "Update", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
-    jCheckBox8.setFont(new Font("Ubuntu", 0, 12));
-    jCheckBox8.setSelected(true);
-    jCheckBox8.setText("Check for update on startup");
-    jCheckBox8.setToolTipText("You can check for update at any time, directly on movie renamer (globe button)");
+    updatePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("update"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
+    checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));
+    checkUpdateChk.setText(bundle.getString("chkUpdateOnStart")); // NOI18N
+    checkUpdateChk.setToolTipText("You can check for update at any time, directly on movie renamer (globe button)");
+    checkUpdateChk.setEnabled(false);
 
-    GroupLayout jPanel4Layout = new GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-      jPanel4Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
+    GroupLayout updatePnlLayout = new GroupLayout(updatePnl);
+    updatePnl.setLayout(updatePnlLayout);
+
+    updatePnlLayout.setHorizontalGroup(
+      updatePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(updatePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jCheckBox8)
-        .addContainerGap(261, Short.MAX_VALUE))
+        .addComponent(checkUpdateChk, GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+        .addContainerGap())
     );
-    jPanel4Layout.setVerticalGroup(
-      jPanel4Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
+    updatePnlLayout.setVerticalGroup(
+      updatePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(updatePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jCheckBox8)
+        .addComponent(checkUpdateChk)
         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel10.setBorder(BorderFactory.createTitledBorder(null, "Movie file list", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
+    interfacePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("interface"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
+    selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));
+    selectFirstMovieChk.setText(bundle.getString("autoSelFrstMovie")); // NOI18N
 
-    useExtensionFilterChk.setText("Use extension filter");
+    selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));
+    selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
 
-    showMovieFilePathChk.setText("Show movie file path");
+    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));
+    displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
+    displayThumbResultChk.setToolTipText("Displays movie thumbnails in search results");
 
-    scanSubfolderChk.setText("Scan subfolders");
+    actorImageChk.setFont(new Font("Ubuntu", 0, 12));
+    actorImageChk.setText(bundle.getString("showActorImage")); // NOI18N
+    actorImageChk.setEnabled(false);
 
-    hideNotAMovieFileChk.setText("Hide not a movie files");
+    movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    movieInfoPanelChk.setText(bundle.getString("showMoviePanel")); // NOI18N
+    movieInfoPanelChk.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent evt) {
+        movieInfoPanelChkItemStateChanged(evt);
+      }
+    });
 
-    hideRenamedMovieChk.setText("Hide renamed movie");
+    thumbsChk.setFont(new Font("Ubuntu", 0, 12));
+    thumbsChk.setText(bundle.getString("showThumbs")); // NOI18N
+    thumbsChk.setEnabled(false);
 
-    helpSearchBtn2.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png"))); // NOI18N
-    helpSearchBtn2.setToolTipText("Help");
-    helpSearchBtn2.setMaximumSize(new Dimension(26, 26));
-    helpSearchBtn2.setMinimumSize(new Dimension(26, 26));
-    helpSearchBtn2.setPreferredSize(new Dimension(26, 26));
+    fanartsChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    fanartsChk.setText(bundle.getString("showFanarts")); // NOI18N
+    fanartsChk.setEnabled(false);
 
-    jCheckBox16.setText("Destination folder");
-    jCheckBox16.setEnabled(false);
+    useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12));
+    useExtensionFilterChk.setText(bundle.getString("useExtFilter")); // NOI18N
 
-    GroupLayout jPanel10Layout = new GroupLayout(jPanel10);
-    jPanel10.setLayout(jPanel10Layout);
-    jPanel10Layout.setHorizontalGroup(
-      jPanel10Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel10Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel10Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(useExtensionFilterChk)
-          .addComponent(showMovieFilePathChk)
-          .addComponent(scanSubfolderChk))
-        .addGap(20, 20, 20)
-        .addGroup(jPanel10Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jCheckBox16)
-          .addGroup(jPanel10Layout.createSequentialGroup()
-            .addComponent(hideNotAMovieFileChk)
-            .addPreferredGap(ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-            .addComponent(helpSearchBtn2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-          .addComponent(hideRenamedMovieChk))
-        .addContainerGap())
+    showMovieFilePathChk.setFont(new Font("Ubuntu", 0, 12));
+    showMovieFilePathChk.setText(bundle.getString("showmovieFilePath")); // NOI18N
+
+    scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));
+    scanSubfolderChk.setText(bundle.getString("autoScanSubfolder")); // NOI18N
+
+    GroupLayout interfacePnlLayout = new GroupLayout(interfacePnl);
+    interfacePnl.setLayout(interfacePnlLayout);
+    interfacePnlLayout.setHorizontalGroup(
+      interfacePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(interfacePnlLayout.createSequentialGroup()
+        .addGap(12, 12, 12)
+        .addGroup(interfacePnlLayout.createParallelGroup(Alignment.TRAILING, false)
+          .addComponent(scanSubfolderChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(displayThumbResultChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(selectFirstMovieChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(selectFirstResChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(useExtensionFilterChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(showMovieFilePathChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(movieInfoPanelChk, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(Alignment.LEADING, interfacePnlLayout.createSequentialGroup()
+            .addGap(21, 21, 21)
+            .addGroup(interfacePnlLayout.createParallelGroup(Alignment.LEADING)
+              .addGroup(interfacePnlLayout.createSequentialGroup()
+                .addComponent(thumbsChk)
+                .addGap(18, 18, 18)
+                .addComponent(fanartsChk))
+              .addComponent(actorImageChk, GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))))
+        .addContainerGap(164, Short.MAX_VALUE))
     );
-    jPanel10Layout.setVerticalGroup(
-      jPanel10Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel10Layout.createSequentialGroup()
-        .addGroup(jPanel10Layout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(useExtensionFilterChk)
-          .addComponent(hideNotAMovieFileChk))
+    interfacePnlLayout.setVerticalGroup(
+      interfacePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(interfacePnlLayout.createSequentialGroup()
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(selectFirstMovieChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(selectFirstResChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(displayThumbResultChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(scanSubfolderChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(useExtensionFilterChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(showMovieFilePathChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(movieInfoPanelChk)
         .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addGroup(jPanel10Layout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(hideRenamedMovieChk)
-          .addComponent(showMovieFilePathChk))
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addGroup(jPanel10Layout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(scanSubfolderChk)
-          .addComponent(jCheckBox16)))
-      .addComponent(helpSearchBtn2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addComponent(actorImageChk)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addGroup(interfacePnlLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(thumbsChk)
+          .addComponent(fanartsChk)))
     );
 
     GroupLayout generalPnlLayout = new GroupLayout(generalPnl);
@@ -509,99 +469,24 @@ public class Setting extends JDialog {
       .addGroup(generalPnlLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(generalPnlLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jPanel6, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel10, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel13, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(interfacePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(updatePnl, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(languagePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     generalPnlLayout.setVerticalGroup(
       generalPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(generalPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jPanel10, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addComponent(interfacePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jPanel6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jPanel4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jPanel13, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(78, Short.MAX_VALUE))
+        .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(15, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("General", generalPnl);
-
-    jPanel19.setBorder(BorderFactory.createTitledBorder("Advanced"));
-
-    jCheckBox4.setText("Horizontal split");
-
-    jCheckBox11.setText("Display actor image");
-
-    jCheckBox12.setText("Show movie info");
-
-    jCheckBox13.setText("Movie images");
-
-    jCheckBox14.setText("Thumbnail");
-
-    jCheckBox15.setText("Fanart");
-
-    GroupLayout jPanel19Layout = new GroupLayout(jPanel19);
-    jPanel19.setLayout(jPanel19Layout);
-    jPanel19Layout.setHorizontalGroup(
-      jPanel19Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel19Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel19Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jCheckBox4)
-          .addComponent(jCheckBox12)
-          .addGroup(jPanel19Layout.createSequentialGroup()
-            .addGap(21, 21, 21)
-            .addGroup(jPanel19Layout.createParallelGroup(Alignment.LEADING)
-              .addComponent(jCheckBox13)
-              .addComponent(jCheckBox11)
-              .addGroup(jPanel19Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel19Layout.createParallelGroup(Alignment.LEADING)
-                  .addComponent(jCheckBox15)
-                  .addComponent(jCheckBox14))))))
-        .addContainerGap(261, Short.MAX_VALUE))
-    );
-    jPanel19Layout.setVerticalGroup(
-      jPanel19Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel19Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jCheckBox4)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox12)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox11)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox13)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox14)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox15)
-        .addContainerGap(48, Short.MAX_VALUE))
-    );
-
-    GroupLayout jPanel17Layout = new GroupLayout(jPanel17);
-    jPanel17.setLayout(jPanel17Layout);
-    jPanel17Layout.setHorizontalGroup(
-      jPanel17Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel17Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jPanel19, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addContainerGap())
-    );
-    jPanel17Layout.setVerticalGroup(
-      jPanel17Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel17Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jPanel19, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(202, Short.MAX_VALUE))
-    );
-
-    jTabbedPane1.addTab("Interface", jPanel17);
+    settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
 
     jPanel2.setBorder(BorderFactory.createTitledBorder(null, "Movie FileName", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
 
@@ -659,8 +544,6 @@ public class Setting extends JDialog {
       }
     });
 
-    jRadioButton1.setText("jRadioButton1");
-
     GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
 
@@ -669,25 +552,24 @@ public class Setting extends JDialog {
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jRadioButton1)
+          .addComponent(createDirChk, GroupLayout.DEFAULT_SIZE, 419, Short.MAX_VALUE)
           .addComponent(jLabel4)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(jButton3)
             .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(testField, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+            .addComponent(testField, GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
             .addGap(32, 32, 32))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel3)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(formatField, GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGap(21, 21, 21)
             .addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
               .addComponent(movieTitleRBtn)
-              .addComponent(renamedMovieTitleRBtn)))
-          .addComponent(createDirChk, GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel3)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(formatField, GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)))
+              .addComponent(renamedMovieTitleRBtn))))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
@@ -704,15 +586,13 @@ public class Setting extends JDialog {
           .addComponent(testField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         .addGap(22, 22, 22)
         .addComponent(jLabel4)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jRadioButton1)
-        .addGap(62, 62, 62)
+        .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(createDirChk)
-        .addPreferredGap(ComponentPlacement.RELATED)
+        .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(renamedMovieTitleRBtn)
-        .addPreferredGap(ComponentPlacement.RELATED)
+        .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(movieTitleRBtn)
-        .addGap(23, 23, 23))
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jPanel9.setBorder(BorderFactory.createTitledBorder(null, "Image Extension", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
@@ -734,7 +614,7 @@ public class Setting extends JDialog {
         .addComponent(jLabel6)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(thumbExtCbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(279, Short.MAX_VALUE))
+        .addContainerGap(267, Short.MAX_VALUE))
     );
     jPanel9Layout.setVerticalGroup(
       jPanel9Layout.createParallelGroup(Alignment.LEADING)
@@ -749,56 +629,24 @@ public class Setting extends JDialog {
     MovieFilesPnl.setLayout(MovieFilesPnlLayout);
     MovieFilesPnlLayout.setHorizontalGroup(
       MovieFilesPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(MovieFilesPnlLayout.createSequentialGroup()
+      .addGroup(Alignment.TRAILING, MovieFilesPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(MovieFilesPnlLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jPanel2, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel9, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGroup(MovieFilesPnlLayout.createParallelGroup(Alignment.TRAILING)
+          .addComponent(jPanel9, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     MovieFilesPnlLayout.setVerticalGroup(
       MovieFilesPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(Alignment.TRAILING, MovieFilesPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, 318, GroupLayout.PREFERRED_SIZE)
+        .addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jPanel9, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addGap(307, 307, 307))
-    );
-
-    jTabbedPane1.addTab("Rename", MovieFilesPnl);
-
-    jPanel14.setBorder(BorderFactory.createTitledBorder(null, "Images", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
-
-    jCheckBox3.setText("Download and display actors images ");
-
-    jCheckBox2.setText("Download and display fanarts");
-
-    jCheckBox1.setText("Download and display thumbnails");
-
-    GroupLayout jPanel14Layout = new GroupLayout(jPanel14);
-    jPanel14.setLayout(jPanel14Layout);
-    jPanel14Layout.setHorizontalGroup(
-      jPanel14Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel14Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel14Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jCheckBox2)
-          .addComponent(jCheckBox1)
-          .addComponent(jCheckBox3))
-        .addContainerGap(157, Short.MAX_VALUE))
-    );
-    jPanel14Layout.setVerticalGroup(
-      jPanel14Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel14Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jCheckBox1)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox2)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jCheckBox3)
         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
+
+    settingTabPan.addTab("Rename", MovieFilesPnl);
 
     jPanel5.setBorder(BorderFactory.createTitledBorder(null, "Images", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
 
@@ -886,6 +734,7 @@ public class Setting extends JDialog {
 
     GroupLayout jPanel15Layout = new GroupLayout(jPanel15);
     jPanel15.setLayout(jPanel15Layout);
+
     jPanel15Layout.setHorizontalGroup(
       jPanel15Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel15Layout.createSequentialGroup()
@@ -905,16 +754,78 @@ public class Setting extends JDialog {
         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
+    jPanel6.setBorder(BorderFactory.createTitledBorder(null, "Imdb search", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
+    displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));
+    displayAppResultCheckBox.setText("Show approximate result");
+    displayAppResultCheckBox.setToolTipText("Display approximate result even if some movies are found");
+    displayAppResultCheckBox.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        displayAppResultCheckBoxActionPerformed(evt);
+      }
+    });
+
+    limitResultComboBox.setFont(new Font("Ubuntu", 1, 12));
+    limitResultComboBox.setModel(new DefaultComboBoxModel(new String[] { "All", "5", "10", "15", "20", "30" }));
+
+    jLabel14.setFont(new Font("Ubuntu", 0, 12));
+    jLabel14.setText("results for each result type (Popular,Exact,...)");
+
+    helpSearchBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png"))); // NOI18N
+    helpSearchBtn.setToolTipText("Help");
+    helpSearchBtn.setMaximumSize(new Dimension(26, 26));
+    helpSearchBtn.setMinimumSize(new Dimension(26, 26));
+    helpSearchBtn.setPreferredSize(new Dimension(26, 26));
+    helpSearchBtn.addMouseListener(new MouseAdapter() {
+      public void mouseReleased(MouseEvent evt) {
+        helpSearchBtnMouseReleased(evt);
+      }
+    });
+    helpSearchBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        helpSearchBtnActionPerformed(evt);
+      }
+    });
+
+    GroupLayout jPanel6Layout = new GroupLayout(jPanel6);
+    jPanel6.setLayout(jPanel6Layout);
+    jPanel6Layout.setHorizontalGroup(
+      jPanel6Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(jPanel6Layout.createSequentialGroup()
+        .addGap(36, 36, 36)
+        .addGroup(jPanel6Layout.createParallelGroup(Alignment.LEADING)
+          .addComponent(displayAppResultCheckBox)
+          .addGroup(jPanel6Layout.createSequentialGroup()
+            .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(jLabel14)
+            .addPreferredGap(ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+            .addComponent(helpSearchBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap())
+    );
+    jPanel6Layout.setVerticalGroup(
+      jPanel6Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(jPanel6Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel6Layout.createParallelGroup(Alignment.LEADING)
+          .addComponent(helpSearchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addGroup(jPanel6Layout.createParallelGroup(Alignment.BASELINE)
+            .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addComponent(jLabel14)))
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(displayAppResultCheckBox)
+        .addContainerGap(37, Short.MAX_VALUE))
+    );
+
     GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
     jPanel3Layout.setHorizontalGroup(
       jPanel3Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel3Layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jPanel14, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel15, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGroup(jPanel3Layout.createParallelGroup(Alignment.TRAILING, false)
+          .addComponent(jPanel5, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel6, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel15, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
@@ -923,13 +834,13 @@ public class Setting extends JDialog {
         .addContainerGap()
         .addComponent(jPanel15, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jPanel14, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addComponent(jPanel6, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jPanel5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(99, Short.MAX_VALUE))
+        .addContainerGap(40, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("Imdb", jPanel3);
+    settingTabPan.addTab("Imdb", jPanel3);
 
 
     jPanel11.setBorder(BorderFactory.createTitledBorder(null, "Extensions", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
@@ -1094,10 +1005,10 @@ public class Setting extends JDialog {
         .addComponent(jPanel11, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jPanel12, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(58, Short.MAX_VALUE))
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("Filters", filtersPnl);
+    settingTabPan.addTab("Filters", filtersPnl);
 
     jPanel7.setBorder(BorderFactory.createTitledBorder(null, "Image Caching", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
 
@@ -1146,7 +1057,7 @@ public class Setting extends JDialog {
           .addComponent(clearBtn2)
           .addComponent(clearBtn1)
           .addComponent(clearBtn))
-        .addContainerGap(199, Short.MAX_VALUE))
+        .addContainerGap(187, Short.MAX_VALUE))
     );
     jPanel7Layout.setVerticalGroup(
       jPanel7Layout.createParallelGroup(Alignment.LEADING)
@@ -1194,7 +1105,7 @@ public class Setting extends JDialog {
         .addComponent(xmlLbl)
         .addGap(37, 37, 37)
         .addComponent(jButton4)
-        .addContainerGap(199, Short.MAX_VALUE))
+        .addContainerGap(187, Short.MAX_VALUE))
     );
     jPanel8Layout.setVerticalGroup(
       jPanel8Layout.createParallelGroup(Alignment.LEADING)
@@ -1224,10 +1135,10 @@ public class Setting extends JDialog {
         .addComponent(jPanel7, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jPanel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(169, Short.MAX_VALUE))
+        .addContainerGap(116, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("Cache", jPanel1);
+    settingTabPan.addTab("Cache", jPanel1);
 
     jLabel2.setText("Movie Renamer");
 
@@ -1264,7 +1175,7 @@ public class Setting extends JDialog {
               .addGroup(jPanel16Layout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addComponent(jTextField1)))))
-        .addContainerGap(229, Short.MAX_VALUE))
+        .addContainerGap(217, Short.MAX_VALUE))
     );
     jPanel16Layout.setVerticalGroup(
       jPanel16Layout.createParallelGroup(Alignment.LEADING)
@@ -1279,13 +1190,12 @@ public class Setting extends JDialog {
         .addComponent(jLabel8)
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(jTextField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(286, Short.MAX_VALUE))
+        .addContainerGap(233, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("About", jPanel16);
+    settingTabPan.addTab("About", jPanel16);
 
     saveBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png"))); // NOI18N
-    ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
     saveBtn.setText(bundle.getString("save")); // NOI18N
     saveBtn.setToolTipText(bundle.getString("save")); // NOI18N
     saveBtn.setMargin(new Insets(2, 2, 2, 2));
@@ -1309,13 +1219,13 @@ public class Setting extends JDialog {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
+      .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(Alignment.LEADING, false)
-          .addComponent(jTabbedPane1, GroupLayout.PREFERRED_SIZE, 494, GroupLayout.PREFERRED_SIZE)
-          .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
+          .addComponent(settingTabPan, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+          .addGroup(layout.createSequentialGroup()
             .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(ComponentPlacement.RELATED, 314, Short.MAX_VALUE)
             .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
@@ -1323,11 +1233,11 @@ public class Setting extends JDialog {
       layout.createParallelGroup(Alignment.LEADING)
       .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jTabbedPane1, GroupLayout.PREFERRED_SIZE, 498, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-          .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-          .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+        .addComponent(settingTabPan, GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+        .addPreferredGap(ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+          .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
         .addContainerGap())
     );
 
@@ -1342,10 +1252,21 @@ public class Setting extends JDialog {
     boolean restartApp = false;
     
     // General Setting
+    if(setting.showMovieFilePath != showMovieFilePathChk.isSelected()) setting.interfaceChanged = true;
+    if(setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
+    if(setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
+    if(setting.fanart != fanartsChk.isSelected()) setting.interfaceChanged = true;
+
+    setting.selectFrstMovie = selectFirstMovieChk.isSelected();
+    setting.selectFrstRes = selectFirstResChk.isSelected();
+    setting.displayThumbResult = displayThumbResultChk.isSelected();
+    setting.scanSubfolder = scanSubfolderChk.isSelected();
     setting.useExtensionFilter = useExtensionFilterChk.isSelected();
     setting.showMovieFilePath = showMovieFilePathChk.isSelected();
-    setting.scanSubfolder = scanSubfolderChk.isSelected();
-    setting.hideNotAMovieFile = hideNotAMovieFileChk.isSelected();
+    setting.movieInfoPanel = movieInfoPanelChk.isSelected();
+    setting.actorImage = actorImageChk.isSelected();
+    setting.thumb = thumbsChk.isSelected();
+    setting.fanart = fanartsChk.isSelected();
     
     for (int i = 0; i < rBtnThumbList.length; i++) {
       if (rBtnThumbList[i].isSelected())
@@ -1359,7 +1280,7 @@ public class Setting extends JDialog {
 
     setting.displayApproximateResult = displayAppResultCheckBox.isSelected();
     setting.nbResult = limitResultComboBox.getSelectedIndex();
-    setting.displayThumbResult = displayThumbResultChk.isSelected();
+
 
     boolean langFr = setting.locale.equals("fr");
     if(langFr != frenchRbtn.isSelected()){
@@ -1550,11 +1471,21 @@ public class Setting extends JDialog {
     // TODO add your handling code here:
 }//GEN-LAST:event_displayAppResultCheckBoxActionPerformed
 
+  private void movieInfoPanelChkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_movieInfoPanelChkItemStateChanged
+    boolean activate = true;
+    if(!movieInfoPanelChk.isSelected()) activate = false;
+    actorImageChk.setEnabled(activate);
+    thumbsChk.setEnabled(activate);
+    fanartsChk.setEnabled(activate);
+  }//GEN-LAST:event_movieInfoPanelChkItemStateChanged
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JButton CancelBtn;
   private JPanel MovieFilesPnl;
   private JLabel actorCacheLbl;
+  private JCheckBox actorImageChk;
   private JButton addExtensionBtn;
+  private JCheckBox checkUpdateChk;
   private JButton clearBtn;
   private JButton clearBtn1;
   private JButton clearBtn2;
@@ -1566,6 +1497,7 @@ public class Setting extends JDialog {
   private JList extentionJlist;
   private JLabel fanartCacheLbl;
   private ButtonGroup fanartGroup;
+  private JCheckBox fanartsChk;
   private JList filterJlist;
   private JPanel filtersPnl;
   private JTextField formatField;
@@ -1575,31 +1507,17 @@ public class Setting extends JDialog {
   private JButton helpBtn1;
   private JButton helpBtn2;
   private JButton helpSearchBtn;
-  private JButton helpSearchBtn2;
-  private JCheckBox hideNotAMovieFileChk;
-  private JCheckBox hideRenamedMovieChk;
   private JRadioButton imdbEnRbtn;
   private JRadioButton imdbFrRbtn;
   private ButtonGroup imdbLangGroup;
   private ButtonGroup interfaceGroup;
+  private JPanel interfacePnl;
   private JButton jButton1;
   private JButton jButton2;
   private JButton jButton3;
   private JButton jButton4;
   private JButton jButton5;
   private JButton jButton6;
-  private JCheckBox jCheckBox1;
-  private JCheckBox jCheckBox11;
-  private JCheckBox jCheckBox12;
-  private JCheckBox jCheckBox13;
-  private JCheckBox jCheckBox14;
-  private JCheckBox jCheckBox15;
-  private JCheckBox jCheckBox16;
-  private JCheckBox jCheckBox2;
-  private JCheckBox jCheckBox3;
-  private JCheckBox jCheckBox4;
-  private JCheckBox jCheckBox8;
-  private JLabel jLabel1;
   private JLabel jLabel10;
   private JLabel jLabel14;
   private JLabel jLabel2;
@@ -1610,32 +1528,27 @@ public class Setting extends JDialog {
   private JLabel jLabel8;
   private JLabel jLabel9;
   private JPanel jPanel1;
-  private JPanel jPanel10;
   private JPanel jPanel11;
   private JPanel jPanel12;
-  private JPanel jPanel13;
-  private JPanel jPanel14;
   private JPanel jPanel15;
   private JPanel jPanel16;
-  private JPanel jPanel17;
-  private JPanel jPanel19;
   private JPanel jPanel2;
   private JPanel jPanel3;
-  private JPanel jPanel4;
   private JPanel jPanel5;
   private JPanel jPanel6;
   private JPanel jPanel7;
   private JPanel jPanel8;
   private JPanel jPanel9;
-  private JRadioButton jRadioButton1;
   private JScrollPane jScrollPane1;
   private JScrollPane jScrollPane2;
-  private JTabbedPane jTabbedPane1;
   private JTextField jTextField1;
   private ButtonGroup languageGroup;
+  private JPanel languagePnl;
   private JComboBox limitResultComboBox;
+  private JLabel lwarningLbl;
   private JRadioButton midFanartSizeRBtn;
   private JRadioButton midThumbSizeRBtn;
+  private JCheckBox movieInfoPanelChk;
   private JRadioButton movieTitleRBtn;
   private JRadioButton origFanartSizeRBtn;
   public JRadioButton origThumbSizeRBtn;
@@ -1645,6 +1558,9 @@ public class Setting extends JDialog {
   private JRadioButton renamedMovieTitleRBtn;
   private JButton saveBtn;
   private JCheckBox scanSubfolderChk;
+  private JCheckBox selectFirstMovieChk;
+  private JCheckBox selectFirstResChk;
+  private JTabbedPane settingTabPan;
   private JCheckBox showMovieFilePathChk;
   private JTextField testField;
   private JLabel thumbCacheLbl;
@@ -1652,6 +1568,8 @@ public class Setting extends JDialog {
   private JRadioButton thumbFanartSizeRBtn;
   private ButtonGroup thumbGroup;
   private JRadioButton thumbThumbSizeRBtn;
+  private JCheckBox thumbsChk;
+  private JPanel updatePnl;
   private JCheckBox useExtensionFilterChk;
   private JLabel xmlLbl;
   private ButtonGroup youtubeGroup;

@@ -52,8 +52,8 @@ public class ActorWorker extends SwingWorker<Void, Void> {
     for (int i = 0; i < actors.size(); i++) {
       Image image = null;
       URL url = null;
-
-      if (!actors.get(i).getThumb().equals(Utils.EMPTY)) {
+      StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
+      if (!actors.get(i).getThumb().equals(Utils.EMPTY) && setting.actorImage) {
         try {
           url = new URL(actors.get(i).getThumb().replace("SY214_SX314", "SY60_SX90").replace(".png", ".jpg"));
           image = setting.cache.getImage(url, Cache.actor);
@@ -66,13 +66,20 @@ public class ActorWorker extends SwingWorker<Void, Void> {
         }
 
         if (image == null) image = Utils.getImageFromJAR("/image/unknown.png", getClass());
-        StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
+        
         if (url != null) desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.actor).getAbsolutePath()).append("\"><br>");
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
         desc.append("</html>");
         moviePnl.addActorToList(actors.get(i).getName(), image, desc.toString());
+      }
+      else {
+        for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
+          desc.append("<br>").append(actors.get(i).getRoles().get(j));
+        }
+        desc.append("</html>");
+        moviePnl.addActorToList(actors.get(i).getName(), null, desc.toString());
       }
       setProgress((i * 100) / actors.size());
     }

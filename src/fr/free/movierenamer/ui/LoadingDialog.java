@@ -21,7 +21,6 @@ package fr.free.movierenamer.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,6 @@ import javax.swing.JDialog;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import fr.free.movierenamer.utils.Loading;
-import java.beans.PropertyChangeListener;
 
 /**
  *

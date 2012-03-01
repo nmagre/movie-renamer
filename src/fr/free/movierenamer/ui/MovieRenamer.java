@@ -96,7 +96,7 @@ import fr.free.movierenamer.worker.TheMovieDbInfoWorker;
 
 /**
  *
- * @author duffy
+ * @author Nicolas Magré
  */
 public class MovieRenamer extends javax.swing.JFrame {
 
@@ -152,8 +152,9 @@ public class MovieRenamer extends javax.swing.JFrame {
 
       @Override
       public void valueChanged(ListSelectionEvent evt) {
+
         if (searchResultList.getSelectedIndex() == -1) return;
-        if(!loading.isShown()) loadDial(false);
+        if (!loading.isShown()) loadDial(false, true);
         clearInterface(false, false);
         getMovieInfo(((ImdbSearchResult) searchResultList.getSelectedValue()).getImdbId());
       }
@@ -166,34 +167,44 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     loadInterface();
     setTitle(Settings.softName + "-" + setting.getVersion());
+    setLocationRelativeTo(null);
   }
 
   private void loadInterface() {
-    switch (setting.interfaceType) {
-      case Settings.SIMPLE:
-        centerPnl.add(jSplitPane1);
-        break;
-      case Settings.COMPLETE:
-        jSplitPane2.setBottomComponent(movieImagePnl);
-        break;
-      case Settings.CUSTOM:
-        break;
+    if (!setting.movieInfoPanel) {
+      jSplitPane2.remove(movieImagePnl);
+      jSplitPane1.remove(jSplitPane2);
+      jSplitPane1.add(jPanel1);
+      jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    } else {
+      jSplitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+      if (jSplitPane1.getBottomComponent().equals(jPanel1)) {
+        jSplitPane1.remove(jPanel1);
+        jSplitPane2.add(jPanel1);
+        jSplitPane1.add(jSplitPane2);
+      }
+      movieImagePnl.setDisplay(setting);
+      jSplitPane2.setBottomComponent(movieImagePnl);
     }
+    thumbChk.setVisible(setting.movieInfoPanel && setting.thumb);
+    fanartChk.setVisible(setting.movieInfoPanel && setting.fanart);
+    nfoChk.setVisible(setting.movieInfoPanel);
     centerPnl.validate();
     centerPnl.repaint();
   }
 
   //Only call in EDT
   private void clearInterface(boolean movieList, boolean searchList) {
-    if(currentMovie != null) currentMovie.clear();
+    if (!SwingUtilities.isEventDispatchThread()) setting.getLogger().log(Level.SEVERE, "movierenamer : clearInterface is not running in EDT");
+    if (currentMovie != null) currentMovie.clear();
     if (movieList) {
-      if(movieFileNameModel != null) movieFileNameModel.clear();
+      if (movieFileNameModel != null) movieFileNameModel.clear();
       ((TitledBorder) jScrollPane1.getBorder()).setTitle(bundle.getString("movies"));
       jScrollPane1.validate();
       jScrollPane1.repaint();
     }
     if (searchList) {
-      if(searchResModel != null) searchResModel.clear();
+      if (searchResModel != null) searchResModel.clear();
       resultLbl.setText(bundle.getString("searchResListTitle"));
       searchBtn.setEnabled(false);
       searchField.setEnabled(false);
@@ -204,7 +215,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
   private void searchMovieImdb(String searchTitle) {
     try {
-      loadDial(true);
+      loadDial(true, setting.selectFrstRes);
       ImdbSearchWorker imdbsw = new ImdbSearchWorker(MovieRenamer.this, searchTitle, setting);
       imdbsw.addPropertyChangeListener(new SearchWorkerListener(imdbsw, searchResultList, searchResModel));
       imdbsw.execute();
@@ -215,13 +226,15 @@ public class MovieRenamer extends javax.swing.JFrame {
     }
   }
 
-  private void loadDial(boolean search) {
+  private void loadDial(boolean search, boolean movieinfo) {
     final ArrayList<Loading> loadingWorker = new ArrayList<Loading>();
     if (search) loadingWorker.add(new Loading("Imdb Search", true, 100, SEARCHWORKER));
-    loadingWorker.add(new Loading("Movie infomation", true, 100, INFOWORKER));
-    loadingWorker.add(new Loading("Thumbnails", false, 100, THUMBWORKER));
-    loadingWorker.add(new Loading("Fanarts", false, 100, FANARTWORKER));
-    loadingWorker.add(new Loading("Actors", false, 100, ACTORWORKER));
+    if (movieinfo) {
+      loadingWorker.add(new Loading("Movie infomation", true, 100, INFOWORKER));
+      if (setting.movieInfoPanel && setting.thumb) loadingWorker.add(new Loading("Thumbnails", false, 100, THUMBWORKER));
+      if (setting.movieInfoPanel && setting.fanart) loadingWorker.add(new Loading("Fanarts", false, 100, FANARTWORKER));
+      if (setting.movieInfoPanel && setting.actorImage) loadingWorker.add(new Loading("Actors", false, 100, ACTORWORKER));
+    }
     loading = new LoadingDialog(loadingWorker, MovieRenamer.this);
     SwingUtilities.invokeLater(new Runnable() {
 
@@ -237,11 +250,14 @@ public class MovieRenamer extends javax.swing.JFrame {
       currentMovie.clear();
       currentMovie.setImdbId(imdbId);
       ImdbInfoWorker imdbiw = new ImdbInfoWorker(MovieRenamer.this, imdbId, setting);
-      TheMovieDbInfoWorker tmdbiw = new TheMovieDbInfoWorker(currentMovie, setting);
+      if ((setting.thumb || setting.fanart) && setting.movieInfoPanel) {
+        TheMovieDbInfoWorker tmdbiw = new TheMovieDbInfoWorker(currentMovie, setting);
+        tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
+        tmdbiw.execute();
+      }
       imdbiw.addPropertyChangeListener(new MovieInfoListener(imdbiw));
-      tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
       imdbiw.execute();
-      tmdbiw.execute();
+
     } catch (MalformedURLException ex) {
       setting.getLogger().log(Level.SEVERE, null, ex);
     }
@@ -472,7 +488,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
 
-      final Setting set = new Setting(setting);
+      final Setting set = new Setting(setting, this);
       set.addWindowListener(new WindowListener() {
 
         @Override
@@ -565,7 +581,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         } catch (IOException ex) {
           Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
         }
-      
+
       //Download fanart
       if (fanartChk.isSelected())
         try {
@@ -601,19 +617,25 @@ public class MovieRenamer extends javax.swing.JFrame {
           for (int i = 0; i < objects.size(); i++) {
             model.addElement(objects.get(i));
           }
-          list.setCellRenderer(new IconListRenderer<ImdbSearchResult>(objects));
+          // Display thumbs in result list
+          if (setting.displayThumbResult) list.setCellRenderer(new IconListRenderer<ImdbSearchResult>(objects));
 
           list.setModel(model);
-          if (objects.isEmpty()) JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noResult"), sError, JOptionPane.ERROR_MESSAGE);
-          searchBtn.setEnabled(!objects.isEmpty());
-          searchField.setEnabled(!objects.isEmpty());
+          if (objects.isEmpty()){
+            JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noResult"), sError, JOptionPane.ERROR_MESSAGE);
+            loading.setVisible(false);
+          }
+          searchBtn.setEnabled(true);
+          searchField.setEnabled(true);
         } catch (InterruptedException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
         }
         loading.setValue(100, SEARCHWORKER);
-        if (!model.isEmpty()) list.setSelectedIndex(0);// Start ImdbInfoWorker
+        if (!model.isEmpty())
+          if (MovieRenamer.this.setting.selectFrstRes)
+            list.setSelectedIndex(0);
       } else loading.setValue(worker.getProgress(), SEARCHWORKER);
     }
   }
@@ -650,7 +672,6 @@ public class MovieRenamer extends javax.swing.JFrame {
           model = new DefaultListModel();
 
           for (int i = 0; i < objects.size(); i++) {
-            if (setting.hideNotAMovieFile && objects.get(i).isWarning()) continue;
             model.addElement(objects.get(i));
           }
 
@@ -660,6 +681,7 @@ public class MovieRenamer extends javax.swing.JFrame {
           component.repaint();
           list.setModel(model);
           if (model.isEmpty()) JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noMovieFound"), sError, JOptionPane.ERROR_MESSAGE);
+          else if (setting.selectFrstMovie) list.setSelectedIndex(0);
         } catch (InterruptedException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
@@ -687,7 +709,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         try {
           Object obj = imdbiw.get();
           if (obj == null) return;
-          
+
           if (obj instanceof MovieInfo) {
             currentMovie.setMovieInfo((MovieInfo) obj);
 
@@ -701,7 +723,6 @@ public class MovieRenamer extends javax.swing.JFrame {
             actor.execute();
           }
           if (obj instanceof Movie) {
-            movieImagePnl.clearList();
             currentMovie.setThumbs(((Movie) obj).getThumbs());
             currentMovie.setFanarts(((Movie) obj).getFanarts());
             MovieImageWorker thumb = new MovieImageWorker(currentMovie.getThumbs(), 0, Cache.thumb, movieImagePnl, setting);

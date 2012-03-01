@@ -84,7 +84,7 @@ public class MoviePanel extends javax.swing.JPanel {
   /** Creates new form MovieImagePanel
    * @param setting 
    */
-  public MoviePanel(final Settings setting) {
+  public MoviePanel(Settings setting) {
     this.setting = setting;
     initComponents();
     thumbs = new ArrayList<MovieImage>();
@@ -93,12 +93,6 @@ public class MoviePanel extends javax.swing.JPanel {
     thumbnailsList.setModel(thumbnailModel);
     fanartList.setModel(fanartModel);
     actorList.setModel(actorModel);
-
-
-    //thumbsScrollPane.setVisible(false);
-    //fanartsScrollPane.setVisible(false);
-    //jPanel2.setVisible(false);
-    //movieTabbedPane.setVisible(false);
 
     thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -112,10 +106,10 @@ public class MoviePanel extends javax.swing.JPanel {
         if (index != -1)
           try {
             URL url = new URL(thumbs.get(index).getOrigUrl().replace(".png", ".jpg")); // API bug, png is jpg on server
-            Image img = setting.cache.getImage(url, Cache.thumb);
+            Image img = MoviePanel.this.setting.cache.getImage(url, Cache.thumb);
             if (img == null) {
-              setting.cache.add(url.openStream(), url.toString(), Cache.thumb);
-              img = setting.cache.getImage(url, Cache.thumb);
+              MoviePanel.this.setting.cache.add(url.openStream(), url.toString(), Cache.thumb);
+              img = MoviePanel.this.setting.cache.getImage(url, Cache.thumb);
             }
             if (img != null)
               jLabel7.setIcon(new ImageIcon(img.getScaledInstance(jLabel7.getWidth(), jLabel7.getHeight(), Image.SCALE_DEFAULT)));
@@ -138,10 +132,10 @@ public class MoviePanel extends javax.swing.JPanel {
         if (index != -1) {
           try {
             URL url = new URL(fanarts.get(index).getOrigUrl().replace(".png", ".jpg")); // API bug, png is jpg on server
-            img = setting.cache.getImage(url, Cache.fanart);
+            img = MoviePanel.this.setting.cache.getImage(url, Cache.fanart);
             if (img == null) {
-              setting.cache.add(url.openStream(), url.toString(), Cache.fanart);
-              img = setting.cache.getImage(url, Cache.fanart);
+              MoviePanel.this.setting.cache.add(url.openStream(), url.toString(), Cache.fanart);
+              img = MoviePanel.this.setting.cache.getImage(url, Cache.fanart);
             }
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -156,11 +150,20 @@ public class MoviePanel extends javax.swing.JPanel {
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     actorList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     actorList.setVisibleRowCount(-1);
-
+    
+    thumbsScrollPane.setVisible(setting.thumb);
+    fanartsScrollPane.setVisible(setting.fanart);
+    jPanel2.setVisible(setting.thumb || setting.fanart);
     img = null;
   }
 
-  public void addThumbToList(final Image thumb, final MovieImage mvImg) {//A refaire (http request in EDT)
+  public void setDisplay(Settings setting){
+    thumbsScrollPane.setVisible(setting.thumb);
+    fanartsScrollPane.setVisible(setting.fanart);
+    jPanel2.setVisible(setting.thumb || setting.fanart);
+  }
+
+  public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg) {//A refaire (http request in EDT)
 
     SwingUtilities.invokeLater(new Thread() {
 
@@ -188,7 +191,7 @@ public class MoviePanel extends javax.swing.JPanel {
     });
   }
 
-  public void addFanartToList(final Image fanart, final MovieImage mvImg) {//A refaire (http request in EDT)
+  public synchronized void addFanartToList(final Image fanart, final MovieImage mvImg) {//A refaire (http request in EDT)
 
     SwingUtilities.invokeLater(new Thread() {
 
@@ -279,7 +282,7 @@ public class MoviePanel extends javax.swing.JPanel {
 
   private void setRate(Double rate) {
     if (rate < 0.00) return;
-    if (rate > 5.00) rate /= 2;
+    rate /= 2;
     int n = rate.intValue();
     switch (n) {
       case 0:
@@ -370,7 +373,7 @@ public class MoviePanel extends javax.swing.JPanel {
         // Invoke arbitrary paint methods, which will paint
         // with 50% translucency.
         g2d.setPaint(Color.black);
-        g2d.fillRoundRect(20, 20, getWidth()-40, getHeight()-40, 50, 50);
+        g2d.fillRoundRect(15, 15, getWidth()-30, getHeight()-30, 30, 30);
 
         // Restore the old composite.
         g2d.setComposite(oldComp);
@@ -395,6 +398,7 @@ public class MoviePanel extends javax.swing.JPanel {
     star1 = new JLabel();
     star = new JLabel();
 
+    setMinimumSize(new Dimension(562, 358));
     setLayout(new BorderLayout());
 
     jPanel2.setPreferredSize(new Dimension(562, 125));
@@ -421,9 +425,9 @@ public class MoviePanel extends javax.swing.JPanel {
     jPanel2Layout.setHorizontalGroup(
       jPanel2Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel2Layout.createSequentialGroup()
-        .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+        .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE))
+        .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(Alignment.LEADING)
@@ -433,7 +437,10 @@ public class MoviePanel extends javax.swing.JPanel {
 
     add(jPanel2, BorderLayout.PAGE_END);
 
+    jPanel1.setPreferredSize(new Dimension(562, 350));
+
     jTextArea1.setColumns(20);
+    jTextArea1.setEditable(false);
     jTextArea1.setLineWrap(true);
     jTextArea1.setRows(5);
     jTextArea1.setWrapStyleWord(true);
@@ -441,16 +448,22 @@ public class MoviePanel extends javax.swing.JPanel {
     jTextArea1.setOpaque(false);
     jScrollPane2.setViewportView(jTextArea1);
 
+    genreField.setEditable(false);
     genreField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
+    yearField.setEditable(false);
     yearField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
+    runtimeField.setEditable(false);
     runtimeField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
+    jTextField4.setEditable(false);
     jTextField4.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
+    origTitleField.setEditable(false);
     origTitleField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
+    countryField.setEditable(false);
     countryField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
     GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
@@ -491,11 +504,11 @@ public class MoviePanel extends javax.swing.JPanel {
           .addComponent(jTextField4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
           .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-        .addContainerGap())
+        .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jPanel3.setBorder(new EmptyBorder(35, 35, 35, 35));
+    jPanel3.setBorder(new EmptyBorder(20, 20, 20, 20));
 
     movieTabbedPane.addTab("Details", jPanel3);
 
@@ -515,8 +528,8 @@ public class MoviePanel extends javax.swing.JPanel {
       jPanel4Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel4Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jScrollPane3, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-        .addContainerGap())
+        .addComponent(jScrollPane3, GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+        .addGap(30, 30, 30))
     );
 
     movieTabbedPane.addTab("Actor", jPanel4);
@@ -538,7 +551,7 @@ public class MoviePanel extends javax.swing.JPanel {
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
-        .addGap(28, 28, 28)
+        .addGap(52, 52, 52)
         .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addComponent(star)
@@ -562,8 +575,10 @@ public class MoviePanel extends javax.swing.JPanel {
           .addComponent(star4))
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(jLabel7, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE)
-        .addGap(22, 22, 22))
-      .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+        .addGap(50, 50, 50))
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+        .addContainerGap())
     );
 
     add(jPanel1, BorderLayout.CENTER);
