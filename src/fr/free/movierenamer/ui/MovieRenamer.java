@@ -50,7 +50,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -93,6 +92,7 @@ import fr.free.movierenamer.worker.ImdbSearchWorker;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import fr.free.movierenamer.worker.MovieImageWorker;
 import fr.free.movierenamer.worker.TheMovieDbInfoWorker;
+import javax.swing.DefaultListCellRenderer;
 
 /**
  *
@@ -162,7 +162,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     movieImagePnl = new MoviePanel(setting);
 
-    dropFile = new DropFile(setting, new FileWorkerListener(movieList, movieFileNameModel, jScrollPane1), this);
+    dropFile = new DropFile(setting, new FileWorkerListener(movieList, movieFileNameModel, movieScroll), this);
     new DropTarget(movieList, dropFile);
 
     loadInterface();
@@ -172,19 +172,19 @@ public class MovieRenamer extends javax.swing.JFrame {
 
   private void loadInterface() {
     if (!setting.movieInfoPanel) {
-      jSplitPane2.remove(movieImagePnl);
-      jSplitPane1.remove(jSplitPane2);
-      jSplitPane1.add(jPanel1);
-      jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+      searchSp.remove(movieImagePnl);
+      centerSp.remove(searchSp);
+      centerSp.add(searchPnl);
+      centerSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
     } else {
-      jSplitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-      if (jSplitPane1.getBottomComponent().equals(jPanel1)) {
-        jSplitPane1.remove(jPanel1);
-        jSplitPane2.add(jPanel1);
-        jSplitPane1.add(jSplitPane2);
+      centerSp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+      if (centerSp.getBottomComponent().equals(searchPnl)) {
+        centerSp.remove(searchPnl);
+        searchSp.add(searchPnl);
+        centerSp.add(searchSp);
       }
       movieImagePnl.setDisplay(setting);
-      jSplitPane2.setBottomComponent(movieImagePnl);
+      searchSp.setBottomComponent(movieImagePnl);
     }
     thumbChk.setVisible(setting.movieInfoPanel && setting.thumb);
     fanartChk.setVisible(setting.movieInfoPanel && setting.fanart);
@@ -199,9 +199,9 @@ public class MovieRenamer extends javax.swing.JFrame {
     if (currentMovie != null) currentMovie.clear();
     if (movieList) {
       if (movieFileNameModel != null) movieFileNameModel.clear();
-      ((TitledBorder) jScrollPane1.getBorder()).setTitle(bundle.getString("movies"));
-      jScrollPane1.validate();
-      jScrollPane1.repaint();
+      ((TitledBorder) movieScroll.getBorder()).setTitle(bundle.getString("movies"));
+      movieScroll.validate();
+      movieScroll.repaint();
     }
     if (searchList) {
       if (searchResModel != null) searchResModel.clear();
@@ -228,12 +228,12 @@ public class MovieRenamer extends javax.swing.JFrame {
 
   private void loadDial(boolean search, boolean movieinfo) {
     final ArrayList<Loading> loadingWorker = new ArrayList<Loading>();
-    if (search) loadingWorker.add(new Loading("Imdb Search", true, 100, SEARCHWORKER));
+    if (search) loadingWorker.add(new Loading(bundle.getString("imSearch"), true, 100, SEARCHWORKER));
     if (movieinfo) {
-      loadingWorker.add(new Loading("Movie infomation", true, 100, INFOWORKER));
-      if (setting.movieInfoPanel && setting.thumb) loadingWorker.add(new Loading("Thumbnails", false, 100, THUMBWORKER));
+      loadingWorker.add(new Loading(bundle.getString("movieInf"), true, 100, INFOWORKER));
+      if (setting.movieInfoPanel && setting.thumb) loadingWorker.add(new Loading(bundle.getString("thumbnails"), false, 100, THUMBWORKER));
       if (setting.movieInfoPanel && setting.fanart) loadingWorker.add(new Loading("Fanarts", false, 100, FANARTWORKER));
-      if (setting.movieInfoPanel && setting.actorImage) loadingWorker.add(new Loading("Actors", false, 100, ACTORWORKER));
+      if (setting.movieInfoPanel && setting.actorImage) loadingWorker.add(new Loading(bundle.getString("actors"), false, 100, ACTORWORKER));
     }
     loading = new LoadingDialog(loadingWorker, MovieRenamer.this);
     SwingUtilities.invokeLater(new Runnable() {
@@ -282,12 +282,12 @@ public class MovieRenamer extends javax.swing.JFrame {
     settingBtn = new JButton();
     exitBtn = new JButton();
     centerPnl = new JPanel();
-    jSplitPane1 = new JSplitPane();
-    jScrollPane1 = new JScrollPane();
+    centerSp = new JSplitPane();
+    movieScroll = new JScrollPane();
     movieList = new JList();
-    jSplitPane2 = new JSplitPane();
-    jPanel1 = new JPanel();
-    jScrollPane2 = new JScrollPane();
+    searchSp = new JSplitPane();
+    searchPnl = new JPanel();
+    searchScroll = new JScrollPane();
     searchResultList = new JList();
     searchField = new JTextField();
     searchBtn = new JButton();
@@ -333,6 +333,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png"))); // NOI18N
     updateBtn.setToolTipText(bundle.getString("updateBtn")); // NOI18N
+    updateBtn.setEnabled(false);
     updateBtn.setFocusable(false);
     updateBtn.setHorizontalTextPosition(SwingConstants.CENTER);
     updateBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -364,27 +365,27 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     getContentPane().add(topTb, BorderLayout.PAGE_START);
 
-    jSplitPane1.setDividerLocation(300);
+    centerSp.setDividerLocation(300);
 
 
-    jScrollPane1.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("movieListTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
+    movieScroll.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("movieListTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
     movieList.setFont(new Font("Dialog", 0, 12));
-    jScrollPane1.setViewportView(movieList);
+    movieScroll.setViewportView(movieList);
 
-    jSplitPane1.setTopComponent(jScrollPane1);
+    centerSp.setTopComponent(movieScroll);
 
-    jSplitPane2.setDividerLocation(200);
+    searchSp.setDividerLocation(200);
 
-    jSplitPane2.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    searchSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-    jPanel1.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("searchTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
+    searchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("searchTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
     searchResultList.setFont(new Font("Dialog", 0, 12));
-    jScrollPane2.setViewportView(searchResultList);
+    searchScroll.setViewportView(searchResultList);
 
     searchField.setEnabled(false);
 
     searchBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-search-3.png"))); // NOI18N
-    searchBtn.setToolTipText("Search on imdb");
+    searchBtn.setToolTipText(bundle.getString("searchOnImdb")); // NOI18N
     searchBtn.setEnabled(false);
     searchBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
@@ -394,44 +395,44 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     resultLbl.setText(bundle.getString("searchResListTitle")); // NOI18N
 
-    GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
-    jPanel1Layout.setHorizontalGroup(
-      jPanel1Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+    GroupLayout searchPnlLayout = new GroupLayout(searchPnl);
+    searchPnl.setLayout(searchPnlLayout);
+    searchPnlLayout.setHorizontalGroup(
+      searchPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(Alignment.TRAILING, searchPnlLayout.createSequentialGroup()
         .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-      .addGroup(jPanel1Layout.createSequentialGroup()
+      .addGroup(searchPnlLayout.createSequentialGroup()
         .addComponent(resultLbl)
         .addContainerGap(501, Short.MAX_VALUE))
-      .addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
+      .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 599, Short.MAX_VALUE)
     );
-    jPanel1Layout.setVerticalGroup(
-      jPanel1Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel1Layout.createSequentialGroup()
-        .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
+    searchPnlLayout.setVerticalGroup(
+      searchPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(searchPnlLayout.createSequentialGroup()
+        .addGroup(searchPnlLayout.createParallelGroup(Alignment.LEADING)
           .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
           .addComponent(searchField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(resultLbl)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
+        .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
     );
 
-    jSplitPane2.setLeftComponent(jPanel1);
+    searchSp.setLeftComponent(searchPnl);
 
-    jSplitPane1.setRightComponent(jSplitPane2);
+    centerSp.setRightComponent(searchSp);
 
     GroupLayout centerPnlLayout = new GroupLayout(centerPnl);
     centerPnl.setLayout(centerPnlLayout);
     centerPnlLayout.setHorizontalGroup(
       centerPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
+      .addComponent(centerSp, GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
     );
     centerPnlLayout.setVerticalGroup(
       centerPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(jSplitPane1, GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
+      .addComponent(centerSp, GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE)
     );
 
     getContentPane().add(centerPnl, BorderLayout.CENTER);
@@ -440,7 +441,7 @@ public class MovieRenamer extends javax.swing.JFrame {
     btmTb.setRollover(true);
 
     renameBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png"))); // NOI18N
-    renameBtn.setText("Rename");
+    renameBtn.setText(bundle.getString("rename")); // NOI18N
     renameBtn.setEnabled(false);
     renameBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
     renameBtn.addActionListener(new ActionListener() {
@@ -453,17 +454,20 @@ public class MovieRenamer extends javax.swing.JFrame {
     renamedField.setEnabled(false);
     btmTb.add(renamedField);
 
-    thumbChk.setText("Thumb");
+    thumbChk.setText(bundle.getString("thumb")); // NOI18N
+    thumbChk.setToolTipText(bundle.getString("downThumb")); // NOI18N
     thumbChk.setFocusable(false);
     thumbChk.setVerticalTextPosition(SwingConstants.BOTTOM);
     btmTb.add(thumbChk);
 
     fanartChk.setText("Fanart");
+    fanartChk.setToolTipText(bundle.getString("downFanart")); // NOI18N
     fanartChk.setFocusable(false);
     fanartChk.setVerticalTextPosition(SwingConstants.BOTTOM);
     btmTb.add(fanartChk);
 
     nfoChk.setText("Xbmc NFO");
+    nfoChk.setToolTipText(bundle.getString("genNFO")); // NOI18N
     nfoChk.setFocusable(false);
     nfoChk.setVerticalTextPosition(SwingConstants.BOTTOM);
     btmTb.add(nfoChk);
@@ -501,11 +505,32 @@ public class MovieRenamer extends javax.swing.JFrame {
 
         @Override
         public void windowClosed(WindowEvent e) {
+          Settings oldSetting = setting;
           setting = set.getSetting();
+          
           if (setting.interfaceChanged) {
             setting.interfaceChanged = false;
             loadInterface();
+            if(currentMovie == null) return;
+            if(setting.movieInfoPanel){
+              TheMovieDbInfoWorker tmdbiw = null;
+              ActorWorker actor = null;
+              
+              if(!oldSetting.actorImage && setting.actorImage){
+                actor = new ActorWorker(currentMovie.getPersons(MoviePerson.ACTOR), movieImagePnl, setting);
+                actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
+              }
+              
+              if(setting.thumb || setting.fanart){
+                tmdbiw = new TheMovieDbInfoWorker(currentMovie, setting);
+                tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
+              }
+              loadDial(false, true);
+              if(actor != null) actor.execute();
+              if(tmdbiw != null) tmdbiw.execute();
+            }
           }
+          if(currentMovie != null) renamedField.setText(currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase));
         }
 
         @Override
@@ -619,6 +644,7 @@ public class MovieRenamer extends javax.swing.JFrame {
           }
           // Display thumbs in result list
           if (setting.displayThumbResult) list.setCellRenderer(new IconListRenderer<ImdbSearchResult>(objects));
+          else list.setCellRenderer(new DefaultListCellRenderer());
 
           list.setModel(model);
           if (objects.isEmpty()){
@@ -689,7 +715,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         }
         if (progressMonitor != null) progressMonitor.close();
         progressMonitor = null;
-        //if (!model.isEmpty()) list.setSelectedIndex(0);// Start ImdbInfoWorker
+
       } else if (progressMonitor != null)
         progressMonitor.setProgress(worker.getProgress());
     }
@@ -713,7 +739,7 @@ public class MovieRenamer extends javax.swing.JFrame {
           if (obj instanceof MovieInfo) {
             currentMovie.setMovieInfo((MovieInfo) obj);
 
-            renamedField.setText(currentMovie.getRenamedTitle(setting.movieFilenameFormat));
+            renamedField.setText(currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase));
             renameBtn.setEnabled(true);
             renamedField.setEnabled(true);
             movieImagePnl.addMovie(currentMovie);
@@ -731,8 +757,8 @@ public class MovieRenamer extends javax.swing.JFrame {
             thumb.addPropertyChangeListener(new MovieImageListener(thumb, THUMBWORKER));
             fanart.addPropertyChangeListener(new MovieImageListener(fanart, FANARTWORKER));
 
-            thumb.execute();
-            fanart.execute();
+            if(currentMovie.getThumbs().size() > 0 && setting.thumb) thumb.execute();
+            if(currentMovie.getFanarts().size() > 0 && setting.fanart) fanart.execute();
           }
         } catch (InterruptedException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
@@ -764,16 +790,13 @@ public class MovieRenamer extends javax.swing.JFrame {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JToolBar btmTb;
   private JPanel centerPnl;
+  private JSplitPane centerSp;
   private JButton exitBtn;
   private JCheckBox fanartChk;
   private JFileChooser fileChooser;
   private JMenuItem infoPopMenuItem;
-  private JPanel jPanel1;
-  private JScrollPane jScrollPane1;
-  private JScrollPane jScrollPane2;
-  private JSplitPane jSplitPane1;
-  private JSplitPane jSplitPane2;
   private JList movieList;
+  private JScrollPane movieScroll;
   private JCheckBox nfoChk;
   private JButton openBtn;
   private JPopupMenu popMenu;
@@ -782,7 +805,10 @@ public class MovieRenamer extends javax.swing.JFrame {
   private JLabel resultLbl;
   private JButton searchBtn;
   private JTextField searchField;
+  private JPanel searchPnl;
   private JList searchResultList;
+  private JScrollPane searchScroll;
+  private JSplitPane searchSp;
   private Separator separator;
   private JButton settingBtn;
   private JCheckBox thumbChk;

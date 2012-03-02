@@ -114,6 +114,7 @@ public class Settings {
   public String movieFilenameFormat = "<t> (<y>)";
   public int thumbExt = 0;
   public int fanartExt = 1;
+  public int renameCase = 1;
   
   // Boolean
   public boolean useExtensionFilter = true;
@@ -173,6 +174,7 @@ public class Settings {
       out.write("    <movieFilenameFormat>" + movieFilenameFormat.replaceAll("<", "\\$_").replaceAll(">", "_\\$") + "</movieFilenameFormat>" + endl);
       out.write("    <thumbExt>" + thumbExt + "</thumbExt>" + endl);
       out.write("    <fanartExt>" + fanartExt + "</fanartExt>" + endl);
+      out.write("    <renameCase>" + renameCase + "</renameCase>" + endl);
 
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);

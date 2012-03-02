@@ -50,6 +50,10 @@ public class Utils {
   public static final String ENDLINE = "\n";
   public static final String EMPTY = "";
   public static final String DOT = ".";
+  public static final int FIRSTLO = 0;
+  public static final int FIRSTLA = 1;
+  public static final int UPPER = 2;
+  public static final int LOWER = 3;
   public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
   public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
@@ -91,7 +95,7 @@ public class Utils {
   public static boolean checkFile(String fileName, Settings setting) {
     if (!fileName.contains(DOT))
       return false;
-    if(!setting.useExtensionFilter) return true;
+    if (!setting.useExtensionFilter) return true;
     String ext = fileName.substring(fileName.lastIndexOf(DOT) + 1);
     for (int i = 0; i < setting.extensions.length; i++) {
       if (ext.equals(setting.extensions[i]))
@@ -128,7 +132,9 @@ public class Utils {
 
   public static String arrayPersonnToString(ArrayList<MoviePerson> array, String separator) {
     String[] arr = new String[array.size()];
-    for (int i=0;i<array.size();i++) arr[i] = array.get(i).toString();
+    for (int i = 0; i < array.size(); i++) {
+      arr[i] = array.get(i).toString();
+    }
     return arrayToString(arr, separator);
   }
 
@@ -207,13 +213,13 @@ public class Utils {
     byte[] thanksToNetscape = null;
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     InputStream in = cls.getResourceAsStream(fileName);
-    
+
     try {
       int length = in.available();
       thanksToNetscape = new byte[length];
       in.read(thanksToNetscape);
       image = toolkit.createImage(thanksToNetscape);
-      
+
     } catch (Exception ex) {
       Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
     } finally {
@@ -230,9 +236,8 @@ public class Utils {
     boolean del = true;
     for (File fils : racine.listFiles()) {
       if (fils.isDirectory())
-        if(!deleteDirectory(fils)) del = false;
-      else
-        if(!fils.delete()) del = false;
+        if (!deleteDirectory(fils)) del = false;
+        else if (!fils.delete()) del = false;
     }
     return del;
   }
@@ -272,34 +277,33 @@ public class Utils {
   }
 
   /*private static void downloadFile(String url, String fileName) {
-    InputStream is = null;
-    try {
-      URL uri = new URL(url);
-      is = uri.openStream();
-      File f = new File(fileName);
-      if (!f.exists()) {
-        File d = new File(f.getParent());
-        if (!d.exists())
-          d.mkdirs();
-        f.createNewFile();
-      }
-      OutputStream out = new FileOutputStream(f);
-      byte buf[] = new byte[1024];
-      int len;
-      while ((len = is.read(buf)) > 0)
-        out.write(buf, 0, len);
-      out.close();
-    } catch (IOException ex) {
-      JOptionPane.showMessageDialog(null, "Download Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
-    } finally {
-      try {
-        is.close();
-      } catch (IOException ex) {
-        JOptionPane.showMessageDialog(null, "Close Downloaded File Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    }
+  InputStream is = null;
+  try {
+  URL uri = new URL(url);
+  is = uri.openStream();
+  File f = new File(fileName);
+  if (!f.exists()) {
+  File d = new File(f.getParent());
+  if (!d.exists())
+  d.mkdirs();
+  f.createNewFile();
+  }
+  OutputStream out = new FileOutputStream(f);
+  byte buf[] = new byte[1024];
+  int len;
+  while ((len = is.read(buf)) > 0)
+  out.write(buf, 0, len);
+  out.close();
+  } catch (IOException ex) {
+  JOptionPane.showMessageDialog(null, "Download Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
+  } finally {
+  try {
+  is.close();
+  } catch (IOException ex) {
+  JOptionPane.showMessageDialog(null, "Close Downloaded File Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
+  }
+  }
   }*/
-
   public static boolean restartApplication(Class<?> classInJarFile) {
     String javaBin = System.getProperty("java.home") + "/bin/java";
     File jarFile;
@@ -335,6 +339,28 @@ public class Utils {
       else if (c >= 'A' && c <= 'Z')
         c -= 13;
       res.append(c);
+    }
+    return res.toString();
+  }
+
+  public static String capitalizedLetter(String str, boolean onlyFirst) {
+    StringBuilder res = new StringBuilder();
+    char ch, prevCh;
+    boolean toUpper = true;
+    prevCh = '.';
+    str = str.toLowerCase();
+    for (int i = 0; i < str.length(); i++) {
+      ch = str.charAt(i);
+      if (toUpper && Character.isLetter(ch))
+        if (!Character.isLetter(prevCh) || (prevCh == 'i' && ch == 'i')) {
+          res.append(Character.toUpperCase(ch));
+          if (onlyFirst) toUpper = false;
+        } else
+          res.append(ch);
+      else
+        res.append(ch);
+
+      prevCh = ch;
     }
     return res.toString();
   }

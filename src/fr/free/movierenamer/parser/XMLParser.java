@@ -180,6 +180,8 @@ public class XMLParser<T> {
                 config.thumbExt = Integer.parseInt(buffer.toString());
               if (name.equalsIgnoreCase("fanartExt"))
                 config.fanartExt = Integer.parseInt(buffer.toString());
+              if(name.equalsIgnoreCase("renameCase"))
+                config.renameCase = Integer.parseInt(buffer.toString());
             } catch (NumberFormatException ex) {
               config.getLogger().log(Level.SEVERE, ex.getMessage());
               config.xmlError = true;

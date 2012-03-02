@@ -60,7 +60,7 @@ public class ImdbParser {
   private static final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
   
   // Movie Page Combined Pattern
-  private static final String IMDBMOVIETITLE_1 = "<title>.* \\(.*\\d\\d\\d\\d\\.*\\)</title>";
+  private static final String IMDBMOVIETITLE_1 = "<title>.* \\(.*\\d\\d\\d\\d\\.*\\).*</title>";
   private static final String IMDBMOVIEORIGTITLE = "<span class=\"title-extra\">.*</i></span>";
   private static final String IMDBMOVIEORUNTIME = "<h5>(Runtime|Dur&#xE9;e):</h5><div class=\".*\">\\d+ min";
   private static final String IMDBMOVIERATING = "<b>.[\\.,]./10</b>";
@@ -207,7 +207,7 @@ public class ImdbParser {
   }
 
   /**
-   * Get movie information in imdb movie page
+   * Get movie information in imdb movie page combined
    * @param moviePage Imdb movie page
    * @return Movie information
    */
@@ -231,7 +231,7 @@ public class ImdbParser {
           year = searchMatcher.group();
           movieInfo.setYear(year);
         }
-      }
+      }else setting.getLogger().log(Level.SEVERE, "No title found in imdb page");
 
       //Original Title
       pattern = Pattern.compile(IMDBMOVIEORIGTITLE);

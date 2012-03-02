@@ -24,8 +24,15 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
+import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
 import fr.free.movierenamer.utils.Loading;
 
@@ -56,10 +63,10 @@ public class LoadingDialog extends JDialog {
       progressBar.setSize(new Dimension(80, 35));
       progress.put(loadingWorker.get(i).getId(), progressBar);
       id.add(loadingWorker.get(i).getId());
-      jPanel2.add(progress.get(loadingWorker.get(i).getId()));
+      seddPnl.add(progress.get(loadingWorker.get(i).getId()));
     }
-    jPanel2.validate();
-    jPanel2.repaint();
+    seddPnl.validate();
+    seddPnl.repaint();
     pack();
     setModal(true);
     setLocationRelativeTo(parent);
@@ -98,8 +105,8 @@ public class LoadingDialog extends JDialog {
   private void initComponents() {
 
     jPanel1 = new javax.swing.JPanel();
-    jLabel1 = new javax.swing.JLabel();
-    jPanel2 = new javax.swing.JPanel();
+    loadingLbl = new javax.swing.JLabel();
+    seddPnl = new javax.swing.JPanel();
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -112,12 +119,13 @@ public class LoadingDialog extends JDialog {
       .addGap(0, 100, Short.MAX_VALUE)
     );
 
-    setTitle("Loading");
+    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
+    setTitle(bundle.getString("loading")); // NOI18N
     setResizable(false);
 
-    jLabel1.setText("Loading please wait...");
+    loadingLbl.setText(bundle.getString("loadingWait")); // NOI18N
 
-    jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
+    seddPnl.setLayout(new javax.swing.BoxLayout(seddPnl, javax.swing.BoxLayout.PAGE_AXIS));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -126,25 +134,25 @@ public class LoadingDialog extends JDialog {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
-          .addComponent(jLabel1))
+          .addComponent(seddPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
+          .addComponent(loadingLbl))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jLabel1)
+        .addComponent(loadingLbl)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+        .addComponent(seddPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
         .addContainerGap())
     );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JLabel jLabel1;
   private javax.swing.JPanel jPanel1;
-  private javax.swing.JPanel jPanel2;
+  private javax.swing.JLabel loadingLbl;
+  private javax.swing.JPanel seddPnl;
   // End of variables declaration//GEN-END:variables
 }

@@ -237,9 +237,10 @@ public class Movie {
   /**
    * Get renamed movie title
    * @param regExp Expression to rename movie title with
+   * @param letter 
    * @return Movie title renamed
    */
-  public String getRenamedTitle(String regExp) {
+  public String getRenamedTitle(String regExp, int letter) {
     String runtime = "";
     if (getRuntime() != -1) runtime += getRuntime();
     String[][] replace = new String[][]{{"<t>", getTitle()}, {"<tt>", getImdbId()}, {"<y>", getYear()},
@@ -252,7 +253,25 @@ public class Movie {
     String fileName = getFile().getName();
     String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
 
-    return regExp + "." + ext;
+    String res = "";
+    switch(letter){
+      case Utils.UPPER:
+        res = regExp.toUpperCase() + "." + ext.toUpperCase();
+        break;
+      case Utils.LOWER:
+        res = regExp.toLowerCase()+ "." + ext.toLowerCase();
+        break;
+      case Utils.FIRSTLO:
+        res = Utils.capitalizedLetter(regExp, true) + "." + ext.toLowerCase();
+        break;
+      case Utils.FIRSTLA:
+        res = Utils.capitalizedLetter(regExp, false) + "." + ext.toLowerCase();
+        break;
+      default:
+        res = regExp + "." + ext.toLowerCase();
+        break;
+    }
+    return res;
   }
 
   /**

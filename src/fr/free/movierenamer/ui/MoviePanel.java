@@ -24,6 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -70,6 +72,7 @@ public class MoviePanel extends javax.swing.JPanel {
   private final DefaultListModel fanartModel = new DefaultListModel();
   private final DefaultListModel thumbnailModel = new DefaultListModel();
   private final DefaultListModel actorModel = new DefaultListModel();
+  private Dimension thumbDim = new Dimension(140, 197);
   public Dimension thumbListDim = new Dimension(60, 90);
   public Dimension fanartListDim = new Dimension(200, 90);
   public Dimension actorListDim = new Dimension(60, 90);
@@ -112,7 +115,7 @@ public class MoviePanel extends javax.swing.JPanel {
               img = MoviePanel.this.setting.cache.getImage(url, Cache.thumb);
             }
             if (img != null)
-              jLabel7.setIcon(new ImageIcon(img.getScaledInstance(jLabel7.getWidth(), jLabel7.getHeight(), Image.SCALE_DEFAULT)));
+              thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
@@ -140,8 +143,8 @@ public class MoviePanel extends javax.swing.JPanel {
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
-          jPanel3.validate();
-          jPanel3.repaint();
+          detailsPnl.validate();
+          detailsPnl.repaint();
         }
       }
     };
@@ -153,14 +156,14 @@ public class MoviePanel extends javax.swing.JPanel {
     
     thumbsScrollPane.setVisible(setting.thumb);
     fanartsScrollPane.setVisible(setting.fanart);
-    jPanel2.setVisible(setting.thumb || setting.fanart);
+    imagePnl.setVisible(setting.thumb || setting.fanart);
     img = null;
   }
 
   public void setDisplay(Settings setting){
     thumbsScrollPane.setVisible(setting.thumb);
     fanartsScrollPane.setVisible(setting.fanart);
-    jPanel2.setVisible(setting.thumb || setting.fanart);
+    imagePnl.setVisible(setting.thumb || setting.fanart);
   }
 
   public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg) {//A refaire (http request in EDT)
@@ -179,7 +182,7 @@ public class MoviePanel extends javax.swing.JPanel {
               img = setting.cache.getImage(url, Cache.thumb);
             }
             if (img != null)
-              jLabel7.setIcon(new ImageIcon(img.getScaledInstance(jLabel7.getWidth(), jLabel7.getHeight(), Image.SCALE_DEFAULT)));
+              thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
@@ -209,8 +212,8 @@ public class MoviePanel extends javax.swing.JPanel {
           } catch (IOException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
-          jPanel3.validate();
-          jPanel3.repaint();
+          detailsPnl.validate();
+          detailsPnl.repaint();
         }
 
         if (fanart != null)
@@ -248,10 +251,11 @@ public class MoviePanel extends javax.swing.JPanel {
         genreField.setText("");
         yearField.setText("");
         runtimeField.setText("");
-        jTextArea1.setText("");
+        synopsisArea.setText("");
         origTitleField.setText("");
         countryField.setText("");
-        jLabel7.setIcon(null);
+        titleLbl.setText("");
+        thumbLbl.setIcon(null);
         star.setIcon(STAR_EMPTY);
         star1.setIcon(STAR_EMPTY);
         star2.setIcon(STAR_EMPTY);
@@ -269,10 +273,11 @@ public class MoviePanel extends javax.swing.JPanel {
 
       @Override
       public void run() {
+        titleLbl.setText(movie.getTitle());
         genreField.setText(movie.getGenresString());
         yearField.setText(movie.getYear());
         runtimeField.setText(movie.getRuntime() + " min");
-        jTextArea1.setText(movie.getSynopsis());
+        synopsisArea.setText(movie.getSynopsis());
         origTitleField.setText(movie.getOrigTitle());
         countryField.setText(movie.getCountriesString());
         setRate(Double.parseDouble(movie.getRating()));
@@ -347,12 +352,12 @@ public class MoviePanel extends javax.swing.JPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jPanel2 = new JPanel();
+    imagePnl = new JPanel();
     fanartsScrollPane = new JScrollPane();
     thumbsScrollPane = new JScrollPane();
-    jPanel1 = new JPanel();
+    InfoPnl = new JPanel();
     movieTabbedPane = new JTabbedPane();
-    jPanel3 = new JPanel(){
+    detailsPnl = new JPanel(){
       @Override
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -380,28 +385,30 @@ public class MoviePanel extends javax.swing.JPanel {
       }
     }
     ;
-    jScrollPane2 = new JScrollPane();
-    jTextArea1 = new JTextArea();
+    synopsScroll = new JScrollPane();
+    synopsisArea = new JTextArea();
     genreField = new JTextField();
     yearField = new JTextField();
     runtimeField = new JTextField();
     jTextField4 = new JTextField();
     origTitleField = new JTextField();
     countryField = new JTextField();
-    jPanel4 = new JPanel();
-    jScrollPane3 = new JScrollPane();
+    actorPnl = new JPanel();
+    actorScroll = new JScrollPane();
     actorList = new JList();
-    jLabel7 = new JLabel();
+    thumbLbl = new JLabel();
     star4 = new JLabel();
     star3 = new JLabel();
     star2 = new JLabel();
     star1 = new JLabel();
     star = new JLabel();
+    titleLbl = new JLabel();
 
-    setMinimumSize(new Dimension(562, 358));
+    setMinimumSize(new Dimension(10, 380));
+    setPreferredSize(new Dimension(562, 400));
     setLayout(new BorderLayout());
 
-    jPanel2.setPreferredSize(new Dimension(562, 125));
+    imagePnl.setPreferredSize(new Dimension(562, 125));
 
     fanartsScrollPane.setBorder(BorderFactory.createTitledBorder("Fanarts"));
 
@@ -411,8 +418,8 @@ public class MoviePanel extends javax.swing.JPanel {
     fanartList.setMinimumSize(new Dimension(0, 110));
     fanartList.setVisibleRowCount(1);
     fanartsScrollPane.setViewportView(fanartList);
-
-    thumbsScrollPane.setBorder(BorderFactory.createTitledBorder("Thumbnails"));
+    ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+    thumbsScrollPane.setBorder(BorderFactory.createTitledBorder(bundle.getString("thumbnails"))); // NOI18N
     thumbsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
     thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -420,33 +427,35 @@ public class MoviePanel extends javax.swing.JPanel {
     thumbnailsList.setVisibleRowCount(1);
     thumbsScrollPane.setViewportView(thumbnailsList);
 
-    GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
-    jPanel2.setLayout(jPanel2Layout);
-    jPanel2Layout.setHorizontalGroup(
-      jPanel2Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel2Layout.createSequentialGroup()
+    GroupLayout imagePnlLayout = new GroupLayout(imagePnl);
+    imagePnl.setLayout(imagePnlLayout);
+    imagePnlLayout.setHorizontalGroup(
+      imagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(imagePnlLayout.createSequentialGroup()
         .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
     );
-    jPanel2Layout.setVerticalGroup(
-      jPanel2Layout.createParallelGroup(Alignment.LEADING)
+    imagePnlLayout.setVerticalGroup(
+      imagePnlLayout.createParallelGroup(Alignment.LEADING)
       .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
       .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
     );
 
-    add(jPanel2, BorderLayout.PAGE_END);
+    add(imagePnl, BorderLayout.PAGE_END);
 
-    jPanel1.setPreferredSize(new Dimension(562, 350));
+    InfoPnl.setPreferredSize(new Dimension(562, 300));
 
-    jTextArea1.setColumns(20);
-    jTextArea1.setEditable(false);
-    jTextArea1.setLineWrap(true);
-    jTextArea1.setRows(5);
-    jTextArea1.setWrapStyleWord(true);
-    jTextArea1.setBorder(null);
-    jTextArea1.setOpaque(false);
-    jScrollPane2.setViewportView(jTextArea1);
+    detailsPnl.setMinimumSize(new Dimension(0, 189));
+
+    synopsisArea.setColumns(20);
+    synopsisArea.setEditable(false);
+    synopsisArea.setLineWrap(true);
+    synopsisArea.setRows(5);
+    synopsisArea.setWrapStyleWord(true);
+    synopsisArea.setBorder(null);
+    synopsisArea.setOpaque(false);
+    synopsScroll.setViewportView(synopsisArea);
 
     genreField.setEditable(false);
     genreField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
@@ -466,137 +475,147 @@ public class MoviePanel extends javax.swing.JPanel {
     countryField.setEditable(false);
     countryField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
-    GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
-    jPanel3.setLayout(jPanel3Layout);
-    jPanel3Layout.setHorizontalGroup(
-      jPanel3Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+    GroupLayout detailsPnlLayout = new GroupLayout(detailsPnl);
+    detailsPnl.setLayout(detailsPnlLayout);
+    detailsPnlLayout.setHorizontalGroup(
+      detailsPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(Alignment.TRAILING, detailsPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel3Layout.createParallelGroup(Alignment.TRAILING)
-          .addComponent(jScrollPane2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
-              .addComponent(genreField, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
-              .addComponent(yearField, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
-              .addComponent(runtimeField, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))
+        .addGroup(detailsPnlLayout.createParallelGroup(Alignment.TRAILING)
+          .addComponent(synopsScroll, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+          .addGroup(detailsPnlLayout.createSequentialGroup()
+            .addGroup(detailsPnlLayout.createParallelGroup(Alignment.LEADING)
+              .addComponent(genreField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(yearField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(runtimeField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
             .addGap(37, 37, 37)
-            .addGroup(jPanel3Layout.createParallelGroup(Alignment.TRAILING)
-              .addComponent(jTextField4, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
-              .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
-              .addComponent(countryField, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))))
+            .addGroup(detailsPnlLayout.createParallelGroup(Alignment.TRAILING)
+              .addComponent(jTextField4, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(countryField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))))
         .addContainerGap())
     );
-    jPanel3Layout.setVerticalGroup(
-      jPanel3Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel3Layout.createSequentialGroup()
+    detailsPnlLayout.setVerticalGroup(
+      detailsPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(detailsPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING, false)
-          .addGroup(jPanel3Layout.createSequentialGroup()
+        .addGroup(detailsPnlLayout.createParallelGroup(Alignment.LEADING, false)
+          .addGroup(detailsPnlLayout.createSequentialGroup()
             .addComponent(genreField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
             .addComponent(yearField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-          .addGroup(jPanel3Layout.createSequentialGroup()
+          .addGroup(detailsPnlLayout.createSequentialGroup()
             .addComponent(countryField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
             .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)))
         .addGap(18, 18, 18)
-        .addGroup(jPanel3Layout.createParallelGroup(Alignment.BASELINE)
+        .addGroup(detailsPnlLayout.createParallelGroup(Alignment.BASELINE)
           .addComponent(jTextField4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
           .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-
-    jPanel3.setBorder(new EmptyBorder(20, 20, 20, 20));
-
-    movieTabbedPane.addTab("Details", jPanel3);
-
-    actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    jScrollPane3.setViewportView(actorList);
-
-    GroupLayout jPanel4Layout = new GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-      jPanel4Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jScrollPane3, GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+        .addComponent(synopsScroll)
         .addContainerGap())
     );
-    jPanel4Layout.setVerticalGroup(
-      jPanel4Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
+
+    detailsPnl.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+    movieTabbedPane.addTab(bundle.getString("details"), detailsPnl); // NOI18N
+
+    actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    actorScroll.setViewportView(actorList);
+
+    GroupLayout actorPnlLayout = new GroupLayout(actorPnl);
+    actorPnl.setLayout(actorPnlLayout);
+    actorPnlLayout.setHorizontalGroup(
+      actorPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(actorPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jScrollPane3, GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
-        .addGap(30, 30, 30))
+        .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+    actorPnlLayout.setVerticalGroup(
+      actorPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(actorPnlLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+        .addContainerGap())
     );
 
-    movieTabbedPane.addTab("Actor", jPanel4);
+    movieTabbedPane.addTab(bundle.getString("actor"), actorPnl); // NOI18N
 
 
 
 
 
 
-    jLabel7.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+    thumbLbl.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
     star4.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
     star3.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
     star2.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
     star1.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
     star.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
-    GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
-    jPanel1Layout.setHorizontalGroup(
-      jPanel1Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel1Layout.createSequentialGroup()
-        .addGap(52, 52, 52)
-        .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
-          .addGroup(jPanel1Layout.createSequentialGroup()
-            .addComponent(star)
-            .addComponent(star1)
-            .addComponent(star2)
-            .addComponent(star3)
-            .addComponent(star4))
-          .addComponent(jLabel7, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
-    );
-    jPanel1Layout.setVerticalGroup(
-      jPanel1Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel1Layout.createSequentialGroup()
+    titleLbl.setFont(new Font("Ubuntu", 1, 14));
+    titleLbl.setText(" ");
+
+    GroupLayout InfoPnlLayout = new GroupLayout(InfoPnl);
+    InfoPnl.setLayout(InfoPnlLayout);
+    InfoPnlLayout.setHorizontalGroup(
+      InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(InfoPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(star)
-          .addComponent(star1)
-          .addComponent(star2)
-          .addComponent(star3)
-          .addComponent(star4))
+        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+          .addGroup(InfoPnlLayout.createSequentialGroup()
+            .addComponent(titleLbl, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
+            .addContainerGap())
+          .addGroup(InfoPnlLayout.createSequentialGroup()
+            .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING, false)
+              .addGroup(InfoPnlLayout.createSequentialGroup()
+                .addComponent(star)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(star1)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(star2)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(star3)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(star4))
+              .addComponent(thumbLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(20, 20, 20)
+            .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE))))
+    );
+    InfoPnlLayout.setVerticalGroup(
+      InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(InfoPnlLayout.createSequentialGroup()
+        .addComponent(titleLbl, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jLabel7, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE)
-        .addGap(50, 50, 50))
-      .addGroup(jPanel1Layout.createSequentialGroup()
-        .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE)
+        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+          .addGroup(InfoPnlLayout.createSequentialGroup()
+            .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+              .addComponent(star)
+              .addComponent(star1)
+              .addComponent(star2)
+              .addComponent(star3)
+              .addComponent(star4))
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE))
+          .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         .addContainerGap())
     );
 
-    add(jPanel1, BorderLayout.CENTER);
+    add(InfoPnl, BorderLayout.CENTER);
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private JPanel InfoPnl;
   private JList actorList;
+  private JPanel actorPnl;
+  private JScrollPane actorScroll;
   private JTextField countryField;
+  private JPanel detailsPnl;
   private final JList fanartList = new JList();
   private JScrollPane fanartsScrollPane;
   private JTextField genreField;
-  private JLabel jLabel7;
-  private JPanel jPanel1;
-  private JPanel jPanel2;
-  private JPanel jPanel3;
-  private JPanel jPanel4;
-  private JScrollPane jScrollPane2;
-  private JScrollPane jScrollPane3;
-  private JTextArea jTextArea1;
+  private JPanel imagePnl;
   private JTextField jTextField4;
   private JTabbedPane movieTabbedPane;
   private JTextField origTitleField;
@@ -606,15 +625,20 @@ public class MoviePanel extends javax.swing.JPanel {
   private JLabel star2;
   private JLabel star3;
   private JLabel star4;
+  private JScrollPane synopsScroll;
+  private JTextArea synopsisArea;
+  private JLabel thumbLbl;
   private final JList thumbnailsList = new JList(){
     // This method is called as the cursor moves within the list.
     public String getToolTipText(MouseEvent evt) {
       int index = locationToIndex(evt.getPoint());
+      if(index == -1) return null;
       ImageIcon item = (ImageIcon) getModel().getElementAt(index);
       return item.getDescription();
     }
   };
   private JScrollPane thumbsScrollPane;
+  private JLabel titleLbl;
   private JTextField yearField;
   // End of variables declaration//GEN-END:variables
 }
