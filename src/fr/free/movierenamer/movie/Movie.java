@@ -88,6 +88,14 @@ public class Movie {
   }
 
   /**
+   * Get imdb thumb
+   * @return String 
+   */
+  public String getImdbThumb() {
+    return movieinfo.getImdbThumb();
+  }
+
+  /**
    * Get countries string
    * @return String of countries separated by pipe
    */
@@ -296,6 +304,22 @@ public class Movie {
    */
   public void addFanart(MovieImage fanart) {
     fanarts.add(fanart);
+  }
+
+  /**
+   * Set movie file
+   * @param file Movie file to set
+   */
+  public void setFile(File file) {
+    movieFile.setFile(file);
+  }
+
+  /**
+   * Set movie renamed
+   * @param renamed Movie is renamed
+   */
+  public void setRenamed(boolean renamed) {
+    movieFile.setRenamed(renamed);
   }
 
   /**

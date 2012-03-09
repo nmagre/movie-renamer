@@ -19,7 +19,6 @@
  ******************************************************************************/
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,23 +30,28 @@ import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.movie.Movie;
-import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.res.tmdbResult;
+import java.awt.Component;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  *
  * @author duffy
  */
-public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
+public class TheMovieDbInfoWorker extends SwingWorker<Movie, String> {
 
   private Movie movie;
   private Settings setting;
-
-  public TheMovieDbInfoWorker(Movie movie, Settings setting) {
+  private Component parent;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  
+  public TheMovieDbInfoWorker(Movie movie, Component parent, Settings setting) {
     this.movie = movie;
     this.setting = setting;
+    this.parent = parent;
   }
 
   @Override
@@ -68,8 +72,8 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
             try {
               Thread.sleep(600);
               in = url.openStream();
-            } catch (IOException exe) {//A refaire (not in EDT)
-              JOptionPane.showMessageDialog(null, "Can't retreive Movie info\n" + "Try to refresh", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException exe) {
+              publish(bundle.getString("retImageFailed"));
               return null;
             }
           }
@@ -77,7 +81,7 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
         setting.cache.add(in, url.toString(), Cache.theMovieDBXML);
         f = setting.cache.get(url, Cache.theMovieDBXML);
       }
-      
+
       XMLParser<tmdbResult> mmp = new XMLParser<tmdbResult>(f.getAbsolutePath(), tmdbResult.class);
       try {
         tmdbResult res = mmp.parseXml();
@@ -106,16 +110,21 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, Void> {
       /*if (movie.getMovieDBId().equals(Utils.EMPTY))*/ return movie;
       //XMLParser<MovieInfo> movieinfo = new XMLParser<MovieInfo>(setting.imdbAPIUrlMovieInf + xmlUrl + movie.getMovieDBId(), MovieInfo.class);
       /*try {
-        movie.setMovieInfo(movieinfo.parseXml());
+      movie.setMovieInfo(movieinfo.parseXml());
       } catch (IOException ex) {
-        setting.getLogger().log(Level.SEVERE, "{0}\n{1}{2}", new Object[]{ex.toString(), setting.imdbAPIUrlMovieInf, movie.getMovieDBId()});
+      setting.getLogger().log(Level.SEVERE, "{0}\n{1}{2}", new Object[]{ex.toString(), setting.imdbAPIUrlMovieInf, movie.getMovieDBId()});
       } catch (InterruptedException ex) {
-        setting.getLogger().log(Level.WARNING, ex.toString());
-        return null;
+      setting.getLogger().log(Level.WARNING, ex.toString());
+      return null;
       }*/
     } catch (IOException ex) {
       Logger.getLogger(TheMovieDbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
     }
     return movie;
+  }
+
+  @Override
+  protected void process(List<String> chunks) {
+    JOptionPane.showMessageDialog(parent, chunks.get(0), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

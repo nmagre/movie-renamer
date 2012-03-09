@@ -231,6 +231,8 @@ public class XMLParser<T> {
               config.fanart = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("checkUpdate"))
               config.checkUpdate = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("showNotaMovieWarn"))
+              config.showNotaMovieWarn = buffer.toString().equals(sZero);
 
           } catch (NullPointerException ex) {
             config.getLogger().log(Level.SEVERE, ex.getMessage());
@@ -489,18 +491,6 @@ public class XMLParser<T> {
         if (name.equalsIgnoreCase("movie")) {
           renamed.setMovieFileSrc(attributes.getValue("src"));
           renamed.setMovieFileDest(attributes.getValue("dest"));
-        }
-        if (name.equalsIgnoreCase("fanart")) {
-          renamed.setFanartFileSrc(attributes.getValue("src"));
-          renamed.setFanartFileDest(attributes.getValue("dest"));
-        }
-        if (name.equalsIgnoreCase("thumb")) {
-          renamed.setThumbFileSrc(attributes.getValue("src"));
-          renamed.setThumbFileDest(attributes.getValue("dest"));
-        }
-        if (name.equalsIgnoreCase("subTitle")) {
-          renamed.setSrtFileSrc(attributes.getValue("src"));
-          renamed.setSrtFileDst(attributes.getValue("dest"));
         }
         if (name.equalsIgnoreCase("date")) renamed.setDate(buffer.toString());
       }

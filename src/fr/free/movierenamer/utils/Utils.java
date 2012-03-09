@@ -32,10 +32,20 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.media.ConfigureCompleteEvent;
+import javax.media.ControllerEvent;
+import javax.media.ControllerListener;
+import javax.media.Manager;
+import javax.media.MediaLocator;
+import javax.media.NoProcessorException;
+import javax.media.Processor;
+import javax.media.control.TrackControl;
+import javax.media.format.VideoFormat;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -54,6 +64,7 @@ public class Utils {
   public static final int FIRSTLA = 1;
   public static final int UPPER = 2;
   public static final int LOWER = 3;
+  public static final Icon MOVIERENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.gif", Utils.class));
   public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
   public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
@@ -72,6 +83,35 @@ public class Utils {
     if (OS == null)
       OS = System.getProperty("os.name");
     return OS;
+  }
+
+  public static VideoFormat getFormat(MediaLocator locator) throws NoProcessorException, IOException {
+    final Processor processor = Manager.createProcessor(locator);
+    processor.configure();
+    VideoFormat format;
+    final List fmts = new ArrayList();
+    processor.addControllerListener(new ControllerListener() {
+
+      @Override
+      public void controllerUpdate(ControllerEvent evt) {
+        if (evt instanceof ConfigureCompleteEvent) {
+          for (TrackControl o : processor.getTrackControls()) {
+            fmts.add(o.getFormat());
+          }
+          if (fmts.isEmpty())
+            fmts.add(null);
+          processor.close();
+        }
+      }
+    });
+
+    while (fmts.isEmpty())
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException ignored) {
+      }
+    format = (VideoFormat) fmts.get(0);
+    return format;
   }
 
   public static boolean isWindows() {
@@ -98,7 +138,7 @@ public class Utils {
     if (!setting.useExtensionFilter) return true;
     String ext = fileName.substring(fileName.lastIndexOf(DOT) + 1);
     for (int i = 0; i < setting.extensions.length; i++) {
-      if (ext.equals(setting.extensions[i]))
+      if (ext.equalsIgnoreCase(setting.extensions[i]))
         return true;
     }
     return false;
@@ -192,11 +232,11 @@ public class Utils {
     return true;
   }
 
-  public static boolean createFilePath(String fileName) {//Vraiment nimp (A refaire)
+  public static boolean createFilePath(String fileName, boolean dir) {
     boolean ret = true;
     File f = new File(fileName);
     if (!f.exists())
-      if (!f.getName().contains("."))
+      if (dir)
         ret = f.mkdirs();
       else {
         File d = new File(f.getParent());

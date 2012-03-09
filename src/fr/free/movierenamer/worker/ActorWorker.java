@@ -53,7 +53,7 @@ public class ActorWorker extends SwingWorker<Void, Void> {
       Image image = null;
       URL url = null;
       StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
-      if (!actors.get(i).getThumb().equals(Utils.EMPTY) && setting.actorImage) {
+      if (!actors.get(i).getThumb().equals(Utils.EMPTY) && setting.actorImage && setting.movieInfoPanel) {
         try {
           url = new URL(actors.get(i).getThumb().replace("SY214_SX314", "SY60_SX90").replace(".png", ".jpg"));
           image = setting.cache.getImage(url, Cache.actor);

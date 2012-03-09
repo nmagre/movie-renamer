@@ -59,6 +59,14 @@ public class MovieFile implements IIconList {
     return file;
   }
 
+  public void setFile(File file){
+    this.file = file;
+  }
+
+  public void setRenamed(boolean renamed){
+    this.renamed = renamed;
+  }
+
   public boolean isRenamed(){
     return renamed;
   }
@@ -69,7 +77,7 @@ public class MovieFile implements IIconList {
 
   @Override
   public Icon getIcon() {
-    if(renamed) return new ImageIcon(Utils.getImageFromJAR("/image/star-empty.png", getClass()));
+    if(renamed) return Utils.MOVIERENAMEDICON;
     if(warning) return Utils.WARNINGICON;
     return Utils.MOVIEICON;
   }

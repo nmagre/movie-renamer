@@ -113,6 +113,7 @@ public class DropFile implements DropTargetListener {
     }
   }
 
+  // Only on EDT
   public void setMovies(ArrayList<File> files) {
     boolean subFolders = false;
     int count = 0;
@@ -123,7 +124,7 @@ public class DropFile implements DropTargetListener {
           if (subDir != null) {
             count += subDir.length;
             if (subDir.length > 0)
-              if (!subFolders) {//A refaire (running in EDT ?)
+              if (!subFolders) {
                 int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
                 subFolders = !(n != 0);
               }

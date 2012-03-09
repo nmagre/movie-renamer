@@ -60,7 +60,8 @@ public class ImdbParser {
   private static final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
   
   // Movie Page Combined Pattern
-  private static final String IMDBMOVIETITLE_1 = "<title>.* \\(.*\\d\\d\\d\\d\\.*\\).*</title>";
+  private static final String IMDBMOVIETITLE_C = "<title>.* \\(.*\\d+.*\\).*</title>";
+  private static final String IMDBMOVIETHUMB_C = "title=\".*\" src=.http://ia.media-imdb.com/images/.*>";
   private static final String IMDBMOVIEORIGTITLE = "<span class=\"title-extra\">.*</i></span>";
   private static final String IMDBMOVIEORUNTIME = "<h5>(Runtime|Dur&#xE9;e):</h5><div class=\".*\">\\d+ min";
   private static final String IMDBMOVIERATING = "<b>.[\\.,]./10</b>";
@@ -73,8 +74,8 @@ public class ImdbParser {
   private static final String IMDBMOVIEPLOT = "<div class=.info-content.>\n.*(\n?)<a class=..*. href=./title/tt\\d+/plotsummary.";
   private static final String IMDBMOVIECAST = "<h3>((Cast)|(Ensemble))</h3>.*";
   private static final String IMDBMOVIEACTOR = "/?;\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>";
-  private static final String IMDBMOVIECOUNTRY = "<h5>((Country:)|(Pays:))</h5><div class=\".*\"><a href=\".*\">(.*)</div></div>";
-  private static final String IMDBMOVIESTUDIO = "<h5>Company:</h5><div class=..*.><a href=..*.>(.*)</a><a";
+  private static final String IMDBMOVIECOUNTRY = "<h5>((Country:)|(Pays:))</h5><div class=\"info-content\">(.*)<div class=\"info\"";
+  private static final String IMDBMOVIESTUDIO = "<h5>((Company:)|(Soci&#xE9;t&#xE9;:))</h5><div class=..*.><a href=..*.>(.*)</a><a";
 
   public ImdbParser(Settings setting){
       this.setting = setting;
@@ -192,11 +193,14 @@ public class ImdbParser {
         movieName = decodeXMLString(movieName);
 
         String imdbId = moviePage.substring(moviePage.indexOf("/tt") + 1, moviePage.indexOf("/tt") + 10);
-        pattern = Pattern.compile(IMDBMOVIETHUMB);
+        pattern = Pattern.compile(french ? IMDBMOVIETHUMB_C:IMDBMOVIETHUMB);
         Matcher thumbMatcher = pattern.matcher(moviePage);
         String thumb = null;
-        if (thumbMatcher.find())
-          thumb = thumbMatcher.group().substring(thumbMatcher.group().indexOf("img src=") + 9, thumbMatcher.group().indexOf(".jpg") + 4);
+        if (thumbMatcher.find()){
+          String thumbnail = thumbMatcher.group();
+          if(thumbnail.contains("img")) thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
+          else thumb = thumbnail.substring(thumbnail.lastIndexOf("src=")+ 5, thumbnail.lastIndexOf("\""));
+        }
         found.add(new ImdbSearchResult(movieName, imdbId, "Exact", thumb));
 
       } else setting.getLogger().log(Level.SEVERE, "imdb page unrecognized");
@@ -215,7 +219,7 @@ public class ImdbParser {
     MovieInfo movieInfo = new MovieInfo();
     try {
       //Title + Year
-      Pattern pattern = Pattern.compile(IMDBMOVIETITLE_1);
+      Pattern pattern = Pattern.compile(IMDBMOVIETITLE_C);
       Matcher searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
         String title = "";
@@ -232,6 +236,15 @@ public class ImdbParser {
           movieInfo.setYear(year);
         }
       }else setting.getLogger().log(Level.SEVERE, "No title found in imdb page");
+
+      // Thumb
+      pattern = Pattern.compile(IMDBMOVIETHUMB_C);
+      searchMatcher = pattern.matcher(moviePage);
+      if(searchMatcher.find()){
+        String imdbThumb = searchMatcher.group();
+        imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=")+ 5, imdbThumb.lastIndexOf("\""));
+        movieInfo.setImdbThumb(imdbThumb);
+      }
 
       //Original Title
       pattern = Pattern.compile(IMDBMOVIEORIGTITLE);
@@ -365,20 +378,36 @@ public class ImdbParser {
       searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
         String country = searchMatcher.group();
-        country = country.substring(country.indexOf("<a"), country.lastIndexOf("</a>"));
-        if (country.contains(" | ")) {
-          String[] countries = country.split("\\|");
-          for (int i = 0; i < countries.length; i++) {
-            country = decodeXMLString(countries[i]);
-            if (country.contains("country"))
+        if(country.contains("/country/")){
+          country = country.substring(country.indexOf("<a"), country.lastIndexOf("</a>"));
+          if (country.contains(" | ")) {
+            String[] countries = country.split("\\|");
+            for (int i = 0; i < countries.length; i++) {
+              country = decodeXMLString(countries[i]);
+              if (country.contains("country"))
+                movieInfo.addCountry(country.substring(country.indexOf(">") + 1, country.indexOf("</")));
+            }
+          } else {
+            country = decodeXMLString(country);
+            if (country.contains("</"))
               movieInfo.addCountry(country.substring(country.indexOf(">") + 1, country.indexOf("</")));
+            else
+              movieInfo.addCountry(country.substring(country.indexOf(">") + 1));
           }
-        } else {
-          country = decodeXMLString(country);
-          if (country.contains("</"))
-            movieInfo.addCountry(country.substring(country.indexOf(">") + 1, country.indexOf("</")));
-          else
-            movieInfo.addCountry(country.substring(country.indexOf(">") + 1));
+        }
+        else {
+          country = country.substring(0,country.indexOf("</div></div>"));
+          country = country.substring(country.indexOf("info-content") + 14);
+           if (country.contains(" | ")) {
+            String[] countries = country.split("\\|");
+            for (int i = 0; i < countries.length; i++) {
+              country = decodeXMLString(countries[i]);
+                movieInfo.addCountry(country);
+            }
+          } else {
+            country = decodeXMLString(country);
+            movieInfo.addCountry(country);
+          }
         }
       }
       

@@ -31,6 +31,7 @@ public class MovieInfo {
 
   private String title;
   private String imdbId;
+  private String imdbThumb;
   private String trailer;
   private String synopsis;
   private String tagline;
@@ -50,6 +51,7 @@ public class MovieInfo {
   public MovieInfo() {
     title = "";
     imdbId = "";
+    imdbThumb = "";
     trailer = "";
     synopsis = "";
     tagline = "";
@@ -73,6 +75,10 @@ public class MovieInfo {
 
   public String getImdbId() {
     return imdbId;
+  }
+
+  public String getImdbThumb() {
+    return imdbThumb;
   }
 
   public String getTrailer() {
@@ -135,11 +141,11 @@ public class MovieInfo {
     return countries;
   }
 
-  public String getDirectorsString(){
+  public String getDirectorsString() {
     return Utils.arrayPersonnToString(directors, " | ");
   }
 
-  public String getWritersString(){
+  public String getWritersString() {
     return Utils.arrayPersonnToString(writers, " | ");
   }
 
@@ -184,6 +190,10 @@ public class MovieInfo {
 
   public void setImdbId(String imdbId) {
     this.imdbId = imdbId;
+  }
+
+  public void setImdbThumb(String imdbThumb) {
+    this.imdbThumb = imdbThumb;
   }
 
   public void setTrailer(String trailer) {
@@ -260,6 +270,7 @@ public class MovieInfo {
     StringBuilder res = new StringBuilder();
     res.append(title).append(Utils.ENDLINE);
     res.append("  ImdbId : ").append(imdbId).append(Utils.ENDLINE);
+    res.append("  ImdbThumb : ").append(imdbThumb).append(Utils.ENDLINE);
     res.append("  Trailer : ").append(trailer).append(Utils.ENDLINE);
     res.append("  Synopsis : ").append(synopsis).append(Utils.ENDLINE);
     res.append("  Tagline : ").append(tagline).append(Utils.ENDLINE);

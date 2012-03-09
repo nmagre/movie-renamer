@@ -88,7 +88,7 @@ public class HttpGet {
       }
       rd.close();
       result = sb.toString();
-    } catch (Exception e) {//It is running on EDT ? (a refaire)
+    } catch (Exception e) {
       throw new Exception("HTTP Get "+ bundle.getString("error") + Utils.SPACE + ":" + e);
     }
     return result;

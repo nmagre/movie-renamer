@@ -29,16 +29,16 @@ public class Renamed {
   private String date;
   private String movieFileSrc;
   private String movieFileDest;
-  private String thumbFileSrc;
-  private String thumbFileDest;
-  private String fanartFileSrc;
-  private String fanartFileDest;
-  private String srtFileSrc;
-  private String srtFileDst;
-  private boolean newDirectory;
 
-  public Renamed(String title) {
+  public Renamed(String title){
     this.title = title;
+  }
+  
+  public Renamed(String title, String date, String movieFileSrc,String movieFileDest) {
+    this.title = title;
+    this.date = date;
+    this.movieFileSrc = movieFileSrc;
+    this.movieFileDest = movieFileDest;
   }
 
   public String getTitle() {
@@ -57,34 +57,6 @@ public class Renamed {
     return movieFileDest;
   }
 
-  public String getThumbFileSrc() {
-    return thumbFileSrc;
-  }
-
-  public String getThumbFileDest() {
-    return thumbFileDest;
-  }
-
-  public String getFanartFileSrc() {
-    return fanartFileSrc;
-  }
-
-  public String getFanartFileDest() {
-    return fanartFileDest;
-  }
-
-  public String getSrtFileSrc() {
-    return srtFileSrc;
-  }
-
-  public String getSrtFileDst() {
-    return srtFileDst;
-  }
-
-  public boolean getNewDirectory() {
-    return newDirectory;
-  }
-
   public void setTitle(String title) {
     this.title = title;
   }
@@ -99,33 +71,5 @@ public class Renamed {
 
   public void setMovieFileDest(String movieFileDest) {
     this.movieFileDest = movieFileDest;
-  }
-
-  public void setThumbFileSrc(String thumbFileSrc) {
-    this.thumbFileSrc = thumbFileSrc;
-  }
-
-  public void setThumbFileDest(String thumbFileDest) {
-    this.thumbFileDest = thumbFileDest;
-  }
-
-  public void setFanartFileSrc(String fanartFileSrc) {
-    this.fanartFileSrc = fanartFileSrc;
-  }
-
-  public void setFanartFileDest(String fanartFileDest) {
-    this.fanartFileDest = fanartFileDest;
-  }
-
-  public void setSrtFileSrc(String srtFileSrc) {
-    this.srtFileSrc = srtFileSrc;
-  }
-
-  public void setSrtFileDst(String srtFileDst) {
-    this.srtFileDst = srtFileDst;
-  }
-
-  public void setNewDirectory(boolean newDirectory) {
-    this.newDirectory = newDirectory;
   }
 }

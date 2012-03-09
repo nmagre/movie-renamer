@@ -91,17 +91,18 @@ public class Settings {
   // Saved settings
   public String locale = "";
   public String[] nameFilters = {
-    "notv","readnfo","repack","proper","nfo","extended.cut","limitededition","limited","k-sual","extended",
-    "uncut","n° [0-9][0-9][0-9]","yestv","stv","remastered","limited","x264","bluray","bd5","bd9","hddvd",
-    "hdz","wes-","edition.exclusive","unrated","walt disney","dvdrip","cinefile","hdmi","dvd5","ac3","culthd",
-    "dvd9","remux","edition.platinum","frenchhqc","proper","frenchedit","wawamania","h264","bdrip","brrip",
-    "hdteam","hddvdrip","subhd","xvid","divx","null","divx511","vorbis","=str=","www","ffm","mp3","-arrows",
-    "divx5","dvb","mpa2","blubyte","brmp","avs","filmhd","hd4u","1080p","1080i","720p","720i","720","fwd",
-    "-Liber","truefrench","dts","french","megaexclue","justme","untoucahbles","vostfr","1cd","2cd","vff",
-    " vo "," vf ","forcebleue","hd"," ma ","knob"," ws","bong","-fiction"," cam ","telesync"," ts "," tc ",
-    "ntsc"," pal ","dvd-r","dvdscr","scr","r1","r2","r3","r4","r5","wp","subforced","dvd","vcd","avchd",
-    "-arlbouffiard","-redbull"," md","-kong","-thewarrior777","-LU3UR","-DELUiSE","-SURViVAL","-vodka",
-    "-slim","-","_"
+    "notv","readnfo","repack","proper","nfo","extended.cut","limitededition","limited","k-sual",
+    "extended","uncut","n° [0-9][0-9][0-9]","yestv","stv","remastered","limited","x264","bluray",
+    "bd5","bd9","hddvd","hdz","wes-","edition.exclusive","unrated","walt disney","dvdrip","cinefile",
+    "hdmi","dvd5","ac3","culthd","dvd9","remux","edition.platinum","frenchhqc","proper","frenchedit",
+    "wawamania","h264","bdrip","brrip","hdteam","hddvdrip","subhd","xvid","divx","null","divx511",
+    "vorbis","=str=","www","ffm","mp3","-arrows","divx5","dvb","mpa2","blubyte","brmp","avs","filmhd",
+    "hd4u","1080p","1080i","720p","720i","720","-Liber","truefrench","dts","french","megaexclue","justme",
+    "untoucahbles","vostfr","1cd","2cd","vff"," vo "," vf ","forcebleue","hd"," ma ","knob"," ws","bong",
+    "-fiction"," cam ","telesync"," ts "," tc ","ntsc"," pal ","dvd-r","dvdscr","scr","r1","r2","r3","r4",
+    "r5","wp","subforced","dvd","vcd","avchd","-arlbouffiard","-redbull"," md","-kong","-thewarrior777",
+    "-LU3UR","-DELUiSE","-SURViVAL","-vodka","-slim","_","-HARIJO","-ENJOY","-PTN","-fwd","-ARTEFAC",
+    "-COGiTO","-AYMO","-GKS"
   };
   
   public String xmlVersion = "";
@@ -137,15 +138,16 @@ public class Settings {
   public boolean thumb = true;
   public boolean fanart = true;
   public boolean checkUpdate = false;
+  public boolean showNotaMovieWarn = true;
   
 
   public Settings() {
-    Utils.createFilePath(configFile);
-    Utils.createFilePath(fanartCacheDir);
-    Utils.createFilePath(thumbCacheDir);
-    Utils.createFilePath(actorCacheDir);
-    Utils.createFilePath(xmlCacheDir);
-    Utils.createFilePath(logFile);
+    Utils.createFilePath(configFile, false);
+    Utils.createFilePath(fanartCacheDir, true);
+    Utils.createFilePath(thumbCacheDir, true);
+    Utils.createFilePath(actorCacheDir, true);
+    Utils.createFilePath(xmlCacheDir, true);
+    Utils.createFilePath(logFile, false);
     try {
       FileHandler fh = new FileHandler(logFile);
       logger.addHandler(fh);
@@ -197,6 +199,7 @@ public class Settings {
       out.write("    <thumb>" + (thumb ? 0 : 1) + "</thumb>" + endl);
       out.write("    <fanart>" + (fanart ? 0 : 1) + "</fanart>" + endl);
       out.write("    <checkUpdate>" + (checkUpdate ? 0 : 1) + "</checkUpdate>" + endl);
+      out.write("    <showNotaMovieWarn>" + (showNotaMovieWarn ? 0 : 1) + "</showNotaMovieWarn>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);
