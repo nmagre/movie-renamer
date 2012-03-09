@@ -38,7 +38,7 @@
       <description>The base files</description>
       <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH"/>
       <file src="dist/@JARFILE@" targetdir="$INSTALL_PATH"/>
-      <file src="postinst.sh" targetdir="$INSTALL_PATH"/>
+      <file src="postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
       <file src="src/image/icon-32.ico" targetdir="$INSTALL_PATH" os="windows"/>
       <file src="src/image/icon-32.gif" targetdir="$INSTALL_PATH" os="unix"/>
       <executable targetfile="$INSTALL_PATH/postinst.sh" os="unix" stage="postinstall" failure="warn">

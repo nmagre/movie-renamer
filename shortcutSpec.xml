@@ -10,12 +10,11 @@
     workingDirectory="$INSTALL_PATH"
     iconFile="$INSTALL_PATH\icon-32.ico"
     initialState="normal"
-    programGroup="yes||no"
+    programGroup="yes"
     desktop="yes||no"
     applications="yes||no"
-    startMenu="no"
+    startMenu="yes||no"
+    type="Application"
     startup="no">
-
-    <createForPack name="Core"/>
   </shortcut>
 </shortcuts>
