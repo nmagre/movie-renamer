@@ -94,11 +94,11 @@ public class ImdbParser {
 
     if (searchPage) {
       setting.getLogger().log(Level.INFO, "Imdb Search page");
-      found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, "Popular"));//Popular title
+      found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire":"Popular"));//Popular title
       found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french, "Exact"));//Exact title
-      found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, "Partial"));//Partial title
+      found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel":"Partial"));//Partial title
       if (found.isEmpty() || setting.displayApproximateResult)
-        found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, "Approximate"));
+        found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif":"Approximate"));
     } else {
       setting.getLogger().log(Level.INFO, "Imdb Movie page");
       getMovie(htmlSearchRes, found);

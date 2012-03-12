@@ -21,7 +21,7 @@ package fr.free.movierenamer.movie;
 
 /**
  *
- * @author duffy
+ * @author Magré Nicolas
  */
 public class MovieImage {
 

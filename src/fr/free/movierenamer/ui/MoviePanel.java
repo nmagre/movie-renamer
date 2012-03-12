@@ -44,7 +44,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -56,13 +55,15 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EmptyBorder;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.utils.Settings;
+import java.awt.Component;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
 
 /**
  *
@@ -73,6 +74,7 @@ public class MoviePanel extends javax.swing.JPanel {
   private final DefaultListModel fanartModel = new DefaultListModel();
   private final DefaultListModel thumbnailModel = new DefaultListModel();
   private final DefaultListModel actorModel = new DefaultListModel();
+  private final ImageIcon actorDefault = new ImageIcon(getClass().getResource("/image/unknown.png"));
   private Dimension thumbDim = new Dimension(160, 200);
   public Dimension thumbListDim = new Dimension(60, 90);
   public Dimension fanartListDim = new Dimension(200, 90);
@@ -81,6 +83,7 @@ public class MoviePanel extends javax.swing.JPanel {
   private final Icon STAR_HALF = new ImageIcon(getClass().getResource("/image/star-half.png"));
   private final Icon STAR_EMPTY = new ImageIcon(getClass().getResource("/image/star-empty.png"));
   private Image img;
+  private ArrayList<actorImage> actors;
   private ArrayList<MovieImage> thumbs;
   private ArrayList<MovieImage> fanarts;
   private Settings setting;
@@ -91,6 +94,7 @@ public class MoviePanel extends javax.swing.JPanel {
   public MoviePanel(Settings setting) {
     this.setting = setting;
     initComponents();
+    actors = new ArrayList<actorImage>();
     thumbs = new ArrayList<MovieImage>();
     fanarts = new ArrayList<MovieImage>();
 
@@ -136,6 +140,23 @@ public class MoviePanel extends javax.swing.JPanel {
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     actorList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     actorList.setVisibleRowCount(-1);
+    actorList.setCellRenderer(new DefaultListCellRenderer() {
+
+      @Override
+      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+        if (index >= actors.size()) return label;
+        Icon icon = null;
+        icon = actors.get(index).getImage();
+
+        if (icon != null) label.setIcon(icon);
+        else label.setIcon(actorDefault);
+        return label;
+      }
+    });
+
 
     thumbsScrollPane.setVisible(setting.thumb);
     fanartsScrollPane.setVisible(setting.fanart);
@@ -173,8 +194,8 @@ public class MoviePanel extends javax.swing.JPanel {
         thumbs.add(mvImg);
         if (thumbnailModel.isEmpty())
           img = getImage(thumbs.get(0).getOrigUrl().replace(".png", ".jpg"), Cache.thumb);
-          if (img != null)
-            thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+        if (img != null)
+          thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
         if (thumb != null)
           thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
         if (!thumbnailModel.isEmpty())
@@ -191,7 +212,7 @@ public class MoviePanel extends javax.swing.JPanel {
       public void run() {
         fanarts.add(mvImg);
         if (fanartModel.isEmpty()) {
-            img = getImage(fanarts.get(0).getOrigUrl().replace(".png", ".jpg"), Cache.fanart);
+          img = getImage(fanarts.get(0).getOrigUrl().replace(".png", ".jpg"), Cache.fanart);
           detailsPnl.validate();
           detailsPnl.repaint();
         }
@@ -205,13 +226,14 @@ public class MoviePanel extends javax.swing.JPanel {
   }
 
   public void addActorToList(final String actor, final Image actorImg, final String desc) {
+    ImageIcon icon = null;
+    if(actorImg != null) icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
+    actors.add(new actorImage(actor, desc, icon));
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
       public void run() {
-        if (actorImg != null)
-          actorModel.addElement(new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc));
-        else actorModel.addElement(actor);
+         actorModel.addElement(actor);
       }
     });
   }
@@ -241,7 +263,7 @@ public class MoviePanel extends javax.swing.JPanel {
         star2.setIcon(STAR_EMPTY);
         star3.setIcon(STAR_EMPTY);
         star4.setIcon(STAR_EMPTY);
-
+        actors.clear();
         validate();
         repaint();
       }
@@ -311,21 +333,57 @@ public class MoviePanel extends javax.swing.JPanel {
     }
   }
 
-  public URL getSelectedThumb() {
-    return getSelectedItem(thumbs, thumbnailsList);
+  public URL getSelectedThumb(int size) {
+    return getSelectedItem(thumbs, thumbnailsList, size);
   }
 
-  public URL getSelectedFanart() {
-    return getSelectedItem(fanarts, fanartList);
+  public URL getSelectedFanart(int size) {
+    return getSelectedItem(fanarts, fanartList, size);
   }
 
-  private URL getSelectedItem(ArrayList<MovieImage> array, JList list) {
+  private URL getSelectedItem(ArrayList<MovieImage> array, JList list, int size) {
     try {
-      return new URL(array.get(list.getSelectedIndex()).getOrigUrl().replace(".png", ".jpg"));
+      switch (size) {
+        case 0:
+          return new URL(array.get(list.getSelectedIndex()).getOrigUrl().replace(".png", ".jpg"));
+        case 1:
+          return new URL(array.get(list.getSelectedIndex()).getMidUrl().replace(".png", ".jpg"));
+        case 2:
+          return new URL(array.get(list.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"));
+        default:
+          break;
+      }
+
     } catch (MalformedURLException ex) {
       Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
+  }
+
+  private class actorImage {
+
+    private String name;
+    private String desc;
+    private ImageIcon img;
+
+    public actorImage(String name, String desc, ImageIcon img) {
+      this.name = name;
+      this.desc = desc;
+      if (img == null) img = actorDefault;
+      else this.img = img;
+    }
+
+    public ImageIcon getImage() {
+      return img;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+
+    public String getName() {
+      return name;
+    }
   }
 
   /** This method is called from within the constructor to
@@ -380,7 +438,17 @@ public class MoviePanel extends javax.swing.JPanel {
     countryField = new JTextField();
     actorPnl = new JPanel();
     actorScroll = new JScrollPane();
-    actorList = new JList();
+    actorList = new JList() {
+      // This method is called as the cursor moves within the list.
+      public String getToolTipText(MouseEvent evt) {
+        // Get item index
+        int index = locationToIndex(evt.getPoint());
+        if(index == -1) return "";
+        if(index >= actors.size()) return "";
+        return actors.get(index).getDesc();
+      }
+    }
+    ;
     thumbLbl = new JLabel();
     star4 = new JLabel();
     star3 = new JLabel();
@@ -388,8 +456,6 @@ public class MoviePanel extends javax.swing.JPanel {
     star1 = new JLabel();
     star = new JLabel();
     titleLbl = new JLabel();
-    jButton1 = new JButton();
-    jButton2 = new JButton();
 
     setMinimumSize(new Dimension(10, 380));
     setPreferredSize(new Dimension(562, 400));
@@ -524,7 +590,7 @@ public class MoviePanel extends javax.swing.JPanel {
       actorPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(actorPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+        .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -545,12 +611,6 @@ public class MoviePanel extends javax.swing.JPanel {
     titleLbl.setFont(new Font("Ubuntu", 1, 14));
     titleLbl.setText(" ");
 
-    jButton1.setIcon(new ImageIcon(getClass().getResource("/image/film.png"))); // NOI18N
-    jButton1.setToolTipText("Play movie");
-
-    jButton2.setIcon(new ImageIcon(getClass().getResource("/image/film-error.png"))); // NOI18N
-    jButton2.setToolTipText("Imdb Page");
-
     GroupLayout InfoPnlLayout = new GroupLayout(InfoPnl);
     InfoPnl.setLayout(InfoPnlLayout);
     InfoPnlLayout.setHorizontalGroup(
@@ -560,10 +620,7 @@ public class MoviePanel extends javax.swing.JPanel {
         .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
           .addGroup(Alignment.TRAILING, InfoPnlLayout.createSequentialGroup()
             .addComponent(titleLbl, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-            .addPreferredGap(ComponentPlacement.UNRELATED)
-            .addComponent(jButton2, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(jButton1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
+            .addGap(84, 84, 84))
           .addGroup(InfoPnlLayout.createSequentialGroup()
             .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING, false)
               .addGroup(InfoPnlLayout.createSequentialGroup()
@@ -583,11 +640,7 @@ public class MoviePanel extends javax.swing.JPanel {
     InfoPnlLayout.setVerticalGroup(
       InfoPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(InfoPnlLayout.createSequentialGroup()
-        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
-          .addGroup(InfoPnlLayout.createParallelGroup(Alignment.BASELINE)
-            .addComponent(titleLbl, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-            .addComponent(jButton1))
-          .addComponent(jButton2))
+        .addComponent(titleLbl, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
           .addGroup(InfoPnlLayout.createSequentialGroup()
@@ -599,13 +652,12 @@ public class MoviePanel extends javax.swing.JPanel {
               .addComponent(star4))
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE))
-          .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE))
+          .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
         .addContainerGap())
     );
 
     add(InfoPnl, BorderLayout.CENTER);
-  }// </editor-fold>//GEN-END:initComponents
-  // Variables declaration - do not modify//GEN-BEGIN:variables
+  }// </editor-fold>  // Variables declaration - do not modify//GEN-END:initComponents
   private JPanel InfoPnl;
   private JList actorList;
   private JPanel actorPnl;
@@ -616,8 +668,6 @@ public class MoviePanel extends javax.swing.JPanel {
   private JScrollPane fanartsScrollPane;
   private JTextField genreField;
   private JPanel imagePnl;
-  private JButton jButton1;
-  private JButton jButton2;
   private JTextField jTextField4;
   private JTabbedPane movieTabbedPane;
   private JTextField origTitleField;

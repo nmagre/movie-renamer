@@ -32,20 +32,10 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.ConfigureCompleteEvent;
-import javax.media.ControllerEvent;
-import javax.media.ControllerListener;
-import javax.media.Manager;
-import javax.media.MediaLocator;
-import javax.media.NoProcessorException;
-import javax.media.Processor;
-import javax.media.control.TrackControl;
-import javax.media.format.VideoFormat;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -83,35 +73,6 @@ public class Utils {
     if (OS == null)
       OS = System.getProperty("os.name");
     return OS;
-  }
-
-  public static VideoFormat getFormat(MediaLocator locator) throws NoProcessorException, IOException {
-    final Processor processor = Manager.createProcessor(locator);
-    processor.configure();
-    VideoFormat format;
-    final List fmts = new ArrayList();
-    processor.addControllerListener(new ControllerListener() {
-
-      @Override
-      public void controllerUpdate(ControllerEvent evt) {
-        if (evt instanceof ConfigureCompleteEvent) {
-          for (TrackControl o : processor.getTrackControls()) {
-            fmts.add(o.getFormat());
-          }
-          if (fmts.isEmpty())
-            fmts.add(null);
-          processor.close();
-        }
-      }
-    });
-
-    while (fmts.isEmpty())
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException ignored) {
-      }
-    format = (VideoFormat) fmts.get(0);
-    return format;
   }
 
   public static boolean isWindows() {
@@ -272,12 +233,14 @@ public class Utils {
     return image;
   }
 
-  public static boolean deleteDirectory(File racine) {//Humm et le root est supprimé ? (A tester)
+  public static boolean deleteFileInDirectory(File dir) {
     boolean del = true;
-    for (File fils : racine.listFiles()) {
-      if (fils.isDirectory())
-        if (!deleteDirectory(fils)) del = false;
+    for (File fils : dir.listFiles()) {
+      if (fils.isDirectory()){
+        if (!deleteFileInDirectory(fils)) del = false;
         else if (!fils.delete()) del = false;
+      }
+      else if (!fils.delete()) del = false;
     }
     return del;
   }

@@ -98,9 +98,8 @@ public class DropFile implements DropTargetListener {
           file = file.substring(0, file.length() - 1);
           files.add(new File(file));
         }
-      } else if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){// Windows
+      } else if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor))// Windows
         files.addAll((List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
-      }      
 
       setMovies(files);
 
@@ -117,17 +116,18 @@ public class DropFile implements DropTargetListener {
   public void setMovies(ArrayList<File> files) {
     boolean subFolders = false;
     int count = 0;
-    if(!setting.scanSubfolder){
-      for (File file : files) {
-        if (file.isDirectory()) {
-          File[] subDir = file.listFiles(folderFilter);
-          if (subDir != null) {
-            count += subDir.length;
-            if (subDir.length > 0)
-              if (!subFolders) {
-                int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
-                subFolders = !(n != 0);
-              }
+    
+    for (File file : files) {
+      if (file.isDirectory()) {
+        File[] subDir = file.listFiles(folderFilter);
+        if (subDir != null) {
+          count += subDir.length;
+          if (subDir.length > 0){
+            if (!subFolders && !setting.scanSubfolder) {
+              int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+              subFolders = !(n != 0);
+            }
+            else subFolders = true;
           }
         }
       }

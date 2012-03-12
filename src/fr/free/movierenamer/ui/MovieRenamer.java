@@ -51,15 +51,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -610,7 +606,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       //Download thumb
       if (thumbChk.isSelected())
         try {
-          Utils.copyFile(setting.cache.get(movieImagePnl.getSelectedThumb(), Cache.thumb), new File(newPath + newNameNoExt + setting.thumbExtList[setting.thumbExt]));
+          Utils.copyFile(setting.cache.get(movieImagePnl.getSelectedThumb(setting.thumbSize), Cache.thumb), new File(newPath + newNameNoExt + setting.thumbExtList[setting.thumbExt]));
         } catch (IOException ex) {
           Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -618,19 +614,30 @@ public class MovieRenamer extends javax.swing.JFrame {
       //Download fanart
       if (fanartChk.isSelected())
         try {
-          Utils.copyFile(setting.cache.get(movieImagePnl.getSelectedFanart(), Cache.fanart), new File(newPath + newNameNoExt + "-fanart.jpg"));
+          Utils.copyFile(setting.cache.get(movieImagePnl.getSelectedFanart(setting.thumbSize), Cache.fanart), new File(newPath + newNameNoExt + "-fanart.jpg"));
         } catch (IOException ex) {
           Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
-      mvFile.get(movieList.getSelectedIndex()).setFile(new File(newPath + newName));
+      int index = movieList.getSelectedIndex();
+      if(index == -1){
+        JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noMovieSelected"), sError, JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      
+      mvFile.get(index).setFile(new File(newPath + newName));
       movieFileNameModel = new DefaultListModel();
       for (int i = 0; i < mvFile.size(); i++) {
         movieFileNameModel.addElement(mvFile.get(i));
       }
       movieList.setCellRenderer(new IconListRenderer<MovieFile>(mvFile));
       movieList.setModel(movieFileNameModel);
+
+      if(mvFile.size() <= (index + 1)){
+        JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("endOfList"), "Information", JOptionPane.INFORMATION_MESSAGE);
+        return;
+      }
+      movieList.setSelectedIndex(index + 1);
     }//GEN-LAST:event_renameBtnActionPerformed
 
   public class SearchWorkerListener implements PropertyChangeListener {
