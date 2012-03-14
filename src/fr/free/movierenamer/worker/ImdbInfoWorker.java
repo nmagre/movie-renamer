@@ -31,8 +31,8 @@ import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 /**
- *
- * @author duffy
+ * Class ImdbInfoWorker
+ * @author Magré Nicolas
  */
 public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
 

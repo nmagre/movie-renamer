@@ -20,7 +20,7 @@
 package fr.free.movierenamer.movie;
 
 /**
- *
+ * Class MovieImage
  * @author Magré Nicolas
  */
 public class MovieImage {

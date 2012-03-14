@@ -31,7 +31,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 /**
- *
+ * Class ActorWorker
  * @author Magré Nicolas
  */
 public class ActorWorker extends SwingWorker<Void, Void> {

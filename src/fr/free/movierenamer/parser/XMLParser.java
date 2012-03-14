@@ -318,11 +318,11 @@ public class XMLParser<T> {
                 lastAttribute = attributes.getValue(0);
               }
               if (attributes.getValue(2).equals("original"))
-                currentMovieImage.setOrigUrl(attributes.getValue(1));
+                currentMovieImage.setOrigUrl(attributes.getValue(1).replace(".png", ".jpg"));// API bug png ar jpg on server
               if (attributes.getValue(2).equals("thumb"))
-                currentMovieImage.setThumbUrl(attributes.getValue(1));
+                currentMovieImage.setThumbUrl(attributes.getValue(1).replace(".png", ".jpg"));
               if (attributes.getValue(2).equals("mid") || attributes.getValue(2).equals("poster"))
-                currentMovieImage.setMidUrl(attributes.getValue(1));
+                currentMovieImage.setMidUrl(attributes.getValue(1).replace(".png", ".jpg"));
             }
     }
 

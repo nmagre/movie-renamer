@@ -31,8 +31,8 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.MoviePanel;
 
 /**
- *
- * @author duffy
+ * Class MovieImageWorker
+ * @author Magré Nicolas
  */
 public class MovieImageWorker extends SwingWorker<Void, Void>  {
 
@@ -59,7 +59,7 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
       try {
         
         setProgress((i*100)/arrayImage.size());
-        URL url = new URL(arrayImage.get(i).getThumbUrl().replace(".png", ".jpg"));// API bug, png is jpg on server
+        URL url = new URL(arrayImage.get(i).getThumbUrl());
         image = setting.cache.getImage(url, cache);
         if (image == null) {
           setting.cache.add(url.openStream(), url.toString(), cache);
@@ -68,10 +68,10 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
         if (image == null) continue;
         switch (type) {
           case THUMB:
-            moviePnl.addThumbToList(image, arrayImage.get(i));
+            moviePnl.addThumbToList(image, arrayImage.get(i), false);
             break;
           case FANART:
-            moviePnl.addFanartToList(image, arrayImage.get(i));
+            moviePnl.addFanartToList(image, arrayImage.get(i), false);
             break;
           default:
             continue;

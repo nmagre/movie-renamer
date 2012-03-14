@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- *
- * @author duffy
+ * Class TheMovieDbInfoWorker
+ * @author Magré Nicolas
  */
 public class TheMovieDbInfoWorker extends SwingWorker<Movie, String> {
 

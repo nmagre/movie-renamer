@@ -198,7 +198,7 @@ public class ImdbParser {
         String thumb = null;
         if (thumbMatcher.find()){
           String thumbnail = thumbMatcher.group();
-          if(thumbnail.contains("img")) thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
+          if(thumbnail.contains("img src=")) thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
           else thumb = thumbnail.substring(thumbnail.lastIndexOf("src=")+ 5, thumbnail.lastIndexOf("\""));
         }
         found.add(new ImdbSearchResult(movieName, imdbId, "Exact", thumb));

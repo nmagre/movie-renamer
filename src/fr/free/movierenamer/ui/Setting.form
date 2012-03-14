@@ -1460,7 +1460,7 @@
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="jPanel1">
+        <Container class="javax.swing.JPanel" name="cachePnl">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Cache">
@@ -1475,8 +1475,8 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="cachePnl" alignment="1" max="32767" attributes="0"/>
-                          <Component id="jPanel8" alignment="0" max="32767" attributes="0"/>
+                          <Component id="imagePnl" alignment="1" max="32767" attributes="0"/>
+                          <Component id="xmlFilePnl" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -1486,16 +1486,16 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="cachePnl" min="-2" max="-2" attributes="0"/>
+                      <Component id="imagePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
+                      <Component id="xmlFilePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="158" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="cachePnl">
+            <Container class="javax.swing.JPanel" name="imagePnl">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -1612,7 +1612,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="jPanel8">
+            <Container class="javax.swing.JPanel" name="xmlFilePnl">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
@@ -1672,92 +1672,6 @@
                 </Component>
               </SubComponents>
             </Container>
-          </SubComponents>
-        </Container>
-        <Container class="javax.swing.JPanel" name="jPanel16">
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="About">
-                <Property name="tabTitle" type="java.lang.String" value="About"/>
-              </JTabbedPaneConstraints>
-            </Constraint>
-          </Constraints>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="12" pref="12" max="12" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace min="12" pref="12" max="12" attributes="0"/>
-                                      <Component id="jButton6" max="32767" attributes="1"/>
-                                  </Group>
-                                  <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Group type="102" alignment="0" attributes="1">
-                                      <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
-                                      <Component id="jTextField1" max="32767" attributes="0"/>
-                                  </Group>
-                              </Group>
-                          </Group>
-                      </Group>
-                      <EmptySpace pref="196" max="32767" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jButton6" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="251" max="32767" attributes="0"/>
-                  </Group>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-          <SubComponents>
-            <Component class="javax.swing.JLabel" name="jLabel2">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Movie Renamer"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel7">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Website"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JButton" name="jButton6">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="http:/movierenamer.free.fr"/>
-              </Properties>
-              <Events>
-                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton6MouseReleased"/>
-              </Events>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel8">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Contact"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JTextField" name="jTextField1">
-              <Properties>
-                <Property name="editable" type="boolean" value="false"/>
-                <Property name="text" type="java.lang.String" value="movierenamer@free.fr"/>
-              </Properties>
-            </Component>
           </SubComponents>
         </Container>
       </SubComponents>

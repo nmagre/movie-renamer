@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import fr.free.movierenamer.parser.XMLParser;
@@ -39,9 +40,10 @@ public class Main {
 
   private static MovieRenamer mvr;
 
-  public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException {
-
+  public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException, ParseException {
+    
     final Settings setting = loadSetting();
+    
     java.awt.EventQueue.invokeLater(new Runnable() {
 
       @Override
@@ -65,7 +67,7 @@ public class Main {
           else setting.locale = "fr";
           saved = setting.saveSetting();
           setting.xmlVersion = setting.getVersion();
-          setting.xmlError = false;
+          setting.imdbFr = setting.locale.equals("fr");
         }
         Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR"):Locale.ENGLISH));
         if (!setting.getVersion().equals(setting.xmlVersion) || setting.xmlError)
@@ -77,7 +79,11 @@ public class Main {
         setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
         saved = setting.saveSetting();
       }
-    else saved = setting.saveSetting();
+    else{
+      saved = setting.saveSetting();
+      if (!saved) JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+      return loadSetting();
+    }
     if (!saved) JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
     return setting;
   }

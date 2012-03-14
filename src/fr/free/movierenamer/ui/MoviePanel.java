@@ -29,9 +29,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,19 +55,59 @@ import javax.swing.SwingUtilities;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieImage;
+import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Component;
+import java.awt.dnd.DropTarget;
+import java.awt.event.MouseEvent;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
- *
- * @author duffy
+ * Class MoviePanel
+ * @author Magré Nicolas
  */
 public class MoviePanel extends javax.swing.JPanel {
-
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private JPanel InfoPnl;
+  private JList actorList;
+  private JPanel actorPnl;
+  private JScrollPane actorScroll;
+  private JTextField countryField;
+  private JPanel detailsPnl;
+  private final JList fanartList = new JList();
+  private JScrollPane fanartsScrollPane;
+  private JTextField genreField;
+  private JPanel imagePnl;
+  private JTextField jTextField4;
+  private JTabbedPane movieTabbedPane;
+  private JTextField origTitleField;
+  private JTextField runtimeField;
+  private JLabel star;
+  private JLabel star1;
+  private JLabel star2;
+  private JLabel star3;
+  private JLabel star4;
+  private JScrollPane synopsScroll;
+  private JTextArea synopsisArea;
+  private JLabel thumbLbl;
+  private final JList thumbnailsList = new JList(){
+    // This method is called as the cursor moves within the list.
+    public String getToolTipText(MouseEvent evt) {
+      int index = locationToIndex(evt.getPoint());
+      if(index == -1) return null;
+      ImageIcon item = (ImageIcon) getModel().getElementAt(index);
+      return item.getDescription();
+    }
+  };
+  private JScrollPane thumbsScrollPane;
+  private JLabel titleLbl;
+  private JTextField yearField;
+  // End of variables declaration//GEN-END:variables
   private final DefaultListModel fanartModel = new DefaultListModel();
   private final DefaultListModel thumbnailModel = new DefaultListModel();
   private final DefaultListModel actorModel = new DefaultListModel();
@@ -82,13 +119,15 @@ public class MoviePanel extends javax.swing.JPanel {
   private final Icon STAR = new ImageIcon(getClass().getResource("/image/star.png"));
   private final Icon STAR_HALF = new ImageIcon(getClass().getResource("/image/star-half.png"));
   private final Icon STAR_EMPTY = new ImageIcon(getClass().getResource("/image/star-empty.png"));
-  private Image img;
+  private Image fanartBack;
+  private DropTarget dropThumbTarget;
+  private DropTarget dropFanartTarget;
   private ArrayList<actorImage> actors;
   private ArrayList<MovieImage> thumbs;
   private ArrayList<MovieImage> fanarts;
   private Settings setting;
 
-  /** Creates new form MovieImagePanel
+  /** Creates new form MoviePanel
    * @param setting 
    */
   public MoviePanel(Settings setting) {
@@ -105,37 +144,38 @@ public class MoviePanel extends javax.swing.JPanel {
     thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     thumbnailsList.setVisibleRowCount(-1);
-
-    MouseListener mouseListener = new MouseAdapter() {
+    thumbnailsList.addListSelectionListener(new ListSelectionListener() {
 
       @Override
-      public void mouseClicked(MouseEvent e) {//A refaire (http request in EDT)
-        int index = thumbnailsList.locationToIndex(e.getPoint());
-        if (index != -1)
-          img = getImage(thumbs.get(index).getOrigUrl().replace(".png", ".jpg"), Cache.thumb);
+      public void valueChanged(ListSelectionEvent e) {
+        if (thumbnailsList.getSelectedIndex() == -1) return;
+        thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
+        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getOrigUrl().replace(".png", ".jpg"), Cache.thumb);
         if (img != null)
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
       }
-    };
-    thumbnailsList.addMouseListener(mouseListener);
+    });
 
+    DropImage dropThumb = new DropImage(this, Cache.thumb, setting);
+    dropThumbTarget = new DropTarget(thumbnailsList, dropThumb);
 
     fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     fanartList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     fanartList.setVisibleRowCount(-1);
-    mouseListener = new MouseAdapter() {
+    fanartList.addListSelectionListener(new ListSelectionListener() {
 
       @Override
-      public void mouseClicked(MouseEvent e) {//A refaire (http request in EDT)
-        int index = fanartList.locationToIndex(e.getPoint());
-        if (index != -1) {
-          img = getImage(fanarts.get(index).getOrigUrl().replace(".png", ".jpg"), Cache.fanart);
-          detailsPnl.validate();
-          detailsPnl.repaint();
-        }
+      public void valueChanged(ListSelectionEvent lse) {
+        if (fanartList.getSelectedIndex() == -1) return;
+        fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
+        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getOrigUrl(), Cache.fanart);
+        detailsPnl.validate();
+        detailsPnl.repaint();
       }
-    };
-    fanartList.addMouseListener(mouseListener);
+    });
+
+    DropImage dropFanart = new DropImage(this, Cache.fanart, setting);
+    dropFanartTarget = new DropTarget(fanartList, dropFanart);
 
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     actorList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -157,11 +197,12 @@ public class MoviePanel extends javax.swing.JPanel {
       }
     });
 
-
+    dropFanartTarget.setActive(false);
+    dropThumbTarget.setActive(false);
     thumbsScrollPane.setVisible(setting.thumb);
     fanartsScrollPane.setVisible(setting.fanart);
     imagePnl.setVisible(setting.thumb || setting.fanart);
-    img = null;
+    fanartBack = null;
   }
 
   public void setDisplay(Settings setting) {
@@ -185,26 +226,27 @@ public class MoviePanel extends javax.swing.JPanel {
     return image;
   }
 
-  public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg) {//A refaire (http request in EDT)
+  public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg, final boolean selectLast) {//A refaire (http request in EDT)
 
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
       public void run() {
         thumbs.add(mvImg);
+        Image img = null;
         if (thumbnailModel.isEmpty())
-          img = getImage(thumbs.get(0).getOrigUrl().replace(".png", ".jpg"), Cache.thumb);
+          img = getImage(thumbs.get(0).getOrigUrl(), Cache.thumb);
         if (img != null)
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
         if (thumb != null)
           thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
         if (!thumbnailModel.isEmpty())
-          thumbnailsList.setSelectedIndex(0);
+          thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size()-1):0));
       }
     });
   }
 
-  public synchronized void addFanartToList(final Image fanart, final MovieImage mvImg) {//A refaire (http request in EDT)
+  public synchronized void addFanartToList(final Image fanart, final MovieImage mvImg, final boolean selectLast) {//A refaire (http request in EDT)
 
     SwingUtilities.invokeLater(new Thread() {
 
@@ -212,7 +254,7 @@ public class MoviePanel extends javax.swing.JPanel {
       public void run() {
         fanarts.add(mvImg);
         if (fanartModel.isEmpty()) {
-          img = getImage(fanarts.get(0).getOrigUrl().replace(".png", ".jpg"), Cache.fanart);
+          fanartBack = getImage(fanarts.get(0).getOrigUrl(), Cache.fanart);
           detailsPnl.validate();
           detailsPnl.repaint();
         }
@@ -220,20 +262,20 @@ public class MoviePanel extends javax.swing.JPanel {
         if (fanart != null)
           fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
         if (!fanartModel.isEmpty())
-          fanartList.setSelectedIndex(0);
+          fanartList.setSelectedIndex((selectLast ? (fanartModel.size()-1):0));
       }
     });
   }
 
   public void addActorToList(final String actor, final Image actorImg, final String desc) {
     ImageIcon icon = null;
-    if(actorImg != null) icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
+    if (actorImg != null) icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
     actors.add(new actorImage(actor, desc, icon));
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
       public void run() {
-         actorModel.addElement(actor);
+        actorModel.addElement(actor);
       }
     });
   }
@@ -241,12 +283,13 @@ public class MoviePanel extends javax.swing.JPanel {
   public void clearList() {
     fanarts.clear();
     thumbs.clear();
-    img = null;
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
       public void run() {
-        img = null;
+        dropFanartTarget.setActive(false);
+        dropThumbTarget.setActive(false);
+        fanartBack = null;
         fanartModel.clear();
         thumbnailModel.clear();
         actorModel.clear();
@@ -283,6 +326,14 @@ public class MoviePanel extends javax.swing.JPanel {
         origTitleField.setText(movie.getOrigTitle());
         countryField.setText(movie.getCountriesString());
         setRate(Float.parseFloat(movie.getRating().replace(",", ".")));
+        dropFanartTarget.setActive(true);
+        dropThumbTarget.setActive(true);
+
+        genreField.setCaretPosition(0);
+        synopsisArea.setCaretPosition(0);
+        origTitleField.setCaretPosition(0);
+        countryField.setCaretPosition(0);
+
         if (!setting.thumb)
           if (!movie.getImdbThumb().equals("")) {
             Image imThumb = getImage(movie.getImdbThumb(), Cache.thumb);
@@ -345,11 +396,11 @@ public class MoviePanel extends javax.swing.JPanel {
     try {
       switch (size) {
         case 0:
-          return new URL(array.get(list.getSelectedIndex()).getOrigUrl().replace(".png", ".jpg"));
+          return new URL(array.get(list.getSelectedIndex()).getOrigUrl());
         case 1:
-          return new URL(array.get(list.getSelectedIndex()).getMidUrl().replace(".png", ".jpg"));
+          return new URL(array.get(list.getSelectedIndex()).getMidUrl());
         case 2:
-          return new URL(array.get(list.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"));
+          return new URL(array.get(list.getSelectedIndex()).getThumbUrl());
         default:
           break;
       }
@@ -404,8 +455,8 @@ public class MoviePanel extends javax.swing.JPanel {
       @Override
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(img != null){
-          g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+        if(fanartBack != null){
+          g.drawImage(fanartBack, 0, 0, getWidth(), getHeight(), this);
         }
 
         // Create an AlphaComposite with 50% translucency.
@@ -657,40 +708,5 @@ public class MoviePanel extends javax.swing.JPanel {
     );
 
     add(InfoPnl, BorderLayout.CENTER);
-  }// </editor-fold>  // Variables declaration - do not modify//GEN-END:initComponents
-  private JPanel InfoPnl;
-  private JList actorList;
-  private JPanel actorPnl;
-  private JScrollPane actorScroll;
-  private JTextField countryField;
-  private JPanel detailsPnl;
-  private final JList fanartList = new JList();
-  private JScrollPane fanartsScrollPane;
-  private JTextField genreField;
-  private JPanel imagePnl;
-  private JTextField jTextField4;
-  private JTabbedPane movieTabbedPane;
-  private JTextField origTitleField;
-  private JTextField runtimeField;
-  private JLabel star;
-  private JLabel star1;
-  private JLabel star2;
-  private JLabel star3;
-  private JLabel star4;
-  private JScrollPane synopsScroll;
-  private JTextArea synopsisArea;
-  private JLabel thumbLbl;
-  private final JList thumbnailsList = new JList(){
-    // This method is called as the cursor moves within the list.
-    public String getToolTipText(MouseEvent evt) {
-      int index = locationToIndex(evt.getPoint());
-      if(index == -1) return null;
-      ImageIcon item = (ImageIcon) getModel().getElementAt(index);
-      return item.getDescription();
-    }
-  };
-  private JScrollPane thumbsScrollPane;
-  private JLabel titleLbl;
-  private JTextField yearField;
-  // End of variables declaration//GEN-END:variables
+  }// </editor-fold>//GEN-END:initComponents
 }

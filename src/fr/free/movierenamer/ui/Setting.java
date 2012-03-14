@@ -154,7 +154,6 @@ public class Setting extends JDialog {
     showNotaMovieWarnChk.setSelected(setting.showNotaMovieWarn);
     scanSubfolderChk.setSelected(setting.scanSubfolder);
     useExtensionFilterChk.setSelected(setting.useExtensionFilter);
-//    showMovieFilePathChk.setSelected(setting.showMovieFilePath);
     movieInfoPanelChk.setSelected(setting.movieInfoPanel);
     actorImageChk.setSelected(setting.actorImage);
     thumbsChk.setSelected(setting.thumb);
@@ -320,23 +319,17 @@ public class Setting extends JDialog {
     filterScrollP = new JScrollPane();
     filterJlist = new JList();
     filenameFilterHelp = new JButton();
-    jPanel1 = new JPanel();
     cachePnl = new JPanel();
+    imagePnl = new JPanel();
     actorCacheLbl = new JLabel();
     fanartCacheLbl = new JLabel();
     thumbCacheLbl = new JLabel();
     clearThumbBtn = new JButton();
     clearFanartBtn = new JButton();
     clearActorBtn = new JButton();
-    jPanel8 = new JPanel();
+    xmlFilePnl = new JPanel();
     xmlLbl = new JLabel();
     clearXmlBtn = new JButton();
-    jPanel16 = new JPanel();
-    jLabel2 = new JLabel();
-    jLabel7 = new JLabel();
-    jButton6 = new JButton();
-    jLabel8 = new JLabel();
-    jTextField1 = new JTextField();
     saveBtn = new JButton();
     CancelBtn = new JButton();
 
@@ -1068,7 +1061,7 @@ public class Setting extends JDialog {
 
     settingTabPan.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
 
-    cachePnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
+    imagePnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
 
     actorCacheLbl.setText(bundle.getString("useForActor")); // NOI18N
 
@@ -1100,42 +1093,42 @@ public class Setting extends JDialog {
       }
     });
 
-    GroupLayout cachePnlLayout = new GroupLayout(cachePnl);
-    cachePnl.setLayout(cachePnlLayout);
-    cachePnlLayout.setHorizontalGroup(
-      cachePnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(cachePnlLayout.createSequentialGroup()
+    GroupLayout imagePnlLayout = new GroupLayout(imagePnl);
+    imagePnl.setLayout(imagePnlLayout);
+    imagePnlLayout.setHorizontalGroup(
+      imagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(imagePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(cachePnlLayout.createParallelGroup(Alignment.LEADING)
+        .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING)
           .addComponent(thumbCacheLbl)
           .addComponent(fanartCacheLbl)
           .addComponent(actorCacheLbl))
         .addPreferredGap(ComponentPlacement.RELATED, 181, Short.MAX_VALUE)
-        .addGroup(cachePnlLayout.createParallelGroup(Alignment.LEADING, false)
+        .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING, false)
           .addComponent(clearActorBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(clearFanartBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(clearThumbBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
-    cachePnlLayout.setVerticalGroup(
-      cachePnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(cachePnlLayout.createSequentialGroup()
+    imagePnlLayout.setVerticalGroup(
+      imagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(imagePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(cachePnlLayout.createParallelGroup(Alignment.TRAILING)
+        .addGroup(imagePnlLayout.createParallelGroup(Alignment.TRAILING)
           .addComponent(thumbCacheLbl)
           .addComponent(clearThumbBtn))
         .addGap(18, 18, 18)
-        .addGroup(cachePnlLayout.createParallelGroup(Alignment.TRAILING)
+        .addGroup(imagePnlLayout.createParallelGroup(Alignment.TRAILING)
           .addComponent(fanartCacheLbl)
           .addComponent(clearFanartBtn))
         .addGap(18, 18, 18)
-        .addGroup(cachePnlLayout.createParallelGroup(Alignment.TRAILING)
+        .addGroup(imagePnlLayout.createParallelGroup(Alignment.TRAILING)
           .addComponent(actorCacheLbl)
           .addComponent(clearActorBtn))
         .addContainerGap())
     );
 
-    jPanel8.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("xmlFiles"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
+    xmlFilePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("xmlFiles"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
 
     xmlLbl.setText(bundle.getString("useForXml")); // NOI18N
 
@@ -1147,104 +1140,49 @@ public class Setting extends JDialog {
       }
     });
 
-    GroupLayout jPanel8Layout = new GroupLayout(jPanel8);
-    jPanel8.setLayout(jPanel8Layout);
-    jPanel8Layout.setHorizontalGroup(
-      jPanel8Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel8Layout.createSequentialGroup()
+    GroupLayout xmlFilePnlLayout = new GroupLayout(xmlFilePnl);
+    xmlFilePnl.setLayout(xmlFilePnlLayout);
+    xmlFilePnlLayout.setHorizontalGroup(
+      xmlFilePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(xmlFilePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(xmlLbl)
         .addPreferredGap(ComponentPlacement.RELATED, 197, Short.MAX_VALUE)
         .addComponent(clearXmlBtn)
         .addContainerGap())
     );
-    jPanel8Layout.setVerticalGroup(
-      jPanel8Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel8Layout.createSequentialGroup()
+    xmlFilePnlLayout.setVerticalGroup(
+      xmlFilePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(xmlFilePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel8Layout.createParallelGroup(Alignment.TRAILING)
+        .addGroup(xmlFilePnlLayout.createParallelGroup(Alignment.TRAILING)
           .addComponent(clearXmlBtn)
           .addComponent(xmlLbl))
         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
-    jPanel1Layout.setHorizontalGroup(
-      jPanel1Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel1Layout.createSequentialGroup()
+    GroupLayout cachePnlLayout = new GroupLayout(cachePnl);
+    cachePnl.setLayout(cachePnlLayout);
+    cachePnlLayout.setHorizontalGroup(
+      cachePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(cachePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(cachePnl, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel8, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addGroup(cachePnlLayout.createParallelGroup(Alignment.LEADING)
+          .addComponent(imagePnl, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(xmlFilePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
-    jPanel1Layout.setVerticalGroup(
-      jPanel1Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel1Layout.createSequentialGroup()
+    cachePnlLayout.setVerticalGroup(
+      cachePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(cachePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(cachePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(jPanel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addContainerGap(158, Short.MAX_VALUE))
     );
 
-    settingTabPan.addTab("Cache", jPanel1);
-
-    jLabel2.setText("Movie Renamer");
-
-    jLabel7.setText("Website");
-
-    jButton6.setText("http:/movierenamer.free.fr");
-    jButton6.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        jButton6MouseReleased(evt);
-      }
-    });
-
-    jLabel8.setText("Contact");
-
-    jTextField1.setEditable(false);
-    jTextField1.setText("movierenamer@free.fr");
-
-    GroupLayout jPanel16Layout = new GroupLayout(jPanel16);
-    jPanel16.setLayout(jPanel16Layout);
-    jPanel16Layout.setHorizontalGroup(
-      jPanel16Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel16Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel16Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(jLabel2)
-          .addGroup(jPanel16Layout.createSequentialGroup()
-            .addGap(12, 12, 12)
-            .addGroup(jPanel16Layout.createParallelGroup(Alignment.LEADING, false)
-              .addGroup(jPanel16Layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jButton6, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-              .addComponent(jLabel7)
-              .addComponent(jLabel8)
-              .addGroup(jPanel16Layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jTextField1)))))
-        .addContainerGap(196, Short.MAX_VALUE))
-    );
-    jPanel16Layout.setVerticalGroup(
-      jPanel16Layout.createParallelGroup(Alignment.LEADING)
-      .addGroup(jPanel16Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jLabel2)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jLabel7)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jButton6)
-        .addGap(30, 30, 30)
-        .addComponent(jLabel8)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(jTextField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(251, Short.MAX_VALUE))
-    );
-
-    settingTabPan.addTab("About", jPanel16);
+    settingTabPan.addTab("Cache", cachePnl);
 
     saveBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png"))); // NOI18N
     saveBtn.setText(bundle.getString("save")); // NOI18N
@@ -1303,7 +1241,6 @@ public class Setting extends JDialog {
     boolean restartApp = false;
 
     // General Setting
-//    if(setting.showMovieFilePath != showMovieFilePathChk.isSelected()) setting.interfaceChanged = true;
     if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
     if (setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
     if (setting.fanart != fanartsChk.isSelected()) setting.interfaceChanged = true;
@@ -1313,7 +1250,6 @@ public class Setting extends JDialog {
     setting.showNotaMovieWarn = showNotaMovieWarnChk.isSelected();
     setting.scanSubfolder = scanSubfolderChk.isSelected();
     setting.useExtensionFilter = useExtensionFilterChk.isSelected();
-//    setting.showMovieFilePath = showMovieFilePathChk.isSelected();
     setting.movieInfoPanel = movieInfoPanelChk.isSelected();
     setting.actorImage = actorImageChk.isSelected();
     setting.thumb = thumbsChk.isSelected();
@@ -1367,16 +1303,6 @@ public class Setting extends JDialog {
       else System.exit(0);
     dispose();
   }//GEN-LAST:event_saveBtnMouseReleased
-
-  private void jButton6MouseReleased(MouseEvent evt) {//GEN-FIRST:event_jButton6MouseReleased
-    try {
-      Desktop.getDesktop().browse(new URI(jButton6.getText()));
-    } catch (IOException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
-    }
-}//GEN-LAST:event_jButton6MouseReleased
 
   private void clearXmlBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_clearXmlBtnMouseReleased
     Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
@@ -1585,6 +1511,7 @@ public class Setting extends JDialog {
   private JRadioButton frenchRbtn;
   private JPanel generalPnl;
   private JButton helpBtn;
+  private JPanel imagePnl;
   private JPanel imagesPnl;
   private JRadioButton imdbEnRbtn;
   private JRadioButton imdbFrRbtn;
@@ -1593,14 +1520,6 @@ public class Setting extends JDialog {
   private JPanel imdbSearchPnl;
   private ButtonGroup interfaceGroup;
   private JPanel interfacePnl;
-  private JButton jButton6;
-  private JLabel jLabel2;
-  private JLabel jLabel7;
-  private JLabel jLabel8;
-  private JPanel jPanel1;
-  private JPanel jPanel16;
-  private JPanel jPanel8;
-  private JTextField jTextField1;
   private ButtonGroup languageGroup;
   private JPanel languagePnl;
   private JComboBox limitResultComboBox;
@@ -1641,6 +1560,7 @@ public class Setting extends JDialog {
   private JPanel updatePnl;
   private JRadioButton upperRbtn;
   private JCheckBox useExtensionFilterChk;
+  private JPanel xmlFilePnl;
   private JLabel xmlLbl;
   private ButtonGroup youtubeGroup;
   // End of variables declaration//GEN-END:variables

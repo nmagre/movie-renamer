@@ -33,7 +33,7 @@ import fr.free.movierenamer.utils.Settings;
 
 /**
  * Class listFilesWorker
- * @author duffy
+ * @author Magré Nicolas
  */
 public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
 

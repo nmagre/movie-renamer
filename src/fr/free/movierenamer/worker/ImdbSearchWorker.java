@@ -43,7 +43,7 @@ import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 /**
- * Class imdbSearchThread
+ * Class ImdbSearchWorker
  * @author Nicolas Magré
  */
 public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, String> {
