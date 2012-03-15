@@ -779,9 +779,6 @@
                       </StringArray>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="thumbExtCbBoxActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="thumnailsExtLbl">
                   <Properties>
@@ -1176,7 +1173,7 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="extensionPnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="fileNameFilterPnl" min="-2" pref="190" max="-2" attributes="0"/>
+                      <Component id="fileNameFilterPnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="29" max="32767" attributes="1"/>
                   </Group>
               </Group>
@@ -1244,7 +1241,7 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="removeExtensuionBtnMouseReleased"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeExtensuionBtnActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="addExtensionBtn">
@@ -1414,7 +1411,7 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="removeFilterBtnMouseReleased"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeFilterBtnActionPerformed"/>
                   </Events>
                 </Component>
                 <Container class="javax.swing.JScrollPane" name="filterScrollP">

@@ -170,6 +170,10 @@ public class Movie {
     return null;
   }
 
+  public String getDirectorsString(){
+    return movieinfo.getDirectorsString();
+  }
+
   /**
    * Get array of thumbnails
    * @return ArrayList of MovieImage

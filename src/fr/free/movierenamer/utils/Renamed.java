@@ -29,9 +29,11 @@ public class Renamed {
   private String date;
   private String movieFileSrc;
   private String movieFileDest;
+  private boolean renameFailed;
 
   public Renamed(String title){
     this.title = title;
+    renameFailed = false;
   }
   
   public Renamed(String title, String date, String movieFileSrc,String movieFileDest) {
@@ -39,6 +41,7 @@ public class Renamed {
     this.date = date;
     this.movieFileSrc = movieFileSrc;
     this.movieFileDest = movieFileDest;
+    renameFailed = false;
   }
 
   public String getTitle() {
@@ -71,5 +74,20 @@ public class Renamed {
 
   public void setMovieFileDest(String movieFileDest) {
     this.movieFileDest = movieFileDest;
+  }
+
+  public void setRenameFailed(boolean renameFailed){
+    this.renameFailed = renameFailed;
+  }
+
+  @Override
+  public String toString(){
+    String res = "";
+    res += "<renamedMovie title=\"" + title.replace("\"", "") + "\">";
+    res += "  <movie src=\"" + movieFileSrc.replace("\"", "") + "\" dest=\"" + movieFileDest.replace("\"", "") + "\" />";
+    res += "  <date>" + date + "</date>";
+    res += "  <failed>" + (renameFailed ? "1":"0") + "</failed>";
+    res += "</renamedMovie>";
+    return res;
   }
 }

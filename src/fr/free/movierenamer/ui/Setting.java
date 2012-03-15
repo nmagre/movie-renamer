@@ -21,7 +21,6 @@ package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -32,13 +31,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -84,7 +78,7 @@ public class Setting extends JDialog {
   private String[][] format = {
     {"<t>", "Matrix"}, {"<y>", "1999"}, {"<tt>", "tt0133093"},
     {"<g>", "Action | Adventure | Sci-Fi"}, {"<g1>", "Action"},
-    {"<d>", "Andy Wachowski, Lana Wachowski"}, {"<d1>", "Andy Wachowski"},
+    {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"},
     {"<rt>", "136"}, {"<ra>", "8.8"}
   };
   private ResourceBundle bundle;
@@ -421,7 +415,7 @@ public class Setting extends JDialog {
       }
     });
 
-    thumbsChk.setFont(new Font("Ubuntu", 0, 12));
+    thumbsChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     thumbsChk.setText(bundle.getString("showThumbs")); // NOI18N
     thumbsChk.setEnabled(false);
 
@@ -658,11 +652,6 @@ public class Setting extends JDialog {
 
     movieImagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("imageExt"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
     thumbExtCbBox.setModel(new DefaultComboBoxModel(new String[] { ".jpg", ".tbn", "-thumb.jpg" }));
-    thumbExtCbBox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        thumbExtCbBoxActionPerformed(evt);
-      }
-    });
 
     thumnailsExtLbl.setFont(new Font("Ubuntu", 1, 12));
     thumnailsExtLbl.setText(bundle.getString("thumbnails")); // NOI18N
@@ -890,9 +879,9 @@ public class Setting extends JDialog {
     extensionPnl.setBorder(BorderFactory.createTitledBorder(null, "Extension", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
     removeExtensuionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png"))); // NOI18N
     removeExtensuionBtn.setToolTipText(bundle.getString("removeExt")); // NOI18N
-    removeExtensuionBtn.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        removeExtensuionBtnMouseReleased(evt);
+    removeExtensuionBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        removeExtensuionBtnActionPerformed(evt);
       }
     });
 
@@ -979,9 +968,9 @@ public class Setting extends JDialog {
 
     removeFilterBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png"))); // NOI18N
     removeFilterBtn.setToolTipText(bundle.getString("removeFilter")); // NOI18N
-    removeFilterBtn.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        removeFilterBtnMouseReleased(evt);
+    removeFilterBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        removeFilterBtnActionPerformed(evt);
       }
     });
 
@@ -1055,7 +1044,7 @@ public class Setting extends JDialog {
         .addContainerGap()
         .addComponent(extensionPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
+        .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addContainerGap(29, Short.MAX_VALUE))
     );
 
@@ -1244,6 +1233,7 @@ public class Setting extends JDialog {
     if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
     if (setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
     if (setting.fanart != fanartsChk.isSelected()) setting.interfaceChanged = true;
+    if (setting.actorImage != actorImageChk.isSelected()) setting.interfaceChanged = true;
 
     setting.selectFrstMovie = selectFirstMovieChk.isSelected();
     setting.selectFrstRes = selectFirstResChk.isSelected();
@@ -1324,31 +1314,20 @@ public class Setting extends JDialog {
     thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir)) + bundle.getString("useForThumb"));
 }//GEN-LAST:event_clearThumbBtnMouseReleased
 
-  private void removeFilterBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_removeFilterBtnMouseReleased
-    String[] newArray = (String[]) Utils.removeFromArray(filters, currentFilterIndex);
-    if (newArray != null) {
-      filters = newArray;
-      loadList(filterJlist, filters);
-      int pos = currentFilterIndex - 1;
-      if (pos < 0)
-        pos++;
-      filterJlist.setSelectedIndex(pos);
-      currentFilterIndex = pos;
-    }
-}//GEN-LAST:event_removeFilterBtnMouseReleased
-
   private void addFilterActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addFilterActionPerformed
     String s = (String) JOptionPane.showInputDialog(this, bundle.getString("filter"), bundle.getString("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
-
+    int index = currentFilterIndex;
     if ((s != null) && (s.length() > 0)) {
       String[] tmp = new String[filters.length + 1];
       int pos = 0;
       for (int i = 0; i < tmp.length; i++) {
-        if (i != currentFilterIndex) tmp[i] = filters[pos++];
+        if (i != index) tmp[i] = filters[pos++];
         else tmp[i] = s;
       }
+      filters = tmp;
       loadList(filterJlist, filters);
-      filterJlist.setSelectedIndex(currentFilterIndex);
+      filterJlist.setSelectedIndex(index);
+      currentFilterIndex = index;
     }
 }//GEN-LAST:event_addFilterActionPerformed
 
@@ -1363,23 +1342,6 @@ public class Setting extends JDialog {
       currentExtensionIndex = extensions.length - 1;
     }
 }//GEN-LAST:event_addExtensionBtnActionPerformed
-
-  private void removeExtensuionBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_removeExtensuionBtnMouseReleased
-    String[] newArray = (String[]) Utils.removeFromArray(extensions, currentExtensionIndex);
-    if (newArray != null) {
-      extensions = newArray;
-      loadList(extentionJlist, extensions);
-      int pos = currentExtensionIndex - 1;
-      if (pos < 0)
-        pos++;
-      extentionJlist.setSelectedIndex(pos);
-      currentExtensionIndex = pos;
-    }
-}//GEN-LAST:event_removeExtensuionBtnMouseReleased
-
-  private void thumbExtCbBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_thumbExtCbBoxActionPerformed
-    // TODO add your handling code here:
-}//GEN-LAST:event_thumbExtCbBoxActionPerformed
 
   private void helpBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
     JOptionPane.showMessageDialog(this, bundle.getString("movieFormatHelp"), bundle.getString("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
@@ -1470,6 +1432,34 @@ public class Setting extends JDialog {
     loadList(filterJlist, filters);
     filterJlist.setSelectedIndex(index);
   }//GEN-LAST:event_moveLeftActionPerformed
+
+  private void removeFilterBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeFilterBtnActionPerformed
+    String[] newArray = (String[]) Utils.removeFromArray(filters, currentFilterIndex);
+    if (newArray != null) {
+      int index = currentFilterIndex;
+      filters = newArray;
+      loadList(filterJlist, filters);
+      int pos = index - 1;
+      if (pos < 0)
+        pos++;
+      filterJlist.setSelectedIndex(pos);
+      currentFilterIndex = pos;
+    }
+  }//GEN-LAST:event_removeFilterBtnActionPerformed
+
+  private void removeExtensuionBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeExtensuionBtnActionPerformed
+    String[] newArray = (String[]) Utils.removeFromArray(extensions, currentExtensionIndex);
+    if (newArray != null) {
+      extensions = newArray;
+      loadList(extentionJlist, extensions);
+      int pos = currentExtensionIndex - 1;
+      if (pos < 0)
+        pos++;
+      extentionJlist.setSelectedIndex(pos);
+      currentExtensionIndex = pos;
+    }
+  }//GEN-LAST:event_removeExtensuionBtnActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JButton CancelBtn;
   private JPanel SearchPnl;

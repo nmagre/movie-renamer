@@ -79,11 +79,11 @@ public class MoviePanel extends javax.swing.JPanel {
   private JScrollPane actorScroll;
   private JTextField countryField;
   private JPanel detailsPnl;
+  private JTextField directorField;
   private final JList fanartList = new JList();
   private JScrollPane fanartsScrollPane;
   private JTextField genreField;
   private JPanel imagePnl;
-  private JTextField jTextField4;
   private JTabbedPane movieTabbedPane;
   private JTextField origTitleField;
   private JTextField runtimeField;
@@ -293,11 +293,12 @@ public class MoviePanel extends javax.swing.JPanel {
         fanartModel.clear();
         thumbnailModel.clear();
         actorModel.clear();
-        genreField.setText("");
+        origTitleField.setText("");
         yearField.setText("");
         runtimeField.setText("");
         synopsisArea.setText("");
-        origTitleField.setText("");
+        genreField.setText("");
+        directorField.setText("");
         countryField.setText("");
         titleLbl.setText("");
         thumbLbl.setIcon(null);
@@ -313,25 +314,32 @@ public class MoviePanel extends javax.swing.JPanel {
     });
   }
 
+  public void clearActorList(){
+    actorModel.clear();
+    actors.clear();
+  }
+
   public void addMovie(final Movie movie) {
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
       public void run() {
         titleLbl.setText(movie.getTitle());
-        genreField.setText(movie.getGenresString());
+        origTitleField.setText(movie.getOrigTitle());
         yearField.setText(movie.getYear());
         runtimeField.setText(movie.getRuntime() + " min");
         synopsisArea.setText(movie.getSynopsis());
-        origTitleField.setText(movie.getOrigTitle());
+        genreField.setText(movie.getGenresString());
+        directorField.setText(movie.getDirectorsString());
         countryField.setText(movie.getCountriesString());
         setRate(Float.parseFloat(movie.getRating().replace(",", ".")));
         dropFanartTarget.setActive(true);
         dropThumbTarget.setActive(true);
 
-        genreField.setCaretPosition(0);
-        synopsisArea.setCaretPosition(0);
         origTitleField.setCaretPosition(0);
+        synopsisArea.setCaretPosition(0);
+        genreField.setCaretPosition(0);
+        directorField.setCaretPosition(0);
         countryField.setCaretPosition(0);
 
         if (!setting.thumb)
@@ -385,10 +393,12 @@ public class MoviePanel extends javax.swing.JPanel {
   }
 
   public URL getSelectedThumb(int size) {
+    if(!thumbsScrollPane.isVisible()) return null;
     return getSelectedItem(thumbs, thumbnailsList, size);
   }
 
   public URL getSelectedFanart(int size) {
+    if(!fanartsScrollPane.isVisible()) return null;
     return getSelectedItem(fanarts, fanartList, size);
   }
 
@@ -481,11 +491,11 @@ public class MoviePanel extends javax.swing.JPanel {
     ;
     synopsScroll = new JScrollPane();
     synopsisArea = new JTextArea();
-    genreField = new JTextField();
-    yearField = new JTextField();
-    runtimeField = new JTextField();
-    jTextField4 = new JTextField();
     origTitleField = new JTextField();
+    yearField = new JTextField();
+    genreField = new JTextField();
+    runtimeField = new JTextField();
+    directorField = new JTextField();
     countryField = new JTextField();
     actorPnl = new JPanel();
     actorScroll = new JScrollPane();
@@ -561,20 +571,20 @@ public class MoviePanel extends javax.swing.JPanel {
     synopsisArea.setOpaque(false);
     synopsScroll.setViewportView(synopsisArea);
 
-    genreField.setEditable(false);
-    genreField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+    origTitleField.setEditable(false);
+    origTitleField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
     yearField.setEditable(false);
     yearField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
+    genreField.setEditable(false);
+    genreField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+
     runtimeField.setEditable(false);
     runtimeField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
-    jTextField4.setEditable(false);
-    jTextField4.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
-
-    origTitleField.setEditable(false);
-    origTitleField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+    directorField.setEditable(false);
+    directorField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
     countryField.setEditable(false);
     countryField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
@@ -589,13 +599,13 @@ public class MoviePanel extends javax.swing.JPanel {
           .addComponent(synopsScroll, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
           .addGroup(detailsPnlLayout.createSequentialGroup()
             .addGroup(detailsPnlLayout.createParallelGroup(Alignment.LEADING)
-              .addComponent(genreField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
               .addComponent(yearField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
               .addComponent(runtimeField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
             .addGap(37, 37, 37)
             .addGroup(detailsPnlLayout.createParallelGroup(Alignment.TRAILING)
-              .addComponent(jTextField4, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-              .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(directorField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+              .addComponent(genreField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
               .addComponent(countryField, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))))
         .addContainerGap())
     );
@@ -605,16 +615,16 @@ public class MoviePanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(detailsPnlLayout.createParallelGroup(Alignment.LEADING, false)
           .addGroup(detailsPnlLayout.createSequentialGroup()
-            .addComponent(genreField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
             .addComponent(yearField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
           .addGroup(detailsPnlLayout.createSequentialGroup()
             .addComponent(countryField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
-            .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)))
+            .addComponent(genreField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)))
         .addGap(18, 18, 18)
         .addGroup(detailsPnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(jTextField4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addComponent(directorField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
           .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(synopsScroll)

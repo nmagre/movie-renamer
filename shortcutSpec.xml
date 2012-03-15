@@ -16,5 +16,6 @@
     startMenu="yes||no"
     type="Application"
     startup="no">
+    <createForPack name="Movie Renamer"/>
   </shortcut>
 </shortcuts>

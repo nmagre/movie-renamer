@@ -279,34 +279,6 @@ public class Utils {
     }
   }
 
-  /*private static void downloadFile(String url, String fileName) {
-  InputStream is = null;
-  try {
-  URL uri = new URL(url);
-  is = uri.openStream();
-  File f = new File(fileName);
-  if (!f.exists()) {
-  File d = new File(f.getParent());
-  if (!d.exists())
-  d.mkdirs();
-  f.createNewFile();
-  }
-  OutputStream out = new FileOutputStream(f);
-  byte buf[] = new byte[1024];
-  int len;
-  while ((len = is.read(buf)) > 0)
-  out.write(buf, 0, len);
-  out.close();
-  } catch (IOException ex) {
-  JOptionPane.showMessageDialog(null, "Download Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
-  } finally {
-  try {
-  is.close();
-  } catch (IOException ex) {
-  JOptionPane.showMessageDialog(null, "Close Downloaded File Failed\n" + ex, "Error", JOptionPane.ERROR_MESSAGE);
-  }
-  }
-  }*/
   public static boolean restartApplication(Class<?> classInJarFile) {
     String javaBin = System.getProperty("java.home") + "/bin/java";
     File jarFile;

@@ -221,14 +221,14 @@
                               <Component id="synopsScroll" alignment="0" pref="357" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="genreField" pref="160" max="32767" attributes="0"/>
+                                      <Component id="origTitleField" pref="160" max="32767" attributes="0"/>
                                       <Component id="yearField" alignment="0" pref="160" max="32767" attributes="0"/>
                                       <Component id="runtimeField" alignment="0" pref="160" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="jTextField4" pref="160" max="32767" attributes="2"/>
-                                      <Component id="origTitleField" pref="160" max="32767" attributes="2"/>
+                                      <Component id="directorField" pref="160" max="32767" attributes="2"/>
+                                      <Component id="genreField" pref="160" max="32767" attributes="2"/>
                                       <Component id="countryField" alignment="1" pref="160" max="32767" attributes="2"/>
                                   </Group>
                               </Group>
@@ -243,19 +243,19 @@
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Group type="102" attributes="0">
-                                  <Component id="genreField" min="-2" max="-2" attributes="0"/>
+                                  <Component id="origTitleField" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="yearField" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Component id="countryField" min="-2" pref="17" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="origTitleField" min="-2" pref="17" max="-2" attributes="0"/>
+                                  <Component id="genreField" min="-2" pref="17" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jTextField4" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="directorField" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="runtimeField" alignment="3" min="-2" pref="17" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -288,7 +288,7 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JTextField" name="genreField">
+                <Component class="javax.swing.JTextField" name="origTitleField">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -308,6 +308,16 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JTextField" name="genreField">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                        <LineBorder/>
+                      </Border>
+                    </Property>
+                  </Properties>
+                </Component>
                 <Component class="javax.swing.JTextField" name="runtimeField">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
@@ -318,17 +328,7 @@
                     </Property>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JTextField" name="jTextField4">
-                  <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                        <LineBorder/>
-                      </Border>
-                    </Property>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JTextField" name="origTitleField">
+                <Component class="javax.swing.JTextField" name="directorField">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">

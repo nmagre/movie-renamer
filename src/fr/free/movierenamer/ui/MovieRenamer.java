@@ -25,19 +25,14 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 import java.awt.dnd.DropTarget;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -83,13 +78,17 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.ui.res.MovieFileFilter;
+import fr.free.movierenamer.utils.Renamer;
+import fr.free.movierenamer.utils.Renamed;
 import fr.free.movierenamer.worker.ActorWorker;
 import fr.free.movierenamer.worker.ImdbInfoWorker;
 import fr.free.movierenamer.worker.ImdbSearchWorker;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import fr.free.movierenamer.worker.MovieImageWorker;
 import fr.free.movierenamer.worker.TheMovieDbInfoWorker;
-import java.io.FileFilter;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 import javax.swing.DefaultListCellRenderer;
 
 /**
@@ -204,6 +203,8 @@ public class MovieRenamer extends javax.swing.JFrame {
       }
       movieImagePnl.setDisplay(setting);
       searchSp.setBottomComponent(movieImagePnl);
+      centerSp.setDividerLocation(300);
+      searchSp.setDividerLocation(200);
     }
     thumbChk.setVisible(setting.movieInfoPanel && setting.thumb);
     fanartChk.setVisible(setting.movieInfoPanel && setting.fanart);
@@ -229,6 +230,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       searchBtn.setEnabled(false);
       searchField.setEnabled(false);
       renamedField.setText("");
+      renamedField.setEnabled(false);
       searchField.setText("");
     }
     movieImagePnl.clearList();
@@ -533,6 +535,7 @@ public class MovieRenamer extends javax.swing.JFrame {
               ActorWorker actor = null;
 
               if (setting.actorImage) {
+                movieImagePnl.clearActorList();
                 actor = new ActorWorker(currentMovie.getPersons(MoviePerson.ACTOR), movieImagePnl, setting);
                 actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
               }
@@ -541,25 +544,22 @@ public class MovieRenamer extends javax.swing.JFrame {
                 tmdbiw = new TheMovieDbInfoWorker(currentMovie, MovieRenamer.this, setting);
                 tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
               }
-              loadDial(false, true);
+              if(setting.thumb || setting.fanart || setting.actorImage) loadDial(false, true);
               if (actor != null) actor.execute();
               if (tmdbiw != null) tmdbiw.execute();
             }
           }
+
           if (currentMovie != null) {
             String dir = "";
-            if (setting.createMovieDirectory)
-              if (setting.movieDirRenamedTitle) {
-                dir = currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase);
-                dir = dir.substring(0, dir.lastIndexOf("."));
-                dir += File.separator;
-              } else {
-                dir = Utils.getFilteredName(currentMovie.getImdbTitle(), new String[0]);
-                dir += File.separator;
-              }
+            if (setting.createMovieDirectory) {
+              String regex = setting.movieDirRenamedTitle ? setting.movieFilenameFormat : "<t>";
+              dir = currentMovie.getRenamedTitle(regex, setting.renameCase);
+              dir = dir.substring(0, dir.lastIndexOf("."));
+              dir += File.separator;
+            }
             renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase));
           }
-
         }
 
         @Override
@@ -594,70 +594,11 @@ public class MovieRenamer extends javax.swing.JFrame {
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
-      File file = currentMovie.getFile();//Current File
-      final String oldFileNameNoExt = file.getName().substring(0, file.getName().lastIndexOf(Utils.DOT));
-      String newName = renamedField.getText();
-      String newPath = currentMovie.getFile().getParent() + File.separator;
 
-      if (setting.createMovieDirectory && newName.contains(File.separator)) {
-        newPath = file.getParent() + File.separator + newName.substring(0, newName.lastIndexOf(File.separator)) + File.separator;
-        newName = newName.substring(newName.lastIndexOf(File.separator) + 1);
-        Utils.createFilePath(newPath, true);
-      }
-
-      String newNameNoExt = newName.substring(0, newName.lastIndexOf(Utils.DOT));
-
-      File[] files = file.getParentFile().listFiles(new FileFilter() {
-
-        @Override
-        public boolean accept(File file) {
-          if (file.getName().equals(oldFileNameNoExt + ".srt")) return true;
-          if (file.getName().equals(oldFileNameNoExt + ".sub")) return true;
-          return false;
-        }
-      });
-
-      if (!file.getName().equals(newName) || !newPath.equals(file.getParent())) {
-        boolean success = file.renameTo(new File(newPath + newName));
-        if (!success) {
-          JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("renameFileFailed"), sError, JOptionPane.ERROR_MESSAGE);
-        } else mvFile.get(movieList.getSelectedIndex()).setRenamed(true);
-      }
-
-      for (int i = 0; i < files.length; i++) {
-        String ext = files[i].getName().substring(files[i].getName().lastIndexOf(Utils.DOT));
-        boolean success = files[i].renameTo(new File(newPath + newNameNoExt + ext));
-        if (!success)
-          JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("renameSrtFailed"), sError, JOptionPane.ERROR_MESSAGE);
-      }
-
-      setting.getLogger().log(Level.INFO, "Rename : {0}\nTo : {1}", new Object[]{file, new File(newPath + newName)});
-
-      //Create Xbmc NFO
-      if (nfoChk.isSelected())
-        try {
-          BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(newPath + newNameNoExt + ".nfo")), "UTF-8"));
-          out.write(currentMovie.getNFOFromMovie(), 0, currentMovie.getNFOFromMovie().length());
-          out.close();
-        } catch (IOException ex) {
-          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-      //Download thumb
-      if (thumbChk.isSelected())
-        try {
-          Utils.copyFile(setting.cache.get(movieImagePnl.getSelectedThumb(setting.thumbSize), Cache.thumb), new File(newPath + newNameNoExt + setting.thumbExtList[setting.thumbExt]));
-        } catch (IOException ex) {
-          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-      //Download fanart
-      if (fanartChk.isSelected())
-        try {
-          Utils.copyFile(setting.cache.get(movieImagePnl.getSelectedFanart(setting.thumbSize), Cache.fanart), new File(newPath + newNameNoExt + "-fanart.jpg"));
-        } catch (IOException ex) {
-          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+      DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault());
+      String title = Utils.getFilteredName(currentMovie.getImdbTitle(), new String[0]);
+      Renamed renamed = new Renamed(title);
+      renamed.setDate(dateFormat.format(new Date()));
 
       int index = movieList.getSelectedIndex();
       if (index == -1) {
@@ -665,7 +606,23 @@ public class MovieRenamer extends javax.swing.JFrame {
         return;
       }
 
-      mvFile.get(index).setFile(new File(newPath + newName));
+      String regex = setting.movieDirRenamedTitle ? setting.movieFilenameFormat : "<t>";
+      String ftitle = currentMovie.getRenamedTitle(regex, setting.renameCase);
+      ftitle = ftitle.substring(0, ftitle.lastIndexOf("."));
+
+      Renamer renamer = new Renamer(ftitle, currentMovie.getFile(), renamedField.getText(), setting);
+
+      if (!renamer.rename()) {
+        JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("renameFileFailed"), sError, JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      mvFile.get(index).setRenamed(true);
+
+      renamer.createNFO(!(nfoChk.isVisible() && nfoChk.isSelected()), currentMovie.getNFOFromMovie());
+      renamer.createThumb(!(thumbChk.isVisible() && thumbChk.isSelected()), movieImagePnl.getSelectedThumb(setting.thumbSize));
+      renamer.createFanart(!(fanartChk.isVisible() && fanartChk.isSelected()), movieImagePnl.getSelectedFanart(setting.fanartSize));
+
+      mvFile.get(index).setFile(renamer.getNewFile());
       movieFileNameModel = new DefaultListModel();
       for (int i = 0; i < mvFile.size(); i++) {
         movieFileNameModel.addElement(mvFile.get(i));
@@ -674,11 +631,13 @@ public class MovieRenamer extends javax.swing.JFrame {
       movieList.setCellRenderer(new IconListRenderer<MovieFile>(mvFile));
       movieList.setModel(movieFileNameModel);
 
+      currentMovie = null;
+      clearInterface(false, true);
       if (mvFile.size() <= (index + 1)) {
         JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("endOfList"), "Information", JOptionPane.INFORMATION_MESSAGE);
-        clearInterface(false, true);
         return;
       }
+
       movieList.setSelectedIndex(index + 1);
     }//GEN-LAST:event_renameBtnActionPerformed
 
@@ -751,6 +710,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         progressMonitor.setProgress(0);
       } else if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
+          currentMovie = null;
           ArrayList<MovieFile> objects = worker.get();
           mvFile = objects;
           movieFileNameModel = new DefaultListModel();
@@ -770,7 +730,6 @@ public class MovieRenamer extends javax.swing.JFrame {
           else if (setting.selectFrstMovie)
             movieList.setSelectedIndex(0);
 
-          currentMovie = null;
         } catch (InterruptedException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
@@ -806,15 +765,12 @@ public class MovieRenamer extends javax.swing.JFrame {
             currentMovie.setMovieInfo((MovieInfo) obj);
 
             String dir = "";
-            if (setting.createMovieDirectory)
-              if (setting.movieDirRenamedTitle) {
-                dir = currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase);
-                dir = dir.substring(0, dir.lastIndexOf("."));
-                dir += File.separator;
-              } else {
-                dir = Utils.getFilteredName(currentMovie.getImdbTitle(), new String[0]);
-                dir += File.separator;
-              }
+            if (setting.createMovieDirectory) {
+              String regex = setting.movieDirRenamedTitle ? setting.movieFilenameFormat : "<t>";
+              dir = currentMovie.getRenamedTitle(regex, setting.renameCase);
+              dir = dir.substring(0, dir.lastIndexOf("."));
+              dir += File.separator;
+            }
 
             renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase));
             renameBtn.setEnabled(true);

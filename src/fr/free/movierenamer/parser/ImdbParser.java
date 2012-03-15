@@ -37,10 +37,9 @@ import fr.free.movierenamer.utils.Settings;
  * @author Nicolas Magré
  */
 public class ImdbParser {
-  
+
   private Settings setting;
   private boolean french;
-    
   // Search Page Pattern
   private static final String MOVIEIMDBPATTERN = ">\\d+.<\\/td>.*?a href=.\\/title\\/tt\\d+\\/.[^>]*>([^<]*).*?\\((\\d+).*?\\)";
   private static final String MOVIENAMEPATTERN = ";\">";
@@ -54,15 +53,14 @@ public class ImdbParser {
   private static final String PARTIALPATTERN_FR = "Titres \\(R&#xE9;sultats Partiels.*?Affichant (\\d+)(.*)";
   private static final String APPROXIMATEPATTERN_EN = "Titles \\(Approx.*?Displaying (\\d+)(.*)";
   private static final String APPROXIMATEPATTERN_FR = "Titres \\(R&#xE9;sultats Approximatif.*?Affichant (\\d+)(.*)";
-  
   // Movie Page Pattern
   private static final String IMDBMOVIETITLE = "<meta property=.og:title. content=?(.*?) \\(.*\\d\\d\\d\\d.*\\)";
   private static final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
-  
   // Movie Page Combined Pattern
   private static final String IMDBMOVIETITLE_C = "<title>.* \\(.*\\d+.*\\).*</title>";
   private static final String IMDBMOVIETHUMB_C = "title=\".*\" src=.http://ia.media-imdb.com/images/.*>";
   private static final String IMDBMOVIEORIGTITLE = "<span class=\"title-extra\">.*</i></span>";
+  private static final String IMDBMOVIEORIGTITLE_FR = "<h5>Alias:</h5>.*\\(titre original\\)";
   private static final String IMDBMOVIEORUNTIME = "<h5>(Runtime|Dur&#xE9;e):</h5><div class=\".*\">\\d+ min";
   private static final String IMDBMOVIERATING = "<b>.[\\.,]./10</b>";
   private static final String IMDBMOVIEVOTES = "<a href=\".*\" class=\".*\">.* votes</a>";
@@ -77,9 +75,9 @@ public class ImdbParser {
   private static final String IMDBMOVIECOUNTRY = "<h5>((Country:)|(Pays:))</h5><div class=\"info-content\">(.*)<div class=\"info\"";
   private static final String IMDBMOVIESTUDIO = "<h5>((Company:)|(Soci&#xE9;t&#xE9;:))</h5><div class=..*.><a href=..*.>(.*)</a><a";
 
-  public ImdbParser(Settings setting){
-      this.setting = setting;
-      this.french = setting.imdbFr;
+  public ImdbParser(Settings setting) {
+    this.setting = setting;
+    this.french = setting.imdbFr;
   }
 
   /**
@@ -94,11 +92,11 @@ public class ImdbParser {
 
     if (searchPage) {
       setting.getLogger().log(Level.INFO, "Imdb Search page");
-      found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire":"Popular"));//Popular title
+      found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire" : "Popular"));//Popular title
       found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french, "Exact"));//Exact title
-      found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel":"Partial"));//Partial title
+      found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel" : "Partial"));//Partial title
       if (found.isEmpty() || setting.displayApproximateResult)
-        found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif":"Approximate"));
+        found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif" : "Approximate"));
     } else {
       setting.getLogger().log(Level.INFO, "Imdb Movie page");
       getMovie(htmlSearchRes, found);
@@ -193,13 +191,13 @@ public class ImdbParser {
         movieName = decodeXMLString(movieName);
 
         String imdbId = moviePage.substring(moviePage.indexOf("/tt") + 1, moviePage.indexOf("/tt") + 10);
-        pattern = Pattern.compile(french ? IMDBMOVIETHUMB_C:IMDBMOVIETHUMB);
+        pattern = Pattern.compile(french ? IMDBMOVIETHUMB_C : IMDBMOVIETHUMB);
         Matcher thumbMatcher = pattern.matcher(moviePage);
         String thumb = null;
-        if (thumbMatcher.find()){
+        if (thumbMatcher.find()) {
           String thumbnail = thumbMatcher.group();
-          if(thumbnail.contains("img src=")) thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
-          else thumb = thumbnail.substring(thumbnail.lastIndexOf("src=")+ 5, thumbnail.lastIndexOf("\""));
+          if (thumbnail.contains("img src=")) thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
+          else thumb = thumbnail.substring(thumbnail.lastIndexOf("src=") + 5, thumbnail.lastIndexOf("\""));
         }
         found.add(new ImdbSearchResult(movieName, imdbId, "Exact", thumb));
 
@@ -235,24 +233,34 @@ public class ImdbParser {
           year = searchMatcher.group();
           movieInfo.setYear(year);
         }
-      }else setting.getLogger().log(Level.SEVERE, "No title found in imdb page");
+      } else setting.getLogger().log(Level.SEVERE, "No title found in imdb page");
 
       // Thumb
       pattern = Pattern.compile(IMDBMOVIETHUMB_C);
       searchMatcher = pattern.matcher(moviePage);
-      if(searchMatcher.find()){
+      if (searchMatcher.find()) {
         String imdbThumb = searchMatcher.group();
-        imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=")+ 5, imdbThumb.lastIndexOf("\""));
+        imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=") + 5, imdbThumb.lastIndexOf("\""));
         movieInfo.setImdbThumb(imdbThumb);
       }
 
       //Original Title
-      pattern = Pattern.compile(IMDBMOVIEORIGTITLE);
+      pattern = Pattern.compile(french ? IMDBMOVIEORIGTITLE_FR : IMDBMOVIEORIGTITLE);
       searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
         String origTitle = searchMatcher.group();
-        origTitle = origTitle.substring(origTitle.indexOf(">") + 1, origTitle.lastIndexOf("<"));
-        origTitle = origTitle.replaceAll("\\(.*\\)", "").replaceAll("<.*>", "");
+        if (french) {
+          System.out.println(origTitle);
+          origTitle = searchMatcher.group().substring(0, searchMatcher.group().lastIndexOf("\""));
+          System.out.println(origTitle);
+          origTitle = origTitle.substring(origTitle.lastIndexOf(">"));
+          System.out.println(origTitle);
+          origTitle = origTitle.substring(origTitle.indexOf("\"") + 1);
+          System.out.println(origTitle);
+        } else {
+          origTitle = origTitle.substring(origTitle.indexOf(">") + 1, origTitle.lastIndexOf("<"));
+          origTitle = origTitle.replaceAll("\\(.*\\)", "").replaceAll("<.*>", "");
+        }
         movieInfo.setOrigTitle(decodeXMLString(origTitle));
       } else movieInfo.setOrigTitle(movieInfo.getTitle());
 
@@ -322,13 +330,13 @@ public class ImdbParser {
       }
 
       //Genres
-      pattern = Pattern.compile((french ? IMDBMOVIEGENRE_FR:IMDBMOVIEGENRE));
+      pattern = Pattern.compile((french ? IMDBMOVIEGENRE_FR : IMDBMOVIEGENRE));
       searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
-        String found = french ? searchMatcher.group().split("\n")[2]:searchMatcher.group();
+        String found = french ? searchMatcher.group().split("\n")[2] : searchMatcher.group();
         String[] genres = found.split("\\|");
         for (int i = 0; i < genres.length; i++) {
-          String genre = french ? genres[i].trim():genres[i].substring(genres[i].indexOf(">") + 1, genres[i].indexOf("</a>"));
+          String genre = french ? genres[i].trim() : genres[i].substring(genres[i].indexOf(">") + 1, genres[i].indexOf("</a>"));
           movieInfo.addGenre(decodeXMLString(genre));
         }
       }
@@ -365,7 +373,7 @@ public class ImdbParser {
                 }
               } else
                 actor.addRole(decodeXMLString(role));
-            } catch (ActionNotValidException e){
+            } catch (ActionNotValidException e) {
               setting.getLogger().log(Level.SEVERE, e.getMessage());
             }
             movieInfo.addActor(actor);
@@ -378,7 +386,7 @@ public class ImdbParser {
       searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
         String country = searchMatcher.group();
-        if(country.contains("/country/")){
+        if (country.contains("/country/")) {
           country = country.substring(country.indexOf("<a"), country.lastIndexOf("</a>"));
           if (country.contains(" | ")) {
             String[] countries = country.split("\\|");
@@ -394,15 +402,14 @@ public class ImdbParser {
             else
               movieInfo.addCountry(country.substring(country.indexOf(">") + 1));
           }
-        }
-        else {
-          country = country.substring(0,country.indexOf("</div></div>"));
+        } else {
+          country = country.substring(0, country.indexOf("</div></div>"));
           country = country.substring(country.indexOf("info-content") + 14);
-           if (country.contains(" | ")) {
+          if (country.contains(" | ")) {
             String[] countries = country.split("\\|");
             for (int i = 0; i < countries.length; i++) {
               country = decodeXMLString(countries[i]);
-                movieInfo.addCountry(country);
+              movieInfo.addCountry(country);
             }
           } else {
             country = decodeXMLString(country);
@@ -410,7 +417,7 @@ public class ImdbParser {
           }
         }
       }
-      
+
       //Studio
       pattern = Pattern.compile(IMDBMOVIESTUDIO);
       searchMatcher = pattern.matcher(moviePage);
