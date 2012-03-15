@@ -26,6 +26,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JList;
@@ -37,12 +38,13 @@ import javax.swing.JPopupMenu;
  */
 public class ContextMenuListMouseListener extends MouseAdapter {
 
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private JPopupMenu popup = new JPopupMenu();
   private MovieFile moviefile;
   private Action play;
 
   public ContextMenuListMouseListener() {
-    play = new AbstractAction("Play") {
+    play = new AbstractAction(bundle.getString("play")) {
 
       @Override
       public void actionPerformed(ActionEvent ae) {

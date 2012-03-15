@@ -19,7 +19,6 @@
  ******************************************************************************/
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.ui.MovieRenamer;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
@@ -28,7 +27,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -64,8 +62,8 @@ public class Renamer {
 
   public boolean rename() {
     String lastDir = oldPath.substring(oldPath.lastIndexOf(File.separator) + 1);
-    setting.getLogger().log(Level.INFO, "Movie folder : {0}\nMovie old filename : {1}", new Object[]{lastDir, oldFileNameNoExt});
-    if (oldFileNameNoExt.matches(lastDir + ".*")) {
+    
+    if (oldFileNameNoExt.matches(lastDir + ".*")) {      
       File files[] = new File(oldPath).listFiles(new FileFilter() {
 
         @Override
@@ -85,9 +83,10 @@ public class Renamer {
 
         File dir = new File(oldPath);
         File oldFileNewDir = new File(oldPath.substring(0, oldPath.lastIndexOf(File.separator) + 1) + newPath);
+        setting.getLogger().log(Level.INFO, "Rename folder : {0} \nTo : {1}", new Object[]{dir, oldFileNewDir});
         boolean success = dir.renameTo(oldFileNewDir);
         if (!success) {
-          setting.getLogger().log(Level.SEVERE, "Failed to rename : {0} to : {1}", new Object[]{dir, oldFileNewDir});
+          setting.getLogger().log(Level.SEVERE, "Failed to rename : {0} \nTo : {1}", new Object[]{dir, oldFileNewDir});
           return false;
         }
 
@@ -97,14 +96,16 @@ public class Renamer {
     }
 
     if (!newPath.equals("")) {
+      setting.getLogger().log(Level.INFO, "Create path : {0}{1}{2}", new Object[]{oldFile.getParent(), File.separator, newPath});
       Utils.createFilePath(oldFile.getParent() + File.separator + newPath, true);
       if (!newPath.endsWith(File.separator)) newPath += File.separator;
     }
 
     if (!newFileNameNoExt.equals(oldFileNameNoExt) || !newPath.equals("")) {
       boolean success = oldFile.renameTo(new File(oldFile.getParent() + File.separator + newPath + newFileName));
+      setting.getLogger().log(Level.INFO, "Rename file : {0} \nTo : {1}", new Object[]{oldFile, oldFile.getParent() + File.separator + newPath + newFileName});
       if (!success) {
-        setting.getLogger().log(Level.SEVERE, "Failed to rename : {0} to : {1}", new Object[]{oldFile, oldFile.getParent() + File.separator + newPath + newFileName});
+        setting.getLogger().log(Level.SEVERE, "Failed to rename : {0} \nTo : {1}", new Object[]{oldFile, oldFile.getParent() + File.separator + newPath + newFileName});
         return false;
       }
       newFile = new File(oldFile.getParent() + File.separator + newPath + newFileName);
@@ -124,11 +125,10 @@ public class Renamer {
       String fext = files[i].getName().substring(files[i].getName().lastIndexOf(Utils.DOT));
 
       boolean success = files[i].renameTo(new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + fext));
+      setting.getLogger().log(Level.INFO, "Rename file : {0} \nTo : {1}", new Object[]{files[i], oldFile.getParent() + File.separator + newPath + newFileNameNoExt + fext});
       if (!success)
         setting.getLogger().log(Level.SEVERE, "Filed to rename : {0}\nTo : {1}", new Object[]{files[i], oldFile.getParent() + File.separator + newPath + newFileNameNoExt + fext});
     }
-
-    setting.getLogger().log(Level.INFO, "Rename : {0}\nTo : {1}", new Object[]{oldFile, newFile});
     return true;
   }
 
@@ -140,41 +140,62 @@ public class Renamer {
     File nfo = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + ".nfo");
     File newNfo = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + ".nfo");
     if (!rename) {
+      setting.getLogger().log(Level.INFO, "Create nfo file{0}", newNfo);
       try {
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newNfo), "UTF-8"));
         out.write(snfo, 0, snfo.length());
         out.close();
       } catch (IOException ex) {
-        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+        setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      if (nfo.exists() && !nfo.equals(newNfo)) nfo.delete();
-    } else if (nfo.exists())// Move nfo
+      if (nfo.exists() && !nfo.equals(newNfo)){
+        setting.getLogger().log(Level.INFO, "Delete nfo file{0}", nfo);
+        nfo.delete();
+      }
+    } else if (nfo.exists()){
+      setting.getLogger().log(Level.INFO, "Rename nfo : {0} \nTo : {1}", new Object[]{nfo, newNfo});
       nfo.renameTo(newNfo);
+    }
+      
   }
 
   public void createThumb(boolean rename, URL url) {
     File thumb = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
     File newThumb = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
     if (!rename) {
+      setting.getLogger().log(Level.INFO, "Create thumb : {0}", newThumb);
       try {
         Utils.copyFile(setting.cache.get(url, Cache.thumb), newThumb);
       } catch (IOException ex) {
-        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+        setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      if (thumb.exists() && !thumb.equals(newThumb)) thumb.delete();
-    } else if (thumb.exists()) thumb.renameTo(newThumb);
+      if (thumb.exists() && !thumb.equals(newThumb)){
+        setting.getLogger().log(Level.INFO, "Delete thumb : {0}", thumb);
+        thumb.delete();
+      }
+    } else if (thumb.exists()){
+      setting.getLogger().log(Level.INFO, "Rename thumb : {0} \nTo : {1}", new Object[]{thumb, newThumb});
+      thumb.renameTo(newThumb);
+    }
   }
 
   public void createFanart(boolean rename, URL url) {
     File fanart = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + "-fanart.jpg");
     File newFanart = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + "-fanart.jpg");
     if (!rename) {
+      setting.getLogger().log(Level.INFO, "Create fanart : {0}", newFanart);
       try {
         Utils.copyFile(setting.cache.get(url, Cache.fanart), newFanart);
       } catch (IOException ex) {
-        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+        setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      if (fanart.exists() && !fanart.equals(newFanart)) fanart.delete();
-    } else if (fanart.exists()) fanart.renameTo(newFanart);
+      if (fanart.exists() && !fanart.equals(newFanart)){
+        setting.getLogger().log(Level.INFO, "Delete fanart : {0}", fanart);
+        fanart.delete();
+      }
+    } else if (fanart.exists()){
+      setting.getLogger().log(Level.INFO, "Rename fanart : {0} \nTo : {1}", new Object[]{fanart, newFanart});
+      fanart.renameTo(newFanart);
+    }
   }
 }

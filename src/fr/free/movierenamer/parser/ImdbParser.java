@@ -250,13 +250,9 @@ public class ImdbParser {
       if (searchMatcher.find()) {
         String origTitle = searchMatcher.group();
         if (french) {
-          System.out.println(origTitle);
           origTitle = searchMatcher.group().substring(0, searchMatcher.group().lastIndexOf("\""));
-          System.out.println(origTitle);
           origTitle = origTitle.substring(origTitle.lastIndexOf(">"));
-          System.out.println(origTitle);
           origTitle = origTitle.substring(origTitle.indexOf("\"") + 1);
-          System.out.println(origTitle);
         } else {
           origTitle = origTitle.substring(origTitle.indexOf(">") + 1, origTitle.lastIndexOf("<"));
           origTitle = origTitle.replaceAll("\\(.*\\)", "").replaceAll("<.*>", "");

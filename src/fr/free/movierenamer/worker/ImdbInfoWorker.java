@@ -65,7 +65,6 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     MovieInfo mvi = imdbParser.getMovieInfo(res);
     mvi.setImdbId(imdbId);
     setProgress(100);
-    System.out.println(mvi);
     return mvi;
   }
 

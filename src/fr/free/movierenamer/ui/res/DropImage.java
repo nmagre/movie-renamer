@@ -90,7 +90,6 @@ public class DropImage implements DropTargetListener {
             String file = URLDecoder.decode(res[i].replace("file://", "").replace("\n", ""), "UTF-8");
             file = file.substring(0, file.length() - 1);
             File f = new File(file);
-            System.out.println(res[i]);
             if (f.exists()){
 
               Image img = null;
@@ -125,13 +124,11 @@ public class DropImage implements DropTargetListener {
             }
           }
         }
-      } else if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
-        System.out.println("List : " + (List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
-
+      }
     } catch (UnsupportedFlavorException ex) {
-      Logger.getLogger(DropImage.class.getName()).log(Level.SEVERE, null, ex);
+      setting.getLogger().log(Level.SEVERE, ex.toString());
     } catch (IOException ex) {
-      Logger.getLogger(DropImage.class.getName()).log(Level.SEVERE, null, ex);
+      setting.getLogger().log(Level.SEVERE, ex.toString());
     }
 
   }

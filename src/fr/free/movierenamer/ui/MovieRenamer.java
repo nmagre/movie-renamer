@@ -92,7 +92,7 @@ import java.util.Locale;
 import javax.swing.DefaultListCellRenderer;
 
 /**
- *
+ * Class MovieRenamer
  * @author Nicolas Magré
  */
 public class MovieRenamer extends javax.swing.JFrame {

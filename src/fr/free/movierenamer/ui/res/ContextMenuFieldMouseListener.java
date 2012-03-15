@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;
@@ -36,6 +37,7 @@ import javax.swing.text.JTextComponent;
  */
 public class ContextMenuFieldMouseListener extends MouseAdapter {
     private JPopupMenu popup = new JPopupMenu();
+    private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
     private Action cut;
     private Action copy;
@@ -50,7 +52,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
     public ContextMenuFieldMouseListener() {
       
-        cut = new AbstractAction("Cut") {
+        cut = new AbstractAction(bundle.getString("cut")) {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -60,7 +62,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
             }
         };
         
-        copy = new AbstractAction("Copy") {
+        copy = new AbstractAction(bundle.getString("copy")) {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -69,7 +71,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
             }
         };
 
-        paste = new AbstractAction("Paste") {
+        paste = new AbstractAction(bundle.getString("paste")) {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -79,7 +81,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
             }
         };
 
-        selectAll = new AbstractAction("Select All") {
+        selectAll = new AbstractAction(bundle.getString("selectAll")) {
 
             @Override
             public void actionPerformed(ActionEvent ae) {

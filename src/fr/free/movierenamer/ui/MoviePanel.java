@@ -221,7 +221,7 @@ public class MoviePanel extends javax.swing.JPanel {
         image = MoviePanel.this.setting.cache.getImage(url, cache);
       }
     } catch (IOException ex) {
-      Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
+      setting.getLogger().log(Level.SEVERE, ex.toString());
     }
     return image;
   }
@@ -416,7 +416,7 @@ public class MoviePanel extends javax.swing.JPanel {
       }
 
     } catch (MalformedURLException ex) {
-      Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
+      setting.getLogger().log(Level.SEVERE, ex.toString());
     }
     return null;
   }

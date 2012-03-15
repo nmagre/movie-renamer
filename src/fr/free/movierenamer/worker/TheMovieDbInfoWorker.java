@@ -118,7 +118,7 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, String> {
       return null;
       }*/
     } catch (IOException ex) {
-      Logger.getLogger(TheMovieDbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+      setting.getLogger().log(Level.SEVERE, ex.toString());
     }
     return movie;
   }
