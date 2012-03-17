@@ -20,30 +20,49 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.movie.MovieFile;
+import fr.free.movierenamer.utils.Utils;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 /**
  *
  * @author duffy
  */
-public class ContextMenuListMouseListener extends MouseAdapter {
+public class ContextMenuListMouseListener extends MouseAdapter implements Serializable {
 
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private JPopupMenu popup = new JPopupMenu();
   private MovieFile moviefile;
-  private Action play;
+  private PropertyChangeSupport changeSupport;
+  private Action search, play, removeList, removeHdd, test;
+  private int index;
+  private String moviename;
 
   public ContextMenuListMouseListener() {
+    index = -1;
+    moviename = "";
+
+    search =  new AbstractAction(bundle.getString("search")) {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        firePropertyChange("search", null, null);
+      }
+    };
+
     play = new AbstractAction(bundle.getString("play")) {
 
       @Override
@@ -54,23 +73,80 @@ public class ContextMenuListMouseListener extends MouseAdapter {
         }
       }
     };
+
+    removeList = new AbstractAction(bundle.getString("removeFromList")) {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        firePropertyChange("remove", null, index);
+      }
+    };
+
+    removeHdd = new AbstractAction(bundle.getString("deleteFile")) {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        int n = JOptionPane.showConfirmDialog(null, bundle.getString("removeFile") + Utils.ENDLINE + moviefile.getFile(), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+        if (n == 0)
+          if (!moviefile.getFile().delete())
+            JOptionPane.showMessageDialog(null, bundle.getString("renameFileFailed"), "Error", JOptionPane.ERROR_MESSAGE);
+          else
+            firePropertyChange("remove", null, moviefile.getFile());
+      }
+    };
+
+    test = new AbstractAction("") {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+      }
+    };
+    test.setEnabled(false);
+
+    popup.add(search);
+    popup.add(new JPopupMenu.Separator());
     popup.add(play);
+    popup.add(new JPopupMenu.Separator());
+    popup.add(removeList);
+    popup.add(removeHdd);
+    popup.add(new JPopupMenu.Separator());
+    popup.add(test);
+    changeSupport = new PropertyChangeSupport(this);
+  }
+
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    changeSupport.addPropertyChangeListener(listener);
+    removeList.addPropertyChangeListener(listener);
+    search.addPropertyChangeListener(listener);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    changeSupport.removePropertyChangeListener(listener);
   }
 
   @Override
   public void mouseClicked(MouseEvent e) {
     if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
+
       if (!(e.getSource() instanceof JList))
         return;
       JList list = (JList) e.getSource();
       if (!(list.getSelectedValue() instanceof MovieFile)) return;
 
-      int location = list.locationToIndex(e.getPoint());
-      moviefile = (MovieFile) list.getModel().getElementAt(list.locationToIndex(e.getPoint()));
-      int x, y;
-      x = e.getX();
-      y = e.getY();
-      popup.show(e.getComponent(), x, y);
+      index = list.getSelectedIndex();
+      moviefile = (MovieFile) list.getModel().getElementAt(index);
+      moviename = moviefile.getFile().getName();
+      if (moviename.length() > 30) moviename = moviename.substring(0, 27) + "...";
+      popup.remove(7);
+      test = new AbstractAction(moviename) {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+        }
+      };
+      test.setEnabled(false);
+      popup.add(test);
+      popup.show(e.getComponent(), e.getX(), e.getY());
     }
   }
 }

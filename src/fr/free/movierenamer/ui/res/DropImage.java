@@ -35,9 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -130,6 +128,5 @@ public class DropImage implements DropTargetListener {
     } catch (IOException ex) {
       setting.getLogger().log(Level.SEVERE, ex.toString());
     }
-
   }
 }

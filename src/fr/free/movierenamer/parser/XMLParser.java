@@ -233,6 +233,8 @@ public class XMLParser<T> {
               config.checkUpdate = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("showNotaMovieWarn"))
               config.showNotaMovieWarn = buffer.toString().equals(sZero);
+            if (name.equalsIgnoreCase("autoSearchMovie"))
+              config.autoSearchMovie = buffer.toString().equals(sZero);
 
           } catch (NullPointerException ex) {
             config.getLogger().log(Level.SEVERE, ex.getMessage());

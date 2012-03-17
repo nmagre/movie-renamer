@@ -70,6 +70,7 @@ import fr.free.movierenamer.ui.res.ImdbSearchResult;
 import fr.free.movierenamer.utils.Loading;
 import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieFile;
+import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.movie.MoviePerson;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
@@ -113,12 +114,33 @@ public class MovieRenamer extends javax.swing.JFrame {
   private final int FANARTWORKER = 3;
   private final int ACTORWORKER = 4;
   private ArrayList<MovieFile> mvFile;
+  private ContextMenuListMouseListener contex;
 
   /** Creates new form MovieRenamerMain
    * @param setting
    */
   public MovieRenamer(Settings setting) {
+
     this.setting = setting;
+    contex = new ContextMenuListMouseListener();
+    contex.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        if (pce.getPropertyName().equals("remove")) {
+          int index = (Integer) pce.getNewValue();
+          if(index == -1) return;
+          mvFile.remove(index);
+          movieFileNameModel.remove(index);
+          clearInterface(false, true);
+        }
+        else if(pce.getPropertyName().equals("search")){
+          if(currentMovie == null) return;
+          searchMovieImdb(currentMovie.getSearch());
+        }
+      }
+    });
+
     initComponents();
 
     setIconImage(Utils.getImageFromJAR("/image/icon-32.gif", getClass()));
@@ -161,7 +183,11 @@ public class MovieRenamer extends javax.swing.JFrame {
         renameBtn.setEnabled(false);
         renamedField.setText(Utils.EMPTY);
         renamedField.setEnabled(false);
-        searchMovieImdb(currentMovie.getSearch());
+        if(MovieRenamer.this.setting.autoSearchMovie) searchMovieImdb(currentMovie.getSearch());
+        else {
+          searchBtn.setEnabled(true);
+          searchField.setEnabled(true);
+        }
       }
     });
 
@@ -384,8 +410,8 @@ public class MovieRenamer extends javax.swing.JFrame {
 
 
     movieScroll.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("movieListTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); // NOI18N
-    movieList.setFont(new Font("Dialog", 0, 12)); // NOI18N
-    movieList.addMouseListener(new ContextMenuListMouseListener());
+    movieList.setFont(new Font("Dialog", 0, 12));
+    movieList.addMouseListener(contex);
     movieScroll.setViewportView(movieList);
 
     centerSp.setTopComponent(movieScroll);
@@ -544,7 +570,8 @@ public class MovieRenamer extends javax.swing.JFrame {
                 tmdbiw = new TheMovieDbInfoWorker(currentMovie, MovieRenamer.this, setting);
                 tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
               }
-              if(setting.thumb || setting.fanart || setting.actorImage) loadDial(false, true);
+              if (setting.thumb || setting.fanart || setting.actorImage) loadDial(false, true);
+              if ((actor != null ||  tmdbiw != null)) loading.setValue(100, INFOWORKER);
               if (actor != null) actor.execute();
               if (tmdbiw != null) tmdbiw.execute();
             }
@@ -594,6 +621,17 @@ public class MovieRenamer extends javax.swing.JFrame {
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
+
+
+      ArrayList<MovieImage> images = movieImagePnl.getAddedThumb();
+      for (int i = 0; i < images.size(); i++) {
+        currentMovie.addThumb(images.get(i));
+      }
+
+      images = movieImagePnl.getAddedFanart();
+      for (int i = 0; i < images.size(); i++) {
+        currentMovie.addFanart(images.get(i));
+      }
 
       DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault());
       String title = Utils.getFilteredName(currentMovie.getImdbTitle(), new String[0]);
@@ -753,7 +791,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-      if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+      if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
         try {
           Object obj = imdbiw.get();
           if (obj == null) {
@@ -780,6 +818,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             ActorWorker actor = new ActorWorker(currentMovie.getPersons(MoviePerson.ACTOR), movieImagePnl, setting);
             actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
             actor.execute();
+            loading.setValue(100, INFOWORKER);
           }
           if (obj instanceof Movie) {
             currentMovie.setThumbs(((Movie) obj).getThumbs());
@@ -792,14 +831,14 @@ public class MovieRenamer extends javax.swing.JFrame {
 
             if (setting.thumb) thumb.execute();
             if (setting.fanart) fanart.execute();
+            if (renameBtn.isEnabled()) loading.setValue(100, INFOWORKER);
           }
         } catch (InterruptedException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
         }
-        loading.setValue(100, INFOWORKER);
-      } else loading.setValue(imdbiw.getProgress(), INFOWORKER);
+      else loading.setValue(imdbiw.getProgress(), INFOWORKER);
     }
   }
 

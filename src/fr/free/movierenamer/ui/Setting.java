@@ -152,6 +152,7 @@ public class Setting extends JDialog {
     actorImageChk.setSelected(setting.actorImage);
     thumbsChk.setSelected(setting.thumb);
     fanartsChk.setSelected(setting.fanart);
+    autoSearchChk.setSelected(setting.autoSearchMovie);
 
     englishRbtn.setSelected(!setting.locale.equals("fr"));
     frenchRbtn.setSelected(setting.locale.equals("fr"));
@@ -258,9 +259,9 @@ public class Setting extends JDialog {
     movieInfoPanelChk = new JCheckBox();
     thumbsChk = new JCheckBox();
     fanartsChk = new JCheckBox();
-    useExtensionFilterChk = new JCheckBox();
     scanSubfolderChk = new JCheckBox();
     showNotaMovieWarnChk = new JCheckBox();
+    autoSearchChk = new JCheckBox();
     renamePnl = new JPanel();
     movieFileNamePnl = new JPanel();
     movieTitleRBtn = new JRadioButton();
@@ -305,6 +306,7 @@ public class Setting extends JDialog {
     extensionScrollP = new JScrollPane();
     extentionJlist = new JList();
     extensionHelp = new JButton();
+    useExtensionFilterChk = new JCheckBox();
     fileNameFilterPnl = new JPanel();
     moveLeft = new JButton();
     moveRight = new JButton();
@@ -397,14 +399,17 @@ public class Setting extends JDialog {
     );
 
     interfacePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("interface"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));
+    selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     selectFirstMovieChk.setText(bundle.getString("autoSelFrstMovie")); // NOI18N
+    selectFirstMovieChk.setToolTipText(bundle.getString("autoSelFrstMovieTt")); // NOI18N
 
-    selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));
+    selectFirstResChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
+    selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
 
-    actorImageChk.setFont(new Font("Ubuntu", 0, 12));
+    actorImageChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     actorImageChk.setText(bundle.getString("showActorImage")); // NOI18N
+    actorImageChk.setToolTipText(bundle.getString("showActorImageTt")); // NOI18N
     actorImageChk.setEnabled(false);
 
     movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12));
@@ -417,20 +422,25 @@ public class Setting extends JDialog {
 
     thumbsChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     thumbsChk.setText(bundle.getString("showThumbs")); // NOI18N
+    thumbsChk.setToolTipText(bundle.getString("showThumbsTt")); // NOI18N
     thumbsChk.setEnabled(false);
 
-    fanartsChk.setFont(new Font("Ubuntu", 0, 12));
+    fanartsChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     fanartsChk.setText(bundle.getString("showFanarts")); // NOI18N
+    fanartsChk.setToolTipText(bundle.getString("showFanartsTt")); // NOI18N
     fanartsChk.setEnabled(false);
 
-    useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12));
-    useExtensionFilterChk.setText(bundle.getString("useExtFilter")); // NOI18N
-
-    scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));
+    scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     scanSubfolderChk.setText(bundle.getString("autoScanSubfolder")); // NOI18N
+    scanSubfolderChk.setToolTipText(bundle.getString("autoScanSubfolderTt")); // NOI18N
 
-    showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));
+    showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     showNotaMovieWarnChk.setText(bundle.getString("showNotMovieWarn")); // NOI18N
+    showNotaMovieWarnChk.setToolTipText(bundle.getString("showNotMovieWarnTt")); // NOI18N
+
+    autoSearchChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
+    autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
 
     GroupLayout interfacePnlLayout = new GroupLayout(interfacePnl);
     interfacePnl.setLayout(interfacePnlLayout);
@@ -442,15 +452,15 @@ public class Setting extends JDialog {
           .addComponent(selectFirstMovieChk)
           .addComponent(selectFirstResChk)
           .addComponent(scanSubfolderChk)
-          .addComponent(useExtensionFilterChk)
-          .addComponent(showNotaMovieWarnChk)
           .addComponent(movieInfoPanelChk)
           .addGroup(interfacePnlLayout.createSequentialGroup()
             .addGap(21, 21, 21)
             .addGroup(interfacePnlLayout.createParallelGroup(Alignment.LEADING)
               .addComponent(thumbsChk)
               .addComponent(actorImageChk)
-              .addComponent(fanartsChk))))
+              .addComponent(fanartsChk)))
+          .addComponent(showNotaMovieWarnChk)
+          .addComponent(autoSearchChk))
         .addContainerGap(147, Short.MAX_VALUE))
     );
     interfacePnlLayout.setVerticalGroup(
@@ -460,11 +470,11 @@ public class Setting extends JDialog {
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(selectFirstResChk)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(showNotaMovieWarnChk)
+        .addComponent(autoSearchChk)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(scanSubfolderChk)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(useExtensionFilterChk)
+        .addComponent(showNotaMovieWarnChk)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(movieInfoPanelChk)
         .addPreferredGap(ComponentPlacement.UNRELATED)
@@ -496,7 +506,7 @@ public class Setting extends JDialog {
         .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(30, Short.MAX_VALUE))
+        .addContainerGap(34, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
@@ -694,7 +704,7 @@ public class Setting extends JDialog {
         .addComponent(movieFileNamePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(movieImagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(43, Short.MAX_VALUE))
+        .addContainerGap(47, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("rename"), renamePnl); // NOI18N
@@ -806,9 +816,9 @@ public class Setting extends JDialog {
     );
 
     imdbSearchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("result"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
-    displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));
+    displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     displayAppResultCheckBox.setText(bundle.getString("showAppRes")); // NOI18N
-    displayAppResultCheckBox.setToolTipText("Display approximate result even if some movies are found");
+    displayAppResultCheckBox.setToolTipText(bundle.getString("showAppRestt")); // NOI18N
 
     limitResultComboBox.setFont(new Font("Ubuntu", 1, 12));
     limitResultComboBox.setModel(new DefaultComboBoxModel(new String[] { bundle.getString("all"), "5", "10", "15", "20", "30" }));
@@ -816,9 +826,8 @@ public class Setting extends JDialog {
     limitResultLbl.setFont(new Font("Ubuntu", 0, 12));
     limitResultLbl.setText(bundle.getString("resForEachType")); // NOI18N
 
-    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));
+    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
-    displayThumbResultChk.setToolTipText("Displays movie thumbnails in search results");
 
     GroupLayout imdbSearchPnlLayout = new GroupLayout(imdbSearchPnl);
     imdbSearchPnl.setLayout(imdbSearchPnlLayout);
@@ -870,7 +879,7 @@ public class Setting extends JDialog {
         .addComponent(imdbSearchPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(imagesPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(64, Short.MAX_VALUE))
+        .addContainerGap(68, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
@@ -907,6 +916,9 @@ public class Setting extends JDialog {
       }
     });
 
+    useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12));
+    useExtensionFilterChk.setText(bundle.getString("useExtFilter")); // NOI18N
+
     GroupLayout extensionPnlLayout = new GroupLayout(extensionPnl);
     extensionPnl.setLayout(extensionPnlLayout);
 
@@ -919,7 +931,8 @@ public class Setting extends JDialog {
             .addComponent(addExtensionBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(removeExtensuionBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE))
-          .addComponent(extensionScrollP, GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
+          .addComponent(extensionScrollP, GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+          .addComponent(useExtensionFilterChk))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(extensionHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
@@ -930,6 +943,8 @@ public class Setting extends JDialog {
         .addGroup(extensionPnlLayout.createParallelGroup(Alignment.LEADING)
           .addGroup(extensionPnlLayout.createSequentialGroup()
             .addContainerGap()
+            .addComponent(useExtensionFilterChk)
+            .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(extensionScrollP, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(ComponentPlacement.RELATED)
             .addGroup(extensionPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1044,8 +1059,8 @@ public class Setting extends JDialog {
         .addContainerGap()
         .addComponent(extensionPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(29, Short.MAX_VALUE))
+        .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
@@ -1168,7 +1183,7 @@ public class Setting extends JDialog {
         .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(158, Short.MAX_VALUE))
+        .addContainerGap(162, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab("Cache", cachePnl);
@@ -1211,7 +1226,7 @@ public class Setting extends JDialog {
       layout.createParallelGroup(Alignment.LEADING)
       .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(settingTabPan, GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
+        .addComponent(settingTabPan, GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
           .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
@@ -1244,6 +1259,7 @@ public class Setting extends JDialog {
     setting.actorImage = actorImageChk.isSelected();
     setting.thumb = thumbsChk.isSelected();
     setting.fanart = fanartsChk.isSelected();
+    setting.autoSearchMovie = autoSearchChk.isSelected();
 
     boolean langFr = setting.locale.equals("fr");
     if (langFr != frenchRbtn.isSelected()) {
@@ -1467,6 +1483,7 @@ public class Setting extends JDialog {
   private JCheckBox actorImageChk;
   private JButton addExtensionBtn;
   private JButton addFilter;
+  private JCheckBox autoSearchChk;
   private JPanel cachePnl;
   private ButtonGroup caseGroup;
   private JLabel caseLbl;

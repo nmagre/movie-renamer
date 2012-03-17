@@ -283,6 +283,7 @@ public class Movie {
         res = regExp + "." + ext.toLowerCase();
         break;
     }
+    if(Utils.isWindows()) res = res.replaceAll(":", "").replaceAll("/", "");
     return res;
   }
 

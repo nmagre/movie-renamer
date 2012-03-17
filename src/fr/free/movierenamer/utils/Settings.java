@@ -97,7 +97,7 @@ public class Settings {
     "hdmi","dvd5","ac3","culthd","dvd9","remux","edition.platinum","frenchhqc","proper","frenchedit",
     "wawamania","h264","bdrip","brrip","hdteam","hddvdrip","subhd","xvid","divx","null","divx511",
     "vorbis","=str=","www","ffm","mp3","-arrows","divx5","dvb","mpa2","blubyte","brmp","avs","filmhd",
-    "hd4u","1080p","1080i","720p","720i","720","-Liber","truefrench","dts","french","megaexclue","justme",
+    "hd4u","1080p","1080i","720p","720i","720","-Liber","truefrench","dts","french","megaexclue",
     "untoucahbles","vostfr","1cd","2cd","vff"," vo "," vf ","forcebleue","hd"," ma ","knob"," ws","bong",
     "-fiction"," cam ","telesync"," ts "," tc ","ntsc"," pal ","dvd-r","dvdscr","scr","r1","r2","r3","r4",
     "r5","wp","subforced","dvd","vcd","avchd","-arlbouffiard","-redbull"," md","-kong","-thewarrior777",
@@ -139,6 +139,7 @@ public class Settings {
   public boolean fanart = true;
   public boolean checkUpdate = false;
   public boolean showNotaMovieWarn = true;
+  public boolean autoSearchMovie = true;
   
 
   public Settings() {
@@ -200,6 +201,7 @@ public class Settings {
       out.write("    <fanart>" + (fanart ? 0 : 1) + "</fanart>" + endl);
       out.write("    <checkUpdate>" + (checkUpdate ? 0 : 1) + "</checkUpdate>" + endl);
       out.write("    <showNotaMovieWarn>" + (showNotaMovieWarn ? 0 : 1) + "</showNotaMovieWarn>" + endl);
+      out.write("    <autoSearchMovie>" + (autoSearchMovie ? 0 : 1) + "</autoSearchMovie>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

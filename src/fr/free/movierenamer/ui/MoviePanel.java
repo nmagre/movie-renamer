@@ -35,7 +35,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -150,7 +149,7 @@ public class MoviePanel extends javax.swing.JPanel {
       public void valueChanged(ListSelectionEvent e) {
         if (thumbnailsList.getSelectedIndex() == -1) return;
         thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
-        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getOrigUrl().replace(".png", ".jpg"), Cache.thumb);
+        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"), Cache.thumb);
         if (img != null)
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
       }
@@ -168,7 +167,7 @@ public class MoviePanel extends javax.swing.JPanel {
       public void valueChanged(ListSelectionEvent lse) {
         if (fanartList.getSelectedIndex() == -1) return;
         fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
-        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getOrigUrl(), Cache.fanart);
+        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.fanart);
         detailsPnl.validate();
         detailsPnl.repaint();
       }
@@ -235,13 +234,13 @@ public class MoviePanel extends javax.swing.JPanel {
         thumbs.add(mvImg);
         Image img = null;
         if (thumbnailModel.isEmpty())
-          img = getImage(thumbs.get(0).getOrigUrl(), Cache.thumb);
+          img = getImage(thumbs.get(0).getThumbUrl(), Cache.thumb);
         if (img != null)
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
         if (thumb != null)
           thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
         if (!thumbnailModel.isEmpty())
-          thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size()-1):0));
+          thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
       }
     });
   }
@@ -254,7 +253,7 @@ public class MoviePanel extends javax.swing.JPanel {
       public void run() {
         fanarts.add(mvImg);
         if (fanartModel.isEmpty()) {
-          fanartBack = getImage(fanarts.get(0).getOrigUrl(), Cache.fanart);
+          fanartBack = getImage(fanarts.get(0).getThumbUrl(), Cache.fanart);
           detailsPnl.validate();
           detailsPnl.repaint();
         }
@@ -262,7 +261,7 @@ public class MoviePanel extends javax.swing.JPanel {
         if (fanart != null)
           fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
         if (!fanartModel.isEmpty())
-          fanartList.setSelectedIndex((selectLast ? (fanartModel.size()-1):0));
+          fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
       }
     });
   }
@@ -314,7 +313,7 @@ public class MoviePanel extends javax.swing.JPanel {
     });
   }
 
-  public void clearActorList(){
+  public void clearActorList() {
     actorModel.clear();
     actors.clear();
   }
@@ -392,13 +391,33 @@ public class MoviePanel extends javax.swing.JPanel {
     }
   }
 
+  public ArrayList<MovieImage> getAddedThumb() {
+    ArrayList<MovieImage> res = new ArrayList<MovieImage>();
+    for (int i = 0; i < thumbs.size(); i++) {
+      if (thumbs.get(i).getId().equals("-1"))
+        if (!thumbs.get(i).getThumbUrl().startsWith("file://"))
+          res.add(thumbs.get(i));
+    }
+    return res;
+  }
+
+  public ArrayList<MovieImage> getAddedFanart() {
+    ArrayList<MovieImage> res = new ArrayList<MovieImage>();
+    for (int i = 0; i < fanarts.size(); i++) {
+      if (fanarts.get(i).getId().equals("-1"))
+        if (!fanarts.get(i).getThumbUrl().startsWith("file://"))
+          res.add(fanarts.get(i));
+    }
+    return res;
+  }
+
   public URL getSelectedThumb(int size) {
-    if(!thumbsScrollPane.isVisible()) return null;
+    if (!thumbsScrollPane.isVisible()) return null;
     return getSelectedItem(thumbs, thumbnailsList, size);
   }
 
   public URL getSelectedFanart(int size) {
-    if(!fanartsScrollPane.isVisible()) return null;
+    if (!fanartsScrollPane.isVisible()) return null;
     return getSelectedItem(fanarts, fanartList, size);
   }
 
