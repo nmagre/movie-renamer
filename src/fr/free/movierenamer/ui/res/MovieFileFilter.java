@@ -26,8 +26,8 @@ import java.util.ResourceBundle;
 import javax.swing.filechooser.FileFilter;
 
 /**
- *
- * @author Administrateur
+ * Class MovieFileFilter
+ * @author Nicolas Magré
  */
 public class MovieFileFilter extends FileFilter{
 
@@ -47,6 +47,5 @@ public class MovieFileFilter extends FileFilter{
     @Override
     public String getDescription() {
         return bundle.getString("movie");
-    }
-    
+    }    
 }

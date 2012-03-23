@@ -52,8 +52,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieImage;
+import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Component;
@@ -65,6 +65,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import plugins.IPluginInfo;
 
 /**
  * Class MoviePanel
@@ -127,10 +128,12 @@ public class MoviePanel extends javax.swing.JPanel {
   private Settings setting;
 
   /** Creates new form MoviePanel
-   * @param setting 
+   * @param setting
+   * @param pluginsInfo
    */
-  public MoviePanel(Settings setting) {
+  public MoviePanel(Settings setting, IPluginInfo[] pluginsInfo) {
     this.setting = setting;
+
     initComponents();
     actors = new ArrayList<actorImage>();
     thumbs = new ArrayList<MovieImage>();
@@ -195,6 +198,12 @@ public class MoviePanel extends javax.swing.JPanel {
         return label;
       }
     });
+
+
+    for (int i = 0; i < pluginsInfo.length; i++) {
+      if (pluginsInfo[i].getInfoPanel() != null)
+        movieTabbedPane.addTab(pluginsInfo[i].getName(), pluginsInfo[i].getInfoPanel());
+    }
 
     dropFanartTarget.setActive(false);
     dropThumbTarget.setActive(false);
@@ -318,20 +327,20 @@ public class MoviePanel extends javax.swing.JPanel {
     actors.clear();
   }
 
-  public void addMovie(final Movie movie) {
+  public void addMovieInfo(final MovieInfo movieInfo) {
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
       public void run() {
-        titleLbl.setText(movie.getTitle());
-        origTitleField.setText(movie.getOrigTitle());
-        yearField.setText(movie.getYear());
-        runtimeField.setText(movie.getRuntime() + " min");
-        synopsisArea.setText(movie.getSynopsis());
-        genreField.setText(movie.getGenresString());
-        directorField.setText(movie.getDirectorsString());
-        countryField.setText(movie.getCountriesString());
-        setRate(Float.parseFloat(movie.getRating().replace(",", ".")));
+        titleLbl.setText(movieInfo.getTitle());
+        origTitleField.setText(movieInfo.getOrigTitle());
+        yearField.setText(movieInfo.getYear());
+        runtimeField.setText(movieInfo.getRuntime() + " min");
+        synopsisArea.setText(movieInfo.getSynopsis());
+        genreField.setText(movieInfo.getGenresString());
+        directorField.setText(movieInfo.getDirectorsString());
+        countryField.setText(movieInfo.getCountriesString());
+        setRate(Float.parseFloat(movieInfo.getRating().replace(",", ".")));
         dropFanartTarget.setActive(true);
         dropThumbTarget.setActive(true);
 
@@ -342,8 +351,8 @@ public class MoviePanel extends javax.swing.JPanel {
         countryField.setCaretPosition(0);
 
         if (!setting.thumb)
-          if (!movie.getImdbThumb().equals("")) {
-            Image imThumb = getImage(movie.getImdbThumb(), Cache.thumb);
+          if (!movieInfo.getImdbThumb().equals("")) {
+            Image imThumb = getImage(movieInfo.getImdbThumb(), Cache.thumb);
             if (imThumb != null) thumbLbl.setIcon(new ImageIcon(imThumb.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
           }
       }
@@ -449,7 +458,7 @@ public class MoviePanel extends javax.swing.JPanel {
     public actorImage(String name, String desc, ImageIcon img) {
       this.name = name;
       this.desc = desc;
-      if (img == null) img = actorDefault;
+      if (img == null) this.img = actorDefault;
       else this.img = img;
     }
 
@@ -670,7 +679,7 @@ public class MoviePanel extends javax.swing.JPanel {
       actorPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(actorPnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+        .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -698,9 +707,7 @@ public class MoviePanel extends javax.swing.JPanel {
       .addGroup(InfoPnlLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
-          .addGroup(Alignment.TRAILING, InfoPnlLayout.createSequentialGroup()
-            .addComponent(titleLbl, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-            .addGap(84, 84, 84))
+          .addComponent(titleLbl, GroupLayout.PREFERRED_SIZE, 412, GroupLayout.PREFERRED_SIZE)
           .addGroup(InfoPnlLayout.createSequentialGroup()
             .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING, false)
               .addGroup(InfoPnlLayout.createSequentialGroup()
@@ -721,7 +728,7 @@ public class MoviePanel extends javax.swing.JPanel {
       InfoPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(InfoPnlLayout.createSequentialGroup()
         .addComponent(titleLbl, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
+        .addPreferredGap(ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
         .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
           .addGroup(InfoPnlLayout.createSequentialGroup()
             .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -732,7 +739,7 @@ public class MoviePanel extends javax.swing.JPanel {
               .addComponent(star4))
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE))
-          .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+          .addComponent(movieTabbedPane, GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE))
         .addContainerGap())
     );
 

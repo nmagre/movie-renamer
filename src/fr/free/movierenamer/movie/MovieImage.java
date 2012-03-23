@@ -31,6 +31,11 @@ public class MovieImage {
     private String medium;
     private String thumb;
 
+    /**
+     * Constructor arguments
+     * @param id Image id
+     * @param type Image type
+     */
     public MovieImage(String id, String type) {
         this.id = id;
         this.type = type;
@@ -39,34 +44,66 @@ public class MovieImage {
         thumb = "";
     }
 
+    /**
+     * Get ID
+     * @return ID
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Get type
+     * @return Type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Get image original URL
+     * @return Original URL
+     */
     public String getOrigUrl() {
         return orig;
     }
 
+    /**
+     * Get image middle URL
+     * @return Middle URL
+     */
     public String getMidUrl() {
         return medium;
     }
 
+    /**
+     * Get image thumb URL
+     * @return Thumb URL
+     */
     public String getThumbUrl() {
         return thumb;
     }
 
+    /**
+     * Set original image URL
+     * @param url URL
+     */
     public void setOrigUrl(String url) {
         orig = url;
     }
 
+    /**
+     * Set middle image URL
+     * @param url URL
+     */
     public void setMidUrl(String url) {
         medium = url;
     }
 
+    /**
+     * Set thumb URL
+     * @param url URL
+     */
     public void setThumbUrl(String url) {
         thumb = url;
     }

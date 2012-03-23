@@ -33,7 +33,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.text.JTextComponent;
 
 /**
- *
+ * Class ContextMenuFieldMouseListener
+ * @author Nicolas Magré
  */
 public class ContextMenuFieldMouseListener extends MouseAdapter {
     private JPopupMenu popup = new JPopupMenu();
@@ -45,8 +46,6 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
     private Action selectAll;
 
     private JTextComponent textComponent;
-    private String savedString = "";
-    private Actions lastActionSelected;
 
     private enum Actions { CUT, COPY, PASTE, SELECT_ALL };
 
@@ -56,8 +55,6 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                lastActionSelected = Actions.CUT;
-                savedString = textComponent.getText();
                 textComponent.cut();
             }
         };
@@ -66,7 +63,6 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                lastActionSelected = Actions.COPY;
                 textComponent.copy();
             }
         };
@@ -75,8 +71,6 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                lastActionSelected = Actions.PASTE;
-                savedString = textComponent.getText();
                 textComponent.paste();
             }
         };
@@ -85,7 +79,6 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                lastActionSelected = Actions.SELECT_ALL;
                 textComponent.selectAll();
             }
         };

@@ -38,12 +38,24 @@
       <description>The base files</description>
       <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH"/>
       <file src="dist/@JARFILE@" targetdir="$INSTALL_PATH"/>
+      <file src="lib" targetdir="$INSTALL_PATH"/>
       <file src="postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
+      <file src="postinst.bat" targetdir="$INSTALL_PATH" os="windows"/>
       <file src="src/image/icon-32.ico" targetdir="$INSTALL_PATH" os="windows"/>
       <file src="src/image/icon-32.gif" targetdir="$INSTALL_PATH" os="unix"/>
+
       <executable targetfile="$INSTALL_PATH/postinst.sh" os="unix" stage="postinstall" failure="warn">
         <args>
-          <arg value="$INSTALL_PATH/@JARFILE@" />
+          <arg value="$INSTALL_PATH/" />
+          <arg value="@JARFILE@" />
+          <arg value="Movie Renamer.jar" />
+        </args>
+      </executable>
+      <executable targetfile="$INSTALL_PATH/postinst.bat" os="windows" stage="postinstall" failure="abort">
+        <args>
+          <arg value="$INSTALL_PATH\" />
+          <arg value="@JARFILE@" />
+          <arg value="Movie Renamer.jar" />
         </args>
       </executable>
     </pack>

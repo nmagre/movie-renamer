@@ -28,10 +28,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -40,12 +42,13 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
- *
- * @author duffy
+ * Class Utils
+ * @author Nicolas Magré
  */
 public class Utils {
 
   private static String OS = null;
+  private static ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   public static final String SPACE = " ";
   public static final String ENDLINE = "\n";
   public static final String EMPTY = "";
@@ -55,6 +58,7 @@ public class Utils {
   public static final int UPPER = 2;
   public static final int LOWER = 3;
   public static final Icon MOVIERENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.gif", Utils.class));
+  public static final Icon MOVIEWASRENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-22.gif", Utils.class));
   public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
   public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
@@ -117,18 +121,18 @@ public class Utils {
     return newArray;
   }
 
-  public static String arrayToString(String[] array, String separator) {
+  public static String arrayToString(Object[] array, String separator) {
     StringBuilder res = new StringBuilder();
     if (array.length == 0)
       return res.toString();
     for (int i = 0; i < array.length; i++) {
-      res.append(array[i]).append((i < (array.length - 1)) ? separator : "");
+      res.append(array[i].toString()).append((i < (array.length - 1)) ? separator : "");
     }
     return res.toString();
   }
 
   public static String arrayToString(ArrayList<String> array, String separator) {
-    return arrayToString(array.toArray(new String[array.size()]), separator);
+    return arrayToString(array.toArray(new Object[array.size()]), separator);
   }
 
   public static String arrayPersonnToString(ArrayList<MoviePerson> array, String separator) {
@@ -139,14 +143,19 @@ public class Utils {
     return arrayToString(arr, separator);
   }
 
+  public static ArrayList<String> stringToArray(String str, String seprarator) {
+    ArrayList<String> array = new ArrayList<String>();
+    String[] res = str.split(seprarator);
+    array.addAll(Arrays.asList(res));
+    return array;
+  }
+
   public static String md5(String s) {
     try {
-      // Create MD5 Hash
       MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
       digest.update(s.getBytes());
       byte messageDigest[] = digest.digest();
 
-      // Create Hex String
       StringBuilder hexString = new StringBuilder();
       for (int i = 0; i < messageDigest.length; i++) {
         hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
@@ -206,6 +215,37 @@ public class Utils {
     return ret;
   }
 
+  public static boolean downloadFile(URL uri, String fileName) throws IOException {
+    InputStream is = null;
+    OutputStream out = null;
+    boolean downloaded = false;
+    try {
+      is = uri.openStream();
+      File f = new File(fileName);
+      if (!f.exists()) {
+        File d = new File(f.getParent());
+        if (!d.exists())
+          if (!d.mkdirs()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+        if(!f.createNewFile()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+      }
+      out = new FileOutputStream(f);
+      byte buf[] = new byte[1024];
+      int len;
+      if (is.available() != 0) downloaded = true;
+      while ((len = is.read(buf)) > 0)
+        out.write(buf, 0, len);
+      is.close();
+      out.close();
+    } catch (IOException ex) {
+      if (out != null) try {
+          out.close();
+        } catch (IOException ex1) {
+        }
+      throw ex;
+    }
+    return downloaded;
+  }
+
   public static Image getImageFromJAR(String fileName, Class cls) {
     if (fileName == null)
       return null;
@@ -236,11 +276,10 @@ public class Utils {
   public static boolean deleteFileInDirectory(File dir) {
     boolean del = true;
     for (File fils : dir.listFiles()) {
-      if (fils.isDirectory()){
+      if (fils.isDirectory()) {
         if (!deleteFileInDirectory(fils)) del = false;
         else if (!fils.delete()) del = false;
-      }
-      else if (!fils.delete()) del = false;
+      } else if (!fils.delete()) del = false;
     }
     return del;
   }
@@ -279,15 +318,8 @@ public class Utils {
     }
   }
 
-  public static boolean restartApplication(Class<?> classInJarFile) {
+  public static boolean restartApplication(File jarFile) throws Exception {
     String javaBin = System.getProperty("java.home") + "/bin/java";
-    File jarFile;
-    try {
-      jarFile = new File(classInJarFile.getProtectionDomain().getCodeSource().getLocation().toURI());
-    } catch (Exception e) {
-      e.printStackTrace();
-      return false;
-    }
 
     if (!jarFile.getName().endsWith(".jar"))
       return false;
@@ -295,8 +327,7 @@ public class Utils {
     try {
       Process p = Runtime.getRuntime().exec(toExec);
     } catch (Exception e) {
-      e.printStackTrace();
-      return false;
+      throw e;
     }
     return true;
   }

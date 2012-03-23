@@ -22,8 +22,8 @@ package fr.free.movierenamer.ui.res;
 import javax.swing.Icon;
 
 /**
- *
- * @author duffy
+ * Interface IIconList
+ * @author Nicolas Magré
  */
 public interface IIconList {
   public Icon getIcon();

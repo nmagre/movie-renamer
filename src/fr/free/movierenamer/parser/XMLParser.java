@@ -38,7 +38,7 @@ import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.parser.XMLParser.Setting;
 import fr.free.movierenamer.utils.Renamed;
 import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.ui.res.tmdbResult;
+import fr.free.movierenamer.ui.res.TmdbResult;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -58,13 +58,18 @@ public class XMLParser<T> {
   public XMLParser(String XMLFile, Class c) {
     this.XMLFile = XMLFile;
     if (c == Settings.class) itp = (IParser<T>) new Setting();
-    if (c == tmdbResult.class) itp = (IParser<T>) new ImdbAPIImage();
+    if (c == TmdbResult.class) itp = (IParser<T>) new ImdbAPIImage();
     if (c == MovieInfo.class) itp = (IParser<T>) new ImdbAPIMovInf();
-    if (itp == null) throw new NullPointerException("IParser null");
+    if (c == Renamed.class) itp = (IParser<T>) new RenamedMov();
+  }
+
+  public void setParser(IParser<T> itp) {
+    this.itp = itp;
   }
 
   public T parseXml() throws IOException, InterruptedException {
 
+    if (itp == null) throw new NullPointerException("IParser null");
     SAXParserFactory sparser = SAXParserFactory.newInstance();
     SAXParser parseur = null;
     T obj = null;
@@ -167,6 +172,10 @@ public class XMLParser<T> {
               String res = buffer.toString();
               config.extensions = res.split("/_");
             }
+            if (name.equalsIgnoreCase("movieDir")) {
+              config.movieDir = buffer.toString();
+            }
+
             try {
               if (name.equalsIgnoreCase("thumbSize"))
                 config.thumbSize = Integer.parseInt(buffer.toString());
@@ -180,8 +189,13 @@ public class XMLParser<T> {
                 config.thumbExt = Integer.parseInt(buffer.toString());
               if (name.equalsIgnoreCase("fanartExt"))
                 config.fanartExt = Integer.parseInt(buffer.toString());
-              if(name.equalsIgnoreCase("renameCase"))
+              if (name.equalsIgnoreCase("renameCase"))
                 config.renameCase = Integer.parseInt(buffer.toString());
+              if (name.equalsIgnoreCase("movieDirRenamedTitle")){
+                int nb = Integer.parseInt(buffer.toString());
+                if(nb > 2) nb = 0;
+                config.movieDirRenamedTitle = nb;
+              }
             } catch (NumberFormatException ex) {
               config.getLogger().log(Level.SEVERE, ex.getMessage());
               config.xmlError = true;
@@ -211,8 +225,6 @@ public class XMLParser<T> {
               config.downTrailer = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("createMovieDirectory"))
               config.createMovieDirectory = buffer.toString().equals(sZero);
-            if (name.equalsIgnoreCase("movieDirRenamedTitle"))
-              config.movieDirRenamedTitle = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("imdbInfo"))
               config.imdbInfo = buffer.toString().equals(sZero);
             if (name.equalsIgnoreCase("imdbFr"))
@@ -259,7 +271,7 @@ public class XMLParser<T> {
   /**
    * Parse XML from TheMovieDatabase (images only)
    */
-  public static class ImdbAPIImage extends DefaultHandler implements IParser<tmdbResult> {
+  public static class ImdbAPIImage extends DefaultHandler implements IParser<TmdbResult> {
 
     private ArrayList<MovieImage> thumbs;
     private ArrayList<MovieImage> fanarts;
@@ -270,7 +282,7 @@ public class XMLParser<T> {
     private MovieImage currentMovieImage;
     private String lastAttribute;
     private String tmdbId;
-    private tmdbResult tmdbRes;
+    private TmdbResult tmdbRes;
 
     public ImdbAPIImage() {
       super();
@@ -292,7 +304,7 @@ public class XMLParser<T> {
     @Override
     public void endDocument() throws SAXException {
       super.endDocument();
-      tmdbRes = new tmdbResult(tmdbId, thumbs, fanarts);
+      tmdbRes = new TmdbResult(tmdbId, thumbs, fanarts);
     }
 
     @Override
@@ -356,7 +368,7 @@ public class XMLParser<T> {
     }
 
     @Override
-    public tmdbResult getObject() {
+    public TmdbResult getObject() {
       return tmdbRes;
     }
   }
@@ -392,7 +404,7 @@ public class XMLParser<T> {
         String personnJob = attributes.getValue("job");
 
         if (personnJob.equals("Director") || personnJob.equals("Actor") || personnJob.equals("Writer"))
-          try {//A refaire imbitable
+          try {
             MoviePerson actor;
             actor = movieinfo.getActorByName(attributes.getValue("name"));
             int job = MoviePerson.ACTOR;
@@ -489,14 +501,11 @@ public class XMLParser<T> {
         renamedMovie = true;
       }
 
-      if (renamedMovie) {
+      if (renamedMovie)
         if (name.equalsIgnoreCase("movie")) {
           renamed.setMovieFileSrc(attributes.getValue("src"));
           renamed.setMovieFileDest(attributes.getValue("dest"));
         }
-        if (name.equalsIgnoreCase("date")) renamed.setDate(buffer.toString());
-      }
-      buffer = null;
     }
 
     @Override
@@ -505,12 +514,14 @@ public class XMLParser<T> {
         renamedXML = false;
 
       if (renamedXML)
-        if (renamedMovie)
+        if (renamedMovie) {
           if (name.equalsIgnoreCase("renamedMovie")) {
             renameds.add(renamed);
             renamed = null;
             renamedMovie = false;
           }
+          if (name.equalsIgnoreCase("date")) renamed.setDate(buffer.toString());
+        }
       buffer = null;
     }
 

@@ -24,41 +24,52 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.movie.Movie;
+import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.ui.res.tmdbResult;
+import fr.free.movierenamer.ui.res.TmdbResult;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Class TheMovieDbInfoWorker
+ * Class TheMovieDbImageWorker , get images from theMovieDB by imdbID
  * @author Magré Nicolas
  */
-public class TheMovieDbInfoWorker extends SwingWorker<Movie, String> {
+public class TheMovieDbImageWorker extends SwingWorker<ArrayList<ArrayList<MovieImage>>, String> {
 
-  private Movie movie;
   private Settings setting;
+  private String imdbId;
   private Component parent;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-  
-  public TheMovieDbInfoWorker(Movie movie, Component parent, Settings setting) {
-    this.movie = movie;
+
+  /**
+   * Constructor arguments
+   * @param imdbId Imdb ID (ttxxxxxx)
+   * @param parent Parent component to center joptionpane
+   * @param setting Movie Renamer settings
+   */
+  public TheMovieDbImageWorker(String imdbId, Component parent, Settings setting) {
+    this.imdbId = imdbId;
     this.setting = setting;
     this.parent = parent;
   }
 
   @Override
-  protected Movie doInBackground() throws InterruptedException {
+  protected ArrayList<ArrayList<MovieImage>> doInBackground() throws InterruptedException {
+    ArrayList<ArrayList<MovieImage>> movieImages = new ArrayList<ArrayList<MovieImage>>();
+    ArrayList<MovieImage> thumbs = new ArrayList<MovieImage>();
+    ArrayList<MovieImage> fanarts = new ArrayList<MovieImage>();
+
+    // Try to get XML from theMovieDB
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurl)) + "/";
-      URL url = new URL(setting.imdbAPIUrlMovieId + xmlUrl + movie.getImdbId());
+      URL url = new URL(setting.imdbAPIUrlMovieId + xmlUrl + imdbId);
       File f = setting.cache.get(url, Cache.theMovieDBXML);
       if (f == null) {
         InputStream in;
@@ -82,20 +93,20 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, String> {
         f = setting.cache.get(url, Cache.theMovieDBXML);
       }
 
-      XMLParser<tmdbResult> mmp = new XMLParser<tmdbResult>(f.getAbsolutePath(), tmdbResult.class);
+      // Parse TheMovieDb XML
+      XMLParser<TmdbResult> mmp = new XMLParser<TmdbResult>(f.getAbsolutePath(), TmdbResult.class);
       try {
-        tmdbResult res = mmp.parseXml();
-        //if (!res.getId().equals("")) movie.setMovieDBId(res.getId());
+        TmdbResult res = mmp.parseXml();
         if (res.getThumbs() != null) {
           setting.getLogger().log(Level.INFO, "  {0} Thumbs", "" + res.getThumbs().size());
           for (int i = 0; i < res.getThumbs().size(); i++) {
-            movie.addThumb(res.getThumbs().get(i));
+            thumbs.add(res.getThumbs().get(i));
           }
         }
         if (res.getFanarts() != null) {
           setting.getLogger().log(Level.INFO, "  {0} Fanarts", "" + res.getFanarts().size());
           for (int i = 0; i < res.getFanarts().size(); i++) {
-            movie.addFanart(res.getFanarts().get(i));
+            fanarts.add(res.getFanarts().get(i));
           }
         }
       } catch (IOException ex) {
@@ -106,21 +117,14 @@ public class TheMovieDbInfoWorker extends SwingWorker<Movie, String> {
       } catch (IllegalArgumentException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-
-      /*if (movie.getMovieDBId().equals(Utils.EMPTY))*/ return movie;
-      //XMLParser<MovieInfo> movieinfo = new XMLParser<MovieInfo>(setting.imdbAPIUrlMovieInf + xmlUrl + movie.getMovieDBId(), MovieInfo.class);
-      /*try {
-      movie.setMovieInfo(movieinfo.parseXml());
-      } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0}\n{1}{2}", new Object[]{ex.toString(), setting.imdbAPIUrlMovieInf, movie.getMovieDBId()});
-      } catch (InterruptedException ex) {
-      setting.getLogger().log(Level.WARNING, ex.toString());
-      return null;
-      }*/
     } catch (IOException ex) {
       setting.getLogger().log(Level.SEVERE, ex.toString());
     }
-    return movie;
+
+    movieImages.add(thumbs);
+    movieImages.add(fanarts);
+    
+    return movieImages;
   }
 
   @Override

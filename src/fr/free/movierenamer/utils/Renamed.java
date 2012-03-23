@@ -20,8 +20,8 @@
 package fr.free.movierenamer.utils;
 
 /**
- *
- * @author duffy
+ * Class Renamed , Renamed movie
+ * @author Nicolas Magré
  */
 public class Renamed {
 
@@ -31,11 +31,22 @@ public class Renamed {
   private String movieFileDest;
   private boolean renameFailed;
 
+  /**
+   * Constructor arguments
+   * @param title Rename title
+   */
   public Renamed(String title){
     this.title = title;
     renameFailed = false;
   }
-  
+
+  /**
+   * Constructor arguments
+   * @param title Rename title
+   * @param date Rename date
+   * @param movieFileSrc Rename src file
+   * @param movieFileDest Rename dest file
+   */
   public Renamed(String title, String date, String movieFileSrc,String movieFileDest) {
     this.title = title;
     this.date = date;
@@ -44,38 +55,74 @@ public class Renamed {
     renameFailed = false;
   }
 
+  /**
+   * Get rename title
+   * @return title
+   */
   public String getTitle() {
     return title;
   }
 
+  /**
+   * Get rename date
+   * @return date
+   */
   public String getDate() {
     return date;
   }
 
+  /**
+   * Get movie source file
+   * @return movie file
+   */
   public String getMovieFileSrc() {
     return movieFileSrc;
   }
 
+  /**
+   * Get movie destination file
+   * @return destination file
+   */
   public String getMovieFileDest() {
     return movieFileDest;
   }
 
+  /**
+   * Set rename title
+   * @param title
+   */
   public void setTitle(String title) {
     this.title = title;
   }
 
+  /**
+   * Set rename date
+   * @param date
+   */
   public void setDate(String date) {
     this.date = date;
   }
 
+  /**
+   * Set movie source file
+   * @param movieFileSrc
+   */
   public void setMovieFileSrc(String movieFileSrc) {
     this.movieFileSrc = movieFileSrc;
   }
 
+  /**
+   * Set movie destination file
+   * @param movieFileDest
+   */
   public void setMovieFileDest(String movieFileDest) {
     this.movieFileDest = movieFileDest;
   }
 
+  /**
+   * Set rename failed
+   * @param renameFailed
+   */
   public void setRenameFailed(boolean renameFailed){
     this.renameFailed = renameFailed;
   }

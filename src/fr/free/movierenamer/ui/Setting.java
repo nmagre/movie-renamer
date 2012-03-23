@@ -55,15 +55,14 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
-import java.awt.Component;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
- *
- * @author duffy
+ * Class Setting , Setting dialog
+ * @author Nicolas Magré
  */
 public class Setting extends JDialog {
 
@@ -87,9 +86,8 @@ public class Setting extends JDialog {
 
   /** Creates new form Setting
    * @param setting
-   * @param parent
    */
-  public Setting(Settings setting, Component parent) {
+  public Setting(Settings setting) {
     bundle = ResourceBundle.getBundle("fr.free.movierenamer/i18n/Bundle");
     setIconImage(Utils.getImageFromJAR("/image/icon-32.gif", getClass()));
     initComponents();
@@ -110,7 +108,7 @@ public class Setting extends JDialog {
     this.setting = setting;
     extensions = setting.extensions;
     filters = setting.nameFilters;
-    
+
     extentionJlist.addListSelectionListener(new ListSelectionListener() {
 
       @Override
@@ -141,7 +139,7 @@ public class Setting extends JDialog {
 
     loadList(filterJlist, filters);
     currentFilterIndex = 0;
-        
+
     // General Setting
     selectFirstMovieChk.setSelected(setting.selectFrstMovie);
     selectFirstResChk.setSelected(setting.selectFrstRes);
@@ -153,6 +151,7 @@ public class Setting extends JDialog {
     thumbsChk.setSelected(setting.thumb);
     fanartsChk.setSelected(setting.fanart);
     autoSearchChk.setSelected(setting.autoSearchMovie);
+    checkUpdateChk.setSelected(setting.checkUpdate);
 
     englishRbtn.setSelected(!setting.locale.equals("fr"));
     frenchRbtn.setSelected(setting.locale.equals("fr"));
@@ -178,11 +177,12 @@ public class Setting extends JDialog {
       movieTitleRBtn.setEnabled(true);
       renamedMovieTitleRBtn.setEnabled(true);
     }
-    movieTitleRBtn.setSelected(!setting.movieDirRenamedTitle);
-    renamedMovieTitleRBtn.setSelected(setting.movieDirRenamedTitle);
-
+    movieTitleRBtn.setSelected(setting.movieDirRenamedTitle == 0);
+    renamedMovieTitleRBtn.setSelected(setting.movieDirRenamedTitle == 1);
+    customFolderRBtn.setSelected(setting.movieDirRenamedTitle == 2);
 
     thumbExtCbBox.setSelectedIndex(setting.thumbExt);
+    customFolderField.setText(setting.movieDir);
 
     String ssize = "";
     long size = Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir));
@@ -211,7 +211,7 @@ public class Setting extends JDialog {
 
     setTitle("Movie Renamer Settings " + setting.getVersion());
     setModal(true);
-    setLocationRelativeTo(parent);
+    setLocationRelativeTo(getParent());
   }
 
   private void loadList(JList jlist, String[] array) {
@@ -237,11 +237,8 @@ public class Setting extends JDialog {
 
     thumbGroup = new ButtonGroup();
     fanartGroup = new ButtonGroup();
-    youtubeGroup = new ButtonGroup();
     createDirGroup = new ButtonGroup();
-    ratingGroup = new ButtonGroup();
     languageGroup = new ButtonGroup();
-    interfaceGroup = new ButtonGroup();
     imdbLangGroup = new ButtonGroup();
     caseGroup = new ButtonGroup();
     settingTabPan = new JTabbedPane();
@@ -278,6 +275,8 @@ public class Setting extends JDialog {
     upperRbtn = new JRadioButton();
     lowerRbtn = new JRadioButton();
     caseLbl = new JLabel();
+    customFolderRBtn = new JRadioButton();
+    customFolderField = new JTextField();
     movieImagePnl = new JPanel();
     thumbExtCbBox = new JComboBox();
     thumnailsExtLbl = new JLabel();
@@ -375,10 +374,9 @@ public class Setting extends JDialog {
     );
 
     updatePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("update"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));
+    checkUpdateChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
     checkUpdateChk.setText(bundle.getString("chkUpdateOnStart")); // NOI18N
     checkUpdateChk.setToolTipText("You can check for update at any time, directly on movie renamer (globe button)");
-    checkUpdateChk.setEnabled(false);
 
     GroupLayout updatePnlLayout = new GroupLayout(updatePnl);
     updatePnl.setLayout(updatePnlLayout);
@@ -399,15 +397,15 @@ public class Setting extends JDialog {
     );
 
     interfacePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("interface"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));
     selectFirstMovieChk.setText(bundle.getString("autoSelFrstMovie")); // NOI18N
     selectFirstMovieChk.setToolTipText(bundle.getString("autoSelFrstMovieTt")); // NOI18N
 
-    selectFirstResChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));
     selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
     selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
 
-    actorImageChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    actorImageChk.setFont(new Font("Ubuntu", 0, 12));
     actorImageChk.setText(bundle.getString("showActorImage")); // NOI18N
     actorImageChk.setToolTipText(bundle.getString("showActorImageTt")); // NOI18N
     actorImageChk.setEnabled(false);
@@ -420,25 +418,25 @@ public class Setting extends JDialog {
       }
     });
 
-    thumbsChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    thumbsChk.setFont(new Font("Ubuntu", 0, 12));
     thumbsChk.setText(bundle.getString("showThumbs")); // NOI18N
     thumbsChk.setToolTipText(bundle.getString("showThumbsTt")); // NOI18N
     thumbsChk.setEnabled(false);
 
-    fanartsChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    fanartsChk.setFont(new Font("Ubuntu", 0, 12));
     fanartsChk.setText(bundle.getString("showFanarts")); // NOI18N
     fanartsChk.setToolTipText(bundle.getString("showFanartsTt")); // NOI18N
     fanartsChk.setEnabled(false);
 
-    scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));
     scanSubfolderChk.setText(bundle.getString("autoScanSubfolder")); // NOI18N
     scanSubfolderChk.setToolTipText(bundle.getString("autoScanSubfolderTt")); // NOI18N
 
-    showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));
     showNotaMovieWarnChk.setText(bundle.getString("showNotMovieWarn")); // NOI18N
     showNotaMovieWarnChk.setToolTipText(bundle.getString("showNotMovieWarnTt")); // NOI18N
 
-    autoSearchChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    autoSearchChk.setFont(new Font("Ubuntu", 0, 12));
     autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
     autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
 
@@ -587,31 +585,20 @@ public class Setting extends JDialog {
     caseLbl.setFont(new Font("Ubuntu", 1, 13));
     caseLbl.setText(bundle.getString("fileCase")); // NOI18N
 
+    createDirGroup.add(customFolderRBtn);
+    customFolderRBtn.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent evt) {
+        customFolderRBtnItemStateChanged(evt);
+      }
+    });
+
+    customFolderField.setEnabled(false);
+
     GroupLayout movieFileNamePnlLayout = new GroupLayout(movieFileNamePnl);
     movieFileNamePnl.setLayout(movieFileNamePnlLayout);
 
     movieFileNamePnlLayout.setHorizontalGroup(
       movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(movieFileNamePnlLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(defaultFormatLbl)
-          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
-            .addComponent(formatLbl)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(formatField, GroupLayout.PREFERRED_SIZE, 304, GroupLayout.PREFERRED_SIZE))
-          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
-            .addComponent(testBtn)
-            .addPreferredGap(ComponentPlacement.UNRELATED)
-            .addComponent(testField, GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
-      .addGroup(movieFileNamePnlLayout.createSequentialGroup()
-        .addGap(17, 17, 17)
-        .addComponent(movieTitleRBtn)
-        .addGap(18, 18, 18)
-        .addComponent(renamedMovieTitleRBtn)
-        .addContainerGap(159, Short.MAX_VALUE))
       .addGroup(movieFileNamePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -628,6 +615,31 @@ public class Setting extends JDialog {
         .addContainerGap()
         .addComponent(createDirChk)
         .addContainerGap(286, Short.MAX_VALUE))
+      .addGroup(Alignment.TRAILING, movieFileNamePnlLayout.createSequentialGroup()
+        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.TRAILING)
+          .addGroup(Alignment.LEADING, movieFileNamePnlLayout.createSequentialGroup()
+            .addGap(17, 17, 17)
+            .addComponent(movieTitleRBtn)
+            .addGap(18, 18, 18)
+            .addComponent(renamedMovieTitleRBtn)
+            .addPreferredGap(ComponentPlacement.UNRELATED)
+            .addComponent(customFolderRBtn)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(customFolderField, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
+              .addComponent(defaultFormatLbl)
+              .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+                .addComponent(formatLbl)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(formatField, GroupLayout.PREFERRED_SIZE, 304, GroupLayout.PREFERRED_SIZE))
+              .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+                .addComponent(testBtn)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(testField, GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)))))
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
     );
     movieFileNamePnlLayout.setVerticalGroup(
       movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -652,11 +664,15 @@ public class Setting extends JDialog {
           .addComponent(testBtn)
           .addComponent(testField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(createDirChk)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(movieTitleRBtn)
-          .addComponent(renamedMovieTitleRBtn)))
+        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.TRAILING)
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addComponent(createDirChk)
+            .addPreferredGap(ComponentPlacement.UNRELATED)
+            .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
+              .addComponent(movieTitleRBtn)
+              .addComponent(renamedMovieTitleRBtn)
+              .addComponent(customFolderRBtn)))
+          .addComponent(customFolderField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
       .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
     );
 
@@ -816,7 +832,7 @@ public class Setting extends JDialog {
     );
 
     imdbSearchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("result"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); // NOI18N
-    displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));
     displayAppResultCheckBox.setText(bundle.getString("showAppRes")); // NOI18N
     displayAppResultCheckBox.setToolTipText(bundle.getString("showAppRestt")); // NOI18N
 
@@ -826,7 +842,7 @@ public class Setting extends JDialog {
     limitResultLbl.setFont(new Font("Ubuntu", 0, 12));
     limitResultLbl.setText(bundle.getString("resForEachType")); // NOI18N
 
-    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));
     displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
 
     GroupLayout imdbSearchPnlLayout = new GroupLayout(imdbSearchPnl);
@@ -1192,9 +1208,9 @@ public class Setting extends JDialog {
     saveBtn.setText(bundle.getString("save")); // NOI18N
     saveBtn.setToolTipText(bundle.getString("save")); // NOI18N
     saveBtn.setMargin(new Insets(2, 2, 2, 2));
-    saveBtn.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        saveBtnMouseReleased(evt);
+    saveBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        saveBtnActionPerformed(evt);
       }
     });
 
@@ -1240,75 +1256,6 @@ public class Setting extends JDialog {
   private void CancelBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_CancelBtnMouseReleased
     setVisible(false);
   }//GEN-LAST:event_CancelBtnMouseReleased
-
-  private void saveBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_saveBtnMouseReleased
-    boolean restartApp = false;
-
-    // General Setting
-    if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
-    if (setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
-    if (setting.fanart != fanartsChk.isSelected()) setting.interfaceChanged = true;
-    if (setting.actorImage != actorImageChk.isSelected()) setting.interfaceChanged = true;
-
-    setting.selectFrstMovie = selectFirstMovieChk.isSelected();
-    setting.selectFrstRes = selectFirstResChk.isSelected();
-    setting.showNotaMovieWarn = showNotaMovieWarnChk.isSelected();
-    setting.scanSubfolder = scanSubfolderChk.isSelected();
-    setting.useExtensionFilter = useExtensionFilterChk.isSelected();
-    setting.movieInfoPanel = movieInfoPanelChk.isSelected();
-    setting.actorImage = actorImageChk.isSelected();
-    setting.thumb = thumbsChk.isSelected();
-    setting.fanart = fanartsChk.isSelected();
-    setting.autoSearchMovie = autoSearchChk.isSelected();
-
-    boolean langFr = setting.locale.equals("fr");
-    if (langFr != frenchRbtn.isSelected()) {
-      setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
-      int n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
-      if (n == JOptionPane.YES_OPTION)
-        restartApp = true;
-    }
-
-    // Rename Setting
-    for (int i = 0; i < rBtnCase.length; i++) {
-      if (rBtnCase[i].isSelected())
-        setting.renameCase = i;
-    }
-
-    for (int i = 0; i < rBtnThumbList.length; i++) {
-      if (rBtnThumbList[i].isSelected())
-        setting.thumbSize = i;
-    }
-
-    for (int i = 0; i < rBtnFanartList.length; i++) {
-      if (rBtnFanartList[i].isSelected())
-        setting.fanartSize = i;
-    }
-
-    setting.displayApproximateResult = displayAppResultCheckBox.isSelected();
-    setting.nbResult = limitResultComboBox.getSelectedIndex();
-
-    // Imdb
-    setting.imdbFr = imdbFrRbtn.isSelected();
-    setting.displayThumbResult = displayThumbResultChk.isSelected();
-
-    // Movie Files
-    setting.movieFilenameFormat = formatField.getText();
-    setting.createMovieDirectory = createDirChk.isSelected();
-    setting.thumbExt = thumbExtCbBox.getSelectedIndex();
-    setting.movieDirRenamedTitle = renamedMovieTitleRBtn.isSelected();
-
-    // Filter
-    setting.extensions = extensions;
-    setting.nameFilters = filters;
-
-    setting.saveSetting();
-
-    if (restartApp)
-      if (!Utils.restartApplication(Main.class)) JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
-      else System.exit(0);
-    dispose();
-  }//GEN-LAST:event_saveBtnMouseReleased
 
   private void clearXmlBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_clearXmlBtnMouseReleased
     Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
@@ -1424,14 +1371,14 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_filenameFilterHelpActionPerformed
 
   private void moveRightActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveRightActionPerformed
-     String[] tmp = new String[filters.length];
+    String[] tmp = new String[filters.length];
     for (int i = 0; i < tmp.length; i++) {
-      if(i == (currentFilterIndex + 1)) tmp[i-1] = filters[i];
-      else if(i == currentFilterIndex) tmp[i+1] = filters[i];
+      if (i == (currentFilterIndex + 1)) tmp[i - 1] = filters[i];
+      else if (i == currentFilterIndex) tmp[i + 1] = filters[i];
       else tmp[i] = filters[i];
     }
     filters = tmp;
-    int index = currentFilterIndex+1;
+    int index = currentFilterIndex + 1;
     loadList(filterJlist, filters);
     filterJlist.setSelectedIndex(index);
   }//GEN-LAST:event_moveRightActionPerformed
@@ -1439,12 +1386,12 @@ public class Setting extends JDialog {
   private void moveLeftActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveLeftActionPerformed
     String[] tmp = new String[filters.length];
     for (int i = 0; i < tmp.length; i++) {
-      if(i == (currentFilterIndex -1)) tmp[i+1] = filters[i];
-      else if(i == currentFilterIndex) tmp[i - 1] = filters[i];
+      if (i == (currentFilterIndex - 1)) tmp[i + 1] = filters[i];
+      else if (i == currentFilterIndex) tmp[i - 1] = filters[i];
       else tmp[i] = filters[i];
     }
     filters = tmp;
-    int index = currentFilterIndex-1;
+    int index = currentFilterIndex - 1;
     loadList(filterJlist, filters);
     filterJlist.setSelectedIndex(index);
   }//GEN-LAST:event_moveLeftActionPerformed
@@ -1476,6 +1423,97 @@ public class Setting extends JDialog {
     }
   }//GEN-LAST:event_removeExtensuionBtnActionPerformed
 
+  private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
+    boolean restartApp = false;
+
+    // General Setting
+    if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
+    if (setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
+    if (setting.fanart != fanartsChk.isSelected()) setting.interfaceChanged = true;
+    if (setting.actorImage != actorImageChk.isSelected()) setting.interfaceChanged = true;
+
+    setting.selectFrstMovie = selectFirstMovieChk.isSelected();
+    setting.selectFrstRes = selectFirstResChk.isSelected();
+    setting.showNotaMovieWarn = showNotaMovieWarnChk.isSelected();
+    setting.scanSubfolder = scanSubfolderChk.isSelected();
+    setting.useExtensionFilter = useExtensionFilterChk.isSelected();
+    setting.movieInfoPanel = movieInfoPanelChk.isSelected();
+    setting.actorImage = actorImageChk.isSelected();
+    setting.thumb = thumbsChk.isSelected();
+    setting.fanart = fanartsChk.isSelected();
+    setting.autoSearchMovie = autoSearchChk.isSelected();
+    setting.checkUpdate = checkUpdateChk.isSelected();
+
+    boolean langFr = setting.locale.equals("fr");
+    if (langFr != frenchRbtn.isSelected()) {
+      setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
+      int n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
+      if (n == JOptionPane.YES_OPTION)
+        restartApp = true;
+    }
+
+    // Rename Setting
+    for (int i = 0; i < rBtnCase.length; i++) {
+      if (rBtnCase[i].isSelected())
+        setting.renameCase = i;
+    }
+
+    for (int i = 0; i < rBtnThumbList.length; i++) {
+      if (rBtnThumbList[i].isSelected())
+        setting.thumbSize = i;
+    }
+
+    for (int i = 0; i < rBtnFanartList.length; i++) {
+      if (rBtnFanartList[i].isSelected())
+        setting.fanartSize = i;
+    }
+
+    setting.displayApproximateResult = displayAppResultCheckBox.isSelected();
+    setting.nbResult = limitResultComboBox.getSelectedIndex();
+
+    // Imdb
+    setting.imdbFr = imdbFrRbtn.isSelected();
+    setting.displayThumbResult = displayThumbResultChk.isSelected();
+
+    // Movie Files
+    setting.movieFilenameFormat = formatField.getText();
+    setting.createMovieDirectory = createDirChk.isSelected();
+    setting.thumbExt = thumbExtCbBox.getSelectedIndex();
+
+    setting.movieDir = customFolderField.getText();
+    int nb = 0;
+    if (renamedMovieTitleRBtn.isSelected()) nb = 1;
+    if (customFolderRBtn.isSelected()) nb = 2;
+
+    if (nb == 2 && setting.movieDir.equals("")) {
+      JOptionPane.showMessageDialog(this, bundle.getString("cantBeEmpty"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    setting.movieDirRenamedTitle = nb;
+
+    // Filter
+    setting.extensions = extensions;
+    setting.nameFilters = filters;
+
+    setting.saveSetting();
+
+    if (restartApp)
+      try {
+        if (!Utils.restartApplication(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI())))
+          JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+        else{
+          dispose();
+          System.exit(0);
+        }
+      } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, bundle.getString("cantRestart") + Utils.ENDLINE + ex.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      }
+    dispose();
+  }//GEN-LAST:event_saveBtnActionPerformed
+
+  private void customFolderRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_customFolderRBtnItemStateChanged
+    customFolderField.setEnabled(customFolderRBtn.isSelected());
+  }//GEN-LAST:event_customFolderRBtnItemStateChanged
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JButton CancelBtn;
   private JPanel SearchPnl;
@@ -1494,6 +1532,8 @@ public class Setting extends JDialog {
   private JButton clearXmlBtn;
   private JCheckBox createDirChk;
   private ButtonGroup createDirGroup;
+  private JTextField customFolderField;
+  private JRadioButton customFolderRBtn;
   private JLabel defaultFormatLbl;
   private JCheckBox displayAppResultCheckBox;
   private JCheckBox displayThumbResultChk;
@@ -1525,7 +1565,6 @@ public class Setting extends JDialog {
   private ButtonGroup imdbLangGroup;
   private JPanel imdbLangPnl;
   private JPanel imdbSearchPnl;
-  private ButtonGroup interfaceGroup;
   private JPanel interfacePnl;
   private ButtonGroup languageGroup;
   private JPanel languagePnl;
@@ -1543,7 +1582,6 @@ public class Setting extends JDialog {
   private JRadioButton movieTitleRBtn;
   private JRadioButton origFanartSizeRBtn;
   public JRadioButton origThumbSizeRBtn;
-  private ButtonGroup ratingGroup;
   private JButton removeExtensuionBtn;
   private JButton removeFilterBtn;
   private JPanel renamePnl;
@@ -1569,6 +1607,5 @@ public class Setting extends JDialog {
   private JCheckBox useExtensionFilterChk;
   private JPanel xmlFilePnl;
   private JLabel xmlLbl;
-  private ButtonGroup youtubeGroup;
   // End of variables declaration//GEN-END:variables
 }

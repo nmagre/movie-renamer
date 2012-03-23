@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 /**
- * Class ImdbInfoWorker
+ * Class ImdbInfoWorker , get movie information from imdb
  * @author Magré Nicolas
  */
 public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
@@ -42,6 +42,13 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
   private String imdbId;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
+  /**
+   * Constructor arguments
+   * @param parent Parent component to center joptionpane
+   * @param imdbId Imdb Id
+   * @param setting Movie Renamer settings
+   * @throws MalformedURLException
+   */
   public ImdbInfoWorker(Component parent, String imdbId, Settings setting) throws MalformedURLException {
     this.parent = parent;
     http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr:setting.imdbMovieUrl) + imdbId + "/combined");

@@ -29,44 +29,38 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author duffy
+ * Class Settings , Movie Renamer settings
+ * @author Nicolas Magré
  */
-
 public class Settings {
 
   public static final String softName = "Movie Renamer";
   private final String VERSION = Utils.getRbTok("apps.version");
   private final String userPath = System.getProperty("user.home");
   private final String apk = "BQRjATHjATV3Zwx2AwWxLGOvLwEwZ2WwZQWyBGyvMQx=";
-  private final String movieRenamerFolder = Utils.isWindows() ? "Movie_Renamer":".Movie_Renamer";
-  
+  private final String movieRenamerFolder = Utils.isWindows() ? "Movie_Renamer" : ".Movie_Renamer";
   //Cache
   public Cache cache;
-  
   //Files
-  public final String configFile = userPath + File.separator + movieRenamerFolder + File.separator + "conf" +  File.separator + "movie_renamer.conf";
-  public final String cacheDir = userPath + File.separator +  movieRenamerFolder +  File.separator + "cache" + File.separator;
+  public final String configFile = userPath + File.separator + movieRenamerFolder + File.separator + "conf" + File.separator + "movie_renamer.conf";
+  public final String cacheDir = userPath + File.separator + movieRenamerFolder + File.separator + "cache" + File.separator;
+  public final String renamedFile = cacheDir + "renamed.xml";
   public final String imageCacheDir = cacheDir + "images" + File.separator;
   public final String thumbCacheDir = imageCacheDir + "thumbnails" + File.separator;
   public final String fanartCacheDir = imageCacheDir + "fanarts" + File.separator;
   public final String actorCacheDir = imageCacheDir + "actors" + File.separator;
   public final String xmlCacheDir = cacheDir + "XML" + File.separator;
-  private final String logFile = userPath + File.separator +  movieRenamerFolder +  File.separator + "Logs" + File.separator + "movie_renamer.log";
-
+  private final String logFile = userPath + File.separator + movieRenamerFolder + File.separator + "Logs" + File.separator + "movie_renamer.log";
   //Logger
   private static final Logger logger = Logger.getLogger("Movie Renamer Logger");
-
   //IMDB
   public final String imdbSearchUrl = "http://www.imdb.com/find?s=tt&q=";
   public final String imdbMovieUrl = "http://www.imdb.com/title/";
   public final String imdbSearchUrl_fr = "http://www.imdb.fr/find?s=tt&q=";
   public final String imdbMovieUrl_fr = "http://www.imdb.fr/title/";
-
   //The Movie DB
   public final String imdbAPIUrlMovieId = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
   public final String imdbAPIUrlMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
-
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
@@ -82,32 +76,26 @@ public class Settings {
     {"Talk-Show", "Talk-Show"}, {"Thriller", "Thriller"}, {"War", "Guerre"},
     {"Western", "Western"}
   };
-  
-  //Change
   public boolean interfaceChanged = false;
-
   public String xurl = Utils.rot13(apk);
-  
   // Saved settings
   public String locale = "";
   public String[] nameFilters = {
-    "notv","readnfo","repack","proper","nfo","extended.cut","limitededition","limited","k-sual",
-    "extended","uncut","n° [0-9][0-9][0-9]","yestv","stv","remastered","limited","x264","bluray",
-    "bd5","bd9","hddvd","hdz","wes-","edition.exclusive","unrated","walt disney","dvdrip","cinefile",
-    "hdmi","dvd5","ac3","culthd","dvd9","remux","edition.platinum","frenchhqc","proper","frenchedit",
-    "wawamania","h264","bdrip","brrip","hdteam","hddvdrip","subhd","xvid","divx","null","divx511",
-    "vorbis","=str=","www","ffm","mp3","-arrows","divx5","dvb","mpa2","blubyte","brmp","avs","filmhd",
-    "hd4u","1080p","1080i","720p","720i","720","-Liber","truefrench","dts","french","megaexclue",
-    "untoucahbles","vostfr","1cd","2cd","vff"," vo "," vf ","forcebleue","hd"," ma ","knob"," ws","bong",
-    "-fiction"," cam ","telesync"," ts "," tc ","ntsc"," pal ","dvd-r","dvdscr","scr","r1","r2","r3","r4",
-    "r5","wp","subforced","dvd","vcd","avchd","-arlbouffiard","-redbull"," md","-kong","-thewarrior777",
-    "-LU3UR","-DELUiSE","-SURViVAL","-vodka","-slim","_","-HARIJO","-ENJOY","-PTN","-fwd","-ARTEFAC",
-    "-COGiTO","-AYMO","-GKS"
+    "notv", "readnfo", "repack", "proper", "nfo", "extended.cut", "limitededition", "limited", "k-sual",
+    "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
+    "bd5", "bd9", "hddvd", "hdz", "wes-", "edition.exclusive", "unrated", "walt disney", "dvdrip", "cinefile",
+    "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "proper", "frenchedit",
+    "wawamania", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null", "divx511",
+    "vorbis", "=str=", "www", "ffm", "mp3", "-arrows", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd",
+    "hd4u", "1080p", "1080i", "720p", "720i", "720", "-Liber", "truefrench", "dts", "french", "megaexclue",
+    "untoucahbles", "vostfr", "1cd", "2cd", "vff", " vo ", " vf ", "forcebleue", "hd", " ma ", "knob", " ws", "bong",
+    "-fiction", " cam ", "telesync", " ts ", " tc ", "ntsc", " pal ", "dvd-r", "dvdscr", "scr", "r1", "r2", "r3", "r4",
+    "r5", "wp", "subforced", "dvd", "vcd", "avchd", "-arlbouffiard", "-redbull", " md", "-kong", "-thewarrior777",
+    "-LU3UR", "-DELUiSE", "-SURViVAL", "-vodka", "-slim", "_", "-HARIJO", "-ENJOY", "-PTN", "-fwd", "-ARTEFAC",
+    "-COGiTO", "-AYMO", "-GKS"
   };
-  
   public String xmlVersion = "";
   public boolean xmlError = false;
-  
   public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
   public int thumbSize = 0;
   public int fanartSize = 0;
@@ -116,21 +104,21 @@ public class Settings {
   public int thumbExt = 0;
   public int fanartExt = 1;
   public int renameCase = 1;
-  
+  public String movieDir = "";
+  public int movieDirRenamedTitle = 0;
   // Boolean
   public boolean useExtensionFilter = true;
   public boolean showMovieFilePath = false;
   public boolean scanSubfolder = false;
-  public boolean hideRenamedMovie = false;  
+  public boolean hideRenamedMovie = false;
   public boolean displayApproximateResult = false;
   public boolean displayThumbResult = true;
   public boolean downThumb = true;
   public boolean downFanart = true;
   public boolean downTrailer = false;
   public boolean createMovieDirectory = false;
-  public boolean movieDirRenamedTitle = false;
   public boolean imdbInfo = true;
-  public boolean imdbFr = false;  
+  public boolean imdbFr = false;
   public boolean selectFrstMovie = false;
   public boolean selectFrstRes = true;
   public boolean movieInfoPanel = true;
@@ -140,8 +128,10 @@ public class Settings {
   public boolean checkUpdate = false;
   public boolean showNotaMovieWarn = true;
   public boolean autoSearchMovie = true;
-  
 
+  /**
+   * Constructor
+   */
   public Settings() {
     Utils.createFilePath(configFile, false);
     Utils.createFilePath(fanartCacheDir, true);
@@ -158,6 +148,10 @@ public class Settings {
     cache = new Cache(this);
   }
 
+  /**
+   * Save setting
+   * @return True if setting was saved, False otherwise
+   */
   public boolean saveSetting() {
     logger.log(Level.INFO, "Save configuration");
     try {
@@ -178,6 +172,8 @@ public class Settings {
       out.write("    <thumbExt>" + thumbExt + "</thumbExt>" + endl);
       out.write("    <fanartExt>" + fanartExt + "</fanartExt>" + endl);
       out.write("    <renameCase>" + renameCase + "</renameCase>" + endl);
+      out.write("    <movieDir>" + movieDir + "</movieDir>" + endl);
+      out.write("    <movieDirRenamedTitle>" + movieDirRenamedTitle + "</movieDirRenamedTitle>" + endl);
 
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);
@@ -190,7 +186,6 @@ public class Settings {
       out.write("    <downFanart>" + (downFanart ? 0 : 1) + "</downFanart>" + endl);
       out.write("    <downTrailer>" + (downTrailer ? 0 : 1) + "</downTrailer>" + endl);
       out.write("    <createMovieDirectory>" + (createMovieDirectory ? 0 : 1) + "</createMovieDirectory>" + endl);
-      out.write("    <movieDirRenamedTitle>" + (movieDirRenamedTitle ? 0 : 1) + "</movieDirRenamedTitle>" + endl);
       out.write("    <imdbInfo>" + (imdbInfo ? 0 : 1) + "</imdbInfo>" + endl);
       out.write("    <imdbFr>" + (imdbFr ? 0 : 1) + "</imdbFr>" + endl);
       out.write("    <selectFrstMovie>" + (selectFrstMovie ? 0 : 1) + "</selectFrstMovie>" + endl);
@@ -207,17 +202,25 @@ public class Settings {
       out.write("</Movie_Renamer>" + endl);
       out.close();
     } catch (IOException e) {
-      logger.log(Level.SEVERE, e.getMessage());      
+      logger.log(Level.SEVERE, e.getMessage());
       return false;
     }
     return true;
   }
 
+  /**
+   * Get Movie Renamer version
+   * @return Movie Renamer Version
+   */
   public String getVersion() {
     return VERSION;
   }
 
-  public Logger getLogger(){
+  /**
+   * Get Movie Renamer logger
+   * @return Movie Renamer logger
+   */
+  public Logger getLogger() {
     return logger;
   }
 }

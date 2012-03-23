@@ -29,8 +29,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 /**
- * Class Cache
- * @author duffy
+ * Class Cache , Files cache
+ * @author Nicolas Magré
  */
 public class Cache {
 
@@ -41,10 +41,21 @@ public class Cache {
   public static final int theMovieDBXML = 3;
   private Settings setting;
 
+  /**
+   * Constructor arguments
+   * @param setting Movie Renamer settings
+   */
   public Cache(Settings setting) {
     this.setting = setting;
   }
 
+  /**
+   * Add file to cahe
+   * @param is File inputStream
+   * @param url File url
+   * @param type Cache type
+   * @throws IOException
+   */
   public void add(InputStream is, String url, int type) throws IOException {
     OutputStream os = null;
     File f = new File(getPath(type) + Utils.md5(url));
@@ -54,6 +65,12 @@ public class Cache {
     is.close();
   }
 
+  /**
+   * Get file from cache
+   * @param url File url
+   * @param type Cache type
+   * @return File
+   */
   public File get(URL url, int type) {
     String md5Name = Utils.md5(url.toString());
     File f = new File(getPath(type) + md5Name);
@@ -62,6 +79,13 @@ public class Cache {
     return null;
   }
 
+  /**
+   * Get image from cache
+   * @param image Image url
+   * @param type Cache type
+   * @return Image
+   * @throws IOException
+   */
   public Image getImage(URL image, int type) throws IOException {
     String md5Name = Utils.md5(image.toString());
     File f = new File(getPath(type) + md5Name);
@@ -70,6 +94,11 @@ public class Cache {
     return null;
   }
 
+  /**
+   * Get cache path
+   * @param type cache type
+   * @return Cache path
+   */
   private String getPath(int type) {
     String path = setting.cacheDir;
     switch (type) {

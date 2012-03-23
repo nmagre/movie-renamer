@@ -36,12 +36,13 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.utils.Renamed;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import java.util.ResourceBundle;
 
 /**
- *
- * @author duffy
+ * Class DropFile, Drop files
+ * @author Nicolas Magré
  */
 public class DropFile implements DropTargetListener {
 
@@ -49,6 +50,7 @@ public class DropFile implements DropTargetListener {
   private JFrame parent;
   private MovieRenamer.FileWorkerListener listener;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private ArrayList<Renamed> renamed;
   private FilenameFilter folderFilter = new FilenameFilter() {
 
     @Override
@@ -57,8 +59,16 @@ public class DropFile implements DropTargetListener {
     }
   };
 
-  public DropFile(Settings setting, MovieRenamer.FileWorkerListener listener, JFrame parent) {
+  /**
+   * Constructor arguments
+   * @param setting Movie Renamer settings
+   * @param renamed Array of renamed files
+   * @param listener Worker listener
+   * @param parent Parent component to center JOptionPane
+   */
+  public DropFile(Settings setting, ArrayList<Renamed> renamed,MovieRenamer.FileWorkerListener listener, JFrame parent) {
     this.setting = setting;
+    this.renamed = renamed;
     this.parent = parent;
     this.listener = listener;
   }
@@ -112,7 +122,10 @@ public class DropFile implements DropTargetListener {
     }
   }
 
-  // Only on EDT
+  /**
+   * Set movie files, and add it to UI (Call Only in EDT)
+   * @param files Array of movie files
+   */
   public void setMovies(ArrayList<File> files) {
     boolean subFolders = false;
     int count = 0;
@@ -133,7 +146,7 @@ public class DropFile implements DropTargetListener {
       }
     }
 
-    ListFilesWorker lft = new ListFilesWorker(files, subFolders, count, setting);
+    ListFilesWorker lft = new ListFilesWorker(files, renamed, subFolders, count, setting);
     listener.setWorker(lft);
     lft.addPropertyChangeListener(listener);
     lft.execute();

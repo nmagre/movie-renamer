@@ -19,11 +19,10 @@
  ******************************************************************************/
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.ui.res.IIconList;
 import javax.swing.Icon;
 
 /**
- *
+ * Class ImdbSearchResult
  * @author Magré Nicolas
  */
 public class ImdbSearchResult implements IIconList {
@@ -34,25 +33,48 @@ public class ImdbSearchResult implements IIconList {
   private String thumb;
   private Icon icon;
 
+  /**
+   * Constructor arguments
+   * @param title Imdb title
+   * @param imdbId Imdb ID
+   * @param type Imdb result type (Exact,...)
+   * @param thumb Imdb thumb
+   */
   public ImdbSearchResult(String title, String imdbId, String type, String thumb) {
     this.imdbId = imdbId;
     this.title = title;
-    this.type = type;
     this.thumb = thumb;
+    this.type = type;
   }
 
+  /**
+   * Get imdb title
+   * @return imdb title
+   */
   public String getTitle() {
     return title;
   }
 
+  /**
+   * Get imdb ID
+   * @return imdb ID
+   */
   public String getImdbId() {
     return imdbId;
   }
 
+  /**
+   * Get imdb thumb
+   * @return imdb thumb
+   */
   public String getThumb() {
     return thumb;
   }
 
+  /**
+   * Set icon
+   * @param icon
+   */
   public void setIcon(Icon icon) {
     this.icon = icon;
   }

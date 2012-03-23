@@ -31,7 +31,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 /**
- * Class ActorWorker
+ * Class ActorWorker , Download and add actor images to moviePanel
  * @author Magré Nicolas
  */
 public class ActorWorker extends SwingWorker<Void, Void> {
@@ -40,6 +40,12 @@ public class ActorWorker extends SwingWorker<Void, Void> {
   private Settings setting;
   private MoviePanel moviePnl;
 
+  /**
+   * Constructor arguments
+   * @param actors List of actor
+   * @param moviePnl Movie Renamer moviePanel
+   * @param setting Movie Renamer settings
+   */
   public ActorWorker(List<MoviePerson> actors, MoviePanel moviePnl, Settings setting) {
     this.actors = actors;
     this.moviePnl = moviePnl;
@@ -53,7 +59,9 @@ public class ActorWorker extends SwingWorker<Void, Void> {
       Image image = null;
       URL url = null;
       StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
+      
       if (!actors.get(i).getThumb().equals(Utils.EMPTY) && setting.actorImage && setting.movieInfoPanel) {
+        
         try {
           url = new URL(actors.get(i).getThumb().replace(".png", ".jpg"));
           image = setting.cache.getImage(url, Cache.actor);
@@ -67,20 +75,25 @@ public class ActorWorker extends SwingWorker<Void, Void> {
 
         if (image == null) image = Utils.getImageFromJAR("/image/unknown.png", getClass());
         
-        if (url != null) desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.actor).getAbsolutePath()).append("\"><br>");
+        if (url != null)
+          desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.actor).getAbsolutePath()).append("\"><br>");
+        
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
         desc.append("</html>");
+        
         moviePnl.addActorToList(actors.get(i).getName(), image, desc.toString());
       }
       else {
+        
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
         desc.append("</html>");
         moviePnl.addActorToList(actors.get(i).getName(), null, desc.toString());
       }
+      
       setProgress((i * 100) / actors.size());
     }
     setProgress(100);

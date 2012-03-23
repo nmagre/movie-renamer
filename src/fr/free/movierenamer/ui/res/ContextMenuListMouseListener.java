@@ -29,7 +29,6 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -38,10 +37,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 /**
- *
- * @author duffy
+ * Class ContextMenuListMouseListener
+ * @author Nicolas Magré
  */
-public class ContextMenuListMouseListener extends MouseAdapter implements Serializable {
+public class ContextMenuListMouseListener extends MouseAdapter {
 
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private JPopupMenu popup = new JPopupMenu();
@@ -51,6 +50,9 @@ public class ContextMenuListMouseListener extends MouseAdapter implements Serial
   private int index;
   private String moviename;
 
+  /**
+   * Default construtor
+   */
   public ContextMenuListMouseListener() {
     index = -1;
     moviename = "";
@@ -91,7 +93,7 @@ public class ContextMenuListMouseListener extends MouseAdapter implements Serial
           if (!moviefile.getFile().delete())
             JOptionPane.showMessageDialog(null, bundle.getString("renameFileFailed"), "Error", JOptionPane.ERROR_MESSAGE);
           else
-            firePropertyChange("remove", null, moviefile.getFile());
+            firePropertyChange("remove", null, index);
       }
     };
 
@@ -118,6 +120,7 @@ public class ContextMenuListMouseListener extends MouseAdapter implements Serial
     changeSupport.addPropertyChangeListener(listener);
     removeList.addPropertyChangeListener(listener);
     search.addPropertyChangeListener(listener);
+    removeHdd.addPropertyChangeListener(listener);
   }
 
   public void removePropertyChangeListener(PropertyChangeListener listener) {

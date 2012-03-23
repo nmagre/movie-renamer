@@ -1,5 +1,3 @@
-package fr.free.movierenamer.ui.res;
-
 /******************************************************************************
  *                                                                             *
  *    Movie Renamer                                                            *
@@ -20,38 +18,56 @@ package fr.free.movierenamer.ui.res;
  *                                                                             *
  ******************************************************************************/
 
-
+package fr.free.movierenamer.ui.res;
 
 import java.util.ArrayList;
 import javax.swing.Icon;
 import fr.free.movierenamer.movie.MovieImage;
 
 /**
- *
- * @author duffy
+ * Class TmdbResult , TheMovieDb result
+ * @author Nicolas Magré
  */
-public class tmdbResult implements IIconList{
+public class TmdbResult implements IIconList{
 
   private String tmdbAPIID;
   private ArrayList<MovieImage> thumbs;
   private ArrayList<MovieImage> fanarts;
   private Icon icon;
 
-  public tmdbResult(String tmdbAPIID, ArrayList<MovieImage> thumbs, ArrayList<MovieImage> fanarts){
+  /**
+   * Constructor arguments
+   * @param tmdbAPIID TheMovieDb api ID
+   * @param thumbs Array of thumbs
+   * @param fanarts Array of fanarts
+   */
+  public TmdbResult(String tmdbAPIID, ArrayList<MovieImage> thumbs, ArrayList<MovieImage> fanarts){
     this.tmdbAPIID = tmdbAPIID;
     this.thumbs = thumbs;
     this.fanarts = fanarts;
     this.icon = null;
   }
 
+  /**
+   * Get TheMovieDb ID
+   * @return TheMovieDb ID
+   */
   public String getId(){
     return tmdbAPIID;
   }
 
+  /**
+   * Get thumbs
+   * @return Array of thumbs
+   */
   public ArrayList<MovieImage> getThumbs(){
     return thumbs;
   }
 
+  /**
+   * Get fanarts
+   * @return Array of fanarts
+   */
   public ArrayList<MovieImage> getFanarts(){
     return fanarts;
   }

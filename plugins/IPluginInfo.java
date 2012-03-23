@@ -1,7 +1,7 @@
 /******************************************************************************
  *                                                                             *
  *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
+ *    Copyright (C) 2011 Magré Nicolas                                         *
  *                                                                             *
  *    Movie Renamer is free software: you can redistribute it and/or modify    *
  *    it under the terms of the GNU General Public License as published by     *
@@ -17,43 +17,48 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
  *                                                                             *
  ******************************************************************************/
-package fr.free.movierenamer.ui.res;
+package plugins;
 
-import java.awt.Component;
 import java.util.ArrayList;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JPanel;
 
 /**
- * Class IconListRenderer , Display image + text in list
- * @param <T> 
+ * Interface IPluginInfo
  * @author Nicolas Magré
  */
-public class IconListRenderer<T extends IIconList> extends DefaultListCellRenderer {
+public interface IPluginInfo extends IPlugin {
 
-  private ArrayList<T> results;
-
-  /**
-   * Constructor arguments
-   * @param results List object
-   */
-  public IconListRenderer(ArrayList<T> results) {
-    this.results = results;
+  public enum MOVIEINFO {
+    IDMOVIE,
+    TITLE,
+    PLOT,
+    OUTLINE,
+    TAGLINE,
+    RATING,
+    YEAR,
+    THUMB,
+    IMDBID,
+    SORTTITLE,
+    RUNTIME,
+    MPAA,
+    GENRE,
+    DIRECTOR,
+    WRITER,
+    ORIGINALTITLE,
+    STUDIO,
+    TRAILER,
+    FANART,
+    COUNTRY,
+    STRFILENAME,
+    STRPATH,
+    SET;
   }
 
-  @Override
-  public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-    if(index >= results.size()) return label;
-    Icon icon = null;
-    IIconList iicon = results.get(index);
-    icon = iicon.getIcon();
-
-    if(icon != null) label.setIcon(icon);
-    return label;
-  }
+  public void setMovieFile(String movieFileNoExt);
+  public String getRenameStrChk(); // != null call exec if chk enabled, null do not call exec
+  public JPanel getInfoPanel();
+  public void setInfoPanel(String search);
+  public ArrayList<Info> getInfoChanged();
+  public void clearPanel();
+  public JPanel getSettingPanel();
 }

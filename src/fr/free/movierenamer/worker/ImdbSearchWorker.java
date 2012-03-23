@@ -43,7 +43,7 @@ import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 
 /**
- * Class ImdbSearchWorker
+ * Class ImdbSearchWorker, Search on imdb
  * @author Nicolas Magré
  */
 public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, String> {
@@ -55,6 +55,14 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, S
   private Component parent;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
+  /**
+   * Constructor arguments
+   * @param parent  Parent component to center joptionpane
+   * @param searchTitle Movie title to search
+   * @param setting Movie Renamer settings
+   * @throws MalformedURLException
+   * @throws UnsupportedEncodingException
+   */
   public ImdbSearchWorker(Component parent, String searchTitle, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
     this.parent = parent;
     this.searchTitle = searchTitle;
@@ -104,6 +112,11 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, S
     JOptionPane.showMessageDialog(parent, chunks.get(0), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 
+  /**
+   * Get icon from web server
+   * @param url
+   * @return Icon or null
+   */
   private Icon getHttpImageIcon(String url) {
     Icon icon = null;
     try {

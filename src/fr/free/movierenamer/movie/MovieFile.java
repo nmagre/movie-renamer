@@ -22,7 +22,6 @@ package fr.free.movierenamer.movie;
 
 import java.io.File;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.utils.Utils;
 
@@ -36,16 +35,19 @@ public class MovieFile implements IIconList {
   private boolean renamed;
   private boolean warning;
   private boolean showPath;
+  private boolean wasRenamed;
 
   /**
    * Constructor arguments
    * @param file A movie file
    * @param renamed Already rename
+   * @param wasRenamed Movie was renamed
    * @param warning Warning on the file
    * @param showPath Display path in toString()
    */
-  public MovieFile(File file, boolean renamed, boolean warning, boolean showPath){
+  public MovieFile(File file, boolean renamed, boolean wasRenamed, boolean warning, boolean showPath){
     this.file = file;
+    this.wasRenamed = wasRenamed;
     this.renamed = renamed;
     this.warning = warning;
     this.showPath = showPath;
@@ -59,18 +61,42 @@ public class MovieFile implements IIconList {
     return file;
   }
 
+  /**
+   * Set file
+   * @param file File
+   */
   public void setFile(File file){
     this.file = file;
   }
 
+  /**
+   * Set renamed
+   * @param renamed Renamed
+   */
   public void setRenamed(boolean renamed){
     this.renamed = renamed;
   }
 
+  /**
+   * Is renamed
+   * @return Renamed
+   */
   public boolean isRenamed(){
     return renamed;
   }
 
+  /**
+   * Was renamed
+   * @return Was renamed
+   */
+  public boolean wasRenamed(){
+    return wasRenamed;
+  }
+
+  /**
+   * Get file warning
+   * @return Warning
+   */
   public boolean isWarning(){
     return warning;
   }
@@ -78,6 +104,7 @@ public class MovieFile implements IIconList {
   @Override
   public Icon getIcon() {
     if(renamed) return Utils.MOVIERENAMEDICON;
+    if(wasRenamed) return Utils.MOVIEWASRENAMEDICON;
     if(warning) return Utils.WARNINGICON;
     return Utils.MOVIEICON;
   }

@@ -31,19 +31,27 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.MoviePanel;
 
 /**
- * Class MovieImageWorker
+ * Class MovieImageWorker , Download and add thumbnail/fanart to moviePanel
  * @author Magré Nicolas
  */
 public class MovieImageWorker extends SwingWorker<Void, Void>  {
 
-  private final int THUMB = 0;
-  private final int FANART = 1;
+  private static final int THUMB = 0;
+  private static final int FANART = 1;
   private ArrayList<MovieImage> arrayImage;
   private int type;
   private int cache;
   private Settings setting;
   private MoviePanel moviePnl;
 
+  /**
+   * Constructor arguments
+   * @param arrayImage List of images to download (or load from cache)
+   * @param type Type of images (thumb,fanart)
+   * @param cache Cache for this type of images
+   * @param moviePnl Movie Renamer moviePanel
+   * @param setting Movie Renamer settings
+   */
   public MovieImageWorker(ArrayList<MovieImage> arrayImage, int type, int cache, MoviePanel moviePnl, Settings setting) {
     this.arrayImage = arrayImage;
     this.type = type;
@@ -56,8 +64,7 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
   protected Void doInBackground() {
     for (int i = 0; i < arrayImage.size(); i++) {
       Image image;
-      try {
-        
+      try {        
         setProgress((i*100)/arrayImage.size());
         URL url = new URL(arrayImage.get(i).getThumbUrl());
         image = setting.cache.getImage(url, cache);

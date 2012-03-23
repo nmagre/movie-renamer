@@ -18,25 +18,18 @@
 *                                                                             *
 ******************************************************************************/
 
-package fr.free.movierenamer.utils;
+package plugins;
+
+import java.beans.PropertyChangeListener;
 
 /**
- * Class ActionNotValidException, Exception on non valid action
+ * Interface IPlugin
  * @author Nicolas Magré
  */
-public class ActionNotValidException extends Exception {
-
-	public ActionNotValidException() {}
-
-	public ActionNotValidException(String message) {
-		super(message);
-	}
-
-	public ActionNotValidException(Throwable cause) {
-		super(cause);
-	}
-
-	public ActionNotValidException(String message, Throwable cause) {
-		super(message, cause);
-	} 
+public interface IPlugin {
+  public String getName();
+  public void exec(PropertyChangeListener proper);
+  public boolean checkForUpdate();
+  public boolean update();
+  public String getVersion();
 }

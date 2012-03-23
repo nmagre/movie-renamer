@@ -5,7 +5,7 @@
   <programGroup defaultName="Movie Renamer"
               location="applications"/>
   <shortcut name="Movie Renamer"
-    target="$INSTALL_PATH\@JARFILE@"
+    target="$INSTALL_PATH\Movie Renamer.jar"
     description="Movie Renamer"
     workingDirectory="$INSTALL_PATH"
     iconFile="$INSTALL_PATH\icon-32.ico"

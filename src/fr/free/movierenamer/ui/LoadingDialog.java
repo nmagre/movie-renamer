@@ -30,8 +30,8 @@ import javax.swing.SwingUtilities;
 import fr.free.movierenamer.utils.Loading;
 
 /**
- *
- * @author duffy
+ * Class LoadingDialog
+ * @author Nicolas Magré
  */
 public class LoadingDialog extends JDialog {
 
@@ -40,9 +40,9 @@ public class LoadingDialog extends JDialog {
 
   /** Creates new form LoadingDialog
    * @param loadingWorker
-   * @param parent
+   * @param parent 
    */
-  public LoadingDialog(ArrayList<Loading> loadingWorker, Component parent) {
+  public LoadingDialog(ArrayList<Loading> loadingWorker,Component parent) {
     initComponents();
     progress = new HashMap<Integer, JProgressBar>();
     id = new ArrayList<Integer>();

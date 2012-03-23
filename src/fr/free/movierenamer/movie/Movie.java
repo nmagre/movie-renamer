@@ -48,7 +48,7 @@ public class Movie {
     thumbs = new ArrayList<MovieImage>();
     fanarts = new ArrayList<MovieImage>();
     movieinfo = new MovieInfo();
-    
+
     String fileName = movieFile.getFile().getName();
     filteredFileName = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
     search = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
@@ -80,30 +80,6 @@ public class Movie {
   }
 
   /**
-   * Get genres string
-   * @return String of genres separataded by pipe
-   */
-  public String getGenresString() {
-    return movieinfo.getGenresString();
-  }
-
-  /**
-   * Get imdb thumb
-   * @return String 
-   */
-  public String getImdbThumb() {
-    return movieinfo.getImdbThumb();
-  }
-
-  /**
-   * Get countries string
-   * @return String of countries separated by pipe
-   */
-  public String getCountriesString() {
-    return movieinfo.getCountriesString();
-  }
-
-  /**
    * Get search movie title
    * @return Movie name search
    */
@@ -112,66 +88,11 @@ public class Movie {
   }
 
   /**
-   * Get title
-   * @return Movie title
-   */
-  public String getTitle() {
-    return movieinfo.getTitle();
-  }
-
-  /**
-   * Get year
-   * @return Movie year or "-1"
-   */
-  public String getYear() {
-    return movieinfo.getYear();
-  }
-
-  /**
    * Get imdb ID
    * @return Movie Imdb ID
    */
   public String getImdbId() {
     return imdbId;
-  }
-
-  /**
-   * Get the movie DB ID
-   * @return The movie DB ID
-   */
-  public String getImdbBId() {
-    return movieinfo.getImdbId();
-  }
-
-  /**
-   * Get genres
-   * @return Array of genres
-   */
-  public ArrayList<String> getGenres() {
-    return movieinfo.getGenres();
-  }
-
-  /**
-   * Get array of movie person
-   * @param job Personn job
-   * @return ArrayList of MoviePerson
-   */
-  public ArrayList<MoviePerson> getPersons(int job) {
-    switch(job){
-      case MoviePerson.ACTOR:
-        return movieinfo.getActors();
-      case MoviePerson.DIRECTOR:
-        return movieinfo.getDirectors();
-      case MoviePerson.WRITER:
-        return movieinfo.getWriters();
-      default:
-        break;
-    }
-    return null;
-  }
-
-  public String getDirectorsString(){
-    return movieinfo.getDirectorsString();
   }
 
   /**
@@ -191,72 +112,16 @@ public class Movie {
   }
 
   /**
-   * Get original title
-   * @return Movie original title
-   */
-  public String getOrigTitle() {
-    return movieinfo.getOrigTitle();
-  }
-
-  /**
-   * Get trailer
-   * @return Movie trailer url (youtube url, only with theMovieDB scrap)
-   */
-  public String getTrailer() {
-    return movieinfo.getTrailer();
-  }
-
-  /**
-   * Get tagline
-   * @return Movie tagline
-   */
-  public String getTagline() {
-    return movieinfo.getTagline();
-  }
-
-  /**
-   * Get countries
-   * @return Array of countries
-   */
-  public ArrayList<String> getCountries() {
-    return movieinfo.getCountries();
-  }
-
-  /**
-   * Get runtime
-   * @return Movie runtime or -1
-   */
-  public int getRuntime() {
-    return movieinfo.getRuntime();
-  }
-
-  /**
-   * Get rating
-   * @return Movie rating or "-1"
-   */
-  public String getRating() {
-    return movieinfo.getRating();
-  }
-
-  /**
-   * Get synopsis
-   * @return Movie synopsis
-   */
-  public String getSynopsis() {
-    return movieinfo.getSynopsis();
-  }
-
-  /**
    * Get renamed movie title
    * @param regExp Expression to rename movie title with
-   * @param letter 
+   * @param letter
    * @return Movie title renamed
    */
   public String getRenamedTitle(String regExp, int letter) {
     String runtime = "";
-    if (getRuntime() != -1) runtime += getRuntime();
-    String[][] replace = new String[][]{{"<t>", getTitle()}, {"<tt>", getImdbId()}, {"<y>", getYear()},
-      {"<rt>", runtime}, {"<ra>", getRating()}, {"<d>", movieinfo.getDirectorsString()},
+    if (movieinfo.getRuntime() != -1) runtime += movieinfo.getRuntime();
+    String[][] replace = new String[][]{{"<t>", movieinfo.getTitle()}, {"<tt>", getImdbId()}, {"<y>", movieinfo.getYear()},
+      {"<rt>", runtime}, {"<ra>", movieinfo.getRating()}, {"<d>", movieinfo.getDirectorsString()},
       {"<d1>", movieinfo.getFirstDirector()}, {"<g>", movieinfo.getGenresString()},
       {"<g1>", movieinfo.getFirstGenreString()}};
     for (int i = 0; i < replace.length; i++) {
@@ -266,12 +131,12 @@ public class Movie {
     String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
 
     String res = "";
-    switch(letter){
+    switch (letter) {
       case Utils.UPPER:
         res = regExp.toUpperCase() + "." + ext.toUpperCase();
         break;
       case Utils.LOWER:
-        res = regExp.toLowerCase()+ "." + ext.toLowerCase();
+        res = regExp.toLowerCase() + "." + ext.toLowerCase();
         break;
       case Utils.FIRSTLO:
         res = Utils.capitalizedLetter(regExp, true) + "." + ext.toLowerCase();
@@ -283,8 +148,16 @@ public class Movie {
         res = regExp + "." + ext.toLowerCase();
         break;
     }
-    if(Utils.isWindows()) res = res.replaceAll(":", "").replaceAll("/", "");
+    if (Utils.isWindows()) res = res.replaceAll(":", "").replaceAll("/", "");
     return res;
+  }
+
+  /**
+   * Set movie informations
+   * @return MovieInfo
+   */
+  public MovieInfo getMovieInfo() {
+    return movieinfo;
   }
 
   /**
@@ -325,14 +198,6 @@ public class Movie {
    */
   public void setRenamed(boolean renamed) {
     movieFile.setRenamed(renamed);
-  }
-
-  /**
-   * Set movie title
-   * @param title Movie title to set
-   */
-  public void setTitle(String title) {
-    movieinfo.setTitle(title);
   }
 
   /**
@@ -386,7 +251,7 @@ public class Movie {
    * Set thumbs list
    * @param thumbs Array of thumbs
    */
-  public void setThumbs(ArrayList<MovieImage> thumbs){
+  public void setThumbs(ArrayList<MovieImage> thumbs) {
     this.thumbs = thumbs;
   }
 
@@ -394,7 +259,7 @@ public class Movie {
    * Set fanarts list
    * @param fanarts Array of fanarts
    */
-  public void setFanarts(ArrayList<MovieImage> fanarts){
+  public void setFanarts(ArrayList<MovieImage> fanarts) {
     this.fanarts = fanarts;
   }
 
@@ -408,15 +273,16 @@ public class Movie {
     nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n");
     nfo.append("  <title>").append(Utils.escapeXML(movieinfo.getTitle())).append("</title>\n");
     nfo.append("  <originaltitle>").append(Utils.escapeXML(movieinfo.getOrigTitle())).append("</originaltitle>\n");
-    nfo.append("  <sorttitle>").append(Utils.escapeXML(movieinfo.getTitle())).append("</sorttitle>\n");
-    nfo.append("  <set>").append(Utils.escapeXML(movieinfo.getSet())).append("</set>\n");
+    nfo.append("  <sorttitle>").append(Utils.escapeXML(movieinfo.getSortTitle())).append("</sorttitle>\n");
     nfo.append("  <rating>").append(Utils.escapeXML(movieinfo.getRating())).append("</rating>\n");
     nfo.append("  <year>").append(Utils.escapeXML(movieinfo.getYear())).append("</year>\n");
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
-    nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</outline>\n");
+    nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
     nfo.append("  <runtime>").append(movieinfo.getRuntime() == -1 ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
     nfo.append("  <id>").append(imdbId).append("</id>\n");
+    nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
     nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
     nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
@@ -457,6 +323,13 @@ public class Movie {
     return nfo.toString();
   }
 
+  /**
+   * Transform array to XML string
+   * @param arrayString Array of value
+   * @param tag XML tag
+   * @param level String of space
+   * @return String XML
+   */
   private String printArrayString(ArrayList<String> arrayString, String tag, String level) {
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < arrayString.size(); i++) {
@@ -468,5 +341,5 @@ public class Movie {
   @Override
   public String toString() {
     return imdbTitle;
-  }  
+  }
 }

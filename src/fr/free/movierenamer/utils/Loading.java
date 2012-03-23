@@ -17,12 +17,11 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
  *                                                                             *
  ******************************************************************************/
-
 package fr.free.movierenamer.utils;
 
 /**
- *
- * @author duffy
+ * Class Loading , Loading info
+ * @author Nicolas Magré
  */
 public class Loading {
 
@@ -31,26 +30,49 @@ public class Loading {
   private int max;
   private int idWorker;
 
-  public Loading(String title,boolean indeterminate, int max, int idWorker){
+  /**
+   * Constructor arguments
+   * @param title Loading title
+   * @param indeterminate Loading indeterminate
+   * @param max Loading max value
+   * @param idWorker Loading worker ID
+   */
+  public Loading(String title, boolean indeterminate, int max, int idWorker) {
     this.title = title;
     this.indeterminate = indeterminate;
     this.max = max;
     this.idWorker = idWorker;
   }
 
-  public String getTitle(){
+  /**
+   * Get loading title
+   * @return title
+   */
+  public String getTitle() {
     return title;
   }
 
-  public boolean getIndeterminate(){
+  /**
+   * Get indeterminate
+   * @return indeterminate
+   */
+  public boolean getIndeterminate() {
     return indeterminate;
   }
 
-  public int getMax(){
+  /**
+   * Get mac value
+   * @return max value
+   */
+  public int getMax() {
     return max;
   }
 
-  public int getId(){
+  /**
+   * Get worker ID
+   * @return WorkerID
+   */
+  public int getId() {
     return idWorker;
   }
 }

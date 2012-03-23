@@ -39,8 +39,8 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 
 /**
- *
- * @author duffy
+ * Class DropImage , drag and drog images from hard drive or web browser
+ * @author Nicolas Magré
  */
 public class DropImage implements DropTargetListener {
 
@@ -49,6 +49,12 @@ public class DropImage implements DropTargetListener {
   private boolean thumb = false;
   private int cache;
 
+  /**
+   * Constructor arguments
+   * @param moviePanel Movie Renamer moviePanel
+   * @param cache Cache type
+   * @param setting Movie Renamer settings
+   */
   public DropImage(MoviePanel moviePanel, int cache, Settings setting) {
     this.moviePanel = moviePanel;
     this.setting = setting;
@@ -79,7 +85,7 @@ public class DropImage implements DropTargetListener {
       Transferable data = evt.getTransferable();
       evt.acceptDrop(action);
 
-      if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+      if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {// From hard drive
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
 
@@ -105,7 +111,7 @@ public class DropImage implements DropTargetListener {
               if(thumb) moviePanel.addThumbToList(img, mvImg, true);
               else moviePanel.addFanartToList(img, mvImg, true);
             }
-          } else if (res[i].startsWith("http") || res[i].startsWith("www")) {
+          } else if (res[i].startsWith("http") || res[i].startsWith("www")) {// From web browser
             URL url = new URL(res[i]);
             Image img = setting.cache.getImage(url, cache);
             if (img == null) {

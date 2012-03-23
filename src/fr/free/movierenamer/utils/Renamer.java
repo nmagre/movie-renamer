@@ -26,11 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.util.Date;
 import java.util.logging.Level;
 
 /**
- *
- * @author duffy
+ * Class Renamer , Rename movie files, download thumb/fanart, create XBMC NFO
+ * @author Nicolas Magré
  */
 public class Renamer {
 
@@ -44,7 +45,15 @@ public class Renamer {
   private String newFileName;
   private String newPath = "";
   private String newFileNameNoExt;
+  private Renamed renamed;
 
+  /**
+   * Constructor arguments
+   * @param title Movie title
+   * @param oldFile File to rename
+   * @param newFileName Renamed file
+   * @param setting Movie Renamer settings
+   */
   public Renamer(String title, File oldFile, String newFileName, Settings setting) {
     this.title = title;
     this.setting = setting;
@@ -58,25 +67,31 @@ public class Renamer {
       this.newFileName = newFileName.substring(newFileName.lastIndexOf(File.separator) + 1);
     }
     newFileNameNoExt = this.newFileName.substring(0, this.newFileName.lastIndexOf("."));
+
+    renamed = new Renamed(title);
   }
 
+  /**
+   * Rename a movie file and add it to renamed XML file
+   * @return True if renamed success, False otherwise
+   */
   public boolean rename() {
     String lastDir = oldPath.substring(oldPath.lastIndexOf(File.separator) + 1);
-    
-    if (oldFileNameNoExt.matches(lastDir + ".*")) {      
+
+    if (oldFileNameNoExt.matches(lastDir + ".*")) {
       File files[] = new File(oldPath).listFiles(new FileFilter() {
 
         @Override
         public boolean accept(File file) {
           String fname = file.toString();
           fname = fname.toLowerCase();
-          for (int i = 0; i <setting.extensions.length; i++) {
+          for (int i = 0; i < setting.extensions.length; i++) {
             if (fname.endsWith("." + setting.extensions[i])) return true;
           }
           return false;
         }
       });
-      
+
       if (files.length == 1) {
         if (newPath.equals(""))
           newPath = title;
@@ -129,14 +144,39 @@ public class Renamer {
       if (!success)
         setting.getLogger().log(Level.SEVERE, "Filed to rename : {0}\nTo : {1}", new Object[]{files[i], oldFile.getParent() + File.separator + newPath + newFileNameNoExt + fext});
     }
+
+
+    renamed.setDate(new Date().toString());
+    renamed.setMovieFileSrc(oldFile.getAbsolutePath());
+    renamed.setMovieFileDest(newFile.getAbsolutePath());
+    renamed.setRenameFailed(false);
     return true;
   }
 
+  /**
+   * Get renamed
+   * @return Renamed
+   */
+  public Renamed getRenamed() {
+    return renamed;
+  }
+
+  /**
+   * Get new file
+   * @return Renamed file
+   */
   public File getNewFile() {
     return newFile;
   }
 
-  public void createNFO(boolean rename, String snfo) {
+  /**
+   * Create XBMC NFO
+   * @param rename Rename NFO (if exist), create NFO otherwise
+   * @param snfo NFO string
+   * @return True if success, False otherwise
+   */
+  public boolean createNFO(boolean rename, String snfo) {
+    boolean createNfo = true;
     File nfo = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + ".nfo");
     File newNfo = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + ".nfo");
     if (!rename) {
@@ -148,54 +188,82 @@ public class Renamer {
       } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      if (nfo.exists() && !nfo.equals(newNfo)){
+      if (nfo.exists() && !nfo.equals(newNfo)) {
         setting.getLogger().log(Level.INFO, "Delete nfo file{0}", nfo);
-        nfo.delete();
+        createNfo = nfo.delete();
       }
-    } else if (nfo.exists()){
+    } else if (nfo.exists()) {
       setting.getLogger().log(Level.INFO, "Rename nfo : {0} \nTo : {1}", new Object[]{nfo, newNfo});
-      nfo.renameTo(newNfo);
+      createNfo = nfo.renameTo(newNfo);
     }
-      
+    return createNfo;
   }
 
-  public void createThumb(boolean rename, URL url) {
+  /**
+   * Download and rename thumb
+   * @param rename Rename thumb (if exist), download thumb otherwise
+   * @param url Thumb url
+   * @return True if success, False otherwise
+   */
+  public boolean createThumb(boolean rename, URL url) {
+    boolean createThum = true;
     File thumb = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
     File newThumb = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
     if (!rename) {
       setting.getLogger().log(Level.INFO, "Create thumb : {0}", newThumb);
       try {
+        File file = setting.cache.get(url, Cache.thumb);
+        if (file == null) setting.cache.add(url.openStream(), url.toString(), Cache.thumb);
         Utils.copyFile(setting.cache.get(url, Cache.thumb), newThumb);
       } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      if (thumb.exists() && !thumb.equals(newThumb)){
+      if (thumb.exists() && !thumb.equals(newThumb)) {
         setting.getLogger().log(Level.INFO, "Delete thumb : {0}", thumb);
-        thumb.delete();
+        createThum = thumb.delete();
       }
-    } else if (thumb.exists()){
+    } else if (thumb.exists()) {
       setting.getLogger().log(Level.INFO, "Rename thumb : {0} \nTo : {1}", new Object[]{thumb, newThumb});
-      thumb.renameTo(newThumb);
+      createThum = thumb.renameTo(newThumb);
     }
+    return createThum;
   }
 
-  public void createFanart(boolean rename, URL url) {
+  /**
+   * Download and rename fanart
+   * @param rename Rename fanart (if exist), download fanart otherwise
+   * @param url Fanart url
+   * @return True if success , False otherwise
+   */
+  public boolean createFanart(boolean rename, URL url) {
+    boolean createfan = true;
     File fanart = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + "-fanart.jpg");
     File newFanart = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + "-fanart.jpg");
     if (!rename) {
       setting.getLogger().log(Level.INFO, "Create fanart : {0}", newFanart);
       try {
+        File file = setting.cache.get(url, Cache.fanart);
+        if (file == null) setting.cache.add(url.openStream(), url.toString(), Cache.fanart);
         Utils.copyFile(setting.cache.get(url, Cache.fanart), newFanart);
       } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
-      if (fanart.exists() && !fanart.equals(newFanart)){
+      if (fanart.exists() && !fanart.equals(newFanart)) {
         setting.getLogger().log(Level.INFO, "Delete fanart : {0}", fanart);
-        fanart.delete();
+        createfan = fanart.delete();
       }
-    } else if (fanart.exists()){
+    } else if (fanart.exists()) {
       setting.getLogger().log(Level.INFO, "Rename fanart : {0} \nTo : {1}", new Object[]{fanart, newFanart});
-      fanart.renameTo(newFanart);
+      createfan = fanart.renameTo(newFanart);
     }
+    return createfan;
+  }
+
+  /**
+   * Get new filename and path without extension
+   * @return Filename and path
+   */
+  public String getNewFileNoExt() {
+    return oldFile.getParent() + File.separator + newPath + newFileNameNoExt;
   }
 }

@@ -35,7 +35,7 @@ public class MoviePerson {
 
   private String name;
   private String thumb;
-  private int job;// Actor, Realisator
+  private int job;// Actor, director, writer
   private ArrayList<String> roles;// just for actor
 
   /**
