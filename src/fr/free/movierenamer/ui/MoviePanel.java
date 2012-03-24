@@ -34,7 +34,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -57,10 +59,14 @@ import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.dnd.DropTarget;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -211,6 +217,23 @@ public class MoviePanel extends javax.swing.JPanel {
     fanartsScrollPane.setVisible(setting.fanart);
     imagePnl.setVisible(setting.thumb || setting.fanart);
     fanartBack = null;
+
+    addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        if (pce.getPropertyName().equals("mouseLoading"))
+          setMouseIcon(true);
+        else if (pce.getPropertyName().equals("mouseNormal"))
+          setMouseIcon(false);
+      }
+    });
+  }
+
+  public void setMouseIcon(boolean loading) {
+    Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+    Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    setCursor(loading ? hourglassCursor : normalCursor);
   }
 
   public void setDisplay(Settings setting) {
@@ -234,45 +257,83 @@ public class MoviePanel extends javax.swing.JPanel {
     return image;
   }
 
-  public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg, final boolean selectLast) {//A refaire (http request in EDT)
+  public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg, final boolean selectLast) {
 
-    SwingUtilities.invokeLater(new Thread() {
+    thumbs.add(mvImg);
+
+    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
 
       @Override
-      public void run() {
-        thumbs.add(mvImg);
-        Image img = null;
+      protected Image doInBackground() throws Exception {
+        Image image = null;
         if (thumbnailModel.isEmpty())
-          img = getImage(thumbs.get(0).getThumbUrl(), Cache.thumb);
-        if (img != null)
-          thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
-        if (thumb != null)
-          thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
-        if (!thumbnailModel.isEmpty())
-          thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
+          image = getImage(thumbs.get(0).getThumbUrl(), Cache.thumb);
+        return image;
+      }
+    };
+
+    worker.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE))
+          try {
+            Image img = (Image) worker.get();
+            if (img != null)
+              thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+            if (thumb != null)
+              thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
+            if (!thumbnailModel.isEmpty())
+              thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
+          } catch (InterruptedException ex) {
+            setting.getLogger().log(Level.SEVERE, ex.toString());
+          } catch (ExecutionException ex) {
+            setting.getLogger().log(Level.SEVERE, ex.toString());
+          }
       }
     });
+
+    worker.execute();
   }
 
-  public synchronized void addFanartToList(final Image fanart, final MovieImage mvImg, final boolean selectLast) {//A refaire (http request in EDT)
-
-    SwingUtilities.invokeLater(new Thread() {
+  public synchronized void addFanartToList(final Image fanart, final MovieImage mvImg, final boolean selectLast) {
+    fanarts.add(mvImg);
+    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
 
       @Override
-      public void run() {
-        fanarts.add(mvImg);
-        if (fanartModel.isEmpty()) {
-          fanartBack = getImage(fanarts.get(0).getThumbUrl(), Cache.fanart);
+      protected Image doInBackground() throws Exception {
+        Image img = null;
+        if (fanartModel.isEmpty())
+          img = getImage(fanarts.get(0).getThumbUrl(), Cache.fanart);
+
+        return img;
+      }
+    };
+
+    worker.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+          try {
+            fanartBack = (Image) worker.get();
+          } catch (InterruptedException ex) {
+            Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
+          } catch (ExecutionException ex) {
+            Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
+          }
           detailsPnl.validate();
           detailsPnl.repaint();
-        }
 
-        if (fanart != null)
-          fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
-        if (!fanartModel.isEmpty())
-          fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
+          if (fanart != null)
+            fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
+          if (!fanartModel.isEmpty())
+            fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
+        }
       }
     });
+    
+    worker.execute();
   }
 
   public void addActorToList(final String actor, final Image actorImg, final String desc) {

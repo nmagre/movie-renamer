@@ -90,6 +90,7 @@ import fr.free.movierenamer.worker.ImdbSearchWorker;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import fr.free.movierenamer.worker.MovieImageWorker;
 import fr.free.movierenamer.worker.TheMovieDbImageWorker;
+import java.awt.Cursor;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -240,6 +241,12 @@ public class MovieRenamer extends javax.swing.JFrame {
       checkUpdate(false);
   }
 
+  public void setMouseIcon(boolean loading) {
+    Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+    Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    setCursor(loading ? hourglassCursor:normalCursor);
+  }
+  
   private void loadRenamedMovie() {
     if (new File(setting.renamedFile).exists()) {
       XMLParser<ArrayList<Renamed>> mmp = new XMLParser<ArrayList<Renamed>>(setting.renamedFile, Renamed.class);
@@ -366,7 +373,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         HttpGet http = new HttpGet(url);
         String newVerFile = http.sendGetRequest(false);
         if (newVerFile.equals("")) {
-          if(showAlready) JOptionPane.showMessageDialog(this, "Movie Renamer is already up to date", "Update", JOptionPane.INFORMATION_MESSAGE);
+          if (showAlready) JOptionPane.showMessageDialog(this, "Movie Renamer is already up to date", "Update", JOptionPane.INFORMATION_MESSAGE);
           return;
         }
         String newVer = newVerFile.substring(newVerFile.lastIndexOf("-") + 1, newVerFile.lastIndexOf("."));
@@ -732,7 +739,8 @@ public class MovieRenamer extends javax.swing.JFrame {
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
-
+      
+      setMouseIcon(true);
       ArrayList<MovieImage> images = moviePnl.getAddedThumb();
       for (int i = 0; i < images.size(); i++) {
         currentMovie.addThumb(images.get(i));
@@ -745,6 +753,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
       int index = movieList.getSelectedIndex();
       if (index == -1) {
+        setMouseIcon(false);
         JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noMovieSelected"), sError, JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -756,6 +765,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       Renamer renamer = new Renamer(ftitle, currentMovie.getFile(), renamedField.getText(), setting);
 
       if (!renamer.rename()) {
+        setMouseIcon(false);
         JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("renameFileFailed"), sError, JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -806,6 +816,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
 
+      setMouseIcon(false);
       currentMovie = null;
       clearInterface(false, true);
 

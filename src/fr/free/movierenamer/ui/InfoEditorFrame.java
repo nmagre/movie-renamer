@@ -66,7 +66,6 @@ public class InfoEditorFrame extends JDialog {
   private CustomField ratingCField;
   private CustomField imdbidCField;
   private CustomField synopsisCField;
-  private CustomField shortSynopsisCField;
   private CustomField studioCField;
   private CustomField directorCField;
   private CustomField genreCField;
@@ -118,7 +117,6 @@ public class InfoEditorFrame extends JDialog {
     ratingCField = new CustomField(ratingField, cancelBtn9);
     imdbidCField = new CustomField(imdbidField, cancelBtn10);
     synopsisCField = new CustomField(synopsisField, cancelBtn11);
-    shortSynopsisCField = new CustomField(shortSynopsisField, cancelBtn12);
     studioCField = new CustomField(studioField, cancelBtn13);
     directorCField = new CustomField(directorField, cancelBtn14);
     genreCField = new CustomField(genreField, cancelBtn15);
@@ -142,7 +140,6 @@ public class InfoEditorFrame extends JDialog {
     trailerCField.setInitValue(movieInfo.getTrailer());
     yearCField.setInitValue("" + movieInfo.getYear());
     synopsisCField.setInitValue(movieInfo.getSynopsis());
-    shortSynopsisCField.setInitValue(movieInfo.getSynopsis());
 
     studioCField.setInitValue(movieInfo.getStudiosString());
     directorCField.setInitValue(movieInfo.getDirectorsString());
@@ -222,11 +219,7 @@ public class InfoEditorFrame extends JDialog {
     synopsisSP = new javax.swing.JScrollPane();
     synopsisField = new javax.swing.JTextArea();
     synopsisLbl = new javax.swing.JLabel();
-    shortSynopsisLbl = new javax.swing.JLabel();
-    shortSynopsisSP = new javax.swing.JScrollPane();
-    shortSynopsisField = new javax.swing.JTextArea();
     cancelBtn11 = new javax.swing.JButton();
-    cancelBtn12 = new javax.swing.JButton();
     actorPnl = new javax.swing.JPanel();
     actorLbl = new javax.swing.JLabel();
     actorListSp = new javax.swing.JScrollPane();
@@ -758,23 +751,9 @@ public class InfoEditorFrame extends JDialog {
     synopsisLbl.setFont(new java.awt.Font("Ubuntu", 1, 12));
     synopsisLbl.setText("Synopsis");
 
-    shortSynopsisLbl.setFont(new java.awt.Font("Ubuntu", 1, 12));
-    shortSynopsisLbl.setText("Outline");
-
-    shortSynopsisField.setColumns(20);
-    shortSynopsisField.setLineWrap(true);
-    shortSynopsisField.setRows(5);
-    shortSynopsisField.setWrapStyleWord(true);
-    shortSynopsisField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
-    shortSynopsisSP.setViewportView(shortSynopsisField);
-
     cancelBtn11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
     cancelBtn11.setToolTipText(bundle.getString("cancel")); // NOI18N
     cancelBtn11.setMargin(new java.awt.Insets(2, 2, 2, 2));
-
-    cancelBtn12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-    cancelBtn12.setToolTipText(bundle.getString("cancel")); // NOI18N
-    cancelBtn12.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
     javax.swing.GroupLayout synopsPnlLayout = new javax.swing.GroupLayout(synopsPnl);
     synopsPnl.setLayout(synopsPnlLayout);
@@ -783,16 +762,11 @@ public class InfoEditorFrame extends JDialog {
       .addGroup(synopsPnlLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(synopsPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(synopsisSP, javax.swing.GroupLayout.DEFAULT_SIZE, 569, Short.MAX_VALUE)
           .addGroup(synopsPnlLayout.createSequentialGroup()
             .addComponent(synopsisLbl)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(cancelBtn11, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(synopsisSP, javax.swing.GroupLayout.DEFAULT_SIZE, 569, Short.MAX_VALUE)
-          .addGroup(synopsPnlLayout.createSequentialGroup()
-            .addComponent(shortSynopsisLbl)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(cancelBtn12, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(shortSynopsisSP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 569, Short.MAX_VALUE))
+            .addComponent(cancelBtn11, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     synopsPnlLayout.setVerticalGroup(
@@ -803,13 +777,7 @@ public class InfoEditorFrame extends JDialog {
           .addComponent(synopsisLbl)
           .addComponent(cancelBtn11, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(synopsisSP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(synopsPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(shortSynopsisLbl)
-          .addComponent(cancelBtn12, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(shortSynopsisSP, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+        .addComponent(synopsisSP, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -1045,7 +1013,7 @@ public class InfoEditorFrame extends JDialog {
       movieInfo.setTrailer(trailerField.getText());
       movieInfo.setYear(yearField.getText());
       movieInfo.setSynopsis(synopsisField.getText());
-      movieInfo.setOutline(shortSynopsisField.getText());
+      movieInfo.setOutline(synopsisField.getText());
       movieInfo.setStudios(Utils.stringToArray(studioField.getText(), " \\| "));
       movieInfo.setGenre(Utils.stringToArray(genreField.getText(), " \\| "));
       movieInfo.setSet(Utils.stringToArray(setField.getText(), " \\| "));
@@ -1103,7 +1071,6 @@ public class InfoEditorFrame extends JDialog {
   private javax.swing.JButton cancelBtn1;
   private javax.swing.JButton cancelBtn10;
   private javax.swing.JButton cancelBtn11;
-  private javax.swing.JButton cancelBtn12;
   private javax.swing.JButton cancelBtn13;
   private javax.swing.JButton cancelBtn14;
   private javax.swing.JButton cancelBtn15;
@@ -1153,9 +1120,6 @@ public class InfoEditorFrame extends JDialog {
   private javax.swing.JButton searchBtn;
   private javax.swing.JTextField setField;
   private javax.swing.JLabel setLbl;
-  private javax.swing.JTextArea shortSynopsisField;
-  private javax.swing.JLabel shortSynopsisLbl;
-  private javax.swing.JScrollPane shortSynopsisSP;
   private javax.swing.JComboBox siteComboBox;
   private javax.swing.JTextField sortTitleField;
   private javax.swing.JLabel sortTitleLbl;
