@@ -37,6 +37,7 @@ public class MoviePerson {
   private String thumb;
   private int job;// Actor, director, writer
   private ArrayList<String> roles;// just for actor
+  private String imdbId;
 
   /**
    * Constructor arguments
@@ -81,6 +82,18 @@ public class MoviePerson {
    */
   public ArrayList<String> getRoles() {
     return roles;
+  }
+
+  /**
+   * Get imdb ID
+   * @return Imdb ID
+   */
+  public String getImdbId() {
+    return imdbId;
+  }
+
+  public void setImdbId(String imdbId){
+    this.imdbId = imdbId;
   }
 
   /**

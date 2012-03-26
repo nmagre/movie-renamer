@@ -19,8 +19,6 @@
  ******************************************************************************/
 package fr.free.movierenamer.parser;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -142,7 +140,7 @@ public class ImdbParser {
                 if ((limit > -1 && count > limit) || count > nbMovie)
                   break;
                 movieName = movieImdbMatcher.group().substring(movieNameMatcher.end(), movieImdbMatcher.group().length()).replaceAll("<\\/a>", Utils.EMPTY);
-                movieName = decodeXMLString(movieName);
+                movieName = Utils.unEscapeXML(movieName, "ISO-8859-1");
 
                 //Fix unknown date in movie title
                 if (movieName.contains("(????)"))
@@ -188,7 +186,7 @@ public class ImdbParser {
     try {
       if (titleMatcher.find()) {
         String movieName = titleMatcher.group().substring(titleMatcher.group().indexOf("content=") + 9);
-        movieName = decodeXMLString(movieName);
+        movieName = Utils.unEscapeXML(movieName, "ISO-8859-1");
 
         String imdbId = moviePage.substring(moviePage.indexOf("/tt") + 1, moviePage.indexOf("/tt") + 10);
         pattern = Pattern.compile(french ? IMDBMOVIETHUMB_C : IMDBMOVIETHUMB);
@@ -225,12 +223,14 @@ public class ImdbParser {
         title = title.replaceAll("<title>", Utils.EMPTY).replaceAll("</title>", Utils.EMPTY);
         String year = title;
         title = title.substring(0, title.indexOf("(") - 1);
-        movieInfo.setTitle(decodeXMLString(title));
+        movieInfo.setTitle(Utils.unEscapeXML(title, "ISO-8859-1"));
 
-        pattern = Pattern.compile("\\d\\d\\d\\d");
+        pattern = Pattern.compile("\\(\\d\\d\\d\\d.*\\)");
         searchMatcher = pattern.matcher(year);
         if (searchMatcher.find()) {
-          year = searchMatcher.group();
+          year = searchMatcher.group().replace("(", Utils.EMPTY).replace(")", Utils.EMPTY);
+          if (year.contains("/")) year = year.substring(0, year.indexOf("/"));
+          if (year.contains(" ")) year = year.substring(0, year.indexOf(" "));
           movieInfo.setYear(year);
         }
       } else setting.getLogger().log(Level.SEVERE, "No title found in imdb page");
@@ -257,7 +257,7 @@ public class ImdbParser {
           origTitle = origTitle.substring(origTitle.indexOf(">") + 1, origTitle.lastIndexOf("<"));
           origTitle = origTitle.replaceAll("\\(.*\\)", "").replaceAll("<.*>", "");
         }
-        movieInfo.setOrigTitle(decodeXMLString(origTitle));
+        movieInfo.setOrigTitle(Utils.unEscapeXML(origTitle, "ISO-8859-1"));
       } else movieInfo.setOrigTitle(movieInfo.getTitle());
 
       //Runtime
@@ -293,8 +293,15 @@ public class ImdbParser {
       searchMatcher = pattern.matcher(moviePage);
       while (searchMatcher.find()) {
         String director = searchMatcher.group();
+        String imdbId = "";
+        if (director.contains("link=name/nm")) {
+          int pos = director.indexOf("link=name/nm") + 10;
+          imdbId = director.substring(pos, pos + 9);
+        }
         director = director.substring(director.indexOf(">") + 1, director.lastIndexOf("<"));
-        movieInfo.addDirector(new MoviePerson(decodeXMLString(director), "", MoviePerson.DIRECTOR));
+        MoviePerson dir = new MoviePerson(Utils.unEscapeXML(director, "ISO-8859-1"), "", MoviePerson.DIRECTOR);
+        dir.setImdbId(imdbId);
+        movieInfo.addDirector(dir);
       }
 
       //Writers
@@ -303,7 +310,7 @@ public class ImdbParser {
       while (searchMatcher.find()) {
         String writer = searchMatcher.group();
         writer = writer.substring(writer.indexOf(">") + 1, writer.lastIndexOf("<"));
-        movieInfo.addWriter(new MoviePerson(decodeXMLString(writer), "", MoviePerson.WRITER));
+        movieInfo.addWriter(new MoviePerson(Utils.unEscapeXML(writer, "ISO-8859-1"), "", MoviePerson.WRITER));
       }
 
       //TagLine
@@ -313,7 +320,7 @@ public class ImdbParser {
       if (searchMatcher.find()) {
         String tagline = searchMatcher.group();
         tagline = tagline.substring(tagline.indexOf("\n") + 1, tagline.indexOf("<a") - 1);
-        movieInfo.setTagline(decodeXMLString(tagline));
+        movieInfo.setTagline(Utils.unEscapeXML(tagline, "ISO-8859-1"));
       }
 
       //Plot
@@ -322,7 +329,7 @@ public class ImdbParser {
       if (searchMatcher.find()) {
         String plot = searchMatcher.group();
         plot = plot.substring(plot.indexOf("\n") + 1, plot.indexOf("<a") - 1);
-        movieInfo.setSynopsis(decodeXMLString(plot));
+        movieInfo.setSynopsis(Utils.unEscapeXML(plot, "ISO-8859-1"));
       }
 
       //Genres
@@ -333,7 +340,7 @@ public class ImdbParser {
         String[] genres = found.split("\\|");
         for (int i = 0; i < genres.length; i++) {
           String genre = french ? genres[i].trim() : genres[i].substring(genres[i].indexOf(">") + 1, genres[i].indexOf("</a>"));
-          movieInfo.addGenre(decodeXMLString(genre));
+          movieInfo.addGenre(Utils.unEscapeXML(genre, "ISO-8859-1"));
         }
       }
 
@@ -355,20 +362,31 @@ public class ImdbParser {
 
             String name = matcher2.group().substring(matcher2.group().indexOf("onclick="), matcher2.group().indexOf("</a></td><td"));
             name = name.substring(name.indexOf(">") + 1);
-            MoviePerson actor = new MoviePerson(decodeXMLString(name), thumbactor, MoviePerson.ACTOR);
+            if (thumbactor.equals("http://i.media-imdb.com/images/b.gif")) thumbactor = "";
+
+            String imdbId = "";
+            if (matcher2.group().contains("link=/name/nm")) {
+              int pos = matcher2.group().indexOf("link=/name/nm") + 11;
+              imdbId = matcher2.group().substring(pos, pos + 9);
+            }
+
+            MoviePerson actor = new MoviePerson(Utils.unEscapeXML(name, "ISO-8859-1"), thumbactor, MoviePerson.ACTOR);
+            actor.setImdbId(imdbId);
+
             String role = matcher2.group().substring(matcher2.group().indexOf("class=\"char\""));
             role = role.substring(role.indexOf(">") + 1, role.indexOf("</td>"));
             if (role.contains("href=")) role = role.substring(role.indexOf(">") + 1);
+
             try {
               if (role.contains("/")) {
                 String[] roles = role.split(" / ");
                 for (int j = 0; j < roles.length; j++) {
                   role = roles[j].replaceAll("</a>", "");
                   if (role.contains("href=")) role = role.substring(role.indexOf(">") + 1);
-                  actor.addRole(decodeXMLString(role));
+                  actor.addRole(Utils.unEscapeXML(role, "ISO-8859-1"));
                 }
               } else
-                actor.addRole(decodeXMLString(role));
+                actor.addRole(Utils.unEscapeXML(role, "ISO-8859-1"));
             } catch (ActionNotValidException e) {
               setting.getLogger().log(Level.SEVERE, e.getMessage());
             }
@@ -387,12 +405,12 @@ public class ImdbParser {
           if (country.contains(" | ")) {
             String[] countries = country.split("\\|");
             for (int i = 0; i < countries.length; i++) {
-              country = decodeXMLString(countries[i]);
+              country = Utils.unEscapeXML(countries[i], "ISO-8859-1");
               if (country.contains("country"))
                 movieInfo.addCountry(country.substring(country.indexOf(">") + 1, country.indexOf("</")));
             }
           } else {
-            country = decodeXMLString(country);
+            country = Utils.unEscapeXML(country, "ISO-8859-1");
             if (country.contains("</"))
               movieInfo.addCountry(country.substring(country.indexOf(">") + 1, country.indexOf("</")));
             else
@@ -404,11 +422,11 @@ public class ImdbParser {
           if (country.contains(" | ")) {
             String[] countries = country.split("\\|");
             for (int i = 0; i < countries.length; i++) {
-              country = decodeXMLString(countries[i]);
+              country = Utils.unEscapeXML(countries[i], "ISO-8859-1");
               movieInfo.addCountry(country);
             }
           } else {
-            country = decodeXMLString(country);
+            country = Utils.unEscapeXML(country, "ISO-8859-1");
             movieInfo.addCountry(country);
           }
         }
@@ -421,7 +439,7 @@ public class ImdbParser {
         String studio = searchMatcher.group();
         studio = studio.substring(studio.indexOf("<a"), studio.lastIndexOf("</a>"));
         studio = studio.substring(studio.lastIndexOf(">") + 1);
-        studio = decodeXMLString(studio);
+        studio = Utils.unEscapeXML(studio, "ISO-8859-1");
         movieInfo.addStudio(studio);
       }
     } catch (IndexOutOfBoundsException e) {
@@ -429,21 +447,5 @@ public class ImdbParser {
       throw new IndexOutOfBoundsException("Parse failed : IndexOutOfBoundsException");
     }
     return movieInfo;
-  }
-
-  /**
-   * Decode XML encoded character in HTML page
-   * @param text String to decode
-   * @return String decoded in ISO-8859-1 charset
-   */
-  private String decodeXMLString(String text) {
-    try {
-      text = text.replaceAll("&#x(\\w\\w);", "%$1");
-      text = URLDecoder.decode(text.replaceAll("% ", "%25 "), "ISO-8859-1");
-      return text.trim();
-    } catch (UnsupportedEncodingException e) {
-      setting.getLogger().log(Level.SEVERE, e.getMessage());
-    }
-    return "";
   }
 }

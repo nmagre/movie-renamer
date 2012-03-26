@@ -106,6 +106,9 @@ public class Settings {
   public int renameCase = 1;
   public String movieDir = "";
   public int movieDirRenamedTitle = 0;
+  public String commande = "";
+  public int nfoType = 0;
+  
   // Boolean
   public boolean useExtensionFilter = true;
   public boolean showMovieFilePath = false;
@@ -163,17 +166,19 @@ public class Settings {
 
       // Variables
       out.write("    <locale>" + locale + "</locale>" + endl);
-      out.write("    <nameFilters>" + Utils.arrayToString(nameFilters, "/_") + "</nameFilters>" + endl);
+      out.write("    <nameFilters>" + Utils.escapeXML(Utils.arrayToString(nameFilters, "/_")) + "</nameFilters>" + endl);
       out.write("    <extensions>" + Utils.arrayToString(extensions, "/_") + "</extensions>" + endl);
       out.write("    <thumbSize>" + thumbSize + "</thumbSize>" + endl);
       out.write("    <fanartSize>" + fanartSize + "</fanartSize>" + endl);
       out.write("    <nbResult>" + nbResult + "</nbResult>" + endl);
-      out.write("    <movieFilenameFormat>" + movieFilenameFormat.replaceAll("<", "\\$_").replaceAll(">", "_\\$") + "</movieFilenameFormat>" + endl);
+      out.write("    <movieFilenameFormat>" + Utils.escapeXML(movieFilenameFormat) + "</movieFilenameFormat>" + endl);
       out.write("    <thumbExt>" + thumbExt + "</thumbExt>" + endl);
       out.write("    <fanartExt>" + fanartExt + "</fanartExt>" + endl);
       out.write("    <renameCase>" + renameCase + "</renameCase>" + endl);
       out.write("    <movieDir>" + movieDir + "</movieDir>" + endl);
       out.write("    <movieDirRenamedTitle>" + movieDirRenamedTitle + "</movieDirRenamedTitle>" + endl);
+      out.write("    <commande>" + Utils.escapeXML(commande) + "</commande>" + endl);
+      out.write("    <nfoType>" + nfoType + "</nfoType>" + endl);
 
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);

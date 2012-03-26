@@ -165,16 +165,15 @@ public class XMLParser<T> {
             if (name.equals("locale"))
               config.locale = buffer.toString();
             if (name.equalsIgnoreCase("nameFilters")) {
-              String res = buffer.toString();
+              String res = Utils.unEscapeXML(buffer.toString(), "UTF-8");
               config.nameFilters = res.split("/_");
             }
             if (name.equalsIgnoreCase("extensions")) {
               String res = buffer.toString();
               config.extensions = res.split("/_");
             }
-            if (name.equalsIgnoreCase("movieDir")) {
+            if (name.equalsIgnoreCase("movieDir"))
               config.movieDir = buffer.toString();
-            }
 
             try {
               if (name.equalsIgnoreCase("thumbSize"))
@@ -191,18 +190,27 @@ public class XMLParser<T> {
                 config.fanartExt = Integer.parseInt(buffer.toString());
               if (name.equalsIgnoreCase("renameCase"))
                 config.renameCase = Integer.parseInt(buffer.toString());
-              if (name.equalsIgnoreCase("movieDirRenamedTitle")){
+              if (name.equalsIgnoreCase("movieDirRenamedTitle")) {
                 int nb = Integer.parseInt(buffer.toString());
-                if(nb > 2) nb = 0;
+                if (nb > 2) nb = 0;
                 config.movieDirRenamedTitle = nb;
               }
+              if (name.equalsIgnoreCase("nfoType")) {
+                int nb = Integer.parseInt(buffer.toString());
+                if (nb > 1) nb = 0;
+                config.nfoType = nb;
+              }
+
             } catch (NumberFormatException ex) {
               config.getLogger().log(Level.SEVERE, ex.getMessage());
               config.xmlError = true;
             }
 
             if (name.equalsIgnoreCase("movieFilenameFormat"))
-              config.movieFilenameFormat = buffer.toString().replaceAll("\\$_", "<").replaceAll("_\\$", ">");
+              if (config.xmlVersion.compareToIgnoreCase("1.2.2_Alpha") < 0)// Older setting file
+                config.movieFilenameFormat = buffer.toString().replace("$_", "<").replace("_$", ">");
+              else config.movieFilenameFormat = Utils.unEscapeXML(buffer.toString(), "UTF-8");
+
 
             // boolean
             if (name.equalsIgnoreCase("useExtensionFilter"))
@@ -497,14 +505,14 @@ public class XMLParser<T> {
       if (name.equalsIgnoreCase("Movie_Renamer_Renamed"))
         renamedXML = true;
       if (name.equalsIgnoreCase("renamedMovie")) {
-        renamed = new Renamed(attributes.getValue("title"));
+        renamed = new Renamed(Utils.unEscapeXML(attributes.getValue("title"), "UTF-8"));
         renamedMovie = true;
       }
 
       if (renamedMovie)
         if (name.equalsIgnoreCase("movie")) {
-          renamed.setMovieFileSrc(attributes.getValue("src"));
-          renamed.setMovieFileDest(attributes.getValue("dest"));
+          renamed.setMovieFileSrc(Utils.unEscapeXML(attributes.getValue("src"), "UTF-8"));
+          renamed.setMovieFileDest(Utils.unEscapeXML(attributes.getValue("dest"), "UTF-8"));
         }
     }
 

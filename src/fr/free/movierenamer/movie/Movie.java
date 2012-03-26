@@ -25,7 +25,7 @@ import fr.free.movierenamer.utils.Utils;
 
 /**
  * Movie Class
- * @author duffy
+ * @author Nicolas Magré
  */
 public class Movie {
 
@@ -267,7 +267,7 @@ public class Movie {
    * Generate XBMC NFO file
    * @return Xbmc NFO file
    */
-  public String getNFOFromMovie() {
+  public String getXbmcNFOFromMovie() {
 
     StringBuilder nfo = new StringBuilder();
     nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n");
@@ -275,13 +275,14 @@ public class Movie {
     nfo.append("  <originaltitle>").append(Utils.escapeXML(movieinfo.getOrigTitle())).append("</originaltitle>\n");
     nfo.append("  <sorttitle>").append(Utils.escapeXML(movieinfo.getSortTitle())).append("</sorttitle>\n");
     nfo.append("  <rating>").append(Utils.escapeXML(movieinfo.getRating())).append("</rating>\n");
+    nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
     nfo.append("  <year>").append(Utils.escapeXML(movieinfo.getYear())).append("</year>\n");
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
     nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
     nfo.append("  <runtime>").append(movieinfo.getRuntime() == -1 ? "" : movieinfo.getRuntime()).append("</runtime>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
-    nfo.append("  <id>").append(imdbId).append("</id>\n");
+    nfo.append("  <id>").append(movieinfo.getImdbId()).append("</id>\n");
     nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
     nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
@@ -314,11 +315,77 @@ public class Movie {
       nfo.append("  <thumb preview=\"").append(thumbs.get(i).getThumbUrl()).append("\">").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
-    nfo.append("  <fanart>\n");
+    nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
-      nfo.append("    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>\n");
+      nfo.append("\n    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
     }
-    nfo.append("  </fanart>\n");
+    if(fanarts.size() > 0) nfo.append("\n  ");
+    nfo.append("</fanart>\n");
+    nfo.append("</movie>");
+    return nfo.toString();
+  }
+
+  /**
+   * Generate Mediaportal NFO file
+   * @return Mediaportal NFO file
+   */
+  public String getMediaPortalNFOFromMovie() {
+
+    StringBuilder nfo = new StringBuilder();
+    nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<movie>\n");
+    nfo.append("  <title>").append(Utils.escapeXML(movieinfo.getTitle())).append("</title>\n");
+    nfo.append("  <language></language>\n");
+    nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
+    nfo.append("  <year>").append(Utils.escapeXML(movieinfo.getYear())).append("</year>\n");
+    nfo.append("  <rating>").append(Utils.escapeXML(movieinfo.getRating())).append("</rating>\n");
+    nfo.append("  <runtime>").append(movieinfo.getRuntime() == -1 ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
+    nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
+    nfo.append("  <top250></top250>\n");
+    nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString().replace("|", "/"))).append("</studio>\n");
+
+    ArrayList<MoviePerson> personn = movieinfo.getDirectors();
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
+      nfo.append("  <directorimdb>").append(Utils.escapeXML(personn.get(i).getImdbId())).append("</directorimdb>\n");
+    }
+
+    nfo.append("  <credits>").append(Utils.escapeXML(movieinfo.getWritersString().replace("|", "/"))).append("</credits>\n");
+    nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
+    nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
+    nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
+    nfo.append("  <review></review>\n");
+
+    for (int i = 0; i < thumbs.size(); i++) {
+      nfo.append("  <thumb>").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
+    }
+
+    nfo.append("  <fanart>");
+    for (int i = 0; i < fanarts.size(); i++) {
+      nfo.append("\n    <thumb>").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
+    }
+    if( fanarts.size() > 0) nfo.append("\n  ");
+    nfo.append("</fanart>\n");
+
+    ArrayList<String> genres = movieinfo.getGenres();
+    nfo.append("  <genres>");
+    for(int i=0;i<genres.size();i++){
+      nfo.append("\n    <genre>").append(Utils.escapeXML(genres.get(i))).append("</genre>");
+    }
+    if(genres.size() > 0) nfo.append("\n  ");
+    nfo.append("<genres>\n");
+
+    personn = movieinfo.getActors();
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <actor>\n");
+      nfo.append("    <name>").append(Utils.escapeXML(personn.get(i).getName())).append("</name>\n");
+      nfo.append("    <role>").append(Utils.escapeXML(Utils.arrayToString(personn.get(i).getRoles(), ", "))).append("</role>\n");
+      nfo.append("    <imdb>").append(personn.get(i).getImdbId()).append("</imdb>\n");
+      if(!personn.get(i).getThumb().equals(""))
+        nfo.append("    <thumb>").append(personn.get(i).getThumb()).append("</thumb>\n");
+      nfo.append("  </actor>\n");
+    }
+
     nfo.append("</movie>");
     return nfo.toString();
   }

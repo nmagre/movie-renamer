@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 
 /**
  * Class Renamer , Rename movie files, download thumb/fanart, create XBMC NFO
@@ -46,6 +48,8 @@ public class Renamer {
   private String newPath = "";
   private String newFileNameNoExt;
   private Renamed renamed;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  public boolean cancel = false;
 
   /**
    * Constructor arguments
@@ -117,13 +121,22 @@ public class Renamer {
     }
 
     if (!newFileNameNoExt.equals(oldFileNameNoExt) || !newPath.equals("")) {
-      boolean success = oldFile.renameTo(new File(oldFile.getParent() + File.separator + newPath + newFileName));
+      newFile = new File(oldFile.getParent() + File.separator + newPath + newFileName);
+      if (newFile.exists()) {
+        int n = JOptionPane.showConfirmDialog(null, Settings.softName + Utils.SPACE + bundle.getString("alreadyExist"), "Question", JOptionPane.YES_NO_OPTION);
+        if (n != JOptionPane.YES_OPTION){
+          cancel = true;
+          return true;
+        }
+      }
+
+      boolean success = oldFile.renameTo(newFile);
       setting.getLogger().log(Level.INFO, "Rename file : {0} \nTo : {1}", new Object[]{oldFile, oldFile.getParent() + File.separator + newPath + newFileName});
       if (!success) {
         setting.getLogger().log(Level.SEVERE, "Failed to rename : {0} \nTo : {1}", new Object[]{oldFile, oldFile.getParent() + File.separator + newPath + newFileName});
         return false;
       }
-      newFile = new File(oldFile.getParent() + File.separator + newPath + newFileName);
+
     } else newFile = oldFile;
 
     File[] files = oldFile.getParentFile().listFiles(new FileFilter() {
@@ -171,15 +184,15 @@ public class Renamer {
 
   /**
    * Create XBMC NFO
-   * @param rename Rename NFO (if exist), create NFO otherwise
+   * @param create Create NFO, Rename NFO (if exist) otherwise
    * @param snfo NFO string
    * @return True if success, False otherwise
    */
-  public boolean createNFO(boolean rename, String snfo) {
+  public boolean createNFO(boolean create, String snfo) {
     boolean createNfo = true;
     File nfo = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + ".nfo");
     File newNfo = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + ".nfo");
-    if (!rename) {
+    if (create) {
       setting.getLogger().log(Level.INFO, "Create nfo file{0}", newNfo);
       try {
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(newNfo), "UTF-8"));
@@ -201,15 +214,16 @@ public class Renamer {
 
   /**
    * Download and rename thumb
-   * @param rename Rename thumb (if exist), download thumb otherwise
+   * @param create Download thumb, Rename thumb (if exist) otherwise
    * @param url Thumb url
    * @return True if success, False otherwise
    */
-  public boolean createThumb(boolean rename, URL url) {
+  public boolean createThumb(boolean create, URL url) {
+    if (url == null) return true;
     boolean createThum = true;
     File thumb = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
     File newThumb = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
-    if (!rename) {
+    if (create) {
       setting.getLogger().log(Level.INFO, "Create thumb : {0}", newThumb);
       try {
         File file = setting.cache.get(url, Cache.thumb);
@@ -231,15 +245,16 @@ public class Renamer {
 
   /**
    * Download and rename fanart
-   * @param rename Rename fanart (if exist), download fanart otherwise
+   * @param create Download fanart Rename fanart (if exist) otherwise
    * @param url Fanart url
    * @return True if success , False otherwise
    */
-  public boolean createFanart(boolean rename, URL url) {
+  public boolean createFanart(boolean create, URL url) {
+    if (url == null) return true;
     boolean createfan = true;
     File fanart = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + "-fanart.jpg");
     File newFanart = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + "-fanart.jpg");
-    if (!rename) {
+    if (create) {
       setting.getLogger().log(Level.INFO, "Create fanart : {0}", newFanart);
       try {
         File file = setting.cache.get(url, Cache.fanart);

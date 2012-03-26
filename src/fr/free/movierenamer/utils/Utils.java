@@ -28,7 +28,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -226,7 +228,7 @@ public class Utils {
         File d = new File(f.getParent());
         if (!d.exists())
           if (!d.mkdirs()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
-        if(!f.createNewFile()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+        if (!f.createNewFile()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
       }
       out = new FileOutputStream(f);
       byte buf[] = new byte[1024];
@@ -384,6 +386,21 @@ public class Utils {
         stringBuffer.append("&#").append((int) ch).append(";");
       else
         stringBuffer.append(ch);
+    }
+    return stringBuffer.toString();
+  }
+
+  public static String unEscapeXML(String text, String encode) {
+    if (text == null)
+      return text;
+
+    StringBuilder stringBuffer = new StringBuilder();
+    try {
+      text = text.replaceAll("&#x(\\w\\w);", "%$1");
+      text = URLDecoder.decode(text.replaceAll("% ", "%25 "), encode);
+      return text.trim();
+    } catch (UnsupportedEncodingException e) {
+      Logger.getLogger("Movie Renamer").log(Level.SEVERE, e.getMessage());
     }
     return stringBuffer.toString();
   }

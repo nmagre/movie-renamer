@@ -23,6 +23,7 @@ import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -59,7 +61,7 @@ public class DropImage implements DropTargetListener {
     this.moviePanel = moviePanel;
     this.setting = setting;
     this.cache = cache;
-    if(cache == Cache.thumb) thumb = true;
+    if (cache == Cache.thumb) thumb = true;
   }
 
   @Override
@@ -79,12 +81,18 @@ public class DropImage implements DropTargetListener {
   }
 
   @Override
-  public void drop(DropTargetDropEvent evt) {
-    try {
-      int action = evt.getDropAction();
-      Transferable data = evt.getTransferable();
-      evt.acceptDrop(action);
+  public void drop(final DropTargetDropEvent evt) {
 
+    Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+    final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    
+    moviePanel.firePropertyChange("mouseLoading", true, true);
+    int action = evt.getDropAction();
+    final Transferable data = evt.getTransferable();
+    evt.acceptDrop(action);
+
+    try {
+      moviePanel.setCursor(hourglassCursor);
       if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {// From hard drive
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
@@ -94,45 +102,60 @@ public class DropImage implements DropTargetListener {
             String file = URLDecoder.decode(res[i].replace("file://", "").replace("\n", ""), "UTF-8");
             file = file.substring(0, file.length() - 1);
             File f = new File(file);
-            if (f.exists()){
+            if (f.exists()) {
 
               Image img = null;
-              try{
+              try {
                 img = ImageIO.read(f);
-              }
-              catch(IllegalArgumentException e){
+              } catch (IllegalArgumentException e) {
                 continue;
               }
-              
-              MovieImage mvImg = new MovieImage("-1", thumb ? "poster":"fanart");
+
+              MovieImage mvImg = new MovieImage("-1", thumb ? "poster" : "fanart");
               mvImg.setMidUrl(res[i]);
               mvImg.setOrigUrl(res[i]);
               mvImg.setThumbUrl(res[i]);
-              if(thumb) moviePanel.addThumbToList(img, mvImg, true);
+              if (thumb) moviePanel.addThumbToList(img, mvImg, true);
               else moviePanel.addFanartToList(img, mvImg, true);
             }
+            moviePanel.firePropertyChange("mouseNormal", true, true);
           } else if (res[i].startsWith("http") || res[i].startsWith("www")) {// From web browser
-            URL url = new URL(res[i]);
-            Image img = setting.cache.getImage(url, cache);
-            if (img == null) {
-              setting.cache.add(url.openStream(), url.toString(), cache);
-              img = setting.cache.getImage(url, cache);
-            }
-            if (img != null){
-              MovieImage mvImg = new MovieImage("-1", thumb ? "poster":"fanart");
-              mvImg.setMidUrl(url.toString());
-              mvImg.setOrigUrl(url.toString());
-              mvImg.setThumbUrl(url.toString());
-              if(thumb) moviePanel.addThumbToList(img, mvImg, true);
-              else moviePanel.addFanartToList(img, mvImg, true);
-            }
+            final String image = res[i];
+            Thread thread = new Thread(new Runnable() {
+
+              @Override
+              public void run() {
+                try {
+                  URL url = new URL(image);
+                  Image img = setting.cache.getImage(url, cache);
+                  if (img == null) {
+                    setting.cache.add(url.openStream(), url.toString(), cache);
+                    img = setting.cache.getImage(url, cache);
+                  }
+                  if (img != null) {
+                    MovieImage mvImg = new MovieImage("-1", thumb ? "poster" : "fanart");
+                    mvImg.setMidUrl(url.toString());
+                    mvImg.setOrigUrl(url.toString());
+                    mvImg.setThumbUrl(url.toString());
+                    if (thumb) moviePanel.addThumbToList(img, mvImg, true);
+                    else moviePanel.addFanartToList(img, mvImg, true);
+                  }
+                } catch (IOException ex) {
+                  Logger.getLogger(DropImage.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                moviePanel.setCursor(normalCursor);
+              }
+            });
+            thread.start();
           }
         }
       }
     } catch (UnsupportedFlavorException ex) {
       setting.getLogger().log(Level.SEVERE, ex.toString());
+      moviePanel.setCursor(normalCursor);
     } catch (IOException ex) {
       setting.getLogger().log(Level.SEVERE, ex.toString());
+      moviePanel.setCursor(normalCursor);
     }
   }
 }

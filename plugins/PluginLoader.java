@@ -36,10 +36,10 @@ public class PluginLoader {
   private String pluginPath = PluginLoader.class.getProtectionDomain().getCodeSource().getLocation().toString();
 	private File[] files;
 
-	private ArrayList classIPluginInfo;
+	private ArrayList<Class> classIPluginInfo;
 
 	public PluginLoader(){
-		this.classIPluginInfo = new ArrayList();
+		this.classIPluginInfo = new ArrayList<Class>();
 		if(pluginPath.contains(File.separator)){
       pluginPath = pluginPath.substring(0, pluginPath.lastIndexOf(File.separator));
       if(pluginPath.contains(File.separator)) pluginPath = pluginPath.substring(0, pluginPath.lastIndexOf(File.separator)+1);

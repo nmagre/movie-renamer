@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.Renamed;
 import fr.free.movierenamer.worker.ListFilesWorker;
+import java.awt.Cursor;
 import java.util.ResourceBundle;
 
 /**
@@ -51,6 +52,8 @@ public class DropFile implements DropTargetListener {
   private MovieRenamer.FileWorkerListener listener;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private ArrayList<Renamed> renamed;
+  private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+  private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
   private FilenameFilter folderFilter = new FilenameFilter() {
 
     @Override
@@ -66,7 +69,7 @@ public class DropFile implements DropTargetListener {
    * @param listener Worker listener
    * @param parent Parent component to center JOptionPane
    */
-  public DropFile(Settings setting, ArrayList<Renamed> renamed,MovieRenamer.FileWorkerListener listener, JFrame parent) {
+  public DropFile(Settings setting, ArrayList<Renamed> renamed, MovieRenamer.FileWorkerListener listener, JFrame parent) {
     this.setting = setting;
     this.renamed = renamed;
     this.parent = parent;
@@ -92,6 +95,8 @@ public class DropFile implements DropTargetListener {
   @SuppressWarnings("unchecked") //Remove cast warning from Object to List<File>
   @Override
   public void drop(DropTargetDropEvent evt) {
+
+    parent.setCursor(hourglassCursor);
 
     int action = evt.getDropAction();
     evt.acceptDrop(action);
@@ -119,6 +124,7 @@ public class DropFile implements DropTargetListener {
       JOptionPane.showMessageDialog(parent, e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
     } finally {
       evt.dropComplete(true);
+      parent.setCursor(normalCursor);
     }
   }
 
@@ -129,22 +135,22 @@ public class DropFile implements DropTargetListener {
   public void setMovies(ArrayList<File> files) {
     boolean subFolders = false;
     int count = 0;
-    
+
     for (File file : files) {
       if (file.isDirectory()) {
         File[] subDir = file.listFiles(folderFilter);
         if (subDir != null) {
           count += subDir.length;
-          if (subDir.length > 0){
+          if (subDir.length > 0)
             if (!subFolders && !setting.scanSubfolder) {
+              parent.setCursor(normalCursor);
               int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
               subFolders = !(n != 0);
-            }
-            else subFolders = true;
-          }
+            } else subFolders = true;
         }
       }
     }
+    parent.setCursor(normalCursor);
 
     ListFilesWorker lft = new ListFilesWorker(files, renamed, subFolders, count, setting);
     listener.setWorker(lft);

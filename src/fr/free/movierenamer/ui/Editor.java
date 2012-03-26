@@ -76,6 +76,7 @@ public class Editor extends JDialog {
         int index = stringList.getSelectedIndex();
         if (index != -1)
           stringField.setText(array.get(index));
+        else stringField.setText("");
       }
     });
 
@@ -241,6 +242,8 @@ public class Editor extends JDialog {
       for (int i = 0; i < array.size(); i++) {
         listModel.addElement(array.get(i));
       }
+      if(index >= listModel.size()) index = listModel.size() - 1;
+      stringField.setText("");
       stringList.setSelectedIndex(index);
     }
   }//GEN-LAST:event_removeBtnActionPerformed

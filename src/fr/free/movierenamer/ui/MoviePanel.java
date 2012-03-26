@@ -217,23 +217,6 @@ public class MoviePanel extends javax.swing.JPanel {
     fanartsScrollPane.setVisible(setting.fanart);
     imagePnl.setVisible(setting.thumb || setting.fanart);
     fanartBack = null;
-
-    addPropertyChangeListener(new PropertyChangeListener() {
-
-      @Override
-      public void propertyChange(PropertyChangeEvent pce) {
-        if (pce.getPropertyName().equals("mouseLoading"))
-          setMouseIcon(true);
-        else if (pce.getPropertyName().equals("mouseNormal"))
-          setMouseIcon(false);
-      }
-    });
-  }
-
-  public void setMouseIcon(boolean loading) {
-    Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-    Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    setCursor(loading ? hourglassCursor : normalCursor);
   }
 
   public void setDisplay(Settings setting) {
@@ -317,13 +300,16 @@ public class MoviePanel extends javax.swing.JPanel {
         if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
           try {
             fanartBack = (Image) worker.get();
+            if (fanartBack != null) {
+              detailsPnl.validate();
+              detailsPnl.repaint();
+            }
+
           } catch (InterruptedException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           } catch (ExecutionException ex) {
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
-          detailsPnl.validate();
-          detailsPnl.repaint();
 
           if (fanart != null)
             fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
@@ -332,7 +318,7 @@ public class MoviePanel extends javax.swing.JPanel {
         }
       }
     });
-    
+
     worker.execute();
   }
 
@@ -386,6 +372,16 @@ public class MoviePanel extends javax.swing.JPanel {
   public void clearActorList() {
     actorModel.clear();
     actors.clear();
+  }
+
+  public void clearThumbList() {
+    thumbnailModel.clear();
+    thumbs.clear();
+  }
+
+  public void clearFanartList() {
+    fanartModel.clear();
+    fanarts.clear();
   }
 
   public void addMovieInfo(final MovieInfo movieInfo) {
@@ -492,6 +488,7 @@ public class MoviePanel extends javax.swing.JPanel {
   }
 
   private URL getSelectedItem(ArrayList<MovieImage> array, JList list, int size) {
+    if (array.isEmpty()) return null;
     try {
       switch (size) {
         case 0:
