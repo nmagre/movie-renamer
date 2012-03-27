@@ -78,7 +78,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<ImdbSearchResult>, S
     setProgress(0);
     String searchres = null;
     try {
-      searchres = http.sendGetRequest(true);
+      searchres = http.sendGetRequest(true, "ISO-8859-15");
     } catch (Exception e) {
       publish(e.getMessage());
       return null;

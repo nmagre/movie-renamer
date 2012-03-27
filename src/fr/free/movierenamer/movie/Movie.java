@@ -114,19 +114,21 @@ public class Movie {
   /**
    * Get renamed movie title
    * @param regExp Expression to rename movie title with
+   * @param separator 
    * @param letter
    * @return Movie title renamed
    */
-  public String getRenamedTitle(String regExp, int letter) {
+  public String getRenamedTitle(String regExp, String separator, int letter) {
     String runtime = "";
     if (movieinfo.getRuntime() != -1) runtime += movieinfo.getRuntime();
     String[][] replace = new String[][]{{"<t>", movieinfo.getTitle()}, {"<tt>", getImdbId()}, {"<y>", movieinfo.getYear()},
-      {"<rt>", runtime}, {"<ra>", movieinfo.getRating()}, {"<d>", movieinfo.getDirectorsString()},
-      {"<d1>", movieinfo.getFirstDirector()}, {"<g>", movieinfo.getGenresString()},
+      {"<rt>", runtime}, {"<ra>", movieinfo.getRating()}, {"<d>", movieinfo.getDirectorsString().replace(" | ", separator)},
+      {"<d1>", movieinfo.getFirstDirector()}, {"<g>", movieinfo.getGenresString().replace(" | ", separator)},
       {"<g1>", movieinfo.getFirstGenreString()}};
     for (int i = 0; i < replace.length; i++) {
       regExp = regExp.replaceAll(replace[i][0], replace[i][1]);
     }
+
     String fileName = getFile().getName();
     String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
 

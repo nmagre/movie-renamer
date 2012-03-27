@@ -91,10 +91,11 @@ public class HttpGet {
   /**
    * Get web page as string
    * @param fakeUserAgent Use a fake user agent
+   * @param encode 
    * @return Web page or null
    * @throws Exception
    */
-  public String sendGetRequest(boolean fakeUserAgent) throws Exception {
+  public String sendGetRequest(boolean fakeUserAgent, String encode) throws Exception {
     if (url == null) return null;
     realURL = null;
     String result = null;
@@ -107,7 +108,7 @@ public class HttpGet {
       }
       conn.setReadTimeout(3000);
 
-      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), "ISO-8859-15"));
+      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), encode));
       StringBuilder sb = new StringBuilder();
       String line;
       realURL = conn.getURL();

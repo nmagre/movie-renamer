@@ -351,7 +351,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       try {
         URL url = new URL("http://movierenamer.free.fr/update.php?version=" + ver.substring(0, setting.getVersion().lastIndexOf("_")) + "&amp;lang=" + setting.locale);
         HttpGet http = new HttpGet(url);
-        String newVerFile = http.sendGetRequest(false);
+        String newVerFile = http.sendGetRequest(false, "UTF-8");
         if (newVerFile.equals("")) {
           if (showAlready) JOptionPane.showMessageDialog(this, "Movie Renamer is already up to date", "Update", JOptionPane.INFORMATION_MESSAGE);
           return;
@@ -359,7 +359,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         String newVer = newVerFile.substring(newVerFile.lastIndexOf("-") + 1, newVerFile.lastIndexOf("."));
         URL urlHist = new URL("http://movierenamer.free.fr/update.php?getHistory&lang=" + setting.locale);
         http.setUrl(urlHist);
-        String history = http.sendGetRequest(false);
+        String history = http.sendGetRequest(false, "UTF-8");
         File jarFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         int n = JOptionPane.showConfirmDialog(this, Utils.ENDLINE + bundle.getString("newVersionAvailable")
           + Utils.SPACE + newVer + Utils.ENDLINE + bundle.getString("updateMr") + Utils.SPACE + ver
@@ -371,7 +371,7 @@ public class MovieRenamer extends javax.swing.JFrame {
           boolean updated = Utils.downloadFile(url, jarFile.getAbsolutePath());
 
           if (updated) {
-            n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
+            n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestartAppUpdate"), "Question", JOptionPane.YES_NO_OPTION);
             if (n == JOptionPane.YES_OPTION)
               if (!Utils.restartApplication(jarFile)) JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
               else {
@@ -681,11 +681,11 @@ public class MovieRenamer extends javax.swing.JFrame {
                 dir = setting.movieDir + File.separator;
               else {
                 String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : "<t>";
-                dir = currentMovie.getRenamedTitle(regex, setting.renameCase);
+                dir = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
                 dir = dir.substring(0, dir.lastIndexOf("."));
                 dir += File.separator;
               }
-            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase));
+            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.separator, setting.renameCase));
           }
         }
 
@@ -741,7 +741,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       }
 
       String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : "<t>";
-      String ftitle = currentMovie.getRenamedTitle(regex, setting.renameCase);
+      String ftitle = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
       ftitle = ftitle.substring(0, ftitle.lastIndexOf("."));
 
       Renamer renamer = new Renamer(ftitle, currentMovie.getFile(), renamedField.getText(), setting);
@@ -784,7 +784,8 @@ public class MovieRenamer extends javax.swing.JFrame {
 
       for (int i = 0; i < pluginsInfo.length; i++) {
         if (pluginsInfo[i].getRenameStrChk() != null)
-          pluginsInfo[i].setMovieFile(renamer.getNewFileNoExt());
+          pluginsInfo[i].setMovieFileNameNoExt(renamer.getNewFileNoExt());
+        pluginsInfo[i].onRename(null);
       }
 
       mvFile.get(index).setFile(renamer.getNewFile());
@@ -991,12 +992,12 @@ public class MovieRenamer extends javax.swing.JFrame {
                 dir = setting.movieDir + File.separator;
               else {
                 String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : "<t>";
-                dir = currentMovie.getRenamedTitle(regex, setting.renameCase);
+                dir = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
                 dir = dir.substring(0, dir.lastIndexOf("."));
                 dir += File.separator;
               }
 
-            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.renameCase));
+            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.separator, setting.renameCase));
             renameBtn.setEnabled(true);
             renamedField.setEnabled(true);
             editBtn.setEnabled(true);
@@ -1005,9 +1006,9 @@ public class MovieRenamer extends javax.swing.JFrame {
             System.out.println("Load plugin");
             for (int i = 0; i < MovieRenamer.this.pluginsInfo.length; i++) {
               System.out.println(MovieRenamer.this.pluginsInfo[i].getName());
-              String renamedTitle = currentMovie.getRenamedTitle("<t>", setting.renameCase);
+              String renamedTitle = currentMovie.getRenamedTitle("<t>", setting.separator, setting.renameCase);
               renamedTitle = renamedTitle.substring(0, renamedTitle.lastIndexOf("."));
-              MovieRenamer.this.pluginsInfo[i].setInfoPanel(renamedTitle);
+              MovieRenamer.this.pluginsInfo[i].onSearchFinish(renamedTitle);
             }
 
             ActorWorker actor = new ActorWorker(currentMovie.getMovieInfo().getActors(), moviePnl, setting);

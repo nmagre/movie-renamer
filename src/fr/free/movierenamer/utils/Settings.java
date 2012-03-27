@@ -108,6 +108,7 @@ public class Settings {
   public int movieDirRenamedTitle = 0;
   public String commande = "";
   public int nfoType = 0;
+  public String separator = ", ";
   
   // Boolean
   public boolean useExtensionFilter = true;
@@ -179,6 +180,7 @@ public class Settings {
       out.write("    <movieDirRenamedTitle>" + movieDirRenamedTitle + "</movieDirRenamedTitle>" + endl);
       out.write("    <commande>" + Utils.escapeXML(commande) + "</commande>" + endl);
       out.write("    <nfoType>" + nfoType + "</nfoType>" + endl);
+      out.write("    <separator>" + separator + "</separator>" + endl);
 
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);

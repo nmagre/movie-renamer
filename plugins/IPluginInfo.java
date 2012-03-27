@@ -54,10 +54,30 @@ public interface IPluginInfo extends IPlugin {
     SET;
   }
 
-  public void setMovieFile(String movieFileNoExt);
-  public String getRenameStrChk(); // != null call exec if chk enabled, null do not call exec
+  /**
+   * Set renamed movie filename + path without file extension
+   * @param movieFileNoExt
+   */
+  public void setMovieFileNameNoExt(String movieFileNoExt);
+
+  /**
+   * Create a checkbox in rename toolbar, if checked setMovieFileNameNoExt() and onRename() are called;
+   * @return Null for no checkbox, Checkbox text otherwise
+   */
+  public String getRenameStrChk();
+
+  /**
+   * Add panel to movie info panel
+   * @return Null for no panel, a Jpanel
+   */
   public JPanel getInfoPanel();
-  public void setInfoPanel(String search);
+
+  /**
+   * Set info panel
+   * @param search
+   */
+  public void onSearchFinish(String search);
+  
   public ArrayList<Info> getInfoChanged();
   public void clearPanel();
   public JPanel getSettingPanel();

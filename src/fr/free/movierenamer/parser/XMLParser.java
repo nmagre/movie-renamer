@@ -174,7 +174,9 @@ public class XMLParser<T> {
             }
             if (name.equalsIgnoreCase("movieDir"))
               config.movieDir = buffer.toString();
-
+            if (name.equalsIgnoreCase("separator"))
+              config.separator = buffer.toString();
+            
             try {
               if (name.equalsIgnoreCase("thumbSize"))
                 config.thumbSize = Integer.parseInt(buffer.toString());

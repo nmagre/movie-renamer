@@ -115,7 +115,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolders) {
         getFiles(movies, listFiles[i]);
-        if (listFiles[i].getParentFile().getName().equals(currentParent)) {
+        if (listFiles[i].getParentFile().getName().equals(currentParent) && count < nbFiles) {
           count++;
           setProgress((int) ((count * 100) / nbFiles));
         }

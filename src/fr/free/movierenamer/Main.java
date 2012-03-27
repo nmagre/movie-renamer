@@ -32,6 +32,7 @@ import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.ui.MovieRenamer;
 import java.util.Locale;
 import plugins.IPluginInfo;
+import plugins.PluginLoader;
 
 
 /**
@@ -41,20 +42,19 @@ import plugins.IPluginInfo;
 public class Main {
 
   private static MovieRenamer mvr;
-  //private static PluginLoader pluginsLoader;
+  private static PluginLoader pluginsLoader;
   private static IPluginInfo[] pluginInfo;
   
   public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException, ParseException {
     final Settings setting = loadSetting();
-    //pluginsLoader = new PluginLoader();
+    pluginsLoader = new PluginLoader();
     pluginInfo = new IPluginInfo[0];
-    /*try {
+    try {
       pluginInfo = pluginsLoader.loadAllInfoPlugins();
     } catch (Exception ex) {
-      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+      setting.getLogger().log(Level.SEVERE, null, ex);
     }
     if(pluginInfo.length >0) System.out.println("found : " + pluginInfo.length + " plugins");
-     */
     
     java.awt.EventQueue.invokeLater(new Runnable() {
 

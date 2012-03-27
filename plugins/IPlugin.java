@@ -28,7 +28,7 @@ import java.beans.PropertyChangeListener;
  */
 public interface IPlugin {
   public String getName();
-  public void exec(PropertyChangeListener proper);
+  public void onRename(PropertyChangeListener proper);
   public boolean checkForUpdate();
   public boolean update();
   public String getVersion();

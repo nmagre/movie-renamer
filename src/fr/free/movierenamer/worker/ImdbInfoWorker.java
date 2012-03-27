@@ -61,7 +61,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     setProgress(0);
     String res = null;
     try{
-      res = http.sendGetRequest(true);
+      res = http.sendGetRequest(true, "ISO-8859-15");
     }
     catch(Exception e){
       publish(e.getMessage());
