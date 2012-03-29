@@ -121,7 +121,7 @@ public class Movie {
   public String getRenamedTitle(String regExp, String separator, int letter) {
     String runtime = "";
     if (movieinfo.getRuntime() != -1) runtime += movieinfo.getRuntime();
-    String[][] replace = new String[][]{{"<t>", movieinfo.getTitle()}, {"<tt>", getImdbId()}, {"<y>", movieinfo.getYear()},
+    String[][] replace = new String[][]{{"<t>", movieinfo.getTitle()}, {"<ot>", movieinfo.getOrigTitle()}, {"<tt>", getImdbId()}, {"<y>", movieinfo.getYear()},
       {"<rt>", runtime}, {"<ra>", movieinfo.getRating()}, {"<d>", movieinfo.getDirectorsString().replace(" | ", separator)},
       {"<d1>", movieinfo.getFirstDirector()}, {"<g>", movieinfo.getGenresString().replace(" | ", separator)},
       {"<g1>", movieinfo.getFirstGenreString()}};

@@ -90,6 +90,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
   protected ArrayList<MovieFile> doInBackground() {
     ArrayList<MovieFile> movies = new ArrayList<MovieFile>();
     for (int i = 0; i < files.size(); i++) {
+      if(isCancelled()) return null;
       if (files.get(i).isDirectory()) {
         currentParent = files.get(i).getName();
         getFiles(movies, files.get(i));
@@ -106,6 +107,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
    * @param file File to add or directory to scan
    */
   private void getFiles(ArrayList<MovieFile> movies, File file) {
+    if(isCancelled()) return;
     File[] listFiles = file.listFiles();
     if (listFiles == null) {
       setting.getLogger().log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());

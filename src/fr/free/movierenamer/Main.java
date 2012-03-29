@@ -55,12 +55,12 @@ public class Main {
       setting.getLogger().log(Level.SEVERE, null, ex);
     }
     if(pluginInfo.length >0) System.out.println("found : " + pluginInfo.length + " plugins");
-    
+
     java.awt.EventQueue.invokeLater(new Runnable() {
 
       @Override
       public void run() {
-        mvr = new MovieRenamer(setting, pluginInfo);
+        mvr = new MovieRenamer(setting, pluginInfo.clone());
         mvr.setVisible(true);
       }
     });

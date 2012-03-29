@@ -75,6 +75,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.util.concurrent.CancellationException;
 import javax.swing.DefaultListCellRenderer;
 import plugins.IPluginInfo;
 
@@ -680,7 +681,8 @@ public class MovieRenamer extends javax.swing.JFrame {
               if (setting.movieDirRenamedTitle == 2)
                 dir = setting.movieDir + File.separator;
               else {
-                String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : "<t>";
+                boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
+                String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>":"<t>");
                 dir = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
                 dir = dir.substring(0, dir.lastIndexOf("."));
                 dir += File.separator;
@@ -740,7 +742,8 @@ public class MovieRenamer extends javax.swing.JFrame {
         return;
       }
 
-      String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : "<t>";
+      boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
+      String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>":"<t>");
       String ftitle = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
       ftitle = ftitle.substring(0, ftitle.lastIndexOf("."));
 
@@ -955,12 +958,19 @@ public class MovieRenamer extends javax.swing.JFrame {
           setting.getLogger().log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
+        } catch (CancellationException ex){
+          setting.getLogger().log(Level.INFO, "ListFileWorker canceled");
+          return;
         }
         if (progressMonitor != null) progressMonitor.close();
         progressMonitor = null;
 
       } else if (progressMonitor != null)
         progressMonitor.setProgress(worker.getProgress());
+
+      if(progressMonitor != null && progressMonitor.isCanceled()){
+        if(!worker.isDone()) worker.cancel(true);
+      }
     }
   }
 
@@ -991,7 +1001,8 @@ public class MovieRenamer extends javax.swing.JFrame {
               if (setting.movieDirRenamedTitle == 2)
                 dir = setting.movieDir + File.separator;
               else {
-                String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : "<t>";
+                boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
+                String regex = (setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>":"<t>"));
                 dir = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
                 dir = dir.substring(0, dir.lastIndexOf("."));
                 dir += File.separator;
@@ -1006,7 +1017,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             System.out.println("Load plugin");
             for (int i = 0; i < MovieRenamer.this.pluginsInfo.length; i++) {
               System.out.println(MovieRenamer.this.pluginsInfo[i].getName());
-              String renamedTitle = currentMovie.getRenamedTitle("<t>", setting.separator, setting.renameCase);
+              String renamedTitle = currentMovie.getRenamedTitle(setting.movieFilenameFormat.contains("<t>") ?"<t>":"<ot>", setting.separator, setting.renameCase);
               renamedTitle = renamedTitle.substring(0, renamedTitle.lastIndexOf("."));
               MovieRenamer.this.pluginsInfo[i].onSearchFinish(renamedTitle);
             }
