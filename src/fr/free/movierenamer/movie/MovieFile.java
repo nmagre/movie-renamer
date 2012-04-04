@@ -20,9 +20,9 @@
 
 package fr.free.movierenamer.movie;
 
+import fr.free.movierenamer.ui.res.IIconList;
 import java.io.File;
 import javax.swing.Icon;
-import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.utils.Utils;
 
 /**

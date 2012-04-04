@@ -11,15 +11,14 @@
     iconFile="$INSTALL_PATH/icon-32.gif"
     workingDirectory=""
     initialState="normal"
-    programGroup="no"
-    desktop="no"
+    programGroup="yes"
+    desktop="yes"
     applications="yes"
     startMenu="yes"
-    startup="yes"
+    startup="no"
     type="Application"
     terminal="false"
     encoding="UTF-8">
-
     <createForPack name="Movie Renamer"/>
   </shortcut>
 </shortcuts>

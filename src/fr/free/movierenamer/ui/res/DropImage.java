@@ -22,6 +22,7 @@ package fr.free.movierenamer.ui.res;
 import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Cursor;
 import java.awt.Image;
@@ -111,7 +112,7 @@ public class DropImage implements DropTargetListener {
                 continue;
               }
 
-              MovieImage mvImg = new MovieImage("-1", thumb ? "poster" : "fanart");
+              Images mvImg = new Images("-1", thumb ? "poster" : "fanart");
               mvImg.setMidUrl(res[i]);
               mvImg.setOrigUrl(res[i]);
               mvImg.setThumbUrl(res[i]);
@@ -133,7 +134,7 @@ public class DropImage implements DropTargetListener {
                     img = setting.cache.getImage(url, cache);
                   }
                   if (img != null) {
-                    MovieImage mvImg = new MovieImage("-1", thumb ? "poster" : "fanart");
+                    Images mvImg = new Images("-1", thumb ? "poster" : "fanart");
                     mvImg.setMidUrl(url.toString());
                     mvImg.setOrigUrl(url.toString());
                     mvImg.setThumbUrl(url.toString());

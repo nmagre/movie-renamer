@@ -22,7 +22,7 @@ package fr.free.movierenamer.ui.res;
 
 import java.util.ArrayList;
 import javax.swing.Icon;
-import fr.free.movierenamer.movie.MovieImage;
+import fr.free.movierenamer.utils.Images;
 
 /**
  * Class TmdbResult , TheMovieDb result
@@ -31,8 +31,8 @@ import fr.free.movierenamer.movie.MovieImage;
 public class TmdbResult implements IIconList{
 
   private String tmdbAPIID;
-  private ArrayList<MovieImage> thumbs;
-  private ArrayList<MovieImage> fanarts;
+  private ArrayList<Images> thumbs;
+  private ArrayList<Images> fanarts;
   private Icon icon;
 
   /**
@@ -41,7 +41,7 @@ public class TmdbResult implements IIconList{
    * @param thumbs Array of thumbs
    * @param fanarts Array of fanarts
    */
-  public TmdbResult(String tmdbAPIID, ArrayList<MovieImage> thumbs, ArrayList<MovieImage> fanarts){
+  public TmdbResult(String tmdbAPIID, ArrayList<Images> thumbs, ArrayList<Images> fanarts){
     this.tmdbAPIID = tmdbAPIID;
     this.thumbs = thumbs;
     this.fanarts = fanarts;
@@ -60,7 +60,7 @@ public class TmdbResult implements IIconList{
    * Get thumbs
    * @return Array of thumbs
    */
-  public ArrayList<MovieImage> getThumbs(){
+  public ArrayList<Images> getThumbs(){
     return thumbs;
   }
 
@@ -68,7 +68,7 @@ public class TmdbResult implements IIconList{
    * Get fanarts
    * @return Array of fanarts
    */
-  public ArrayList<MovieImage> getFanarts(){
+  public ArrayList<Images> getFanarts(){
     return fanarts;
   }
 

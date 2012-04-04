@@ -123,26 +123,28 @@ public class Utils {
     return newArray;
   }
 
-  public static String arrayToString(Object[] array, String separator) {
+  public static String arrayToString(Object[] array, String separator, int limit) {
     StringBuilder res = new StringBuilder();
     if (array.length == 0)
       return res.toString();
     for (int i = 0; i < array.length; i++) {
-      res.append(array[i].toString()).append((i < (array.length - 1)) ? separator : "");
+      if(limit != 0 && i == limit) break;
+      res.append(array[i].toString().trim());
+      if((i+1) != limit) res.append((i < (array.length - 1)) ? separator : "");
     }
     return res.toString();
   }
 
-  public static String arrayToString(ArrayList<String> array, String separator) {
-    return arrayToString(array.toArray(new Object[array.size()]), separator);
+  public static String arrayToString(ArrayList<String> array, String separator, int limit) {
+    return arrayToString(array.toArray(new Object[array.size()]), separator, limit);
   }
 
-  public static String arrayPersonnToString(ArrayList<MoviePerson> array, String separator) {
+  public static String arrayPersonnToString(ArrayList<MoviePerson> array, String separator, int limit) {
     String[] arr = new String[array.size()];
     for (int i = 0; i < array.size(); i++) {
       arr[i] = array.get(i).toString();
     }
-    return arrayToString(arr, separator);
+    return arrayToString(arr, separator, limit);
   }
 
   public static ArrayList<String> stringToArray(String str, String seprarator) {

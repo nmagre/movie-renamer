@@ -19,9 +19,13 @@
  ******************************************************************************/
 package fr.free.movierenamer.movie;
 
+import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.utils.Settings;
 import java.io.File;
 import java.util.ArrayList;
 import fr.free.movierenamer.utils.Utils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Movie Class
@@ -31,9 +35,8 @@ public class Movie {
 
   private MovieFile movieFile;
   private MovieInfo movieinfo;
+  private MovieImage movieImage;
   private String imdbId;
-  private ArrayList<MovieImage> thumbs;
-  private ArrayList<MovieImage> fanarts;
   private String imdbTitle;
   private String filteredFileName;
   private String search;
@@ -45,9 +48,8 @@ public class Movie {
    */
   public Movie(MovieFile movieFile, String[] filter) {
     this.movieFile = movieFile;
-    thumbs = new ArrayList<MovieImage>();
-    fanarts = new ArrayList<MovieImage>();
     movieinfo = new MovieInfo();
+    movieImage = new MovieImage();
 
     String fileName = movieFile.getFile().getName();
     filteredFileName = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
@@ -99,41 +101,80 @@ public class Movie {
    * Get array of thumbnails
    * @return ArrayList of MovieImage
    */
-  public ArrayList<MovieImage> getThumbs() {
-    return thumbs;
+  public ArrayList<Images> getThumbs() {
+    return movieImage.getThumbs();
   }
 
   /**
    * Get array of fanarts
    * @return ArrayList of MovieImage
    */
-  public ArrayList<MovieImage> getFanarts() {
-    return fanarts;
+  public ArrayList<Images> getFanarts() {
+    return movieImage.getFanarts();
   }
 
   /**
    * Get renamed movie title
+   * @param setting
    * @param regExp Expression to rename movie title with
-   * @param separator 
-   * @param letter
    * @return Movie title renamed
    */
-  public String getRenamedTitle(String regExp, String separator, int letter) {
+  public String getRenamedTitle(String regExp, Settings setting) {
+    String separator = setting.separator;
+    int limit = setting.limit;
+    int renameCase = setting.renameCase;
+    boolean trim = setting.rmSpcChar;
+
     String runtime = "";
-    if (movieinfo.getRuntime() != -1) runtime += movieinfo.getRuntime();
-    String[][] replace = new String[][]{{"<t>", movieinfo.getTitle()}, {"<ot>", movieinfo.getOrigTitle()}, {"<tt>", getImdbId()}, {"<y>", movieinfo.getYear()},
-      {"<rt>", runtime}, {"<ra>", movieinfo.getRating()}, {"<d>", movieinfo.getDirectorsString().replace(" | ", separator)},
-      {"<d1>", movieinfo.getFirstDirector()}, {"<g>", movieinfo.getGenresString().replace(" | ", separator)},
-      {"<g1>", movieinfo.getFirstGenreString()}};
+    if (!movieinfo.getRuntime().equals("-1")) runtime += movieinfo.getRuntime();
+    String[][] replace = new String[][]{
+      {"<t>", movieinfo.getTitle()},
+      {"<ot>", movieinfo.getOrigTitle()},
+      {"<tt>", getImdbId()},
+      {"<y>", movieinfo.getYear()},
+      {"<rt>", runtime},
+      {"<ra>", movieinfo.getRating()},
+      {"<a>", movieinfo.getActorsString(separator, limit)},
+      {"<d>", movieinfo.getDirectorsString(separator, limit)},
+      {"<g>", movieinfo.getGenresString(separator, limit)},
+      {"<c>", movieinfo.getCountriesString(separator, limit)}
+    };
+
+    Pattern pattern = Pattern.compile("<([adcg])(\\d+)>");
+    Matcher matcher = pattern.matcher(regExp);
+    while (matcher.find()) {
+      int n = Integer.parseInt(matcher.group(2));
+      char x = matcher.group(1).charAt(0);
+      System.out.println("<xn> : <" + x + n + ">");
+      switch (x) {
+        case 'a':
+          regExp = regExp.replaceAll("<a\\d+>", movieinfo.getActorN(n));
+          break;
+        case 'd':
+          regExp = regExp.replaceAll("<d\\d+>", movieinfo.getDirectorN(n));
+          break;
+        case 'g':
+          regExp = regExp.replaceAll("<g\\d+>", movieinfo.getGenreN(n));
+          break;
+        case 'c':
+          regExp = regExp.replaceAll("<c\\d+>", movieinfo.getCountryN(n));
+          break;
+        default:
+          break;
+      }
+    }
+
     for (int i = 0; i < replace.length; i++) {
       regExp = regExp.replaceAll(replace[i][0], replace[i][1]);
     }
+
+    if (trim) regExp = regExp.trim();
 
     String fileName = getFile().getName();
     String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
 
     String res = "";
-    switch (letter) {
+    switch (renameCase) {
       case Utils.UPPER:
         res = regExp.toUpperCase() + "." + ext.toUpperCase();
         break;
@@ -151,6 +192,7 @@ public class Movie {
         break;
     }
     if (Utils.isWindows()) res = res.replaceAll(":", "").replaceAll("/", "");
+    if (setting.rmDupSpace) res = res.replaceAll("\\s+", " ");
     return res;
   }
 
@@ -174,16 +216,16 @@ public class Movie {
    * Add a thumb to movie
    * @param thumb Thumb to add
    */
-  public void addThumb(MovieImage thumb) {
-    thumbs.add(thumb);
+  public void addThumb(Images thumb) {
+    movieImage.addThumb(thumb);
   }
 
   /**
    * Add a fanart to movie
    * @param fanart Fanart to add
    */
-  public void addFanart(MovieImage fanart) {
-    fanarts.add(fanart);
+  public void addFanart(Images fanart) {
+    movieImage.addFanart(fanart);
   }
 
   /**
@@ -231,14 +273,14 @@ public class Movie {
    * Clear thumbs list
    */
   public void clearThumbs() {
-    thumbs.clear();
+    movieImage.clearThumbs();
   }
 
   /**
    * Cleanr fanart list
    */
   public void clearFanarts() {
-    fanarts.clear();
+    movieImage.clearFanarts();
   }
 
   /**
@@ -253,16 +295,16 @@ public class Movie {
    * Set thumbs list
    * @param thumbs Array of thumbs
    */
-  public void setThumbs(ArrayList<MovieImage> thumbs) {
-    this.thumbs = thumbs;
+  public void setThumbs(ArrayList<Images> thumbs) {
+    movieImage.setThumbs(thumbs);
   }
 
   /**
    * Set fanarts list
    * @param fanarts Array of fanarts
    */
-  public void setFanarts(ArrayList<MovieImage> fanarts) {
-    this.fanarts = fanarts;
+  public void setFanarts(ArrayList<Images> fanarts) {
+    movieImage.setFanarts(fanarts);
   }
 
   /**
@@ -282,7 +324,7 @@ public class Movie {
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
     nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
-    nfo.append("  <runtime>").append(movieinfo.getRuntime() == -1 ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <runtime>").append(movieinfo.getRuntime().equals("-1") ? "" : movieinfo.getRuntime()).append("</runtime>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
     nfo.append("  <id>").append(movieinfo.getImdbId()).append("</id>\n");
     nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
@@ -313,15 +355,17 @@ public class Movie {
       nfo.append("  </actor>\n");
     }
 
+    ArrayList<Images> thumbs = movieImage.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb preview=\"").append(thumbs.get(i).getThumbUrl()).append("\">").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
+    ArrayList<Images> fanarts = movieImage.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
     }
-    if(fanarts.size() > 0) nfo.append("\n  ");
+    if (fanarts.size() > 0) nfo.append("\n  ");
     nfo.append("</fanart>\n");
     nfo.append("</movie>");
     return nfo.toString();
@@ -340,11 +384,11 @@ public class Movie {
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
     nfo.append("  <year>").append(Utils.escapeXML(movieinfo.getYear())).append("</year>\n");
     nfo.append("  <rating>").append(Utils.escapeXML(movieinfo.getRating())).append("</rating>\n");
-    nfo.append("  <runtime>").append(movieinfo.getRuntime() == -1 ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <runtime>").append(movieinfo.getRuntime().equals("-1") ? "" : movieinfo.getRuntime()).append("</runtime>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
     nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
     nfo.append("  <top250></top250>\n");
-    nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString().replace("|", "/"))).append("</studio>\n");
+    nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString(" / ", 0))).append("</studio>\n");
 
     ArrayList<MoviePerson> personn = movieinfo.getDirectors();
     for (int i = 0; i < personn.size(); i++) {
@@ -352,38 +396,40 @@ public class Movie {
       nfo.append("  <directorimdb>").append(Utils.escapeXML(personn.get(i).getImdbId())).append("</directorimdb>\n");
     }
 
-    nfo.append("  <credits>").append(Utils.escapeXML(movieinfo.getWritersString().replace("|", "/"))).append("</credits>\n");
+    nfo.append("  <credits>").append(Utils.escapeXML(movieinfo.getWritersString(" / ", 0))).append("</credits>\n");
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
     nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
     nfo.append("  <review></review>\n");
 
+    ArrayList<Images> thumbs = movieImage.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb>").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
+    ArrayList<Images> fanarts = movieImage.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb>").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
     }
-    if( fanarts.size() > 0) nfo.append("\n  ");
+    if (fanarts.size() > 0) nfo.append("\n  ");
     nfo.append("</fanart>\n");
 
     ArrayList<String> genres = movieinfo.getGenres();
     nfo.append("  <genres>");
-    for(int i=0;i<genres.size();i++){
+    for (int i = 0; i < genres.size(); i++) {
       nfo.append("\n    <genre>").append(Utils.escapeXML(genres.get(i))).append("</genre>");
     }
-    if(genres.size() > 0) nfo.append("\n  ");
+    if (genres.size() > 0) nfo.append("\n  ");
     nfo.append("<genres>\n");
 
     personn = movieinfo.getActors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <actor>\n");
       nfo.append("    <name>").append(Utils.escapeXML(personn.get(i).getName())).append("</name>\n");
-      nfo.append("    <role>").append(Utils.escapeXML(Utils.arrayToString(personn.get(i).getRoles(), ", "))).append("</role>\n");
+      nfo.append("    <role>").append(Utils.escapeXML(Utils.arrayToString(personn.get(i).getRoles(), ", ", 0))).append("</role>\n");
       nfo.append("    <imdb>").append(personn.get(i).getImdbId()).append("</imdb>\n");
-      if(!personn.get(i).getThumb().equals(""))
+      if (!personn.get(i).getThumb().equals(""))
         nfo.append("    <thumb>").append(personn.get(i).getThumb()).append("</thumb>\n");
       nfo.append("  </actor>\n");
     }

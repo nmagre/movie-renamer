@@ -1,0 +1,138 @@
+/******************************************************************************
+ *                                                                             *
+ *    Movie Renamer                                                            *
+ *    Copyright (C) 2011 Magré Nicolas                                         *
+ *                                                                             *
+ *    Movie Renamer is free software: you can redistribute it and/or modify    *
+ *    it under the terms of the GNU General Public License as published by     *
+ *    the Free Software Foundation, either version 3 of the License, or        *
+ *    (at your option) any later version.                                      *
+ *                                                                             *
+ *    This program is distributed in the hope that it will be useful,          *
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *    GNU General Public License for more details.                             *
+ *                                                                             *
+ *    You should have received a copy of the GNU General Public License        *
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
+ *                                                                             *
+ ******************************************************************************/
+package fr.free.movierenamer.parser.xml;
+
+import fr.free.movierenamer.movie.MovieInfo;
+import fr.free.movierenamer.movie.MoviePerson;
+import fr.free.movierenamer.utils.ActionNotValidException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+/**
+ * Class XbmcNFOInfo
+ * @author Nicolas Magré
+ */
+public class XbmcNFOInfo extends DefaultHandler implements IParser<MovieInfo> {
+
+    private StringBuffer buffer;
+    private MovieInfo movieInfo;
+    private MoviePerson currentActor;
+    boolean movie;
+
+    public XbmcNFOInfo() {
+      super();
+    }
+
+    @Override
+    public void startDocument() throws SAXException {
+      super.startDocument();
+      movieInfo = new MovieInfo();
+      movie = false;
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+      buffer = new StringBuffer();
+      if (name.equalsIgnoreCase("movie")) movie = true;
+      if (name.equalsIgnoreCase("actor"))
+        currentActor = new MoviePerson(MoviePerson.ACTOR);
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String name) throws SAXException {
+      if (movie)
+        if (name.equalsIgnoreCase("movie"))
+          movie = false;
+        else if (name.equalsIgnoreCase("title"))
+          movieInfo.setTitle(buffer.toString());
+        else if (name.equalsIgnoreCase("originaltitle"))
+          movieInfo.setOrigTitle(buffer.toString());
+        else if (name.equalsIgnoreCase("rating"))
+          movieInfo.setRating(buffer.toString());
+        else if (name.equalsIgnoreCase("year"))
+          movieInfo.setYear(buffer.toString());
+        else if (name.equalsIgnoreCase("votes"))
+          movieInfo.setVotes(buffer.toString());
+        else if (name.equalsIgnoreCase("outline"))
+          movieInfo.setOutline(buffer.toString());
+        else if (name.equalsIgnoreCase("plot"))
+          movieInfo.setSynopsis(buffer.toString());
+        else if (name.equalsIgnoreCase("tagline"))
+          movieInfo.setTagline(buffer.toString());
+        else if (name.equalsIgnoreCase("runtime"))
+          movieInfo.setRuntime(buffer.toString());
+        else if (name.equalsIgnoreCase("mpaa"))
+          movieInfo.setMpaa(buffer.toString());
+        else if (name.equalsIgnoreCase("playcount")) {
+        } else if (name.equalsIgnoreCase("lastplayed")) {
+        } else if (name.equalsIgnoreCase("id"))
+          movieInfo.setImdbId(buffer.toString());
+        else if (name.equalsIgnoreCase("genre"))
+          movieInfo.addGenre(buffer.toString());
+        else if (name.equalsIgnoreCase("country"))
+          movieInfo.addCountry(buffer.toString());
+        else if (name.equalsIgnoreCase("credits"))
+          movieInfo.addWriter(new MoviePerson(buffer.toString(), "", MoviePerson.WRITER));
+        else if (name.equalsIgnoreCase("director"))
+          movieInfo.addDirector(new MoviePerson(buffer.toString(), "", MoviePerson.DIRECTOR));
+        else if (name.equalsIgnoreCase("premiered")) {
+        } else if (name.equalsIgnoreCase("status")) {
+        } else if (name.equalsIgnoreCase("code")) {
+        } else if (name.equalsIgnoreCase("aired")) {
+        } else if (name.equalsIgnoreCase("studio"))
+          movieInfo.addStudio(buffer.toString());
+        else if (name.equalsIgnoreCase("trailer"))
+          movieInfo.setTrailer(buffer.toString());
+        else if (name.equalsIgnoreCase("actor")) {
+          movieInfo.addActor(currentActor);
+          currentActor = null;
+        } else if (name.equalsIgnoreCase("thumb")) {
+          if (currentActor != null) currentActor.setThumb(buffer.toString());
+        } else if (name.equalsIgnoreCase("name")) {
+          if (currentActor != null) currentActor.setName(buffer.toString());
+        } else if (name.equalsIgnoreCase("sorttitle"))
+          movieInfo.setSortTitle(buffer.toString());
+        else if (name.equalsIgnoreCase("set"))
+          movieInfo.addSet(buffer.toString());
+        else if (name.equalsIgnoreCase("role"))
+          try {
+            currentActor.addRole(buffer.toString());
+          } catch (ActionNotValidException ex) {
+            Logger.getLogger(XMLParser.class.getName()).log(Level.SEVERE, null, ex);
+          }
+      buffer = null;
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+      String lecture = new String(ch, start, length);
+      if (buffer != null)
+        buffer.append(lecture);
+    }
+
+    @Override
+    public MovieInfo getObject() {
+      return movieInfo;
+    }
+
+}

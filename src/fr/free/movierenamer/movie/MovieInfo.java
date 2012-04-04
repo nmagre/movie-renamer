@@ -40,7 +40,7 @@ public class MovieInfo {
   private String origTitle;
   private String rating;
   private String mpaa;
-  private int runtime;
+  private String runtime;
   private String year;
   private String votes;
   private ArrayList<String> set;//Saga
@@ -64,7 +64,7 @@ public class MovieInfo {
     tagline = "";
     origTitle = "";
     rating = "-1";
-    runtime = -1;
+    runtime = "-1";
     year = "";
     votes = "-1";
     mpaa = "";
@@ -90,8 +90,8 @@ public class MovieInfo {
    * Get sort title
    * @return Sort title
    */
-  public String getSortTitle(){
-    return (sortTitle.equals("") ? title:sortTitle);
+  public String getSortTitle() {
+    return (sortTitle.equals("") ? title : sortTitle);
   }
 
   /**
@@ -162,7 +162,7 @@ public class MovieInfo {
    * Get runtime
    * @return Runtime
    */
-  public int getRuntime() {
+  public String getRuntime() {
     return runtime;
   }
 
@@ -247,51 +247,73 @@ public class MovieInfo {
   }
 
   /**
-   * Get directors
-   * @return Directors separated by a pipe
+   * Get actors
+   * @param separator Separator
+   * @param limit Number of actors to return (0 for all)
+   * @return Actors separated by separator
    */
-  public String getDirectorsString() {
-    return Utils.arrayPersonnToString(directors, " | ");
+  public String getActorsString(String separator, int limit) {
+    return Utils.arrayPersonnToString(actors, separator, limit);
+  }
+
+  /**
+   * Get directors
+   * @param separator Separator
+   * @param limit Number of directors to return (0 for all)
+   * @return Directors separated by separator
+   */
+  public String getDirectorsString(String separator, int limit) {
+    return Utils.arrayPersonnToString(directors, separator, limit);
   }
 
   /**
    * Get writers to string
-   * @return Writers separated by a pipe
+   * @param separator Separator
+   * @param limit Number of writers to return (0 for all)
+   * @return Writers separated by separator
    */
-  public String getWritersString() {
-    return Utils.arrayPersonnToString(writers, " | ");
+  public String getWritersString(String separator, int limit) {
+    return Utils.arrayPersonnToString(writers, separator, limit);
   }
 
   /**
    * Get genres to string
-   * @return Genre separated by a pipe
+   * @param separator Separator
+   * @param limit Number of genres to return (0 for all)
+   * @return Genre separated by separator
    */
-  public String getGenresString() {
-    return Utils.arrayToString(genres, " | ");
+  public String getGenresString(String separator, int limit) {
+    return Utils.arrayToString(genres, separator, limit);
   }
 
   /**
    * Get countries to string
-   * @return Countries separated by a pipe
+   * @param separator Separator
+   * @param limit Number of countries to return (0 for all)
+   * @return Countries separated by separator
    */
-  public String getCountriesString() {
-    return Utils.arrayToString(countries, " | ");
+  public String getCountriesString(String separator, int limit) {
+    return Utils.arrayToString(countries, separator, limit);
   }
 
   /**
    * Get studios to string
-   * @return Studios separated by a pipe
+   * @param separator Separator
+   * @param limit Number of studios to return (0 for all)
+   * @return Studios separated by separator
    */
-  public String getStudiosString() {
-    return Utils.arrayToString(studios, " | ");
+  public String getStudiosString(String separator, int limit) {
+    return Utils.arrayToString(studios, separator, limit);
   }
 
   /**
    * Get sets to string
-   * @return Sets separated by a pipe
+   * @param separator Separator
+   * @param limit Number of sets to return (0 for all)
+   * @return Sets separated by separator
    */
-  public String getSetString() {
-    return Utils.arrayToString(set, " | ");
+  public String getSetString(String separator, int limit) {
+    return Utils.arrayToString(set, separator, limit);
   }
 
   /**
@@ -307,6 +329,26 @@ public class MovieInfo {
   }
 
   /**
+   * Get the n actor
+   * @param n Position of actor
+   * @return Actor name or an empty string
+   */
+  public String getActorN(int n) {
+    if (n >= actors.size()) return "";
+    return actors.get(n).getName();
+  }
+
+  /**
+   * Get the n director
+   * @param n Position of director
+   * @return Director name or an empty string
+   */
+  public String getDirectorN(int n) {
+    if (n >= directors.size()) return "";
+    return directors.get(n).getName();
+  }
+
+  /**
    * Get first genre
    * @return First genre
    */
@@ -316,6 +358,26 @@ public class MovieInfo {
       return genres.get(i);
     }
     return res;
+  }
+
+  /**
+   * Get the n genre
+   * @param n Position of genre
+   * @return Genre or an empty string
+   */
+  public String getGenreN(int n) {
+    if (n >= genres.size()) return "";
+    return genres.get(n);
+  }
+
+  /**
+   * Get the n country
+   * @param n Position of country
+   * @return Country or an empty string
+   */
+  public String getCountryN(int n) {
+    if (n >= countries.size()) return "";
+    return countries.get(n);
   }
 
   /**
@@ -346,7 +408,7 @@ public class MovieInfo {
    * Set sort title
    * @param sortTitle Sort title
    */
-  public void setSortTitle(String sortTitle){
+  public void setSortTitle(String sortTitle) {
     this.sortTitle = sortTitle;
   }
 
@@ -394,7 +456,7 @@ public class MovieInfo {
    * Set genres
    * @param genres Array of genres
    */
-  public void setGenre(ArrayList<String> genres){
+  public void setGenre(ArrayList<String> genres) {
     this.genres = genres;
   }
 
@@ -402,7 +464,7 @@ public class MovieInfo {
    * Set sets
    * @param set Array of sets
    */
-  public void setSets(ArrayList<String> set){
+  public void setSets(ArrayList<String> set) {
     this.set = set;
   }
 
@@ -410,7 +472,7 @@ public class MovieInfo {
    * Set writers
    * @param writers Array of writers
    */
-  public void setWriters(ArrayList<MoviePerson> writers){
+  public void setWriters(ArrayList<MoviePerson> writers) {
     this.writers = writers;
   }
 
@@ -418,7 +480,7 @@ public class MovieInfo {
    * Set countries
    * @param countries Array of countries
    */
-  public void setCountries(ArrayList<String> countries){
+  public void setCountries(ArrayList<String> countries) {
     this.countries = countries;
   }
 
@@ -466,7 +528,7 @@ public class MovieInfo {
    * Set runtime
    * @param runtime Runtime
    */
-  public void setRuntime(int runtime) {
+  public void setRuntime(String runtime) {
     this.runtime = runtime;
   }
 
@@ -582,7 +644,7 @@ public class MovieInfo {
     res.append("  Trailer : ").append(trailer).append(Utils.ENDLINE);
     res.append("  Synopsis : ").append(synopsis).append(Utils.ENDLINE);
     res.append("  Short-Synopsis : ").append(outline).append(Utils.ENDLINE);
-    res.append("  Set(Saga) : ").append(getSetString()).append(Utils.ENDLINE);
+    res.append("  Set(Saga) : ").append(getSetString(" | ", 0)).append(Utils.ENDLINE);
     res.append("  Mpaa : ").append(mpaa).append(Utils.ENDLINE);
     res.append("  Tagline : ").append(tagline).append(Utils.ENDLINE);
     res.append("  OrigTitle : ").append(origTitle).append(Utils.ENDLINE);
@@ -590,11 +652,11 @@ public class MovieInfo {
     res.append("  Runtime : ").append(runtime).append(Utils.ENDLINE);
     res.append("  Year : ").append(year).append(Utils.ENDLINE);
     res.append("  Vote : ").append(votes).append(Utils.ENDLINE);
-    res.append("  Genre : ").append(Utils.arrayToString(genres, " | ")).append(Utils.ENDLINE);
-    res.append("  Studio : ").append(Utils.arrayToString(studios, " | ")).append(Utils.ENDLINE);
-    res.append("  Country : ").append(Utils.arrayToString(countries, " | ")).append(Utils.ENDLINE);
-    res.append("  Director : ").append(getDirectorsString()).append(Utils.ENDLINE);
-    res.append("  Writer : ").append(getWritersString()).append(Utils.ENDLINE);
+    res.append("  Genre : ").append(Utils.arrayToString(genres, " | ", 0)).append(Utils.ENDLINE);
+    res.append("  Studio : ").append(Utils.arrayToString(studios, " | ", 0)).append(Utils.ENDLINE);
+    res.append("  Country : ").append(Utils.arrayToString(countries, " | ", 0)).append(Utils.ENDLINE);
+    res.append("  Director : ").append(getDirectorsString(" | ", 0)).append(Utils.ENDLINE);
+    res.append("  Writer : ").append(getWritersString(" | ", 0)).append(Utils.ENDLINE);
     res.append("  Actor :\n");
     for (int i = 0; i < actors.size(); i++) {
       res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);

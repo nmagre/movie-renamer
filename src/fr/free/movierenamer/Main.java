@@ -19,6 +19,7 @@
  ******************************************************************************/
 package fr.free.movierenamer;
 
+import fr.free.movierenamer.parser.xml.MrSettings;
 import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
@@ -28,12 +29,9 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
-import fr.free.movierenamer.parser.XMLParser;
+import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.ui.MovieRenamer;
 import java.util.Locale;
-import plugins.IPluginInfo;
-import plugins.PluginLoader;
-
 
 /**
  * Class Main
@@ -42,25 +40,26 @@ import plugins.PluginLoader;
 public class Main {
 
   private static MovieRenamer mvr;
-  private static PluginLoader pluginsLoader;
-  private static IPluginInfo[] pluginInfo;
+  //private static PluginLoader pluginsLoader;
+  //private static IPluginInfo[] pluginInfo;
   
   public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException, ParseException {
     final Settings setting = loadSetting();
-    pluginsLoader = new PluginLoader();
-    pluginInfo = new IPluginInfo[0];
+    //pluginsLoader = new PluginLoader();
+    /*pluginInfo = new IPluginInfo[0];
     try {
       pluginInfo = pluginsLoader.loadAllInfoPlugins();
     } catch (Exception ex) {
       setting.getLogger().log(Level.SEVERE, null, ex);
     }
     if(pluginInfo.length >0) System.out.println("found : " + pluginInfo.length + " plugins");
+    */
 
     java.awt.EventQueue.invokeLater(new Runnable() {
 
       @Override
       public void run() {
-        mvr = new MovieRenamer(setting, pluginInfo.clone());
+        mvr = new MovieRenamer(setting, null);
         mvr.setVisible(true);
       }
     });
@@ -72,7 +71,8 @@ public class Main {
     boolean saved = true;
     if (file.exists())
       try {
-        XMLParser<Settings> mmp = new XMLParser<Settings>(setting.configFile, Settings.class);
+        XMLParser<Settings> mmp = new XMLParser<Settings>(setting.configFile);
+        mmp.setParser(new MrSettings());
         setting = mmp.parseXml();
         if (setting.locale.equals("")) {
           if (!Locale.getDefault().getLanguage().equals("fr")) setting.locale = "en";

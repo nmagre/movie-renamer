@@ -39,6 +39,14 @@ public class MoviePerson {
   private ArrayList<String> roles;// just for actor
   private String imdbId;
 
+  public MoviePerson(int job){
+    name = "";
+    thumb = "";
+    this.job = job;
+    imdbId = "";
+    roles = new ArrayList<String>();
+  }
+
   /**
    * Constructor arguments
    * @param name Person name
@@ -49,6 +57,7 @@ public class MoviePerson {
     this.name = name;
     this.thumb = thumb;
     this.job = job;
+    imdbId = "";
     roles = new ArrayList<String>();
   }
 
@@ -92,8 +101,28 @@ public class MoviePerson {
     return imdbId;
   }
 
+  /**
+   * Set name
+   * @param name
+   */
+  public void setName(String name){
+    this.name = name;
+  }
+
+  /**
+   * Set imdb ID
+   * @param imdbId
+   */
   public void setImdbId(String imdbId){
     this.imdbId = imdbId;
+  }
+
+  /**
+   * Set thumb
+   * @param thumb
+   */
+  public void setThumb(String thumb){
+    this.thumb = thumb;
   }
 
   /**

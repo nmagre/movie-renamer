@@ -57,9 +57,9 @@ import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
+import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.dnd.DropTarget;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -71,7 +71,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import plugins.IPluginInfo;
 
 /**
  * Class MoviePanel
@@ -129,21 +128,21 @@ public class MoviePanel extends javax.swing.JPanel {
   private DropTarget dropThumbTarget;
   private DropTarget dropFanartTarget;
   private ArrayList<actorImage> actors;
-  private ArrayList<MovieImage> thumbs;
-  private ArrayList<MovieImage> fanarts;
+  private ArrayList<Images> thumbs;
+  private ArrayList<Images> fanarts;
   private Settings setting;
 
   /** Creates new form MoviePanel
    * @param setting
-   * @param pluginsInfo
+   * @param tmp 
    */
-  public MoviePanel(Settings setting, IPluginInfo[] pluginsInfo) {
+  public MoviePanel(Settings setting, /*IPluginInfo[] pluginsInfo*/String tmp) {
     this.setting = setting;
 
     initComponents();
     actors = new ArrayList<actorImage>();
-    thumbs = new ArrayList<MovieImage>();
-    fanarts = new ArrayList<MovieImage>();
+    thumbs = new ArrayList<Images>();
+    fanarts = new ArrayList<Images>();
 
     thumbnailsList.setModel(thumbnailModel);
     fanartList.setModel(fanartModel);
@@ -206,11 +205,11 @@ public class MoviePanel extends javax.swing.JPanel {
     });
 
 
-    for (int i = 0; i < pluginsInfo.length; i++) {
+/*    for (int i = 0; i < pluginsInfo.length; i++) {
       if (pluginsInfo[i].getInfoPanel() != null)
         movieTabbedPane.addTab(pluginsInfo[i].getName(), pluginsInfo[i].getInfoPanel());
     }
-
+*/
     dropFanartTarget.setActive(false);
     dropThumbTarget.setActive(false);
     thumbsScrollPane.setVisible(setting.thumb);
@@ -240,7 +239,7 @@ public class MoviePanel extends javax.swing.JPanel {
     return image;
   }
 
-  public synchronized void addThumbToList(final Image thumb, final MovieImage mvImg, final boolean selectLast) {
+  public synchronized void addThumbToList(final Image thumb, final Images mvImg, final boolean selectLast) {
 
     thumbs.add(mvImg);
 
@@ -279,7 +278,7 @@ public class MoviePanel extends javax.swing.JPanel {
     worker.execute();
   }
 
-  public synchronized void addFanartToList(final Image fanart, final MovieImage mvImg, final boolean selectLast) {
+  public synchronized void addFanartToList(final Image fanart, final Images mvImg, final boolean selectLast) {
     fanarts.add(mvImg);
     final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
 
@@ -394,9 +393,9 @@ public class MoviePanel extends javax.swing.JPanel {
         yearField.setText(movieInfo.getYear());
         runtimeField.setText(movieInfo.getRuntime() + " min");
         synopsisArea.setText(movieInfo.getSynopsis());
-        genreField.setText(movieInfo.getGenresString());
-        directorField.setText(movieInfo.getDirectorsString());
-        countryField.setText(movieInfo.getCountriesString());
+        genreField.setText(movieInfo.getGenresString(" | ", 0));
+        directorField.setText(movieInfo.getDirectorsString(" | ", 0));
+        countryField.setText(movieInfo.getCountriesString(" | ", 0));
         setRate(Float.parseFloat(movieInfo.getRating().replace(",", ".")));
         dropFanartTarget.setActive(true);
         dropThumbTarget.setActive(true);
@@ -457,8 +456,8 @@ public class MoviePanel extends javax.swing.JPanel {
     }
   }
 
-  public ArrayList<MovieImage> getAddedThumb() {
-    ArrayList<MovieImage> res = new ArrayList<MovieImage>();
+  public ArrayList<Images> getAddedThumb() {
+    ArrayList<Images> res = new ArrayList<Images>();
     for (int i = 0; i < thumbs.size(); i++) {
       if (thumbs.get(i).getId().equals("-1"))
         if (!thumbs.get(i).getThumbUrl().startsWith("file://"))
@@ -467,8 +466,8 @@ public class MoviePanel extends javax.swing.JPanel {
     return res;
   }
 
-  public ArrayList<MovieImage> getAddedFanart() {
-    ArrayList<MovieImage> res = new ArrayList<MovieImage>();
+  public ArrayList<Images> getAddedFanart() {
+    ArrayList<Images> res = new ArrayList<Images>();
     for (int i = 0; i < fanarts.size(); i++) {
       if (fanarts.get(i).getId().equals("-1"))
         if (!fanarts.get(i).getThumbUrl().startsWith("file://"))
@@ -487,7 +486,7 @@ public class MoviePanel extends javax.swing.JPanel {
     return getSelectedItem(fanarts, fanartList, size);
   }
 
-  private URL getSelectedItem(ArrayList<MovieImage> array, JList list, int size) {
+  private URL getSelectedItem(ArrayList<Images> array, JList list, int size) {
     if (array.isEmpty()) return null;
     try {
       switch (size) {

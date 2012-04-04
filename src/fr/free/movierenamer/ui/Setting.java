@@ -77,9 +77,12 @@ public class Setting extends JDialog {
   private JRadioButton[] rBtnCase;
   private String[][] format = {
     {"<t>", "Matrix"}, {"<ot>", "The Matrix"}, {"<y>", "1999"}, {"<tt>", "tt0133093"},
-    {"<g>", "Action | Adventure | Sci-Fi"}, {"<g1>", "Action"},
-    {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"},
-    {"<rt>", "136"}, {"<ra>", "8.8"}
+    {"<a>","Keanu Reeves | Laurence Fishburne | Carrie-Anne Moss | Hugo Weaving | Gloria Foster"},
+    {"<a1>","Keanu Reeves"},{"<a2>","Laurence Fishburne"},{"<a3>","Carrie-Anne Moss"},{"<a4>","Hugo Weaving"},{"<a5>","Gloria Foster"},
+    {"<g>", "Action | Adventure | Sci-Fi"}, {"<g1>", "Action"},{"<g2>", "Adventure"},{"<g3>", "Sci-Fi"},
+    {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"},{"<d2>", "Lana Wachowski"},
+    {"<c>","USA | Australia"},{"<c1>","USA"},{"<c2>","Australia"},
+    {"<rt>", "136"}, {"<ra>", "8.8"},{"<[acdg]\\d+>",""}
   };
   private ResourceBundle bundle;
   private String[] lafName;
@@ -170,6 +173,9 @@ public class Setting extends JDialog {
     xbmcNFORBtn.setSelected(setting.nfoType == 0);
     mediaPortalNFORBtn.setSelected(setting.nfoType == 1);
     separatorField.setText(setting.separator);
+    limitField.setText("" + setting.limit);
+    rmSpcCharChk.setSelected(setting.rmSpcChar);
+    rmDupSpaceChk.setSelected(setting.rmDupSpace);
 
     // Imdb
     imdbFrRbtn.setSelected(setting.imdbFr);
@@ -286,19 +292,11 @@ public class Setting extends JDialog {
     customFolderField = new JTextField();
     separatorLbl = new JLabel();
     separatorField = new JTextField();
-    movieImagePnl = new JPanel();
-    thumbExtCbBox = new JComboBox();
-    thumnailsExtLbl = new JLabel();
+    limitLbl = new JLabel();
+    limitField = new JTextField();
+    rmSpcCharChk = new JCheckBox();
+    rmDupSpaceChk = new JCheckBox();
     SearchPnl = new JPanel();
-    imagesPnl = new JPanel();
-    thumbThumbSizeRBtn = new JRadioButton();
-    midThumbSizeRBtn = new JRadioButton();
-    origThumbSizeRBtn = new JRadioButton();
-    thumbSzeLbl = new JLabel();
-    fanartSizeLbl = new JLabel();
-    origFanartSizeRBtn = new JRadioButton();
-    midFanartSizeRBtn = new JRadioButton();
-    thumbFanartSizeRBtn = new JRadioButton();
     imdbLangPnl = new JPanel();
     imdbFrRbtn = new JRadioButton();
     imdbEnRbtn = new JRadioButton();
@@ -309,6 +307,19 @@ public class Setting extends JDialog {
     displayThumbResultChk = new JCheckBox();
     selectFirstResChk = new JCheckBox();
     autoSearchChk = new JCheckBox();
+    jPanel1 = new JPanel();
+    movieImagePnl = new JPanel();
+    thumbExtCbBox = new JComboBox();
+    thumnailsExtLbl = new JLabel();
+    imagesPnl = new JPanel();
+    thumbThumbSizeRBtn = new JRadioButton();
+    midThumbSizeRBtn = new JRadioButton();
+    origThumbSizeRBtn = new JRadioButton();
+    thumbSzeLbl = new JLabel();
+    fanartSizeLbl = new JLabel();
+    origFanartSizeRBtn = new JRadioButton();
+    midFanartSizeRBtn = new JRadioButton();
+    thumbFanartSizeRBtn = new JRadioButton();
     filtersPnl = new JPanel();
     extensionPnl = new JPanel();
     removeExtensuionBtn = new JButton();
@@ -370,7 +381,7 @@ public class Setting extends JDialog {
         .addComponent(englishRbtn)
         .addGap(18, 18, 18)
         .addComponent(frenchRbtn)
-        .addPreferredGap(ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
+        .addPreferredGap(ComponentPlacement.RELATED, 167, Short.MAX_VALUE)
         .addComponent(lwarningLbl)
         .addContainerGap())
     );
@@ -385,7 +396,7 @@ public class Setting extends JDialog {
     );
 
     updatePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("update"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    checkUpdateChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));
     checkUpdateChk.setText(bundle.getString("chkUpdateOnStart")); // NOI18N
     checkUpdateChk.setToolTipText(bundle.getString("chkUpdateOnStartTt")); // NOI18N
 
@@ -397,7 +408,7 @@ public class Setting extends JDialog {
       .addGroup(updatePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(checkUpdateChk)
-        .addContainerGap(217, Short.MAX_VALUE))
+        .addContainerGap(238, Short.MAX_VALUE))
     );
     updatePnlLayout.setVerticalGroup(
       updatePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -460,7 +471,7 @@ public class Setting extends JDialog {
               .addComponent(thumbsChk)
               .addComponent(actorImageChk)
               .addComponent(fanartsChk))))
-        .addContainerGap(183, Short.MAX_VALUE))
+        .addContainerGap(204, Short.MAX_VALUE))
     );
     interfacePnlLayout.setVerticalGroup(
       interfacePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -483,11 +494,11 @@ public class Setting extends JDialog {
     nfoPnl.setBorder(BorderFactory.createTitledBorder(null, "NFO", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
 
     nfoGroup.add(xbmcNFORBtn);
-    xbmcNFORBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    xbmcNFORBtn.setFont(new Font("Ubuntu", 0, 12));
     xbmcNFORBtn.setText(bundle.getString("nfoXbmc")); // NOI18N
 
     nfoGroup.add(mediaPortalNFORBtn);
-    mediaPortalNFORBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    mediaPortalNFORBtn.setFont(new Font("Ubuntu", 0, 12));
     mediaPortalNFORBtn.setText(bundle.getString("nfoMediaPortal")); // NOI18N
 
     GroupLayout nfoPnlLayout = new GroupLayout(nfoPnl);
@@ -499,7 +510,7 @@ public class Setting extends JDialog {
         .addComponent(xbmcNFORBtn)
         .addGap(18, 18, 18)
         .addComponent(mediaPortalNFORBtn)
-        .addContainerGap(186, Short.MAX_VALUE))
+        .addContainerGap(207, Short.MAX_VALUE))
     );
     nfoPnlLayout.setVerticalGroup(
       nfoPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -535,7 +546,7 @@ public class Setting extends JDialog {
         .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(14, Short.MAX_VALUE))
+        .addContainerGap(29, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
@@ -578,7 +589,7 @@ public class Setting extends JDialog {
 
     testField.setEditable(false);
 
-    formatField.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    formatField.setFont(new Font("Ubuntu", 0, 12));
     formatField.setText("<t> (<y>)");
     formatField.addMouseListener(new ContextMenuFieldMouseListener());
 
@@ -597,7 +608,7 @@ public class Setting extends JDialog {
     });
 
     caseGroup.add(firstLoRbtn);
-    firstLoRbtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    firstLoRbtn.setFont(new Font("Ubuntu", 0, 12));
     firstLoRbtn.setText(bundle.getString("firstLo")); // NOI18N
 
     caseGroup.add(firstLaRbtn);
@@ -623,29 +634,61 @@ public class Setting extends JDialog {
       }
     });
 
-    customFolderField.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    customFolderField.setFont(new Font("Ubuntu", 0, 12));
     customFolderField.setEnabled(false);
 
-    separatorLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
+    separatorLbl.setFont(new Font("Ubuntu", 1, 12));
     separatorLbl.setText(bundle.getString("separator")); // NOI18N
 
-    separatorField.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    separatorField.setFont(new Font("Ubuntu", 0, 12));
     separatorField.setText(",");
+
+    limitLbl.setText(bundle.getString("limit")); // NOI18N
+
+    limitField.setText("0");
+
+    rmSpcCharChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    rmSpcCharChk.setText(bundle.getString("rmSpcChar")); // NOI18N
+
+    rmDupSpaceChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    rmDupSpaceChk.setText(bundle.getString("rmDupSpace")); // NOI18N
 
     GroupLayout movieFileNamePnlLayout = new GroupLayout(movieFileNamePnl);
     movieFileNamePnl.setLayout(movieFileNamePnlLayout);
-
     movieFileNamePnlLayout.setHorizontalGroup(
       movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(movieFileNamePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
           .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addGap(21, 21, 21)
+            .addComponent(movieTitleRBtn)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(renamedMovieTitleRBtn)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(customFolderRBtn)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(customFolderField, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+            .addGap(41, 41, 41))
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addComponent(createDirChk)
+            .addContainerGap())
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addComponent(rmDupSpaceChk)
+            .addContainerGap())
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addComponent(rmSpcCharChk)
+            .addContainerGap())
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
             .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
               .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                 .addComponent(separatorLbl)
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(separatorField, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE))
+                .addComponent(separatorField, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(limitLbl)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(limitField, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE))
               .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -653,39 +696,25 @@ public class Setting extends JDialog {
                   .addComponent(firstLoRbtn)
                   .addComponent(upperRbtn)
                   .addComponent(lowerRbtn))))
-            .addContainerGap(201, Short.MAX_VALUE))
+            .addContainerGap(169, Short.MAX_VALUE))
           .addGroup(Alignment.TRAILING, movieFileNamePnlLayout.createSequentialGroup()
             .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
               .addComponent(defaultFormatLbl)
               .addGroup(Alignment.TRAILING, movieFileNamePnlLayout.createSequentialGroup()
                 .addComponent(formatLbl)
                 .addGap(28, 28, 28)
-                .addComponent(formatField, GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                .addComponent(formatField, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
                 .addGap(14, 14, 14)))
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
           .addGroup(movieFileNamePnlLayout.createSequentialGroup()
             .addComponent(caseLbl)
-            .addContainerGap(367, Short.MAX_VALUE))
+            .addContainerGap(388, Short.MAX_VALUE))
           .addGroup(movieFileNamePnlLayout.createSequentialGroup()
-            .addComponent(createDirChk)
-            .addContainerGap(276, Short.MAX_VALUE))
-          .addGroup(Alignment.TRAILING, movieFileNamePnlLayout.createSequentialGroup()
-            .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.TRAILING)
-              .addGroup(Alignment.LEADING, movieFileNamePnlLayout.createSequentialGroup()
-                .addComponent(testBtn)
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(testField, GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE))
-              .addGroup(movieFileNamePnlLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(movieTitleRBtn)
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(renamedMovieTitleRBtn)
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(customFolderRBtn)
-                .addGap(2, 2, 2)
-                .addComponent(customFolderField, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)))
-            .addGap(14, 14, 14))))
+            .addComponent(testBtn)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(testField, GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+            .addGap(33, 33, 33))))
     );
     movieFileNamePnlLayout.setVerticalGroup(
       movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -700,7 +729,9 @@ public class Setting extends JDialog {
             .addPreferredGap(ComponentPlacement.RELATED)
             .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
               .addComponent(separatorField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-              .addComponent(separatorLbl))
+              .addComponent(separatorLbl)
+              .addComponent(limitLbl)
+              .addComponent(limitField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
             .addGap(7, 7, 7)
             .addComponent(caseLbl)
             .addPreferredGap(ComponentPlacement.RELATED)
@@ -713,45 +744,26 @@ public class Setting extends JDialog {
             .addComponent(lowerRbtn))
           .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         .addGap(18, 18, 18)
-        .addComponent(createDirChk)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
-          .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
-            .addComponent(movieTitleRBtn)
-            .addComponent(renamedMovieTitleRBtn))
-          .addComponent(customFolderRBtn)
+        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.TRAILING)
+          .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+            .addComponent(rmSpcCharChk)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.TRAILING)
+              .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+                .addComponent(rmDupSpaceChk)
+                .addGap(18, 18, 18)
+                .addComponent(createDirChk)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
+                  .addComponent(movieTitleRBtn)
+                  .addComponent(renamedMovieTitleRBtn)))
+              .addComponent(customFolderRBtn)))
           .addComponent(customFolderField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         .addGap(18, 18, 18)
         .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(testField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addComponent(testBtn))
-        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-
-    movieImagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("imageExt"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    thumbExtCbBox.setModel(new DefaultComboBoxModel(new String[] { ".jpg", ".tbn", "-thumb.jpg" }));
-
-    thumnailsExtLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
-    thumnailsExtLbl.setText(bundle.getString("thumbnails")); // NOI18N
-
-    GroupLayout movieImagePnlLayout = new GroupLayout(movieImagePnl);
-    movieImagePnl.setLayout(movieImagePnlLayout);
-    movieImagePnlLayout.setHorizontalGroup(
-      movieImagePnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(movieImagePnlLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(thumnailsExtLbl)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(thumbExtCbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(220, Short.MAX_VALUE))
-    );
-    movieImagePnlLayout.setVerticalGroup(
-      movieImagePnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(movieImagePnlLayout.createSequentialGroup()
-        .addGroup(movieImagePnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(thumnailsExtLbl)
-          .addComponent(thumbExtCbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(testBtn)
+          .addComponent(testField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        .addContainerGap())
     );
 
     GroupLayout renamePnlLayout = new GroupLayout(renamePnl);
@@ -760,9 +772,7 @@ public class Setting extends JDialog {
       renamePnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(renamePnlLayout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(renamePnlLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(movieFileNamePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(movieImagePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addComponent(movieFileNamePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addContainerGap())
     );
     renamePnlLayout.setVerticalGroup(
@@ -770,101 +780,20 @@ public class Setting extends JDialog {
       .addGroup(renamePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(movieFileNamePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(movieImagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(35, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("rename"), renamePnl); // NOI18N
 
-    imagesPnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 14))); // NOI18N
-
-    thumbGroup.add(thumbThumbSizeRBtn);
-    thumbThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    thumbThumbSizeRBtn.setText(bundle.getString("small")); // NOI18N
-
-    thumbGroup.add(midThumbSizeRBtn);
-    midThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    midThumbSizeRBtn.setText(bundle.getString("medium")); // NOI18N
-
-    thumbGroup.add(origThumbSizeRBtn);
-    origThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    origThumbSizeRBtn.setSelected(true);
-    origThumbSizeRBtn.setText("Original");
-
-    thumbSzeLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
-    thumbSzeLbl.setText(bundle.getString("thumbsSize")); // NOI18N
-
-    fanartSizeLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
-    fanartSizeLbl.setText(bundle.getString("fanartsSize")); // NOI18N
-
-    fanartGroup.add(origFanartSizeRBtn);
-    origFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    origFanartSizeRBtn.setSelected(true);
-    origFanartSizeRBtn.setText("Original");
-
-    fanartGroup.add(midFanartSizeRBtn);
-    midFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    midFanartSizeRBtn.setText(bundle.getString("medium")); // NOI18N
-
-    fanartGroup.add(thumbFanartSizeRBtn);
-    thumbFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
-    thumbFanartSizeRBtn.setText(bundle.getString("small")); // NOI18N
-
-    GroupLayout imagesPnlLayout = new GroupLayout(imagesPnl);
-    imagesPnl.setLayout(imagesPnlLayout);
-    imagesPnlLayout.setHorizontalGroup(
-      imagesPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(imagesPnlLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(thumbSzeLbl)
-          .addGroup(imagesPnlLayout.createSequentialGroup()
-            .addGap(12, 12, 12)
-            .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
-              .addComponent(midThumbSizeRBtn)
-              .addComponent(origThumbSizeRBtn)
-              .addComponent(thumbThumbSizeRBtn))))
-        .addGap(80, 80, 80)
-        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(fanartSizeLbl)
-          .addGroup(imagesPnlLayout.createSequentialGroup()
-            .addGap(12, 12, 12)
-            .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
-              .addComponent(midFanartSizeRBtn)
-              .addComponent(origFanartSizeRBtn)
-              .addComponent(thumbFanartSizeRBtn))))
-        .addContainerGap(117, Short.MAX_VALUE))
-    );
-    imagesPnlLayout.setVerticalGroup(
-      imagesPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(imagesPnlLayout.createSequentialGroup()
-        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(thumbSzeLbl)
-          .addComponent(fanartSizeLbl))
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(origThumbSizeRBtn)
-          .addComponent(origFanartSizeRBtn))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(midThumbSizeRBtn)
-          .addComponent(midFanartSizeRBtn))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
-          .addComponent(thumbThumbSizeRBtn)
-          .addComponent(thumbFanartSizeRBtn)))
-    );
-
     imdbLangPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
 
     imdbLangGroup.add(imdbFrRbtn);
-    imdbFrRbtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    imdbFrRbtn.setFont(new Font("Ubuntu", 0, 12));
     imdbFrRbtn.setSelected(true);
     imdbFrRbtn.setText(bundle.getString("imdbFr")); // NOI18N
 
     imdbLangGroup.add(imdbEnRbtn);
-    imdbEnRbtn.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    imdbEnRbtn.setFont(new Font("Ubuntu", 0, 12));
     imdbEnRbtn.setText(bundle.getString("imdbEn")); // NOI18N
 
     GroupLayout imdbLangPnlLayout = new GroupLayout(imdbLangPnl);
@@ -877,7 +806,7 @@ public class Setting extends JDialog {
         .addComponent(imdbFrRbtn)
         .addGap(18, 18, 18)
         .addComponent(imdbEnRbtn)
-        .addContainerGap(142, Short.MAX_VALUE))
+        .addContainerGap(163, Short.MAX_VALUE))
     );
     imdbLangPnlLayout.setVerticalGroup(
       imdbLangPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -897,10 +826,10 @@ public class Setting extends JDialog {
     limitResultComboBox.setFont(new Font("Ubuntu", 1, 12));
     limitResultComboBox.setModel(new DefaultComboBoxModel(new String[] { bundle.getString("all"), "5", "10", "15", "20", "30" }));
 
-    limitResultLbl.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    limitResultLbl.setFont(new Font("Ubuntu", 0, 12));
     limitResultLbl.setText(bundle.getString("resForEachType")); // NOI18N
 
-    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));
     displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
 
     selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));
@@ -926,7 +855,7 @@ public class Setting extends JDialog {
           .addComponent(displayAppResultCheckBox)
           .addComponent(autoSearchChk)
           .addComponent(selectFirstResChk))
-        .addContainerGap(106, Short.MAX_VALUE))
+        .addContainerGap(127, Short.MAX_VALUE))
     );
     imdbSearchPnlLayout.setVerticalGroup(
       imdbSearchPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -954,8 +883,7 @@ public class Setting extends JDialog {
         .addContainerGap()
         .addGroup(SearchPnlLayout.createParallelGroup(Alignment.LEADING)
           .addComponent(imdbLangPnl, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(imdbSearchPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(imagesPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(imdbSearchPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     SearchPnlLayout.setVerticalGroup(
@@ -965,12 +893,139 @@ public class Setting extends JDialog {
         .addComponent(imdbLangPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(imdbSearchPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(imagesPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(52, Short.MAX_VALUE))
+        .addContainerGap(193, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
+
+
+    movieImagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("imageExt"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
+    thumbExtCbBox.setModel(new DefaultComboBoxModel(new String[] { ".jpg", ".tbn", "-thumb.jpg" }));
+
+    thumnailsExtLbl.setFont(new Font("Ubuntu", 1, 12));
+    thumnailsExtLbl.setText(bundle.getString("thumbnails")); // NOI18N
+
+    GroupLayout movieImagePnlLayout = new GroupLayout(movieImagePnl);
+    movieImagePnl.setLayout(movieImagePnlLayout);
+    movieImagePnlLayout.setHorizontalGroup(
+      movieImagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(movieImagePnlLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(thumnailsExtLbl)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(thumbExtCbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(241, Short.MAX_VALUE))
+    );
+    movieImagePnlLayout.setVerticalGroup(
+      movieImagePnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(movieImagePnlLayout.createSequentialGroup()
+        .addGroup(movieImagePnlLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(thumnailsExtLbl)
+          .addComponent(thumbExtCbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    imagesPnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 14))); // NOI18N
+
+    thumbGroup.add(thumbThumbSizeRBtn);
+    thumbThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));
+    thumbThumbSizeRBtn.setText(bundle.getString("small")); // NOI18N
+
+    thumbGroup.add(midThumbSizeRBtn);
+    midThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));
+    midThumbSizeRBtn.setText(bundle.getString("medium")); // NOI18N
+
+    thumbGroup.add(origThumbSizeRBtn);
+    origThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));
+    origThumbSizeRBtn.setSelected(true);
+    origThumbSizeRBtn.setText("Original");
+
+    thumbSzeLbl.setFont(new Font("Ubuntu", 1, 13));
+    thumbSzeLbl.setText(bundle.getString("thumbsSize")); // NOI18N
+
+    fanartSizeLbl.setFont(new Font("Ubuntu", 1, 13));
+    fanartSizeLbl.setText(bundle.getString("fanartsSize")); // NOI18N
+
+    fanartGroup.add(origFanartSizeRBtn);
+    origFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));
+    origFanartSizeRBtn.setSelected(true);
+    origFanartSizeRBtn.setText("Original");
+
+    fanartGroup.add(midFanartSizeRBtn);
+    midFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));
+    midFanartSizeRBtn.setText(bundle.getString("medium")); // NOI18N
+
+    fanartGroup.add(thumbFanartSizeRBtn);
+    thumbFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));
+    thumbFanartSizeRBtn.setText(bundle.getString("small")); // NOI18N
+
+    GroupLayout imagesPnlLayout = new GroupLayout(imagesPnl);
+    imagesPnl.setLayout(imagesPnlLayout);
+    imagesPnlLayout.setHorizontalGroup(
+      imagesPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(imagesPnlLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
+          .addComponent(thumbSzeLbl)
+          .addGroup(imagesPnlLayout.createSequentialGroup()
+            .addGap(12, 12, 12)
+            .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
+              .addComponent(midThumbSizeRBtn)
+              .addComponent(origThumbSizeRBtn)
+              .addComponent(thumbThumbSizeRBtn))))
+        .addGap(80, 80, 80)
+        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
+          .addComponent(fanartSizeLbl)
+          .addGroup(imagesPnlLayout.createSequentialGroup()
+            .addGap(12, 12, 12)
+            .addGroup(imagesPnlLayout.createParallelGroup(Alignment.LEADING)
+              .addComponent(midFanartSizeRBtn)
+              .addComponent(origFanartSizeRBtn)
+              .addComponent(thumbFanartSizeRBtn))))
+        .addContainerGap(159, Short.MAX_VALUE))
+    );
+    imagesPnlLayout.setVerticalGroup(
+      imagesPnlLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(imagesPnlLayout.createSequentialGroup()
+        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(thumbSzeLbl)
+          .addComponent(fanartSizeLbl))
+        .addPreferredGap(ComponentPlacement.UNRELATED)
+        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(origThumbSizeRBtn)
+          .addComponent(origFanartSizeRBtn))
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(midThumbSizeRBtn)
+          .addComponent(midFanartSizeRBtn))
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addGroup(imagesPnlLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(thumbThumbSizeRBtn)
+          .addComponent(thumbFanartSizeRBtn)))
+    );
+
+    GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel1Layout.createParallelGroup(Alignment.LEADING)
+          .addComponent(movieImagePnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(imagesPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(movieImagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(imagesPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(242, Short.MAX_VALUE))
+    );
+
+    settingTabPan.addTab("Image", jPanel1);
 
 
     extensionPnl.setBorder(BorderFactory.createTitledBorder(null, "Extension", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
@@ -990,7 +1045,7 @@ public class Setting extends JDialog {
       }
     });
 
-    extentionJlist.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    extentionJlist.setFont(new Font("Ubuntu", 0, 12));
     extentionJlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     extensionScrollP.setViewportView(extentionJlist);
 
@@ -1005,7 +1060,7 @@ public class Setting extends JDialog {
       }
     });
 
-    useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12));
     useExtensionFilterChk.setText(bundle.getString("useExtFilter")); // NOI18N
 
     GroupLayout extensionPnlLayout = new GroupLayout(extensionPnl);
@@ -1020,7 +1075,7 @@ public class Setting extends JDialog {
             .addComponent(addExtensionBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(removeExtensuionBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE))
-          .addComponent(extensionScrollP, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
+          .addComponent(extensionScrollP, GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
           .addComponent(useExtensionFilterChk))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(extensionHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
@@ -1078,7 +1133,7 @@ public class Setting extends JDialog {
       }
     });
 
-    filterJlist.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
+    filterJlist.setFont(new Font("Ubuntu", 0, 12));
     filterJlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     filterScrollP.setViewportView(filterJlist);
 
@@ -1104,13 +1159,13 @@ public class Setting extends JDialog {
             .addComponent(moveLeft, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(moveRight, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
             .addComponent(addFilter, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(removeFilterBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
             .addGap(12, 12, 12))
           .addGroup(fileNameFilterPnlLayout.createSequentialGroup()
-            .addComponent(filterScrollP, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
+            .addComponent(filterScrollP, GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
             .addPreferredGap(ComponentPlacement.UNRELATED)))
         .addComponent(filenameFilterHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
@@ -1150,20 +1205,20 @@ public class Setting extends JDialog {
         .addComponent(extensionPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(18, Short.MAX_VALUE))
+        .addContainerGap(33, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
 
 
     imagePnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    actorCacheLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    actorCacheLbl.setFont(new Font("Ubuntu", 1, 13));
     actorCacheLbl.setText(bundle.getString("useForActor")); // NOI18N
 
-    fanartCacheLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    fanartCacheLbl.setFont(new Font("Ubuntu", 1, 13));
     fanartCacheLbl.setText(bundle.getString("useForFanart")); // NOI18N
 
-    thumbCacheLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    thumbCacheLbl.setFont(new Font("Ubuntu", 1, 13));
     thumbCacheLbl.setText(bundle.getString("useForThumb")); // NOI18N
 
     clearThumbBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png"))); // NOI18N
@@ -1201,7 +1256,7 @@ public class Setting extends JDialog {
           .addComponent(thumbCacheLbl)
           .addComponent(fanartCacheLbl)
           .addComponent(actorCacheLbl))
-        .addPreferredGap(ComponentPlacement.RELATED, 190, Short.MAX_VALUE)
+        .addPreferredGap(ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
         .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING, false)
           .addComponent(clearActorBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(clearFanartBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1227,7 +1282,7 @@ public class Setting extends JDialog {
     );
 
     xmlFilePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("xmlFiles"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); // NOI18N
-    xmlLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    xmlLbl.setFont(new Font("Ubuntu", 1, 13));
     xmlLbl.setText(bundle.getString("useForXml")); // NOI18N
 
     clearXmlBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png"))); // NOI18N
@@ -1245,7 +1300,7 @@ public class Setting extends JDialog {
       .addGroup(xmlFilePnlLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(xmlLbl)
-        .addPreferredGap(ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
+        .addPreferredGap(ComponentPlacement.RELATED, 223, Short.MAX_VALUE)
         .addComponent(clearXmlBtn)
         .addContainerGap())
     );
@@ -1277,7 +1332,7 @@ public class Setting extends JDialog {
         .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(169, Short.MAX_VALUE))
+        .addContainerGap(184, Short.MAX_VALUE))
     );
 
     settingTabPan.addTab("Cache", cachePnl);
@@ -1309,10 +1364,10 @@ public class Setting extends JDialog {
       .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-          .addComponent(settingTabPan, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+          .addComponent(settingTabPan, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED, 287, Short.MAX_VALUE)
+            .addPreferredGap(ComponentPlacement.RELATED, 308, Short.MAX_VALUE)
             .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
@@ -1320,7 +1375,7 @@ public class Setting extends JDialog {
       layout.createParallelGroup(Alignment.LEADING)
       .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(settingTabPan, GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+        .addComponent(settingTabPan, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(Alignment.BASELINE)
           .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
@@ -1385,7 +1440,7 @@ public class Setting extends JDialog {
 }//GEN-LAST:event_addExtensionBtnActionPerformed
 
   private void helpBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
-    JOptionPane.showMessageDialog(this, bundle.getString("movieFormatHelp").replace("|", separatorField.getText()), bundle.getString("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, bundle.getString("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), bundle.getString("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
 }//GEN-LAST:event_helpBtnActionPerformed
 
   private void createDirChkMouseReleased(MouseEvent evt) {//GEN-FIRST:event_createDirChkMouseReleased
@@ -1433,6 +1488,8 @@ public class Setting extends JDialog {
       if(customFolderRBtn.isSelected()) res = customFolderField.getText() + File.separator + res;
     }
 
+    if(rmSpcCharChk.isSelected()) res = res.trim();
+
     switch (titleCase) {
       case Utils.UPPER:
         res = res.toUpperCase() + "." + ext.toUpperCase();
@@ -1450,6 +1507,9 @@ public class Setting extends JDialog {
         res = res + "." + ext.toLowerCase();
         break;
     }
+
+    if(rmDupSpaceChk.isSelected()) res = res.replaceAll("\\s+", " ");
+    
     testField.setText(res);
   }//GEN-LAST:event_testBtnActionPerformed
 
@@ -1517,6 +1577,16 @@ public class Setting extends JDialog {
   private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
     boolean restartApp = false;
 
+    int p = 0;
+    try {
+     p = Integer.parseInt(limitField.getText());
+    }
+    catch(NumberFormatException e){
+      JOptionPane.showMessageDialog(this, bundle.getString("nanLimit"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    setting.limit = p;
+
     // General Setting
     if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
     if (setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
@@ -1562,6 +1632,8 @@ public class Setting extends JDialog {
     setting.displayApproximateResult = displayAppResultCheckBox.isSelected();
     setting.nbResult = limitResultComboBox.getSelectedIndex();
     setting.nfoType = xbmcNFORBtn.isSelected() ? 0:1;
+    setting.rmSpcChar = rmSpcCharChk.isSelected();
+    setting.rmDupSpace = rmDupSpaceChk.isSelected();
 
     // Imdb
     setting.imdbFr = imdbFrRbtn.isSelected();
@@ -1607,6 +1679,7 @@ public class Setting extends JDialog {
   private void customFolderRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_customFolderRBtnItemStateChanged
     customFolderField.setEnabled(customFolderRBtn.isSelected());
   }//GEN-LAST:event_customFolderRBtnItemStateChanged
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JButton CancelBtn;
   private JPanel SearchPnl;
@@ -1659,8 +1732,11 @@ public class Setting extends JDialog {
   private JPanel imdbLangPnl;
   private JPanel imdbSearchPnl;
   private JPanel interfacePnl;
+  private JPanel jPanel1;
   private ButtonGroup languageGroup;
   private JPanel languagePnl;
+  private JTextField limitField;
+  private JLabel limitLbl;
   private JComboBox limitResultComboBox;
   private JLabel limitResultLbl;
   private JRadioButton lowerRbtn;
@@ -1682,6 +1758,8 @@ public class Setting extends JDialog {
   private JButton removeFilterBtn;
   private JPanel renamePnl;
   private JRadioButton renamedMovieTitleRBtn;
+  private JCheckBox rmDupSpaceChk;
+  private JCheckBox rmSpcCharChk;
   private JButton saveBtn;
   private JCheckBox scanSubfolderChk;
   private JCheckBox selectFirstMovieChk;

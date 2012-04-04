@@ -249,7 +249,7 @@ public class Editor extends JDialog {
   }//GEN-LAST:event_removeBtnActionPerformed
 
   private void okBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
-    String res = Utils.arrayToString(array, " | ");
+    String res = Utils.arrayToString(array, " | ", 0);
     if(!initValue.equals(res))
       firePropertyChange("", initValue, res);
     setVisible(false);

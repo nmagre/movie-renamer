@@ -19,97 +19,51 @@
  ******************************************************************************/
 package fr.free.movierenamer.movie;
 
+import fr.free.movierenamer.utils.Images;
+import java.util.ArrayList;
+
 /**
  * Class MovieImage
  * @author Magré Nicolas
  */
 public class MovieImage {
+  private ArrayList<Images> thumbs;
+  private ArrayList<Images> fanarts;
 
-    private String id;
-    private String type;
-    private String orig;
-    private String medium;
-    private String thumb;
+  public MovieImage(){
+    thumbs = new ArrayList<Images>();
+    fanarts = new ArrayList<Images>();
+  }
 
-    /**
-     * Constructor arguments
-     * @param id Image id
-     * @param type Image type
-     */
-    public MovieImage(String id, String type) {
-        this.id = id;
-        this.type = type;
-        orig = "";
-        medium = "";
-        thumb = "";
-    }
+  public ArrayList<Images> getThumbs(){
+    return thumbs;
+  }
+  
+  public ArrayList<Images> getFanarts(){
+    return fanarts;
+  }
 
-    /**
-     * Get ID
-     * @return ID
-     */
-    public String getId() {
-        return id;
-    }
+  public void setThumbs(ArrayList<Images> thumbs){
+    this.thumbs = thumbs;
+  }
 
-    /**
-     * Get type
-     * @return Type
-     */
-    public String getType() {
-        return type;
-    }
+  public void setFanarts(ArrayList<Images> fanarts){
+    this.fanarts = fanarts;
+  }
 
-    /**
-     * Get image original URL
-     * @return Original URL
-     */
-    public String getOrigUrl() {
-        return orig;
-    }
+  public void addThumb(Images thumb){
+    thumbs.add(thumb);
+  }
 
-    /**
-     * Get image middle URL
-     * @return Middle URL
-     */
-    public String getMidUrl() {
-        return medium;
-    }
+  public void addFanart(Images fanart){
+    fanarts.add(fanart);
+  }
 
-    /**
-     * Get image thumb URL
-     * @return Thumb URL
-     */
-    public String getThumbUrl() {
-        return thumb;
-    }
+  public void clearThumbs(){
+    thumbs.clear();
+  }
 
-    /**
-     * Set original image URL
-     * @param url URL
-     */
-    public void setOrigUrl(String url) {
-        orig = url;
-    }
-
-    /**
-     * Set middle image URL
-     * @param url URL
-     */
-    public void setMidUrl(String url) {
-        medium = url;
-    }
-
-    /**
-     * Set thumb URL
-     * @param url URL
-     */
-    public void setThumbUrl(String url) {
-        thumb = url;
-    }
-
-    @Override
-    public String toString() {
-        return id + " : " + type;
-    }
+  public void clearFanarts(){
+    fanarts.clear();
+  }
 }

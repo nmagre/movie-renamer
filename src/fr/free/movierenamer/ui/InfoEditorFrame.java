@@ -141,12 +141,12 @@ public class InfoEditorFrame extends JDialog {
     yearCField.setInitValue("" + movieInfo.getYear());
     synopsisCField.setInitValue(movieInfo.getSynopsis());
 
-    studioCField.setInitValue(movieInfo.getStudiosString());
-    directorCField.setInitValue(movieInfo.getDirectorsString());
-    genreCField.setInitValue(movieInfo.getGenresString());
-    setCField.setInitValue(movieInfo.getSetString());
-    writerCField.setInitValue(movieInfo.getWritersString());
-    countryCField.setInitValue(movieInfo.getCountriesString());
+    studioCField.setInitValue(movieInfo.getStudiosString(" | ", 0));
+    directorCField.setInitValue(movieInfo.getDirectorsString(" | ", 0));
+    genreCField.setInitValue(movieInfo.getGenresString(" | ", 0));
+    setCField.setInitValue(movieInfo.getSetString(" | ", 0));
+    writerCField.setInitValue(movieInfo.getWritersString(" | ", 0));
+    countryCField.setInitValue(movieInfo.getCountriesString(" | ", 0));
   }
 
   @SuppressWarnings("unchecked")
@@ -911,7 +911,7 @@ public class InfoEditorFrame extends JDialog {
     private void actorsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_actorsListValueChanged
       strRoleField.setEnabled(true);
       MoviePerson actor = (MoviePerson) actorsList.getSelectedValue();
-      strRoleField.setText(Utils.arrayToString(actor.getRoles(), " | "));
+      strRoleField.setText(Utils.arrayToString(actor.getRoles(), " | ", 0));
     }//GEN-LAST:event_actorsListValueChanged
 
     private void jButton15MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton15MouseReleased
@@ -996,17 +996,11 @@ public class InfoEditorFrame extends JDialog {
 
     private void applyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyBtnActionPerformed
 
-      if (!runtimeField.getText().equals("") && !runtimeField.getText().equals("-1"))
-        if (!Utils.isDigit(runtimeField.getText())) {
-          JOptionPane.showMessageDialog(getParent(), bundle.getString("nanRuntime"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
       movieInfo.setImdbId(imdbidField.getText());
       movieInfo.setMpaa(mpaaField.getText());
       movieInfo.setOrigTitle(originalTitleField.getText());
       movieInfo.setRating(ratingField.getText());
-      movieInfo.setRuntime(Integer.parseInt(runtimeField.getText()));
+      movieInfo.setRuntime(runtimeField.getText());
       movieInfo.setSortTitle(sortTitleField.getText());
       movieInfo.setTagline(taglineField.getText());
       movieInfo.setTitle(titleField.getText());

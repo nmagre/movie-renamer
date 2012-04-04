@@ -109,6 +109,7 @@ public class Settings {
   public String commande = "";
   public int nfoType = 0;
   public String separator = ", ";
+  public int limit = 3;
   
   // Boolean
   public boolean useExtensionFilter = true;
@@ -132,6 +133,8 @@ public class Settings {
   public boolean checkUpdate = false;
   public boolean showNotaMovieWarn = true;
   public boolean autoSearchMovie = true;
+  public boolean rmSpcChar = true;
+  public boolean rmDupSpace = true;
 
   /**
    * Constructor
@@ -167,8 +170,8 @@ public class Settings {
 
       // Variables
       out.write("    <locale>" + locale + "</locale>" + endl);
-      out.write("    <nameFilters>" + Utils.escapeXML(Utils.arrayToString(nameFilters, "/_")) + "</nameFilters>" + endl);
-      out.write("    <extensions>" + Utils.arrayToString(extensions, "/_") + "</extensions>" + endl);
+      out.write("    <nameFilters>" + Utils.escapeXML(Utils.arrayToString(nameFilters, "/_", 0)) + "</nameFilters>" + endl);
+      out.write("    <extensions>" + Utils.arrayToString(extensions, "/_", 0) + "</extensions>" + endl);
       out.write("    <thumbSize>" + thumbSize + "</thumbSize>" + endl);
       out.write("    <fanartSize>" + fanartSize + "</fanartSize>" + endl);
       out.write("    <nbResult>" + nbResult + "</nbResult>" + endl);
@@ -181,7 +184,8 @@ public class Settings {
       out.write("    <commande>" + Utils.escapeXML(commande) + "</commande>" + endl);
       out.write("    <nfoType>" + nfoType + "</nfoType>" + endl);
       out.write("    <separator>" + separator + "</separator>" + endl);
-
+      out.write("    <limit>" + limit + "</limit>" + endl);
+      
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);
       out.write("    <showMovieFilePath>" + (showMovieFilePath ? 0 : 1) + "</showMovieFilePath>" + endl);
@@ -204,6 +208,8 @@ public class Settings {
       out.write("    <checkUpdate>" + (checkUpdate ? 0 : 1) + "</checkUpdate>" + endl);
       out.write("    <showNotaMovieWarn>" + (showNotaMovieWarn ? 0 : 1) + "</showNotaMovieWarn>" + endl);
       out.write("    <autoSearchMovie>" + (autoSearchMovie ? 0 : 1) + "</autoSearchMovie>" + endl);
+      out.write("    <rmSpcChar>" + (rmSpcChar ? 0 : 1) + "</rmSpcChar>" + endl);
+      out.write("    <rmDupSpace>" + (rmDupSpace ? 0 : 1) + "</rmDupSpace>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

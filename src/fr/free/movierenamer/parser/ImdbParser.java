@@ -267,7 +267,7 @@ public class ImdbParser {
         String runtime = searchMatcher.group();
         runtime = runtime.substring(runtime.lastIndexOf(">") + 1, runtime.length() - 4);
         if (Utils.isDigit(runtime))
-          movieInfo.setRuntime(Integer.parseInt(runtime));
+          movieInfo.setRuntime(runtime);
       }
 
       //Rating

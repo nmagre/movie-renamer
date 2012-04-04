@@ -29,9 +29,11 @@ import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.movie.MovieImage;
-import fr.free.movierenamer.parser.XMLParser;
+import fr.free.movierenamer.parser.xml.TheMovieDbImage;
+import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.res.TmdbResult;
+import fr.free.movierenamer.utils.Images;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ import java.util.ResourceBundle;
  * Class TheMovieDbImageWorker , get images from theMovieDB by imdbID
  * @author Magré Nicolas
  */
-public class TheMovieDbImageWorker extends SwingWorker<ArrayList<ArrayList<MovieImage>>, String> {
+public class TheMovieDbImageWorker extends SwingWorker<MovieImage, String> {
 
   private Settings setting;
   private String imdbId;
@@ -61,10 +63,10 @@ public class TheMovieDbImageWorker extends SwingWorker<ArrayList<ArrayList<Movie
   }
 
   @Override
-  protected ArrayList<ArrayList<MovieImage>> doInBackground() throws InterruptedException {
-    ArrayList<ArrayList<MovieImage>> movieImages = new ArrayList<ArrayList<MovieImage>>();
-    ArrayList<MovieImage> thumbs = new ArrayList<MovieImage>();
-    ArrayList<MovieImage> fanarts = new ArrayList<MovieImage>();
+  protected MovieImage doInBackground() throws InterruptedException {
+    MovieImage mvImgs = new MovieImage();
+    ArrayList<Images> thumbs = new ArrayList<Images>();
+    ArrayList<Images> fanarts = new ArrayList<Images>();
 
     // Try to get XML from theMovieDB
     try {
@@ -94,7 +96,8 @@ public class TheMovieDbImageWorker extends SwingWorker<ArrayList<ArrayList<Movie
       }
 
       // Parse TheMovieDb XML
-      XMLParser<TmdbResult> mmp = new XMLParser<TmdbResult>(f.getAbsolutePath(), TmdbResult.class);
+      XMLParser<TmdbResult> mmp = new XMLParser<TmdbResult>(f.getAbsolutePath());
+      mmp.setParser(new TheMovieDbImage());
       try {
         TmdbResult res = mmp.parseXml();
         if (res.getThumbs() != null) {
@@ -121,10 +124,10 @@ public class TheMovieDbImageWorker extends SwingWorker<ArrayList<ArrayList<Movie
       setting.getLogger().log(Level.SEVERE, ex.toString());
     }
 
-    movieImages.add(thumbs);
-    movieImages.add(fanarts);
+    mvImgs.setThumbs(thumbs);
+    mvImgs.setFanarts(fanarts);
     
-    return movieImages;
+    return mvImgs;
   }
 
   @Override

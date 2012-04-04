@@ -17,7 +17,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
  *                                                                             *
  ******************************************************************************/
-package fr.free.movierenamer.parser;
+package fr.free.movierenamer.parser.xml;
 
 import org.xml.sax.ContentHandler;
 

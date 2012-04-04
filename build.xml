@@ -4,7 +4,7 @@
 
    <target name="compile-plugin" description="compile the plugins " >
         <mkdir dir="build/Plugins"/>
-    <javac srcdir="plugins" destdir="build/Plugins"  includeantruntime="false">
+    <javac deprecation="true" destdir="build/Plugins" encoding="UTF-8" includeantruntime="false" srcDir="plugins" target="1.6" source="1.6" tempdir="${java.io.tmpdir}">
       <compilerarg line="-Xlint:unchecked"/>
     </javac>
   </target>
@@ -23,6 +23,18 @@
   <import file="nbproject/build-impl.xml"/>
    
   <target name="mrInstaller" depends="init,compile,jar">
+  <!-- check for java version and fail build if not the correct version -->
+    <echo message="Java Version: ${java.version}"/>
+    <fail message="Unsupported Java version: ${java.version}. Make sure that the version of the Java compiler is 1.6">
+        <condition>
+            <not>
+                <or>
+                    <contains string="${java.version}" substring="1.6" casesensitive="false" />
+                </or>
+            </not>
+        </condition>
+    </fail>
+
     <copy file="install.xml" tofile="install-tmp.xml" >
       <filterchain>
          <replacetokens>
@@ -31,6 +43,7 @@
           </replacetokens>
       </filterchain>
     </copy>
+
     <copy file="shortcutSpec.xml" tofile="shortcutSpec-tmp.xml" >
       <filterchain>
          <replacetokens>
@@ -38,6 +51,7 @@
           </replacetokens>
       </filterchain>
     </copy>
+
     <copy file="Unix_shortcutSpec.xml" tofile="Unix_shortcutSpec-tmp.xml" >
       <filterchain>
          <replacetokens>
@@ -45,6 +59,8 @@
           </replacetokens>
       </filterchain>
     </copy>
+
+    <!-- Izpack  -->
     <exec executable="compile">
       <arg value="install-tmp.xml"/>
       <arg value="-o" />
@@ -52,11 +68,13 @@
       <arg value="-k"/>
       <arg value="standard"/>
     </exec>
+
     <exec executable="chmod">
       <arg value="+x" />
       <arg value="dist/${apps}_Installer-${apps.version}.jar" />
       <arg value="${dist.jar}" />
     </exec>
+
     <delete file="shortcutSpec-tmp.xml"/>
     <delete file="Unix_shortcutSpec-tmp.xml"/>
     <delete file="install-tmp.xml"/>

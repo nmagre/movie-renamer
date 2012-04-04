@@ -26,9 +26,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
-import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.utils.Images;
 
 /**
  * Class MovieImageWorker , Download and add thumbnail/fanart to moviePanel
@@ -38,7 +38,7 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
 
   private static final int THUMB = 0;
   private static final int FANART = 1;
-  private ArrayList<MovieImage> arrayImage;
+  private ArrayList<Images> arrayImage;
   private int type;
   private int cache;
   private Settings setting;
@@ -52,7 +52,7 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
    * @param moviePnl Movie Renamer moviePanel
    * @param setting Movie Renamer settings
    */
-  public MovieImageWorker(ArrayList<MovieImage> arrayImage, int type, int cache, MoviePanel moviePnl, Settings setting) {
+  public MovieImageWorker(ArrayList<Images> arrayImage, int type, int cache, MoviePanel moviePnl, Settings setting) {
     this.arrayImage = arrayImage;
     this.type = type;
     this.cache = cache;

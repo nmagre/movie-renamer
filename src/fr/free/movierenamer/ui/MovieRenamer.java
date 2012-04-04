@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
-import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.ProgressMonitor;
@@ -54,13 +53,15 @@ import fr.free.movierenamer.movie.Movie;
 import fr.free.movierenamer.movie.MovieFile;
 import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.movie.MovieInfo;
-import fr.free.movierenamer.parser.XMLParser;
+import fr.free.movierenamer.parser.xml.MrRenamedMovie;
+import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.ui.res.ContextMenuListMouseListener;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.ui.res.MovieFileFilter;
 import fr.free.movierenamer.utils.HttpGet;
+import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Renamer;
 import fr.free.movierenamer.utils.Renamed;
 import fr.free.movierenamer.worker.ActorWorker;
@@ -77,7 +78,6 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.concurrent.CancellationException;
 import javax.swing.DefaultListCellRenderer;
-import plugins.IPluginInfo;
 
 /**
  * Class MovieRenamer
@@ -101,13 +101,13 @@ public class MovieRenamer extends javax.swing.JFrame {
   private final int ACTORWORKER = 4;
   private ArrayList<MovieFile> mvFile;
   private ContextMenuListMouseListener contex;
-  private IPluginInfo[] pluginsInfo;
+  //private IPluginInfo[] pluginsInfo;
   private ArrayList<Renamed> renamedMovieFile;
 
-  public MovieRenamer(Settings setting, IPluginInfo[] pluginsInfo) {
+  public MovieRenamer(Settings setting, String tmp/*IPluginInfo[] pluginsInfo*/) {
 
     this.setting = setting;
-    this.pluginsInfo = pluginsInfo;
+    //this.pluginsInfo = pluginsInfo;
 
     renamedMovieFile = new ArrayList<Renamed>();
 
@@ -133,11 +133,11 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     initComponents();
 
-    for (int i = 0; i < MovieRenamer.this.pluginsInfo.length; i++) {
+/*    for (int i = 0; i < MovieRenamer.this.pluginsInfo.length; i++) {
       if (this.pluginsInfo[i].getRenameStrChk() != null)
         btmTb.add(new JCheckBox(this.pluginsInfo[i].getRenameStrChk()));
     }
-
+*/
     setIconImage(Utils.getImageFromJAR("/image/icon-32.gif", getClass()));
 
     fileChooser.setFileFilter(new MovieFileFilter(setting));
@@ -208,7 +208,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       }
     });
 
-    moviePnl = new MoviePanel(setting, pluginsInfo);
+    moviePnl = new MoviePanel(setting, /*pluginsInfo*/null);
 
     dropFile = new DropFile(setting, renamedMovieFile, new FileWorkerListener(), this);
     new DropTarget(movieList, dropFile);
@@ -230,7 +230,8 @@ public class MovieRenamer extends javax.swing.JFrame {
 
   private void loadRenamedMovie() {
     if (new File(setting.renamedFile).exists()) {
-      XMLParser<ArrayList<Renamed>> mmp = new XMLParser<ArrayList<Renamed>>(setting.renamedFile, Renamed.class);
+      XMLParser<ArrayList<Renamed>> mmp = new XMLParser<ArrayList<Renamed>>(setting.renamedFile);
+      mmp.setParser(new MrRenamedMovie());
       try {
         try {
           renamedMovieFile = mmp.parseXml();
@@ -683,11 +684,11 @@ public class MovieRenamer extends javax.swing.JFrame {
               else {
                 boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
                 String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>":"<t>");
-                dir = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
+                dir = currentMovie.getRenamedTitle(regex, setting);
                 dir = dir.substring(0, dir.lastIndexOf("."));
                 dir += File.separator;
               }
-            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.separator, setting.renameCase));
+            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting));
           }
         }
 
@@ -725,7 +726,7 @@ public class MovieRenamer extends javax.swing.JFrame {
     private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
 
       setMouseIcon(true);
-      ArrayList<MovieImage> images = moviePnl.getAddedThumb();
+      ArrayList<Images> images = moviePnl.getAddedThumb();
       for (int i = 0; i < images.size(); i++) {
         currentMovie.addThumb(images.get(i));
       }
@@ -744,7 +745,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
       boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
       String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>":"<t>");
-      String ftitle = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
+      String ftitle = currentMovie.getRenamedTitle(regex, setting);
       ftitle = ftitle.substring(0, ftitle.lastIndexOf("."));
 
       Renamer renamer = new Renamer(ftitle, currentMovie.getFile(), renamedField.getText(), setting);
@@ -785,11 +786,11 @@ public class MovieRenamer extends javax.swing.JFrame {
       renamer.createThumb(createThumbnail, moviePnl.getSelectedThumb(setting.thumbSize));
       renamer.createFanart(createFan, moviePnl.getSelectedFanart(setting.fanartSize));
 
-      for (int i = 0; i < pluginsInfo.length; i++) {
+      /*for (int i = 0; i < pluginsInfo.length; i++) {
         if (pluginsInfo[i].getRenameStrChk() != null)
           pluginsInfo[i].setMovieFileNameNoExt(renamer.getNewFileNoExt());
         pluginsInfo[i].onRename(null);
-      }
+      }*/
 
       mvFile.get(index).setFile(renamer.getNewFile());
       movieFileNameModel = new DefaultListModel();
@@ -982,7 +983,7 @@ public class MovieRenamer extends javax.swing.JFrame {
       this.imdbiw = imdbiw;
     }
 
-    @SuppressWarnings("unchecked") // Remove warning : Cast Object to ArrayList<ArrayList<MovieImage>>
+    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE))
@@ -1003,35 +1004,36 @@ public class MovieRenamer extends javax.swing.JFrame {
               else {
                 boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
                 String regex = (setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>":"<t>"));
-                dir = currentMovie.getRenamedTitle(regex, setting.separator, setting.renameCase);
+                dir = currentMovie.getRenamedTitle(regex, setting);
                 dir = dir.substring(0, dir.lastIndexOf("."));
                 dir += File.separator;
               }
 
-            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting.separator, setting.renameCase));
+            renamedField.setText(dir + currentMovie.getRenamedTitle(setting.movieFilenameFormat, setting));
             renameBtn.setEnabled(true);
             renamedField.setEnabled(true);
             editBtn.setEnabled(true);
             moviePnl.addMovieInfo(currentMovie.getMovieInfo());
 
-            System.out.println("Load plugin");
-            for (int i = 0; i < MovieRenamer.this.pluginsInfo.length; i++) {
+            /*for (int i = 0; i < MovieRenamer.this.pluginsInfo.length; i++) {
               System.out.println(MovieRenamer.this.pluginsInfo[i].getName());
               String renamedTitle = currentMovie.getRenamedTitle(setting.movieFilenameFormat.contains("<t>") ?"<t>":"<ot>", setting.separator, setting.renameCase);
               renamedTitle = renamedTitle.substring(0, renamedTitle.lastIndexOf("."));
               MovieRenamer.this.pluginsInfo[i].onSearchFinish(renamedTitle);
-            }
+            }*/
 
             ActorWorker actor = new ActorWorker(currentMovie.getMovieInfo().getActors(), moviePnl, setting);
             actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
             actor.execute();
             loading.setValue(100, INFOWORKER);
           }
-          if (obj instanceof ArrayList) {
-            ArrayList<ArrayList<MovieImage>> movieimage = (ArrayList<ArrayList<MovieImage>>) obj;
+          
+          if (obj instanceof MovieImage) {
+            MovieImage movieimage = (MovieImage) obj;
             
-            currentMovie.setThumbs(movieimage.get(0));
-            currentMovie.setFanarts(movieimage.get(1));
+            currentMovie.setThumbs(movieimage.getThumbs());
+            currentMovie.setFanarts(movieimage.getFanarts());
+            
             MovieImageWorker thumb = new MovieImageWorker(currentMovie.getThumbs(), 0, Cache.thumb, moviePnl, setting);
             MovieImageWorker fanart = new MovieImageWorker(currentMovie.getFanarts(), 1, Cache.fanart, moviePnl, setting);
 
