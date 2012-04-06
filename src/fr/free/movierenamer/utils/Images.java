@@ -26,39 +26,28 @@ package fr.free.movierenamer.utils;
  */
 public class Images {
 
-    private String id;
-    private String type;
+    private int id;
     private String orig;
     private String medium;
     private String thumb;
 
     /**
      * Constructor arguments
-     * @param id Image id
-     * @param type Image type
+     * @param id Image id, "-1" -> image added , "0" image from NFO
      */
-    public Images(String id, String type) {
+    public Images(int id) {
         this.id = id;
-        this.type = type;
         orig = "";
         medium = "";
         thumb = "";
     }
 
     /**
-     * Get ID
-     * @return ID
+     * Get Id
+     * @return Id
      */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Get type
-     * @return Type
-     */
-    public String getType() {
-        return type;
+    public int getId(){
+      return id;
     }
 
     /**
@@ -111,6 +100,6 @@ public class Images {
 
     @Override
     public String toString() {
-        return id + " : " + type;
+        return orig;
     }
 }

@@ -262,8 +262,10 @@ public class MovieRenamer extends javax.swing.JFrame {
       centerSp.setDividerLocation(300);
       searchSp.setDividerLocation(200);
     }
+
     thumbChk.setVisible(setting.movieInfoPanel && setting.thumb);
     fanartChk.setVisible(setting.movieInfoPanel && setting.fanart);
+    
     nfoChk.setVisible(setting.movieInfoPanel);
     editBtn.setVisible(setting.movieInfoPanel);
 
@@ -355,7 +357,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         HttpGet http = new HttpGet(url);
         String newVerFile = http.sendGetRequest(false, "UTF-8");
         if (newVerFile.equals("")) {
-          if (showAlready) JOptionPane.showMessageDialog(this, "Movie Renamer is already up to date", "Update", JOptionPane.INFORMATION_MESSAGE);
+          if (showAlready) JOptionPane.showMessageDialog(this, bundle.getString("alreadyUpToDate"), bundle.getString("update"), JOptionPane.INFORMATION_MESSAGE);
           return;
         }
         String newVer = newVerFile.substring(newVerFile.lastIndexOf("-") + 1, newVerFile.lastIndexOf("."));
@@ -750,6 +752,12 @@ public class MovieRenamer extends javax.swing.JFrame {
 
       Renamer renamer = new Renamer(ftitle, currentMovie.getFile(), renamedField.getText(), setting);
 
+      String url = "";
+      URL uri = moviePnl.getSelectedThumb(setting.thumbSize);
+      if(uri != null) url = uri.toString();
+      if(url.equals("") && currentMovie.getThumbs().size() > 0) url = currentMovie.getThumbs().get(0).getThumbUrl();
+      renamer.setThumb(url);
+      
       if (!renamer.rename()) {
         setMouseIcon(false);
         JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("renameFileFailed"), sError, JOptionPane.ERROR_MESSAGE);
@@ -1022,6 +1030,7 @@ public class MovieRenamer extends javax.swing.JFrame {
               MovieRenamer.this.pluginsInfo[i].onSearchFinish(renamedTitle);
             }*/
 
+            System.out.println(currentMovie.getMovieInfo());
             ActorWorker actor = new ActorWorker(currentMovie.getMovieInfo().getActors(), moviePnl, setting);
             actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
             actor.execute();
@@ -1043,6 +1052,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             if (setting.thumb) thumb.execute();
             if (setting.fanart) fanart.execute();
             if (renameBtn.isEnabled()) loading.setValue(100, INFOWORKER);
+            System.out.println(currentMovie.getMovieImage());
           }
         } catch (InterruptedException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);

@@ -88,7 +88,7 @@ public class Settings {
     "wawamania", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null", "divx511",
     "vorbis", "=str=", "www", "ffm", "mp3", "-arrows", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd",
     "hd4u", "1080p", "1080i", "720p", "720i", "720", "-Liber", "truefrench", "dts", "french", "megaexclue",
-    "untoucahbles", "vostfr", "1cd", "2cd", "vff", " vo ", " vf ", "forcebleue", "hd", " ma ", "knob", " ws", "bong",
+    "untoucahbles", "vostfr", "1cd", "2cd", "vff", " vo ", " vf ", "forcebleue", "hd", "knob", " ws", "bong",
     "-fiction", " cam ", "telesync", " ts ", " tc ", "ntsc", " pal ", "dvd-r", "dvdscr", "scr", "r1", "r2", "r3", "r4",
     "r5", "wp", "subforced", "dvd", "vcd", "avchd", "-arlbouffiard", "-redbull", " md", "-kong", "-thewarrior777",
     "-LU3UR", "-DELUiSE", "-SURViVAL", "-vodka", "-slim", "_", "-HARIJO", "-ENJOY", "-PTN", "-fwd", "-ARTEFAC",

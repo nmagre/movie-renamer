@@ -19,7 +19,6 @@
  ******************************************************************************/
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.movie.MovieImage;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Images;
@@ -112,7 +111,7 @@ public class DropImage implements DropTargetListener {
                 continue;
               }
 
-              Images mvImg = new Images("-1", thumb ? "poster" : "fanart");
+              Images mvImg = new Images(-1);
               mvImg.setMidUrl(res[i]);
               mvImg.setOrigUrl(res[i]);
               mvImg.setThumbUrl(res[i]);
@@ -134,7 +133,7 @@ public class DropImage implements DropTargetListener {
                     img = setting.cache.getImage(url, cache);
                   }
                   if (img != null) {
-                    Images mvImg = new Images("-1", thumb ? "poster" : "fanart");
+                    Images mvImg = new Images(-1);
                     mvImg.setMidUrl(url.toString());
                     mvImg.setOrigUrl(url.toString());
                     mvImg.setThumbUrl(url.toString());

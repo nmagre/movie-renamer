@@ -34,6 +34,7 @@ import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.ui.res.TmdbResult;
 import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.utils.Utils;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,10 +119,10 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, String> {
         setting.getLogger().log(Level.WARNING, ex.toString());
         return null;
       } catch (IllegalArgumentException ex) {
-        setting.getLogger().log(Level.SEVERE, ex.toString());
+        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IllegalArgumentException", ex.getStackTrace()));
       }
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, ex.toString());
+      setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IOException", ex.getStackTrace()));
     }
 
     mvImgs.setThumbs(thumbs);

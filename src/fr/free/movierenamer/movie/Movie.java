@@ -197,11 +197,19 @@ public class Movie {
   }
 
   /**
-   * Set movie informations
+   * Get movie informations
    * @return MovieInfo
    */
   public MovieInfo getMovieInfo() {
     return movieinfo;
+  }
+
+  /**
+   * Get movie images
+   * @return MovieImage
+   */
+  public MovieImage getMovieImage() {
+    return movieImage;
   }
 
   /**
@@ -455,6 +463,9 @@ public class Movie {
 
   @Override
   public String toString() {
-    return imdbTitle;
+    String res = movieFile.toString();
+    res += movieinfo.toString();
+    res += "\n" + movieImage.toString();
+    return res;
   }
 }

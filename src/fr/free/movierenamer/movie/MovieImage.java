@@ -20,6 +20,7 @@
 package fr.free.movierenamer.movie;
 
 import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 
 /**
@@ -65,5 +66,14 @@ public class MovieImage {
 
   public void clearFanarts(){
     fanarts.clear();
+  }
+
+  @Override
+  public String toString(){
+    String res = "Thumbnails :\n  ";
+    res += Utils.arrayToString(thumbs.toArray(),"\n  " , 0);
+    res += "\nFanarts :\n  ";
+    res += Utils.arrayToString(fanarts.toArray(),"\n  " , 0);
+   return res;
   }
 }

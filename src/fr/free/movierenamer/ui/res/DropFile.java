@@ -136,6 +136,8 @@ public class DropFile implements DropTargetListener {
     boolean subFolders = false;
     int count = 0;
 
+    parent.setCursor(hourglassCursor);
+
     for (File file : files) {
       if (file.isDirectory()) {
         File[] subDir = file.listFiles(folderFilter);
@@ -145,8 +147,9 @@ public class DropFile implements DropTargetListener {
             if (!subFolders && !setting.scanSubfolder) {
               parent.setCursor(normalCursor);
               int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
-              subFolders = !(n != 0);
-            } else subFolders = true;
+              if (n == JOptionPane.NO_OPTION) break;
+              subFolders = true;
+            }
         }
       }
     }

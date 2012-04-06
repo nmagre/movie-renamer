@@ -87,15 +87,18 @@ public class Utils {
 
   public static String getFilteredName(String movieName, String[] replaceBy) {
     String res = movieName.replaceAll("\\.", " ");
+        System.out.println(res);
     for (int i = 0; i < replaceBy.length; i++) {
       res = res.replaceAll("(?i)" + replaceBy[i], "");
     }
+        System.out.println(res);
     res = res.replaceAll(" [0-9][0-9][0-9][0-9]", "");
     res = res.replaceAll("\\([0-9][0-9][0-9][0-9]\\)", "");
     res = res.replaceAll("\\(.*\\)", "");
     res = res.replaceAll(" {2,}", " ");
     res = res.replaceAll("^ ", "");
     res = res.replaceAll(" $", "");
+    System.out.println(res);
     return res;
   }
 
@@ -129,7 +132,7 @@ public class Utils {
       return res.toString();
     for (int i = 0; i < array.length; i++) {
       if(limit != 0 && i == limit) break;
-      res.append(array[i].toString().trim());
+      res.append(array[i].toString());
       if((i+1) != limit) res.append((i < (array.length - 1)) ? separator : "");
     }
     return res.toString();

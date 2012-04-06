@@ -159,7 +159,7 @@ public class Renamer {
     }
 
 
-    renamed.setDate(new Date().toString());
+    renamed.setDate(new Date().toString());    
     renamed.setMovieFileSrc(oldFile.getAbsolutePath());
     renamed.setMovieFileDest(newFile.getAbsolutePath());
     renamed.setRenameFailed(false);
@@ -280,5 +280,17 @@ public class Renamer {
    */
   public String getNewFileNoExt() {
     return oldFile.getParent() + File.separator + newPath + newFileNameNoExt;
+  }
+
+  /**
+   * Set thumb url
+   * @param thumb
+   */
+  public void setThumb(String thumb){
+    renamed.setThumb(thumb);
+  }
+
+  public void setTmDbId(String id){
+    renamed.setTmDbId(id);
   }
 }

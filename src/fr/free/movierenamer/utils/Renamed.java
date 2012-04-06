@@ -30,6 +30,8 @@ public class Renamed {
   private String movieFileSrc;
   private String movieFileDest;
   private boolean renameFailed;
+  private String thumb;
+  private String tmdbId;
 
   /**
    * Constructor arguments
@@ -127,11 +129,29 @@ public class Renamed {
     this.renameFailed = renameFailed;
   }
 
+  /**
+   * Set thumb
+   * @param thumb
+   */
+  public void setThumb(String thumb){
+    this.thumb = thumb;
+  }
+
+  /**
+   * Set themoviedb id
+   * @param id
+   */
+  public void setTmDbId(String id){
+    tmdbId = id;
+  }
+
   @Override
   public String toString(){
     String res = "";
     res += "<renamedMovie title=\"" + title.replace("\"", "") + "\">";
+    res += "  <tmdbId>" + tmdbId + "</tmdbId>";
     res += "  <movie src=\"" + movieFileSrc.replace("\"", "") + "\" dest=\"" + movieFileDest.replace("\"", "") + "\" />";
+    res += "  <thumb>" + thumb + "</thumb>";
     res += "  <date>" + date + "</date>";
     res += "  <failed>" + (renameFailed ? "1":"0") + "</failed>";
     res += "</renamedMovie>";

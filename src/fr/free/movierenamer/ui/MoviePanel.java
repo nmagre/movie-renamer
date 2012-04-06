@@ -459,7 +459,7 @@ public class MoviePanel extends javax.swing.JPanel {
   public ArrayList<Images> getAddedThumb() {
     ArrayList<Images> res = new ArrayList<Images>();
     for (int i = 0; i < thumbs.size(); i++) {
-      if (thumbs.get(i).getId().equals("-1"))
+      if (thumbs.get(i).getId() == -1)
         if (!thumbs.get(i).getThumbUrl().startsWith("file://"))
           res.add(thumbs.get(i));
     }
@@ -469,7 +469,7 @@ public class MoviePanel extends javax.swing.JPanel {
   public ArrayList<Images> getAddedFanart() {
     ArrayList<Images> res = new ArrayList<Images>();
     for (int i = 0; i < fanarts.size(); i++) {
-      if (fanarts.get(i).getId().equals("-1"))
+      if (fanarts.get(i).getId() == -1)
         if (!fanarts.get(i).getThumbUrl().startsWith("file://"))
           res.add(fanarts.get(i));
     }

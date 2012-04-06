@@ -87,7 +87,7 @@ public class TheMovieDbImage extends DefaultHandler implements IParser<TmdbResul
                 currentMovieImage = null;
               }
               currentId = attributes.getValue("id");
-              currentMovieImage = new Images(currentId, attributes.getValue(0));
+              currentMovieImage = new Images(0);
               lastAttribute = attributes.getValue(0);
             }
             if (attributes.getValue(2).equals("original"))

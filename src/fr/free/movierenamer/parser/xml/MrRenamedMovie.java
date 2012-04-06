@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * class MrRenamedMovie
+ * Class MrRenamedMovie
  * @author Nicolas Magré
  */
 public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<Renamed>> {
@@ -80,6 +80,8 @@ public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<
           renamed = null;
           renamedMovie = false;
         }
+        if (name.equalsIgnoreCase("thumb")) renamed.setThumb(buffer.toString());
+        if (name.equalsIgnoreCase("tmdbid")) renamed.setTmDbId(buffer.toString());
         if (name.equalsIgnoreCase("date")) renamed.setDate(buffer.toString());
       }
     buffer = null;
