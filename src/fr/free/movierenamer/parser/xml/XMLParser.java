@@ -52,8 +52,8 @@ public class XMLParser<T> {
 
     if (itp == null) throw new NullPointerException("IParser null");
     SAXParserFactory sparser = SAXParserFactory.newInstance();
-    SAXParser parseur = null;
-    T obj = null;
+    SAXParser parseur;
+    T obj;
     try {
       parseur = sparser.newSAXParser();
     } catch (ParserConfigurationException e) {

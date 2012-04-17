@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;

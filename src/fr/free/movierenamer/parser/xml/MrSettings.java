@@ -81,6 +81,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
             config.movieDir = buffer.toString();
           if (name.equalsIgnoreCase("separator"))
             config.separator = buffer.toString();
+          if (name.equalsIgnoreCase("laf"))
+            config.laf = buffer.toString();
 
           try {
             if (name.equalsIgnoreCase("thumbSize"))

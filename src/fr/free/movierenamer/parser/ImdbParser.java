@@ -114,7 +114,8 @@ public class ImdbParser {
     Pattern pattern = Pattern.compile(searchPattern);
     Matcher titleMatcher = pattern.matcher(htmlSearchRes);
     Matcher movieImdbMatcher, movieNameMatcher, imdbIDMatcher, thumbMatcher;
-    String movieName = "";
+    String movieName;
+    
     String start = (!french ? "Displaying " : "Affichant ");
     String stop = (!french ? "Result" : "R&#xE9;sultat");
     try {

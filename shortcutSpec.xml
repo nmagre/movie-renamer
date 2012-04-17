@@ -8,7 +8,7 @@
     target="$INSTALL_PATH\Movie Renamer.jar"
     description="Movie Renamer"
     workingDirectory="$INSTALL_PATH"
-    iconFile="$INSTALL_PATH\icon-32.ico"
+    iconFile="$INSTALL_PATH\icon.ico"
     initialState="normal"
     programGroup="yes"
     desktop="yes"

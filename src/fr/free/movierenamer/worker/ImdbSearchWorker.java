@@ -88,7 +88,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
           Icon icon = getHttpImageIcon(thumb);
           if (icon != null) imsres.setIcon(icon);
         }
-        if (imsres.getIcon() == null) imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.gif", getClass())));
+        if (imsres.getIcon() == null) imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
         setProgress(30 + (int) (++i * 70) / imdbSearchResult.size());
       }
     }

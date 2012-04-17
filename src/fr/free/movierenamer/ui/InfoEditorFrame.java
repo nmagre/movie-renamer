@@ -80,7 +80,7 @@ public class InfoEditorFrame extends JDialog {
     setValue();    
     setTitle("Movie Renamer Editor - " + movieInfo.getTitle());
     setLocationRelativeTo(parent);
-    setIconImage(Utils.getImageFromJAR("/image/icon-32.gif", getClass()));
+    setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     setModal(true);
   }
 

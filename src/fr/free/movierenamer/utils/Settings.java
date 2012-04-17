@@ -21,6 +21,7 @@ import java.io.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.UIManager;
 
 /**
  * Class Settings , Movie Renamer settings
@@ -71,7 +72,11 @@ public class Settings {
     {"Talk-Show", "Talk-Show"}, {"Thriller", "Thriller"}, {"War", "Guerre"},
     {"Western", "Western"}
   };
+  //LAF
+  public final static UIManager.LookAndFeelInfo lookAndFeels[] = UIManager.getInstalledLookAndFeels();
+  public boolean lafChanged = false;
   public boolean interfaceChanged = false;
+  //Apk
   public String xurlMdb = Utils.rot13(apkMdb);
   public String xurlTdb = Utils.rot13(apkTdb);
   
@@ -107,6 +112,7 @@ public class Settings {
   public int nfoType = 0;
   public String separator = ", ";
   public int limit = 3;
+  public String laf = "";
   
   // Boolean
   public boolean useExtensionFilter = true;
@@ -182,6 +188,7 @@ public class Settings {
       out.write("    <nfoType>" + nfoType + "</nfoType>" + endl);
       out.write("    <separator>" + separator + "</separator>" + endl);
       out.write("    <limit>" + limit + "</limit>" + endl);
+      out.write("    <laf>" + laf + "</laf>" + endl);
       
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);

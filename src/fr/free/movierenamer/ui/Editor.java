@@ -87,7 +87,7 @@ public class Editor extends JDialog {
     }
     setTitle("Movie Renamer Editor");
     setLocationRelativeTo(getParent());
-    setIconImage(Utils.getImageFromJAR("/image/icon-32.gif", getClass()));
+    setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     setModal(true);
   }
 

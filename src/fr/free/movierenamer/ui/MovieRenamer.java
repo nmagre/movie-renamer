@@ -65,7 +65,7 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Nicolas Magré
  */
-public class MovieRenamer extends javax.swing.JFrame {
+public class MovieRenamer extends JFrame {
 
   private Settings setting;
   private DefaultListModel movieFileNameModel;
@@ -117,7 +117,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
     initComponents();
 
-    setIconImage(Utils.getImageFromJAR("/image/icon-32.gif", getClass()));
+    setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
 
     fileChooser.setFileFilter(new MovieFileFilter(setting));
     fileChooser.setAcceptAllFileFilterUsed(false);//Remove AcceptAll as an available choice in the choosable filter list
@@ -194,7 +194,7 @@ public class MovieRenamer extends javax.swing.JFrame {
 
         switch (currentMedia.getType()) {
           case Media.MOVIE:
-            
+
             //Get movie info
             SwingWorker<MovieInfo, Void> mworker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
             mworker.addPropertyChangeListener(new MovieInfoListener(mworker));
@@ -684,11 +684,11 @@ public class MovieRenamer extends javax.swing.JFrame {
               if ((actor != null || tmdbiw != null)) {
                 loading.setValue(100, INFOWORKER);
               }
-              
+
               if (actor != null) {
                 actor.execute();
               }
-              
+
               if (tmdbiw != null) {
                 tmdbiw.execute();
               }
@@ -709,6 +709,28 @@ public class MovieRenamer extends javax.swing.JFrame {
               }
             }
             renamedField.setText(dir + currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting));
+          }
+
+          if (setting.lafChanged) {
+            setting.lafChanged = false;
+            try {
+              for (int i = 0; i < Settings.lookAndFeels.length; i++) {
+                if (Settings.lookAndFeels[i].getName().equals(setting.laf)) {
+                  UIManager.setLookAndFeel(Settings.lookAndFeels[i].getClassName());
+                  break;
+                }
+              }
+              SwingUtilities.updateComponentTreeUI(MovieRenamer.this);
+            } catch (ClassNotFoundException ex) {
+              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedLookAndFeelException ex) {
+              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            pack();
           }
         }
 
@@ -1102,7 +1124,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             if (setting.thumb) {
               thumb.execute();
             }
-            
+
             if (setting.fanart) {
               fanart.execute();
             }

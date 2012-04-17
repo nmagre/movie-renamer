@@ -57,8 +57,8 @@ public class Utils {
   public static final int FIRSTLA = 1;
   public static final int UPPER = 2;
   public static final int LOWER = 3;
-  public static final Icon MOVIERENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.gif", Utils.class));
-  public static final Icon MOVIEWASRENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-22.gif", Utils.class));
+  public static final Icon MOVIERENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.png", Utils.class));
+  public static final Icon MOVIEWASRENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-22.png", Utils.class));
   public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
   public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
@@ -85,18 +85,15 @@ public class Utils {
 
   public static String getFilteredName(String movieName, String[] replaceBy) {
     String res = movieName.replaceAll("\\.", " ");
-        System.out.println(res);
     for (int i = 0; i < replaceBy.length; i++) {
       res = res.replaceAll("(?i)" + replaceBy[i], "");
     }
-        System.out.println(res);
     res = res.replaceAll(" [0-9][0-9][0-9][0-9]", "");
     res = res.replaceAll("\\([0-9][0-9][0-9][0-9]\\)", "");
     res = res.replaceAll("\\(.*\\)", "");
     res = res.replaceAll(" {2,}", " ");
     res = res.replaceAll("^ ", "");
     res = res.replaceAll(" $", "");
-    System.out.println(res);
     return res;
   }
 

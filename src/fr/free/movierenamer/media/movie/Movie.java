@@ -158,7 +158,6 @@ public class Movie implements Media {
     while (matcher.find()) {
       int n = Integer.parseInt(matcher.group(2));
       char x = matcher.group(1).charAt(0);
-      System.out.println("<xn> : <" + x + n + ">");
       switch (x) {
         case 'a':
           regExp = regExp.replaceAll("<a\\d+>", movieinfo.getActorN(n));

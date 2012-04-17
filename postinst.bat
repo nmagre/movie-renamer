@@ -1,6 +1,6 @@
-@echo off
+@echo on
 SET pp=%1
-SET hdd=%pp:~1,3%
+SET hdd=%pp:~0,3%
 SET pathInst=%pp:~3%
 cd %hdd%
 

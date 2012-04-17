@@ -29,19 +29,53 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Class Main
+ *
  * @author Nicolas Magré
  */
 public class Main {
 
   private static MovieRenamer mvr;
-  
+
   public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException, ParseException {
     final Settings setting = loadSetting();
+
+
+    if (setting.laf.equals("")) {
+      setting.laf = Settings.lookAndFeels[0].getName();
+    }
     
+    try {
+      boolean lafFound = false;
+      for (int i = 0; i < Settings.lookAndFeels.length; i++) {
+        if (Settings.lookAndFeels[i].getName().equals(setting.laf)) {
+          UIManager.setLookAndFeel(Settings.lookAndFeels[i].getClassName());
+          lafFound = true;
+          break;
+        }
+      }
+      
+      if(!lafFound){
+        setting.laf = Settings.lookAndFeels[0].getName();
+        UIManager.setLookAndFeel(Settings.lookAndFeels[0].getClassName());
+      }
+      
+    } catch (ClassNotFoundException ex) {
+      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (UnsupportedLookAndFeelException ex) {
+      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
     java.awt.EventQueue.invokeLater(new Runnable() {
 
       @Override
@@ -54,17 +88,18 @@ public class Main {
 
   /**
    * Load Movie Renamer settings
+   *
    * @return Movie Renamer settings
    */
   private static Settings loadSetting() {
     boolean saved;
     Settings setting = new Settings();
     File file = new File(setting.configFile);
-    
-    
+
+
     if (!file.exists()) {
       saved = setting.saveSetting();
-      if (!saved){
+      if (!saved) {
         JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
         return setting;
       }
@@ -80,26 +115,36 @@ public class Main {
 
       // Define locale on first run
       if (setting.locale.equals("")) {
-        if (!Locale.getDefault().getLanguage().equals("fr")) setting.locale = "en";
-        else setting.locale = "fr";
+        if (!Locale.getDefault().getLanguage().equals("fr")) {
+          setting.locale = "en";
+        } else {
+          setting.locale = "fr";
+        }
         setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
         setting.imdbFr = setting.locale.equals("fr");
+      } else {
+        saved = true;
       }
-      else saved = true;
 
       // Set locale
       Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-      if (setting.getVersion().equals(setting.xmlVersion) && !setting.xmlError) saved = true;
-      
+      if (setting.getVersion().equals(setting.xmlVersion) && !setting.xmlError) {
+        saved = true;
+      }
+
     } catch (IOException ex) {
       setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
     } catch (InterruptedException ex) {
       setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
-      if (!saved) saved = setting.saveSetting();
+      if (!saved) {
+        saved = setting.saveSetting();
+      }
     }
 
-    if (!saved) JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+    if (!saved) {
+      JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+    }
     return setting;
   }
 }
