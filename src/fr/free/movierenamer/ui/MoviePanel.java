@@ -1,22 +1,20 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.ui;
 
 import java.awt.AlphaComposite;
@@ -54,8 +52,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.movie.MovieImage;
-import fr.free.movierenamer.movie.MovieInfo;
+import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
@@ -136,7 +134,7 @@ public class MoviePanel extends javax.swing.JPanel {
    * @param setting
    * @param tmp 
    */
-  public MoviePanel(Settings setting, /*IPluginInfo[] pluginsInfo*/String tmp) {
+  public MoviePanel(Settings setting) {
     this.setting = setting;
 
     initComponents();
@@ -204,12 +202,6 @@ public class MoviePanel extends javax.swing.JPanel {
       }
     });
 
-
-/*    for (int i = 0; i < pluginsInfo.length; i++) {
-      if (pluginsInfo[i].getInfoPanel() != null)
-        movieTabbedPane.addTab(pluginsInfo[i].getName(), pluginsInfo[i].getInfoPanel());
-    }
-*/
     dropFanartTarget.setActive(false);
     dropThumbTarget.setActive(false);
     thumbsScrollPane.setVisible(setting.thumb);
@@ -452,7 +444,7 @@ public class MoviePanel extends javax.swing.JPanel {
         star4.setIcon(STAR);
         break;
       default:
-        return;
+        break;
     }
   }
 

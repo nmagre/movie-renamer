@@ -1,34 +1,32 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.parser;
 
+import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.media.movie.MoviePerson;
+import fr.free.movierenamer.ui.res.SearchResult;
+import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import fr.free.movierenamer.ui.res.ImdbSearchResult;
-import fr.free.movierenamer.movie.MovieInfo;
-import fr.free.movierenamer.movie.MoviePerson;
-import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.utils.Settings;
 
 /**
  * Imdb http page parser
@@ -84,8 +82,8 @@ public class ImdbParser {
    * @param searchPage Is a imdb search page or imdb movie page
    * @return Array of ImdbSearchResult
    */
-  public ArrayList<ImdbSearchResult> parse(String htmlSearchRes, boolean searchPage) {
-    ArrayList<ImdbSearchResult> found = new ArrayList<ImdbSearchResult>();
+  public ArrayList<SearchResult> parse(String htmlSearchRes, boolean searchPage) {
+    ArrayList<SearchResult> found = new ArrayList<SearchResult>();
     int limit = setting.nbResultList[setting.nbResult];
 
     if (searchPage) {
@@ -111,8 +109,8 @@ public class ImdbParser {
    * @param type Type of result search
    * @return Array of ImdbSearchResult
    */
-  private ArrayList<ImdbSearchResult> findMovies(String htmlSearchRes, String searchPattern, int limit, boolean french, String type) {
-    ArrayList<ImdbSearchResult> found = new ArrayList<ImdbSearchResult>();
+  private ArrayList<SearchResult> findMovies(String htmlSearchRes, String searchPattern, int limit, boolean french, String type) {
+    ArrayList<SearchResult> found = new ArrayList<SearchResult>();
     Pattern pattern = Pattern.compile(searchPattern);
     Matcher titleMatcher = pattern.matcher(htmlSearchRes);
     Matcher movieImdbMatcher, movieNameMatcher, imdbIDMatcher, thumbMatcher;
@@ -156,7 +154,7 @@ public class ImdbParser {
                   thumb = null;
                   if (thumbMatcher.find())
                     thumb = thumbMatcher.group().substring(thumbMatcher.group().indexOf("img src=") + 9, thumbMatcher.group().indexOf(".jpg") + 4);
-                  found.add(new ImdbSearchResult(movieName, imdbIDMatcher.group(), type, thumb));
+                  found.add(new SearchResult(movieName, imdbIDMatcher.group(), type, thumb));
                 }
                 count++;
               }
@@ -179,7 +177,7 @@ public class ImdbParser {
    * @param moviePage Imdb movie page
    * @param found Array to put the results in
    */
-  private void getMovie(String moviePage, ArrayList<ImdbSearchResult> found) {
+  private void getMovie(String moviePage, ArrayList<SearchResult> found) {
     Pattern pattern = Pattern.compile(IMDBMOVIETITLE);
     Matcher titleMatcher = pattern.matcher(moviePage);
 
@@ -197,7 +195,7 @@ public class ImdbParser {
           if (thumbnail.contains("img src=")) thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
           else thumb = thumbnail.substring(thumbnail.lastIndexOf("src=") + 5, thumbnail.lastIndexOf("\""));
         }
-        found.add(new ImdbSearchResult(movieName, imdbId, "Exact", thumb));
+        found.add(new SearchResult(movieName, imdbId, "Exact", thumb));
 
       } else setting.getLogger().log(Level.SEVERE, "imdb page unrecognized");
     } catch (IndexOutOfBoundsException e) {
@@ -222,7 +220,7 @@ public class ImdbParser {
         title = searchMatcher.group();
         title = title.replaceAll("<title>", Utils.EMPTY).replaceAll("</title>", Utils.EMPTY);
         String year = title;
-        title = title.substring(0, title.indexOf("(") - 1);
+        title = title.substring(0, title.lastIndexOf("(") - 1);
         movieInfo.setTitle(Utils.unEscapeXML(title, "ISO-8859-1"));
 
         pattern = Pattern.compile("\\(\\d\\d\\d\\d.*\\)");
@@ -248,11 +246,11 @@ public class ImdbParser {
       pattern = Pattern.compile(french ? IMDBMOVIEORIGTITLE_FR : IMDBMOVIEORIGTITLE);
       searchMatcher = pattern.matcher(moviePage);
       if (searchMatcher.find()) {
-        String origTitle = searchMatcher.group();
+        String origTitle = searchMatcher.group().replace("&#x22;", "\"");
         if (french) {
-          origTitle = searchMatcher.group().substring(0, searchMatcher.group().lastIndexOf("\""));
+          origTitle = origTitle.substring(0, origTitle.lastIndexOf("\""));
           origTitle = origTitle.substring(origTitle.lastIndexOf(">"));
-          origTitle = origTitle.substring(origTitle.indexOf("\"") + 1);
+          origTitle = origTitle.substring(origTitle.lastIndexOf("\"") + 1);
         } else {
           origTitle = origTitle.substring(origTitle.indexOf(">") + 1, origTitle.lastIndexOf("<"));
           origTitle = origTitle.replaceAll("\\(.*\\)", "").replaceAll("<.*>", "");

@@ -1,66 +1,57 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.parser.xml.TheMovieDbImage;
+import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.ui.res.TmdbResult;
+import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
-import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.movie.MovieImage;
-import fr.free.movierenamer.parser.xml.TheMovieDbImage;
-import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.ui.res.TmdbResult;
-import fr.free.movierenamer.utils.Images;
-import fr.free.movierenamer.utils.Utils;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * Class TheMovieDbImageWorker , get images from theMovieDB by imdbID
  * @author Magré Nicolas
  */
-public class TheMovieDbImageWorker extends SwingWorker<MovieImage, String> {
+public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
 
   private Settings setting;
   private String imdbId;
-  private Component parent;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-
+  
   /**
    * Constructor arguments
    * @param imdbId Imdb ID (ttxxxxxx)
    * @param parent Parent component to center joptionpane
    * @param setting Movie Renamer settings
    */
-  public TheMovieDbImageWorker(String imdbId, Component parent, Settings setting) {
+  public TheMovieDbImageWorker(String imdbId, Settings setting) {
     this.imdbId = imdbId;
     this.setting = setting;
-    this.parent = parent;
   }
 
   @Override
@@ -71,7 +62,7 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, String> {
 
     // Try to get XML from theMovieDB
     try {
-      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurl)) + "/";
+      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/";
       URL url = new URL(setting.imdbAPIUrlMovieId + xmlUrl + imdbId);
       File f = setting.cache.get(url, Cache.theMovieDBXML);
       if (f == null) {
@@ -87,7 +78,7 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, String> {
               Thread.sleep(600);
               in = url.openStream();
             } catch (IOException exe) {
-              publish(bundle.getString("retImageFailed"));
+              //A faire , traiter erreur
               return null;
             }
           }
@@ -129,10 +120,5 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, String> {
     mvImgs.setFanarts(fanarts);
     
     return mvImgs;
-  }
-
-  @Override
-  protected void process(List<String> chunks) {
-    JOptionPane.showMessageDialog(parent, chunks.get(0), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

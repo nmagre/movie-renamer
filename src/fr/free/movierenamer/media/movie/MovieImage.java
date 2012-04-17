@@ -15,62 +15,63 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.media.movie;
 
 import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
-import javax.swing.Icon;
 
 /**
- * Class TmdbResult , TheMovieDb result
- * @author Nicolas Magré
+ * Class MovieImage
+ * @author Magré Nicolas
  */
-public class TmdbResult implements IIconList{
-
-  private String tmdbAPIID;
+public class MovieImage {
   private ArrayList<Images> thumbs;
   private ArrayList<Images> fanarts;
-  private Icon icon;
 
-  /**
-   * Constructor arguments
-   * @param tmdbAPIID TheMovieDb api ID
-   * @param thumbs Array of thumbs
-   * @param fanarts Array of fanarts
-   */
-  public TmdbResult(String tmdbAPIID, ArrayList<Images> thumbs, ArrayList<Images> fanarts){
-    this.tmdbAPIID = tmdbAPIID;
-    this.thumbs = thumbs;
-    this.fanarts = fanarts;
-    this.icon = null;
+  public MovieImage(){
+    thumbs = new ArrayList<Images>();
+    fanarts = new ArrayList<Images>();
   }
 
-  /**
-   * Get TheMovieDb ID
-   * @return TheMovieDb ID
-   */
-  public String getId(){
-    return tmdbAPIID;
-  }
-
-  /**
-   * Get thumbs
-   * @return Array of thumbs
-   */
   public ArrayList<Images> getThumbs(){
     return thumbs;
   }
-
-  /**
-   * Get fanarts
-   * @return Array of fanarts
-   */
+  
   public ArrayList<Images> getFanarts(){
     return fanarts;
   }
 
+  public void setThumbs(ArrayList<Images> thumbs){
+    this.thumbs = thumbs;
+  }
+
+  public void setFanarts(ArrayList<Images> fanarts){
+    this.fanarts = fanarts;
+  }
+
+  public void addThumb(Images thumb){
+    thumbs.add(thumb);
+  }
+
+  public void addFanart(Images fanart){
+    fanarts.add(fanart);
+  }
+
+  public void clearThumbs(){
+    thumbs.clear();
+  }
+
+  public void clearFanarts(){
+    fanarts.clear();
+  }
+
   @Override
-  public Icon getIcon() {
-    return icon;
+  public String toString(){
+    String res = "Thumbnails :\n  ";
+    res += Utils.arrayToString(thumbs.toArray(),"\n  " , 0);
+    res += "\nFanarts :\n  ";
+    res += Utils.arrayToString(fanarts.toArray(),"\n  " , 0);
+   return res;
   }
 }

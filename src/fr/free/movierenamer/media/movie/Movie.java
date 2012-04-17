@@ -1,39 +1,39 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
-package fr.free.movierenamer.movie;
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.media.Media;
+import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.util.ArrayList;
-import fr.free.movierenamer.utils.Utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Movie Class
+ * Class Movie
  * @author Nicolas Magré
  */
-public class Movie {
+public class Movie implements Media {
 
-  private MovieFile movieFile;
+  private MediaFile movieFile;
   private MovieInfo movieinfo;
   private MovieImage movieImage;
   private String imdbId;
@@ -43,10 +43,11 @@ public class Movie {
 
   /**
    * Constructor arguments
+   *
    * @param movieFile A movie file
    * @param filter An array of movie title filters
    */
-  public Movie(MovieFile movieFile, String[] filter) {
+  public Movie(MediaFile movieFile, String[] filter) {
     this.movieFile = movieFile;
     movieinfo = new MovieInfo();
     movieImage = new MovieImage();
@@ -59,6 +60,7 @@ public class Movie {
   /**
    * Clear images and movie information
    */
+  @Override
   public void clear() {
     this.clearFanarts();
     this.clearThumbs();
@@ -67,6 +69,7 @@ public class Movie {
 
   /**
    * Get movie file
+   *
    * @return File of movie
    */
   public File getFile() {
@@ -75,6 +78,7 @@ public class Movie {
 
   /**
    * Get filtered movie title
+   *
    * @return Movie name filtered
    */
   public String getFilteredName() {
@@ -83,14 +87,17 @@ public class Movie {
 
   /**
    * Get search movie title
+   *
    * @return Movie name search
    */
+  @Override
   public String getSearch() {
     return search;
   }
 
   /**
    * Get imdb ID
+   *
    * @return Movie Imdb ID
    */
   public String getImdbId() {
@@ -99,6 +106,7 @@ public class Movie {
 
   /**
    * Get array of thumbnails
+   *
    * @return ArrayList of MovieImage
    */
   public ArrayList<Images> getThumbs() {
@@ -107,6 +115,7 @@ public class Movie {
 
   /**
    * Get array of fanarts
+   *
    * @return ArrayList of MovieImage
    */
   public ArrayList<Images> getFanarts() {
@@ -115,10 +124,12 @@ public class Movie {
 
   /**
    * Get renamed movie title
+   *
    * @param setting
    * @param regExp Expression to rename movie title with
    * @return Movie title renamed
    */
+  @Override
   public String getRenamedTitle(String regExp, Settings setting) {
     String separator = setting.separator;
     int limit = setting.limit;
@@ -126,7 +137,9 @@ public class Movie {
     boolean trim = setting.rmSpcChar;
 
     String runtime = "";
-    if (!movieinfo.getRuntime().equals("-1")) runtime += movieinfo.getRuntime();
+    if (!movieinfo.getRuntime().equals("-1")) {
+      runtime += movieinfo.getRuntime();
+    }
     String[][] replace = new String[][]{
       {"<t>", movieinfo.getTitle()},
       {"<ot>", movieinfo.getOrigTitle()},
@@ -168,12 +181,14 @@ public class Movie {
       regExp = regExp.replaceAll(replace[i][0], replace[i][1]);
     }
 
-    if (trim) regExp = regExp.trim();
+    if (trim) {
+      regExp = regExp.trim();
+    }
 
     String fileName = getFile().getName();
     String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
 
-    String res = "";
+    String res;
     switch (renameCase) {
       case Utils.UPPER:
         res = regExp.toUpperCase() + "." + ext.toUpperCase();
@@ -191,13 +206,20 @@ public class Movie {
         res = regExp + "." + ext.toLowerCase();
         break;
     }
-    if (Utils.isWindows()) res = res.replaceAll(":", "").replaceAll("/", "");
-    if (setting.rmDupSpace) res = res.replaceAll("\\s+", " ");
+    
+    if (Utils.isWindows()) {
+      res = res.replaceAll(":", "").replaceAll("/", "");
+    }
+    
+    if (setting.rmDupSpace) {
+      res = res.replaceAll("\\s+", " ");
+    }
     return res;
   }
 
   /**
    * Get movie informations
+   *
    * @return MovieInfo
    */
   public MovieInfo getMovieInfo() {
@@ -206,6 +228,7 @@ public class Movie {
 
   /**
    * Get movie images
+   *
    * @return MovieImage
    */
   public MovieImage getMovieImage() {
@@ -214,6 +237,7 @@ public class Movie {
 
   /**
    * Get Imdb title
+   *
    * @return Movie Imdb title
    */
   public String getImdbTitle() {
@@ -222,6 +246,7 @@ public class Movie {
 
   /**
    * Add a thumb to movie
+   *
    * @param thumb Thumb to add
    */
   public void addThumb(Images thumb) {
@@ -230,6 +255,7 @@ public class Movie {
 
   /**
    * Add a fanart to movie
+   *
    * @param fanart Fanart to add
    */
   public void addFanart(Images fanart) {
@@ -238,6 +264,7 @@ public class Movie {
 
   /**
    * Set movie file
+   *
    * @param file Movie file to set
    */
   public void setFile(File file) {
@@ -246,6 +273,7 @@ public class Movie {
 
   /**
    * Set movie renamed
+   *
    * @param renamed Movie is renamed
    */
   public void setRenamed(boolean renamed) {
@@ -254,14 +282,17 @@ public class Movie {
 
   /**
    * Set Imdb search string
+   *
    * @param search movie to search on Imdb
    */
+  @Override
   public void setSearch(String search) {
     this.search = search;
   }
 
   /**
    * Set movie informations
+   *
    * @param movieinfo Movie informations
    */
   public void setMovieInfo(MovieInfo movieinfo) {
@@ -270,9 +301,11 @@ public class Movie {
 
   /**
    * Set imdb ID
+   *
    * @param imdbId Imdb ID
    */
-  public void setImdbId(String imdbId) {
+  @Override
+  public void setId(String imdbId) {
     this.imdbId = imdbId;
     movieinfo.setImdbId(imdbId);
   }
@@ -293,6 +326,7 @@ public class Movie {
 
   /**
    * Set imdb title
+   *
    * @param imdbTitle
    */
   public void setImdbTitle(String imdbTitle) {
@@ -301,6 +335,7 @@ public class Movie {
 
   /**
    * Set thumbs list
+   *
    * @param thumbs Array of thumbs
    */
   public void setThumbs(ArrayList<Images> thumbs) {
@@ -309,6 +344,7 @@ public class Movie {
 
   /**
    * Set fanarts list
+   *
    * @param fanarts Array of fanarts
    */
   public void setFanarts(ArrayList<Images> fanarts) {
@@ -317,6 +353,7 @@ public class Movie {
 
   /**
    * Generate XBMC NFO file
+   *
    * @return Xbmc NFO file
    */
   public String getXbmcNFOFromMovie() {
@@ -373,7 +410,9 @@ public class Movie {
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
     }
-    if (fanarts.size() > 0) nfo.append("\n  ");
+    if (fanarts.size() > 0) {
+      nfo.append("\n  ");
+    }
     nfo.append("</fanart>\n");
     nfo.append("</movie>");
     return nfo.toString();
@@ -381,6 +420,7 @@ public class Movie {
 
   /**
    * Generate Mediaportal NFO file
+   *
    * @return Mediaportal NFO file
    */
   public String getMediaPortalNFOFromMovie() {
@@ -420,7 +460,9 @@ public class Movie {
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb>").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
     }
-    if (fanarts.size() > 0) nfo.append("\n  ");
+    if (fanarts.size() > 0) {
+      nfo.append("\n  ");
+    }
     nfo.append("</fanart>\n");
 
     ArrayList<String> genres = movieinfo.getGenres();
@@ -428,7 +470,9 @@ public class Movie {
     for (int i = 0; i < genres.size(); i++) {
       nfo.append("\n    <genre>").append(Utils.escapeXML(genres.get(i))).append("</genre>");
     }
-    if (genres.size() > 0) nfo.append("\n  ");
+    if (genres.size() > 0) {
+      nfo.append("\n  ");
+    }
     nfo.append("<genres>\n");
 
     personn = movieinfo.getActors();
@@ -437,8 +481,9 @@ public class Movie {
       nfo.append("    <name>").append(Utils.escapeXML(personn.get(i).getName())).append("</name>\n");
       nfo.append("    <role>").append(Utils.escapeXML(Utils.arrayToString(personn.get(i).getRoles(), ", ", 0))).append("</role>\n");
       nfo.append("    <imdb>").append(personn.get(i).getImdbId()).append("</imdb>\n");
-      if (!personn.get(i).getThumb().equals(""))
+      if (!personn.get(i).getThumb().equals("")) {
         nfo.append("    <thumb>").append(personn.get(i).getThumb()).append("</thumb>\n");
+      }
       nfo.append("  </actor>\n");
     }
 
@@ -448,6 +493,7 @@ public class Movie {
 
   /**
    * Transform array to XML string
+   *
    * @param arrayString Array of value
    * @param tag XML tag
    * @param level String of space
@@ -467,5 +513,27 @@ public class Movie {
     res += movieinfo.toString();
     res += "\n" + movieImage.toString();
     return res;
+  }
+
+  @Override
+  public MediaFile getMediaFile() {
+    return movieFile;
+  }
+
+  @Override
+  public void setMediaFile(MediaFile mediaFile) {
+    movieFile = mediaFile;
+  }
+
+  @Override
+  public int getType() {
+    return Media.MOVIE;
+  }
+
+  @Override
+  public void setInfo(Object info) {
+    if(info instanceof MovieInfo)
+      movieinfo = (MovieInfo) info;
+    else movieinfo = new MovieInfo();
   }
 }

@@ -1,68 +1,44 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.util.Arrays;
-import java.util.ResourceBundle;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Component;
-import javax.swing.UIManager;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.*;
+import java.io.File;
+import java.util.Arrays;
+import java.util.ResourceBundle;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
  * Class Setting , Setting dialog
+ *
  * @author Nicolas Magré
  */
 public class Setting extends JDialog {
@@ -77,20 +53,22 @@ public class Setting extends JDialog {
   private JRadioButton[] rBtnCase;
   private String[][] format = {
     {"<t>", "Matrix"}, {"<ot>", "The Matrix"}, {"<y>", "1999"}, {"<tt>", "tt0133093"},
-    {"<a>","Keanu Reeves | Laurence Fishburne | Carrie-Anne Moss | Hugo Weaving | Gloria Foster"},
-    {"<a1>","Keanu Reeves"},{"<a2>","Laurence Fishburne"},{"<a3>","Carrie-Anne Moss"},{"<a4>","Hugo Weaving"},{"<a5>","Gloria Foster"},
-    {"<g>", "Action | Adventure | Sci-Fi"}, {"<g1>", "Action"},{"<g2>", "Adventure"},{"<g3>", "Sci-Fi"},
-    {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"},{"<d2>", "Lana Wachowski"},
-    {"<c>","USA | Australia"},{"<c1>","USA"},{"<c2>","Australia"},
-    {"<rt>", "136"}, {"<ra>", "8.8"},{"<[acdg]\\d+>",""}
+    {"<a>", "Keanu Reeves | Laurence Fishburne | Carrie-Anne Moss | Hugo Weaving | Gloria Foster"},
+    {"<a1>", "Keanu Reeves"}, {"<a2>", "Laurence Fishburne"}, {"<a3>", "Carrie-Anne Moss"}, {"<a4>", "Hugo Weaving"}, {"<a5>", "Gloria Foster"},
+    {"<g>", "Action | Adventure | Sci-Fi"}, {"<g1>", "Action"}, {"<g2>", "Adventure"}, {"<g3>", "Sci-Fi"},
+    {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"}, {"<d2>", "Lana Wachowski"},
+    {"<c>", "USA | Australia"}, {"<c1>", "USA"}, {"<c2>", "Australia"},
+    {"<rt>", "136"}, {"<ra>", "8.8"}, {"<[acdg]\\d+>", ""}
   };
   private ResourceBundle bundle;
   private String[] lafName;
   private String[] lafClass;
 
-  /** Creates new form Setting
+  /**
+   * Creates new form Setting
+   *
    * @param setting
-   * @param parent 
+   * @param parent
    */
   public Setting(Settings setting, Component parent) {
     bundle = ResourceBundle.getBundle("fr.free.movierenamer/i18n/Bundle");
@@ -118,8 +96,9 @@ public class Setting extends JDialog {
 
       @Override
       public void valueChanged(ListSelectionEvent lse) {
-        if (extentionJlist.getSelectedIndex() != -1)
+        if (extentionJlist.getSelectedIndex() != -1) {
           currentExtensionIndex = extentionJlist.getSelectedIndex();
+        }
       }
     });
     loadList(extentionJlist, extensions);
@@ -131,10 +110,16 @@ public class Setting extends JDialog {
       public void valueChanged(ListSelectionEvent lse) {
         if (filterJlist.getSelectedIndex() != -1) {
           currentFilterIndex = filterJlist.getSelectedIndex();
-          if (currentFilterIndex == 0) moveLeft.setEnabled(false);
-          else moveLeft.setEnabled(true);
-          if (currentFilterIndex == (filters.length - 1)) moveRight.setEnabled(false);
-          else moveRight.setEnabled(true);
+          if (currentFilterIndex == 0) {
+            moveLeft.setEnabled(false);
+          } else {
+            moveLeft.setEnabled(true);
+          }
+          if (currentFilterIndex == (filters.length - 1)) {
+            moveRight.setEnabled(false);
+          } else {
+            moveRight.setEnabled(true);
+          }
         } else {
           moveRight.setEnabled(false);
           moveLeft.setEnabled(false);
@@ -163,8 +148,11 @@ public class Setting extends JDialog {
 
     // Rename Setting
     formatField.setText(setting.movieFilenameFormat);
-    if (setting.renameCase >= caseGroup.getButtonCount()) caseGroup.setSelected(rBtnCase[1].getModel(), true);
-    else caseGroup.setSelected(rBtnCase[setting.renameCase].getModel(), true);
+    if (setting.renameCase >= caseGroup.getButtonCount()) {
+      caseGroup.setSelected(rBtnCase[1].getModel(), true);
+    } else {
+      caseGroup.setSelected(rBtnCase[setting.renameCase].getModel(), true);
+    }
 
     thumbGroup.setSelected(rBtnThumbList[setting.thumbSize].getModel(), true);
     fanartGroup.setSelected(rBtnFanartList[setting.fanartSize].getModel(), true);
@@ -195,29 +183,33 @@ public class Setting extends JDialog {
     thumbExtCbBox.setSelectedIndex(setting.thumbExt);
     customFolderField.setText(setting.movieDir);
 
-    String ssize = "";
+    String ssize;
     long size = Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir));
     ssize = "" + size;
-    if (size == 0)
+    if (size == 0) {
       ssize = "0." + Utils.getDirSize(new File(setting.thumbCacheDir));
+    }
     thumbCacheLbl.setText(ssize + bundle.getString("useForThumb"));
 
     size = Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir));
     ssize = "" + size;
-    if (size == 0)
+    if (size == 0) {
       ssize = "0." + Utils.getDirSize(new File(setting.fanartCacheDir));
+    }
     fanartCacheLbl.setText(ssize + bundle.getString("useForFanart"));
 
     size = Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir));
     ssize = "" + size;
-    if (size == 0)
+    if (size == 0) {
       ssize = "0." + Utils.getDirSize(new File(setting.actorCacheDir));
+    }
     actorCacheLbl.setText(ssize + bundle.getString("useForActor"));
 
     size = Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir));
     ssize = "" + size;
-    if (size == 0)
+    if (size == 0) {
       ssize = "0." + Utils.getDirSize(new File(setting.xmlCacheDir));
+    }
     xmlLbl.setText(ssize + bundle.getString("useForXml"));
 
     setTitle("Movie Renamer Settings " + setting.getVersion());
@@ -237,10 +229,8 @@ public class Setting extends JDialog {
     return setting;
   }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
+  /**
+   * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
    */
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -1417,8 +1407,11 @@ public class Setting extends JDialog {
       String[] tmp = new String[filters.length + 1];
       int pos = 0;
       for (int i = 0; i < tmp.length; i++) {
-        if (i != index) tmp[i] = filters[pos++];
-        else tmp[i] = s;
+        if (i != index) {
+          tmp[i] = filters[pos++];
+        } else {
+          tmp[i] = s;
+        }
       }
       filters = tmp;
       loadList(filterJlist, filters);
@@ -1459,7 +1452,9 @@ public class Setting extends JDialog {
 
   private void movieInfoPanelChkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_movieInfoPanelChkItemStateChanged
     boolean activate = true;
-    if (!movieInfoPanelChk.isSelected()) activate = false;
+    if (!movieInfoPanelChk.isSelected()) {
+      activate = false;
+    }
     actorImageChk.setEnabled(activate);
     thumbsChk.setEnabled(activate);
     fanartsChk.setEnabled(activate);
@@ -1470,25 +1465,53 @@ public class Setting extends JDialog {
     String ext = "avi";
     int titleCase = 0;
 
+    int p;
+    try {
+      p = Integer.parseInt(limitField.getText());
+    } catch (NumberFormatException e) {
+      JOptionPane.showMessageDialog(this, bundle.getString("nanLimit"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
     for (int i = 0; i < format.length; i++) {
-      res = res.replaceAll(format[i][0], format[i][1]);
+      if (p > 0) {
+        if (format[i][0].equals("<a>") || format[i][0].equals("<d>") || format[i][0].equals("<c>") || format[i][0].equals("<g>")) {
+          String[] tmp = format[i][1].split(" \\| ");
+          String replace = "";
+          for(int j=0;j<tmp.length;j++)
+            if(j< p) replace += tmp[j].trim() + ((j+1<p && (j+1) < tmp.length) ? " | ":"");
+          res = res.replaceAll(format[i][0], replace);
+        } else {
+          res = res.replaceAll(format[i][0], format[i][1]);
+        }
+      }
+      else res = res.replaceAll(format[i][0], format[i][1]);
     }
 
     res = res.replace(" | ", separatorField.getText());
 
     for (int i = 0; i < rBtnCase.length; i++) {
-      if (rBtnCase[i].isSelected())
+      if (rBtnCase[i].isSelected()) {
         titleCase = i;
+      }
     }
 
-    if(createDirChk.isSelected()){
-      int p = formatField.getText().contains("<t>") ? 0:1;
-      if(movieTitleRBtn.isSelected()) res = format[p][1]+ File.separator + res;
-      if(renamedMovieTitleRBtn.isSelected()) res = res + File.separator + res;
-      if(customFolderRBtn.isSelected()) res = customFolderField.getText() + File.separator + res;
+    if (createDirChk.isSelected()) {
+      p = formatField.getText().contains("<t>") ? 0 : 1;
+      if (movieTitleRBtn.isSelected()) {
+        res = format[p][1] + File.separator + res;
+      }
+      if (renamedMovieTitleRBtn.isSelected()) {
+        res = res + File.separator + res;
+      }
+      if (customFolderRBtn.isSelected()) {
+        res = customFolderField.getText() + File.separator + res;
+      }
     }
 
-    if(rmSpcCharChk.isSelected()) res = res.trim();
+    if (rmSpcCharChk.isSelected()) {
+      res = res.trim();
+    }
 
     switch (titleCase) {
       case Utils.UPPER:
@@ -1508,8 +1531,10 @@ public class Setting extends JDialog {
         break;
     }
 
-    if(rmDupSpaceChk.isSelected()) res = res.replaceAll("\\s+", " ");
-    
+    if (rmDupSpaceChk.isSelected()) {
+      res = res.replaceAll("\\s+", " ");
+    }
+
     testField.setText(res);
   }//GEN-LAST:event_testBtnActionPerformed
 
@@ -1524,9 +1549,13 @@ public class Setting extends JDialog {
   private void moveRightActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveRightActionPerformed
     String[] tmp = new String[filters.length];
     for (int i = 0; i < tmp.length; i++) {
-      if (i == (currentFilterIndex + 1)) tmp[i - 1] = filters[i];
-      else if (i == currentFilterIndex) tmp[i + 1] = filters[i];
-      else tmp[i] = filters[i];
+      if (i == (currentFilterIndex + 1)) {
+        tmp[i - 1] = filters[i];
+      } else if (i == currentFilterIndex) {
+        tmp[i + 1] = filters[i];
+      } else {
+        tmp[i] = filters[i];
+      }
     }
     filters = tmp;
     int index = currentFilterIndex + 1;
@@ -1537,9 +1566,13 @@ public class Setting extends JDialog {
   private void moveLeftActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveLeftActionPerformed
     String[] tmp = new String[filters.length];
     for (int i = 0; i < tmp.length; i++) {
-      if (i == (currentFilterIndex - 1)) tmp[i + 1] = filters[i];
-      else if (i == currentFilterIndex) tmp[i - 1] = filters[i];
-      else tmp[i] = filters[i];
+      if (i == (currentFilterIndex - 1)) {
+        tmp[i + 1] = filters[i];
+      } else if (i == currentFilterIndex) {
+        tmp[i - 1] = filters[i];
+      } else {
+        tmp[i] = filters[i];
+      }
     }
     filters = tmp;
     int index = currentFilterIndex - 1;
@@ -1554,8 +1587,9 @@ public class Setting extends JDialog {
       filters = newArray;
       loadList(filterJlist, filters);
       int pos = index - 1;
-      if (pos < 0)
+      if (pos < 0) {
         pos++;
+      }
       filterJlist.setSelectedIndex(pos);
       currentFilterIndex = pos;
     }
@@ -1567,8 +1601,9 @@ public class Setting extends JDialog {
       extensions = newArray;
       loadList(extentionJlist, extensions);
       int pos = currentExtensionIndex - 1;
-      if (pos < 0)
+      if (pos < 0) {
         pos++;
+      }
       extentionJlist.setSelectedIndex(pos);
       currentExtensionIndex = pos;
     }
@@ -1577,21 +1612,34 @@ public class Setting extends JDialog {
   private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
     boolean restartApp = false;
 
-    int p = 0;
+    int p;
     try {
-     p = Integer.parseInt(limitField.getText());
-    }
-    catch(NumberFormatException e){
+      p = Integer.parseInt(limitField.getText());
+    } catch (NumberFormatException e) {
       JOptionPane.showMessageDialog(this, bundle.getString("nanLimit"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
+    
+    if(!formatField.getText().contains("<t>") && !formatField.getText().contains("<ot>")){
+      JOptionPane.showMessageDialog(this, bundle.getString("noTitle"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    
     setting.limit = p;
 
     // General Setting
-    if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) setting.interfaceChanged = true;
-    if (setting.thumb != thumbsChk.isSelected()) setting.interfaceChanged = true;
-    if (setting.fanart != fanartsChk.isSelected()) setting.interfaceChanged = true;
-    if (setting.actorImage != actorImageChk.isSelected()) setting.interfaceChanged = true;
+    if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) {
+      setting.interfaceChanged = true;
+    }
+    if (setting.thumb != thumbsChk.isSelected()) {
+      setting.interfaceChanged = true;
+    }
+    if (setting.fanart != fanartsChk.isSelected()) {
+      setting.interfaceChanged = true;
+    }
+    if (setting.actorImage != actorImageChk.isSelected()) {
+      setting.interfaceChanged = true;
+    }
 
     setting.selectFrstMovie = selectFirstMovieChk.isSelected();
     setting.selectFrstRes = selectFirstResChk.isSelected();
@@ -1609,29 +1657,33 @@ public class Setting extends JDialog {
     if (langFr != frenchRbtn.isSelected()) {
       setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
       int n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
-      if (n == JOptionPane.YES_OPTION)
+      if (n == JOptionPane.YES_OPTION) {
         restartApp = true;
+      }
     }
 
     // Rename Setting
     for (int i = 0; i < rBtnCase.length; i++) {
-      if (rBtnCase[i].isSelected())
+      if (rBtnCase[i].isSelected()) {
         setting.renameCase = i;
+      }
     }
 
     for (int i = 0; i < rBtnThumbList.length; i++) {
-      if (rBtnThumbList[i].isSelected())
+      if (rBtnThumbList[i].isSelected()) {
         setting.thumbSize = i;
+      }
     }
 
     for (int i = 0; i < rBtnFanartList.length; i++) {
-      if (rBtnFanartList[i].isSelected())
+      if (rBtnFanartList[i].isSelected()) {
         setting.fanartSize = i;
+      }
     }
 
     setting.displayApproximateResult = displayAppResultCheckBox.isSelected();
     setting.nbResult = limitResultComboBox.getSelectedIndex();
-    setting.nfoType = xbmcNFORBtn.isSelected() ? 0:1;
+    setting.nfoType = xbmcNFORBtn.isSelected() ? 0 : 1;
     setting.rmSpcChar = rmSpcCharChk.isSelected();
     setting.rmDupSpace = rmDupSpaceChk.isSelected();
 
@@ -1646,8 +1698,12 @@ public class Setting extends JDialog {
 
     setting.movieDir = customFolderField.getText();
     int nb = 0;
-    if (renamedMovieTitleRBtn.isSelected()) nb = 1;
-    if (customFolderRBtn.isSelected()) nb = 2;
+    if (renamedMovieTitleRBtn.isSelected()) {
+      nb = 1;
+    }
+    if (customFolderRBtn.isSelected()) {
+      nb = 2;
+    }
 
     if (nb == 2 && setting.movieDir.equals("")) {
       JOptionPane.showMessageDialog(this, bundle.getString("cantBeEmpty"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
@@ -1662,24 +1718,24 @@ public class Setting extends JDialog {
 
     setting.saveSetting();
 
-    if (restartApp)
+    if (restartApp) {
       try {
-        if (!Utils.restartApplication(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI())))
+        if (!Utils.restartApplication(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()))) {
           JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
-        else{
+        } else {
           dispose();
           System.exit(0);
         }
       } catch (Exception ex) {
         JOptionPane.showMessageDialog(this, bundle.getString("cantRestart") + Utils.ENDLINE + ex.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
       }
+    }
     dispose();
   }//GEN-LAST:event_saveBtnActionPerformed
 
   private void customFolderRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_customFolderRBtnItemStateChanged
     customFolderField.setEnabled(customFolderRBtn.isSelected());
   }//GEN-LAST:event_customFolderRBtnItemStateChanged
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private JButton CancelBtn;
   private JPanel SearchPnl;

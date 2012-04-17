@@ -1,26 +1,29 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.Media;
+import fr.free.movierenamer.media.MediaFile;
+import fr.free.movierenamer.utils.Renamed;
+import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,16 +31,12 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.SwingWorker;
-import fr.free.movierenamer.movie.MovieFile;
-import fr.free.movierenamer.utils.Renamed;
-import fr.free.movierenamer.utils.Settings;
-import java.io.Serializable;
 
 /**
- * Class listFilesWorker , get List of movie files in files list
+ * Class listFilesWorker , get List of media files in files list
  * @author Magré Nicolas
  */
-public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
+public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   private Settings setting;
   private boolean subFolders;
@@ -83,30 +82,33 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
   }
 
   /**
-   * Retreive all movies files in a folder and subfolder
+   * Retreive all media files in a folder and subfolder
    * @return ArrayList of movies file
    */
   @Override
-  protected ArrayList<MovieFile> doInBackground() {
-    ArrayList<MovieFile> movies = new ArrayList<MovieFile>();
+  protected ArrayList<MediaFile> doInBackground() {
+    ArrayList<MediaFile> movies = new ArrayList<MediaFile>();
     for (int i = 0; i < files.size(); i++) {
       if(isCancelled()) return null;
       if (files.get(i).isDirectory()) {
         currentParent = files.get(i).getName();
         getFiles(movies, files.get(i));
-      } else if (Utils.checkFile(files.get(i).getName(), setting))
-        movies.add(new MovieFile(files.get(i), false, wasRenamed(files.get(i).getAbsolutePath()), !isMovie(files.get(i)), setting.showMovieFilePath));
+      } else if (Utils.checkFile(files.get(i).getName(), setting)){
+        boolean wasrenamed =  wasRenamed(files.get(i).getAbsolutePath());
+        int type = isMovie(files.get(i)) ? Media.MOVIE:Media.TVSHOW;
+        movies.add(new MediaFile(files.get(i), type, false, wasrenamed, setting.showMovieFilePath));
+      }
     }
     Collections.sort(movies, new MyFileComparable());
     return movies;
   }
 
   /**
-   * Scan recursiveli folders and add movies to a list
-   * @param movies List of movies
+   * Scan recursively folders and add media to a list
+   * @param medias List of movies
    * @param file File to add or directory to scan
    */
-  private void getFiles(ArrayList<MovieFile> movies, File file) {
+  private void getFiles(ArrayList<MediaFile> medias, File file) {
     if(isCancelled()) return;
     File[] listFiles = file.listFiles();
     if (listFiles == null) {
@@ -116,13 +118,16 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
     
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolders) {
-        getFiles(movies, listFiles[i]);
+        getFiles(medias, listFiles[i]);
         if (listFiles[i].getParentFile().getName().equals(currentParent) && count < nbFiles) {
           count++;
           setProgress((int) ((count * 100) / nbFiles));
         }
-      } else if (Utils.checkFile(listFiles[i].getName(), setting))
-        movies.add(new MovieFile(listFiles[i], false, wasRenamed(listFiles[i].getAbsolutePath()), !isMovie(listFiles[i]), setting.showMovieFilePath));
+      } else if (Utils.checkFile(listFiles[i].getName(), setting)){
+        boolean wasrenamed = wasRenamed(listFiles[i].getAbsolutePath());
+        int type = isMovie(listFiles[i]) ? Media.MOVIE:Media.TVSHOW;
+        medias.add(new MediaFile(listFiles[i], type, false, wasrenamed, setting.showMovieFilePath));
+      }
     }
   }
 
@@ -143,7 +148,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
    * @param file File to check
    * @return
    */
-  private boolean isMovie(File file) {
+  private boolean isMovie(File file) {//A refaire
     if (file.length() < 400000000) return false;
     String filename = file.getName();
     if (searchPattern(filename, "\\d++x\\d++.?\\d++x\\d++")) return false;
@@ -172,10 +177,10 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MovieFile>, Void> {
   /**
    * class MyFileComparable , compare two filename
    */
-  private static class MyFileComparable implements Comparator<MovieFile>,Serializable {
+  private static class MyFileComparable implements Comparator<MediaFile>,Serializable {
 
     @Override
-    public int compare(MovieFile s1, MovieFile s2) {
+    public int compare(MediaFile s1, MediaFile s2) {
       return s1.getFile().getName().compareTo(s2.getFile().getName());
     }
   }

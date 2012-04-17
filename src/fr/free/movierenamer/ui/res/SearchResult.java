@@ -17,60 +17,74 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.utils.Images;
-import java.util.ArrayList;
 import javax.swing.Icon;
 
 /**
- * Class TmdbResult , TheMovieDb result
- * @author Nicolas Magré
+ * Class SearchResult
+ * @author Magré Nicolas
  */
-public class TmdbResult implements IIconList{
+public class SearchResult implements IIconList {
 
-  private String tmdbAPIID;
-  private ArrayList<Images> thumbs;
-  private ArrayList<Images> fanarts;
+  private String id;
+  private String title;
+  private String type;
+  private String thumb;
   private Icon icon;
 
   /**
    * Constructor arguments
-   * @param tmdbAPIID TheMovieDb api ID
-   * @param thumbs Array of thumbs
-   * @param fanarts Array of fanarts
+   * @param title Title
+   * @param imdbId ID
+   * @param type result type (Exact,...)
+   * @param thumb Imdb thumb
    */
-  public TmdbResult(String tmdbAPIID, ArrayList<Images> thumbs, ArrayList<Images> fanarts){
-    this.tmdbAPIID = tmdbAPIID;
-    this.thumbs = thumbs;
-    this.fanarts = fanarts;
-    this.icon = null;
+  public SearchResult(String title, String id, String type, String thumb) {
+    this.id = id;
+    this.title = title;
+    this.thumb = thumb;
+    this.type = type;
   }
 
   /**
-   * Get TheMovieDb ID
-   * @return TheMovieDb ID
+   * Get title
+   * @return imdb title
    */
-  public String getId(){
-    return tmdbAPIID;
+  public String getTitle() {
+    return title;
   }
 
   /**
-   * Get thumbs
-   * @return Array of thumbs
+   * Get ID
+   * @return imdb ID
    */
-  public ArrayList<Images> getThumbs(){
-    return thumbs;
+  public String getId() {
+    return id;
   }
 
   /**
-   * Get fanarts
-   * @return Array of fanarts
+   * Get thumb
+   * @return imdb thumb
    */
-  public ArrayList<Images> getFanarts(){
-    return fanarts;
+  public String getThumb() {
+    return thumb;
+  }
+
+  /**
+   * Set icon
+   * @param icon
+   */
+  public void setIcon(Icon icon) {
+    this.icon = icon;
   }
 
   @Override
   public Icon getIcon() {
     return icon;
+  }
+
+  @Override
+  public String toString() {
+    if(type.equals("")) return title;
+    return title + " : " + type;
   }
 }

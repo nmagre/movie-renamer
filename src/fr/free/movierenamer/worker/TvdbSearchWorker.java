@@ -15,25 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.utils;
+package fr.free.movierenamer.worker;
+
+import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.ui.res.SearchResult;
+import fr.free.movierenamer.utils.Settings;
+import java.util.ArrayList;
+import javax.swing.SwingWorker;
 
 /**
- * Class ActionNotValidException, Exception on non valid action
- * @author Nicolas Magré
+ *
+ * @author duffy
  */
-public class ActionNotValidException extends Exception {
+public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
+  //A faire
+  
+  public TvdbSearchWorker(String searchTitle, Settings setting){
+    
+  }
 
-	public ActionNotValidException() {}
-
-	public ActionNotValidException(String message) {
-		super(message);
-	}
-
-	public ActionNotValidException(Throwable cause) {
-		super(cause);
-	}
-
-	public ActionNotValidException(String message, Throwable cause) {
-		super(message, cause);
-	} 
+  @Override
+  protected ArrayList<SearchResult> doInBackground() throws Exception {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

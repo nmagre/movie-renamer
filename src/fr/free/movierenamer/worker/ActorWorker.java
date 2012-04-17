@@ -1,33 +1,32 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2012 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.movie.MoviePerson;
+import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
-import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.movie.MoviePerson;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.ui.MoviePanel;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.SwingWorker;
 
 /**
@@ -70,7 +69,7 @@ public class ActorWorker extends SwingWorker<Void, Void> {
             image = setting.cache.getImage(url, Cache.actor);
           }
         } catch (IOException ex) {
-          ex.printStackTrace();
+          setting.getLogger().log(Level.SEVERE, null, ex);
         }
 
         if (image == null) image = Utils.getImageFromJAR("/image/unknown.png", getClass());

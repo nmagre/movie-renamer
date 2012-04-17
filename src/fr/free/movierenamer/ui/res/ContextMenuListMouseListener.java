@@ -1,25 +1,23 @@
-/******************************************************************************
- *                                                                             *
- *    Movie Renamer                                                            *
- *    Copyright (C) 2011 Magré Nicolas                                         *
- *                                                                             *
- *    Movie Renamer is free software: you can redistribute it and/or modify    *
- *    it under the terms of the GNU General Public License as published by     *
- *    the Free Software Foundation, either version 3 of the License, or        *
- *    (at your option) any later version.                                      *
- *                                                                             *
- *    This program is distributed in the hope that it will be useful,          *
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
- *    GNU General Public License for more details.                             *
- *                                                                             *
- *    You should have received a copy of the GNU General Public License        *
- *    along with this program.  If not, see <http://www.gnu.org/licenses/>.    *
- *                                                                             *
- ******************************************************************************/
+/*
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.movie.MovieFile;
+import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
@@ -44,7 +42,7 @@ public class ContextMenuListMouseListener extends MouseAdapter {
 
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private JPopupMenu popup = new JPopupMenu();
-  private MovieFile moviefile;
+  private MediaFile moviefile;
   private PropertyChangeSupport changeSupport;
   private Action search, play, removeList, removeHdd, test;
   private int index;
@@ -134,10 +132,10 @@ public class ContextMenuListMouseListener extends MouseAdapter {
       if (!(e.getSource() instanceof JList))
         return;
       JList list = (JList) e.getSource();
-      if (!(list.getSelectedValue() instanceof MovieFile)) return;
+      if (!(list.getSelectedValue() instanceof MediaFile)) return;
 
       index = list.getSelectedIndex();
-      moviefile = (MovieFile) list.getModel().getElementAt(index);
+      moviefile = (MediaFile) list.getModel().getElementAt(index);
       moviename = moviefile.getFile().getName();
       if (moviename.length() > 30) moviename = moviename.substring(0, 27) + "...";
       popup.remove(7);

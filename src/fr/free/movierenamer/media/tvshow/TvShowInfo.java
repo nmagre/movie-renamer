@@ -15,25 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.utils;
+package fr.free.movierenamer.media.tvshow;
 
 /**
- * Class ActionNotValidException, Exception on non valid action
- * @author Nicolas Magré
+ *
+ * @author duffy
  */
-public class ActionNotValidException extends Exception {
-
-	public ActionNotValidException() {}
-
-	public ActionNotValidException(String message) {
-		super(message);
-	}
-
-	public ActionNotValidException(Throwable cause) {
-		super(cause);
-	}
-
-	public ActionNotValidException(String message, Throwable cause) {
-		super(message, cause);
-	} 
+public class TvShowInfo {
+  //A faire
 }
