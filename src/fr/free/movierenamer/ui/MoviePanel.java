@@ -155,13 +155,13 @@ public class MoviePanel extends javax.swing.JPanel {
       public void valueChanged(ListSelectionEvent e) {
         if (thumbnailsList.getSelectedIndex() == -1) return;
         thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
-        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"), Cache.thumb);
+        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"), Cache.THUMB);
         if (img != null)
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
       }
     });
 
-    DropImage dropThumb = new DropImage(this, Cache.thumb, setting);
+    DropImage dropThumb = new DropImage(this, Cache.THUMB, setting);
     dropThumbTarget = new DropTarget(thumbnailsList, dropThumb);
 
     fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -173,13 +173,13 @@ public class MoviePanel extends javax.swing.JPanel {
       public void valueChanged(ListSelectionEvent lse) {
         if (fanartList.getSelectedIndex() == -1) return;
         fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
-        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.fanart);
+        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.FANART);
         detailsPnl.validate();
         detailsPnl.repaint();
       }
     });
 
-    DropImage dropFanart = new DropImage(this, Cache.fanart, setting);
+    DropImage dropFanart = new DropImage(this, Cache.FANART, setting);
     dropFanartTarget = new DropTarget(fanartList, dropFanart);
 
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -241,7 +241,7 @@ public class MoviePanel extends javax.swing.JPanel {
       protected Image doInBackground() throws Exception {
         Image image = null;
         if (thumbnailModel.isEmpty())
-          image = getImage(thumbs.get(0).getThumbUrl(), Cache.thumb);
+          image = getImage(thumbs.get(0).getThumbUrl(), Cache.THUMB);
         return image;
       }
     };
@@ -278,7 +278,7 @@ public class MoviePanel extends javax.swing.JPanel {
       protected Image doInBackground() throws Exception {
         Image img = null;
         if (fanartModel.isEmpty())
-          img = getImage(fanarts.get(0).getThumbUrl(), Cache.fanart);
+          img = getImage(fanarts.get(0).getThumbUrl(), Cache.FANART);
 
         return img;
       }
@@ -400,7 +400,7 @@ public class MoviePanel extends javax.swing.JPanel {
 
         if (!setting.thumb)
           if (!movieInfo.getImdbThumb().equals("")) {
-            Image imThumb = getImage(movieInfo.getImdbThumb(), Cache.thumb);
+            Image imThumb = getImage(movieInfo.getImdbThumb(), Cache.THUMB);
             if (imThumb != null) thumbLbl.setIcon(new ImageIcon(imThumb.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
           }
       }

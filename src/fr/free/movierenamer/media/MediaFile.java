@@ -53,7 +53,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Get file
-   * @return File 
+   * @return Meda file
    */
   public File getFile(){
     return file;
@@ -77,7 +77,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Is renamed
-   * @return Renamed
+   * @return True is media is renamed, fals otherwise
    */
   public boolean isRenamed(){
     return renamed;
@@ -85,7 +85,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Was renamed
-   * @return Was renamed
+   * @return True is media was renamed, fals otherwise
    */
   public boolean wasRenamed(){
     return wasRenamed;
@@ -93,12 +93,16 @@ public class MediaFile implements IIconList {
 
   /**
    * Get file type
-   * @return Warning
+   * @return Media.MOVIE or Media.TVSHOW
    */
   public int type(){
     return type;
   }
 
+  /**
+   * Get media icon to display in list
+   * @return Icon
+   */
   @Override
   public Icon getIcon() {
     if(renamed) return Utils.MOVIERENAMEDICON;

@@ -31,13 +31,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 /**
  * Class ImdbSearchWorker, Search on imdb
+ *
  * @author Nicolas Magré
  */
 public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
@@ -46,10 +50,12 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
   private Settings setting;
   private HttpGet http;
   private ImdbParser imdbParser;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /**
    * Constructor arguments
-   * @param parent  Parent component to center joptionpane
+   *
+   * @param parent Parent component to center joptionpane
    * @param searchTitle Movie title to search
    * @param setting Movie Renamer settings
    * @throws MalformedURLException
@@ -74,22 +80,32 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
       setting.getLogger().log(Level.SEVERE, e.toString());
       return null;
     }
+    
     setProgress(30);
     setting.getLogger().log(Level.INFO, "Search : {0}", searchTitle);
 
     if (searchres != null && !searchres.contains("<b>No Matches.</b>")) {
       boolean searchPage = !http.getURL().toString().matches("http://www.imdb.(com|fr)/title/tt\\d+/");
-      imdbSearchResult = imdbParser.parse(searchres, searchPage);
+      try {
+        imdbSearchResult = imdbParser.parse(searchres, searchPage);
 
-      int i = 0;
-      for (SearchResult imsres : imdbSearchResult) {
-        String thumb = imsres.getThumb();
-        if (thumb != null) {
-          Icon icon = getHttpImageIcon(thumb);
-          if (icon != null) imsres.setIcon(icon);
+        int i = 0;
+        for (SearchResult imsres : imdbSearchResult) {
+          String thumb = imsres.getThumb();
+          if (thumb != null) {
+            Icon icon = getHttpImageIcon(thumb);
+            if (icon != null) {
+              imsres.setIcon(icon);
+            }
+          }
+          if (imsres.getIcon() == null) {
+            imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
+          }
+          setProgress(30 + (int) (++i * 70) / imdbSearchResult.size());
         }
-        if (imsres.getIcon() == null) imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
-        setProgress(30 + (int) (++i * 70) / imdbSearchResult.size());
+      } catch (IndexOutOfBoundsException ex) {
+        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IndexOutOfBoundsException", ex.getStackTrace()));
+        publish((Void) null);
       }
     }
 
@@ -97,9 +113,15 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
     setting.getLogger().log(Level.INFO, "found : {0} Movies", imdbSearchResult.size());
     return imdbSearchResult;
   }
+  
+  @Override
+  public void process (List<Void> v){
+    JOptionPane.showMessageDialog(null, bundle.getString("imdbParserFail"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+  }
 
   /**
    * Get icon from web server
+   *
    * @param url
    * @return Icon or null
    */
@@ -108,10 +130,10 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
     try {
       Image image;
       URL uri = new URL(url);
-      image = setting.cache.getImage(uri, Cache.thumb);
+      image = setting.cache.getImage(uri, Cache.THUMB);
       if (image == null) {
-        setting.cache.add(uri.openStream(), uri.toString(), Cache.thumb);
-        image = setting.cache.getImage(uri, Cache.thumb);
+        setting.cache.add(uri.openStream(), uri.toString(), Cache.THUMB);
+        image = setting.cache.getImage(uri, Cache.THUMB);
       }
       icon = new ImageIcon(image.getScaledInstance(45, 70, Image.SCALE_DEFAULT));
     } catch (IOException ex) {

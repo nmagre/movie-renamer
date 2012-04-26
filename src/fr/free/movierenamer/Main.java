@@ -24,15 +24,14 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Class Main
@@ -43,9 +42,8 @@ public class Main {
 
   private static MovieRenamer mvr;
 
-  public static void main(String args[]) throws UnsupportedEncodingException, URISyntaxException, ParseException {
+  public static void main(String args[]) {
     final Settings setting = loadSetting();
-
 
     if (setting.laf.equals("")) {
       setting.laf = Settings.lookAndFeels[0].getName();
@@ -122,6 +120,7 @@ public class Main {
         }
         setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
         setting.imdbFr = setting.locale.equals("fr");
+        setting.tvdbFr = setting.locale.equals("fr");
       } else {
         saved = true;
       }
@@ -132,6 +131,10 @@ public class Main {
         saved = true;
       }
 
+    } catch (ParserConfigurationException ex) {
+      setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
+    } catch (SAXException ex) {
+      setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
     } catch (IOException ex) {
       setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
     } catch (InterruptedException ex) {

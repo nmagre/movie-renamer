@@ -17,6 +17,9 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.utils.Settings;
 import java.awt.Image;
 import java.awt.color.CMMException;
 import java.io.IOException;
@@ -24,9 +27,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.ui.MoviePanel;
-import fr.free.movierenamer.utils.Images;
 
 /**
  * Class MovieImageWorker , Download and add thumbnail/fanart to moviePanel

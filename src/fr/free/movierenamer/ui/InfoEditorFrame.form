@@ -655,23 +655,14 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="studioLbl" min="-2" max="-2" attributes="1"/>
-                                  <Component id="countryLbl" alignment="0" pref="65" max="32767" attributes="1"/>
-                                  <Component id="setLbl" alignment="0" min="-2" max="-2" attributes="1"/>
-                                  <Component id="directorLbl" alignment="0" pref="65" max="32767" attributes="1"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="genreLbl" alignment="0" min="-2" max="-2" attributes="1"/>
-                                  <Component id="writerLbl" alignment="0" min="-2" max="-2" attributes="1"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="studioLbl" min="-2" max="-2" attributes="1"/>
+                          <Component id="countryLbl" alignment="0" pref="65" max="32767" attributes="1"/>
+                          <Component id="setLbl" alignment="0" min="-2" max="-2" attributes="1"/>
+                          <Component id="directorLbl" alignment="0" pref="65" max="32767" attributes="1"/>
+                          <Component id="genreLbl" alignment="0" min="-2" max="-2" attributes="1"/>
+                          <Component id="writerLbl" alignment="0" min="-2" max="-2" attributes="1"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="writerField" alignment="0" pref="415" max="32767" attributes="1"/>

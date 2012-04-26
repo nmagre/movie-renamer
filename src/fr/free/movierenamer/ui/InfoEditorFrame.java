@@ -1032,7 +1032,7 @@ public class InfoEditorFrame extends JDialog {
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
       try {
         int index = siteComboBox.getSelectedIndex();
-        String url = "";
+        String url;
         switch (index) {
           case ALLOCINE:
             url = allocineSearchUrl + URLEncoder.encode(movieInfo.getTitle(), "ISO-8859-1");

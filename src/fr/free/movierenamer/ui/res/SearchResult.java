@@ -34,7 +34,7 @@ public class SearchResult implements IIconList {
   /**
    * Constructor arguments
    * @param title Title
-   * @param imdbId ID
+   * @param id API ID
    * @param type result type (Exact,...)
    * @param thumb Imdb thumb
    */
@@ -55,7 +55,7 @@ public class SearchResult implements IIconList {
 
   /**
    * Get ID
-   * @return imdb ID
+   * @return API ID
    */
   public String getId() {
     return id;

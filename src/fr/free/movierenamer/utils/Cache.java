@@ -29,10 +29,11 @@ import javax.imageio.ImageIO;
 public class Cache {
 
   //Type
-  public static final int thumb = 0;
-  public static final int fanart = 1;
-  public static final int actor = 2;
-  public static final int theMovieDBXML = 3;
+  public static final int THUMB = 0;
+  public static final int FANART = 1;
+  public static final int ACTOR = 2;
+  public static final int TMDBXML = 3;
+  public static final int TVSHOWZIP = 4;
   private Settings setting;
 
   /**
@@ -44,7 +45,7 @@ public class Cache {
   }
 
   /**
-   * Add file to cahe
+   * Add file to cache
    * @param is File inputStream
    * @param url File url
    * @param type Cache type
@@ -96,18 +97,20 @@ public class Cache {
   private String getPath(int type) {
     String path = setting.cacheDir;
     switch (type) {
-      case thumb:
+      case THUMB:
         path = setting.thumbCacheDir;
         break;
-      case fanart:
+      case FANART:
         path = setting.fanartCacheDir;
         break;
-      case actor:
+      case ACTOR:
         path = setting.actorCacheDir;
         break;
-      case theMovieDBXML:
+      case TMDBXML:
         path = setting.xmlCacheDir;
         break;
+      case TVSHOWZIP:
+        path = setting.tvshowZipCacheDir;
       default:
         break;
     }

@@ -121,7 +121,6 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
               config.movieFilenameFormat = buffer.toString().replace("$_", "<").replace("_$", ">");
             else config.movieFilenameFormat = Utils.unEscapeXML(buffer.toString(), "UTF-8");
 
-
           // boolean
           if (name.equalsIgnoreCase("useExtensionFilter"))
             config.useExtensionFilter = buffer.toString().equals(sZero);
@@ -169,6 +168,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
             config.rmSpcChar = buffer.toString().equals(sZero);
           if (name.equalsIgnoreCase("rmDupSpace"))
             config.rmDupSpace = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("tvdbFr"))
+            config.tvdbFr = buffer.toString().equals(sZero);
 
         } catch (NullPointerException ex) {
           config.getLogger().log(Level.SEVERE, ex.getMessage());

@@ -63,10 +63,10 @@ public class ActorWorker extends SwingWorker<Void, Void> {
         
         try {
           url = new URL(actors.get(i).getThumb().replace(".png", ".jpg"));
-          image = setting.cache.getImage(url, Cache.actor);
+          image = setting.cache.getImage(url, Cache.ACTOR);
           if (image == null) {
-            setting.cache.add(url.openStream(), url.toString(), Cache.actor);
-            image = setting.cache.getImage(url, Cache.actor);
+            setting.cache.add(url.openStream(), url.toString(), Cache.ACTOR);
+            image = setting.cache.getImage(url, Cache.ACTOR);
           }
         } catch (IOException ex) {
           setting.getLogger().log(Level.SEVERE, null, ex);
@@ -75,7 +75,7 @@ public class ActorWorker extends SwingWorker<Void, Void> {
         if (image == null) image = Utils.getImageFromJAR("/image/unknown.png", getClass());
         
         if (url != null)
-          desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.actor).getAbsolutePath()).append("\"><br>");
+          desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.ACTOR).getAbsolutePath()).append("\"><br>");
         
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));

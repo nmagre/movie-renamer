@@ -59,6 +59,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Class MovieRenamer
@@ -150,7 +152,7 @@ public class MovieRenamer extends JFrame {
         if (mediaFile.type() == Media.MOVIE) {
           currentMedia = new Movie(mediaFile, MovieRenamer.this.setting.nameFilters);
         } else {
-          currentMedia = new TvShow();//A faire
+          currentMedia = new TvShow(mediaFile);//A faire
         }
         currentMedia.setMediaFile(mediaFile);
 
@@ -209,10 +211,10 @@ public class MovieRenamer extends JFrame {
             }
             break;
           case Media.TVSHOW://A faire
-            SwingWorker<TvShowInfo, Void> tworker = WorkerManager.getTvShowInfoWorker("");
+           /* SwingWorker<TvShowInfo, Void> tworker = WorkerManager.getTvShowInfoWorker("");
             TvShowInfoListener tsil = new TvShowInfoListener(tworker);
             tworker.addPropertyChangeListener(tsil);
-            tworker.execute();
+            tworker.execute();*/
             break;
         }
       }
@@ -225,7 +227,7 @@ public class MovieRenamer extends JFrame {
     dt.setActive(true);
 
     loadInterface();
-    setTitle(Settings.softName + "-" + setting.getVersion());
+    setTitle(Settings.APPNAME + "-" + setting.getVersion());
     setLocationRelativeTo(null);
 
     nfoChk.setText(setting.nfoType == 0 ? bundle.getString("nfoXbmc") : bundle.getString("nfoMediaPortal"));
@@ -245,13 +247,15 @@ public class MovieRenamer extends JFrame {
       XMLParser<ArrayList<Renamed>> mmp = new XMLParser<ArrayList<Renamed>>(setting.renamedFile);
       mmp.setParser(new MrRenamedMovie());
       try {
-        try {
-          renamedMovieFile = mmp.parseXml();
-        } catch (InterruptedException ex) {
-          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-      } catch (IOException e) {
-        setting.getLogger().log(Level.SEVERE, e.toString());
+        renamedMovieFile = mmp.parseXml();
+      } catch (ParserConfigurationException ex) {
+        setting.getLogger().log(Level.SEVERE, ex.toString());
+      } catch (SAXException ex) {
+        setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
+      } catch (InterruptedException ex) {
+        setting.getLogger().log(Level.SEVERE, ex.toString());
+      } catch (IOException ex) {
+        setting.getLogger().log(Level.SEVERE, ex.toString());
       }
     }
   }
@@ -386,7 +390,7 @@ public class MovieRenamer extends JFrame {
           boolean updated = Utils.downloadFile(url, jarFile.getAbsolutePath());
 
           if (updated) {
-            n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestartAppUpdate"), "Question", JOptionPane.YES_NO_OPTION);
+            n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + bundle.getString("wantRestartAppUpdate"), "Question", JOptionPane.YES_NO_OPTION);
             if (n == JOptionPane.YES_OPTION) {
               if (!Utils.restartApplication(jarFile)) {
                 JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
@@ -845,8 +849,7 @@ public class MovieRenamer extends JFrame {
 
 
         renamer.createNFO(createXNFO, setting.nfoType == 0 ? movie.getXbmcNFOFromMovie() : movie.getMediaPortalNFOFromMovie());
-        renamer.createThumb(createThumbnail,
-                moviePnl.getSelectedThumb(setting.thumbSize));
+        renamer.createThumb(createThumbnail, moviePnl.getSelectedThumb(setting.thumbSize));
         renamer.createFanart(createFan, moviePnl.getSelectedFanart(setting.fanartSize));
 
         mediaFile.get(index).setFile(renamer.getNewFile());
@@ -957,6 +960,7 @@ public class MovieRenamer extends JFrame {
             loading.dispose();
             return;
           }
+          
           searchResModel = new DefaultListModel();
           resultLbl.setText(bundle.getString("searchResListTitle") + " : " + objects.size());
           for (int i = 0; i < objects.size(); i++) {
@@ -1115,8 +1119,8 @@ public class MovieRenamer extends JFrame {
             movie.setFanarts(movieimage.getFanarts());
 
 
-            MovieImageWorker thumb = new MovieImageWorker(movie.getThumbs(), 0, Cache.thumb, moviePnl, setting);
-            MovieImageWorker fanart = new MovieImageWorker(movie.getFanarts(), 1, Cache.fanart, moviePnl, setting);
+            MovieImageWorker thumb = new MovieImageWorker(movie.getThumbs(), 0, Cache.THUMB, moviePnl, setting);
+            MovieImageWorker fanart = new MovieImageWorker(movie.getFanarts(), 1, Cache.FANART, moviePnl, setting);
 
             thumb.addPropertyChangeListener(new MovieImageListener(thumb, THUMBWORKER));
             fanart.addPropertyChangeListener(new MovieImageListener(fanart, FANARTWORKER));

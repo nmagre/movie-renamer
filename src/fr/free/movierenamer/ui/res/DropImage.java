@@ -59,7 +59,7 @@ public class DropImage implements DropTargetListener {
     this.moviePanel = moviePanel;
     this.setting = setting;
     this.cache = cache;
-    if (cache == Cache.thumb) thumb = true;
+    if (cache == Cache.THUMB) thumb = true;
   }
 
   @Override

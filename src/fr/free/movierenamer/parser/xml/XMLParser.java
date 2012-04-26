@@ -17,11 +17,14 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -31,16 +34,22 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XML parser
+ *
  * @param <T> XML object to parse
  * @author Nicolas Magré
  */
 public class XMLParser<T> {
 
   private String XMLFile;
+  private String ZIPFile;
   private IParser<T> itp = null;
-  private final int RETRY = 3;
 
   public XMLParser(String XMLFile) {
+    this.XMLFile = XMLFile;
+  }
+
+  public XMLParser(String ZIPFile, String XMLFile) {
+    this.ZIPFile = ZIPFile;
     this.XMLFile = XMLFile;
   }
 
@@ -48,56 +57,55 @@ public class XMLParser<T> {
     this.itp = itp;
   }
 
-  public T parseXml() throws IOException, InterruptedException {
+  public T parseXml() throws IOException, InterruptedException, ParserConfigurationException, SAXException {
 
-    if (itp == null) throw new NullPointerException("IParser null");
-    SAXParserFactory sparser = SAXParserFactory.newInstance();
+    if (itp == null) {
+      throw new NullPointerException("IParser null");
+    }
+
     SAXParser parseur;
-    T obj;
-    try {
-      parseur = sparser.newSAXParser();
-    } catch (ParserConfigurationException e) {
-      e.printStackTrace();
-      return null;
-    } catch (SAXException e) {
-      e.printStackTrace();
-      return null;
-    }
+    InputSource in = null;
 
-    for (int i = 0; i < RETRY; i++) {
-      try {
-        InputSource objFile;
-        if (isUrl()) {
-          URL url = new URL(XMLFile);
-          objFile = new InputSource(url.openStream());
-        } else {
-          File f = new File(XMLFile);
-          objFile = new InputSource(new FileInputStream(f));
+    SAXParserFactory sparser = SAXParserFactory.newInstance();
+    parseur = sparser.newSAXParser();
+
+    if (Utils.isUrl(XMLFile)) {
+      URL url = new URL(XMLFile);
+      in = new InputSource(url.openStream());
+    } else {
+      if (ZIPFile != null && Utils.isZIPFile(ZIPFile)) {
+        
+        ZipFile zf = new ZipFile(ZIPFile);
+        ZipInputStream zipIn;
+        ZipEntry zipEntry;
+
+        zipIn = new ZipInputStream(new FileInputStream(ZIPFile));
+        zipEntry = zipIn.getNextEntry();
+
+        while (zipEntry != null) {
+          if (XMLFile.equals(zipEntry.getName())) {
+            in = new InputSource(zf.getInputStream(zipEntry));
+            break;
+          }
+          zipIn.closeEntry();
+          zipEntry = zipIn.getNextEntry();
         }
-        parseur.parse(objFile, (DefaultHandler) itp);
-        if (itp == null) throw new NullPointerException("IParser null");
-        obj = itp.getObject();
-      } catch (SAXException e) {
-        break;
-      } catch (IOException e) {
-        Thread.sleep(500);
-        continue;
+        zf.close();
+        zipIn.close();
+        
+        if(in == null) throw new IOException(XMLFile + " not found in zipFile " + ZIPFile);
+      } else {
+        File f = new File(XMLFile);
+        in = new InputSource(new FileInputStream(f));
       }
-      return obj;
     }
-    throw new IOException("Failed to read after " + RETRY + " attempts");
-  }
 
-  /**
-   * Check if "XMLFILE" is an url
-   * @return
-   */
-  private boolean isUrl() {
-    try {
-      new URL(XMLFile);
-    } catch (MalformedURLException e) {
-      return false;
+    parseur.parse(in, (DefaultHandler) itp);
+
+    if (itp == null) {
+      throw new NullPointerException("IParser null");
     }
-    return true;
+
+    return itp.getObject();
   }
 }

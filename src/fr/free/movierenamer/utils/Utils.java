@@ -20,13 +20,8 @@ package fr.free.movierenamer.utils;
 import fr.free.movierenamer.media.movie.MoviePerson;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
@@ -43,6 +38,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Class Utils
+ *
  * @author Nicolas Magré
  */
 public class Utils {
@@ -67,15 +63,16 @@ public class Utils {
     String msg = "";
     try {
       msg = rb.getString(propToken);
-    } catch (MissingResourceException e) {
+    } catch (MissingResourceException ex) {
       System.err.println("Token ".concat(propToken).concat(" not in Propertyfile!"));
     }
     return msg;
   }
 
   public static String getOsName() {
-    if (OS == null)
+    if (OS == null) {
       OS = System.getProperty("os.name");
+    }
     return OS;
   }
 
@@ -98,37 +95,48 @@ public class Utils {
   }
 
   public static boolean checkFile(String fileName, Settings setting) {
-    if (!fileName.contains(DOT))
+    if (!fileName.contains(DOT)) {
       return false;
-    if (!setting.useExtensionFilter) return true;
+    }
+    if (!setting.useExtensionFilter) {
+      return true;
+    }
     String ext = fileName.substring(fileName.lastIndexOf(DOT) + 1);
     for (int i = 0; i < setting.extensions.length; i++) {
-      if (ext.equalsIgnoreCase(setting.extensions[i]))
+      if (ext.equalsIgnoreCase(setting.extensions[i])) {
         return true;
+      }
     }
     return false;
   }
 
   public static String[] removeFromArray(String[] array, int index) {
-    if (index >= array.length)
+    if (index >= array.length) {
       return null;
+    }
     String[] newArray = new String[array.length - 1];
     int pos = 0;
     for (int i = 0; i < array.length; i++) {
-      if (i != index)
+      if (i != index) {
         newArray[pos++] = array[i];
+      }
     }
     return newArray;
   }
 
   public static String arrayToString(Object[] array, String separator, int limit) {
     StringBuilder res = new StringBuilder();
-    if (array.length == 0)
+    if (array.length == 0) {
       return res.toString();
+    }
     for (int i = 0; i < array.length; i++) {
-      if(limit != 0 && i == limit) break;
+      if (limit != 0 && i == limit) {
+        break;
+      }
       res.append(array[i].toString());
-      if((i+1) != limit) res.append((i < (array.length - 1)) ? separator : "");
+      if ((i + 1) != limit) {
+        res.append((i < (array.length - 1)) ? separator : "");
+      }
     }
     return res.toString();
   }
@@ -171,17 +179,19 @@ public class Utils {
 
   public static long getDirSize(File dir) {
     long size = 0;
-    if (dir.isFile())
+    if (dir.isFile()) {
       size = dir.length();
-    else {
+    } else {
       File[] subFiles = dir.listFiles();
-      if (subFiles == null)
+      if (subFiles == null) {
         return 0;
+      }
       for (File file : subFiles) {
-        if (file.isFile())
+        if (file.isFile()) {
           size += file.length();
-        else
+        } else {
           size += getDirSize(file);
+        }
       }
     }
     return size;
@@ -192,14 +202,17 @@ public class Utils {
   }
 
   public static boolean isDigit(String text) {
-    if (text == null)
+    if (text == null) {
       return false;
-    if (text.length() == 0)
+    }
+    if (text.length() == 0) {
       return false;
+    }
 
     for (int i = 0; i < text.length(); i++) {
-      if (!Character.isDigit(text.charAt(i)) && text.charAt(i) != '.')
+      if (!Character.isDigit(text.charAt(i)) && text.charAt(i) != '.') {
         return false;
+      }
     }
     return true;
   }
@@ -207,18 +220,19 @@ public class Utils {
   public static boolean createFilePath(String fileName, boolean dir) {
     boolean ret = true;
     File f = new File(fileName);
-    if (!f.exists())
-      if (dir)
+    if (!f.exists()) {
+      if (dir) {
         ret = f.mkdirs();
-      else {
+      } else {
         File d = new File(f.getParent());
         ret = d.mkdirs();
       }
+    }
     return ret;
   }
 
-  public static boolean downloadFile(URL uri, String fileName) throws IOException {
-    InputStream is = null;
+  public static boolean downloadFile(URL uri, String fileName) throws IOException {// A refaire
+    InputStream is;
     OutputStream out = null;
     boolean downloaded = false;
     try {
@@ -226,34 +240,45 @@ public class Utils {
       File f = new File(fileName);
       if (!f.exists()) {
         File d = new File(f.getParent());
-        if (!d.exists())
-          if (!d.mkdirs()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
-        if (!f.createNewFile()) throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+        if (!d.exists()) {
+          if (!d.mkdirs()) {
+            throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+          }
+        }
+        if (!f.createNewFile()) {
+          throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+        }
       }
       out = new FileOutputStream(f);
       byte buf[] = new byte[1024];
       int len;
-      if (is.available() != 0) downloaded = true;
-      while ((len = is.read(buf)) > 0)
+      if (is.available() != 0) {
+        downloaded = true;
+      }
+      while ((len = is.read(buf)) > 0) {
         out.write(buf, 0, len);
+      }
       is.close();
       out.close();
     } catch (IOException ex) {
-      if (out != null) try {
+      if (out != null) {
+        try {
           out.close();
         } catch (IOException ex1) {
         }
+      }
       throw ex;
     }
     return downloaded;
   }
 
   public static Image getImageFromJAR(String fileName, Class cls) {
-    if (fileName == null)
+    if (fileName == null) {
       return null;
+    }
 
     Image image = null;
-    byte[] thanksToNetscape = null;
+    byte[] thanksToNetscape;
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     InputStream in = cls.getResourceAsStream(fileName);
 
@@ -279,17 +304,23 @@ public class Utils {
     boolean del = true;
     for (File fils : dir.listFiles()) {
       if (fils.isDirectory()) {
-        if (!deleteFileInDirectory(fils)) del = false;
-        else if (!fils.delete()) del = false;
-      } else if (!fils.delete()) del = false;
+        if (!deleteFileInDirectory(fils)) {
+          del = false;
+        } else if (!fils.delete()) {
+          del = false;
+        }
+      } else if (!fils.delete()) {
+        del = false;
+      }
     }
     return del;
   }
 
   public static boolean copyFile(File sourceFile, File destFile) throws IOException {
     boolean cpFile = false;
-    if (!destFile.exists())
+    if (!destFile.exists()) {
       cpFile = destFile.createNewFile();
+    }
 
     FileChannel source = null;
     FileChannel destination = null;
@@ -298,39 +329,33 @@ public class Utils {
       destination = new FileOutputStream(destFile).getChannel();
       destination.transferFrom(source, 0, source.size());
     } finally {
-      if (source != null)
+      if (source != null) {
         source.close();
-      if (destination != null)
+      }
+      if (destination != null) {
         destination.close();
+      }
     }
     return cpFile;
   }
 
-  public static void copyStream(InputStream is, OutputStream os) {
+  public static void copyStream(InputStream in, OutputStream out) throws IOException {
     final int buffer_size = 1024;
-    try {
-      byte[] bytes = new byte[buffer_size];
-      for (;;) {
-        int count = is.read(bytes, 0, buffer_size);
-        if (count == -1)
-          break;
-        os.write(bytes, 0, count);
-      }
-    } catch (Exception ex) {
+    byte[] bytes = new byte[buffer_size];
+    int p;
+    while ((p = in.read(bytes, 0, buffer_size)) != -1) {
+      out.write(bytes, 0, p);
     }
   }
 
   public static boolean restartApplication(File jarFile) throws Exception {
     String javaBin = System.getProperty("java.home") + "/bin/java";
 
-    if (!jarFile.getName().endsWith(".jar"))
+    if (!jarFile.getName().endsWith(".jar")) {
       return false;
-    String toExec[] = new String[]{javaBin, "-jar", jarFile.getPath()};
-    try {
-      Process p = Runtime.getRuntime().exec(toExec);
-    } catch (Exception e) {
-      throw e;
     }
+    String toExec[] = new String[]{javaBin, "-jar", jarFile.getPath()};
+    Process p = Runtime.getRuntime().exec(toExec);
     return true;
   }
 
@@ -338,14 +363,15 @@ public class Utils {
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
-      if (c >= 'a' && c <= 'm')
+      if (c >= 'a' && c <= 'm') {
         c += 13;
-      else if (c >= 'n' && c <= 'z')
+      } else if (c >= 'n' && c <= 'z') {
         c -= 13;
-      else if (c >= 'A' && c <= 'M')
+      } else if (c >= 'A' && c <= 'M') {
         c += 13;
-      else if (c >= 'A' && c <= 'Z')
+      } else if (c >= 'A' && c <= 'Z') {
         c -= 13;
+      }
       res.append(c);
     }
     return res.toString();
@@ -359,14 +385,18 @@ public class Utils {
     str = str.toLowerCase();
     for (int i = 0; i < str.length(); i++) {
       ch = str.charAt(i);
-      if (toUpper && Character.isLetter(ch))
+      if (toUpper && Character.isLetter(ch)) {
         if (!Character.isLetter(prevCh) || (prevCh == 'i' && ch == 'i')) {
           res.append(Character.toUpperCase(ch));
-          if (onlyFirst) toUpper = false;
-        } else
+          if (onlyFirst) {
+            toUpper = false;
+          }
+        } else {
           res.append(ch);
-      else
+        }
+      } else {
         res.append(ch);
+      }
 
       prevCh = ch;
     }
@@ -374,35 +404,36 @@ public class Utils {
   }
 
   public static String escapeXML(String text) {
-    if (text == null)
+    if (text == null) {
       return text;
+    }
 
     StringBuilder stringBuffer = new StringBuilder();
     for (int i = 0; i < text.length(); i++) {
       char ch = text.charAt(i);
       boolean needEscape = (ch == '<' || ch == '&' || ch == '>');
 
-      if (needEscape || (ch < 32) || (ch > 136))
+      if (needEscape || (ch < 32) || (ch > 136)) {
         stringBuffer.append("&#").append((int) ch).append(";");
-      else
+      } else {
         stringBuffer.append(ch);
+      }
     }
     return stringBuffer.toString();
   }
 
   public static String unEscapeXML(String text, String encode) {
-    if (text == null)
-      return text;
-
-    StringBuilder stringBuffer = new StringBuilder();
     try {
+      if (text == null) {
+        return "";
+      }
+
       text = text.replaceAll("&#x(\\w\\w);", "%$1");
       text = URLDecoder.decode(text.replaceAll("% ", "%25 "), encode);
-      return text.trim();
-    } catch (UnsupportedEncodingException e) {
-      Logger.getLogger("Movie Renamer").log(Level.SEVERE, e.getMessage());
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return stringBuffer.toString();
+    return text;
   }
 
   public static String getStackTrace(String exception, StackTraceElement[] ste) {
@@ -411,5 +442,26 @@ public class Utils {
       res.append("    ").append(ste[i].toString()).append("\n");
     }
     return res.toString();
+  }
+
+  public static boolean isZIPFile(String fileName) throws IOException {
+    File file = new File(fileName);
+    if (file.isDirectory() || file.length() < 4) {
+      return false;
+    }
+
+    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+    int magic = in.readInt();
+    in.close();
+    return (magic == 0x504b0304);
+  }
+
+  public static boolean isUrl(String text) {
+    try {
+      URL urL = new URL(text);
+    } catch (MalformedURLException e) {
+      return false;
+    }
+    return true;
   }
 }

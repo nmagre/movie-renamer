@@ -1587,7 +1587,7 @@ public class Setting extends JDialog {
     boolean langFr = setting.locale.equals("fr");
     if (langFr != frenchRbtn.isSelected()) {
       setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
-      int n = JOptionPane.showConfirmDialog(this, Settings.softName + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
+      int n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
       if (n == JOptionPane.YES_OPTION) {
         restartApp = true;
       }

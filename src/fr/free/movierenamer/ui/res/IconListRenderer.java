@@ -47,7 +47,7 @@ public class IconListRenderer<T extends IIconList> extends DefaultListCellRender
     JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
     if(index >= results.size()) return label;
-    Icon icon = null;
+    Icon icon;
     IIconList iicon = results.get(index);
     icon = iicon.getIcon();
 

@@ -121,7 +121,7 @@ public class Renamer {
     if (!newFileNameNoExt.equals(oldFileNameNoExt) || !newPath.equals("")) {
       newFile = new File(oldFile.getParent() + File.separator + newPath + newFileName);
       if (newFile.exists()) {
-        int n = JOptionPane.showConfirmDialog(null, Settings.softName + Utils.SPACE + bundle.getString("alreadyExist"), "Question", JOptionPane.YES_NO_OPTION);
+        int n = JOptionPane.showConfirmDialog(null, Settings.APPNAME + Utils.SPACE + bundle.getString("alreadyExist"), "Question", JOptionPane.YES_NO_OPTION);
         if (n != JOptionPane.YES_OPTION){
           cancel = true;
           return true;
@@ -224,9 +224,9 @@ public class Renamer {
     if (create) {
       setting.getLogger().log(Level.INFO, "Create thumb : {0}", newThumb);
       try {
-        File file = setting.cache.get(url, Cache.thumb);
-        if (file == null) setting.cache.add(url.openStream(), url.toString(), Cache.thumb);
-        Utils.copyFile(setting.cache.get(url, Cache.thumb), newThumb);
+        File file = setting.cache.get(url, Cache.THUMB);
+        if (file == null) setting.cache.add(url.openStream(), url.toString(), Cache.THUMB);
+        Utils.copyFile(setting.cache.get(url, Cache.THUMB), newThumb);
       } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }
@@ -255,9 +255,9 @@ public class Renamer {
     if (create) {
       setting.getLogger().log(Level.INFO, "Create fanart : {0}", newFanart);
       try {
-        File file = setting.cache.get(url, Cache.fanart);
-        if (file == null) setting.cache.add(url.openStream(), url.toString(), Cache.fanart);
-        Utils.copyFile(setting.cache.get(url, Cache.fanart), newFanart);
+        File file = setting.cache.get(url, Cache.FANART);
+        if (file == null) setting.cache.add(url.openStream(), url.toString(), Cache.FANART);
+        Utils.copyFile(setting.cache.get(url, Cache.FANART), newFanart);
       } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       }

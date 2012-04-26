@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Class TheMovieDbImageWorker , get images from theMovieDB by imdbID
@@ -63,8 +65,8 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
     // Try to get XML from theMovieDB
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/";
-      URL url = new URL(setting.imdbAPIUrlMovieId + xmlUrl + imdbId);
-      File f = setting.cache.get(url, Cache.theMovieDBXML);
+      URL url = new URL(setting.tmdbAPIUrlMovieImdb + xmlUrl + imdbId);
+      File f = setting.cache.get(url, Cache.TMDBXML);
       if (f == null) {
         InputStream in;
         try {
@@ -83,8 +85,8 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
             }
           }
         }
-        setting.cache.add(in, url.toString(), Cache.theMovieDBXML);
-        f = setting.cache.get(url, Cache.theMovieDBXML);
+        setting.cache.add(in, url.toString(), Cache.TMDBXML);
+        f = setting.cache.get(url, Cache.TMDBXML);
       }
 
       // Parse TheMovieDb XML
@@ -104,6 +106,10 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
             fanarts.add(res.getFanarts().get(i));
           }
         }
+      } catch (ParserConfigurationException ex) {
+        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
+      } catch (SAXException ex) {
+        setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
       } catch (IOException ex) {
         setting.getLogger().log(Level.SEVERE, ex.toString());
       } catch (InterruptedException ex) {

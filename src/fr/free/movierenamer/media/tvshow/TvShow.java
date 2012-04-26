@@ -27,22 +27,24 @@ import fr.free.movierenamer.utils.Settings;
  */
 public class TvShow implements Media {
 
-  private MediaFile mediaFile;
-
-  //A faire
+  private MediaFile tvShowFile;
+  private String tvShowId;
+  private String search;
   
-  public TvShow(){
-    
+  public TvShow(MediaFile tvShowFile){
+    this.tvShowFile = tvShowFile;
+    String filName = tvShowFile.getFile().getName();
+    search = filName.substring(0, filName.indexOf(" "));
   }
   
   @Override
   public MediaFile getMediaFile() {
-    return mediaFile;
+    return tvShowFile;
   }
 
   @Override
-  public void setMediaFile(MediaFile mediaFile) {
-    this.mediaFile = mediaFile;
+  public void setMediaFile(MediaFile tvShowFile) {
+    this.tvShowFile = tvShowFile;
   }
 
   @Override
@@ -52,12 +54,12 @@ public class TvShow implements Media {
 
   @Override
   public String getSearch() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return search;
   }
 
   @Override
   public void setSearch(String search) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    this.search = search;
   }
 
   @Override
@@ -66,8 +68,8 @@ public class TvShow implements Media {
   }
 
   @Override
-  public void clear() {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public void clear() {// A faire
+    
   }
 
   @Override
@@ -77,6 +79,6 @@ public class TvShow implements Media {
 
   @Override
   public void setId(String id) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    tvShowId = id;
   }
 }

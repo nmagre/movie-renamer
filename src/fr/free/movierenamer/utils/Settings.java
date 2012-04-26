@@ -29,34 +29,38 @@ import javax.swing.UIManager;
  */
 public class Settings {
 
-  public static final String softName = "Movie Renamer";
-  private final String VERSION = Utils.getRbTok("apps.version");
+  public static final String APPNAME = "Movie Renamer";
+  private final String version = Utils.getRbTok("apps.version");
   private final String userPath = System.getProperty("user.home");
   private final String apkMdb = "BQRjATHjATV3Zwx2AwWxLGOvLwEwZ2WwZQWyBGyvMQx=";
   private final String apkTdb = "DmIOExH5DwV1AwZkZRZ3Zt==";
   private final String movieRenamerFolder = Utils.isWindows() ? "Movie_Renamer" : ".Movie_Renamer";
   //Cache
   public Cache cache;
-  //Files
-  public final String configFile = userPath + File.separator + movieRenamerFolder + File.separator + "conf" + File.separator + "movie_renamer.conf";
   public final String cacheDir = userPath + File.separator + movieRenamerFolder + File.separator + "cache" + File.separator;
-  public final String renamedFile = cacheDir + "renamed.xml";
   public final String imageCacheDir = cacheDir + "images" + File.separator;
   public final String thumbCacheDir = imageCacheDir + "thumbnails" + File.separator;
   public final String fanartCacheDir = imageCacheDir + "fanarts" + File.separator;
   public final String actorCacheDir = imageCacheDir + "actors" + File.separator;
   public final String xmlCacheDir = cacheDir + "XML" + File.separator;
+  public final String tvshowZipCacheDir = cacheDir + "Zip" + File.separator;
+  //Files
+  public final String configFile = userPath + File.separator + movieRenamerFolder + File.separator + "conf" + File.separator + "movie_renamer.conf";
+  public final String renamedFile = cacheDir + "renamed.xml";
   private final String logFile = userPath + File.separator + movieRenamerFolder + File.separator + "Logs" + File.separator + "movie_renamer.log";
   //Logger
-  private static final Logger logger = Logger.getLogger("Movie Renamer Logger");
+  private static final Logger LOGGER = Logger.getLogger("Movie Renamer Logger");
   //IMDB
   public final String imdbSearchUrl = "http://www.imdb.com/find?s=tt&q=";
   public final String imdbMovieUrl = "http://www.imdb.com/title/";
   public final String imdbSearchUrl_fr = "http://www.imdb.fr/find?s=tt&q=";
   public final String imdbMovieUrl_fr = "http://www.imdb.fr/title/";
   //The Movie DB
-  public final String imdbAPIUrlMovieId = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
-  public final String imdbAPIUrlMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
+  public final String tmdbAPIUrlMovieImdb = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
+  //public final String tmdbAPIUrlMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
+  //Tvdb
+  public final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";
+  public static final String tvdbAPIUrlTvShowBanners = "http://thetvdb.com/banners/";
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
@@ -138,6 +142,7 @@ public class Settings {
   public boolean autoSearchMovie = true;
   public boolean rmSpcChar = true;
   public boolean rmDupSpace = true;
+  public boolean tvdbFr = false;
 
   /**
    * Constructor
@@ -151,9 +156,11 @@ public class Settings {
     Utils.createFilePath(logFile, false);
     try {
       FileHandler fh = new FileHandler(logFile);
-      logger.addHandler(fh);
+      LOGGER.addHandler(fh);
     } catch (SecurityException e) {
+      LOGGER.log(Level.SEVERE, e.getMessage());
     } catch (IOException e) {
+      LOGGER.log(Level.SEVERE, e.getMessage());
     }
     cache = new Cache(this);
   }
@@ -163,12 +170,12 @@ public class Settings {
    * @return True if setting was saved, False otherwise
    */
   public boolean saveSetting() {
-    logger.log(Level.INFO, "Save configuration");
+    LOGGER.log(Level.INFO, "Save configuration");
     try {
       String endl = Utils.ENDLINE;
       BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), "UTF-8"));
       out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl);
-      out.write("<Movie_Renamer Version=\"" + VERSION + "\">" + endl);
+      out.write("<Movie_Renamer Version=\"" + version + "\">" + endl);
       out.write("  <setting>" + endl);
 
       // Variables
@@ -214,12 +221,13 @@ public class Settings {
       out.write("    <autoSearchMovie>" + (autoSearchMovie ? 0 : 1) + "</autoSearchMovie>" + endl);
       out.write("    <rmSpcChar>" + (rmSpcChar ? 0 : 1) + "</rmSpcChar>" + endl);
       out.write("    <rmDupSpace>" + (rmDupSpace ? 0 : 1) + "</rmDupSpace>" + endl);
+      out.write("    <tvdbFr>" + (tvdbFr ? 0 : 1) + "</tvdbFr>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);
       out.close();
     } catch (IOException e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      LOGGER.log(Level.SEVERE, e.getMessage());
       return false;
     }
     return true;
@@ -230,7 +238,7 @@ public class Settings {
    * @return Movie Renamer Version
    */
   public String getVersion() {
-    return VERSION;
+    return version;
   }
 
   /**
@@ -238,6 +246,6 @@ public class Settings {
    * @return Movie Renamer logger
    */
   public Logger getLogger() {
-    return logger;
+    return LOGGER;
   }
 }
