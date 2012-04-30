@@ -86,6 +86,16 @@
             <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="topTb.add(Box.createHorizontalGlue());"/>
           </AuxValues>
         </Component>
+        <Component class="javax.swing.JComboBox" name="modeCBox">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modeCBoxActionPerformed"/>
+          </Events>
+        </Component>
         <Component class="javax.swing.JButton" name="updateBtn">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">

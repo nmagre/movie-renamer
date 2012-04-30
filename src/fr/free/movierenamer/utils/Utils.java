@@ -464,4 +464,12 @@ public class Utils {
     }
     return true;
   }
+  public static boolean isRootDir(File dir){
+    if(!dir.isDirectory()) return false;
+    File[] roots = File.listRoots();
+    for(File root: roots){
+      if(root.equals(dir)) return true;
+    }
+    return false;
+  }  
 }

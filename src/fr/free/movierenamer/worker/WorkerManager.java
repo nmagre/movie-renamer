@@ -77,6 +77,6 @@ public abstract class WorkerManager {
   
   //A faire
   public static SwingWorker<TvShowInfo, Void> getTvShowInfoWorker(String... args){
-    return null;
+    return new TvdbInfoWorker();
   }
 }

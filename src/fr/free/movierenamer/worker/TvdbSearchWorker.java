@@ -17,17 +17,14 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.TvdbTvShow;
 import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.ui.res.SearchResult;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Image;
 import java.awt.color.CMMException;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;

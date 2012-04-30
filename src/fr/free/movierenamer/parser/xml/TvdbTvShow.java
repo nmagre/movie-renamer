@@ -65,8 +65,11 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("series")){
-      if((french && currentLanguage.equals("fr")) || !french)
-      results.add(new SearchResult(currentName, currentId, "TvShow", Settings.tvdbAPIUrlTvShowBanners + currentThumb));
+      if((french && currentLanguage.equals("fr")) || !french){
+        String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowBanners + currentThumb:null;
+        results.add(new SearchResult(currentName, currentId, "TvShow", thumb));
+      }
+      currentName = currentId = currentThumb = currentLanguage = "";
       series = false;
     }
     if(series){

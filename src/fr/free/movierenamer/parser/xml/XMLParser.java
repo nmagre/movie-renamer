@@ -69,7 +69,7 @@ public class XMLParser<T> {
     SAXParserFactory sparser = SAXParserFactory.newInstance();
     parseur = sparser.newSAXParser();
 
-    if (Utils.isUrl(XMLFile)) {
+    if (Utils.isUrl(XMLFile)) {//A refaire ,openStrea can failed
       URL url = new URL(XMLFile);
       in = new InputSource(url.openStream());
     } else {

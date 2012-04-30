@@ -20,6 +20,7 @@ package fr.free.movierenamer.media.tvshow;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.TvShowNameMatcher;
 
 /**
  *
@@ -30,13 +31,14 @@ public class TvShow implements Media {
   private MediaFile tvShowFile;
   private String tvShowId;
   private String search;
-  
-  public TvShow(MediaFile tvShowFile){
+
+  public TvShow(MediaFile tvShowFile) {
     this.tvShowFile = tvShowFile;
-    String filName = tvShowFile.getFile().getName();
-    search = filName.substring(0, filName.indexOf(" "));
+    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile);    
+    search = tvMatcher.getTvShowName();
+    System.out.println("\n  Tv show Title : " + search + "\n");
   }
-  
+
   @Override
   public MediaFile getMediaFile() {
     return tvShowFile;
@@ -53,7 +55,7 @@ public class TvShow implements Media {
   }
 
   @Override
-  public String getSearch() {
+  public String getSearch() {//A refaire
     return search;
   }
 
@@ -69,7 +71,6 @@ public class TvShow implements Media {
 
   @Override
   public void clear() {// A faire
-    
   }
 
   @Override

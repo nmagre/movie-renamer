@@ -38,9 +38,11 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  * Class InfoEditorFrame
+ *
  * @author Nicolas Magré
  */
 public class InfoEditorFrame extends JDialog {
@@ -77,7 +79,7 @@ public class InfoEditorFrame extends JDialog {
     this.movieInfo = movieInfo;
 
     initComponents();
-    setValue();    
+    setValue();
     setTitle("Movie Renamer Editor - " + movieInfo.getTitle());
     setLocationRelativeTo(parent);
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
@@ -96,11 +98,12 @@ public class InfoEditorFrame extends JDialog {
 
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2)
+        if (e.getClickCount() == 2) {
           if (actorsList.getSelectedIndex() != -1) {
             String strActor = (String) ((MoviePerson) listModel.getElementAt(actorsList.getSelectedIndex())).getName();
             JOptionPane.showMessageDialog(InfoEditorFrame.this, "", strActor, JOptionPane.INFORMATION_MESSAGE, null);
           }
+        }
       }
     });
 
@@ -145,6 +148,18 @@ public class InfoEditorFrame extends JDialog {
     setCField.setInitValue(movieInfo.getSetString(" | ", 0));
     writerCField.setInitValue(movieInfo.getWritersString(" | ", 0));
     countryCField.setInitValue(movieInfo.getCountriesString(" | ", 0));
+  }
+
+  public void openEditor(final JTextField field, String separator) {
+    Editor editor = new Editor(field.getText(), separator);
+    editor.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        field.setText((String) pce.getNewValue());
+      }
+    });
+    editor.setVisible(true);
   }
 
   @SuppressWarnings("unchecked")
@@ -917,75 +932,27 @@ public class InfoEditorFrame extends JDialog {
     }//GEN-LAST:event_jButton15MouseReleased
 
     private void editStudioBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editStudioBtnActionPerformed
-      Editor editor = new Editor(studioField.getText(), " \\| ");
-      editor.addPropertyChangeListener(new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent pce) {
-          studioField.setText((String) pce.getNewValue());
-        }
-      });
-      editor.setVisible(true);
+      openEditor(studioField, " \\| ");
     }//GEN-LAST:event_editStudioBtnActionPerformed
 
     private void editDirectorBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDirectorBtnActionPerformed
-      Editor editor = new Editor(directorField.getText(), " \\| ");
-      editor.addPropertyChangeListener(new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent pce) {
-          directorField.setText((String) pce.getNewValue());
-        }
-      });
-      editor.setVisible(true);
+      openEditor(directorField, " \\| ");
     }//GEN-LAST:event_editDirectorBtnActionPerformed
 
     private void editGenreBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editGenreBtnActionPerformed
-      Editor editor = new Editor(genreField.getText(), " \\| ");
-      editor.addPropertyChangeListener(new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent pce) {
-          genreField.setText((String) pce.getNewValue());
-        }
-      });
-      editor.setVisible(true);
+      openEditor(genreField, " \\| ");
     }//GEN-LAST:event_editGenreBtnActionPerformed
 
     private void editSetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editSetBtnActionPerformed
-      Editor editor = new Editor(setField.getText(), " \\| ");
-      editor.addPropertyChangeListener(new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent pce) {
-          setField.setText((String) pce.getNewValue());
-        }
-      });
-      editor.setVisible(true);
+      openEditor(setField, " \\| ");
     }//GEN-LAST:event_editSetBtnActionPerformed
 
     private void editWriterBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editWriterBtnActionPerformed
-      Editor editor = new Editor(writerField.getText(), " \\| ");
-      editor.addPropertyChangeListener(new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent pce) {
-          writerField.setText((String) pce.getNewValue());
-        }
-      });
-      editor.setVisible(true);
+      openEditor(writerField, " \\| ");
     }//GEN-LAST:event_editWriterBtnActionPerformed
 
     private void editCountryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCountryBtnActionPerformed
-      Editor editor = new Editor(countryField.getText(), " \\| ");
-      editor.addPropertyChangeListener(new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent pce) {
-          countryField.setText((String) pce.getNewValue());
-        }
-      });
-      editor.setVisible(true);
+      openEditor(countryField, " \\| ");
     }//GEN-LAST:event_editCountryBtnActionPerformed
 
     private void cancleBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancleBtnActionPerformed
@@ -1024,7 +991,7 @@ public class InfoEditorFrame extends JDialog {
         person.add(new MoviePerson(array.get(i), null, MoviePerson.WRITER));
       }
       movieInfo.setDirectors(person);
-      
+
       firePropertyChange("movieInfo", null, movieInfo);
       dispose();
     }//GEN-LAST:event_applyBtnActionPerformed

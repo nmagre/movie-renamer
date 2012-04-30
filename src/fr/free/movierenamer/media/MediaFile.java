@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package fr.free.movierenamer.media;
 
 import fr.free.movierenamer.ui.res.IIconList;
@@ -25,6 +24,7 @@ import javax.swing.Icon;
 
 /**
  * Class MovieFile
+ *
  * @author Nicolas Magré
  */
 public class MediaFile implements IIconList {
@@ -37,13 +37,14 @@ public class MediaFile implements IIconList {
 
   /**
    * Constructor arguments
+   *
    * @param file A movie file
    * @param renamed Already rename
    * @param wasRenamed Movie was renamed
    * @param warning Warning on the file
    * @param showPath Display path in toString()
    */
-  public MediaFile(File file, int type, boolean renamed, boolean wasRenamed, boolean showPath){
+  public MediaFile(File file, int type, boolean renamed, boolean wasRenamed, boolean showPath) {
     this.file = file;
     this.type = type;
     this.wasRenamed = wasRenamed;
@@ -53,66 +54,86 @@ public class MediaFile implements IIconList {
 
   /**
    * Get file
+   *
    * @return Meda file
    */
-  public File getFile(){
+  public File getFile() {
     return file;
   }
 
   /**
    * Set file
+   *
    * @param file File
    */
-  public void setFile(File file){
+  public void setFile(File file) {
     this.file = file;
   }
 
   /**
    * Set renamed
+   *
    * @param renamed Renamed
    */
-  public void setRenamed(boolean renamed){
+  public void setRenamed(boolean renamed) {
     this.renamed = renamed;
   }
 
   /**
    * Is renamed
+   *
    * @return True is media is renamed, fals otherwise
    */
-  public boolean isRenamed(){
+  public boolean isRenamed() {
     return renamed;
   }
 
   /**
    * Was renamed
+   *
    * @return True is media was renamed, fals otherwise
    */
-  public boolean wasRenamed(){
+  public boolean wasRenamed() {
     return wasRenamed;
   }
 
   /**
    * Get file type
+   *
    * @return Media.MOVIE or Media.TVSHOW
    */
-  public int type(){
+  public int getType() {
     return type;
   }
 
   /**
+   * Set file type
+   *
+   * @return Media.MOVIE or Media.TVSHOW
+   */
+  public void setType(int type) {
+    this.type = type;
+  }
+
+  /**
    * Get media icon to display in list
+   *
    * @return Icon
    */
   @Override
   public Icon getIcon() {
-    if(renamed) return Utils.MOVIERENAMEDICON;
-    if(wasRenamed) return Utils.MOVIEWASRENAMEDICON;
+    if (renamed) {
+      return Utils.MOVIERENAMEDICON;
+    }
+    if (wasRenamed) {
+      return Utils.MOVIEWASRENAMEDICON;
+    }
     //if(warning) return Utils.WARNINGICON;
     return Utils.MOVIEICON;
   }
 
   @Override
-  public String toString(){
-    return (showPath ? file.toString():file.getName());
+  public String toString() {
+    return (showPath ? file.toString() : file.getName());
   }
 }

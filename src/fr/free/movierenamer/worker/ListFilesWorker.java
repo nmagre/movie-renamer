@@ -148,8 +148,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    * @param file File to check
    * @return
    */
-  private boolean isMovie(File file) {//A refaire
-    if (file.length() < 400000000) return false;
+  static public boolean isMovie(File file) {//A refaire
     String filename = file.getName();
     if (searchPattern(filename, "\\d++x\\d++.?\\d++x\\d++")) return false;
     if (searchPattern(filename, "\\d++[eE]\\d\\d")) return false;
@@ -158,6 +157,8 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
     if (searchPattern(filename, "\\d++x\\d++")) return false;
     if (searchPattern(filename, "\\(\\d\\d\\d\\)")) return false;
     if (searchPattern(filename, "[eE][pP].?\\d++")) return false;
+    if (file.getParent().matches(".*((?i:season)|(?i:saison)).*")) return false;
+    //if (searchPattern(filename, "(?<!\\p{Alnum})[Ss](\\d{1,2}|\\d{4})[^\\p{Alnum}]{0,3}[Ee]((\\d{1,2}\\D?)+)(?!\\p{Digit})")) return false;
     return true;
   }
 
@@ -167,7 +168,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    * @param sPattern Pattern
    * @return True if pattern is find in string , False otherwise
    */
-  private boolean searchPattern(String text, String sPattern) {
+  private static boolean searchPattern(String text, String sPattern) {
     Pattern pattern = Pattern.compile(sPattern);
     Matcher searchMatcher = pattern.matcher(text);
     if (searchMatcher.find()) return true;
