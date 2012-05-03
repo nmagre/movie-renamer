@@ -31,17 +31,50 @@ public class SxE {
     episode = -1;
   }
 
-  public SxE(int saison, int episode) {
-    this.season = saison;
+  public SxE(int season, int episode) {
+    this.season = season;
     this.episode = episode;
   }
 
-  public int getSaison() {
+  public int getSeason() {
     return season;
   }
 
   public int getEpisode() {
     return episode;
+  }
+  
+  public boolean isValid(){
+    return season !=-1 && episode != -1;
+  }
+  
+  public boolean isPartial(){
+    return season != -1 || episode != -1;
+  }
+  
+  public void setEpisode(int episode){
+    this.episode = episode;
+  }
+  
+  public void setSeason(int season){
+    this.season = season;
+  }
+  
+  @Override
+  public boolean equals(Object obj){
+    if (obj instanceof SxE) {
+			SxE sxe = (SxE) obj;
+			return sxe.getEpisode() == episode && sxe.getSeason() == season;
+		}
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 29 * hash + this.season;
+    hash = 29 * hash + this.episode;
+    return hash;
   }
 
   @Override

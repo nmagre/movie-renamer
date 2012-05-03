@@ -26,42 +26,47 @@ import javax.swing.SwingWorker;
 
 /**
  * Class ImdbInfoWorker , get movie information from imdb
+ *
  * @author Magré Nicolas
  */
 public class ImdbInfoWorker extends SwingWorker<MovieInfo, Void> {
 
   private HttpGet http;
-  private ImdbParser imdbParser;
   private String imdbId;
+  private Settings setting;
 
   /**
    * Constructor arguments
+   *
    * @param parent Parent component to center joptionpane
    * @param imdbId Imdb Id
    * @param setting Movie Renamer settings
    * @throws MalformedURLException
    */
   public ImdbInfoWorker(String imdbId, Settings setting) throws MalformedURLException {
-    http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr:setting.imdbMovieUrl) + imdbId + "/combined");
-    imdbParser = new ImdbParser(setting);
+    http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + imdbId + "/combined");
+    this.setting = setting;
     this.imdbId = imdbId;
   }
 
   @Override
   protected MovieInfo doInBackground() {
+
     setProgress(0);
     String res;
-    try{
+    try {
       res = http.sendGetRequest(true, "ISO-8859-15");
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       //A refaire
       setProgress(100);
       return null;
     }
     setProgress(80);
+
+    ImdbParser imdbParser = new ImdbParser(setting);
     MovieInfo mvi = imdbParser.getMovieInfo(res);
     mvi.setImdbId(imdbId);
+    
     setProgress(100);
     return mvi;
   }

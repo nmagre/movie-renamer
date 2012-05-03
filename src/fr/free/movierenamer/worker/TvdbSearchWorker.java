@@ -40,8 +40,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- *
- * @author duffy
+ * Class TvdbSearchWorker
+ * @author Nicolas Magre
  */
 public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
 

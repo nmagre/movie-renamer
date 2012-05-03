@@ -18,19 +18,67 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.parser.xml.TvdbTvShowInfo;
+import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.Settings;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.swing.SwingWorker;
+import javax.xml.bind.DatatypeConverter;
 
 /**
- *
+ * Class TvdbInfoWorker
  * @author Nicolas Magré
  */
 
 //A faire
 public class TvdbInfoWorker extends SwingWorker<TvShowInfo, Void>{
 
+  private String tvdbId;
+  private Settings setting;
+  
+   public TvdbInfoWorker(String tvdbId, Settings setting) throws MalformedURLException {
+    this.tvdbId = tvdbId;
+    this.setting = setting;
+  }
+  
   @Override
   protected TvShowInfo doInBackground() throws Exception {
-    setProgress(100);
-    return null;
+    System.out.println("Tv Show info worker start");
+    String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
+      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + tvdbId + "/all/" + (setting.tvdbFr ? "fr":"en") + ".zip");
+      File f = setting.cache.get(url, Cache.TVSHOWZIP);
+      if (f == null) {
+        InputStream in;
+        try {
+          in = url.openStream();
+        } catch (IOException e) {
+          try {
+            Thread.sleep(1200);
+            in = url.openStream();
+          } catch (IOException ex) {
+            try {
+              Thread.sleep(600);
+              in = url.openStream();
+            } catch (IOException exe) {
+              //A faire , traiter erreur
+              return null;
+            }
+          }
+        }
+        setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
+        f = setting.cache.get(url, Cache.TVSHOWZIP);
+      }
+      
+      TvShowInfo tvShowInfo;
+      XMLParser<TvShowInfo> xmp = new XMLParser<TvShowInfo>(f.getAbsolutePath(), (setting.tvdbFr ? "fr":"en") + ".xml");
+      xmp.setParser(new TvdbTvShowInfo());      
+      tvShowInfo = xmp.parseXml();
+      
+    return tvShowInfo;
   }  
 }

@@ -60,7 +60,7 @@ public class Settings {
   //public final String tmdbAPIUrlMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
   //Tvdb
   public final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";
-  public static final String tvdbAPIUrlTvShowBanners = "http://thetvdb.com/banners/";
+  public static final String tvdbAPIUrlTvShowImage = "http://thetvdb.com/banners/";
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
@@ -153,6 +153,7 @@ public class Settings {
     Utils.createFilePath(thumbCacheDir, true);
     Utils.createFilePath(actorCacheDir, true);
     Utils.createFilePath(xmlCacheDir, true);
+    Utils.createFilePath(tvshowZipCacheDir, true);
     Utils.createFilePath(logFile, false);
     try {
       FileHandler fh = new FileHandler(logFile);

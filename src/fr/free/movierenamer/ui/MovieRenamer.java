@@ -44,6 +44,7 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,43 +209,46 @@ public class MovieRenamer extends JFrame {
 
     @Override
     public void valueChanged(ListSelectionEvent evt) {
+      try {
+        if (searchResultList.getSelectedIndex() == -1) {
+          return;
+        }
 
-      if (searchResultList.getSelectedIndex() == -1) {
-        return;
-      }
+        if (!loading.isShown()) {
+          loadDial(false);
+        }
 
-      if (!loading.isShown()) {
-        loadDial(false);
-      }
+        clearInterface(false, false);
 
-      clearInterface(false, false);
+        currentMedia.clear();
 
-      currentMedia.clear();
+        SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
+        currentMedia.setId(sres.getId());
 
-      SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
-      currentMedia.setId(sres.getId());
-
-      switch (currentMedia.getType()) {
-        case Media.MOVIE:
-          //Get movie info
-          SwingWorker<MovieInfo, Void> mworker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
-          mworker.addPropertyChangeListener(new MovieInfoListener(mworker));
-          mworker.execute();
-          //Get movie images
-          if (MovieRenamer.this.setting.movieInfoPanel) {
-            if (MovieRenamer.this.setting.thumb || MovieRenamer.this.setting.fanart) {
-              SwingWorker<MovieImage, Void> tmdbiw = WorkerManager.getMovieImageWorker(sres.getId(), MovieRenamer.this.setting);
-              tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
-              tmdbiw.execute();
+        switch (currentMedia.getType()) {
+          case Media.MOVIE:
+            //Get movie info
+            SwingWorker<MovieInfo, Void> mworker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
+            mworker.addPropertyChangeListener(new MovieInfoListener(mworker));
+            mworker.execute();
+            //Get movie images
+            if (MovieRenamer.this.setting.movieInfoPanel) {
+              if (MovieRenamer.this.setting.thumb || MovieRenamer.this.setting.fanart) {
+                SwingWorker<MovieImage, Void> tmdbiw = WorkerManager.getMovieImageWorker(sres.getId(), MovieRenamer.this.setting);
+                tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
+                tmdbiw.execute();
+              }
             }
-          }
-          break;
-        case Media.TVSHOW://A faire
-          SwingWorker<TvShowInfo, Void> tworker = WorkerManager.getTvShowInfoWorker("");
-          TvShowInfoListener tsil = new TvShowInfoListener(tworker);
-          tworker.addPropertyChangeListener(tsil);
-          tworker.execute();
-          break;
+            break;
+          case Media.TVSHOW:
+            SwingWorker<TvShowInfo, Void> tworker = WorkerManager.getTvShowInfoWorker(sres.getId(), MovieRenamer.this.setting);
+            TvShowInfoListener tsil = new TvShowInfoListener(tworker);
+            tworker.addPropertyChangeListener(tsil);
+            tworker.execute();
+            break;
+        }
+      } catch (MalformedURLException ex) {
+        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
   };
@@ -281,7 +285,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private void loadInterface() {
+  private void loadInterface() {//A refaire
     
     int c = 0;
     switch(c){
@@ -318,7 +322,7 @@ public class MovieRenamer extends JFrame {
     centerPnl.repaint();
   }
 
-  private void clearInterface(boolean movieList, boolean searchList) {
+  private void clearInterface(boolean movieList, boolean searchList) {//A refaire
 
     if (currentMedia != null) {
       currentMedia.clear();
@@ -720,7 +724,7 @@ public class MovieRenamer extends JFrame {
     }//GEN-LAST:event_exitBtnActionPerformed
 
     private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
-
+      //A refaire
       final Setting set = new Setting(setting, this);
       set.addWindowListener(new WindowListener() {
 
@@ -1159,7 +1163,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private class MovieInfoListener implements PropertyChangeListener {
+  private class MovieInfoListener implements PropertyChangeListener {//A refaire
 
     private SwingWorker imdbiw;
 

@@ -17,38 +17,30 @@
  */
 package fr.free.movierenamer.parser.xml;
 
-import fr.free.movierenamer.ui.res.SearchResult;
-import fr.free.movierenamer.utils.Settings;
-import java.util.ArrayList;
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Class TvdbTvShow , tvShow search result XML parser
+ *
  * @author Nicolas Magré
  */
-public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
+public class TvdbTvShowInfo extends DefaultHandler implements IParser<TvShowInfo> {
 
   private StringBuffer buffer;
   private boolean french;
-  private ArrayList<SearchResult> results;
-  private String currentId;
-  private String currentName;
-  private String currentThumb;
-  private String currentLanguage;
-  private boolean series;
+  private TvShowInfo tvShowInfo;
   
-  public TvdbTvShow(boolean french) {
+  public TvdbTvShowInfo(){
     super();
-    this.french = french;
-  }
-
+  } 
+  
+  
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    results = new ArrayList<SearchResult>();
-    series = false;
+    tvShowInfo = new TvShowInfo();
   }
 
   @Override
@@ -59,24 +51,12 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("series")) series = true;
+    
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("series")){
-      if((french && currentLanguage.equals("fr")) || !french){
-        String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb:null;
-        results.add(new SearchResult(currentName, currentId, "TvShow", thumb));
-      }
-      currentName = currentId = currentThumb = currentLanguage = "";
-      series = false;
-    }
-    if(series){
-      if (name.equalsIgnoreCase("seriesid")) currentId = buffer.toString();
-      if (name.equalsIgnoreCase("language")) currentLanguage = buffer.toString();
-      if (name.equalsIgnoreCase("SeriesName")) currentName = buffer.toString();
-      if (name.equalsIgnoreCase("banner")) currentThumb = buffer.toString();
     }
     buffer = null;
   }
@@ -89,7 +69,7 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   }
   
   @Override
-  public ArrayList<SearchResult> getObject() {
-    return results;
-  }
+  public TvShowInfo getObject() {
+    return tvShowInfo;
+  }  
 }

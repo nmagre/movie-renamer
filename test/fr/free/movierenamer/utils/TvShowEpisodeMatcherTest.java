@@ -39,7 +39,7 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(1, 2), "Code Lisa - [1x02] - Télécommande de choc.avi");
     epMatchesTest.put(new SxE(1, 11), "Dexter.S01E11.FRENCH.HDRIp.avi");
     epMatchesTest.put(new SxE(1, 3), "H Saison 1 - Ep. 03 - Le Manuscrit.avi");
-    epMatchesTest.put(new SxE(8, 43), "H Season 8 - Ep. 43 - en test.avi");
+    epMatchesTest.put(new SxE(8, 43), "H Season 8 - Ep 43 - en test.avi");
     epMatchesTest.put(new SxE(2, 3), "H Saison 2 Vol. 1 - Ep. 3 - Une Histoire de Démission.avi");
     epMatchesTest.put(new SxE(3, 1), "How i met your mother S03 E01 VF.avi");
     epMatchesTest.put(new SxE(3, 9), "How i met your mother 0309.avi");
@@ -64,6 +64,12 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(8, 3), "(803) Stargate Sg1 - Season 8 - Ep 03 - Quarantaine - fr.avi");
     epMatchesTest.put(new SxE(10, 9), "Stargate Sg1 - Season 10 - Episode 9 - unknown.avi");
     epMatchesTest.put(new SxE(9, 9), "Stargate SG-1 - 9x09 - Prototype (HD 720x400 Fr).avi");
+    //With folder
+    epMatchesTest.put(new SxE(3, 5), "S3/Dingo - Ep. 05 - Cinéma de minuit sur la ville.avi");
+    epMatchesTest.put(new SxE(1, 51), "Saison 03/La bande à Dingo - 1x51 - Pat au Paddoc.FR.avi");
+    epMatchesTest.put(new SxE(3, 11), "Prison Break/P break s3/Episode 11.avi");
+    epMatchesTest.put(new SxE(9, 2), "Season 9/SIMPSONS - 180 s09e02 - le principal principal.avi");
+    epMatchesTest.put(new SxE(4, 3), "saison 4/03 - Une fille de clown 720p 800x600.avi");
     return epMatchesTest;
   }
 
@@ -79,14 +85,10 @@ public class TvShowEpisodeMatcherTest {
     while (i.hasNext()) {
       SxE key = (SxE) i.next();
       SxE found = new TvShowEpisodeMatcher((String) epMatches.get(key)).matchEpisode();
-      try {
-        assertEquals(key.toString(), found.toString());
-        p++;
-      } catch (AssertionError e) {
-        System.err.println("Match failed : " + (String) epMatches.get(key));
-        System.err.println("Expect : " + key.toString() + " , found : " + found.toString() + "\n");
-      }
+      assertEquals(key.toString(), found.toString());
+      p++;
     }
+    
     if (p != v) {
       fail("Only " + p + "/" + v + " test Success");
     }
