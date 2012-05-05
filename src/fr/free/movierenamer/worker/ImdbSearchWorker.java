@@ -55,7 +55,6 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
   /**
    * Constructor arguments
    *
-   * @param parent Parent component to center joptionpane
    * @param searchTitle Movie title to search
    * @param setting Movie Renamer settings
    * @throws MalformedURLException
@@ -77,12 +76,12 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
     try {
       searchres = http.sendGetRequest(true, "ISO-8859-15");
     } catch (Exception e) {
-      setting.getLogger().log(Level.SEVERE, e.toString());
+      Settings.LOGGER.log(Level.SEVERE, e.toString());
       return null;
     }
     
     setProgress(30);
-    setting.getLogger().log(Level.INFO, "Search : {0}", searchTitle);
+    Settings.LOGGER.log(Level.INFO, "Search : {0}", searchTitle);
 
     if (searchres != null && !searchres.contains("<b>No Matches.</b>")) {
       boolean searchPage = !http.getURL().toString().matches("http://www.imdb.(com|fr)/title/tt\\d+/");
@@ -104,13 +103,13 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
           setProgress(30 + (int) (++i * 70) / imdbSearchResult.size());
         }
       } catch (IndexOutOfBoundsException ex) {
-        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IndexOutOfBoundsException", ex.getStackTrace()));
+        Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IndexOutOfBoundsException", ex.getStackTrace()));
         publish((Void) null);
       }
     }
 
     setProgress(100);
-    setting.getLogger().log(Level.INFO, "found : {0} Movies", imdbSearchResult.size());
+    Settings.LOGGER.log(Level.INFO, "found : {0} Movies", imdbSearchResult.size());
     return imdbSearchResult;
   }
   
@@ -137,13 +136,13 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
       }
       icon = new ImageIcon(image.getScaledInstance(45, 70, Image.SCALE_DEFAULT));
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     } catch (CMMException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     } catch (IllegalArgumentException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     } catch (NullPointerException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     }
     return icon;
   }

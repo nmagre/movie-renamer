@@ -40,7 +40,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class TvdbSearchWorker
+ * Class TvdbSearchWorker ,Search tv Show on tvdb
  * @author Nicolas Magre
  */
 public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
@@ -105,13 +105,13 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
       }
       icon = new ImageIcon(image.getScaledInstance(200, 30, Image.SCALE_DEFAULT));
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     } catch (CMMException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     } catch (IllegalArgumentException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     } catch (NullPointerException ex) {
-      setting.getLogger().log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     }
     return icon;
   }

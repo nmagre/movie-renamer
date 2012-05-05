@@ -23,7 +23,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 /**
- * Class Cache , Files cache
+ * Class Cache , Really simple cache
+ *
  * @author Nicolas Magré
  */
 public class Cache {
@@ -38,6 +39,7 @@ public class Cache {
 
   /**
    * Constructor arguments
+   *
    * @param setting Movie Renamer settings
    */
   public Cache(Settings setting) {
@@ -46,6 +48,7 @@ public class Cache {
 
   /**
    * Add file to cache
+   *
    * @param is File inputStream
    * @param url File url
    * @param type Cache type
@@ -55,13 +58,14 @@ public class Cache {
     OutputStream os;
     File f = new File(getPath(type) + Utils.md5(url));
     os = new FileOutputStream(f);
-    Utils.copyStream(is, os);
+    copyStream(is, os);
     os.close();
     is.close();
   }
 
   /**
    * Get file from cache
+   *
    * @param url File url
    * @param type Cache type
    * @return File
@@ -69,13 +73,15 @@ public class Cache {
   public File get(URL url, int type) {
     String md5Name = Utils.md5(url.toString());
     File f = new File(getPath(type) + md5Name);
-    if (f.exists())
+    if (f.exists()) {
       return f;
+    }
     return null;
   }
 
   /**
    * Get image from cache
+   *
    * @param image Image url
    * @param type Cache type
    * @return Image
@@ -84,13 +90,15 @@ public class Cache {
   public Image getImage(URL image, int type) throws IOException {
     String md5Name = Utils.md5(image.toString());
     File f = new File(getPath(type) + md5Name);
-    if (f.exists())
+    if (f.exists()) {
       return ImageIO.read(f);
+    }
     return null;
   }
 
   /**
    * Get cache path
+   *
    * @param type cache type
    * @return Cache path
    */
@@ -111,9 +119,25 @@ public class Cache {
         break;
       case TVSHOWZIP:
         path = setting.tvshowZipCacheDir;
+        break;
       default:
         break;
     }
     return path;
+  }
+  
+  /**
+   * Copy stream from unput source to output
+   * @param in Input
+   * @param out Output
+   * @throws IOException 
+   */  
+  private void copyStream(InputStream in, OutputStream out) throws IOException {
+    final int buffer_size = 1024;
+    byte[] bytes = new byte[buffer_size];
+    int p;
+    while ((p = in.read(bytes, 0, buffer_size)) != -1) {
+      out.write(bytes, 0, p);
+    }
   }
 }

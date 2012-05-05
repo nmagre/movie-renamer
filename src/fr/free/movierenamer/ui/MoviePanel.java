@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.ui.res.IMediaPanel;
@@ -26,7 +25,6 @@ import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -49,6 +47,7 @@ import javax.swing.event.ListSelectionListener;
 
 /**
  * Class MoviePanel
+ *
  * @author Magré Nicolas
  */
 public class MoviePanel extends JPanel implements IMediaPanel {        // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -88,6 +87,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     private JLabel titleLbl;
     private JTextField yearField;
     // End of variables declaration//GEN-END:variables
+  private static final long serialVersionUID = 1L;
   private final DefaultListModel fanartModel = new DefaultListModel();
   private final DefaultListModel thumbnailModel = new DefaultListModel();
   private final DefaultListModel actorModel = new DefaultListModel();
@@ -108,9 +108,11 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
   private Settings setting;
   private MovieInfo movieInfo;
 
-  /** Creates new form MoviePanel
+  /**
+   * Creates new form MoviePanel
+   *
    * @param setting
-   * @param tmp 
+   * @param editActionListener  
    */
   public MoviePanel(Settings setting, ActionListener editActionListener) {
     this.setting = setting;
@@ -131,11 +133,14 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        if (thumbnailsList.getSelectedIndex() == -1) return;
+        if (thumbnailsList.getSelectedIndex() == -1) {
+          return;
+        }
         thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
         Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"), Cache.THUMB);
-        if (img != null)
+        if (img != null) {
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+        }
       }
     });
 
@@ -149,7 +154,9 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
 
       @Override
       public void valueChanged(ListSelectionEvent lse) {
-        if (fanartList.getSelectedIndex() == -1) return;
+        if (fanartList.getSelectedIndex() == -1) {
+          return;
+        }
         fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
         fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.FANART);
         detailsPnl.validate();
@@ -164,17 +171,23 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     actorList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     actorList.setVisibleRowCount(-1);
     actorList.setCellRenderer(new DefaultListCellRenderer() {
+      private static final long serialVersionUID = 1L;
 
       @Override
       public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-        if (index >= actors.size()) return label;
+        if (index >= actors.size()) {
+          return label;
+        }
         Icon icon = actors.get(index).getImage();
 
-        if (icon != null) label.setIcon(icon);
-        else label.setIcon(actorDefault);
+        if (icon != null) {
+          label.setIcon(icon);
+        } else {
+          label.setIcon(actorDefault);
+        }
         return label;
       }
     });
@@ -204,7 +217,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
         image = MoviePanel.this.setting.cache.getImage(url, cache);
       }
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, ex.toString());
+      Settings.LOGGER.log(Level.SEVERE, ex.toString());
     }
     return image;
   }
@@ -218,8 +231,9 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
       @Override
       protected Image doInBackground() throws Exception {
         Image image = null;
-        if (thumbnailModel.isEmpty())
+        if (thumbnailModel.isEmpty()) {
           image = getImage(thumbs.get(0).getThumbUrl(), Cache.THUMB);
+        }
         return image;
       }
     };
@@ -228,20 +242,24 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
 
       @Override
       public void propertyChange(PropertyChangeEvent pce) {
-        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE))
+        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
           try {
             Image img = (Image) worker.get();
-            if (img != null)
+            if (img != null) {
               thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
-            if (thumb != null)
+            }
+            if (thumb != null) {
               thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
-            if (!thumbnailModel.isEmpty())
+            }
+            if (!thumbnailModel.isEmpty()) {
               thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
+            }
           } catch (InterruptedException ex) {
-            setting.getLogger().log(Level.SEVERE, ex.toString());
+            Settings.LOGGER.log(Level.SEVERE, ex.toString());
           } catch (ExecutionException ex) {
-            setting.getLogger().log(Level.SEVERE, ex.toString());
+            Settings.LOGGER.log(Level.SEVERE, ex.toString());
           }
+        }
       }
     });
 
@@ -255,8 +273,9 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
       @Override
       protected Image doInBackground() throws Exception {
         Image img = null;
-        if (fanartModel.isEmpty())
+        if (fanartModel.isEmpty()) {
           img = getImage(fanarts.get(0).getThumbUrl(), Cache.FANART);
+        }
 
         return img;
       }
@@ -280,10 +299,12 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
             Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
           }
 
-          if (fanart != null)
+          if (fanart != null) {
             fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
-          if (!fanartModel.isEmpty())
+          }
+          if (!fanartModel.isEmpty()) {
             fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
+          }
         }
       }
     });
@@ -293,7 +314,9 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
 
   public void addActorToList(final String actor, final Image actorImg, final String desc) {
     ImageIcon icon = null;
-    if (actorImg != null) icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
+    if (actorImg != null) {
+      icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
+    }
     actors.add(new actorImage(actor, desc, icon));
     SwingUtilities.invokeLater(new Thread() {
 
@@ -377,17 +400,22 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
         directorField.setCaretPosition(0);
         countryField.setCaretPosition(0);
 
-        if (!setting.thumb)
+        if (!setting.thumb) {
           if (!movieInfo.getImdbThumb().equals("")) {
             Image imThumb = getImage(movieInfo.getImdbThumb(), Cache.THUMB);
-            if (imThumb != null) thumbLbl.setIcon(new ImageIcon(imThumb.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+            if (imThumb != null) {
+              thumbLbl.setIcon(new ImageIcon(imThumb.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+            }
           }
+        }
       }
     });
   }
 
   private void setRate(Float rate) {
-    if (rate < 0.00) return;
+    if (rate < 0.00) {
+      return;
+    }
     rate /= 2;
     int n = rate.intValue();
     switch (n) {
@@ -395,25 +423,33 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
         break;
       case 1:
         star.setIcon(STAR);
-        if ((rate - rate.intValue()) >= 0.50) star1.setIcon(STAR_HALF);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star1.setIcon(STAR_HALF);
+        }
         break;
       case 2:
         star.setIcon(STAR);
         star1.setIcon(STAR);
-        if ((rate - rate.intValue()) >= 0.50) star2.setIcon(STAR_HALF);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star2.setIcon(STAR_HALF);
+        }
         break;
       case 3:
         star.setIcon(STAR);
         star1.setIcon(STAR);
         star2.setIcon(STAR);
-        if ((rate - rate.intValue()) >= 0.50) star3.setIcon(STAR_HALF);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star3.setIcon(STAR_HALF);
+        }
         break;
       case 4:
         star.setIcon(STAR);
         star1.setIcon(STAR);
         star2.setIcon(STAR);
         star3.setIcon(STAR);
-        if ((rate - rate.intValue()) >= 0.50) star4.setIcon(STAR_HALF);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star4.setIcon(STAR_HALF);
+        }
         break;
       case 5:
         star.setIcon(STAR);
@@ -430,9 +466,11 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
   public ArrayList<Images> getAddedThumb() {
     ArrayList<Images> res = new ArrayList<Images>();
     for (int i = 0; i < thumbs.size(); i++) {
-      if (thumbs.get(i).getId() == -1)
-        if (!thumbs.get(i).getThumbUrl().startsWith("file://"))
+      if (thumbs.get(i).getId() == -1) {
+        if (!thumbs.get(i).getThumbUrl().startsWith("file://")) {
           res.add(thumbs.get(i));
+        }
+      }
     }
     return res;
   }
@@ -440,25 +478,33 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
   public ArrayList<Images> getAddedFanart() {
     ArrayList<Images> res = new ArrayList<Images>();
     for (int i = 0; i < fanarts.size(); i++) {
-      if (fanarts.get(i).getId() == -1)
-        if (!fanarts.get(i).getThumbUrl().startsWith("file://"))
+      if (fanarts.get(i).getId() == -1) {
+        if (!fanarts.get(i).getThumbUrl().startsWith("file://")) {
           res.add(fanarts.get(i));
+        }
+      }
     }
     return res;
   }
 
   public URL getSelectedThumb(int size) {
-    if (!thumbsScrollPane.isVisible()) return null;
+    if (!thumbsScrollPane.isVisible()) {
+      return null;
+    }
     return getSelectedItem(thumbs, thumbnailsList, size);
   }
 
   public URL getSelectedFanart(int size) {
-    if (!fanartsScrollPane.isVisible()) return null;
+    if (!fanartsScrollPane.isVisible()) {
+      return null;
+    }
     return getSelectedItem(fanarts, fanartList, size);
   }
 
   private URL getSelectedItem(ArrayList<Images> array, JList list, int size) {
-    if (array.isEmpty()) return null;
+    if (array.isEmpty()) {
+      return null;
+    }
     try {
       switch (size) {
         case 0:
@@ -472,7 +518,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
       }
 
     } catch (MalformedURLException ex) {
-      setting.getLogger().log(Level.SEVERE, ex.toString());
+      Settings.LOGGER.log(Level.SEVERE, ex.toString());
     }
     return null;
   }
@@ -486,8 +532,11 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     public actorImage(String name, String desc, ImageIcon img) {
       this.name = name;
       this.desc = desc;
-      if (img == null) this.img = actorDefault;
-      else this.img = img;
+      if (img == null) {
+        this.img = actorDefault;
+      } else {
+        this.img = img;
+      }
     }
 
     public ImageIcon getImage() {
@@ -503,10 +552,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     }
   }
 
-  /** This method is called from within the constructor to
-   * initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is
-   * always regenerated by the Form Editor.
+  /**
+   * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always regenerated by the Form Editor.
    */
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

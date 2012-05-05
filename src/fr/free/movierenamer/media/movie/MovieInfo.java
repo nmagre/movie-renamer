@@ -17,12 +17,14 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import java.util.ArrayList;
 import fr.free.movierenamer.utils.Utils;
+import java.util.ArrayList;
 
 /**
  * Class MovieInfo
+ *
  * @author Nicolas Magré
  */
 public class MovieInfo {
@@ -44,9 +46,9 @@ public class MovieInfo {
   private ArrayList<String> set;//Saga
   private ArrayList<String> genres;
   private ArrayList<String> studios;
-  private ArrayList<MoviePerson> actors;
-  private ArrayList<MoviePerson> directors;
-  private ArrayList<MoviePerson> writers;
+  private ArrayList<MediaPerson> actors;
+  private ArrayList<MediaPerson> directors;
+  private ArrayList<MediaPerson> writers;
   private ArrayList<String> countries;
 
   /**
@@ -70,14 +72,15 @@ public class MovieInfo {
     set = new ArrayList<String>();
     genres = new ArrayList<String>();
     studios = new ArrayList<String>();
-    actors = new ArrayList<MoviePerson>();
-    directors = new ArrayList<MoviePerson>();
-    writers = new ArrayList<MoviePerson>();
+    actors = new ArrayList<MediaPerson>();
+    directors = new ArrayList<MediaPerson>();
+    writers = new ArrayList<MediaPerson>();
     countries = new ArrayList<String>();
   }
 
   /**
    * Get movie title
+   *
    * @return Movie title
    */
   public String getTitle() {
@@ -86,6 +89,7 @@ public class MovieInfo {
 
   /**
    * Get sort title
+   *
    * @return Sort title
    */
   public String getSortTitle() {
@@ -94,6 +98,7 @@ public class MovieInfo {
 
   /**
    * Get imdb ID
+   *
    * @return Imdb ID
    */
   public String getImdbId() {
@@ -102,6 +107,7 @@ public class MovieInfo {
 
   /**
    * Get imdb thumb
+   *
    * @return Imdb thumb
    */
   public String getImdbThumb() {
@@ -110,6 +116,7 @@ public class MovieInfo {
 
   /**
    * Get trailer
+   *
    * @return Trailer
    */
   public String getTrailer() {
@@ -118,6 +125,7 @@ public class MovieInfo {
 
   /**
    * Get synopsis
+   *
    * @return Synopsis
    */
   public String getSynopsis() {
@@ -126,6 +134,7 @@ public class MovieInfo {
 
   /**
    * Get outline
+   *
    * @return Outline
    */
   public String getOutline() {
@@ -134,6 +143,7 @@ public class MovieInfo {
 
   /**
    * Get tagline
+   *
    * @return Tagline
    */
   public String getTagline() {
@@ -142,6 +152,7 @@ public class MovieInfo {
 
   /**
    * Get original title
+   *
    * @return Original title
    */
   public String getOrigTitle() {
@@ -150,6 +161,7 @@ public class MovieInfo {
 
   /**
    * Get rating
+   *
    * @return Rating
    */
   public String getRating() {
@@ -158,6 +170,7 @@ public class MovieInfo {
 
   /**
    * Get runtime
+   *
    * @return Runtime
    */
   public String getRuntime() {
@@ -166,6 +179,7 @@ public class MovieInfo {
 
   /**
    * Get year
+   *
    * @return Year
    */
   public String getYear() {
@@ -174,6 +188,7 @@ public class MovieInfo {
 
   /**
    * Get votes
+   *
    * @return Votes
    */
   public String getVotes() {
@@ -182,6 +197,7 @@ public class MovieInfo {
 
   /**
    * Get set
+   *
    * @return Array of set
    */
   public ArrayList<String> getSet() {
@@ -190,6 +206,7 @@ public class MovieInfo {
 
   /**
    * Get mpaa
+   *
    * @return Mpaa
    */
   public String getMpaa() {
@@ -198,6 +215,7 @@ public class MovieInfo {
 
   /**
    * Get genres
+   *
    * @return Array of genre
    */
   public ArrayList<String> getGenres() {
@@ -206,6 +224,7 @@ public class MovieInfo {
 
   /**
    * Get studios
+   *
    * @return Array of studios
    */
   public ArrayList<String> getStudios() {
@@ -214,30 +233,34 @@ public class MovieInfo {
 
   /**
    * Get Actors
+   *
    * @return Array of actors
    */
-  public ArrayList<MoviePerson> getActors() {
+  public ArrayList<MediaPerson> getActors() {
     return actors;
   }
 
   /**
    * Get directors
+   *
    * @return Array of directors
    */
-  public ArrayList<MoviePerson> getDirectors() {
+  public ArrayList<MediaPerson> getDirectors() {
     return directors;
   }
 
   /**
    * Get writers
+   *
    * @return Array of writers
    */
-  public ArrayList<MoviePerson> getWriters() {
+  public ArrayList<MediaPerson> getWriters() {
     return writers;
   }
 
   /**
    * Get countries
+   *
    * @return Array of countries
    */
   public ArrayList<String> getCountries() {
@@ -246,36 +269,40 @@ public class MovieInfo {
 
   /**
    * Get actors
+   *
    * @param separator Separator
    * @param limit Number of actors to return (0 for all)
    * @return Actors separated by separator
    */
   public String getActorsString(String separator, int limit) {
-    return Utils.arrayPersonnToString(actors, separator, limit);
+    return Utils.arrayToString(actors, separator, limit);
   }
 
   /**
    * Get directors
+   *
    * @param separator Separator
    * @param limit Number of directors to return (0 for all)
    * @return Directors separated by separator
    */
   public String getDirectorsString(String separator, int limit) {
-    return Utils.arrayPersonnToString(directors, separator, limit);
+    return Utils.arrayToString(directors, separator, limit);
   }
 
   /**
    * Get writers to string
+   *
    * @param separator Separator
    * @param limit Number of writers to return (0 for all)
    * @return Writers separated by separator
    */
   public String getWritersString(String separator, int limit) {
-    return Utils.arrayPersonnToString(writers, separator, limit);
+    return Utils.arrayToString(writers, separator, limit);
   }
 
   /**
    * Get genres to string
+   *
    * @param separator Separator
    * @param limit Number of genres to return (0 for all)
    * @return Genre separated by separator
@@ -286,6 +313,7 @@ public class MovieInfo {
 
   /**
    * Get countries to string
+   *
    * @param separator Separator
    * @param limit Number of countries to return (0 for all)
    * @return Countries separated by separator
@@ -296,6 +324,7 @@ public class MovieInfo {
 
   /**
    * Get studios to string
+   *
    * @param separator Separator
    * @param limit Number of studios to return (0 for all)
    * @return Studios separated by separator
@@ -306,6 +335,7 @@ public class MovieInfo {
 
   /**
    * Get sets to string
+   *
    * @param separator Separator
    * @param limit Number of sets to return (0 for all)
    * @return Sets separated by separator
@@ -316,6 +346,7 @@ public class MovieInfo {
 
   /**
    * Get first director
+   *
    * @return First director
    */
   public String getFirstDirector() {
@@ -328,26 +359,33 @@ public class MovieInfo {
 
   /**
    * Get the n actor
+   *
    * @param n Position of actor
    * @return Actor name or an empty string
    */
   public String getActorN(int n) {
-    if (n >= actors.size()) return "";
+    if (n >= actors.size()) {
+      return "";
+    }
     return actors.get(n).getName();
   }
 
   /**
    * Get the n director
+   *
    * @param n Position of director
    * @return Director name or an empty string
    */
   public String getDirectorN(int n) {
-    if (n >= directors.size()) return "";
+    if (n >= directors.size()) {
+      return "";
+    }
     return directors.get(n).getName();
   }
 
   /**
    * Get first genre
+   *
    * @return First genre
    */
   public String getFirstGenreString() {
@@ -360,31 +398,38 @@ public class MovieInfo {
 
   /**
    * Get the n genre
+   *
    * @param n Position of genre
    * @return Genre or an empty string
    */
   public String getGenreN(int n) {
-    if (n >= genres.size()) return "";
+    if (n >= genres.size()) {
+      return "";
+    }
     return genres.get(n);
   }
 
   /**
    * Get the n country
+   *
    * @param n Position of country
    * @return Country or an empty string
    */
   public String getCountryN(int n) {
-    if (n >= countries.size()) return "";
+    if (n >= countries.size()) {
+      return "";
+    }
     return countries.get(n);
   }
 
   /**
    * Get actor by name
+   *
    * @param actor Actor name
    * @return MoviePerson if actor found, null otherwise
    */
-  public MoviePerson getActorByName(String actor) {
-    MoviePerson res = null;
+  public MediaPerson getActorByName(String actor) {
+    MediaPerson res = null;
     for (int i = 0; i < actors.size(); i++) {
       if (actors.get(i).getName().equals(actor)) {
         res = actors.get(i);
@@ -396,6 +441,7 @@ public class MovieInfo {
 
   /**
    * Set title
+   *
    * @param title Title
    */
   public void setTitle(String title) {
@@ -404,6 +450,7 @@ public class MovieInfo {
 
   /**
    * Set sort title
+   *
    * @param sortTitle Sort title
    */
   public void setSortTitle(String sortTitle) {
@@ -412,6 +459,7 @@ public class MovieInfo {
 
   /**
    * Set imdb ID
+   *
    * @param imdbId Imdb ID
    */
   public void setImdbId(String imdbId) {
@@ -420,6 +468,7 @@ public class MovieInfo {
 
   /**
    * Set imdb thumb
+   *
    * @param imdbThumb Imdb thumb
    */
   public void setImdbThumb(String imdbThumb) {
@@ -428,6 +477,7 @@ public class MovieInfo {
 
   /**
    * Set trailer
+   *
    * @param trailer Trailer
    */
   public void setTrailer(String trailer) {
@@ -436,6 +486,7 @@ public class MovieInfo {
 
   /**
    * Set studios
+   *
    * @param studios Array of studio
    */
   public void setStudios(ArrayList<String> studios) {
@@ -444,14 +495,16 @@ public class MovieInfo {
 
   /**
    * Set directors
+   *
    * @param directors Array of directors
    */
-  public void setDirectors(ArrayList<MoviePerson> directors) {
+  public void setDirectors(ArrayList<MediaPerson> directors) {
     this.directors = directors;
   }
 
   /**
    * Set genres
+   *
    * @param genres Array of genres
    */
   public void setGenre(ArrayList<String> genres) {
@@ -460,6 +513,7 @@ public class MovieInfo {
 
   /**
    * Set sets
+   *
    * @param set Array of sets
    */
   public void setSets(ArrayList<String> set) {
@@ -468,14 +522,16 @@ public class MovieInfo {
 
   /**
    * Set writers
+   *
    * @param writers Array of writers
    */
-  public void setWriters(ArrayList<MoviePerson> writers) {
+  public void setWriters(ArrayList<MediaPerson> writers) {
     this.writers = writers;
   }
 
   /**
    * Set countries
+   *
    * @param countries Array of countries
    */
   public void setCountries(ArrayList<String> countries) {
@@ -484,6 +540,7 @@ public class MovieInfo {
 
   /**
    * Set synopsis
+   *
    * @param synopsis Synopsis
    */
   public void setSynopsis(String synopsis) {
@@ -492,6 +549,7 @@ public class MovieInfo {
 
   /**
    * Set outline
+   *
    * @param outline Outline
    */
   public void setOutline(String outline) {
@@ -500,6 +558,7 @@ public class MovieInfo {
 
   /**
    * Set tagline
+   *
    * @param tagline Tagline
    */
   public void setTagline(String tagline) {
@@ -508,6 +567,7 @@ public class MovieInfo {
 
   /**
    * Set original title
+   *
    * @param origTitle Original title
    */
   public void setOrigTitle(String origTitle) {
@@ -516,6 +576,7 @@ public class MovieInfo {
 
   /**
    * Set rating
+   *
    * @param rating Rating
    */
   public void setRating(String rating) {
@@ -524,6 +585,7 @@ public class MovieInfo {
 
   /**
    * Set runtime
+   *
    * @param runtime Runtime
    */
   public void setRuntime(String runtime) {
@@ -532,6 +594,7 @@ public class MovieInfo {
 
   /**
    * Set year
+   *
    * @param year Year
    */
   public void setYear(String year) {
@@ -540,6 +603,7 @@ public class MovieInfo {
 
   /**
    * Set votes
+   *
    * @param votes Votes
    */
   public void setVotes(String votes) {
@@ -548,6 +612,7 @@ public class MovieInfo {
 
   /**
    * Set sets
+   *
    * @param set Array of set
    */
   public void setSet(ArrayList<String> set) {
@@ -556,6 +621,7 @@ public class MovieInfo {
 
   /**
    * Set mpaa
+   *
    * @param mpaa Mpaa
    */
   public void setMpaa(String mpaa) {
@@ -564,6 +630,7 @@ public class MovieInfo {
 
   /**
    * Add genre
+   *
    * @param genre Genre
    */
   public void addGenre(String genre) {
@@ -572,6 +639,7 @@ public class MovieInfo {
 
   /**
    * Add studio
+   *
    * @param studio Studio
    */
   public void addStudio(String studio) {
@@ -580,30 +648,34 @@ public class MovieInfo {
 
   /**
    * Add actor
+   *
    * @param actor Actor
    */
-  public void addActor(MoviePerson actor) {
+  public void addActor(MediaPerson actor) {
     actors.add(actor);
   }
 
   /**
    * Add drector
+   *
    * @param director Director
    */
-  public void addDirector(MoviePerson director) {
+  public void addDirector(MediaPerson director) {
     directors.add(director);
   }
 
   /**
    * Add writer
+   *
    * @param writer Writer
    */
-  public void addWriter(MoviePerson writer) {
+  public void addWriter(MediaPerson writer) {
     writers.add(writer);
   }
 
   /**
    * Add country
+   *
    * @param country Country
    */
   public void addCountry(String country) {
@@ -612,6 +684,7 @@ public class MovieInfo {
 
   /**
    * Add role to actor
+   *
    * @param actor Actor
    * @param role Role
    * @throws ActionNotValidException
@@ -627,6 +700,7 @@ public class MovieInfo {
 
   /**
    * Add set
+   *
    * @param strSet Set
    */
   public void addSet(String strSet) {

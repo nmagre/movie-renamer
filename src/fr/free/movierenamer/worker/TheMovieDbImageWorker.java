@@ -48,7 +48,6 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
   /**
    * Constructor arguments
    * @param imdbId Imdb ID (ttxxxxxx)
-   * @param parent Parent component to center joptionpane
    * @param setting Movie Renamer settings
    */
   public TheMovieDbImageWorker(String imdbId, Settings setting) {
@@ -80,7 +79,7 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
               Thread.sleep(600);
               in = url.openStream();
             } catch (IOException exe) {
-              //A faire , traiter erreur
+              //A refaire , traiter erreur
               return null;
             }
           }
@@ -95,31 +94,31 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
       try {
         TmdbResult res = mmp.parseXml();
         if (res.getThumbs() != null) {
-          setting.getLogger().log(Level.INFO, "  {0} Thumbs", "" + res.getThumbs().size());
+          Settings.LOGGER.log(Level.INFO, "  {0} Thumbs", "" + res.getThumbs().size());
           for (int i = 0; i < res.getThumbs().size(); i++) {
             thumbs.add(res.getThumbs().get(i));
           }
         }
         if (res.getFanarts() != null) {
-          setting.getLogger().log(Level.INFO, "  {0} Fanarts", "" + res.getFanarts().size());
+          Settings.LOGGER.log(Level.INFO, "  {0} Fanarts", "" + res.getFanarts().size());
           for (int i = 0; i < res.getFanarts().size(); i++) {
             fanarts.add(res.getFanarts().get(i));
           }
         }
       } catch (ParserConfigurationException ex) {
-        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
+        Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
       } catch (SAXException ex) {
-        setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
+        Settings.LOGGER.log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
       } catch (IOException ex) {
-        setting.getLogger().log(Level.SEVERE, ex.toString());
+        Settings.LOGGER.log(Level.SEVERE, ex.toString());
       } catch (InterruptedException ex) {
-        setting.getLogger().log(Level.WARNING, ex.toString());
+        Settings.LOGGER.log(Level.WARNING, ex.toString());
         return null;
       } catch (IllegalArgumentException ex) {
-        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IllegalArgumentException", ex.getStackTrace()));
+        Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IllegalArgumentException", ex.getStackTrace()));
       }
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IOException", ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IOException", ex.getStackTrace()));
     }
 
     mvImgs.setThumbs(thumbs);

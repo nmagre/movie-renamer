@@ -18,9 +18,9 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.Media;
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.media.movie.MoviePerson;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.ui.res.SearchResult;
@@ -51,9 +51,9 @@ public abstract class WorkerManager {
           break;
       }
     } catch (MalformedURLException ex) {
-      setting.getLogger().log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (UnsupportedEncodingException ex) {
-      setting.getLogger().log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
     return worker;
   }
@@ -66,7 +66,7 @@ public abstract class WorkerManager {
     return new TheMovieDbImageWorker(imdb, setting);
   }
   
-  public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MoviePerson> actors,MoviePanel moviePanel, Settings setting){
+  public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors,MoviePanel moviePanel, Settings setting){
     return new ActorWorker(actors, moviePanel, setting);
   }
   

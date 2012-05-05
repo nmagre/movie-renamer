@@ -27,30 +27,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Class TvdbInfoWorker
+ *
  * @author Nicolas Magré
  */
-
 //A faire
-public class TvdbInfoWorker extends SwingWorker<TvShowInfo, Void>{
+public class TvdbInfoWorker extends SwingWorker<TvShowInfo, Void> {
 
   private String tvdbId;
   private Settings setting;
-  
-   public TvdbInfoWorker(String tvdbId, Settings setting) throws MalformedURLException {
+
+  public TvdbInfoWorker(String tvdbId, Settings setting) throws MalformedURLException {
     this.tvdbId = tvdbId;
     this.setting = setting;
   }
-  
+
   @Override
-  protected TvShowInfo doInBackground() throws Exception {
-    System.out.println("Tv Show info worker start");
-    String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
-      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + tvdbId + "/all/" + (setting.tvdbFr ? "fr":"en") + ".zip");
+  protected TvShowInfo doInBackground() {
+    TvShowInfo tvShowInfo = null;
+    try {
+      System.out.println("Tv Show info worker start");
+      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
+      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + tvdbId + "/all/" + (setting.tvdbFr ? "fr" : "en") + ".zip");
       File f = setting.cache.get(url, Cache.TVSHOWZIP);
       if (f == null) {
         InputStream in;
@@ -65,7 +71,7 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, Void>{
               Thread.sleep(600);
               in = url.openStream();
             } catch (IOException exe) {
-              //A faire , traiter erreur
+              //A refaire , traiter erreur
               return null;
             }
           }
@@ -73,12 +79,21 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, Void>{
         setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
         f = setting.cache.get(url, Cache.TVSHOWZIP);
       }
-      
-      TvShowInfo tvShowInfo;
-      XMLParser<TvShowInfo> xmp = new XMLParser<TvShowInfo>(f.getAbsolutePath(), (setting.tvdbFr ? "fr":"en") + ".xml");
-      xmp.setParser(new TvdbTvShowInfo());      
+
+      XMLParser<TvShowInfo> xmp = new XMLParser<TvShowInfo>(f.getAbsolutePath(), (setting.tvdbFr ? "fr" : "en") + ".xml");
+      xmp.setParser(new TvdbTvShowInfo());
       tvShowInfo = xmp.parseXml();
-      
+
+
+    } catch (InterruptedException ex) {
+      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ParserConfigurationException ex) {
+      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (SAXException ex) {
+      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException ex) {
+      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+    }
     return tvShowInfo;
-  }  
+  }
 }

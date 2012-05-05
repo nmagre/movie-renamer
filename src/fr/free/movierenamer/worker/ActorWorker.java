@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.movie.MoviePerson;
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
@@ -31,21 +31,23 @@ import javax.swing.SwingWorker;
 
 /**
  * Class ActorWorker , Download and add actor images to moviePanel
+ *
  * @author Magré Nicolas
  */
 public class ActorWorker extends SwingWorker<Void, Void> {
 
-  private List<MoviePerson> actors;
+  private List<MediaPerson> actors;
   private Settings setting;
   private MoviePanel moviePnl;
 
   /**
    * Constructor arguments
+   *
    * @param actors List of actor
    * @param moviePnl Movie Renamer moviePanel
    * @param setting Movie Renamer settings
    */
-  public ActorWorker(List<MoviePerson> actors, MoviePanel moviePnl, Settings setting) {
+  public ActorWorker(List<MediaPerson> actors, MoviePanel moviePnl, Settings setting) {//A refaire , utiliser un listener + firepropertychange au lieu du panel
     this.actors = actors;
     this.moviePnl = moviePnl;
     this.setting = setting;
@@ -58,9 +60,9 @@ public class ActorWorker extends SwingWorker<Void, Void> {
       Image image = null;
       URL url = null;
       StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
-      
+
       if (!actors.get(i).getThumb().equals(Utils.EMPTY) && setting.actorImage && setting.movieInfoPanel) {
-        
+
         try {
           url = new URL(actors.get(i).getThumb().replace(".png", ".jpg"));
           image = setting.cache.getImage(url, Cache.ACTOR);
@@ -69,30 +71,32 @@ public class ActorWorker extends SwingWorker<Void, Void> {
             image = setting.cache.getImage(url, Cache.ACTOR);
           }
         } catch (IOException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        if (image == null) image = Utils.getImageFromJAR("/image/unknown.png", getClass());
-        
-        if (url != null)
+        if (image == null) {
+          image = Utils.getImageFromJAR("/image/unknown.png", getClass());
+        }
+
+        if (url != null) {
           desc.append("<img src=\"file:").append(setting.cache.get(url, Cache.ACTOR).getAbsolutePath()).append("\"><br>");
-        
+        }
+
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
         desc.append("</html>");
-        
+
         moviePnl.addActorToList(actors.get(i).getName(), image, desc.toString());
-      }
-      else {
-        
+      } else {
+
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
         desc.append("</html>");
         moviePnl.addActorToList(actors.get(i).getName(), null, desc.toString());
       }
-      
+
       setProgress((i * 100) / actors.size());
     }
     setProgress(100);

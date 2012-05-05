@@ -20,7 +20,6 @@ package fr.free.movierenamer.utils;
 import fr.free.movierenamer.media.MediaFile;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,7 +66,9 @@ public class TvShowNameMatcher {
     getMatcherRes(names, (folderMatch = matchByFolderName()));
     getMatcherRes(names, (episodeMatch = matchByEpisode()));
     getMatcherRes(names, (commonFileMatch = matchByCommonSeqFileName()));
-    if(names.isEmpty()) return normalize(mfile.getFile().getName().substring(0, mfile.getFile().getName().lastIndexOf(".") + 1));
+    if(names.isEmpty()) {
+      return normalize(mfile.getFile().getName().substring(0, mfile.getFile().getName().lastIndexOf(".") + 1));
+    }
     return matchAll(names);
   }
 
@@ -443,7 +444,7 @@ public class TvShowNameMatcher {
   /**
    * class MyStringLengthComparable , compare two string length
    */
-  private static class MyStringLengthComparable implements Comparator<String>, Serializable {
+  private static class MyStringLengthComparable implements Comparator<String> {
 
     @Override
     public int compare(String s1, String s2) {

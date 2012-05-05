@@ -28,14 +28,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ResourceBundle;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 
 /**
  * Class ContextMenuListMouseListener
+ *
  * @author Nicolas Magré
  */
 public class ContextMenuListMouseListener extends MouseAdapter {
@@ -55,7 +52,9 @@ public class ContextMenuListMouseListener extends MouseAdapter {
     index = -1;
     moviename = "";
 
-    search =  new AbstractAction(bundle.getString("search")) {
+    search = new AbstractAction(bundle.getString("search")) {
+
+      private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(ActionEvent ae) {
@@ -64,6 +63,8 @@ public class ContextMenuListMouseListener extends MouseAdapter {
     };
 
     play = new AbstractAction(bundle.getString("play")) {
+
+      private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(ActionEvent ae) {
@@ -76,6 +77,8 @@ public class ContextMenuListMouseListener extends MouseAdapter {
 
     removeList = new AbstractAction(bundle.getString("removeFromList")) {
 
+      private static final long serialVersionUID = 1L;
+
       @Override
       public void actionPerformed(ActionEvent ae) {
         firePropertyChange("remove", null, index);
@@ -84,18 +87,23 @@ public class ContextMenuListMouseListener extends MouseAdapter {
 
     removeHdd = new AbstractAction(bundle.getString("deleteFile")) {
 
+      private static final long serialVersionUID = 1L;
+
       @Override
       public void actionPerformed(ActionEvent ae) {
         int n = JOptionPane.showConfirmDialog(null, bundle.getString("removeFile") + Utils.ENDLINE + moviefile.getFile(), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
-        if (n == 0)
-          if (!moviefile.getFile().delete())
+        if (n == 0) {
+          if (!moviefile.getFile().delete()) {
             JOptionPane.showMessageDialog(null, bundle.getString("renameFileFailed"), "Error", JOptionPane.ERROR_MESSAGE);
-          else
+          } else {
             firePropertyChange("remove", null, index);
+          }
+        }
       }
     };
 
     test = new AbstractAction("") {
+      private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(ActionEvent ae) {
@@ -129,17 +137,23 @@ public class ContextMenuListMouseListener extends MouseAdapter {
   public void mouseClicked(MouseEvent e) {
     if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
 
-      if (!(e.getSource() instanceof JList))
+      if (!(e.getSource() instanceof JList)) {
         return;
+      }
       JList list = (JList) e.getSource();
-      if (!(list.getSelectedValue() instanceof MediaFile)) return;
+      if (!(list.getSelectedValue() instanceof MediaFile)) {
+        return;
+      }
 
       index = list.getSelectedIndex();
       moviefile = (MediaFile) list.getModel().getElementAt(index);
       moviename = moviefile.getFile().getName();
-      if (moviename.length() > 30) moviename = moviename.substring(0, 27) + "...";
+      if (moviename.length() > 30) {
+        moviename = moviename.substring(0, 27) + "...";
+      }
       popup.remove(7);
       test = new AbstractAction(moviename) {
+        private static final long serialVersionUID = 1L;
 
         @Override
         public void actionPerformed(ActionEvent ae) {

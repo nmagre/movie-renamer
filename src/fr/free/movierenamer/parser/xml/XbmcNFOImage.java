@@ -25,6 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class XbmcNFOImage
+ *
  * @author Nicolas Magré
  */
 public class XbmcNFOImage extends DefaultHandler implements IParser<MovieImage> {
@@ -52,27 +53,40 @@ public class XbmcNFOImage extends DefaultHandler implements IParser<MovieImage> 
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("movie")) movie = true;
-    if (name.equalsIgnoreCase("fanart")) fanart = true;
-    if (name.equalsIgnoreCase("thumb"))
+    if (name.equalsIgnoreCase("movie")) {
+      movie = true;
+    }
+    if (name.equalsIgnoreCase("fanart")) {
+      fanart = true;
+    }
+    if (name.equalsIgnoreCase("thumb")) {
       if (attributes.getValue("preview") != null) {
         thumb = true;
         image = new Images(0);
         image.setThumbUrl(attributes.getValue("preview"));
       }
+    }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (movie)
-      if (name.equalsIgnoreCase("movie")) movie = false;
-    if (name.equalsIgnoreCase("fanart")) fanart = true;
+    if (movie) {
+      if (name.equalsIgnoreCase("movie")) {
+        movie = false;
+      }
+    }
+    if (name.equalsIgnoreCase("fanart")) {
+      fanart = true;
+    }
     if (name.equalsIgnoreCase("thumb")) {
-      if (thumb){
+      if (thumb) {
         image.setOrigUrl(buffer.toString());
         image.setMidUrl(buffer.toString());
-        if (fanart) movieImage.addFanart(image);
-        else movieImage.addThumb(image);
+        if (fanart) {
+          movieImage.addFanart(image);
+        } else {
+          movieImage.addThumb(image);
+        }
       }
       thumb = false;
     }
@@ -82,8 +96,9 @@ public class XbmcNFOImage extends DefaultHandler implements IParser<MovieImage> 
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     String lecture = new String(ch, start, length);
-    if (buffer != null)
+    if (buffer != null) {
       buffer.append(lecture);
+    }
   }
 
   @Override

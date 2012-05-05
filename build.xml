@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Movie_Renamer" default="default" basedir=".">
   <description>Builds, tests, and runs the project Movie Renamer.</description>
-
-   <target name="compile-plugin" description="compile the plugins " >
-        <mkdir dir="build/Plugins"/>
-    <javac deprecation="true" destdir="build/Plugins" encoding="UTF-8" includeantruntime="false" srcDir="plugins" target="1.6" source="1.6" tempdir="${java.io.tmpdir}">
-      <compilerarg line="-Xlint:unchecked"/>
-    </javac>
-  </target>
-  
-  <target name="plugins" depends="compile-plugin"
-        description="generate the distribution" >
-    <mkdir dir="lib"/>
-    <jar jarfile="lib/Plugins.jar" basedir="build/Plugins"/>
-  </target>
-  
-  <target name="-pre-init" depends="plugins">
+    
+  <target name="-pre-init">
     <property file="src\fr\free\movierenamer\version.properties"/>
     <property name="dist.jar" value="dist/${apps}-${apps.version}.jar" />
   </target>

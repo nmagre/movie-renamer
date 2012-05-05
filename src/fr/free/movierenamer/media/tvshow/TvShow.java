@@ -26,7 +26,7 @@ import fr.free.movierenamer.utils.TvShowNameMatcher;
  *
  * @author duffy
  */
-public class TvShow implements Media {
+public class TvShow implements Media {//A faire
 
   private MediaFile tvShowFile;
   private String tvShowId;
@@ -55,7 +55,7 @@ public class TvShow implements Media {
   }
 
   @Override
-  public String getSearch() {//A refaire
+  public String getSearch() {
     return search;
   }
 

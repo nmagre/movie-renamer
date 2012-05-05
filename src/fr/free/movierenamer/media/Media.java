@@ -44,7 +44,7 @@ public interface Media {
   public void setMediaFile(MediaFile mediaFile);
 
   /**
-   * Get media type (MOVIE, TVSHOW)
+   * Get media type (MOVIE, TVSHOW, ...)
    *
    * @return Media type
    */
@@ -76,7 +76,7 @@ public interface Media {
   /**
    * Set media id (imdbId,tvdbId,..)
    *
-   * @param id
+   * @param id Media api id
    */
   public void setId(String id);
 

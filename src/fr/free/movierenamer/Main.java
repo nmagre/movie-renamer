@@ -132,13 +132,13 @@ public class Main {
       }
 
     } catch (ParserConfigurationException ex) {
-      setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE,Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
     } catch (SAXException ex) {
-      setting.getLogger().log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
     } catch (InterruptedException ex) {
-      setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
       if (!saved) {
         saved = setting.saveSetting();

@@ -274,26 +274,26 @@ public class MovieRenamer extends JFrame {
       try {
         renamedMediaFile = mmp.parseXml();
       } catch (ParserConfigurationException ex) {
-        setting.getLogger().log(Level.SEVERE, ex.toString());
+        Settings.LOGGER.log(Level.SEVERE, ex.toString());
       } catch (SAXException ex) {
-        setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("SAXException", ex.getStackTrace()));
+        Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("SAXException", ex.getStackTrace()));
       } catch (InterruptedException ex) {
-        setting.getLogger().log(Level.SEVERE, ex.toString());
+        Settings.LOGGER.log(Level.SEVERE, ex.toString());
       } catch (IOException ex) {
-        setting.getLogger().log(Level.SEVERE, ex.toString());
+        Settings.LOGGER.log(Level.SEVERE, ex.toString());
       }
     }
   }
 
   private void loadInterface() {//A refaire
-    
+
     int c = 0;
-    switch(c){
+    switch (c) {
       case 0:
       case 1:
         break;
     }
-    
+
     if (!setting.movieInfoPanel) {
       searchSp.remove(moviePnl);
       centerSp.remove(searchSp);
@@ -464,21 +464,16 @@ public class MovieRenamer extends JFrame {
         if (n == 0) {
           url = new URL("http://movierenamer.free.fr/" + newVerFile.replaceAll(" ", "%20"));
 
-          boolean updated = Utils.downloadFile(url, jarFile.getAbsolutePath());
+          Utils.downloadFile(url, jarFile.getAbsolutePath());
 
-          if (updated) {
-            n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + bundle.getString("wantRestartAppUpdate"), "Question", JOptionPane.YES_NO_OPTION);
-            if (n == JOptionPane.YES_OPTION) {
-              if (!Utils.restartApplication(jarFile)) {
-                JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
-              } else {
-                dispose();
-                System.exit(0);
-              }
+          n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + bundle.getString("wantRestartAppUpdate"), "Question", JOptionPane.YES_NO_OPTION);
+          if (n == JOptionPane.YES_OPTION) {
+            if (!Utils.restartApplication(jarFile)) {
+              JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+            } else {
+              dispose();
+              System.exit(0);
             }
-
-          } else {
-            JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
           }
         }
       } catch (Exception e) {
@@ -961,7 +956,7 @@ public class MovieRenamer extends JFrame {
           out.write("</Movie_Renamer_Renamed>" + endl);
           out.close();
         } catch (IOException ex) {
-          setting.getLogger().log(Level.SEVERE, ex.toString());
+          Settings.LOGGER.log(Level.SEVERE, ex.toString());
         }
       }
 
@@ -1079,9 +1074,9 @@ public class MovieRenamer extends JFrame {
           }
 
         } catch (InterruptedException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
         loading.setValue(100, SEARCHWORKER);
         if (!searchResModel.isEmpty()) {
@@ -1139,11 +1134,11 @@ public class MovieRenamer extends JFrame {
           }
 
         } catch (InterruptedException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (CancellationException ex) {
-          setting.getLogger().log(Level.INFO, "ListFileWorker canceled");
+          Settings.LOGGER.log(Level.INFO, "ListFileWorker canceled");
           return;
         }
         if (progressMonitor != null) {
@@ -1236,9 +1231,9 @@ public class MovieRenamer extends JFrame {
             }
           }
         } catch (InterruptedException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
-          setting.getLogger().log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
       } else {
         loading.setValue(imdbiw.getProgress(), INFOWORKER);

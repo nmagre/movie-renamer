@@ -26,6 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class TvdbTvShow , tvShow search result XML parser
+ *
  * @author Nicolas Magré
  */
 public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
@@ -38,7 +39,7 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   private String currentThumb;
   private String currentLanguage;
   private boolean series;
-  
+
   public TvdbTvShow(boolean french) {
     super();
     this.french = french;
@@ -59,24 +60,34 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("series")) series = true;
+    if (name.equalsIgnoreCase("series")) {
+      series = true;
+    }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("series")){
-      if((french && currentLanguage.equals("fr")) || !french){
-        String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb:null;
+    if (name.equalsIgnoreCase("series")) {
+      if ((french && currentLanguage.equals("fr")) || !french) {
+        String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb : null;
         results.add(new SearchResult(currentName, currentId, "TvShow", thumb));
       }
       currentName = currentId = currentThumb = currentLanguage = "";
       series = false;
     }
-    if(series){
-      if (name.equalsIgnoreCase("seriesid")) currentId = buffer.toString();
-      if (name.equalsIgnoreCase("language")) currentLanguage = buffer.toString();
-      if (name.equalsIgnoreCase("SeriesName")) currentName = buffer.toString();
-      if (name.equalsIgnoreCase("banner")) currentThumb = buffer.toString();
+    if (series) {
+      if (name.equalsIgnoreCase("seriesid")) {
+        currentId = buffer.toString();
+      }
+      if (name.equalsIgnoreCase("language")) {
+        currentLanguage = buffer.toString();
+      }
+      if (name.equalsIgnoreCase("SeriesName")) {
+        currentName = buffer.toString();
+      }
+      if (name.equalsIgnoreCase("banner")) {
+        currentThumb = buffer.toString();
+      }
     }
     buffer = null;
   }
@@ -84,10 +95,11 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     String lecture = new String(ch, start, length);
-    if (buffer != null)
+    if (buffer != null) {
       buffer.append(lecture);
+    }
   }
-  
+
   @Override
   public ArrayList<SearchResult> getObject() {
     return results;

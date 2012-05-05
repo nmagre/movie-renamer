@@ -18,8 +18,8 @@
 package fr.free.movierenamer.utils;
 
 /**
- *
- * @author duffy
+ * class Images
+ * @author Nicolas Magré
  */
 public class Images {
 

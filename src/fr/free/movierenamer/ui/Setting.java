@@ -1528,7 +1528,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_moveLeftActionPerformed
 
   private void removeFilterBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeFilterBtnActionPerformed
-    String[] newArray = (String[]) Utils.removeFromArray(filters, currentFilterIndex);
+    String[] newArray = Utils.removeFromArray(filters, currentFilterIndex);
     if (newArray != null) {
       int index = currentFilterIndex;
       filters = newArray;
@@ -1543,7 +1543,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_removeFilterBtnActionPerformed
 
   private void removeExtensuionBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeExtensuionBtnActionPerformed
-    String[] newArray = (String[]) Utils.removeFromArray(extensions, currentExtensionIndex);
+    String[] newArray = Utils.removeFromArray(extensions, currentExtensionIndex);
     if (newArray != null) {
       extensions = newArray;
       loadList(extentionJlist, extensions);

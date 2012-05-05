@@ -19,6 +19,7 @@ package fr.free.movierenamer.media.movie;
 
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class Movie
+ *
  * @author Nicolas Magré
  */
 public class Movie implements Media {
@@ -205,11 +207,11 @@ public class Movie implements Media {
         res = regExp + "." + ext.toLowerCase();
         break;
     }
-    
+
     if (Utils.isWindows()) {
       res = res.replaceAll(":", "").replaceAll("/", "");
     }
-    
+
     if (setting.rmDupSpace) {
       res = res.replaceAll("\\s+", " ");
     }
@@ -317,7 +319,7 @@ public class Movie implements Media {
   }
 
   /**
-   * Cleanr fanart list
+   * Clear fanart list
    */
   public void clearFanarts() {
     movieImage.clearFanarts();
@@ -376,7 +378,7 @@ public class Movie implements Media {
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
     nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
 
-    ArrayList<MoviePerson> personn = movieinfo.getWriters();
+    ArrayList<MediaPerson> personn = movieinfo.getWriters();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <credits>").append(Utils.escapeXML(personn.get(i).getName())).append("</credits>\n");
     }
@@ -437,7 +439,7 @@ public class Movie implements Media {
     nfo.append("  <top250></top250>\n");
     nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString(" / ", 0))).append("</studio>\n");
 
-    ArrayList<MoviePerson> personn = movieinfo.getDirectors();
+    ArrayList<MediaPerson> personn = movieinfo.getDirectors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
       nfo.append("  <directorimdb>").append(Utils.escapeXML(personn.get(i).getImdbId())).append("</directorimdb>\n");
@@ -531,8 +533,10 @@ public class Movie implements Media {
 
   @Override
   public void setInfo(Object info) {
-    if(info instanceof MovieInfo)
+    if (info instanceof MovieInfo) {
       movieinfo = (MovieInfo) info;
-    else movieinfo = new MovieInfo();
+    } else {
+      movieinfo = new MovieInfo();
+    }
   }
 }

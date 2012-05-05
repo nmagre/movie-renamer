@@ -26,9 +26,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class MrRenamedMovie
+ *
  * @author Nicolas Magré
  */
-public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<Renamed>> {
+public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<Renamed>> {//A refaire , en media
 
   private StringBuffer buffer;
   private boolean renamedXML;
@@ -52,44 +53,55 @@ public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("Movie_Renamer_Renamed"))
+    if (name.equalsIgnoreCase("Movie_Renamer_Renamed")) {
       renamedXML = true;
+    }
     if (name.equalsIgnoreCase("renamedMovie")) {
       renamed = new Renamed(Utils.unEscapeXML(attributes.getValue("title"), "UTF-8"));
       renamedMovie = true;
     }
 
-    if (renamedMovie)
+    if (renamedMovie) {
       if (name.equalsIgnoreCase("movie")) {
         renamed.setMovieFileSrc(Utils.unEscapeXML(attributes.getValue("src"), "UTF-8"));
         renamed.setMovieFileDest(Utils.unEscapeXML(attributes.getValue("dest"), "UTF-8"));
       }
+    }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("Movie_Renamer_Renamed"))
+    if (name.equalsIgnoreCase("Movie_Renamer_Renamed")) {
       renamedXML = false;
+    }
 
-    if (renamedXML)
+    if (renamedXML) {
       if (renamedMovie) {
         if (name.equalsIgnoreCase("renamedMovie")) {
           renameds.add(renamed);
           renamed = null;
           renamedMovie = false;
         }
-        if (name.equalsIgnoreCase("thumb")) renamed.setThumb(buffer.toString());
-        if (name.equalsIgnoreCase("tmdbid")) renamed.setTmDbId(buffer.toString());
-        if (name.equalsIgnoreCase("date")) renamed.setDate(buffer.toString());
+        if (name.equalsIgnoreCase("thumb")) {
+          renamed.setThumb(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("tmdbid")) {
+          renamed.setTmDbId(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("date")) {
+          renamed.setDate(buffer.toString());
+        }
       }
+    }
     buffer = null;
   }
 
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     String lecture = new String(ch, start, length);
-    if (buffer != null)
+    if (buffer != null) {
       buffer.append(lecture);
+    }
   }
 
   @Override

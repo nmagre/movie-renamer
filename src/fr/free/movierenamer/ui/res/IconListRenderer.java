@@ -26,15 +26,18 @@ import javax.swing.JList;
 
 /**
  * Class IconListRenderer , Display image + text in list
- * @param <T> 
+ *
+ * @param <T>
  * @author Nicolas Magré
  */
 public class IconListRenderer<T extends IIconList> extends DefaultListCellRenderer {
 
+  private static final long serialVersionUID = 1L;
   private ArrayList<T> results;
 
   /**
    * Constructor arguments
+   *
    * @param results List object
    */
   public IconListRenderer(ArrayList<T> results) {
@@ -46,12 +49,17 @@ public class IconListRenderer<T extends IIconList> extends DefaultListCellRender
 
     JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-    if(index >= results.size()) return label;
+    if (index >= results.size()) {
+      return label;
+    }
+    
     Icon icon;
     IIconList iicon = results.get(index);
     icon = iicon.getIcon();
 
-    if(icon != null) label.setIcon(icon);
+    if (icon != null) {
+      label.setIcon(icon);
+    }
     return label;
   }
 }

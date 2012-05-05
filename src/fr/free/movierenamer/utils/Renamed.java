@@ -22,6 +22,9 @@ package fr.free.movierenamer.utils;
  * @author Nicolas Magré
  */
 public class Renamed {
+//A refaire
+//l'inclure dans Media en "MediaRenamed"
+//ajouter une rotation sur le fichier XML paramétrable dans "Settings" (ex:10,50,100,illimité) et pourquoi une function "undo" 
 
   private String title;
   private String date;

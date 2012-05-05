@@ -26,17 +26,16 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class TvdbTvShowInfo extends DefaultHandler implements IParser<TvShowInfo> {
+public class TvdbTvShowInfo extends DefaultHandler implements IParser<TvShowInfo> {//A faire
 
   private StringBuffer buffer;
   private boolean french;
   private TvShowInfo tvShowInfo;
-  
-  public TvdbTvShowInfo(){
+
+  public TvdbTvShowInfo() {
     super();
-  } 
-  
-  
+  }
+
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
@@ -51,12 +50,12 @@ public class TvdbTvShowInfo extends DefaultHandler implements IParser<TvShowInfo
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    
+
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("series")){
+    if (name.equalsIgnoreCase("series")) {
     }
     buffer = null;
   }
@@ -64,12 +63,13 @@ public class TvdbTvShowInfo extends DefaultHandler implements IParser<TvShowInfo
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     String lecture = new String(ch, start, length);
-    if (buffer != null)
+    if (buffer != null) {
       buffer.append(lecture);
+    }
   }
-  
+
   @Override
   public TvShowInfo getObject() {
     return tvShowInfo;
-  }  
+  }
 }

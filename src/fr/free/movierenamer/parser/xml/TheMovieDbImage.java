@@ -26,6 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class TheMovieDbImage
+ *
  * @author Nicolas Magré
  */
 public class TheMovieDbImage extends DefaultHandler implements IParser<TmdbResult> {
@@ -67,52 +68,65 @@ public class TheMovieDbImage extends DefaultHandler implements IParser<TmdbResul
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("OpenSearchDescription"))
+    if (name.equalsIgnoreCase("OpenSearchDescription")) {
       imdbAPIXML = true;
-    if (name.equalsIgnoreCase("images"))
+    }
+    if (name.equalsIgnoreCase("images")) {
       images = true;
+    }
 
-    if (imdbAPIXML)
-      if (images)
-        if (name.equalsIgnoreCase("image"))
+    if (imdbAPIXML) {
+      if (images) {
+        if (name.equalsIgnoreCase("image")) {
           if (attributes.getQName(0) != null && attributes.getQName(0).equals("type")) {
             if (!currentId.equals(attributes.getValue("id"))) {
               if (currentMovieImage != null) {
-                if (lastAttribute.equals("poster"))
+                if (lastAttribute.equals("poster")) {
                   thumbs.add(currentMovieImage);
-                else
+                } else {
                   fanarts.add(currentMovieImage);
+                }
                 currentMovieImage = null;
               }
               currentId = attributes.getValue("id");
               currentMovieImage = new Images(0);
               lastAttribute = attributes.getValue(0);
             }
-            if (attributes.getValue(2).equals("original"))
+            if (attributes.getValue(2).equals("original")) {
               currentMovieImage.setOrigUrl(attributes.getValue(1).replace(".png", ".jpg"));// API bug png ar jpg on server
-            if (attributes.getValue(2).equals("thumb"))
+            }
+            if (attributes.getValue(2).equals("thumb")) {
               currentMovieImage.setThumbUrl(attributes.getValue(1).replace(".png", ".jpg"));
-            if (attributes.getValue(2).equals("mid") || attributes.getValue(2).equals("poster"))
+            }
+            if (attributes.getValue(2).equals("mid") || attributes.getValue(2).equals("poster")) {
               currentMovieImage.setMidUrl(attributes.getValue(1).replace(".png", ".jpg"));
+            }
           }
+        }
+      }
+    }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("OpenSearchDescription"))
+    if (name.equalsIgnoreCase("OpenSearchDescription")) {
       imdbAPIXML = false;
+    }
 
     if (name.equalsIgnoreCase("images")) {
       images = false;
-      if (currentMovieImage != null)
-        if (lastAttribute.equals("poster"))
+      if (currentMovieImage != null) {
+        if (lastAttribute.equals("poster")) {
           thumbs.add(currentMovieImage);
-        else
+        } else {
           fanarts.add(currentMovieImage);
+        }
+      }
     }
 
-    if (name.equalsIgnoreCase("id"))
+    if (name.equalsIgnoreCase("id")) {
       tmdbId = buffer.toString();
+    }
 
     buffer = null;
   }
@@ -120,8 +134,9 @@ public class TheMovieDbImage extends DefaultHandler implements IParser<TmdbResul
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     String lecture = new String(ch, start, length);
-    if (buffer != null)
+    if (buffer != null) {
       buffer.append(lecture);
+    }
   }
 
   @Override

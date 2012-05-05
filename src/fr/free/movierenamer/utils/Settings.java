@@ -49,7 +49,7 @@ public class Settings {
   public final String renamedFile = cacheDir + "renamed.xml";
   private final String logFile = userPath + File.separator + movieRenamerFolder + File.separator + "Logs" + File.separator + "movie_renamer.log";
   //Logger
-  private static final Logger LOGGER = Logger.getLogger("Movie Renamer Logger");
+  public static final Logger LOGGER = Logger.getLogger("Movie Renamer Logger");
   //IMDB
   public final String imdbSearchUrl = "http://www.imdb.com/find?s=tt&q=";
   public final String imdbMovieUrl = "http://www.imdb.com/title/";
@@ -240,13 +240,5 @@ public class Settings {
    */
   public String getVersion() {
     return version;
-  }
-
-  /**
-   * Get Movie Renamer logger
-   * @return Movie Renamer logger
-   */
-  public Logger getLogger() {
-    return LOGGER;
   }
 }

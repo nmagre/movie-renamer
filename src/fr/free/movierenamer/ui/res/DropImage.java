@@ -40,6 +40,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Class DropImage , drag and drog images from hard drive or web browser
+ *
  * @author Nicolas Magré
  */
 public class DropImage implements DropTargetListener {
@@ -51,6 +52,7 @@ public class DropImage implements DropTargetListener {
 
   /**
    * Constructor arguments
+   *
    * @param moviePanel Movie Renamer moviePanel
    * @param cache Cache type
    * @param setting Movie Renamer settings
@@ -59,7 +61,9 @@ public class DropImage implements DropTargetListener {
     this.moviePanel = moviePanel;
     this.setting = setting;
     this.cache = cache;
-    if (cache == Cache.THUMB) thumb = true;
+    if (cache == Cache.THUMB) {
+      thumb = true;
+    }
   }
 
   @Override
@@ -83,7 +87,7 @@ public class DropImage implements DropTargetListener {
 
     Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
     final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    
+
     moviePanel.firePropertyChange("mouseLoading", true, true);
     int action = evt.getDropAction();
     final Transferable data = evt.getTransferable();
@@ -102,7 +106,7 @@ public class DropImage implements DropTargetListener {
             File f = new File(file);
             if (f.exists()) {
 
-              Image img = null;
+              Image img;
               try {
                 img = ImageIO.read(f);
               } catch (IllegalArgumentException e) {
@@ -113,8 +117,11 @@ public class DropImage implements DropTargetListener {
               mvImg.setMidUrl(res[i]);
               mvImg.setOrigUrl(res[i]);
               mvImg.setThumbUrl(res[i]);
-              if (thumb) moviePanel.addThumbToList(img, mvImg, true);
-              else moviePanel.addFanartToList(img, mvImg, true);
+              if (thumb) {
+                moviePanel.addThumbToList(img, mvImg, true);
+              } else {
+                moviePanel.addFanartToList(img, mvImg, true);
+              }
             }
             moviePanel.firePropertyChange("mouseNormal", true, true);
           } else if (res[i].startsWith("http") || res[i].startsWith("www")) {// From web browser
@@ -135,8 +142,11 @@ public class DropImage implements DropTargetListener {
                     mvImg.setMidUrl(url.toString());
                     mvImg.setOrigUrl(url.toString());
                     mvImg.setThumbUrl(url.toString());
-                    if (thumb) moviePanel.addThumbToList(img, mvImg, true);
-                    else moviePanel.addFanartToList(img, mvImg, true);
+                    if (thumb) {
+                      moviePanel.addThumbToList(img, mvImg, true);
+                    } else {
+                      moviePanel.addFanartToList(img, mvImg, true);
+                    }
                   }
                 } catch (IOException ex) {
                   Logger.getLogger(DropImage.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,10 +159,10 @@ public class DropImage implements DropTargetListener {
         }
       }
     } catch (UnsupportedFlavorException ex) {
-      setting.getLogger().log(Level.SEVERE, ex.toString());
+      Settings.LOGGER.log(Level.SEVERE, ex.toString());
       moviePanel.setCursor(normalCursor);
     } catch (IOException ex) {
-      setting.getLogger().log(Level.SEVERE, ex.toString());
+      Settings.LOGGER.log(Level.SEVERE, ex.toString());
       moviePanel.setCursor(normalCursor);
     }
   }

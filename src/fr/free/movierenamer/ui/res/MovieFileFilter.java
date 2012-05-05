@@ -17,33 +17,41 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.util.ResourceBundle;
 import javax.swing.filechooser.FileFilter;
 
 /**
  * Class MovieFileFilter
+ *
  * @author Nicolas Magré
  */
-public class MovieFileFilter extends FileFilter{
+public class MovieFileFilter extends FileFilter {//A refaire en media
 
-    private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-    private Settings setting;
-    
-    public MovieFileFilter(Settings setting){
-        this.setting = setting;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private Settings setting;
+
+  public MovieFileFilter(Settings setting) {
+    this.setting = setting;
+  }
+
+  @Override
+  public boolean accept(File file) {
+    if (file.isDirectory()) {
+      return true;
     }
     
-    @Override
-    public boolean accept(File file) {
-        if (file.isDirectory()) return true;
-        return Utils.checkFile(file.getName(), setting);
+    if (!setting.useExtensionFilter) {
+      return true;
     }
+    
+    return Utils.checkFileExt(file.getName(), setting.extensions);
+  }
 
-    @Override
-    public String getDescription() {
-        return bundle.getString("movie");
-    }    
+  @Override
+  public String getDescription() {
+    return bundle.getString("movie");
+  }
 }

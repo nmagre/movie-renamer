@@ -15,29 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package fr.free.movierenamer.media.movie;
+package fr.free.movierenamer.media;
 
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.util.ArrayList;
 
 /**
- * Class MoviePerson
+ * Class MediaPerson
+ *
  * @author Nicolas Magré
  */
-public class MoviePerson {
+public class MediaPerson {
 
   public static final int ACTOR = 0;
   public static final int DIRECTOR = 1;
   public static final int WRITER = 2;
-
   private String name;
   private String thumb;
   private int job;// Actor, director, writer
   private ArrayList<String> roles;// just for actor
-  private String imdbId;
+  private String imdbId;//Only use for media portal
 
-  public MoviePerson(int job){
+  public MediaPerson(int job) {
     name = "";
     thumb = "";
     this.job = job;
@@ -47,11 +46,12 @@ public class MoviePerson {
 
   /**
    * Constructor arguments
+   *
    * @param name Person name
    * @param thumb Person thumbnail
    * @param job Person job (actor,director,writer,...)
    */
-  public MoviePerson(String name, String thumb, int job){
+  public MediaPerson(String name, String thumb, int job) {
     this.name = name;
     this.thumb = thumb;
     this.job = job;
@@ -61,30 +61,34 @@ public class MoviePerson {
 
   /**
    * Get name
+   *
    * @return Person name
    */
-  public String getName(){
+  public String getName() {
     return name;
   }
 
   /**
    * Get thumbnail
+   *
    * @return Person thumbnail
    */
-  public String getThumb(){
+  public String getThumb() {
     return thumb;
   }
-  
+
   /**
    * Get job
+   *
    * @return Person job
    */
-  public int getJob(){
+  public int getJob() {
     return job;
   }
-  
+
   /**
    * Get roles
+   *
    * @return Person movie roles
    */
   public ArrayList<String> getRoles() {
@@ -93,6 +97,7 @@ public class MoviePerson {
 
   /**
    * Get imdb ID
+   *
    * @return Imdb ID
    */
   public String getImdbId() {
@@ -101,40 +106,47 @@ public class MoviePerson {
 
   /**
    * Set name
+   *
    * @param name
    */
-  public void setName(String name){
+  public void setName(String name) {
     this.name = name;
   }
 
   /**
    * Set imdb ID
+   *
    * @param imdbId
    */
-  public void setImdbId(String imdbId){
+  public void setImdbId(String imdbId) {
     this.imdbId = imdbId;
   }
 
   /**
    * Set thumb
+   *
    * @param thumb
    */
-  public void setThumb(String thumb){
+  public void setThumb(String thumb) {
     this.thumb = thumb;
   }
 
   /**
    * Add role (only for actors)
+   *
    * @param role Role
    * @throws ActionNotValidException
    */
   public void addRole(String role) throws ActionNotValidException {
-    if(job != ACTOR) throw new ActionNotValidException("Only actor can have a role");
-    else roles.add(role);
+    if (job != ACTOR) {
+      throw new ActionNotValidException("Only actor can have a role");
+    } else {
+      roles.add(role);
+    }
   }
 
   @Override
-  public String toString(){
-     return name;
+  public String toString() {
+    return name;
   }
 }

@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.parser;
 
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.media.movie.MoviePerson;
 import fr.free.movierenamer.ui.res.SearchResult;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
@@ -83,13 +83,14 @@ public class ImdbParser {
    * @param htmlSearchRes Imdb search page or imdb movie page
    * @param searchPage Is a imdb search page or imdb movie page
    * @return Array of ImdbSearchResult
+   * @throws IndexOutOfBoundsException  
    */
   public ArrayList<SearchResult> parse(String htmlSearchRes, boolean searchPage) throws IndexOutOfBoundsException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
     int limit = setting.nbResultList[setting.nbResult];
 
     if (searchPage) {
-      setting.getLogger().log(Level.INFO, "Imdb Search page");
+      Settings.LOGGER.log(Level.INFO, "Imdb Search page");
       found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire" : "Popular"));//Popular title
       found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french, "Exact"));//Exact title
       found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel" : "Partial"));//Partial title
@@ -97,7 +98,7 @@ public class ImdbParser {
         found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif" : "Approximate"));
       }
     } else {
-      setting.getLogger().log(Level.INFO, "Imdb Movie page");
+      Settings.LOGGER.log(Level.INFO, "Imdb Movie page");
       getMovie(htmlSearchRes, found);
     }
     return found;
@@ -172,7 +173,7 @@ public class ImdbParser {
         }
       }
     } catch (IllegalArgumentException ex) {
-      setting.getLogger().log(Level.SEVERE, Utils.getStackTrace("IllegalArgumentException", ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IllegalArgumentException", ex.getStackTrace()));
     }
     return found;
   }
@@ -207,10 +208,10 @@ public class ImdbParser {
         found.add(new SearchResult(movieName, imdbId, "Exact", thumb));
 
       } else {
-        setting.getLogger().log(Level.SEVERE, "imdb page unrecognized");
+        Settings.LOGGER.log(Level.SEVERE, "imdb page unrecognized");
       }
     } catch (IndexOutOfBoundsException e) {
-      setting.getLogger().log(Level.SEVERE, e.getMessage());
+      Settings.LOGGER.log(Level.SEVERE, e.getMessage());
       throw new IndexOutOfBoundsException("Parse failed : IndexOutOfBoundsException");
     }
   }
@@ -220,6 +221,7 @@ public class ImdbParser {
    *
    * @param moviePage Imdb movie page
    * @return Movie information
+   * @throws IndexOutOfBoundsException  
    */
   public MovieInfo getMovieInfo(String moviePage) throws IndexOutOfBoundsException {
     MovieInfo movieInfo = new MovieInfo();
@@ -246,7 +248,7 @@ public class ImdbParser {
         movieInfo.setYear(year);
       }
     } else {
-      setting.getLogger().log(Level.SEVERE, "No title found in imdb page");
+      Settings.LOGGER.log(Level.SEVERE, "No title found in imdb page");
     }
 
     // Thumb
@@ -316,7 +318,7 @@ public class ImdbParser {
         imdbId = director.substring(pos, pos + 9);
       }
       director = director.substring(director.indexOf(">") + 1, director.lastIndexOf("<"));
-      MoviePerson dir = new MoviePerson(Utils.unEscapeXML(director, "ISO-8859-1"), "", MoviePerson.DIRECTOR);
+      MediaPerson dir = new MediaPerson(Utils.unEscapeXML(director, "ISO-8859-1"), "", MediaPerson.DIRECTOR);
       dir.setImdbId(imdbId);
       movieInfo.addDirector(dir);
     }
@@ -327,7 +329,7 @@ public class ImdbParser {
     while (searchMatcher.find()) {
       String writer = searchMatcher.group();
       writer = writer.substring(writer.indexOf(">") + 1, writer.lastIndexOf("<"));
-      movieInfo.addWriter(new MoviePerson(Utils.unEscapeXML(writer, "ISO-8859-1"), "", MoviePerson.WRITER));
+      movieInfo.addWriter(new MediaPerson(Utils.unEscapeXML(writer, "ISO-8859-1"), "", MediaPerson.WRITER));
     }
 
     //TagLine
@@ -389,7 +391,7 @@ public class ImdbParser {
             imdbId = matcher2.group().substring(pos, pos + 9);
           }
 
-          MoviePerson actor = new MoviePerson(Utils.unEscapeXML(name, "ISO-8859-1"), thumbactor, MoviePerson.ACTOR);
+          MediaPerson actor = new MediaPerson(Utils.unEscapeXML(name, "ISO-8859-1"), thumbactor, MediaPerson.ACTOR);
           actor.setImdbId(imdbId);
 
           String role = matcher2.group().substring(matcher2.group().indexOf("class=\"char\""));
@@ -412,7 +414,7 @@ public class ImdbParser {
               actor.addRole(Utils.unEscapeXML(role, "ISO-8859-1"));
             }
           } catch (ActionNotValidException e) {
-            setting.getLogger().log(Level.SEVERE, e.getMessage());
+            Settings.LOGGER.log(Level.SEVERE, e.getMessage());
           }
           movieInfo.addActor(actor);
         }
@@ -468,7 +470,7 @@ public class ImdbParser {
       studio = Utils.unEscapeXML(studio, "ISO-8859-1");
       movieInfo.addStudio(studio);
     }
-    
+
     return movieInfo;
   }
 }

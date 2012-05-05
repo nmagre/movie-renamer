@@ -38,13 +38,13 @@ public class MediaFile implements IIconList {
   /**
    * Constructor arguments
    *
-   * @param file A movie file
-   * @param renamed Already rename
-   * @param wasRenamed Movie was renamed
-   * @param warning Warning on the file
+   * @param file A media file
+   * @param type Media type
+   * @param renamed
+   * @param wasRenamed Media was renamed
    * @param showPath Display path in toString()
    */
-  public MediaFile(File file, int type, boolean renamed, boolean wasRenamed, boolean showPath) {
+  public MediaFile(File file, int type, boolean renamed, boolean wasRenamed, boolean showPath) {//A refaire , renamed est forcement a false
     this.file = file;
     this.type = type;
     this.wasRenamed = wasRenamed;
@@ -55,7 +55,7 @@ public class MediaFile implements IIconList {
   /**
    * Get file
    *
-   * @return Meda file
+   * @return File
    */
   public File getFile() {
     return file;
@@ -71,7 +71,7 @@ public class MediaFile implements IIconList {
   }
 
   /**
-   * Set renamed
+   * Set media renamed
    *
    * @param renamed Renamed
    */
@@ -80,18 +80,18 @@ public class MediaFile implements IIconList {
   }
 
   /**
-   * Is renamed
+   * Media is renamed
    *
-   * @return True is media is renamed, fals otherwise
+   * @return True if media is renamed, false otherwise
    */
   public boolean isRenamed() {
     return renamed;
   }
 
   /**
-   * Was renamed
+   * Media has been renamed
    *
-   * @return True is media was renamed, fals otherwise
+   * @return True is media was renamed, false otherwise
    */
   public boolean wasRenamed() {
     return wasRenamed;
@@ -100,7 +100,7 @@ public class MediaFile implements IIconList {
   /**
    * Get file type
    *
-   * @return Media.MOVIE or Media.TVSHOW
+   * @return Media type
    */
   public int getType() {
     return type;
@@ -109,7 +109,7 @@ public class MediaFile implements IIconList {
   /**
    * Set file type
    *
-   * @return Media.MOVIE or Media.TVSHOW
+   * @param type Media type
    */
   public void setType(int type) {
     this.type = type;
@@ -125,10 +125,10 @@ public class MediaFile implements IIconList {
     if (renamed) {
       return Utils.MOVIERENAMEDICON;
     }
+    
     if (wasRenamed) {
       return Utils.MOVIEWASRENAMEDICON;
     }
-    //if(warning) return Utils.WARNINGICON;
     return Utils.MOVIEICON;
   }
 

@@ -34,6 +34,7 @@ import javax.swing.SwingWorker;
 
 /**
  * Class listFilesWorker , get List of media files in files list
+ *
  * @author Magré Nicolas
  */
 public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
@@ -48,6 +49,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Constructor arguments
+   *
    * @param files List of files
    * @param renamed List of renamed files
    * @param subFolders Scan subfolders
@@ -65,6 +67,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Constructor arguments
+   *
    * @param files List of files
    * @param renamed List of renamed files
    * @param subFolders Scan subfolders
@@ -83,19 +86,22 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Retreive all media files in a folder and subfolder
+   *
    * @return ArrayList of movies file
    */
   @Override
-  protected ArrayList<MediaFile> doInBackground() {
+  protected ArrayList<MediaFile> doInBackground() {//A refaire , 
     ArrayList<MediaFile> movies = new ArrayList<MediaFile>();
     for (int i = 0; i < files.size(); i++) {
-      if(isCancelled()) return null;
+      if (isCancelled()) {
+        return null;
+      }
       if (files.get(i).isDirectory()) {
         currentParent = files.get(i).getName();
         getFiles(movies, files.get(i));
-      } else if (Utils.checkFile(files.get(i).getName(), setting)){
-        boolean wasrenamed =  wasRenamed(files.get(i).getAbsolutePath());
-        int type = isMovie(files.get(i)) ? Media.MOVIE:Media.TVSHOW;
+      } else if (Utils.checkFileExt(files.get(i).getName(), setting.extensions) || !setting.useExtensionFilter) {
+        boolean wasrenamed = wasRenamed(files.get(i).getAbsolutePath());
+        int type = isMovie(files.get(i)) ? Media.MOVIE : Media.TVSHOW;
         movies.add(new MediaFile(files.get(i), type, false, wasrenamed, setting.showMovieFilePath));
       }
     }
@@ -105,27 +111,30 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Scan recursively folders and add media to a list
+   *
    * @param medias List of movies
    * @param file File to add or directory to scan
    */
-  private void getFiles(ArrayList<MediaFile> medias, File file) {
-    if(isCancelled()) return;
-    File[] listFiles = file.listFiles();
-    if (listFiles == null) {
-      setting.getLogger().log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());
+  private void getFiles(ArrayList<MediaFile> medias, File file) {//A refaire
+    if (isCancelled()) {
       return;
     }
-    
+    File[] listFiles = file.listFiles();
+    if (listFiles == null) {
+      Settings.LOGGER.log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());
+      return;
+    }
+
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolders) {
         getFiles(medias, listFiles[i]);
         if (listFiles[i].getParentFile().getName().equals(currentParent) && count < nbFiles) {
           count++;
-          setProgress((int) ((count * 100) / nbFiles));
+          setProgress(((count * 100) / nbFiles));
         }
-      } else if (Utils.checkFile(listFiles[i].getName(), setting)){
+      } else if (Utils.checkFileExt(listFiles[i].getName(), setting.extensions) || !setting.useExtensionFilter) {
         boolean wasrenamed = wasRenamed(listFiles[i].getAbsolutePath());
-        int type = isMovie(listFiles[i]) ? Media.MOVIE:Media.TVSHOW;
+        int type = isMovie(listFiles[i]) ? Media.MOVIE : Media.TVSHOW;
         medias.add(new MediaFile(listFiles[i], type, false, wasrenamed, setting.showMovieFilePath));
       }
     }
@@ -133,37 +142,57 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Check if Movie Renamer already rename this file
+   *
    * @param file File to check
    * @return True if file was renamed by Movie Renamer, False otherwise
    */
   private boolean wasRenamed(String file) {
     for (int i = 0; i < renamed.size(); i++) {
-      if (renamed.get(i).getMovieFileDest().equals(file)) return true;
+      if (renamed.get(i).getMovieFileDest().equals(file)) {
+        return true;
+      }
     }
     return false;
   }
 
   /**
    * Check if file is a movie
+   *
    * @param file File to check
-   * @return
+   * @return True if file is a movie, false otherwise
    */
-  static public boolean isMovie(File file) {//A refaire
+  static public boolean isMovie(File file) {//A refaire , amélioré la detection
     String filename = file.getName();
-    if (searchPattern(filename, "\\d++x\\d++.?\\d++x\\d++")) return false;
-    if (searchPattern(filename, "\\d++[eE]\\d\\d")) return false;
-    if (searchPattern(filename, "[sS]\\d++[eE]\\d++")) return false;
-    if (searchPattern(filename, "[sS]\\d++.[eE]\\d++")) return false;
-    if (searchPattern(filename, "\\d++x\\d++")) return false;
-    if (searchPattern(filename, "\\(\\d\\d\\d\\)")) return false;
-    if (searchPattern(filename, "[eE][pP].?\\d++")) return false;
-    if (file.getParent().matches(".*((?i:season)|(?i:saison)).*")) return false;
-    //if (searchPattern(filename, "(?<!\\p{Alnum})[Ss](\\d{1,2}|\\d{4})[^\\p{Alnum}]{0,3}[Ee]((\\d{1,2}\\D?)+)(?!\\p{Digit})")) return false;
+    if (searchPattern(filename, "\\d++x\\d++.?\\d++x\\d++")) {
+      return false;
+    }
+    if (searchPattern(filename, "\\d++[eE]\\d\\d")) {
+      return false;
+    }
+    if (searchPattern(filename, "[sS]\\d++[eE]\\d++")) {
+      return false;
+    }
+    if (searchPattern(filename, "[sS]\\d++.[eE]\\d++")) {
+      return false;
+    }
+    if (searchPattern(filename, "\\d++x\\d++")) {
+      return false;
+    }
+    if (searchPattern(filename, "\\(\\d\\d\\d\\)")) {
+      return false;
+    }
+    if (searchPattern(filename, "[eE][pP].?\\d++")) {
+      return false;
+    }
+    if (file.getParent().matches(".*((?i:season)|(?i:saison)).*")) {
+      return false;
+    }
     return true;
   }
 
   /**
    * Search pattern in string
+   *
    * @param text String to search in
    * @param sPattern Pattern
    * @return True if pattern is find in string , False otherwise
@@ -171,14 +200,18 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
   private static boolean searchPattern(String text, String sPattern) {
     Pattern pattern = Pattern.compile(sPattern);
     Matcher searchMatcher = pattern.matcher(text);
-    if (searchMatcher.find()) return true;
+    if (searchMatcher.find()) {
+      return true;
+    }
     return false;
   }
 
   /**
    * class MyFileComparable , compare two filename
    */
-  private static class MyFileComparable implements Comparator<MediaFile>,Serializable {
+  private static class MyFileComparable implements Comparator<MediaFile>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Override
     public int compare(MediaFile s1, MediaFile s2) {

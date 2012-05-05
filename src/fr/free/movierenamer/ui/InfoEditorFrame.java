@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.media.movie.MoviePerson;
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.ui.res.CustomField;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Component;
@@ -88,7 +88,7 @@ public class InfoEditorFrame extends JDialog {
 
   private void setValue() {
     listModel = new DefaultListModel();
-    ArrayList<MoviePerson> actors = movieInfo.getActors();
+    ArrayList<MediaPerson> actors = movieInfo.getActors();
     for (int i = 0; i < actors.size(); i++) {
       listModel.addElement(actors.get(i));
     }
@@ -100,7 +100,7 @@ public class InfoEditorFrame extends JDialog {
       public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() == 2) {
           if (actorsList.getSelectedIndex() != -1) {
-            String strActor = (String) ((MoviePerson) listModel.getElementAt(actorsList.getSelectedIndex())).getName();
+            String strActor = (String) ((MediaPerson) listModel.getElementAt(actorsList.getSelectedIndex())).getName();
             JOptionPane.showMessageDialog(InfoEditorFrame.this, "", strActor, JOptionPane.INFORMATION_MESSAGE, null);
           }
         }
@@ -239,7 +239,7 @@ public class InfoEditorFrame extends JDialog {
     actorsList = new javax.swing.JList(){
       public String getToolTipText(MouseEvent evt) {
         int index = locationToIndex(evt.getPoint());
-        MoviePerson item = (MoviePerson) getModel().getElementAt(index);
+        MediaPerson item = (MediaPerson) getModel().getElementAt(index);
         String name = item.getName();
         String tooltip = "<html><h2>"+ name + "</h2><img  style=\"float: left;margin-right: 5px;\" src=\"file:/mnt/Divx/.actors/";
         tooltip += ((String)name).replaceAll(" ", "_") + ".tbn\">";
@@ -923,7 +923,7 @@ public class InfoEditorFrame extends JDialog {
 
     private void actorsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_actorsListValueChanged
       strRoleField.setEnabled(true);
-      MoviePerson actor = (MoviePerson) actorsList.getSelectedValue();
+      MediaPerson actor = (MediaPerson) actorsList.getSelectedValue();
       strRoleField.setText(Utils.arrayToString(actor.getRoles(), " | ", 0));
     }//GEN-LAST:event_actorsListValueChanged
 
@@ -978,17 +978,17 @@ public class InfoEditorFrame extends JDialog {
       movieInfo.setSet(Utils.stringToArray(setField.getText(), " \\| "));
       movieInfo.setCountries(Utils.stringToArray(countryField.getText(), " \\| "));
 
-      ArrayList<MoviePerson> person = new ArrayList<MoviePerson>();
+      ArrayList<MediaPerson> person = new ArrayList<MediaPerson>();
       ArrayList<String> array = Utils.stringToArray(directorField.getText(), " \\| ");
       for (int i = 0; i < array.size(); i++) {
-        person.add(new MoviePerson(array.get(i), null, MoviePerson.DIRECTOR));
+        person.add(new MediaPerson(array.get(i), null, MediaPerson.DIRECTOR));
       }
       movieInfo.setDirectors(person);
 
-      person = new ArrayList<MoviePerson>();
+      person = new ArrayList<MediaPerson>();
       array = Utils.stringToArray(writerField.getText(), " \\| ");
       for (int i = 0; i < array.size(); i++) {
-        person.add(new MoviePerson(array.get(i), null, MoviePerson.WRITER));
+        person.add(new MediaPerson(array.get(i), null, MediaPerson.WRITER));
       }
       movieInfo.setDirectors(person);
 

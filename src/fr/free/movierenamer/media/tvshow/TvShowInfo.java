@@ -21,6 +21,6 @@ package fr.free.movierenamer.media.tvshow;
  *
  * @author duffy
  */
-public class TvShowInfo {
+public class TvShowInfo {//A faire
   //A faire
 }

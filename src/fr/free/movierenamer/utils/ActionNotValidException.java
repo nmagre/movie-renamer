@@ -22,6 +22,7 @@ package fr.free.movierenamer.utils;
  * @author Nicolas Magré
  */
 public class ActionNotValidException extends Exception {
+  private static final long serialVersionUID = 1L;
 
 	public ActionNotValidException() {}
 

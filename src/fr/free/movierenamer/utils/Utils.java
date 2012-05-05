@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.media.movie.MoviePerson;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.*;
@@ -32,7 +31,6 @@ import java.util.Arrays;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -59,28 +57,44 @@ public class Utils {
   public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
 
+  /**
+   * Get token from version.properties
+   *
+   * @param propToken Token property name
+   * @return Token value or an empty string
+   */
   public static String getRbTok(String propToken) {
     String msg = "";
     try {
       msg = rb.getString(propToken);
     } catch (MissingResourceException ex) {
-      System.err.println("Token ".concat(propToken).concat(" not in Propertyfile!"));
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
     return msg;
   }
 
-  public static String getOsName() {
+  /**
+   * Get operating system name
+   *
+   * @return Operating system name
+   */
+  private static String getOsName() {
     if (OS == null) {
       OS = System.getProperty("os.name");
     }
     return OS;
   }
 
+  /**
+   * Check if operating system is windows
+   *
+   * @return
+   */
   public static boolean isWindows() {
     return getOsName().startsWith("Windows");
   }
 
-  public static String getFilteredName(String movieName, String[] replaceBy) {
+  public static String getFilteredName(String movieName, String[] replaceBy) {//A refaire, améliorer + rendre compatible pour les série enfin avoir
     String res = movieName.replaceAll("\\.", " ");
     for (int i = 0; i < replaceBy.length; i++) {
       res = res.replaceAll("(?i)" + replaceBy[i], "");
@@ -94,26 +108,44 @@ public class Utils {
     return res;
   }
 
-  public static boolean checkFile(String fileName, Settings setting) {
+  /**
+   * Check if file have a good extension
+   *
+   * @param fileName File to check extension
+   * @param extensions Array of extensions
+   * @return True if file extension is in array
+   */
+  public static boolean checkFileExt(String fileName, String[] extensions) {
+
+    if (extensions == null | extensions.length == 0) {
+      return false;
+    }
+
     if (!fileName.contains(DOT)) {
       return false;
     }
-    if (!setting.useExtensionFilter) {
-      return true;
-    }
+
     String ext = fileName.substring(fileName.lastIndexOf(DOT) + 1);
-    for (int i = 0; i < setting.extensions.length; i++) {
-      if (ext.equalsIgnoreCase(setting.extensions[i])) {
+    for (int i = 0; i < extensions.length; i++) {
+      if (ext.equalsIgnoreCase(extensions[i])) {
         return true;
       }
     }
     return false;
   }
 
+  /**
+   * Remove string from array at index
+   *
+   * @param array String array
+   * @param index Index of string to remove
+   * @return
+   */
   public static String[] removeFromArray(String[] array, int index) {
     if (index >= array.length) {
       return null;
     }
+
     String[] newArray = new String[array.length - 1];
     int pos = 0;
     for (int i = 0; i < array.length; i++) {
@@ -124,16 +156,28 @@ public class Utils {
     return newArray;
   }
 
+  /**
+   * Get a string from an array separated by separator and limited to limit
+   *
+   * @param array Object array
+   * @param separator Separator
+   * @param limit Limit
+   * @return String separated by separator or empty
+   */
   public static String arrayToString(Object[] array, String separator, int limit) {
     StringBuilder res = new StringBuilder();
+
     if (array.length == 0) {
       return res.toString();
     }
+
     for (int i = 0; i < array.length; i++) {
       if (limit != 0 && i == limit) {
         break;
       }
+
       res.append(array[i].toString());
+
       if ((i + 1) != limit) {
         res.append((i < (array.length - 1)) ? separator : "");
       }
@@ -141,29 +185,48 @@ public class Utils {
     return res.toString();
   }
 
-  public static String arrayToString(ArrayList<String> array, String separator, int limit) {
+  /**
+   * Get a string from an array separated by separator and limited to limit
+   *
+   * @param array ArrayList
+   * @param separator Separator
+   * @param limit Limit
+   * @return String separated by separator or empty
+   */
+  public static String arrayToString(ArrayList<?> array, String separator, int limit) {
     return arrayToString(array.toArray(new Object[array.size()]), separator, limit);
   }
 
-  public static String arrayPersonnToString(ArrayList<MoviePerson> array, String separator, int limit) {
-    String[] arr = new String[array.size()];
-    for (int i = 0; i < array.size(); i++) {
-      arr[i] = array.get(i).toString();
-    }
-    return arrayToString(arr, separator, limit);
-  }
-
-  public static ArrayList<String> stringToArray(String str, String seprarator) {
+  /**
+   * Get an array from a string separated by separator
+   *
+   * @param str String
+   * @param separator Separator
+   * @return
+   */
+  public static ArrayList<String> stringToArray(String str, String separator) {
     ArrayList<String> array = new ArrayList<String>();
-    String[] res = str.split(seprarator);
+    if (str == null) {
+      return array;
+    }
+    if (separator == null) {
+      separator = ", ";
+    }
+    String[] res = str.split(separator);
     array.addAll(Arrays.asList(res));
     return array;
   }
 
-  public static String md5(String s) {
+  /**
+   * Get string md5
+   *
+   * @param str String
+   * @return md5
+   */
+  public static String md5(String str) {
     try {
       MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-      digest.update(s.getBytes());
+      digest.update(str.getBytes());
       byte messageDigest[] = digest.digest();
 
       StringBuilder hexString = new StringBuilder();
@@ -172,13 +235,23 @@ public class Utils {
       }
       return hexString.toString();
 
-    } catch (NoSuchAlgorithmException e) {
+    } catch (NoSuchAlgorithmException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
-    return s;
+    return str;
   }
 
+  /**
+   * Get directory size
+   *
+   * @param dir Directory
+   * @return Directory size or 0
+   */
   public static long getDirSize(File dir) {
     long size = 0;
+    if (dir == null) {
+      return size;
+    }
     if (dir.isFile()) {
       size = dir.length();
     } else {
@@ -197,26 +270,42 @@ public class Utils {
     return size;
   }
 
+  /**
+   * Get directry size in Megabytes
+   *
+   * @param dir Directory
+   * @return Directory size or 0
+   */
   public static long getDirSizeInMegabytes(File dir) {
     return getDirSize(dir) / 1024 / 1024;
   }
 
-  public static boolean isDigit(String text) {
-    if (text == null) {
-      return false;
-    }
-    if (text.length() == 0) {
+  /**
+   * Check if string is a digit
+   *
+   * @param str String
+   * @return True if str is a digit, false otherwise
+   */
+  public static boolean isDigit(String str) {
+    if (str == null || str.length() == 0) {
       return false;
     }
 
-    for (int i = 0; i < text.length(); i++) {
-      if (!Character.isDigit(text.charAt(i)) && text.charAt(i) != '.') {
+    for (int i = 0; i < str.length(); i++) {
+      if (!Character.isDigit(str.charAt(i)) && str.charAt(i) != '.') {
         return false;
       }
     }
     return true;
   }
 
+  /**
+   * Create file path
+   *
+   * @param fileName File
+   * @param dir File is a directory
+   * @return True on success, false otherwise
+   */
   public static boolean createFilePath(String fileName, boolean dir) {
     boolean ret = true;
     File f = new File(fileName);
@@ -231,48 +320,51 @@ public class Utils {
     return ret;
   }
 
-  public static boolean downloadFile(URL uri, String fileName) throws IOException {// A refaire
+  /**
+   * Download file from http server
+   *
+   * @param url File url
+   * @param fileName Download filename
+   * @throws IOException
+   */
+  public static void downloadFile(URL url, String fileName) throws IOException {
     InputStream is;
-    OutputStream out = null;
-    boolean downloaded = false;
-    try {
-      is = uri.openStream();
-      File f = new File(fileName);
-      if (!f.exists()) {
-        File d = new File(f.getParent());
-        if (!d.exists()) {
-          if (!d.mkdirs()) {
-            throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
-          }
-        }
-        if (!f.createNewFile()) {
+    OutputStream out;
+
+    is = url.openStream();
+    File f = new File(fileName);
+    if (!f.exists()) {
+      File d = new File(f.getParent());
+      if (!d.exists()) {
+        if (!d.mkdirs()) {
           throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
         }
       }
-      out = new FileOutputStream(f);
-      byte buf[] = new byte[1024];
-      int len;
-      if (is.available() != 0) {
-        downloaded = true;
+      if (!f.createNewFile()) {
+        throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
       }
-      while ((len = is.read(buf)) > 0) {
-        out.write(buf, 0, len);
-      }
-      is.close();
-      out.close();
-    } catch (IOException ex) {
-      if (out != null) {
-        try {
-          out.close();
-        } catch (IOException ex1) {
-        }
-      }
-      throw ex;
     }
-    return downloaded;
+
+    out = new FileOutputStream(f);
+    byte buf[] = new byte[1024];
+    int len;
+
+    while ((len = is.read(buf)) > 0) {
+      out.write(buf, 0, len);
+    }
+    is.close();
+    out.close();
   }
 
-  public static Image getImageFromJAR(String fileName, Class cls) {
+  /**
+   * Get image from jar file
+   *
+   * @param <T>
+   * @param fileName Image filename
+   * @param cls Class
+   * @return Image or null
+   */
+  public static <T> Image getImageFromJAR(String fileName, Class<T> cls) {
     if (fileName == null) {
       return null;
     }
@@ -289,19 +381,28 @@ public class Utils {
       image = toolkit.createImage(thanksToNetscape);
 
     } catch (Exception ex) {
-      Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } finally {
       try {
         in.close();
       } catch (IOException ex) {
-        Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }
     return image;
   }
 
+  /**
+   * Delete all file in directory
+   *
+   * @param dir Directory
+   * @return True on succes, false otherwise
+   */
   public static boolean deleteFileInDirectory(File dir) {
     boolean del = true;
+    if (dir == null && !dir.isDirectory()) {
+      return false;
+    }
     for (File fils : dir.listFiles()) {
       if (fils.isDirectory()) {
         if (!deleteFileInDirectory(fils)) {
@@ -316,8 +417,19 @@ public class Utils {
     return del;
   }
 
+  /**
+   * Copy a file
+   * @param sourceFile Source file
+   * @param destFile Destination file
+   * @return True on susccess, false otherwise 
+   * @throws IOException 
+   */
   public static boolean copyFile(File sourceFile, File destFile) throws IOException {
     boolean cpFile = false;
+    if(sourceFile == null || !sourceFile.canRead()){
+      return cpFile;
+    }
+    
     if (!destFile.exists()) {
       cpFile = destFile.createNewFile();
     }
@@ -339,15 +451,12 @@ public class Utils {
     return cpFile;
   }
 
-  public static void copyStream(InputStream in, OutputStream out) throws IOException {
-    final int buffer_size = 1024;
-    byte[] bytes = new byte[buffer_size];
-    int p;
-    while ((p = in.read(bytes, 0, buffer_size)) != -1) {
-      out.write(bytes, 0, p);
-    }
-  }
-
+  /**
+   * Restart application
+   * @param jarFile Jar file to restart
+   * @return True if success , false otherwise
+   * @throws Exception 
+   */
   public static boolean restartApplication(File jarFile) throws Exception {
     String javaBin = System.getProperty("java.home") + "/bin/java";
 
@@ -359,17 +468,19 @@ public class Utils {
     return true;
   }
 
+  /**
+   * Rotate string by 13 places
+   *
+   * @param text String
+   * @return String rotate
+   */
   public static String rot13(String text) {
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
-      if (c >= 'a' && c <= 'm') {
+      if ((c >= 'a' && c <= 'm') || (c >= 'A' && c <= 'M')) {
         c += 13;
-      } else if (c >= 'n' && c <= 'z') {
-        c -= 13;
-      } else if (c >= 'A' && c <= 'M') {
-        c += 13;
-      } else if (c >= 'A' && c <= 'Z') {
+      } else if ((c >= 'n' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
         c -= 13;
       }
       res.append(c);
@@ -377,6 +488,13 @@ public class Utils {
     return res.toString();
   }
 
+  /**
+   * Capitalized first letter for each words or only first
+   *
+   * @param str String
+   * @param onlyFirst Only first word letter capitalized
+   * @return String
+   */
   public static String capitalizedLetter(String str, boolean onlyFirst) {
     StringBuilder res = new StringBuilder();
     char ch, prevCh;
@@ -403,14 +521,20 @@ public class Utils {
     return res.toString();
   }
 
-  public static String escapeXML(String text) {
-    if (text == null) {
-      return text;
+  /**
+   * Escape XML special character
+   *
+   * @param str String to escape
+   * @return String escaped
+   */
+  public static String escapeXML(String str) {
+    if (str == null) {
+      return null;
     }
 
     StringBuilder stringBuffer = new StringBuilder();
-    for (int i = 0; i < text.length(); i++) {
-      char ch = text.charAt(i);
+    for (int i = 0; i < str.length(); i++) {
+      char ch = str.charAt(i);
       boolean needEscape = (ch == '<' || ch == '&' || ch == '>');
 
       if (needEscape || (ch < 32) || (ch > 136)) {
@@ -422,20 +546,34 @@ public class Utils {
     return stringBuffer.toString();
   }
 
-  public static String unEscapeXML(String text, String encode) {
-    try {
-      if (text == null) {
-        return "";
-      }
-
-      text = text.replaceAll("&#x(\\w\\w);", "%$1");
-      text = URLDecoder.decode(text.replaceAll("% ", "%25 "), encode);
-    } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+  /**
+   * Unescape XML special character
+   *
+   * @param str String
+   * @param encode Encode type
+   * @return Unescape string
+   */
+  public static String unEscapeXML(String str, String encode) {
+    if (str == null) {
+      return "";
     }
-    return text;
+
+    try {
+      str = str.replaceAll("&#x(\\w\\w);", "%$1");
+      str = URLDecoder.decode(str.replaceAll("% ", "%25 "), encode);
+    } catch (UnsupportedEncodingException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+    return str;
   }
 
+  /**
+   * Get stack trace message to string
+   *
+   * @param exception String
+   * @param ste Stack trace
+   * @return String with stack trace
+   */
   public static String getStackTrace(String exception, StackTraceElement[] ste) {
     StringBuilder res = new StringBuilder(exception + "\n");
     for (int i = 0; i < ste.length; i++) {
@@ -444,6 +582,13 @@ public class Utils {
     return res.toString();
   }
 
+  /**
+   * Check if file is a zip file
+   *
+   * @param fileName File
+   * @return True if file is a zip file, false otherwise
+   * @throws IOException
+   */
   public static boolean isZIPFile(String fileName) throws IOException {
     File file = new File(fileName);
     if (file.isDirectory() || file.length() < 4) {
@@ -456,20 +601,37 @@ public class Utils {
     return (magic == 0x504b0304);
   }
 
-  public static boolean isUrl(String text) {
+  /**
+   * Check if string is an url
+   * @param str String
+   * @return True if string is an url, false otherwise
+   */
+  public static boolean isUrl(String str) {
     try {
-      URL urL = new URL(text);
+      URL urL = new URL(str);
     } catch (MalformedURLException e) {
       return false;
     }
     return true;
   }
-  public static boolean isRootDir(File dir){
-    if(!dir.isDirectory()) return false;
+
+  /**
+   * Check if dir is a root directory
+   *
+   * @param dir Directory
+   * @return True if it is a directory
+   */
+  public static boolean isRootDir(File dir) {
+    if (!dir.isDirectory()) {
+      return false;
+    }
+
     File[] roots = File.listRoots();
-    for(File root: roots){
-      if(root.equals(dir)) return true;
+    for (File root : roots) {
+      if (root.equals(dir)) {
+        return true;
+      }
     }
     return false;
-  }  
+  }
 }

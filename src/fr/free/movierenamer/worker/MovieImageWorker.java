@@ -20,6 +20,7 @@ package fr.free.movierenamer.worker;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.awt.Image;
 import java.awt.color.CMMException;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import javax.swing.SwingWorker;
  * Class MovieImageWorker , Download and add thumbnail/fanart to moviePanel
  * @author Magré Nicolas
  */
-public class MovieImageWorker extends SwingWorker<Void, Void>  {
+public class MovieImageWorker extends SwingWorker<Void, Void>  {//A refaire , en Media et rajouter les images pour les series
 
   private static final int THUMB = 0;
   private static final int FANART = 1;
@@ -50,7 +51,7 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
    * @param moviePnl Movie Renamer moviePanel
    * @param setting Movie Renamer settings
    */
-  public MovieImageWorker(ArrayList<Images> arrayImage, int type, int cache, MoviePanel moviePnl, Settings setting) {
+  public MovieImageWorker(ArrayList<Images> arrayImage, int type, int cache, MoviePanel moviePnl, Settings setting) {//A refaire , utiliser un listener + fireporperty au lieu du jpanel
     this.arrayImage = arrayImage;
     this.type = type;
     this.cache = cache;
@@ -70,7 +71,11 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
           setting.cache.add(url.openStream(), url.toString(), cache);
           image = setting.cache.getImage(url, cache);
         }
-        if (image == null) continue;
+        
+        if (image == null) {
+          continue;
+        }
+        
         switch (type) {
           case THUMB:
             moviePnl.addThumbToList(image, arrayImage.get(i), false);
@@ -82,16 +87,16 @@ public class MovieImageWorker extends SwingWorker<Void, Void>  {
             continue;
         }
       } catch (IOException ex) {
-        setting.getLogger().log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());
+        Settings.LOGGER.log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());
         continue;
       } catch (CMMException ex) {
-        setting.getLogger().log(Level.INFO, "LCMS error 12288 : {0}", arrayImage.get(i).getThumbUrl());
+        Settings.LOGGER.log(Level.INFO, "LCMS error 12288 : {0}", arrayImage.get(i).getThumbUrl());
         continue;
       } catch (IllegalArgumentException ex) {
-        setting.getLogger().log(Level.INFO, "BandOffsets.length is wrong! : {0}", arrayImage.get(i).getThumbUrl());
+        Settings.LOGGER.log(Level.INFO, "BandOffsets.length is wrong! : {0}", arrayImage.get(i).getThumbUrl());
         continue;
       } catch (NullPointerException ex) {
-        ex.printStackTrace();
+        Settings.LOGGER.log(Level.INFO, Utils.getStackTrace("NullPointerException", ex.getStackTrace()));
         continue;
       }
     }

@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 
 /**
  * Class HttpGet , Send http request and get web page in a string
+ *
  * @author Nicolas Magré
  */
 public class HttpGet {
@@ -42,6 +43,7 @@ public class HttpGet {
 
   /**
    * Constructor arguments
+   *
    * @param url Page url
    */
   public HttpGet(URL url) {
@@ -50,6 +52,7 @@ public class HttpGet {
 
   /**
    * Constructor arguments
+   *
    * @param uri Page url
    * @throws MalformedURLException
    */
@@ -60,15 +63,19 @@ public class HttpGet {
 
   /**
    * Get url
+   *
    * @return Page url
    */
   public URL getURL() {
-    if (realURL != null) return realURL;
+    if (realURL != null) {
+      return realURL;
+    }
     return url;
   }
 
   /**
    * Set url
+   *
    * @param url Page url
    */
   public void setUrl(URL url) {
@@ -78,6 +85,7 @@ public class HttpGet {
 
   /**
    * Set url
+   *
    * @param uri Page url
    * @throws MalformedURLException
    */
@@ -88,13 +96,16 @@ public class HttpGet {
 
   /**
    * Get web page as string
+   *
    * @param fakeUserAgent Use a fake user agent
-   * @param encode 
+   * @param encode
    * @return Web page or null
    * @throws Exception
    */
   public String sendGetRequest(boolean fakeUserAgent, String encode) throws Exception {
-    if (url == null) return null;
+    if (url == null) {
+      return null;
+    }
     realURL = null;
     String result = null;
     try {
@@ -113,13 +124,14 @@ public class HttpGet {
 
       while ((line = rd.readLine()) != null) {
         line = line.trim();
-        if (line.length() > 0)
+        if (line.length() > 0) {
           sb.append(line).append(Utils.ENDLINE);
+        }
       }
       rd.close();
       result = sb.toString();
     } catch (Exception e) {
-      throw new Exception("HTTP Get "+ bundle.getString("error") + Utils.SPACE + ":" + e);
+      throw new Exception("HTTP Get " + bundle.getString("error") + Utils.SPACE + ":" + e);
     }
     return result;
   }

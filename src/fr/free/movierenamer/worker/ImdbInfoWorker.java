@@ -38,7 +38,6 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, Void> {
   /**
    * Constructor arguments
    *
-   * @param parent Parent component to center joptionpane
    * @param imdbId Imdb Id
    * @param setting Movie Renamer settings
    * @throws MalformedURLException
@@ -54,7 +53,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, Void> {
 
     setProgress(0);
     String res;
-    try {
+    try {//A refaire , rajouter un retry peut etre ?
       res = http.sendGetRequest(true, "ISO-8859-15");
     } catch (Exception e) {
       //A refaire
@@ -64,7 +63,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, Void> {
     setProgress(80);
 
     ImdbParser imdbParser = new ImdbParser(setting);
-    MovieInfo mvi = imdbParser.getMovieInfo(res);
+    MovieInfo mvi = imdbParser.getMovieInfo(res);//A refaire , catch IndexOutOfBoundsException
     mvi.setImdbId(imdbId);
     
     setProgress(100);

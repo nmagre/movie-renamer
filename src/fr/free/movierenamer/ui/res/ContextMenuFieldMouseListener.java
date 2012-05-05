@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package fr.free.movierenamer.ui.res;
 
 import java.awt.Toolkit;
@@ -32,89 +31,100 @@ import javax.swing.text.JTextComponent;
 
 /**
  * Class ContextMenuFieldMouseListener
+ *
  * @author Nicolas Magré
  */
 public class ContextMenuFieldMouseListener extends MouseAdapter {
-    private JPopupMenu popup = new JPopupMenu();
-    private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
-    private Action cut;
-    private Action copy;
-    private Action paste;
-    private Action selectAll;
+  private JPopupMenu popup = new JPopupMenu();
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private Action cut;
+  private Action copy;
+  private Action paste;
+  private Action selectAll;
+  private JTextComponent textComponent;
 
-    private JTextComponent textComponent;
+  private enum Actions {
 
-    private enum Actions { CUT, COPY, PASTE, SELECT_ALL };
+    CUT, COPY, PASTE, SELECT_ALL
+  };
 
-    public ContextMenuFieldMouseListener() {
-      
-        cut = new AbstractAction(bundle.getString("cut")) {
+  public ContextMenuFieldMouseListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                textComponent.cut();
-            }
-        };
-        
-        copy = new AbstractAction(bundle.getString("copy")) {
+    cut = new AbstractAction(bundle.getString("cut")) {
 
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                textComponent.copy();
-            }
-        };
+      private static final long serialVersionUID = 1L;
 
-        paste = new AbstractAction(bundle.getString("paste")) {
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        textComponent.cut();
+      }
+    };
 
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                textComponent.paste();
-            }
-        };
+    copy = new AbstractAction(bundle.getString("copy")) {
 
-        selectAll = new AbstractAction(bundle.getString("selectAll")) {
+      private static final long serialVersionUID = 1L;
 
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                textComponent.selectAll();
-            }
-        };
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        textComponent.copy();
+      }
+    };
 
-        popup.add(copy);
-        popup.add(cut);
-        popup.add(paste);
-        popup.addSeparator();
-        popup.add(selectAll);
+    paste = new AbstractAction(bundle.getString("paste")) {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        textComponent.paste();
+      }
+    };
+
+    selectAll = new AbstractAction(bundle.getString("selectAll")) {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        textComponent.selectAll();
+      }
+    };
+
+    popup.add(copy);
+    popup.add(cut);
+    popup.add(paste);
+    popup.addSeparator();
+    popup.add(selectAll);
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
+    if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
+      if (!(e.getSource() instanceof JTextComponent)) {
+        return;
+      }
+
+      textComponent = (JTextComponent) e.getSource();
+      textComponent.requestFocus();
+
+      boolean enabled = textComponent.isEnabled();
+      boolean editable = textComponent.isEditable();
+      boolean nonempty = !(textComponent.getText() == null || textComponent.getText().equals(""));
+      boolean marked = textComponent.getSelectedText() != null;
+
+      boolean pasteAvailable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null).isDataFlavorSupported(DataFlavor.stringFlavor);
+
+      cut.setEnabled(enabled && editable && marked);
+      copy.setEnabled(enabled && marked);
+      paste.setEnabled(enabled && editable && pasteAvailable);
+      selectAll.setEnabled(enabled && nonempty);
+
+      int x, y;
+      x = e.getX();
+      y = e.getY();
+
+      popup.show(e.getComponent(), x, y);
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
-            if (!(e.getSource() instanceof JTextComponent)) {
-                return;
-            }
-
-            textComponent = (JTextComponent) e.getSource();
-            textComponent.requestFocus();
-
-            boolean enabled = textComponent.isEnabled();
-            boolean editable = textComponent.isEditable();
-            boolean nonempty = !(textComponent.getText() == null || textComponent.getText().equals(""));
-            boolean marked = textComponent.getSelectedText() != null;
-
-            boolean pasteAvailable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null).isDataFlavorSupported(DataFlavor.stringFlavor);
-
-            cut.setEnabled(enabled && editable && marked);
-            copy.setEnabled(enabled && marked);
-            paste.setEnabled(enabled && editable && pasteAvailable);
-            selectAll.setEnabled(enabled && nonempty);
-
-            int x,y;
-            x = e.getX();
-            y = e.getY();
-
-            popup.show(e.getComponent(), x, y);
-        }
-    }
+  }
 }

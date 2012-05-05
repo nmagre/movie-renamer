@@ -21,6 +21,7 @@ import javax.swing.Icon;
 
 /**
  * Class SearchResult
+ *
  * @author Magré Nicolas
  */
 public class SearchResult implements IIconList {
@@ -33,6 +34,7 @@ public class SearchResult implements IIconList {
 
   /**
    * Constructor arguments
+   *
    * @param title Title
    * @param id API ID
    * @param type result type (Exact,...)
@@ -47,6 +49,7 @@ public class SearchResult implements IIconList {
 
   /**
    * Get title
+   *
    * @return imdb title
    */
   public String getTitle() {
@@ -55,6 +58,7 @@ public class SearchResult implements IIconList {
 
   /**
    * Get ID
+   *
    * @return API ID
    */
   public String getId() {
@@ -63,6 +67,7 @@ public class SearchResult implements IIconList {
 
   /**
    * Get thumb
+   *
    * @return imdb thumb
    */
   public String getThumb() {
@@ -71,6 +76,7 @@ public class SearchResult implements IIconList {
 
   /**
    * Set icon
+   *
    * @param icon
    */
   public void setIcon(Icon icon) {
@@ -84,7 +90,9 @@ public class SearchResult implements IIconList {
 
   @Override
   public String toString() {
-    if(type.equals("")) return title;
+    if (type.equals("")) {
+      return title;
+    }
     return title + " : " + type;
   }
 }

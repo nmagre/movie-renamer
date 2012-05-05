@@ -69,15 +69,16 @@ public class XMLParser<T> {
     SAXParserFactory sparser = SAXParserFactory.newInstance();
     parseur = sparser.newSAXParser();
 
+    ZipFile zf = null;
     if (Utils.isUrl(XMLFile)) {//A refaire ,openStrea can failed
       URL url = new URL(XMLFile);
       in = new InputSource(url.openStream());
     } else {
       if (ZIPFile != null && Utils.isZIPFile(ZIPFile)) {
-        
-        ZipFile zf = new ZipFile(ZIPFile);
-        ZipInputStream zipIn;
+
+        zf = new ZipFile(ZIPFile);        
         ZipEntry zipEntry;
+        ZipInputStream zipIn;
 
         zipIn = new ZipInputStream(new FileInputStream(ZIPFile));
         zipEntry = zipIn.getNextEntry();
@@ -90,10 +91,11 @@ public class XMLParser<T> {
           zipIn.closeEntry();
           zipEntry = zipIn.getNextEntry();
         }
-        zf.close();
         zipIn.close();
-        
-        if(in == null) throw new IOException(XMLFile + " not found in zipFile " + ZIPFile);
+
+        if (in == null) {
+          throw new IOException(XMLFile + " not found in zipFile " + ZIPFile);
+        }
       } else {
         File f = new File(XMLFile);
         in = new InputSource(new FileInputStream(f));
@@ -101,7 +103,11 @@ public class XMLParser<T> {
     }
 
     parseur.parse(in, (DefaultHandler) itp);
-
+    
+    if(zf != null) {
+      zf.close();
+    }
+    
     if (itp == null) {
       throw new NullPointerException("IParser null");
     }
