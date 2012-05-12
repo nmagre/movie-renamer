@@ -51,10 +51,10 @@ public class Utils {
   public static final int FIRSTLA = 1;
   public static final int UPPER = 2;
   public static final int LOWER = 3;
-  public static final Icon MOVIERENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.png", Utils.class));
-  public static final Icon MOVIEWASRENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-22.png", Utils.class));
-  public static final Icon MOVIEICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
-  public static final Icon WARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
+  public static final Icon MEDIARENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.png", Utils.class));
+  public static final Icon MEDIAWASRENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-22.png", Utils.class));
+  public static final Icon MEDIAICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
+  public static final Icon MEDIAWARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
 
   /**
@@ -88,7 +88,7 @@ public class Utils {
   /**
    * Check if operating system is windows
    *
-   * @return
+   * @return True if OS is windows, false otherwhise
    */
   public static boolean isWindows() {
     return getOsName().startsWith("Windows");

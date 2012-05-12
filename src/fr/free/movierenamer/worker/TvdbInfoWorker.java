@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
  * @author Nicolas Magré
  */
 //A faire
-public class TvdbInfoWorker extends SwingWorker<TvShowInfo, Void> {
+public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
 
   private String tvdbId;
   private Settings setting;

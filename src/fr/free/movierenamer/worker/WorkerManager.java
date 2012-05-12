@@ -58,7 +58,7 @@ public abstract class WorkerManager {
     return worker;
   }
   
-  public static SwingWorker<MovieInfo, Void> getMovieInfoWorker(String imdb, Settings setting) throws MalformedURLException{
+  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(String imdb, Settings setting) throws MalformedURLException{
       return new ImdbInfoWorker(imdb, setting);
   }
   
@@ -70,7 +70,7 @@ public abstract class WorkerManager {
     return new ActorWorker(actors, moviePanel, setting);
   }
   
-  public static SwingWorker<TvShowInfo, Void> getTvShowInfoWorker(String tvdbId, Settings setting) throws MalformedURLException{
+  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(String tvdbId, Settings setting) throws MalformedURLException{
     return new TvdbInfoWorker(tvdbId, setting);
   }
 }

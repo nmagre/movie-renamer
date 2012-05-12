@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui;
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
+import fr.free.movierenamer.media.MediaFileFilter;
 import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -106,7 +107,7 @@ public class MovieRenamer extends JFrame {
 
     initComponents();
 
-    fileChooser.setFileFilter(new MovieFileFilter(setting));
+    fileChooser.setFileFilter(new MediaFileFilter(setting));
     fileChooser.setAcceptAllFileFilterUsed(false);//Remove AcceptAll as an available choice in the choosable filter list
 
     mediaList.addListSelectionListener(mediaListSelectionListener);
@@ -183,7 +184,7 @@ public class MovieRenamer extends JFrame {
           currentMedia = new Movie(mediaFile, MovieRenamer.this.setting.nameFilters);
           break;
         case Media.TVSHOW:
-          currentMedia = new TvShow(mediaFile);//A faire
+          currentMedia = new TvShow(mediaFile);
           break;
         default:
           return;
@@ -228,7 +229,7 @@ public class MovieRenamer extends JFrame {
         switch (currentMedia.getType()) {
           case Media.MOVIE:
             //Get movie info
-            SwingWorker<MovieInfo, Void> mworker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
+            SwingWorker<MovieInfo, String> mworker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
             mworker.addPropertyChangeListener(new MovieInfoListener(mworker));
             mworker.execute();
             //Get movie images
@@ -241,7 +242,7 @@ public class MovieRenamer extends JFrame {
             }
             break;
           case Media.TVSHOW:
-            SwingWorker<TvShowInfo, Void> tworker = WorkerManager.getTvShowInfoWorker(sres.getId(), MovieRenamer.this.setting);
+            SwingWorker<TvShowInfo, String> tworker = WorkerManager.getTvShowInfoWorker(sres.getId(), MovieRenamer.this.setting);
             TvShowInfoListener tsil = new TvShowInfoListener(tworker);
             tworker.addPropertyChangeListener(tsil);
             tworker.execute();
@@ -358,7 +359,8 @@ public class MovieRenamer extends JFrame {
    *
    * @return 0 : Media type is supported by mode 1 : Media type was changed to mode media type 2 : Currentmode was changed to correct mode -1 : User request to cancel
    */
-  private boolean checkMediaTypeInCurrentMode(MediaFile mediaFile) {
+  private boolean checkMediaTypeInCurrentMode(MediaFile mediaFile) {//A refaire , i18n
+    
     if (mediaFile.getType() == currentMode.getMediaType()) {
       return true;
     }
@@ -372,8 +374,8 @@ public class MovieRenamer extends JFrame {
     switch (res) {
       case 0:
         mediaFile.setType(currentMode.getMediaType());
+        break;
       case 1://A faire , change mode
-
         modeCBox.setSelectedIndex(mediaFile.getType());
         break;
       case 2:
@@ -477,7 +479,7 @@ public class MovieRenamer extends JFrame {
           }
         }
       } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, bundle.getString("checkUpdateFailed") + Utils.ENDLINE + e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
       }
     }
   }

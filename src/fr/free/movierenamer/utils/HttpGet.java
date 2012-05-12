@@ -39,6 +39,8 @@ public class HttpGet {
    * Default constructor
    */
   public HttpGet() {
+    url = null;
+    realURL = null;
   }
 
   /**
@@ -108,6 +110,7 @@ public class HttpGet {
     }
     realURL = null;
     String result = null;
+    
     try {
       URLConnection conn = url.openConnection();
 

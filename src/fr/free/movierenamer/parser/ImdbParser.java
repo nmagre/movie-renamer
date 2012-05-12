@@ -71,6 +71,7 @@ public class ImdbParser {
   private static final String IMDBMOVIEACTOR = "\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>";
   private static final String IMDBMOVIECOUNTRY = "<h5>((Country:)|(Pays:))</h5><div class=\"info-content\">(.*)<div class=\"info\"";
   private static final String IMDBMOVIESTUDIO = "<h5>((Company:)|(Soci&#xE9;t&#xE9;:))</h5><div class=..*.><a href=..*.>(.*)</a><a";
+  private static final String IMDBTOP250 = "<a href=./chart/top\\?tt\\d{7}.>Top 250: #(\\d{1,3})</a>";
 
   public ImdbParser(Settings setting) {
     this.setting = setting;
@@ -470,7 +471,17 @@ public class ImdbParser {
       studio = Utils.unEscapeXML(studio, "ISO-8859-1");
       movieInfo.addStudio(studio);
     }
-
+    
+    //Top 250    
+    pattern = Pattern.compile(IMDBTOP250);
+    searchMatcher = pattern.matcher(moviePage);
+    if(searchMatcher.find()){
+      System.out.println("Top 250 found" + searchMatcher.group() + " : " + searchMatcher.group(1));
+      String top250 = searchMatcher.group(1);
+      if(top250 != null && Utils.isDigit(top250)) {
+        movieInfo.setTop250(top250);
+      }
+    }
     return movieInfo;
   }
 }

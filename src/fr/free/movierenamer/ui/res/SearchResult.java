@@ -57,7 +57,7 @@ public class SearchResult implements IIconList {
   }
 
   /**
-   * Get ID
+   * Get API ID
    *
    * @return API ID
    */

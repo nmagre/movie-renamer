@@ -85,9 +85,9 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jTabbedPane1" alignment="1" pref="598" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="movietitleField" pref="299" max="32767" attributes="1"/>
+                      <Component id="movietitleField" max="32767" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="seachOnLbl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -97,7 +97,7 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="applyBtn" min="-2" pref="84" max="-2" attributes="0"/>
-                      <EmptySpace pref="430" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="cancleBtn" min="-2" pref="84" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -118,7 +118,7 @@
                   <Component id="searchBtn" min="-2" pref="25" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
-              <Component id="jTabbedPane1" pref="257" max="32767" attributes="0"/>
+              <Component id="jTabbedPane1" max="32767" attributes="0"/>
               <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="applyBtn" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
@@ -159,34 +159,47 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="taglineLbl" alignment="0" max="32767" attributes="1"/>
-                          <Component id="trailerLbl" alignment="0" max="32767" attributes="1"/>
-                          <Component id="mpaaLbl" alignment="0" max="32767" attributes="1"/>
-                          <Component id="originalTitleLbl" alignment="0" max="32767" attributes="1"/>
-                          <Component id="sortTitleLbl" alignment="0" max="32767" attributes="1"/>
-                          <Component id="titleLbl" alignment="0" max="32767" attributes="1"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="taglineLbl" alignment="0" max="32767" attributes="1"/>
+                              <Component id="trailerLbl" alignment="0" max="32767" attributes="1"/>
+                              <Component id="mpaaLbl" alignment="0" max="32767" attributes="1"/>
+                              <Component id="originalTitleLbl" alignment="0" pref="140" max="32767" attributes="1"/>
+                              <Component id="sortTitleLbl" alignment="0" max="32767" attributes="1"/>
+                              <Component id="titleLbl" alignment="0" max="32767" attributes="1"/>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <Component id="yearLbl" min="-2" max="-2" attributes="1"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="yearField" min="-2" pref="58" max="-2" attributes="1"/>
+                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="yearLbl" min="-2" max="-2" attributes="1"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="yearField" min="-2" pref="58" max="-2" attributes="1"/>
+                              <Component id="top250Lbl" min="-2" max="-2" attributes="1"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="top250Field" min="-2" pref="58" max="-2" attributes="1"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="cancelBtn7" min="-2" pref="15" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="taglineField" alignment="0" pref="412" max="32767" attributes="1"/>
-                          <Component id="trailerField" alignment="0" pref="412" max="32767" attributes="1"/>
-                          <Component id="mpaaField" alignment="0" pref="412" max="32767" attributes="1"/>
-                          <Component id="originalTitleField" alignment="0" pref="412" max="32767" attributes="1"/>
-                          <Component id="sortTitleField" alignment="0" pref="412" max="32767" attributes="1"/>
-                          <Component id="titleField" alignment="1" pref="412" max="32767" attributes="1"/>
+                          <Component id="taglineField" alignment="0" pref="404" max="32767" attributes="1"/>
+                          <Component id="trailerField" alignment="0" pref="404" max="32767" attributes="1"/>
+                          <Component id="mpaaField" alignment="0" pref="404" max="32767" attributes="1"/>
+                          <Component id="originalTitleField" alignment="0" pref="404" max="32767" attributes="1"/>
+                          <Component id="sortTitleField" alignment="0" pref="404" max="32767" attributes="1"/>
+                          <Component id="titleField" alignment="1" pref="404" max="32767" attributes="1"/>
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace pref="55" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Component id="runtimeLbl" min="-2" max="-2" attributes="0"/>
-                                  <Component id="imdbidLbl" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="cancelBtn7" min="-2" pref="15" max="-2" attributes="0"/>
+                                      <EmptySpace pref="30" max="32767" attributes="0"/>
+                                      <Component id="runtimeLbl" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="cancelBtn12" min="-2" pref="15" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="imdbidLbl" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -195,14 +208,21 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="cancelBtn8" alignment="0" min="-2" pref="15" max="-2" attributes="0"/>
+                                  <Component id="cancelBtn10" alignment="0" min="-2" pref="15" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="cancelBtn8" min="-2" pref="15" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
                                       <Component id="ratingLbl" min="-2" max="-2" attributes="1"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="ratingField" min="-2" pref="66" max="-2" attributes="1"/>
                                   </Group>
-                                  <Component id="cancelBtn10" min="-2" pref="15" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="watchedLbl" min="-2" max="-2" attributes="1"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="watchedChk" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
                       </Group>
@@ -303,8 +323,15 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="imdbidField" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="imdbidLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="top250Lbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="top250Field" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="cancelBtn10" min="-2" pref="15" max="-2" attributes="0"/>
+                          <Component id="cancelBtn12" min="-2" pref="15" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                              <Component id="watchedChk" min="-2" max="-2" attributes="0"/>
+                              <Component id="watchedLbl" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -636,6 +663,49 @@
                 </Property>
               </Properties>
             </Component>
+            <Component class="javax.swing.JLabel" name="top250Lbl">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Ubuntu" size="12" style="1"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Top 250"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="top250Field">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Ubuntu" size="12" style="0"/>
+                </Property>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="yearField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JButton" name="cancelBtn12">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/image/dialog-cancel-2-16.png"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="cancel" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+                <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+                  <Insets value="[2, 2, 2, 2]"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="watchedChk">
+            </Component>
+            <Component class="javax.swing.JLabel" name="watchedLbl">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Ubuntu" size="12" style="1"/>
+                </Property>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="watched" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="detailPnl">
@@ -683,22 +753,22 @@
                               <Component id="cancelBtn18" min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="editWriterBtn" pref="44" max="32767" attributes="0"/>
+                              <Component id="editWriterBtn" pref="45" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cancelBtn17" min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="editSetBtn" pref="44" max="32767" attributes="0"/>
+                              <Component id="editSetBtn" pref="45" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cancelBtn16" min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="editStudioBtn" pref="44" max="32767" attributes="0"/>
+                              <Component id="editStudioBtn" pref="45" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cancelBtn13" min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="editDirectorBtn" pref="44" max="32767" attributes="0"/>
+                              <Component id="editDirectorBtn" pref="45" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cancelBtn14" min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
@@ -776,7 +846,7 @@
                           </Group>
                           <Component id="cancelBtn18" min="-2" pref="15" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="43" max="32767" attributes="0"/>
+                      <EmptySpace pref="83" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1097,7 +1167,7 @@
                           <Component id="cancelBtn11" min="-2" pref="15" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="synopsisSP" pref="181" max="32767" attributes="0"/>
+                      <Component id="synopsisSP" pref="221" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -1170,7 +1240,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="actorListSp" alignment="1" pref="524" max="32767" attributes="1"/>
-                                  <Component id="strRoleField" alignment="0" pref="527" max="32767" attributes="1"/>
+                                  <Component id="strRoleField" alignment="0" pref="524" max="32767" attributes="1"/>
                               </Group>
                           </Group>
                       </Group>
@@ -1190,7 +1260,7 @@
                           <Component id="strRoleField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="roleLbl" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="51" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

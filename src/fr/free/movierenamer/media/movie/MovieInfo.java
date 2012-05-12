@@ -43,6 +43,8 @@ public class MovieInfo {
   private String runtime;
   private String year;
   private String votes;
+  private String top250;
+  private boolean watched;
   private ArrayList<String> set;//Saga
   private ArrayList<String> genres;
   private ArrayList<String> studios;
@@ -67,6 +69,8 @@ public class MovieInfo {
     runtime = "-1";
     year = "";
     votes = "-1";
+    top250 = "0";
+    watched = false;
     mpaa = "";
     sortTitle = "";
     set = new ArrayList<String>();
@@ -193,6 +197,18 @@ public class MovieInfo {
    */
   public String getVotes() {
     return votes;
+  }
+  
+  /**
+   * Get top 250
+   * @return 0 or top 250 position
+   */
+  public String getTop250(){
+    return top250;
+  }
+  
+  public boolean getWatched(){
+    return watched;
   }
 
   /**
@@ -609,6 +625,14 @@ public class MovieInfo {
   public void setVotes(String votes) {
     this.votes = votes;
   }
+  
+  public void setTop250(String top250){
+    this.top250 = top250;
+  }
+  
+  public void setWatched(boolean watched){
+    this.watched = watched;
+  }
 
   /**
    * Set sets
@@ -724,6 +748,8 @@ public class MovieInfo {
     res.append("  Runtime : ").append(runtime).append(Utils.ENDLINE);
     res.append("  Year : ").append(year).append(Utils.ENDLINE);
     res.append("  Vote : ").append(votes).append(Utils.ENDLINE);
+    res.append("  Top 250 : ").append(top250).append(Utils.ENDLINE);
+    res.append("  Watched : ").append(watched ? "True":"False").append(Utils.ENDLINE);
     res.append("  Genre : ").append(Utils.arrayToString(genres, " | ", 0)).append(Utils.ENDLINE);
     res.append("  Studio : ").append(Utils.arrayToString(studios, " | ", 0)).append(Utils.ENDLINE);
     res.append("  Country : ").append(Utils.arrayToString(countries, " | ", 0)).append(Utils.ENDLINE);

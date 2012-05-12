@@ -100,7 +100,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
           if (imsres.getIcon() == null) {
             imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
           }
-          setProgress(30 + (int) (++i * 70) / imdbSearchResult.size());
+          setProgress((30 + (++i * 70)) / imdbSearchResult.size());
         }
       } catch (IndexOutOfBoundsException ex) {
         Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IndexOutOfBoundsException", ex.getStackTrace()));

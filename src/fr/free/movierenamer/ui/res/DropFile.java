@@ -135,24 +135,26 @@ public class DropFile implements DropTargetListener {
    * @param files Array of movie files
    */
   public void setMovies(ArrayList<File> files) {
-    boolean subFolders = false;
+    boolean subFolders = setting.scanSubfolder;
     int count = 0;
 
     parent.setCursor(hourglassCursor);
 
-    for (File file : files) {
-      if (file.isDirectory()) {
-        File[] subDir = file.listFiles(folderFilter);
-        if (subDir != null) {
-          count += subDir.length;
-          if (subDir.length > 0) {
-            if (!subFolders && !setting.scanSubfolder) {
-              parent.setCursor(normalCursor);
-              int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
-              if (n == JOptionPane.NO_OPTION) {
-                break;
+    if (!subFolders){
+      for (File file : files) {
+        if (file.isDirectory()) {
+          File[] subDir = file.listFiles(folderFilter);
+          if (subDir != null) {
+            count += subDir.length;
+            if (subDir.length > 0) {
+              if (!subFolders && !setting.scanSubfolder) {
+                parent.setCursor(normalCursor);
+                int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+                if (n == JOptionPane.NO_OPTION) {
+                  break;
+                }
+                subFolders = true;
               }
-              subFolders = true;
             }
           }
         }

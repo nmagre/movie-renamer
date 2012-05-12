@@ -40,16 +40,15 @@ public class MediaFile implements IIconList {
    *
    * @param file A media file
    * @param type Media type
-   * @param renamed
    * @param wasRenamed Media was renamed
    * @param showPath Display path in toString()
    */
-  public MediaFile(File file, int type, boolean renamed, boolean wasRenamed, boolean showPath) {//A refaire , renamed est forcement a false
+  public MediaFile(File file, int type, boolean wasRenamed, boolean showPath) {
     this.file = file;
     this.type = type;
     this.wasRenamed = wasRenamed;
-    this.renamed = renamed;
     this.showPath = showPath;
+    renamed = false;
   }
 
   /**
@@ -123,13 +122,13 @@ public class MediaFile implements IIconList {
   @Override
   public Icon getIcon() {
     if (renamed) {
-      return Utils.MOVIERENAMEDICON;
+      return Utils.MEDIARENAMEDICON;
     }
     
     if (wasRenamed) {
-      return Utils.MOVIEWASRENAMEDICON;
+      return Utils.MEDIAWASRENAMEDICON;
     }
-    return Utils.MOVIEICON;
+    return Utils.MEDIAICON;
   }
 
   @Override

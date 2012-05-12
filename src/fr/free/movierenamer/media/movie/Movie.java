@@ -371,6 +371,9 @@ public class Movie implements Media {
     nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
     nfo.append("  <runtime>").append(movieinfo.getRuntime().equals("-1") ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <top250>").append(movieinfo.getTop250()).append("</top250>\n");
+    nfo.append("  <playcount>").append(movieinfo.getWatched() ? "1":"0").append("</playcount>\n");
+    nfo.append("  <watched>").append(movieinfo.getWatched() ? "true":"false").append("</watched>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
     nfo.append("  <id>").append(movieinfo.getImdbId()).append("</id>\n");
     nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
@@ -436,7 +439,6 @@ public class Movie implements Media {
     nfo.append("  <runtime>").append(movieinfo.getRuntime().equals("-1") ? "" : movieinfo.getRuntime()).append("</runtime>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
     nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
-    nfo.append("  <top250></top250>\n");
     nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString(" / ", 0))).append("</studio>\n");
 
     ArrayList<MediaPerson> personn = movieinfo.getDirectors();

@@ -21,7 +21,7 @@ import org.xml.sax.ContentHandler;
 
 /**
  * Interface for XML parser
- * @param <T> XML object to parse
+ * @param <T> Object returned by parser
  * @author Nicolas Magré
  */
 public interface IParser<T> extends ContentHandler {

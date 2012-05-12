@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.media;
 
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -28,30 +28,30 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Nicolas Magré
  */
-public class MovieFileFilter extends FileFilter {//A refaire en media
+public class MediaFileFilter extends FileFilter {
 
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private Settings setting;
 
-  public MovieFileFilter(Settings setting) {
+  public MediaFileFilter(Settings setting) {
     this.setting = setting;
   }
 
   @Override
   public boolean accept(File file) {
-    if (file.isDirectory()) {
-      return true;
-    }
-    
     if (!setting.useExtensionFilter) {
       return true;
     }
-    
+
+    if (file.isDirectory()) {
+      return true;
+    }
+
     return Utils.checkFileExt(file.getName(), setting.extensions);
   }
 
   @Override
   public String getDescription() {
-    return bundle.getString("movie");
+    return bundle.getString("media");
   }
 }

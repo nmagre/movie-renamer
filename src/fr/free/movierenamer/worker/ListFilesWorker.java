@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 import javax.swing.SwingWorker;
 
 /**
- * Class listFilesWorker , get List of media files in files list
+ * Class listFilesWorker ,get List of media files in files list
  *
  * @author Magré Nicolas
  */
@@ -90,23 +90,22 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    * @return ArrayList of movies file
    */
   @Override
-  protected ArrayList<MediaFile> doInBackground() {//A refaire , 
-    ArrayList<MediaFile> movies = new ArrayList<MediaFile>();
-    for (int i = 0; i < files.size(); i++) {
+  protected ArrayList<MediaFile> doInBackground() {
+    ArrayList<MediaFile> medias = new ArrayList<MediaFile>();
+    for (File file : files) {
       if (isCancelled()) {
         return null;
       }
-      if (files.get(i).isDirectory()) {
-        currentParent = files.get(i).getName();
-        getFiles(movies, files.get(i));
-      } else if (Utils.checkFileExt(files.get(i).getName(), setting.extensions) || !setting.useExtensionFilter) {
-        boolean wasrenamed = wasRenamed(files.get(i).getAbsolutePath());
-        int type = isMovie(files.get(i)) ? Media.MOVIE : Media.TVSHOW;
-        movies.add(new MediaFile(files.get(i), type, false, wasrenamed, setting.showMovieFilePath));
+
+      if (file.isDirectory()) {
+        currentParent = file.getName();
+        getFiles(medias, file);
+      } else if (!setting.useExtensionFilter || Utils.checkFileExt(file.getName(), setting.extensions)) {
+        addMediaFile(medias, file);
       }
     }
-    Collections.sort(movies, new MyFileComparable());
-    return movies;
+    Collections.sort(medias, new MediaFileNameComparator());
+    return medias;
   }
 
   /**
@@ -115,10 +114,11 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    * @param medias List of movies
    * @param file File to add or directory to scan
    */
-  private void getFiles(ArrayList<MediaFile> medias, File file) {//A refaire
+  private void getFiles(ArrayList<MediaFile> medias, File file) {
     if (isCancelled()) {
       return;
     }
+
     File[] listFiles = file.listFiles();
     if (listFiles == null) {
       Settings.LOGGER.log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());
@@ -132,16 +132,25 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
           count++;
           setProgress(((count * 100) / nbFiles));
         }
-      } else if (Utils.checkFileExt(listFiles[i].getName(), setting.extensions) || !setting.useExtensionFilter) {
-        boolean wasrenamed = wasRenamed(listFiles[i].getAbsolutePath());
-        int type = isMovie(listFiles[i]) ? Media.MOVIE : Media.TVSHOW;
-        medias.add(new MediaFile(listFiles[i], type, false, wasrenamed, setting.showMovieFilePath));
+      } else if (!setting.useExtensionFilter || Utils.checkFileExt(listFiles[i].getName(), setting.extensions)) {
+        addMediaFile(medias, listFiles[i]);
       }
     }
   }
 
   /**
-   * Check if Movie Renamer already rename this file
+   * Add file to media files list
+   * @param medias Media file list
+   * @param file File to add
+   */
+  private void addMediaFile(ArrayList<MediaFile> medias, File file) {
+    boolean wasrenamed = wasRenamed(file.getAbsolutePath());
+    int type = isMovie(file) ? Media.MOVIE : Media.TVSHOW;
+    medias.add(new MediaFile(file, type, wasrenamed, setting.showMovieFilePath));
+  }
+
+  /**
+   * Check if Movie Renamer has already renamed this file
    *
    * @param file File to check
    * @return True if file was renamed by Movie Renamer, False otherwise
@@ -207,9 +216,9 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
   }
 
   /**
-   * class MyFileComparable , compare two filename
+   * class MediaFileNameComparator , compare two filename
    */
-  private static class MyFileComparable implements Comparator<MediaFile>, Serializable {
+  private static class MediaFileNameComparator implements Comparator<MediaFile>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
