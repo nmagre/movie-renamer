@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.utils;
+package fr.free.movierenamer.matcher;
 
 import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;

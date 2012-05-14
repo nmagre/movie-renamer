@@ -18,17 +18,13 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.parser.ImdbParser;
-import fr.free.movierenamer.ui.res.SearchResult;
-import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
-import java.awt.Image;
-import java.awt.color.CMMException;
-import java.io.IOException;
+import java.awt.Dimension;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +88,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
         for (SearchResult imsres : imdbSearchResult) {
           String thumb = imsres.getThumb();
           if (thumb != null) {
-            Icon icon = getHttpImageIcon(thumb);
+            Icon icon = Utils.getSearchThumb(thumb, setting.cache, new Dimension(45, 70));
             if (icon != null) {
               imsres.setIcon(icon);
             }
@@ -116,34 +112,5 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
   @Override
   public void process (List<Void> v){
     JOptionPane.showMessageDialog(null, bundle.getString("imdbParserFail"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
-  }
-
-  /**
-   * Get icon from web server
-   *
-   * @param url
-   * @return Icon or null
-   */
-  private Icon getHttpImageIcon(String url) {
-    Icon icon = null;
-    try {
-      Image image;
-      URL uri = new URL(url);
-      image = setting.cache.getImage(uri, Cache.THUMB);
-      if (image == null) {
-        setting.cache.add(uri.openStream(), uri.toString(), Cache.THUMB);
-        image = setting.cache.getImage(uri, Cache.THUMB);
-      }
-      icon = new ImageIcon(image.getScaledInstance(45, 70, Image.SCALE_DEFAULT));
-    } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
-    } catch (CMMException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
-    } catch (IllegalArgumentException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
-    } catch (NullPointerException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
-    }
-    return icon;
   }
 }

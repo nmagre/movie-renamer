@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
-import fr.free.movierenamer.ui.res.TmdbResult;
+import fr.free.movierenamer.utils.TmdbResult;
 import fr.free.movierenamer.utils.Images;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
@@ -29,7 +29,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class TheMovieDbImage extends DefaultHandler implements IParser<TmdbResult> {
+public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
 
   private ArrayList<Images> thumbs;
   private ArrayList<Images> fanarts;
@@ -42,7 +42,7 @@ public class TheMovieDbImage extends DefaultHandler implements IParser<TmdbResul
   private String tmdbId;
   private TmdbResult tmdbRes;
 
-  public TheMovieDbImage() {
+  public TmdbImage() {
     super();
   }
 

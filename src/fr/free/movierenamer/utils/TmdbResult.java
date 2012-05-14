@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.utils.Images;
 import java.util.ArrayList;
 import javax.swing.Icon;

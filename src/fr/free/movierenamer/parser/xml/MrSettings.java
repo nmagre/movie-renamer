@@ -127,6 +127,13 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
             if (name.equalsIgnoreCase("limit")) {
               config.limit = Integer.parseInt(buffer.toString());
             }
+            if (name.equalsIgnoreCase("scrapper")) {
+              int nb = Integer.parseInt(buffer.toString());
+              if(nb< 0 || nb >2){
+                nb = 0;
+              }
+              config.scrapper = nb;
+            }            
           } catch (NumberFormatException ex) {
             Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
             config.xmlError = true;

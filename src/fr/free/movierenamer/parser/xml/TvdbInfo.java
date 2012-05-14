@@ -26,13 +26,13 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class TvdbTvShowInfo extends DefaultHandler implements IParser<TvShowInfo> {//A faire
+public class TvdbInfo extends DefaultHandler implements IParser<TvShowInfo> {//A faire
 
   private StringBuffer buffer;
   private boolean french;
   private TvShowInfo tvShowInfo;
 
-  public TvdbTvShowInfo() {
+  public TvdbInfo() {
     super();
   }
 

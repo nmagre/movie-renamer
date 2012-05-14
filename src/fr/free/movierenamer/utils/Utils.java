@@ -17,8 +17,10 @@
  */
 package fr.free.movierenamer.utils;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.color.CMMException;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -419,17 +421,18 @@ public class Utils {
 
   /**
    * Copy a file
+   *
    * @param sourceFile Source file
    * @param destFile Destination file
-   * @return True on susccess, false otherwise 
-   * @throws IOException 
+   * @return True on susccess, false otherwise
+   * @throws IOException
    */
   public static boolean copyFile(File sourceFile, File destFile) throws IOException {
     boolean cpFile = false;
-    if(sourceFile == null || !sourceFile.canRead()){
+    if (sourceFile == null || !sourceFile.canRead()) {
       return cpFile;
     }
-    
+
     if (!destFile.exists()) {
       cpFile = destFile.createNewFile();
     }
@@ -453,9 +456,10 @@ public class Utils {
 
   /**
    * Restart application
+   *
    * @param jarFile Jar file to restart
    * @return True if success , false otherwise
-   * @throws Exception 
+   * @throws Exception
    */
   public static boolean restartApplication(File jarFile) throws Exception {
     String javaBin = System.getProperty("java.home") + "/bin/java";
@@ -489,11 +493,11 @@ public class Utils {
   }
 
   /**
-   * Capitalized first letter for each words or only first
+   * Capitalized first letter for each words or only first one
    *
    * @param str String
    * @param onlyFirst Only first word letter capitalized
-   * @return String
+   * @return String capitalized
    */
   public static String capitalizedLetter(String str, boolean onlyFirst) {
     StringBuilder res = new StringBuilder();
@@ -603,13 +607,14 @@ public class Utils {
 
   /**
    * Check if string is an url
+   *
    * @param str String
    * @return True if string is an url, false otherwise
    */
   public static boolean isUrl(String str) {
     try {
       URL urL = new URL(str);
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException e) {//Not pretty, No return in catch
       return false;
     }
     return true;
@@ -633,5 +638,36 @@ public class Utils {
       }
     }
     return false;
+  }
+
+  /**
+   * Get thumbnail icon from web server or cache
+   *
+   * @param url Thumb url
+   * @param cache Movie Renamer cache
+   * @param dimension Thumb dimension
+   * @return Icon or null
+   */
+  public static Icon getSearchThumb(String url, Cache cache, Dimension dimension) {
+    Icon icon = null;
+    try {
+      Image image;
+      URL uri = new URL(url);
+      image = cache.getImage(uri, Cache.THUMB);
+      if (image == null) {
+        cache.add(uri.openStream(), uri.toString(), Cache.THUMB);
+        image = cache.getImage(uri, Cache.THUMB);
+      }
+      icon = new ImageIcon(image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_DEFAULT));
+    } catch (IOException ex) {
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+    } catch (CMMException ex) {
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+    } catch (IllegalArgumentException ex) {
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+    } catch (NullPointerException ex) {
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+    }
+    return icon;
   }
 }

@@ -56,11 +56,14 @@ public class Settings {
   public final String imdbSearchUrl_fr = "http://www.imdb.fr/find?s=tt&q=";
   public final String imdbMovieUrl_fr = "http://www.imdb.fr/title/";
   //The Movie DB
+  public final String tmdbAPISearchUrl = "http://api.themoviedb.org/2.1/Movie.search/en/xml/";
   public final String tmdbAPIUrlMovieImdb = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
   //public final String tmdbAPIUrlMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
   //Tvdb
   public final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";
   public static final String tvdbAPIUrlTvShowImage = "http://thetvdb.com/banners/";
+  //Allocine
+  public final String allocineAPISearch="http://api.allocine.fr/rest/v3/search?partner=yW5kcm9pZC12M3M&filter=movie&q=";
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
@@ -117,6 +120,7 @@ public class Settings {
   public String separator = ", ";
   public int limit = 3;
   public String laf = "";
+  public int scrapper = 0;
   
   // Boolean
   public boolean useExtensionFilter = true;
@@ -197,6 +201,7 @@ public class Settings {
       out.write("    <separator>" + separator + "</separator>" + endl);
       out.write("    <limit>" + limit + "</limit>" + endl);
       out.write("    <laf>" + laf + "</laf>" + endl);
+      out.write("    <scrapper>" + scrapper + "</scrapper>" + endl);
       
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);

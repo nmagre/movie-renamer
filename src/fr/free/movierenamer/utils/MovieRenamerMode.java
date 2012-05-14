@@ -17,29 +17,35 @@
  */
 package fr.free.movierenamer.utils;
 
+import javax.swing.ImageIcon;
+
 /**
  * Class MovieRenamerMode
+ *
  * @author Nicolas Magré
  */
 public class MovieRenamerMode {
-  
+
   public static final int MOVIEMODE = 0;
   public static final int TVSHOWMODE = 1;
   private int mode;
   private int mediaType;
   private String title;
-  
+  public static final ImageIcon[] modeIcon = new ImageIcon[]{//Mode icon
+    new ImageIcon(Utils.getImageFromJAR("/image/movieMode.png", MovieRenamerMode.class)),
+    new ImageIcon(Utils.getImageFromJAR("/image/tvShowMode.png", MovieRenamerMode.class))};
+
   public MovieRenamerMode(String title, int mode, int mediaType) {
     this.title = title;
     this.mode = mode;
     this.mediaType = mediaType;
   }
-  
-  public String getTitle(){
+
+  public String getTitle() {
     return title;
   }
-  
-  public int getMediaType(){
+
+  public int getMediaType() {
     return mediaType;
   }
 }

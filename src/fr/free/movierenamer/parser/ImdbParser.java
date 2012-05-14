@@ -19,11 +19,12 @@ package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.ui.res.SearchResult;
+import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,7 +55,7 @@ public class ImdbParser {
   private static final String IMDBMOVIETITLE = "<meta property=.og:title. content=?(.*?) \\(.*\\d\\d\\d\\d.*\\)";
   private static final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
   // Movie Page Combined Pattern
-  private static final String IMDBMOVIETITLE_C = "<title>.* \\(.*\\d+.*\\).*</title>";
+  private static final String IMDBMOVIETITLE_C = "<title>(.* \\(.*\\d+.*\\).*)</title>";
   private static final String IMDBMOVIETHUMB_C = "title=\".*\" src=.http://ia.media-imdb.com/images/.*>";
   private static final String IMDBMOVIEORIGTITLE = "<span class=\"title-extra\">.*</i></span>";
   private static final String IMDBMOVIEORIGTITLE_FR = "<h5>Alias:</h5>.*\\(titre original\\)";
@@ -84,7 +85,7 @@ public class ImdbParser {
    * @param htmlSearchRes Imdb search page or imdb movie page
    * @param searchPage Is a imdb search page or imdb movie page
    * @return Array of ImdbSearchResult
-   * @throws IndexOutOfBoundsException  
+   * @throws IndexOutOfBoundsException
    */
   public ArrayList<SearchResult> parse(String htmlSearchRes, boolean searchPage) throws IndexOutOfBoundsException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
@@ -142,7 +143,7 @@ public class ImdbParser {
               movieNameMatcher = pattern.matcher(movieImdbMatcher.group());
 
               if (movieNameMatcher.find()) {
-                if ((limit > -1 && count > limit) || count > nbMovie) {
+                if ((limit > -1 && count > limit) || count > nbMovie) {//
                   break;
                 }
                 movieName = movieImdbMatcher.group().substring(movieNameMatcher.end(), movieImdbMatcher.group().length()).replaceAll("<\\/a>", Utils.EMPTY);
@@ -222,7 +223,7 @@ public class ImdbParser {
    *
    * @param moviePage Imdb movie page
    * @return Movie information
-   * @throws IndexOutOfBoundsException  
+   * @throws IndexOutOfBoundsException
    */
   public MovieInfo getMovieInfo(String moviePage) throws IndexOutOfBoundsException {
     MovieInfo movieInfo = new MovieInfo();
@@ -230,23 +231,30 @@ public class ImdbParser {
     Pattern pattern = Pattern.compile(IMDBMOVIETITLE_C);
     Matcher searchMatcher = pattern.matcher(moviePage);
     if (searchMatcher.find()) {
-      String title = searchMatcher.group();
-      title = title.replaceAll("<title>", Utils.EMPTY).replaceAll("</title>", Utils.EMPTY);
-      String year = title;
-      title = title.substring(0, title.lastIndexOf("(") - 1);
+      String res = searchMatcher.group(1);
+      
+      pattern = Pattern.compile("(.*)\\(\\d{4}\\).\\(.*\\)");//Fixed issue 7, E.g: 6 Guns (2010) (V)
+      searchMatcher = pattern.matcher(res);
+      String title;
+      if(searchMatcher.find()) {
+        title = searchMatcher.group(1);
+      }
+      else {
+        title = res.substring(0, res.lastIndexOf("(") - 1);
+      }
       movieInfo.setTitle(Utils.unEscapeXML(title, "ISO-8859-1"));
 
-      pattern = Pattern.compile("\\(\\d\\d\\d\\d.*\\)");
-      searchMatcher = pattern.matcher(year);
+      //Get year
+      pattern = Pattern.compile("\\((\\d{4}).*\\)");
+      searchMatcher = pattern.matcher(res);
       if (searchMatcher.find()) {
-        year = searchMatcher.group().replace("(", Utils.EMPTY).replace(")", Utils.EMPTY);
-        if (year.contains("/")) {
-          year = year.substring(0, year.indexOf("/"));
+        res = searchMatcher.group(1);
+        if (res != null && Utils.isDigit(res)) {
+          int year = Integer.parseInt(res);
+          if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {//Before all "movies" producted are more short video than a movie
+            movieInfo.setYear("" + year);
+          }
         }
-        if (year.contains(" ")) {
-          year = year.substring(0, year.indexOf(" "));
-        }
-        movieInfo.setYear(year);
       }
     } else {
       Settings.LOGGER.log(Level.SEVERE, "No title found in imdb page");
@@ -471,14 +479,13 @@ public class ImdbParser {
       studio = Utils.unEscapeXML(studio, "ISO-8859-1");
       movieInfo.addStudio(studio);
     }
-    
+
     //Top 250    
     pattern = Pattern.compile(IMDBTOP250);
     searchMatcher = pattern.matcher(moviePage);
-    if(searchMatcher.find()){
-      System.out.println("Top 250 found" + searchMatcher.group() + " : " + searchMatcher.group(1));
+    if (searchMatcher.find()) {
       String top250 = searchMatcher.group(1);
-      if(top250 != null && Utils.isDigit(top250)) {
+      if (top250 != null && Utils.isDigit(top250)) {
         movieInfo.setTop250(top250);
       }
     }

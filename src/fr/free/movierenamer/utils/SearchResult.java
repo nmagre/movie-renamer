@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.ui.res.IIconList;
 import javax.swing.Icon;
 
 /**
@@ -35,10 +36,10 @@ public class SearchResult implements IIconList {
   /**
    * Constructor arguments
    *
-   * @param title Title
+   * @param title Media title
    * @param id API ID
    * @param type result type (Exact,...)
-   * @param thumb Imdb thumb
+   * @param thumb Thumbnail
    */
   public SearchResult(String title, String id, String type, String thumb) {
     this.id = id;
@@ -50,7 +51,7 @@ public class SearchResult implements IIconList {
   /**
    * Get title
    *
-   * @return imdb title
+   * @return Media Title
    */
   public String getTitle() {
     return title;
@@ -66,16 +67,16 @@ public class SearchResult implements IIconList {
   }
 
   /**
-   * Get thumb
+   * Get Thumbnail
    *
-   * @return imdb thumb
+   * @return Thumbnail
    */
   public String getThumb() {
     return thumb;
   }
 
   /**
-   * Set icon
+   * Set media icon
    *
    * @param icon
    */
@@ -83,6 +84,10 @@ public class SearchResult implements IIconList {
     this.icon = icon;
   }
 
+  /**
+   * Get media icon
+   * @return Media icon
+   */
   @Override
   public Icon getIcon() {
     return icon;

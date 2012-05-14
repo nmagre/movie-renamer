@@ -17,39 +17,36 @@
  */
 package fr.free.movierenamer.parser.xml;
 
-import fr.free.movierenamer.ui.res.SearchResult;
-import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.SearchResult;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Class TvdbTvShow , tvShow search result XML parser
+ * Class TmdbSearch
  *
  * @author Nicolas Magré
  */
-public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
+public class TmdbSearch extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
 
   private StringBuffer buffer;
-  private boolean french;
   private ArrayList<SearchResult> results;
+  private boolean movies;
+  private boolean movie;
   private String currentId;
   private String currentName;
   private String currentThumb;
-  private String currentLanguage;
-  private boolean series;
-
-  public TvdbTvShow(boolean french) {
+  
+  public TmdbSearch(){
     super();
-    this.french = french;
   }
 
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
     results = new ArrayList<SearchResult>();
-    series = false;
+    currentThumb = "";
   }
 
   @Override
@@ -60,33 +57,45 @@ public class TvdbTvShow extends DefaultHandler implements IParser<ArrayList<Sear
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("series")) {
-      series = true;
+    if (name.equalsIgnoreCase("movies")) {
+      movies = true;
+    }
+    if (name.equalsIgnoreCase("movie")) {
+      movie = true;
+    }
+    if (movies) {
+      if (movie) {
+        if (name.equalsIgnoreCase("image")) {
+          if(currentThumb.equals("")){
+            if(attributes.getValue("type").equals("poster")){
+              if(attributes.getValue("size").equals("thumb")){
+                currentThumb = attributes.getValue("url");
+              }
+            }
+          }
+        }
+      }
     }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("series")) {
-      if ((french && currentLanguage.equals("fr")) || !french) {
-        String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb : null;
-        results.add(new SearchResult(currentName, currentId, "TvShow", thumb));
-      }
-      currentName = currentId = currentThumb = currentLanguage = "";
-      series = false;
+    if (name.equalsIgnoreCase("movies")) {
+      movies = false;
     }
-    if (series) {
-      if (name.equalsIgnoreCase("seriesid")) {
-        currentId = buffer.toString();
-      }
-      if (name.equalsIgnoreCase("language")) {
-        currentLanguage = buffer.toString();
-      }
-      if (name.equalsIgnoreCase("SeriesName")) {
-        currentName = buffer.toString();
-      }
-      if (name.equalsIgnoreCase("banner")) {
-        currentThumb = buffer.toString();
+    if (name.equalsIgnoreCase("movie")) {
+      movie = false;
+      results.add(new SearchResult(currentName, currentId, "", currentThumb));
+      currentName = currentId = currentThumb = "";
+    }
+    if (movies) {
+      if (movie) {
+        if (name.equalsIgnoreCase("id")) {
+          currentId = buffer.toString();
+        }
+        if (name.equalsIgnoreCase("name")) {
+          currentName = buffer.toString();
+        }
       }
     }
     buffer = null;

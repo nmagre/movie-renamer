@@ -23,7 +23,7 @@ import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.ui.MoviePanel;
-import fr.free.movierenamer.ui.res.SearchResult;
+import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -42,7 +42,17 @@ public abstract class WorkerManager {
     try {
       switch (media.getType()) {
         case Media.MOVIE:
-          worker = new ImdbSearchWorker(media.getSearch(), setting);
+          switch(setting.scrapper){
+            case 0:
+              worker = new ImdbSearchWorker(media.getSearch(), setting);
+              break;
+            case 1:
+              worker = new TmdbSearchWorker(media.getSearch(), setting);
+              break;
+            case 2:
+              worker = new AllocineSearchWorker(media.getSearch(), setting);
+              break;
+          }          
           break;
         case Media.TVSHOW:
           worker = new TvdbSearchWorker(media.getSearch(), setting);
@@ -63,7 +73,7 @@ public abstract class WorkerManager {
   }
   
   public static SwingWorker<MovieImage, Void> getMovieImageWorker(String imdb, Settings setting){
-    return new TheMovieDbImageWorker(imdb, setting);
+    return new TmdbImageWorker(imdb, setting);
   }
   
   public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors,MoviePanel moviePanel, Settings setting){

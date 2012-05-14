@@ -28,7 +28,10 @@ import fr.free.movierenamer.media.tvshow.TvShow;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.MrRenamedMovie;
 import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.ui.res.*;
+import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.ui.res.ContextMenuListMouseListener;
+import fr.free.movierenamer.ui.res.DropFile;
+import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import fr.free.movierenamer.worker.MovieImageWorker;
@@ -89,12 +92,9 @@ public class MovieRenamer extends JFrame {
   private ArrayList<Renamed> renamedMediaFile;
   private MoviePanel moviePnl;
   //Movie Renamer mode
-  private final ImageIcon[] modeIcon = new ImageIcon[]{//Mode icon
-    new ImageIcon(Utils.getImageFromJAR("/image/movieMode.png", getClass())),
-    new ImageIcon(Utils.getImageFromJAR("/image/tvShowMode.png", getClass()))};
   private final MovieRenamerMode[] modes = new MovieRenamerMode[]{
-    new MovieRenamerMode("Mode Movie", MovieRenamerMode.MOVIEMODE, Media.MOVIE),
-    new MovieRenamerMode("Mode TvShow", MovieRenamerMode.TVSHOWMODE, Media.TVSHOW)
+    new MovieRenamerMode("Movie", MovieRenamerMode.MOVIEMODE, Media.MOVIE),
+    new MovieRenamerMode("TvShow", MovieRenamerMode.TVSHOWMODE, Media.TVSHOW)
   };
   private MovieRenamerMode currentMode;
 
@@ -122,7 +122,7 @@ public class MovieRenamer extends JFrame {
     DropTarget dt = new DropTarget(mediaList, dropFile);
     dt.setActive(true);
 
-    modeCBox.setModel(new DefaultComboBoxModel(modeIcon));
+    modeCBox.setModel(new DefaultComboBoxModel(MovieRenamerMode.modeIcon));
     modeCBox.setPreferredSize(new Dimension(120, 25));
     currentMode = modes[modeCBox.getSelectedIndex()];
 
@@ -287,13 +287,6 @@ public class MovieRenamer extends JFrame {
   }
 
   private void loadInterface() {//A refaire
-
-    int c = 0;
-    switch (c) {
-      case 0:
-      case 1:
-        break;
-    }
 
     if (!setting.movieInfoPanel) {
       searchSp.remove(moviePnl);

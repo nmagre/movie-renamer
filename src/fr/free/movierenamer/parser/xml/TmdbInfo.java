@@ -32,13 +32,13 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class TheMovieDbInfo extends DefaultHandler implements IParser<MovieInfo> {
+public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
 
   private StringBuffer buffer;
   private boolean imdbAPIXML;
   private MovieInfo movieinfo;
 
-  public TheMovieDbInfo() {
+  public TmdbInfo() {
     super();
   }
 

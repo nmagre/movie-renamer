@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.media.tvshow.SxE;
 import java.util.Iterator;
 import java.util.LinkedHashMap;

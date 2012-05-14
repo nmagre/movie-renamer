@@ -20,7 +20,7 @@ package fr.free.movierenamer.media.tvshow;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.TvShowNameMatcher;
+import fr.free.movierenamer.matcher.TvShowNameMatcher;
 
 /**
  *

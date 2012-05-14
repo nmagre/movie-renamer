@@ -18,9 +18,9 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.movie.MovieImage;
-import fr.free.movierenamer.parser.xml.TheMovieDbImage;
+import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.ui.res.TmdbResult;
+import fr.free.movierenamer.utils.TmdbResult;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
  * Class TheMovieDbImageWorker , get images from theMovieDB by imdbID
  * @author Magré Nicolas
  */
-public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
+public class TmdbImageWorker extends SwingWorker<MovieImage, Void> {
 
   private Settings setting;
   private String imdbId;
@@ -50,7 +50,7 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
    * @param imdbId Imdb ID (ttxxxxxx)
    * @param setting Movie Renamer settings
    */
-  public TheMovieDbImageWorker(String imdbId, Settings setting) {
+  public TmdbImageWorker(String imdbId, Settings setting) {
     this.imdbId = imdbId;
     this.setting = setting;
   }
@@ -90,7 +90,7 @@ public class TheMovieDbImageWorker extends SwingWorker<MovieImage, Void> {
 
       // Parse TheMovieDb XML
       XMLParser<TmdbResult> mmp = new XMLParser<TmdbResult>(f.getAbsolutePath());
-      mmp.setParser(new TheMovieDbImage());
+      mmp.setParser(new TmdbImage());
       try {
         TmdbResult res = mmp.parseXml();
         if (res.getThumbs() != null) {
