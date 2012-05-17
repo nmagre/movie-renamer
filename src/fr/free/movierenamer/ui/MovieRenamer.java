@@ -215,12 +215,12 @@ public class MovieRenamer extends JFrame {
           return;
         }
 
+        //Show loading dialog if auto select first result is not enabled 
         if (!loading.isShown()) {
           loadDial(false);
         }
 
         clearInterface(false, false);
-
         currentMedia.clear();
 
         SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
@@ -229,9 +229,14 @@ public class MovieRenamer extends JFrame {
         switch (currentMedia.getType()) {
           case Media.MOVIE:
             //Get movie info
-            SwingWorker<MovieInfo, String> mworker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
-            mworker.addPropertyChangeListener(new MovieInfoListener(mworker));
-            mworker.execute();
+            SwingWorker<MovieInfo, String> movieInfoWorker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
+            if(movieInfoWorker == null){
+              //A faire , afficher erreur
+              return;
+            }
+            movieInfoWorker.addPropertyChangeListener(new MovieInfoListener(movieInfoWorker));
+            movieInfoWorker.execute();
+            
             //Get movie images
             if (MovieRenamer.this.setting.movieInfoPanel) {
               if (MovieRenamer.this.setting.thumb || MovieRenamer.this.setting.fanart) {
@@ -353,7 +358,7 @@ public class MovieRenamer extends JFrame {
    * @return 0 : Media type is supported by mode 1 : Media type was changed to mode media type 2 : Currentmode was changed to correct mode -1 : User request to cancel
    */
   private boolean checkMediaTypeInCurrentMode(MediaFile mediaFile) {//A refaire , i18n
-    
+
     if (mediaFile.getType() == currentMode.getMediaType()) {
       return true;
     }
@@ -754,7 +759,7 @@ public class MovieRenamer extends JFrame {
                 if (setting.fanart) {
                   moviePnl.clearFanartList();
                 }
-                tmdbiw = WorkerManager.getMovieImageWorker(movie.getImdbId(), setting);
+                tmdbiw = WorkerManager.getMovieImageWorker(movie.getID(), setting);
                 tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
               }
               if (setting.thumb || setting.fanart || setting.actorImage) {
@@ -1026,10 +1031,6 @@ public class MovieRenamer extends JFrame {
       worker = null;
     }
 
-    public SearchWorkerListener(SwingWorker<ArrayList<SearchResult>, Void> worker) {
-      this.worker = worker;
-    }
-
     public void setWorker(SwingWorker<ArrayList<SearchResult>, Void> worker) {
       this.worker = worker;
     }
@@ -1038,41 +1039,46 @@ public class MovieRenamer extends JFrame {
     public void propertyChange(PropertyChangeEvent evt) {
 
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+
+        ArrayList<SearchResult> results = null;
+
         try {
-          ArrayList<SearchResult> objects = worker.get();
-
-          searchBtn.setEnabled(true);
-          searchField.setEnabled(true);
-
-          if (objects == null) {
-            loading.dispose();
-            return;
-          }
-
-          searchResModel = new DefaultListModel();
-          resultLbl.setText(bundle.getString("searchResListTitle") + " : " + objects.size());
-          for (int i = 0; i < objects.size(); i++) {
-            searchResModel.addElement(objects.get(i));
-          }
-
-          // Display thumbs in result list          
-          if (setting.displayThumbResult) {
-            searchResultList.setCellRenderer(new IconListRenderer<SearchResult>(objects));
-          } else {
-            searchResultList.setCellRenderer(new DefaultListCellRenderer());
-          }
-
-          searchResultList.setModel(searchResModel);
-          if (objects.isEmpty()) {
-            JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noResult"), sError, JOptionPane.ERROR_MESSAGE);
-            loading.setVisible(false);
-          }
-
+          results = worker.get();
         } catch (InterruptedException ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        searchBtn.setEnabled(true);
+        searchField.setEnabled(true);
+
+        if (results == null) {
+          loading.dispose();
+          return;
+        }
+
+        if (results.isEmpty()) {
+          JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noResult"), sError, JOptionPane.ERROR_MESSAGE);
+          loading.setVisible(false);
+          return;
+        }
+
+        searchResModel = new DefaultListModel();
+        resultLbl.setText(bundle.getString("searchResListTitle") + " : " + results.size());
+        for (SearchResult result : results) {
+          searchResModel.addElement(result);
+        }
+
+        // Display thumbs in result list          
+        if (setting.displayThumbResult) {
+          searchResultList.setCellRenderer(new IconListRenderer<SearchResult>(results));
+        } else {
+          searchResultList.setCellRenderer(new DefaultListCellRenderer());
+        }
+
+        searchResultList.setModel(searchResModel);
+
         loading.setValue(100, SEARCHWORKER);
         if (!searchResModel.isEmpty()) {
           if (MovieRenamer.this.setting.selectFrstRes) {

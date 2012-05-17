@@ -38,7 +38,7 @@ public class Movie implements Media {
   private MediaFile movieFile;
   private MovieInfo movieinfo;
   private MovieImage movieImage;
-  private String imdbId;
+  private String id;
   private String imdbTitle;
   private String filteredFileName;
   private String search;
@@ -98,12 +98,12 @@ public class Movie implements Media {
   }
 
   /**
-   * Get imdb ID
+   * Get movie API ID
    *
-   * @return Movie Imdb ID
+   * @return Movie API ID
    */
-  public String getImdbId() {
-    return imdbId;
+  public String getID() {
+    return id;
   }
 
   /**
@@ -145,7 +145,7 @@ public class Movie implements Media {
     String[][] replace = new String[][]{
       {"<t>", movieinfo.getTitle()},
       {"<ot>", movieinfo.getOrigTitle()},
-      {"<tt>", getImdbId()},
+      {"<tt>", id},
       {"<y>", movieinfo.getYear()},
       {"<rt>", runtime},
       {"<ra>", movieinfo.getRating()},
@@ -301,14 +301,13 @@ public class Movie implements Media {
   }
 
   /**
-   * Set imdb ID
-   *
-   * @param imdbId Imdb ID
+   * Set movie API ID
+   * @param id Movie API ID
    */
   @Override
-  public void setId(String imdbId) {
-    this.imdbId = imdbId;
-    movieinfo.setImdbId(imdbId);
+  public void setId(String id) {
+    this.id = id;
+    movieinfo.setImdbId(id);
   }
 
   /**

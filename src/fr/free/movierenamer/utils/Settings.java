@@ -57,8 +57,8 @@ public class Settings {
   public final String imdbMovieUrl_fr = "http://www.imdb.fr/title/";
   //The Movie DB
   public final String tmdbAPISearchUrl = "http://api.themoviedb.org/2.1/Movie.search/en/xml/";
-  public final String tmdbAPIUrlMovieImdb = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
-  //public final String tmdbAPIUrlMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
+  public final String tmdbAPMovieImdbLookUp = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
+  public final String tmdbAPIMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
   //Tvdb
   public final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";
   public static final String tvdbAPIUrlTvShowImage = "http://thetvdb.com/banners/";

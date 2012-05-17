@@ -17,51 +17,52 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.parser.xml.TmdbSearch;
+import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.xml.TmdbInfo;
 import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
-import java.awt.Dimension;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
 import java.util.logging.Level;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class TmdbSearchWorker
+ * Class TmdbInfoWorker, get movie info from the movie database
  *
  * @author Nicolas Magré
  */
-public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
+public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
 
-  private String searchTitle;
   private Settings setting;
+  private String tmdbId;
 
-  public TmdbSearchWorker(String searchTitle, Settings setting) {
-    this.searchTitle = searchTitle;
+  /**
+   * Constructor arguments
+   *
+   * @param tmdbId tmdb Id
+   * @param setting Movie Renamer settings
+   * @throws MalformedURLException
+   */
+  public TmdbInfoWorker(String tmdbId, Settings setting) throws MalformedURLException {
     this.setting = setting;
+    this.tmdbId = tmdbId;
   }
 
   @Override
-  protected ArrayList<SearchResult> doInBackground() {
-    ArrayList<SearchResult> tmdbSearchResult = new ArrayList<SearchResult>();
+  protected MovieInfo doInBackground() throws Exception {
+    MovieInfo movieInfo = new MovieInfo();
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/";
-      String xmlFile = setting.tmdbAPISearchUrl + xmlUrl +  URLEncoder.encode(searchTitle, "UTF-8");
-      if(setting.imdbFr) {
+      String xmlFile = setting.tmdbAPIMovieInf + xmlUrl + tmdbId;
+      if (setting.imdbFr) {
         xmlFile = xmlFile.replace("/en/", "/fr/");
       }
-      
-      XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile);
-      xmp.setParser(new TmdbSearch());
-      tmdbSearchResult = xmp.parseXml();
+      XMLParser<MovieInfo> xmp = new XMLParser<MovieInfo>(xmlFile);
+      xmp.setParser(new TmdbInfo());
+      movieInfo = xmp.parseXml();
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
@@ -71,19 +72,6 @@ public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
     } catch (SAXException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
-    
-     for (SearchResult tmdbres : tmdbSearchResult) {
-      String thumb = tmdbres.getThumb();
-      if (thumb != null) {
-        Icon icon = Utils.getSearchThumb(thumb, setting.cache,  new Dimension(45, 70));
-        if (icon != null) {
-          tmdbres.setIcon(icon);
-        }
-      }
-      if (tmdbres.getIcon() == null) {
-        tmdbres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
-      }
-    }
-    return tmdbSearchResult;
+    return movieInfo;
   }
 }

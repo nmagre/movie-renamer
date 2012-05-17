@@ -2,8 +2,7 @@
 
 <shortcuts>
   <skipIfNotSupported/>
-  <programGroup defaultName="Movie Renamer"
-              location="applications"/>
+  <programGroup defaultName="Movie Renamer" location="applications"/>
   <shortcut name="Movie Renamer"
     target="$INSTALL_PATH/Movie Renamer.jar"
     commandLine=""

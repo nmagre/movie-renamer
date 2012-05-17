@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<installation version="1.0">
+  <info>
+    <appname>Movie Renamer</appname>
+    <appversion>@VERSION@</appversion>
+    <authors>
+      <author name="Magré Nicolas" email="movierenamer@free.fr"/>
+    </authors>
+    <url>http://movierenamer.free.fr/</url>
+    <uninstaller write="no"/> 
+  </info>
+
+  <guiprefs width="640" height="480" resizable="yes"/>
+
+  <locale>
+    <langpack iso3="eng"/>
+    <langpack iso3="fra"/>
+  </locale>
+  
+  <resources>
+    <res id="InfoPanel.info" src="gpl-3.0.txt"/>
+  </resources>
+
+  <panels>
+      <panel classname="HelloPanel"/>
+      <panel classname="InfoPanel"/>
+      <panel classname="TargetPanel"/>
+      <panel classname="PacksPanel"/>
+      <panel classname="InstallPanel"/>
+      <panel classname="FinishPanel"/>
+  </panels>
+
+  <variables>
+    <variable name="TargetPanel.dir" value="/Applications/Movie Renamer.app" />
+  </variables>
+
+  <packs>
+    <pack name="Movie Renamer" required="yes">
+      <description>Movie Renamer @VERSION@</description>
+      <file src="postinstmac.sh" targetdir="$INSTALL_PATH"/>
+      <file src="MacOS/Contents" targetdir="$INSTALL_PATH"/>
+      <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH/Contents/Resources"/>
+      <executable targetfile="$INSTALL_PATH/postinstmac.sh" stage="postinstall" failure="abort">
+        <args>
+          <arg value="$INSTALL_PATH/Contents/MacOS/JavaApplicationStub" />
+        </args>
+      </executable>
+    </pack>
+  </packs>
+</installation>

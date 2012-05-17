@@ -74,7 +74,7 @@ public interface Media {
   public void setSearch(String search);
 
   /**
-   * Set media id (imdbId,tvdbId,..)
+   * Set media id (imdbId,tvdbId,...)
    *
    * @param id Media api id
    */

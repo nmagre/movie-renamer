@@ -96,6 +96,9 @@ public class TmdbSearch extends DefaultHandler implements IParser<ArrayList<Sear
         if (name.equalsIgnoreCase("name")) {
           currentName = buffer.toString();
         }
+        if (name.equalsIgnoreCase("released")) {
+          currentName += " (" + buffer.toString().substring(0, buffer.toString().indexOf("-")) + ")";
+        }
       }
     }
     buffer = null;

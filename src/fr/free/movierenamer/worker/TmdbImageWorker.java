@@ -20,11 +20,7 @@ package fr.free.movierenamer.worker;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.utils.TmdbResult;
-import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.Images;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +60,7 @@ public class TmdbImageWorker extends SwingWorker<MovieImage, Void> {
     // Try to get XML from theMovieDB
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/";
-      URL url = new URL(setting.tmdbAPIUrlMovieImdb + xmlUrl + imdbId);
+      URL url = new URL(setting.tmdbAPMovieImdbLookUp + xmlUrl + imdbId);
       File f = setting.cache.get(url, Cache.TMDBXML);
       if (f == null) {
         InputStream in;

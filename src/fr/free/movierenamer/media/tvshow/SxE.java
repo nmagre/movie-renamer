@@ -18,7 +18,7 @@
 package fr.free.movierenamer.media.tvshow;
 
 /**
- *
+ * Class SxE
  * @author Nicolas Magré
  */
 public class SxE {

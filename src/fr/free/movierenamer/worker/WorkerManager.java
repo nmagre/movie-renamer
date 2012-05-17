@@ -33,31 +33,43 @@ import javax.swing.SwingWorker;
 
 /**
  * Class WorkerManager
+ *
  * @author Nicolas Magré
  */
 public abstract class WorkerManager {
 
+  private static final int IMDB = 0;
+  private static final int TMDB = 1;
+  private static final int ALLOCINE = 2;
+
+  /**
+   * Get media search worker
+   * @param media Media
+   * @param setting Movie Renamer settings
+   * @return Worker depend of media type and settings or null
+   */
   public static SwingWorker<ArrayList<SearchResult>, Void> getSearchWorker(Media media, Settings setting) {
     SwingWorker<ArrayList<SearchResult>, Void> worker = null;
     try {
       switch (media.getType()) {
         case Media.MOVIE:
-          switch(setting.scrapper){
-            case 0:
+          switch (setting.scrapper) {
+            case IMDB:
               worker = new ImdbSearchWorker(media.getSearch(), setting);
               break;
-            case 1:
+            case TMDB:
               worker = new TmdbSearchWorker(media.getSearch(), setting);
               break;
-            case 2:
+            case ALLOCINE:
               worker = new AllocineSearchWorker(media.getSearch(), setting);
               break;
-          }          
+            default:
+          }
           break;
         case Media.TVSHOW:
           worker = new TvdbSearchWorker(media.getSearch(), setting);
           break;
-        default :
+        default:
           break;
       }
     } catch (MalformedURLException ex) {
@@ -67,20 +79,33 @@ public abstract class WorkerManager {
     }
     return worker;
   }
-  
-  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(String imdb, Settings setting) throws MalformedURLException{
-      return new ImdbInfoWorker(imdb, setting);
+
+  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(String id, Settings setting) throws MalformedURLException {
+     SwingWorker<MovieInfo, String> worker = null;
+    switch (setting.scrapper) {
+      case IMDB:
+        worker = new ImdbInfoWorker(id, setting);
+        break;
+      case TMDB:
+        worker = new TmdbInfoWorker(id, setting);
+        break;
+      case ALLOCINE:
+        //A faire
+        break;
+      default:
+    }
+    return worker;
   }
-  
-  public static SwingWorker<MovieImage, Void> getMovieImageWorker(String imdb, Settings setting){
+
+  public static SwingWorker<MovieImage, Void> getMovieImageWorker(String imdb, Settings setting) {
     return new TmdbImageWorker(imdb, setting);
   }
-  
-  public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors,MoviePanel moviePanel, Settings setting){
+
+  public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {
     return new ActorWorker(actors, moviePanel, setting);
   }
-  
-  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(String tvdbId, Settings setting) throws MalformedURLException{
+
+  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(String tvdbId, Settings setting) throws MalformedURLException {
     return new TvdbInfoWorker(tvdbId, setting);
   }
 }

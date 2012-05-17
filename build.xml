@@ -9,6 +9,7 @@
     
   <import file="nbproject/build-impl.xml"/>
    
+  <!-- Unix/Windows installer -->
   <target name="mrInstaller" depends="init,compile,jar">
   <!-- check for java version and fail build if not the correct version -->
     <echo message="Java Version: ${java.version}"/>
@@ -65,5 +66,52 @@
     <delete file="shortcutSpec-tmp.xml"/>
     <delete file="Unix_shortcutSpec-tmp.xml"/>
     <delete file="install-tmp.xml"/>
+  </target>
+
+  <!-- Mac OS -->
+  <target name="mrInstallerMac" depends="init,compile,jar">
+  <!-- check for java version and fail build if not the correct version -->
+    <echo message="Java Version: ${java.version}"/>
+    <fail message="Unsupported Java version: ${java.version}. Make sure that the version of the Java compiler is 1.6">
+        <condition>
+            <not>
+                <or>
+                    <contains string="${java.version}" substring="1.6" casesensitive="false" />
+                </or>
+            </not>
+        </condition>
+    </fail>
+
+    <copy file="install-macOS.xml" tofile="install-macOS-tmp.xml" >
+      <filterchain>
+         <replacetokens>
+            <token key="JARFILE" value="${apps}-${apps.version}.jar"/>
+            <token key="VERSION" value="${apps.version}"/>
+          </replacetokens>
+      </filterchain>
+    </copy>
+
+    <copy file="dist/${apps}-${apps.version}.jar" tofile="MacOS/Contents/Resources/Java/${apps}.jar"/>
+
+    <!-- Izpack  -->
+    <exec executable="compile">
+      <arg value="install-macOS-tmp.xml"/>
+      <arg value="-o" />
+      <arg value="dist/${apps}_Installer-MacOS-${apps.version}.jar"/>
+      <arg value="-k"/>
+      <arg value="standard"/>
+    </exec>
+
+    <exec executable="chmod">
+      <arg value="+x" />
+      <arg value="dist/${apps}_Installer-MacOS-${apps.version}.jar" />
+      <arg value="${dist.jar}" />
+    </exec>
+
+    <delete file="install-macOS-tmp.xml"/>
+  </target>
+
+  <!-- Installer -->
+  <target name="installer" depends="mrInstaller,mrInstallerMac">
   </target>
 </project>

@@ -20,9 +20,9 @@ package fr.free.movierenamer.parser.xml;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -35,7 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
 
   private StringBuffer buffer;
-  private boolean imdbAPIXML;
+  private boolean movie;
   private MovieInfo movieinfo;
 
   public TmdbInfo() {
@@ -45,15 +45,15 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    imdbAPIXML = false;
+    movie = false;
     movieinfo = new MovieInfo();
   }
 
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("OpenSearchDescription")) {
-      imdbAPIXML = true;
+    if (name.equalsIgnoreCase("movie")) {
+      movie = true;
     }
     if (name.equalsIgnoreCase("country")) {
       movieinfo.addCountry(attributes.getValue("name"));
@@ -74,13 +74,15 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
           }
           if (actor == null) {
             actor = new MediaPerson(attributes.getValue("name"), attributes.getValue("thumb"), job);
-            actor.addRole(attributes.getValue("character"));
+           if(job  == MediaPerson.ACTOR) {
+              actor.addRole(attributes.getValue("character"));
+            }
             movieinfo.addActor(actor);
           } else {
             movieinfo.addRole(actor.getName(), attributes.getValue("character"));
           }
         } catch (ActionNotValidException ex) {
-          Logger.getLogger(XMLParser.class.getName()).log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
       }
     }
@@ -92,24 +94,26 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
     if (name.equalsIgnoreCase("studio")) {
       movieinfo.addStudio(attributes.getValue("name"));
     }
-
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("OpenSearchDescription")) {
-      imdbAPIXML = false;
+    if (name.equalsIgnoreCase("movie")) {
+      movie = false;
     }
 
-    if (imdbAPIXML) {
+    if (movie) {
+      if (name.equalsIgnoreCase("name")) {
+        movieinfo.setTitle(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("original_name")) {
+        movieinfo.setOrigTitle(buffer.toString());
+      }
       if (name.equalsIgnoreCase("trailer")) {
         movieinfo.setTrailer(buffer.toString());
       }
       if (name.equalsIgnoreCase("overview")) {
         movieinfo.setSynopsis(buffer.toString());
-      }
-      if (name.equalsIgnoreCase("original_name")) {
-        movieinfo.setOrigTitle(buffer.toString());
       }
       if (name.equalsIgnoreCase("tagline")) {
         movieinfo.setTagline(buffer.toString());
@@ -126,6 +130,12 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
       }
       if (name.equalsIgnoreCase("votes")) {
         movieinfo.setVotes(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("certification")) {
+        movieinfo.setMpaa(buffer.toString());
+      }
+       if (name.equalsIgnoreCase("released")) {
+        movieinfo.setMpaa(buffer.toString().substring(0, buffer.toString().indexOf("-")));
       }
     }
     buffer = null;

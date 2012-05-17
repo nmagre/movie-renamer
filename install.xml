@@ -38,7 +38,6 @@
       <description>Movie Renamer @VERSION@</description>
       <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH"/>
       <file src="dist/@JARFILE@" targetdir="$INSTALL_PATH"/>
-      <file src="lib" targetdir="$INSTALL_PATH"/>
       <file src="postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
       <file src="postinst.bat" targetdir="$INSTALL_PATH" os="windows"/>
       <file src="src/image/icon.ico" targetdir="$INSTALL_PATH" os="windows"/>
@@ -63,7 +62,6 @@
     <pack name="Sources" required="no" preselected="no">
       <description>Movie Renamer @VERSION@ sources</description>
       <file src="src" targetdir="$INSTALL_PATH"/>
-      <file src="plugins" targetdir="$INSTALL_PATH"/>
     </pack>
   </packs>
 </installation>
