@@ -167,20 +167,23 @@
                               <Component id="originalTitleLbl" alignment="0" pref="140" max="32767" attributes="1"/>
                               <Component id="sortTitleLbl" alignment="0" max="32767" attributes="1"/>
                               <Component id="titleLbl" alignment="0" max="32767" attributes="1"/>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="yearLbl" min="-2" max="-2" attributes="1"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="yearField" min="-2" pref="58" max="-2" attributes="1"/>
-                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                              </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="top250Lbl" min="-2" max="-2" attributes="1"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="top250Field" min="-2" pref="58" max="-2" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cancelBtn12" min="-2" pref="15" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="yearLbl" min="-2" max="-2" attributes="1"/>
+                              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
+                              <Component id="yearField" min="-2" pref="58" max="-2" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cancelBtn7" min="-2" pref="15" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="taglineField" alignment="0" pref="404" max="32767" attributes="1"/>
                           <Component id="trailerField" alignment="0" pref="404" max="32767" attributes="1"/>
@@ -189,17 +192,10 @@
                           <Component id="sortTitleField" alignment="0" pref="404" max="32767" attributes="1"/>
                           <Component id="titleField" alignment="1" pref="404" max="32767" attributes="1"/>
                           <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Component id="cancelBtn7" min="-2" pref="15" max="-2" attributes="0"/>
-                                      <EmptySpace pref="30" max="32767" attributes="0"/>
-                                      <Component id="runtimeLbl" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" attributes="0">
-                                      <Component id="cancelBtn12" min="-2" pref="15" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="imdbidLbl" min="-2" max="-2" attributes="0"/>
-                                  </Group>
+                                  <Component id="runtimeLbl" min="-2" max="-2" attributes="0"/>
+                                  <Component id="imdbidLbl" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -1239,8 +1235,8 @@
                               <Component id="roleLbl" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="actorListSp" alignment="1" pref="524" max="32767" attributes="1"/>
-                                  <Component id="strRoleField" alignment="0" pref="524" max="32767" attributes="1"/>
+                                  <Component id="actorListSp" alignment="1" pref="528" max="32767" attributes="1"/>
+                                  <Component id="strRoleField" alignment="0" pref="528" max="32767" attributes="1"/>
                               </Group>
                           </Group>
                       </Group>

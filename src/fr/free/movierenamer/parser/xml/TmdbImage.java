@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.parser.xml;
 
-import fr.free.movierenamer.utils.TmdbResult;
-import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.movie.MovieImage;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -29,18 +29,17 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
+public class TmdbImage extends DefaultHandler implements IParser<MovieImage> {
 
-  private ArrayList<Images> thumbs;
-  private ArrayList<Images> fanarts;
+  private ArrayList<MediaImage> thumbs;
+  private ArrayList<MediaImage> fanarts;
   private StringBuffer buffer;
   private boolean imdbAPIXML;
   private boolean images;
   private String currentId;
-  private Images currentMovieImage;
+  private MediaImage currentMovieImage;
   private String lastAttribute;
-  private String tmdbId;
-  private TmdbResult tmdbRes;
+  private MovieImage movieImgs;
 
   public TmdbImage() {
     super();
@@ -54,15 +53,14 @@ public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
     currentId = "";
     currentMovieImage = null;
     lastAttribute = "";
-    tmdbId = "";
-    thumbs = new ArrayList<Images>();
-    fanarts = new ArrayList<Images>();
+    thumbs = new ArrayList<MediaImage>();
+    fanarts = new ArrayList<MediaImage>();
+    movieImgs = new MovieImage();
   }
 
   @Override
   public void endDocument() throws SAXException {
     super.endDocument();
-    tmdbRes = new TmdbResult(tmdbId, thumbs, fanarts);
   }
 
   @Override
@@ -80,16 +78,8 @@ public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
         if (name.equalsIgnoreCase("image")) {
           if (attributes.getQName(0) != null && attributes.getQName(0).equals("type")) {
             if (!currentId.equals(attributes.getValue("id"))) {
-              if (currentMovieImage != null) {
-                if (lastAttribute.equals("poster")) {
-                  thumbs.add(currentMovieImage);
-                } else {
-                  fanarts.add(currentMovieImage);
-                }
-                currentMovieImage = null;
-              }
               currentId = attributes.getValue("id");
-              currentMovieImage = new Images(0);
+              currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.THUMB:MediaImage.FANART);
               lastAttribute = attributes.getValue(0);
             }
             if (attributes.getValue(2).equals("original")) {
@@ -111,6 +101,8 @@ public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("OpenSearchDescription")) {
       imdbAPIXML = false;
+      movieImgs.setThumbs(thumbs);
+      movieImgs.setFanarts(fanarts);
     }
 
     if (name.equalsIgnoreCase("images")) {
@@ -123,11 +115,6 @@ public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
         }
       }
     }
-
-    if (name.equalsIgnoreCase("id")) {
-      tmdbId = buffer.toString();
-    }
-
     buffer = null;
   }
 
@@ -140,7 +127,7 @@ public class TmdbImage extends DefaultHandler implements IParser<TmdbResult> {
   }
 
   @Override
-  public TmdbResult getObject() {
-    return tmdbRes;
+  public MovieImage getObject() {
+    return movieImgs;
   }
 }

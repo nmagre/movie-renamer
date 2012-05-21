@@ -62,6 +62,7 @@ public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
       XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile);
       xmp.setParser(new TmdbSearch());
       tmdbSearchResult = xmp.parseXml();
+      
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {

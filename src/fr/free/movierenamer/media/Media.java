@@ -60,6 +60,13 @@ public interface Media {
   public String getRenamedTitle(String regex, Settings setting);
 
   /**
+   * Get Media API id
+   * @param IDtype ID type
+   * @return Media Api ID or null
+   */
+  public MediaID getMediaId(int IDtype);
+  
+  /**
    * Get search string
    *
    * @return Search string
@@ -74,18 +81,18 @@ public interface Media {
   public void setSearch(String search);
 
   /**
-   * Set media id (imdbId,tvdbId,...)
-   *
-   * @param id Media api id
-   */
-  public void setId(String id);
-
-  /**
    * Set media info
    *
    * @param info Media info
    */
   public void setInfo(Object info);
+
+  /**
+   * Add Meda ID
+   *
+   * @param id
+   */
+  public void setMediaID(MediaID id);
 
   /**
    * Clear media (images,info,..)

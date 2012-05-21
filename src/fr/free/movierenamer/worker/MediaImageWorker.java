@@ -17,8 +17,9 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.ui.MoviePanel;
-import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Image;
@@ -31,61 +32,51 @@ import javax.swing.SwingWorker;
 
 /**
  * Class MovieImageWorker , Download and add thumbnail/fanart to moviePanel
+ *
  * @author Magré Nicolas
  */
-public class MovieImageWorker extends SwingWorker<Void, Void>  {//A refaire , en Media et rajouter les images pour les series
+public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en Media et rajouter les images pour les series
 
-  private static final int THUMB = 0;
-  private static final int FANART = 1;
-  private ArrayList<Images> arrayImage;
-  private int type;
+  private ArrayList<MediaImage> arrayImage;
   private int cache;
   private Settings setting;
-  private MoviePanel moviePnl;
+  private IMediaPanel mediadPanel;
 
   /**
    * Constructor arguments
+   *
    * @param arrayImage List of images to download (or load from cache)
-   * @param type Type of images (thumb,fanart)
    * @param cache Cache for this type of images
-   * @param moviePnl Movie Renamer moviePanel
+   * @param mediadPanel Movie Renamer media panel
    * @param setting Movie Renamer settings
    */
-  public MovieImageWorker(ArrayList<Images> arrayImage, int type, int cache, MoviePanel moviePnl, Settings setting) {//A refaire , utiliser un listener + fireporperty au lieu du jpanel
+  public MediaImageWorker(ArrayList<MediaImage> arrayImage, int cache, IMediaPanel mediadPanel, Settings setting) {//A refaire , utiliser un listener + fireporperty au lieu du jpanel
     this.arrayImage = arrayImage;
-    this.type = type;
     this.cache = cache;
     this.setting = setting;
-    this.moviePnl = moviePnl;
+    this.mediadPanel = mediadPanel;
   }
 
   @Override
   protected Void doInBackground() {
     for (int i = 0; i < arrayImage.size(); i++) {
       Image image;
-      try {        
-        setProgress((i*100)/arrayImage.size());
+      try {
+        setProgress((i * 100) / arrayImage.size());
         URL url = new URL(arrayImage.get(i).getThumbUrl());
         image = setting.cache.getImage(url, cache);
         if (image == null) {
           setting.cache.add(url.openStream(), url.toString(), cache);
           image = setting.cache.getImage(url, cache);
         }
-        
+
         if (image == null) {
           continue;
         }
-        
-        switch (type) {
-          case THUMB:
-            moviePnl.addThumbToList(image, arrayImage.get(i), false);
-            break;
-          case FANART:
-            moviePnl.addFanartToList(image, arrayImage.get(i), false);
-            break;
-          default:
-            continue;
-        }
+
+        //Add image to media panel
+        mediadPanel.addImageToList(image, arrayImage.get(i), false);
+
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());
         continue;

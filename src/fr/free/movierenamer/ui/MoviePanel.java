@@ -17,11 +17,11 @@
  */
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
@@ -50,7 +50,8 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Magré Nicolas
  */
-public class MoviePanel extends JPanel implements IMediaPanel {        // Variables declaration - do not modify//GEN-BEGIN:variables
+public class MoviePanel extends JPanel implements IMediaPanel {
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JPanel InfoPnl;
     private JList actorList;
     private JPanel actorPnl;
@@ -103,8 +104,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
   private DropTarget dropThumbTarget;
   private DropTarget dropFanartTarget;
   private ArrayList<actorImage> actors;
-  private ArrayList<Images> thumbs;
-  private ArrayList<Images> fanarts;
+  private ArrayList<MediaImage> thumbs;
+  private ArrayList<MediaImage> fanarts;
   private Settings setting;
   private MovieInfo movieInfo;
 
@@ -119,8 +120,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
 
     initComponents();
     actors = new ArrayList<actorImage>();
-    thumbs = new ArrayList<Images>();
-    fanarts = new ArrayList<Images>();
+    thumbs = new ArrayList<MediaImage>();
+    fanarts = new ArrayList<MediaImage>();
 
     thumbnailsList.setModel(thumbnailModel);
     fanartList.setModel(fanartModel);
@@ -223,7 +224,20 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     return image;
   }
 
-  public synchronized void addThumbToList(final Image thumb, final Images mvImg, final boolean selectLast) {
+  @Override
+  public void addImageToList(Image img, MediaImage mediaImage, boolean selectLast) {
+    switch (mediaImage.getType()) {
+      case MediaImage.THUMB:
+        addThumbToList(img, mediaImage, selectLast);
+        break;
+      case MediaImage.FANART:
+        addFanartToList(img, mediaImage, selectLast);
+        break;
+       default: break;
+    }
+  }
+
+  private synchronized void addThumbToList(final Image thumb, final MediaImage mvImg, final boolean selectLast) {
 
     thumbs.add(mvImg);
 
@@ -245,7 +259,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
       public void propertyChange(PropertyChangeEvent pce) {
         if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
           try {
-            Image img = (Image) worker.get();
+            Image img = worker.get();
             if (img != null) {
               thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
             }
@@ -267,7 +281,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     worker.execute();
   }
 
-  public synchronized void addFanartToList(final Image fanart, final Images mvImg, final boolean selectLast) {
+  private synchronized void addFanartToList(final Image fanart, final MediaImage mvImg, final boolean selectLast) {
     fanarts.add(mvImg);
     final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
 
@@ -288,7 +302,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
       public void propertyChange(PropertyChangeEvent pce) {
         if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
           try {
-            fanartBack = (Image) worker.get();
+            fanartBack = worker.get();
             if (fanartBack != null) {
               detailsPnl.validate();
               detailsPnl.repaint();
@@ -402,8 +416,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
         countryField.setCaretPosition(0);
 
         if (!setting.thumb) {
-          if (!movieInfo.getImdbThumb().equals("")) {
-            Image imThumb = getImage(movieInfo.getImdbThumb(), Cache.THUMB);
+          if (!movieInfo.getThumb().equals("")) {
+            Image imThumb = getImage(movieInfo.getThumb(), Cache.THUMB);
             if (imThumb != null) {
               thumbLbl.setIcon(new ImageIcon(imThumb.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
             }
@@ -464,8 +478,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     }
   }
 
-  public ArrayList<Images> getAddedThumb() {
-    ArrayList<Images> res = new ArrayList<Images>();
+  public ArrayList<MediaImage> getAddedThumb() {
+    ArrayList<MediaImage> res = new ArrayList<MediaImage>();
     for (int i = 0; i < thumbs.size(); i++) {
       if (thumbs.get(i).getId() == -1) {
         if (!thumbs.get(i).getThumbUrl().startsWith("file://")) {
@@ -476,8 +490,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     return res;
   }
 
-  public ArrayList<Images> getAddedFanart() {
-    ArrayList<Images> res = new ArrayList<Images>();
+  public ArrayList<MediaImage> getAddedFanart() {
+    ArrayList<MediaImage> res = new ArrayList<MediaImage>();
     for (int i = 0; i < fanarts.size(); i++) {
       if (fanarts.get(i).getId() == -1) {
         if (!fanarts.get(i).getThumbUrl().startsWith("file://")) {
@@ -502,7 +516,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {        // Variab
     return getSelectedItem(fanarts, fanartList, size);
   }
 
-  private URL getSelectedItem(ArrayList<Images> array, JList list, int size) {
+  private URL getSelectedItem(ArrayList<MediaImage> array, JList list, int size) {
     if (array.isEmpty()) {
       return null;
     }

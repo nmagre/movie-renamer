@@ -17,8 +17,10 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 
@@ -31,8 +33,7 @@ public class MovieInfo {
 
   private String title;
   private String sortTitle;
-  private String imdbId;
-  private String imdbThumb;
+  private String thumb;
   private String trailer;
   private String synopsis;
   private String outline;
@@ -45,6 +46,8 @@ public class MovieInfo {
   private String votes;
   private String top250;
   private boolean watched;
+  private MovieImage movieImage;
+  private ArrayList<MediaID> movieIDs;
   private ArrayList<String> set;//Saga
   private ArrayList<String> genres;
   private ArrayList<String> studios;
@@ -58,9 +61,8 @@ public class MovieInfo {
    */
   public MovieInfo() {
     title = "";
-    imdbId = "";
-    imdbThumb = "";
     trailer = "";
+    thumb = "";
     synopsis = "";
     outline = "";
     tagline = "";
@@ -73,6 +75,8 @@ public class MovieInfo {
     watched = false;
     mpaa = "";
     sortTitle = "";
+    movieImage = new MovieImage();
+    movieIDs = new ArrayList<MediaID>();
     set = new ArrayList<String>();
     genres = new ArrayList<String>();
     studios = new ArrayList<String>();
@@ -101,21 +105,12 @@ public class MovieInfo {
   }
 
   /**
-   * Get imdb ID
+   * Get (default) movie thumb
    *
-   * @return Imdb ID
+   * @return
    */
-  public String getImdbId() {
-    return imdbId;
-  }
-
-  /**
-   * Get imdb thumb
-   *
-   * @return Imdb thumb
-   */
-  public String getImdbThumb() {
-    return imdbThumb;
+  public String getThumb() {
+    return thumb;
   }
 
   /**
@@ -198,17 +193,59 @@ public class MovieInfo {
   public String getVotes() {
     return votes;
   }
-  
+
   /**
    * Get top 250
+   *
    * @return 0 or top 250 position
    */
-  public String getTop250(){
+  public String getTop250() {
     return top250;
   }
-  
-  public boolean getWatched(){
+
+  /**
+   * Movie was watched
+   *
+   * @return Ture or false
+   */
+  public boolean getWatched() {
     return watched;
+  }
+
+  /**
+   * Get movie images
+   *
+   * @return MovieImage
+   */
+  public MovieImage getMovieImage() {
+    return movieImage;
+  }
+
+  /**
+   * Get array of thumbnails
+   *
+   * @return ArrayList of MovieImage
+   */
+  public ArrayList<MediaImage> getThumbs() {
+    return movieImage.getThumbs();
+  }
+
+  /**
+   * Get array of fanarts
+   *
+   * @return ArrayList of MovieImage
+   */
+  public ArrayList<MediaImage> getFanarts() {
+    return movieImage.getFanarts();
+  }
+
+  /**
+   * Get movie API IDs
+   *
+   * @return List of movie IDs
+   */
+  public ArrayList<MediaID> getIDs() {
+    return movieIDs;
   }
 
   /**
@@ -456,6 +493,15 @@ public class MovieInfo {
   }
 
   /**
+   * Set movie images
+   *
+   * @param movieImage Movie Images
+   */
+  public void setImages(MovieImage movieImage) {
+    this.movieImage = movieImage;
+  }
+
+  /**
    * Set title
    *
    * @param title Title
@@ -474,21 +520,12 @@ public class MovieInfo {
   }
 
   /**
-   * Set imdb ID
+   * Set (default) thumb
    *
-   * @param imdbId Imdb ID
+   * @param thumb
    */
-  public void setImdbId(String imdbId) {
-    this.imdbId = imdbId;
-  }
-
-  /**
-   * Set imdb thumb
-   *
-   * @param imdbThumb Imdb thumb
-   */
-  public void setImdbThumb(String imdbThumb) {
-    this.imdbThumb = imdbThumb;
+  public void setThumb(String thumb) {
+    this.thumb = thumb;
   }
 
   /**
@@ -625,12 +662,22 @@ public class MovieInfo {
   public void setVotes(String votes) {
     this.votes = votes;
   }
-  
-  public void setTop250(String top250){
+
+  /**
+   * Set top 250
+   *
+   * @param top250
+   */
+  public void setTop250(String top250) {
     this.top250 = top250;
   }
-  
-  public void setWatched(boolean watched){
+
+  /**
+   * Set movie watched
+   *
+   * @param watched
+   */
+  public void setWatched(boolean watched) {
     this.watched = watched;
   }
 
@@ -650,6 +697,24 @@ public class MovieInfo {
    */
   public void setMpaa(String mpaa) {
     this.mpaa = mpaa;
+  }
+
+  /**
+   * Add a thumb to movie images
+   *
+   * @param thumb Thumb to add
+   */
+  public void addThumb(MediaImage thumb) {
+    movieImage.addThumb(thumb);
+  }
+
+  /**
+   * Add a fanart to movie images
+   *
+   * @param fanart Fanart to add
+   */
+  public void addFanart(MediaImage fanart) {
+    movieImage.addFanart(fanart);
   }
 
   /**
@@ -723,6 +788,20 @@ public class MovieInfo {
   }
 
   /**
+   * Add movie API id
+   *
+   * @param id Movie APi id
+   */
+  public void addID(MediaID id) {
+    for (MediaID mID : movieIDs) {
+      if (mID.equals(id)) {
+        return;
+      }
+    }
+    movieIDs.add(id);
+  }
+
+  /**
    * Add set
    *
    * @param strSet Set
@@ -735,9 +814,8 @@ public class MovieInfo {
   public String toString() {
     StringBuilder res = new StringBuilder();
     res.append(title).append(Utils.ENDLINE);
-    res.append("  ImdbId : ").append(imdbId).append(Utils.ENDLINE);
-    res.append("  ImdbThumb : ").append(imdbThumb).append(Utils.ENDLINE);
     res.append("  Trailer : ").append(trailer).append(Utils.ENDLINE);
+    res.append("  Thumbnail : ").append(thumb).append(Utils.ENDLINE);
     res.append("  Synopsis : ").append(synopsis).append(Utils.ENDLINE);
     res.append("  Short-Synopsis : ").append(outline).append(Utils.ENDLINE);
     res.append("  Set(Saga) : ").append(getSetString(" | ", 0)).append(Utils.ENDLINE);
@@ -749,7 +827,7 @@ public class MovieInfo {
     res.append("  Year : ").append(year).append(Utils.ENDLINE);
     res.append("  Vote : ").append(votes).append(Utils.ENDLINE);
     res.append("  Top 250 : ").append(top250).append(Utils.ENDLINE);
-    res.append("  Watched : ").append(watched ? "True":"False").append(Utils.ENDLINE);
+    res.append("  Watched : ").append(watched ? "True" : "False").append(Utils.ENDLINE);
     res.append("  Genre : ").append(Utils.arrayToString(genres, " | ", 0)).append(Utils.ENDLINE);
     res.append("  Studio : ").append(Utils.arrayToString(studios, " | ", 0)).append(Utils.ENDLINE);
     res.append("  Country : ").append(Utils.arrayToString(countries, " | ", 0)).append(Utils.ENDLINE);
@@ -759,6 +837,7 @@ public class MovieInfo {
     for (int i = 0; i < actors.size(); i++) {
       res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);
     }
+    res.append(movieImage.toString());
 
     return res.toString();
   }

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class TvdbSearch extends DefaultHandler implements IParser<ArrayList<Sear
     if (name.equalsIgnoreCase("series")) {
       if ((french && currentLanguage.equals("fr")) || !french) {//Tvdb can return series in English + in French in same times, we just want one of both
         String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb : null;
-        results.add(new SearchResult(currentName, currentId, "", thumb));
+        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TVDBID), "", thumb));
       }
       currentName = currentId = currentThumb = currentLanguage = "";
       series = false;

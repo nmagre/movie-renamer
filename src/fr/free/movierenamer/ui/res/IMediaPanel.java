@@ -17,10 +17,20 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.media.MediaImage;
+import java.awt.Image;
+
 /**
  *
  * @author Nicolas Magré
  */
 public interface IMediaPanel {
-  
+
+  /**
+   * Add image to media panel
+   * @param img Image
+   * @param mediaImage Media image
+   * @param selectLast Select last image instead of first
+   */
+  void addImageToList(Image img, MediaImage mediaImage,  boolean selectLast);
 }

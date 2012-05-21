@@ -129,9 +129,9 @@ public class InfoEditorFrame extends JDialog {
     initMovie();
   }
 
-  private void initMovie() {
+  private void initMovie() {// A refaire , ajouter les API id
     movietitleField.setText(movieInfo.getTitle());
-    imdbidCField.setInitValue(movieInfo.getImdbId());
+ //   imdbidCField.setInitValue(movieInfo.getImdbId());
     mpaaCField.setInitValue(movieInfo.getMpaa());
     originalTitleCField.setInitValue(movieInfo.getOrigTitle());
     ratingCField.setInitValue("" + movieInfo.getRating());
@@ -433,17 +433,20 @@ public class InfoEditorFrame extends JDialog {
                         .addComponent(mpaaLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(originalTitleLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                         .addComponent(sortTitleLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(titleLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(infoPnlLayout.createSequentialGroup()
-                            .addComponent(yearLbl)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(yearField, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(10, 10, 10)))
+                        .addComponent(titleLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(infoPnlLayout.createSequentialGroup()
                         .addComponent(top250Lbl)
                         .addGap(18, 18, 18)
-                        .addComponent(top250Field, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(5, 5, 5)
+                        .addComponent(top250Field, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelBtn12, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(infoPnlLayout.createSequentialGroup()
+                        .addComponent(yearLbl)
+                        .addGap(37, 37, 37)
+                        .addComponent(yearField, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelBtn7, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(2, 2, 2)
                 .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(taglineField, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
                     .addComponent(trailerField, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
@@ -452,15 +455,10 @@ public class InfoEditorFrame extends JDialog {
                     .addComponent(sortTitleField, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
                     .addComponent(titleField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPnlLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(infoPnlLayout.createSequentialGroup()
-                                .addComponent(cancelBtn7, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
-                                .addComponent(runtimeLbl))
-                            .addGroup(infoPnlLayout.createSequentialGroup()
-                                .addComponent(cancelBtn12, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(imdbidLbl)))
+                            .addComponent(runtimeLbl)
+                            .addComponent(imdbidLbl))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(imdbidField)
@@ -855,8 +853,8 @@ public class InfoEditorFrame extends JDialog {
                         .addComponent(roleLbl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(actorPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(actorListSp, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-                            .addComponent(strRoleField, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))))
+                            .addComponent(actorListSp, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
+                            .addComponent(strRoleField, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         actorPnlLayout.setVerticalGroup(
@@ -990,8 +988,8 @@ public class InfoEditorFrame extends JDialog {
     }//GEN-LAST:event_cancleBtnActionPerformed
 
     private void applyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyBtnActionPerformed
-
-      movieInfo.setImdbId(imdbidField.getText());
+//A refaire , ajouter les API ID
+//      movieInfo.setImdbId(imdbidField.getText());
       movieInfo.setMpaa(mpaaField.getText());
       movieInfo.setOrigTitle(originalTitleField.getText());
       movieInfo.setRating(ratingField.getText());

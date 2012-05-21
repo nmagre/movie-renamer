@@ -17,9 +17,8 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.Images;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Cursor;
 import java.awt.Image;
@@ -46,19 +45,19 @@ import javax.imageio.ImageIO;
 public class DropImage implements DropTargetListener {
 
   private Settings setting;
-  private MoviePanel moviePanel;
+  private IMediaPanel mediaPanel;
   private boolean thumb = false;
   private int cache;
 
   /**
    * Constructor arguments
    *
-   * @param moviePanel Movie Renamer moviePanel
+   * @param mediaPanel Movie Renamer media panel
    * @param cache Cache type
    * @param setting Movie Renamer settings
    */
-  public DropImage(MoviePanel moviePanel, int cache, Settings setting) {
-    this.moviePanel = moviePanel;
+  public DropImage(IMediaPanel mediaPanel, int cache, Settings setting) {
+    this.mediaPanel = mediaPanel;
     this.setting = setting;
     this.cache = cache;
     if (cache == Cache.THUMB) {
@@ -88,13 +87,13 @@ public class DropImage implements DropTargetListener {
     Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
     final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    moviePanel.firePropertyChange("mouseLoading", true, true);
+    mediaPanel.firePropertyChange("mouseLoading", true, true);
     int action = evt.getDropAction();
     final Transferable data = evt.getTransferable();
     evt.acceptDrop(action);
 
     try {
-      moviePanel.setCursor(hourglassCursor);
+      mediaPanel.setCursor(hourglassCursor);
       if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) {// From hard drive
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
@@ -113,17 +112,14 @@ public class DropImage implements DropTargetListener {
                 continue;
               }
 
-              Images mvImg = new Images(-1);
+              MediaImage mvImg = new MediaImage(-1, thumb ? MediaImage.THUMB : MediaImage.FANART);
               mvImg.setMidUrl(res[i]);
               mvImg.setOrigUrl(res[i]);
               mvImg.setThumbUrl(res[i]);
-              if (thumb) {
-                moviePanel.addThumbToList(img, mvImg, true);
-              } else {
-                moviePanel.addFanartToList(img, mvImg, true);
-              }
+
+              mediaPanel.addImageToList(img, mvImg, true);
             }
-            moviePanel.firePropertyChange("mouseNormal", true, true);
+            mediaPanel.firePropertyChange("mouseNormal", true, true);
           } else if (res[i].startsWith("http") || res[i].startsWith("www")) {// From web browser
             final String image = res[i];
             Thread thread = new Thread(new Runnable() {
@@ -138,20 +134,17 @@ public class DropImage implements DropTargetListener {
                     img = setting.cache.getImage(url, cache);
                   }
                   if (img != null) {
-                    Images mvImg = new Images(-1);
+                    MediaImage mvImg = new MediaImage(-1, thumb ? MediaImage.THUMB : MediaImage.FANART);
                     mvImg.setMidUrl(url.toString());
                     mvImg.setOrigUrl(url.toString());
                     mvImg.setThumbUrl(url.toString());
-                    if (thumb) {
-                      moviePanel.addThumbToList(img, mvImg, true);
-                    } else {
-                      moviePanel.addFanartToList(img, mvImg, true);
-                    }
+
+                    mediaPanel.addImageToList(img, mvImg, true);
                   }
                 } catch (IOException ex) {
                   Logger.getLogger(DropImage.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                moviePanel.setCursor(normalCursor);
+                mediaPanel.setCursor(normalCursor);
               }
             });
             thread.start();
@@ -160,7 +153,7 @@ public class DropImage implements DropTargetListener {
       }
     } catch (UnsupportedFlavorException ex) {
       Settings.LOGGER.log(Level.SEVERE, ex.toString());
-      moviePanel.setCursor(normalCursor);
+      mediaPanel.setCursor(normalCursor);
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, ex.toString());
       moviePanel.setCursor(normalCursor);

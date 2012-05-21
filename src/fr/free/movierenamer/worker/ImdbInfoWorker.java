@@ -17,8 +17,10 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbParser;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -38,7 +40,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
 
   private static final int RETRY = 3;
   private HttpGet http;
-  private String imdbId;
+  private MediaID id;
   private Settings setting;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
@@ -46,14 +48,18 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
   /**
    * Constructor arguments
    *
-   * @param imdbId Imdb Id
+   * @param id Movie API ID (imdb)
    * @param setting Movie Renamer settings
    * @throws MalformedURLException
+   * @throws ActionNotValidException  
    */
-  public ImdbInfoWorker(String imdbId, Settings setting) throws MalformedURLException {
-    http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + imdbId + "/combined");
+  public ImdbInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+    if(id.getType() != MediaID.IMDBID) {
+      throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
+    }
+    http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + id.getID() + "/combined");
     this.setting = setting;
-    this.imdbId = imdbId;
+    this.id = id;
   }
 
   @Override
@@ -92,7 +98,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     }
 
     if (mvi != null) {
-      mvi.setImdbId(imdbId);
+      mvi.addID(id);
     }
     else {
       Settings.LOGGER.log(Level.SEVERE, null, "Imdbparser failed and we don't know why");

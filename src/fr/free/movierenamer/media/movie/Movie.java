@@ -19,8 +19,9 @@ package fr.free.movierenamer.media.movie;
 
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
@@ -35,11 +36,9 @@ import java.util.regex.Pattern;
  */
 public class Movie implements Media {
 
+  private MediaID mediaId;
   private MediaFile movieFile;
   private MovieInfo movieinfo;
-  private MovieImage movieImage;
-  private String id;
-  private String imdbTitle;
   private String filteredFileName;
   private String search;
 
@@ -52,8 +51,6 @@ public class Movie implements Media {
   public Movie(MediaFile movieFile, String[] filter) {
     this.movieFile = movieFile;
     movieinfo = new MovieInfo();
-    movieImage = new MovieImage();
-
     String fileName = movieFile.getFile().getName();
     filteredFileName = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
     search = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
@@ -64,8 +61,6 @@ public class Movie implements Media {
    */
   @Override
   public void clear() {
-    this.clearFanarts();
-    this.clearThumbs();
     movieinfo = new MovieInfo();
   }
 
@@ -98,33 +93,6 @@ public class Movie implements Media {
   }
 
   /**
-   * Get movie API ID
-   *
-   * @return Movie API ID
-   */
-  public String getID() {
-    return id;
-  }
-
-  /**
-   * Get array of thumbnails
-   *
-   * @return ArrayList of MovieImage
-   */
-  public ArrayList<Images> getThumbs() {
-    return movieImage.getThumbs();
-  }
-
-  /**
-   * Get array of fanarts
-   *
-   * @return ArrayList of MovieImage
-   */
-  public ArrayList<Images> getFanarts() {
-    return movieImage.getFanarts();
-  }
-
-  /**
    * Get renamed movie title
    *
    * @param setting
@@ -145,7 +113,7 @@ public class Movie implements Media {
     String[][] replace = new String[][]{
       {"<t>", movieinfo.getTitle()},
       {"<ot>", movieinfo.getOrigTitle()},
-      {"<tt>", id},
+      {"<tt>", mediaId.getID()},
       {"<y>", movieinfo.getYear()},
       {"<rt>", runtime},
       {"<ra>", movieinfo.getRating()},
@@ -227,40 +195,19 @@ public class Movie implements Media {
     return movieinfo;
   }
 
-  /**
-   * Get movie images
-   *
-   * @return MovieImage
-   */
-  public MovieImage getMovieImage() {
-    return movieImage;
-  }
+  @Override
+  public MediaID getMediaId(int IDtype) {
+    if (mediaId.getType() == IDtype) {
+      return mediaId;
+    }
 
-  /**
-   * Get Imdb title
-   *
-   * @return Movie Imdb title
-   */
-  public String getImdbTitle() {
-    return imdbTitle;
-  }
+    for (MediaID mid : movieinfo.getIDs()) {
+      if (mid.getType() == IDtype) {
+        return mid;
+      }
+    }
 
-  /**
-   * Add a thumb to movie
-   *
-   * @param thumb Thumb to add
-   */
-  public void addThumb(Images thumb) {
-    movieImage.addThumb(thumb);
-  }
-
-  /**
-   * Add a fanart to movie
-   *
-   * @param fanart Fanart to add
-   */
-  public void addFanart(Images fanart) {
-    movieImage.addFanart(fanart);
+    return null;
   }
 
   /**
@@ -301,57 +248,6 @@ public class Movie implements Media {
   }
 
   /**
-   * Set movie API ID
-   * @param id Movie API ID
-   */
-  @Override
-  public void setId(String id) {
-    this.id = id;
-    movieinfo.setImdbId(id);
-  }
-
-  /**
-   * Clear thumbs list
-   */
-  public void clearThumbs() {
-    movieImage.clearThumbs();
-  }
-
-  /**
-   * Clear fanart list
-   */
-  public void clearFanarts() {
-    movieImage.clearFanarts();
-  }
-
-  /**
-   * Set imdb title
-   *
-   * @param imdbTitle
-   */
-  public void setImdbTitle(String imdbTitle) {
-    this.imdbTitle = imdbTitle;
-  }
-
-  /**
-   * Set thumbs list
-   *
-   * @param thumbs Array of thumbs
-   */
-  public void setThumbs(ArrayList<Images> thumbs) {
-    movieImage.setThumbs(thumbs);
-  }
-
-  /**
-   * Set fanarts list
-   *
-   * @param fanarts Array of fanarts
-   */
-  public void setFanarts(ArrayList<Images> fanarts) {
-    movieImage.setFanarts(fanarts);
-  }
-
-  /**
    * Generate XBMC NFO file
    *
    * @return Xbmc NFO file
@@ -371,10 +267,10 @@ public class Movie implements Media {
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
     nfo.append("  <runtime>").append(movieinfo.getRuntime().equals("-1") ? "" : movieinfo.getRuntime()).append("</runtime>\n");
     nfo.append("  <top250>").append(movieinfo.getTop250()).append("</top250>\n");
-    nfo.append("  <playcount>").append(movieinfo.getWatched() ? "1":"0").append("</playcount>\n");
-    nfo.append("  <watched>").append(movieinfo.getWatched() ? "true":"false").append("</watched>\n");
+    nfo.append("  <playcount>").append(movieinfo.getWatched() ? "1" : "0").append("</playcount>\n");
+    nfo.append("  <watched>").append(movieinfo.getWatched() ? "true" : "false").append("</watched>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
-    nfo.append("  <id>").append(movieinfo.getImdbId()).append("</id>\n");
+    nfo.append("  <id>").append(mediaId.getID()).append("</id>\n");
     nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
     nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
@@ -403,12 +299,12 @@ public class Movie implements Media {
       nfo.append("  </actor>\n");
     }
 
-    ArrayList<Images> thumbs = movieImage.getThumbs();
+    ArrayList<MediaImage> thumbs = movieinfo.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb preview=\"").append(thumbs.get(i).getThumbUrl()).append("\">").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
-    ArrayList<Images> fanarts = movieImage.getFanarts();
+    ArrayList<MediaImage> fanarts = movieinfo.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
@@ -452,12 +348,12 @@ public class Movie implements Media {
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
     nfo.append("  <review></review>\n");
 
-    ArrayList<Images> thumbs = movieImage.getThumbs();
+    ArrayList<MediaImage> thumbs = movieinfo.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb>").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
-    ArrayList<Images> fanarts = movieImage.getFanarts();
+    ArrayList<MediaImage> fanarts = movieinfo.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb>").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
@@ -511,9 +407,8 @@ public class Movie implements Media {
 
   @Override
   public String toString() {
-    String res = movieFile.toString();
+    String res = movieFile.toString()+ "\n";
     res += movieinfo.toString();
-    res += "\n" + movieImage.toString();
     return res;
   }
 
@@ -539,5 +434,10 @@ public class Movie implements Media {
     } else {
       movieinfo = new MovieInfo();
     }
+  }
+
+  @Override
+  public void setMediaID(MediaID id) {
+    mediaId = id;
   }
 }

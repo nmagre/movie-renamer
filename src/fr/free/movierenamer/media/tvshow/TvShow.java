@@ -17,10 +17,11 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import fr.free.movierenamer.matcher.TvShowNameMatcher;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.matcher.TvShowNameMatcher;
 
 /**
  *
@@ -28,13 +29,14 @@ import fr.free.movierenamer.matcher.TvShowNameMatcher;
  */
 public class TvShow implements Media {//A faire
 
+  private MediaID mediaID;
   private MediaFile tvShowFile;
   private String tvShowId;
   private String search;
 
   public TvShow(MediaFile tvShowFile) {
     this.tvShowFile = tvShowFile;
-    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile);    
+    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile);
     search = tvMatcher.getTvShowName();
     System.out.println("\n  Tv show Title : " + search + "\n");
   }
@@ -79,7 +81,12 @@ public class TvShow implements Media {//A faire
   }
 
   @Override
-  public void setId(String id) {
-    tvShowId = id;
+  public void setMediaID(MediaID id) {
+    mediaID = id;
+  }
+
+  @Override
+  public MediaID getMediaId(int IDtype) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

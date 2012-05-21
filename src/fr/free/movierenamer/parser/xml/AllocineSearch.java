@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
@@ -24,7 +25,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- *
+ * Class AllocineSearch
  * @author Nicolas Magré
  */
 public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
@@ -71,7 +72,7 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("movie")) {
       movie =  false;
-      results.add(new SearchResult(currentName, currentId, "", currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.ALLOCINEID), "", currentThumb));
       currentName = currentId = currentThumb = "";
     }
     if(movie){
@@ -80,6 +81,9 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
        }
        if (name.equalsIgnoreCase("title")) {
          currentName = buffer.toString();
+       }
+       if(name.equalsIgnoreCase("productionYear")){
+         currentName += " (" + buffer.toString() + ")";
        }
     }
     buffer = null;

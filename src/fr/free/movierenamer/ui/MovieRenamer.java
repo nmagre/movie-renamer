@@ -18,9 +18,7 @@
 package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.Main;
-import fr.free.movierenamer.media.Media;
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.media.MediaFileFilter;
+import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -34,7 +32,7 @@ import fr.free.movierenamer.ui.res.DropFile;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
 import fr.free.movierenamer.worker.ListFilesWorker;
-import fr.free.movierenamer.worker.MovieImageWorker;
+import fr.free.movierenamer.worker.MediaImageWorker;
 import fr.free.movierenamer.worker.WorkerManager;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -224,27 +222,26 @@ public class MovieRenamer extends JFrame {
         currentMedia.clear();
 
         SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
-        currentMedia.setId(sres.getId());
+        currentMedia.setMediaID(sres.getId());
 
         switch (currentMedia.getType()) {
           case Media.MOVIE:
             //Get movie info
             SwingWorker<MovieInfo, String> movieInfoWorker = WorkerManager.getMovieInfoWorker(sres.getId(), MovieRenamer.this.setting);
-            if(movieInfoWorker == null){
+            if (movieInfoWorker == null) {
               //A faire , afficher erreur
               return;
             }
             movieInfoWorker.addPropertyChangeListener(new MovieInfoListener(movieInfoWorker));
             movieInfoWorker.execute();
-            
+
             //Get movie images
-            if (MovieRenamer.this.setting.movieInfoPanel) {
-              if (MovieRenamer.this.setting.thumb || MovieRenamer.this.setting.fanart) {
-                SwingWorker<MovieImage, Void> tmdbiw = WorkerManager.getMovieImageWorker(sres.getId(), MovieRenamer.this.setting);
-                tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
-                tmdbiw.execute();
-              }
+         /*
+             * if(setting.scrapper == 0) {//For Imdb we use tmdb API for movie image (thumnails,fanarts) if (MovieRenamer.this.setting.movieInfoPanel) { if (MovieRenamer.this.setting.thumb ||
+             * MovieRenamer.this.setting.fanart) { SwingWorker<MovieImage, Void> tmdbiw = WorkerManager.getMovieImageWorker(sres.getId(), MovieRenamer.this.setting);
+             * tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw)); tmdbiw.execute(); } }
             }
+             */
             break;
           case Media.TVSHOW:
             SwingWorker<TvShowInfo, String> tworker = WorkerManager.getTvShowInfoWorker(sres.getId(), MovieRenamer.this.setting);
@@ -253,8 +250,10 @@ public class MovieRenamer extends JFrame {
             tworker.execute();
             break;
         }
+      } catch (ActionNotValidException ex) {
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
       } catch (MalformedURLException ex) {
-        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }
   };
@@ -490,9 +489,12 @@ public class MovieRenamer extends JFrame {
     private void initComponents() {
 
         fileChooser = new JFileChooser();
+        batchProcessMenu = new JPopupMenu();
+        jMenuItem1 = new JMenuItem();
         topTb = new JToolBar();
         openBtn = new JButton();
         jSeparator1 = new Separator();
+        batchProcessingBtn = new JButton();
         editBtn = new JButton();
         separator = new Separator();
         modeCBox = new JComboBox();
@@ -520,6 +522,9 @@ public class MovieRenamer extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.setMultiSelectionEnabled(true);
 
+        jMenuItem1.setText("jMenuItem1");
+        batchProcessMenu.add(jMenuItem1);
+
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(770, 570));
 
@@ -538,6 +543,17 @@ public class MovieRenamer extends JFrame {
         });
         topTb.add(openBtn);
         topTb.add(jSeparator1);
+
+        batchProcessingBtn.setIcon(new ImageIcon(getClass().getResource("/image/arrow-down-2.png")));         batchProcessingBtn.setToolTipText(bundle.getString("batchProcessMenu")); // NOI18N
+        batchProcessingBtn.setFocusable(false);
+        batchProcessingBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        batchProcessingBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        batchProcessingBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                batchProcessingBtnActionPerformed(evt);
+            }
+        });
+        topTb.add(batchProcessingBtn);
 
         editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")));         editBtn.setToolTipText(bundle.getString("edit")); // NOI18N
         editBtn.setEnabled(false);
@@ -759,8 +775,12 @@ public class MovieRenamer extends JFrame {
                 if (setting.fanart) {
                   moviePnl.clearFanartList();
                 }
-                tmdbiw = WorkerManager.getMovieImageWorker(movie.getID(), setting);
-                tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
+               /* try {
+                  tmdbiw = WorkerManager.getMovieImageWorker(movie.getMediaId(MediaID.IMDBID), setting);
+                  tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
+                } catch (ActionNotValidException ex) {
+                  Settings.LOGGER.log(Level.SEVERE, null, ex);
+                }*/
               }
               if (setting.thumb || setting.fanart || setting.actorImage) {
                 loadDial(false);
@@ -862,7 +882,7 @@ public class MovieRenamer extends JFrame {
 
       if (currentMedia.getType() == Media.MOVIE) {
         Movie movie = (Movie) currentMedia;
-        ArrayList<Images> images = moviePnl.getAddedThumb();
+        ArrayList<MediaImage> images = moviePnl.getAddedThumb();
         for (int i = 0; i < images.size(); i++) {
           movie.addThumb(images.get(i));
         }
@@ -1023,6 +1043,10 @@ public class MovieRenamer extends JFrame {
     }
   }//GEN-LAST:event_modeCBoxActionPerformed
 
+  private void batchProcessingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_batchProcessingBtnActionPerformed
+    batchProcessMenu.show(batchProcessingBtn, batchProcessingBtn.getX() - 70, batchProcessingBtn.getY() + 30);
+  }//GEN-LAST:event_batchProcessingBtnActionPerformed
+
   public class SearchWorkerListener implements PropertyChangeListener {
 
     private SwingWorker<ArrayList<SearchResult>, Void> worker;
@@ -1161,10 +1185,10 @@ public class MovieRenamer extends JFrame {
 
   private class MovieInfoListener implements PropertyChangeListener {//A refaire
 
-    private SwingWorker imdbiw;
+    private SwingWorker<MovieInfo, String> worker;
 
-    public MovieInfoListener(SwingWorker imdbiw) {
-      this.imdbiw = imdbiw;
+    public MovieInfoListener(SwingWorker<MovieInfo, String> worker) {
+      this.worker = worker;
     }
 
     @Override
@@ -1172,7 +1196,7 @@ public class MovieRenamer extends JFrame {
 
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
-          Object info = imdbiw.get();
+          Object info = worker.get();
           if (info == null) {
             loading.setValue(100, INFOWORKER);
             return;
@@ -1213,8 +1237,8 @@ public class MovieRenamer extends JFrame {
             movie.setFanarts(movieimage.getFanarts());
 
 
-            MovieImageWorker thumb = new MovieImageWorker(movie.getThumbs(), 0, Cache.THUMB, moviePnl, setting);
-            MovieImageWorker fanart = new MovieImageWorker(movie.getFanarts(), 1, Cache.FANART, moviePnl, setting);
+            MediaImageWorker thumb = new MediaImageWorker(movie.getThumbs(), MediaImage.THUMB, Cache.THUMB, moviePnl, setting);
+            MediaImageWorker fanart = new MediaImageWorker(movie.getFanarts(), MediaImage.FANART, Cache.FANART, moviePnl, setting);
 
             thumb.addPropertyChangeListener(new MovieImageListener(thumb, THUMBWORKER));
             fanart.addPropertyChangeListener(new MovieImageListener(fanart, FANARTWORKER));
@@ -1237,7 +1261,7 @@ public class MovieRenamer extends JFrame {
           Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
       } else {
-        loading.setValue(imdbiw.getProgress(), INFOWORKER);
+        loading.setValue(worker.getProgress(), INFOWORKER);
       }
     }
   }
@@ -1276,6 +1300,8 @@ public class MovieRenamer extends JFrame {
     }
   }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private JPopupMenu batchProcessMenu;
+    private JButton batchProcessingBtn;
     private JToolBar btmTb;
     private JPanel centerPnl;
     private JSplitPane centerSp;
@@ -1283,6 +1309,7 @@ public class MovieRenamer extends JFrame {
     private JButton exitBtn;
     private JCheckBox fanartChk;
     private JFileChooser fileChooser;
+    private JMenuItem jMenuItem1;
     private Separator jSeparator1;
     private JList mediaList;
     private JScrollPane mediaScroll;

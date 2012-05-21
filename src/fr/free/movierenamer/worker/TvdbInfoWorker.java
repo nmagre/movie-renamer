@@ -17,9 +17,11 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
 import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
@@ -42,11 +44,14 @@ import org.xml.sax.SAXException;
 //A faire
 public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
 
-  private String tvdbId;
+  private MediaID id;
   private Settings setting;
 
-  public TvdbInfoWorker(String tvdbId, Settings setting) throws MalformedURLException {
-    this.tvdbId = tvdbId;
+  public TvdbInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+    if(id.getType() != MediaID.TVDBID) {
+      throw new ActionNotValidException("TvdbInfoWorker can only use tvdb id");
+    }
+    this.id = id;
     this.setting = setting;
   }
 
@@ -56,7 +61,7 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
     try {
       System.out.println("Tv Show info worker start");
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
-      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + tvdbId + "/all/" + (setting.tvdbFr ? "fr" : "en") + ".zip");
+      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvdbFr ? "fr" : "en") + ".zip");
       File f = setting.cache.get(url, Cache.TVSHOWZIP);
       if (f == null) {//A refaire, XMLPArser peut lire un fichier depuis une URL
         InputStream in;
@@ -83,7 +88,6 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
       XMLParser<TvShowInfo> xmp = new XMLParser<TvShowInfo>(f.getAbsolutePath(), (setting.tvdbFr ? "fr" : "en") + ".xml");
       xmp.setParser(new TvdbInfo());
       tvShowInfo = xmp.parseXml();
-
 
     } catch (InterruptedException ex) {
       Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);

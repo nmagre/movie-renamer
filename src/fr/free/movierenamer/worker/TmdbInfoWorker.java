@@ -17,9 +17,13 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.parser.xml.TmdbInfo;
 import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -37,18 +41,22 @@ import org.xml.sax.SAXException;
 public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
 
   private Settings setting;
-  private String tmdbId;
+  private MediaID id;
 
   /**
    * Constructor arguments
    *
-   * @param tmdbId tmdb Id
+   * @param id
    * @param setting Movie Renamer settings
    * @throws MalformedURLException
+   * @throws ActionNotValidException
    */
-  public TmdbInfoWorker(String tmdbId, Settings setting) throws MalformedURLException {
+  public TmdbInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+    if (id.getType() != MediaID.TMDBID) {
+      throw new ActionNotValidException("TmdbInfoWorker  can only use tmdb ID");
+    }
     this.setting = setting;
-    this.tmdbId = tmdbId;
+    this.id = id;
   }
 
   @Override
@@ -56,13 +64,20 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
     MovieInfo movieInfo = new MovieInfo();
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/";
-      String xmlFile = setting.tmdbAPIMovieInf + xmlUrl + tmdbId;
+      String xmlFile = setting.tmdbAPIMovieInf + xmlUrl + id.getID();
       if (setting.imdbFr) {
         xmlFile = xmlFile.replace("/en/", "/fr/");
       }
+      
       XMLParser<MovieInfo> xmp = new XMLParser<MovieInfo>(xmlFile);
       xmp.setParser(new TmdbInfo());
       movieInfo = xmp.parseXml();
+      
+      XMLParser<MovieImage> mmp = new XMLParser<MovieImage>(xmlFile);
+      mmp.setParser(new TmdbImage());
+      MovieImage movieImg = mmp.parseXml();
+      movieInfo.setImages(movieImg);
+     
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
@@ -72,6 +87,8 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
     } catch (SAXException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
+
+    setProgress(100);
     return movieInfo;
   }
 }

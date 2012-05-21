@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.media.movie;
 
-import fr.free.movierenamer.utils.Images;
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 
@@ -26,35 +26,35 @@ import java.util.ArrayList;
  * @author Magré Nicolas
  */
 public class MovieImage {
-  private ArrayList<Images> thumbs;
-  private ArrayList<Images> fanarts;
+  private ArrayList<MediaImage> thumbs;
+  private ArrayList<MediaImage> fanarts;
 
   public MovieImage(){
-    thumbs = new ArrayList<Images>();
-    fanarts = new ArrayList<Images>();
+    thumbs = new ArrayList<MediaImage>();
+    fanarts = new ArrayList<MediaImage>();
   }
 
-  public ArrayList<Images> getThumbs(){
+  public ArrayList<MediaImage> getThumbs(){
     return thumbs;
   }
   
-  public ArrayList<Images> getFanarts(){
+  public ArrayList<MediaImage> getFanarts(){
     return fanarts;
   }
 
-  public void setThumbs(ArrayList<Images> thumbs){
+  public void setThumbs(ArrayList<MediaImage> thumbs){
     this.thumbs = thumbs;
   }
 
-  public void setFanarts(ArrayList<Images> fanarts){
+  public void setFanarts(ArrayList<MediaImage> fanarts){
     this.fanarts = fanarts;
   }
 
-  public void addThumb(Images thumb){
+  public void addThumb(MediaImage thumb){
     thumbs.add(thumb);
   }
 
-  public void addFanart(Images fanart){
+  public void addFanart(MediaImage fanart){
     fanarts.add(fanart);
   }
 

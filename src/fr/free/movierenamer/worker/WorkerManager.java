@@ -18,11 +18,13 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.Media;
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import java.io.UnsupportedEncodingException;
@@ -44,6 +46,7 @@ public abstract class WorkerManager {
 
   /**
    * Get media search worker
+   *
    * @param media Media
    * @param setting Movie Renamer settings
    * @return Worker depend of media type and settings or null
@@ -80,13 +83,14 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(String id, Settings setting) throws MalformedURLException {
-     SwingWorker<MovieInfo, String> worker = null;
+  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+    SwingWorker<MovieInfo, String> worker = null;
     switch (setting.scrapper) {
       case IMDB:
         worker = new ImdbInfoWorker(id, setting);
         break;
       case TMDB:
+        System.out.println("TMDB worker");
         worker = new TmdbInfoWorker(id, setting);
         break;
       case ALLOCINE:
@@ -97,15 +101,15 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static SwingWorker<MovieImage, Void> getMovieImageWorker(String imdb, Settings setting) {
-    return new TmdbImageWorker(imdb, setting);
+  public static SwingWorker<MovieImage, Void> getMovieImageWorker(MediaID id, Settings setting) throws ActionNotValidException {
+    return new TmdbImageWorker(id, setting);
   }
 
   public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {
     return new ActorWorker(actors, moviePanel, setting);
   }
 
-  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(String tvdbId, Settings setting) throws MalformedURLException {
-    return new TvdbInfoWorker(tvdbId, setting);
+  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+    return new TvdbInfoWorker(id, setting);
   }
 }

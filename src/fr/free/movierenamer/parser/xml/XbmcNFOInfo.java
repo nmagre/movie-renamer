@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -88,7 +89,7 @@ public class XbmcNFOInfo extends DefaultHandler implements IParser<MovieInfo> {
       } else if (name.equalsIgnoreCase("playcount")) {
       } else if (name.equalsIgnoreCase("lastplayed")) {
       } else if (name.equalsIgnoreCase("id")) {
-        movieInfo.setImdbId(buffer.toString());
+        movieInfo.addID(new MediaID(buffer.toString(), buffer.toString().startsWith("tt") ? MediaID.IMDBID:MediaID.TMDBID));
       } else if (name.equalsIgnoreCase("genre")) {
         movieInfo.addGenre(buffer.toString());
       } else if (name.equalsIgnoreCase("country")) {

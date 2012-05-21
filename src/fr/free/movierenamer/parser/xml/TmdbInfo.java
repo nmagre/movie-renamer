@@ -135,7 +135,7 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
         movieinfo.setMpaa(buffer.toString());
       }
        if (name.equalsIgnoreCase("released")) {
-        movieinfo.setMpaa(buffer.toString().substring(0, buffer.toString().indexOf("-")));
+        movieinfo.setYear(buffer.toString().substring(0, buffer.toString().indexOf("-")));
       }
     }
     buffer = null;

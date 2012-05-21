@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.ui.res.IIconList;
 import javax.swing.Icon;
 
@@ -27,7 +28,7 @@ import javax.swing.Icon;
  */
 public class SearchResult implements IIconList {
 
-  private String id;
+  private MediaID id;
   private String title;
   private String type;
   private String thumb;
@@ -41,7 +42,7 @@ public class SearchResult implements IIconList {
    * @param type result type (Exact,...)
    * @param thumb Thumbnail
    */
-  public SearchResult(String title, String id, String type, String thumb) {
+  public SearchResult(String title, MediaID id, String type, String thumb) {
     this.id = id;
     this.title = title;
     this.thumb = thumb;
@@ -62,7 +63,7 @@ public class SearchResult implements IIconList {
    *
    * @return API ID
    */
-  public String getId() {
+  public MediaID getId() {
     return id;
   }
 

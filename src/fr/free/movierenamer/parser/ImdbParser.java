@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.parser;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.SearchResult;
@@ -165,7 +166,7 @@ public class ImdbParser {
                   if (thumbMatcher.find()) {
                     thumb = thumbMatcher.group().substring(thumbMatcher.group().indexOf("img src=") + 9, thumbMatcher.group().indexOf(".jpg") + 4);
                   }
-                  found.add(new SearchResult(movieName, imdbIDMatcher.group(), type, thumb));
+                  found.add(new SearchResult(movieName, new MediaID(imdbIDMatcher.group(), MediaID.IMDBID), type, thumb));
                 }
                 count++;
               }
@@ -207,7 +208,7 @@ public class ImdbParser {
             thumb = thumbnail.substring(thumbnail.lastIndexOf("src=") + 5, thumbnail.lastIndexOf("\""));
           }
         }
-        found.add(new SearchResult(movieName, imdbId, "Exact", thumb));
+        found.add(new SearchResult(movieName, new MediaID(imdbId,  MediaID.IMDBID), "Exact", thumb));
 
       } else {
         Settings.LOGGER.log(Level.SEVERE, "imdb page unrecognized");
@@ -266,7 +267,7 @@ public class ImdbParser {
     if (searchMatcher.find()) {
       String imdbThumb = searchMatcher.group();
       imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=") + 5, imdbThumb.lastIndexOf("\""));
-      movieInfo.setImdbThumb(imdbThumb);
+      movieInfo.setThumb(imdbThumb);
     }
 
     //Original Title

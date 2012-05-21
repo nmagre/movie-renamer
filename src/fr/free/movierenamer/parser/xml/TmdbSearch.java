@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
@@ -85,7 +86,7 @@ public class TmdbSearch extends DefaultHandler implements IParser<ArrayList<Sear
     }
     if (name.equalsIgnoreCase("movie")) {
       movie = false;
-      results.add(new SearchResult(currentName, currentId, "", currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TMDBID) , "", currentThumb));
       currentName = currentId = currentThumb = "";
     }
     if (movies) {
@@ -97,7 +98,12 @@ public class TmdbSearch extends DefaultHandler implements IParser<ArrayList<Sear
           currentName = buffer.toString();
         }
         if (name.equalsIgnoreCase("released")) {
-          currentName += " (" + buffer.toString().substring(0, buffer.toString().indexOf("-")) + ")";
+          if(buffer.toString().contains("-")) {
+            currentName += " (" + buffer.toString().substring(0, buffer.toString().indexOf("-")) + ")";
+          }
+          else if(buffer.toString().length() > 0){
+            currentName += " (" + buffer.toString() + ")";
+          }
         }
       }
     }
