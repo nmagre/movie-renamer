@@ -18,7 +18,7 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -38,18 +38,18 @@ public class ActorWorker extends SwingWorker<Void, Void> {
 
   private List<MediaPerson> actors;
   private Settings setting;
-  private MoviePanel moviePnl;
+  private IMediaPanel mediaPanel;
 
   /**
    * Constructor arguments
    *
    * @param actors List of actor
-   * @param moviePnl Movie Renamer moviePanel
+   * @param mediaPanel Movie Renamer media panel
    * @param setting Movie Renamer settings
    */
-  public ActorWorker(List<MediaPerson> actors, MoviePanel moviePnl, Settings setting) {//A refaire , utiliser un listener + firepropertychange au lieu du panel
+  public ActorWorker(List<MediaPerson> actors, IMediaPanel mediaPanel, Settings setting) {
     this.actors = actors;
-    this.moviePnl = moviePnl;
+    this.mediaPanel = mediaPanel;
     this.setting = setting;
   }
 
@@ -87,14 +87,14 @@ public class ActorWorker extends SwingWorker<Void, Void> {
         }
         desc.append("</html>");
 
-        moviePnl.addActorToList(actors.get(i).getName(), image, desc.toString());
+        mediaPanel.addActorToList(actors.get(i).getName(), image, desc.toString());
       } else {
 
         for (int j = 0; j < actors.get(i).getRoles().size(); j++) {
           desc.append("<br>").append(actors.get(i).getRoles().get(j));
         }
         desc.append("</html>");
-        moviePnl.addActorToList(actors.get(i).getName(), null, desc.toString());
+        mediaPanel.addActorToList(actors.get(i).getName(), null, desc.toString());
       }
 
       setProgress((i * 100) / actors.size());

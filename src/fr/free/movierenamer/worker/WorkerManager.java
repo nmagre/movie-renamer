@@ -27,11 +27,10 @@ import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class WorkerManager
@@ -47,69 +46,67 @@ public abstract class WorkerManager {
   /**
    * Get media search worker
    *
+   * @param errorSupport
    * @param media Media
    * @param setting Movie Renamer settings
    * @return Worker depend of media type and settings or null
    */
-  public static SwingWorker<ArrayList<SearchResult>, Void> getSearchWorker(Media media, Settings setting) {
-    SwingWorker<ArrayList<SearchResult>, Void> worker = null;
-    try {
-      switch (media.getType()) {
-        case Media.MOVIE:
-          switch (setting.scrapper) {
-            case IMDB:
-              worker = new ImdbSearchWorker(media.getSearch(), setting);
-              break;
-            case TMDB:
-              worker = new TmdbSearchWorker(media.getSearch(), setting);
-              break;
-            case ALLOCINE:
-              worker = new AllocineSearchWorker(media.getSearch(), setting);
-              break;
-            default:
-          }
-          break;
-        case Media.TVSHOW:
-          worker = new TvdbSearchWorker(media.getSearch(), setting);
-          break;
-        default:
-          break;
-      }
-    } catch (MalformedURLException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (UnsupportedEncodingException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
+  public static SwingWorker<ArrayList<SearchResult>, String> getSearchWorker(SwingPropertyChangeSupport errorSupport, Media media, Settings setting) {
+    SwingWorker<ArrayList<SearchResult>, String> worker = null;
+    Settings.LOGGER.log(Level.INFO, "Search : {0}", media.getSearch());
+
+    switch (media.getType()) {
+      case Media.MOVIE:
+        switch (setting.scrapper) {
+          case IMDB:
+            worker = new ImdbSearchWorker(errorSupport, media.getSearch(), setting);
+            break;
+          case TMDB:
+            worker = new TmdbSearchWorker(errorSupport, media.getSearch(), setting);
+            break;
+          case ALLOCINE:
+            worker = new AllocineSearchWorker(errorSupport, media.getSearch(), setting);
+            break;
+          default:
+        }
+        break;
+      case Media.TVSHOW:
+        worker = new TvdbSearchWorker(errorSupport, media.getSearch(), setting);
+        break;
+      default:
+        break;
     }
+    
     return worker;
   }
 
-  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
     SwingWorker<MovieInfo, String> worker = null;
     switch (setting.scrapper) {
       case IMDB:
-        worker = new ImdbInfoWorker(id, setting);
+        worker = new ImdbInfoWorker(errorSupport, id, setting);
         break;
       case TMDB:
-        System.out.println("TMDB worker");
-        worker = new TmdbInfoWorker(id, setting);
+        worker = new TmdbInfoWorker(errorSupport, id, setting);
         break;
       case ALLOCINE:
-        //A faire
+        worker = new AllocineInfoWorker(errorSupport, id, setting);
         break;
       default:
     }
+    Settings.LOGGER.log(Level.INFO, "Information API ID : {0}", id.getID());
     return worker;
   }
 
-  public static SwingWorker<MovieImage, Void> getMovieImageWorker(MediaID id, Settings setting) throws ActionNotValidException {
-    return new TmdbImageWorker(id, setting);
+  public static SwingWorker<MovieImage, String> getMovieImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
+    return new TmdbImageWorker(errorSupport, id, setting);
   }
 
   public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {
     return new ActorWorker(actors, moviePanel, setting);
   }
 
-  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+  public static SwingWorker<TvShowInfo, String> getTvShowInfoWorker(MediaID id, Settings setting) throws ActionNotValidException {
     return new TvdbInfoWorker(id, setting);
   }
 }

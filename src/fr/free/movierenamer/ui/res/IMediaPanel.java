@@ -21,11 +21,10 @@ import fr.free.movierenamer.media.MediaImage;
 import java.awt.Image;
 
 /**
- *
+ * Interface IMediaPanel
  * @author Nicolas Magré
  */
 public interface IMediaPanel {
-
   /**
    * Add image to media panel
    * @param img Image
@@ -33,4 +32,12 @@ public interface IMediaPanel {
    * @param selectLast Select last image instead of first
    */
   void addImageToList(Image img, MediaImage mediaImage,  boolean selectLast);
+  
+  /**
+   * Add actor to media panel
+   * @param actor Actor name
+   * @param actorImg Actor image
+   * @param desc Actor description (html -> name + image + roles)
+   */
+  void addActorToList(String actor,Image actorImg, String desc);
 }

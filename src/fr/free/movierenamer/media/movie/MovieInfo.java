@@ -18,9 +18,9 @@
 package fr.free.movierenamer.media.movie;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 
@@ -740,7 +740,7 @@ public class MovieInfo {
    *
    * @param actor Actor
    */
-  public void addActor(MediaPerson actor) {
+  public void addActor(MediaPerson actor) {//A refaire, remplacer par addPerson
     actors.add(actor);
   }
 
@@ -749,7 +749,7 @@ public class MovieInfo {
    *
    * @param director Director
    */
-  public void addDirector(MediaPerson director) {
+  public void addDirector(MediaPerson director) {//A refaire, remplacer par addPerson
     directors.add(director);
   }
 

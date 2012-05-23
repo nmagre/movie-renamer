@@ -145,7 +145,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       }
     });
 
-    DropImage dropThumb = new DropImage(MoviePanel.this, Cache.THUMB, setting);
+    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.THUMB, Cache.THUMB, setting);
     dropThumbTarget = new DropTarget(thumbnailsList, dropThumb);
 
     fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -165,7 +165,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       }
     });
 
-    DropImage dropFanart = new DropImage(MoviePanel.this, Cache.FANART, setting);
+    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.FANART, Cache.FANART, setting);
     dropFanartTarget = new DropTarget(fanartList, dropFanart);
 
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);

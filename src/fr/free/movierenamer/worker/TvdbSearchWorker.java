@@ -19,56 +19,104 @@ package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.parser.xml.TvdbSearch;
 import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Dimension;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
  * Class TvdbSearchWorker ,Search tv Show on tvdb
+ *
  * @author Nicolas Magre
  */
-public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
+public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, String> {
 
+  private static final int RETRY = 3;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private String tvShowName;
   private Settings setting;
+  private SwingPropertyChangeSupport errorSupport;
 
-  public TvdbSearchWorker(String tvShowName, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
+  public TvdbSearchWorker(SwingPropertyChangeSupport errorSupport, String tvShowName, Settings setting) {
+    this.errorSupport = errorSupport;
     this.tvShowName = tvShowName;
     this.setting = setting;
   }
 
   @Override
   protected ArrayList<SearchResult> doInBackground() {
-    ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+    ArrayList<SearchResult> tvdbSearchResult = null;
     try {
-      String search = setting.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvdbFr ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
-      XMLParser<ArrayList<SearchResult>> xmlp = new XMLParser<ArrayList<SearchResult>>(search);
-      xmlp.setParser(new TvdbSearch(setting.tvdbFr));
-      results = xmlp.parseXml();
+      String uri = setting.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvdbFr ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
+      URL url = new URL(uri);
+      File xmlFile = setting.cache.get(url, Cache.XML);
+      if (xmlFile == null) {
+        for (int i = 0; i < RETRY; i++) {
+          InputStream in;
+          try {
+            in = url.openStream();
+            setting.cache.add(in, url.toString(), Cache.XML);
+            xmlFile = setting.cache.get(url, Cache.XML);
+            break;
+          } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
+            Settings.LOGGER.log(Level.SEVERE, null, e);
+            try {
+              Thread.sleep(300);
+            } catch (InterruptedException ex) {
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
+            }
+          }
+        }
+      }
+
+      if (xmlFile == null) {
+        errorSupport.firePropertyChange("closeLoadingDial", false, true);
+        publish("httpFailed");
+        return null;
+      }
+
+      //Parse TVDB API XML
+      XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile.getAbsolutePath());
+      xmp.setParser(new TvdbSearch(setting.tvdbFr));
+      tvdbSearchResult = xmp.parseXml();
+
+    } catch (UnsupportedEncodingException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
-      Logger.getLogger(TvdbSearchWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
-      Logger.getLogger(TvdbSearchWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (ParserConfigurationException ex) {
-      Logger.getLogger(TvdbSearchWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (SAXException ex) {
-      Logger.getLogger(TvdbSearchWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
-    for (SearchResult res : results) {
+    if (tvdbSearchResult == null) {
+      errorSupport.firePropertyChange("closeLoadingDial", false, true);
+      publish("scrapperSeachFailed");
+      return null;
+    }
+
+    for (SearchResult res : tvdbSearchResult) {
       String thumb = res.getThumb();
       if (thumb != null) {
         Icon icon = Utils.getSearchThumb(thumb, setting.cache, new Dimension(200, 70));
@@ -80,7 +128,13 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
         res.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
       }
     }
+
     setProgress(100);
-    return results;
+    return tvdbSearchResult;
+  }
+
+  @Override
+  public void process(List<String> v) {
+    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

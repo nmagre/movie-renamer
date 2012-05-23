@@ -35,7 +35,7 @@ public class MediaImage {
   /**
    * Constructor arguments
    *
-   * @param id Image id, "-1" -> image added , "0" image from NFO
+   * @param id Image id, "-1" -> image added from web/hdd/..., "0" image from API/NFO/...
    * @param type Media image type
    */
   public MediaImage(int id, int type) {

@@ -221,6 +221,9 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("tvdbFr")) {
             config.tvdbFr = buffer.toString().equals(sZero);
           }
+          if (name.equalsIgnoreCase("clearXMLCache")) {
+            config.clearXMLCache = buffer.toString().equals(sZero);
+          }
 
         } catch (NullPointerException ex) {
           Settings.LOGGER.log(Level.SEVERE, ex.getMessage());

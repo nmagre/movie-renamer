@@ -63,7 +63,8 @@ public class Settings {
   public final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";
   public static final String tvdbAPIUrlTvShowImage = "http://thetvdb.com/banners/";
   //Allocine
-  public final String allocineAPISearch="http://api.allocine.fr/rest/v3/search?partner=yW5kcm9pZC12M3M&filter=movie&q=";
+  public final String allocineAPISearch="http://api.allocine.fr/rest/v3/search?partner=yW5kcm9pZC12M3M&filter=movie&striptags=synopsis,synopsisshort&q=";
+  public final String allocineAPIInfo = "http://api.allocine.fr/rest/v3/movie?partner=yW5kcm9pZC12M3M&profile=large&filter=movie&striptags=synopsis,synopsisshort&code=";
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
@@ -147,6 +148,7 @@ public class Settings {
   public boolean rmSpcChar = true;
   public boolean rmDupSpace = true;
   public boolean tvdbFr = false;
+  public boolean clearXMLCache = false;
 
   /**
    * Constructor
@@ -228,6 +230,7 @@ public class Settings {
       out.write("    <rmSpcChar>" + (rmSpcChar ? 0 : 1) + "</rmSpcChar>" + endl);
       out.write("    <rmDupSpace>" + (rmDupSpace ? 0 : 1) + "</rmDupSpace>" + endl);
       out.write("    <tvdbFr>" + (tvdbFr ? 0 : 1) + "</tvdbFr>" + endl);
+      out.write("    <clearXMLCache>" + (clearXMLCache ? 0 : 1) + "</clearXMLCache>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

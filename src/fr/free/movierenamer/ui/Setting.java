@@ -181,6 +181,9 @@ public class Setting extends JDialog {
 
     thumbExtCbBox.setSelectedIndex(setting.thumbExt);
     customFolderField.setText(setting.movieDir);
+    
+    //Cache
+    clearXmlCacheOnStartChk.setSelected(setting.clearXMLCache);
 
     String ssize;
     long size = Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir));
@@ -349,6 +352,7 @@ public class Setting extends JDialog {
         xmlFilePnl = new JPanel();
         xmlLbl = new JLabel();
         clearXmlBtn = new JButton();
+        clearXmlCacheOnStartChk = new JCheckBox();
         saveBtn = new JButton();
         CancelBtn = new JButton();
 
@@ -1274,15 +1278,22 @@ public class Setting extends JDialog {
             }
         });
 
+        clearXmlCacheOnStartChk.setFont(new Font("Ubuntu", 1, 13));         clearXmlCacheOnStartChk.setText(bundle.getString("clearXmlCacheOnStart")); // NOI18N
+
         GroupLayout xmlFilePnlLayout = new GroupLayout(xmlFilePnl);
         xmlFilePnl.setLayout(xmlFilePnlLayout);
         xmlFilePnlLayout.setHorizontalGroup(
             xmlFilePnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(xmlFilePnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(xmlLbl)
-                .addPreferredGap(ComponentPlacement.RELATED, 223, Short.MAX_VALUE)
-                .addComponent(clearXmlBtn)
+                .addGroup(xmlFilePnlLayout.createParallelGroup(Alignment.LEADING)
+                    .addGroup(xmlFilePnlLayout.createSequentialGroup()
+                        .addComponent(xmlLbl)
+                        .addPreferredGap(ComponentPlacement.RELATED, 223, Short.MAX_VALUE)
+                        .addComponent(clearXmlBtn))
+                    .addGroup(xmlFilePnlLayout.createSequentialGroup()
+                        .addComponent(clearXmlCacheOnStartChk)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         xmlFilePnlLayout.setVerticalGroup(
@@ -1292,7 +1303,9 @@ public class Setting extends JDialog {
                 .addGroup(xmlFilePnlLayout.createParallelGroup(Alignment.TRAILING)
                     .addComponent(clearXmlBtn)
                     .addComponent(xmlLbl))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(clearXmlCacheOnStartChk)
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         GroupLayout cachePnlLayout = new GroupLayout(cachePnl);
@@ -1313,7 +1326,7 @@ public class Setting extends JDialog {
                 .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(272, Short.MAX_VALUE))
+                .addContainerGap(236, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab("Cache", cachePnl);
@@ -1716,6 +1729,9 @@ public class Setting extends JDialog {
     // Filter
     setting.extensions = extensions;
     setting.nameFilters = filters;
+    
+    //Cache
+    setting.clearXMLCache = clearXmlCacheOnStartChk.isSelected();
 
     setting.saveSetting();
 
@@ -1770,6 +1786,7 @@ public class Setting extends JDialog {
     private JButton clearFanartBtn;
     private JButton clearThumbBtn;
     private JButton clearXmlBtn;
+    private JCheckBox clearXmlCacheOnStartChk;
     private JCheckBox createDirChk;
     private ButtonGroup createDirGroup;
     private JTextField customFolderField;

@@ -47,7 +47,7 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
   private MediaID id;
   private Settings setting;
 
-  public TvdbInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+  public TvdbInfoWorker(MediaID id, Settings setting) throws ActionNotValidException {
     if(id.getType() != MediaID.TVDBID) {
       throw new ActionNotValidException("TvdbInfoWorker can only use tvdb id");
     }

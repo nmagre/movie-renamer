@@ -18,8 +18,8 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
-import fr.free.movierenamer.parser.xml.TmdbImage;
+import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.xml.AllocineInfo;
 import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
@@ -34,46 +34,44 @@ import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class TheMovieDbImageWorker , get images from theMovieDB with imdbID
+ * Class AllocineInfoWorker
  *
- * @author Magré Nicolas
+ * @author Nicolas Magré
  */
-public class TmdbImageWorker extends SwingWorker<MovieImage, String> {
+public class AllocineInfoWorker extends SwingWorker<MovieInfo, String> {
 
   private static final int RETRY = 3;
   private Settings setting;
   private MediaID id;
-  private SwingPropertyChangeSupport errorSupport;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private SwingPropertyChangeSupport errorSupport;
 
   /**
    * Constructor arguments
    *
    * @param errorSupport Swing change support
-   * @param id Media Id (imdb ID)
+   * @param id Media id
    * @param setting Movie Renamer settings
    * @throws ActionNotValidException
    */
-  public TmdbImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
+  public AllocineInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
     this.errorSupport = errorSupport;
-    if (id.getType() != MediaID.IMDBID) {
-      throw new ActionNotValidException("TmdbImageWorker can only use imdb ID");
+    if (id.getType() != MediaID.ALLOCINEID) {
+      throw new ActionNotValidException("AllocineInfoWorker  can only use allocine ID");
     }
-    this.id = id;
     this.setting = setting;
+    this.id = id;
   }
 
   @Override
-  protected MovieImage doInBackground() {
-    MovieImage mvImgs = null;
-
+  protected MovieInfo doInBackground() {
+    MovieInfo movieInfo = null;
     try {
-      String uri = setting.tmdbAPMovieImdbLookUp + new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/" + id.getID();
+      String uri = setting.allocineAPIInfo + id.getID();
       URL url = new URL(uri);
       File xmlFile = setting.cache.get(url, Cache.XML);
       if (xmlFile == null) {
@@ -101,10 +99,10 @@ public class TmdbImageWorker extends SwingWorker<MovieImage, String> {
         return null;
       }
 
-      //Parse TMDB API XML
-      XMLParser<MovieImage> mmp = new XMLParser<MovieImage>(xmlFile.getAbsolutePath());
-      mmp.setParser(new TmdbImage());
-      mvImgs = mmp.parseXml();
+      //Parse allocine API XML
+      XMLParser<MovieInfo> xmp = new XMLParser<MovieInfo>(xmlFile.getAbsolutePath());
+      xmp.setParser(new AllocineInfo());
+      movieInfo = xmp.parseXml();
 
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -116,13 +114,14 @@ public class TmdbImageWorker extends SwingWorker<MovieImage, String> {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
-    if (mvImgs == null) {
+    if (movieInfo == null) {
       errorSupport.firePropertyChange("closeLoadingDial", false, true);
-      publish("scrapperImageFailed");
+      publish("scrapperInfoFailed");
       return null;
     }
 
-    return mvImgs;
+    setProgress(100);
+    return movieInfo;
   }
 
   @Override

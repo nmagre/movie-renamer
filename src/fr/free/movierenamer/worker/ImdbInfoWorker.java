@@ -30,6 +30,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class ImdbInfoWorker , get movie information from imdb
@@ -42,22 +43,23 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
   private HttpGet http;
   private MediaID id;
   private Settings setting;
+  private SwingPropertyChangeSupport errorSupport;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
 
   /**
    * Constructor arguments
    *
+   * @param errorSupport Swing change support
    * @param id Movie API ID (imdb)
    * @param setting Movie Renamer settings
-   * @throws MalformedURLException
    * @throws ActionNotValidException  
    */
-  public ImdbInfoWorker(MediaID id, Settings setting) throws MalformedURLException, ActionNotValidException {
+  public ImdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
+    this.errorSupport = errorSupport;
     if(id.getType() != MediaID.IMDBID) {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
-    http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + id.getID() + "/combined");
     this.setting = setting;
     this.id = id;
   }
@@ -69,19 +71,21 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     String res = null;
     for (int i = 0; i < RETRY; i++) {
       try {
+        http = new HttpGet((setting.imdbFr ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + id.getID() + "/combined");
         res = http.sendGetRequest(true, "ISO-8859-15");
         break;
-      } catch (Exception e) {//Don't care about exception, res will be null
-        Settings.LOGGER.log(Level.SEVERE, null, e);
+      } catch (Exception ex) {//Don't care about exception, "res" will be null
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
         try {
           Thread.sleep(300);
-        } catch (InterruptedException ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+        } catch (InterruptedException e) {
+          Settings.LOGGER.log(Level.SEVERE, null, e);
         }
       }
     }
 
     if (res == null) {//Http request failed
+      errorSupport.firePropertyChange("closeLoadingDial", false, true);
       publish("httpFailed");
       return null;
     }
@@ -92,19 +96,18 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     MovieInfo mvi = null;
     try {
       mvi = imdbParser.getMovieInfo(res);
-    } catch (IndexOutOfBoundsException ex) {//Imdbparser failed
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IndexOutOfBoundsException", ex.getStackTrace()));
-      publish("imdbParserFail");
+    } catch (Exception ex) {//Imdbparser failed
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("Exception", ex.getStackTrace()));      
     }
 
-    if (mvi != null) {
-      mvi.addID(id);
-    }
-    else {
-      Settings.LOGGER.log(Level.SEVERE, null, "Imdbparser failed and we don't know why");
+    if (mvi == null) {
+      errorSupport.firePropertyChange("closeLoadingDial", false, true);
       publish("imdbParserFail");
+      return null;
     }
 
+    mvi.addID(id);
+    
     setProgress(100);
     return mvi;
   }

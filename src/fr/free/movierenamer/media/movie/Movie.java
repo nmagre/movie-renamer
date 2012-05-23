@@ -17,11 +17,7 @@
  */
 package fr.free.movierenamer.media.movie;
 
-import fr.free.movierenamer.media.Media;
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;

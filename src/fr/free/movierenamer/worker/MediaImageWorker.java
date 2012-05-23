@@ -18,7 +18,6 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;

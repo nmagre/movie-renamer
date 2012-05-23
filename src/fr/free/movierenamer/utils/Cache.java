@@ -33,7 +33,7 @@ public class Cache {
   public static final int THUMB = 0;
   public static final int FANART = 1;
   public static final int ACTOR = 2;
-  public static final int TMDBXML = 3;
+  public static final int XML = 3;
   public static final int TVSHOWZIP = 4;
   private Settings setting;
 
@@ -114,7 +114,7 @@ public class Cache {
       case ACTOR:
         path = setting.actorCacheDir;
         break;
-      case TMDBXML:
+      case XML:
         path = setting.xmlCacheDir;
         break;
       case TVSHOWZIP:

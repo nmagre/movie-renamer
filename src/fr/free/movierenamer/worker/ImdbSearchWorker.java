@@ -18,13 +18,11 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.parser.ImdbParser;
-import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.HttpGet;
+import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Dimension;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,56 +32,61 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class ImdbSearchWorker, Search on imdb
  *
  * @author Nicolas Magré
  */
-public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void> {
+public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, String> {
 
   private String searchTitle;
   private Settings setting;
   private HttpGet http;
   private ImdbParser imdbParser;
+  private SwingPropertyChangeSupport errorSupport;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /**
    * Constructor arguments
    *
+   * @param errorSupport Swing change support
    * @param searchTitle Movie title to search
    * @param setting Movie Renamer settings
-   * @throws MalformedURLException
-   * @throws UnsupportedEncodingException
    */
-  public ImdbSearchWorker(String searchTitle, Settings setting) throws MalformedURLException, UnsupportedEncodingException {
+  public ImdbSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle, Settings setting) {
+    this.errorSupport = errorSupport;
     this.searchTitle = searchTitle;
     this.setting = setting;
-    http = new HttpGet((setting.imdbFr ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
     imdbParser = new ImdbParser(setting);
   }
 
   @Override
   protected ArrayList<SearchResult> doInBackground() {
-    ArrayList<SearchResult> imdbSearchResult = new ArrayList<SearchResult>();
+    ArrayList<SearchResult> imdbSearchResult = null;
 
     setProgress(0);
-    String searchres;
+    String searchres = null;
     try {
+      http = new HttpGet((setting.imdbFr ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
       searchres = http.sendGetRequest(true, "ISO-8859-15");
     } catch (Exception e) {
       Settings.LOGGER.log(Level.SEVERE, e.toString());
+    }
+
+    if (searchres == null) {
+      errorSupport.firePropertyChange("closeLoadingDial", false, true);
+      publish("httpFailed");
       return null;
     }
-    
+
     setProgress(30);
-    Settings.LOGGER.log(Level.INFO, "Search : {0}", searchTitle);
 
     if (searchres != null && !searchres.contains("<b>No Matches.</b>")) {
       boolean searchPage = !http.getURL().toString().matches("http://www.imdb.(com|fr)/title/tt\\d+/");
       try {
         imdbSearchResult = imdbParser.parse(searchres, searchPage);
-
         int i = 0;
         for (SearchResult imsres : imdbSearchResult) {
           String thumb = imsres.getThumb();
@@ -98,19 +101,24 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Void>
           }
           setProgress((30 + (++i * 70)) / imdbSearchResult.size());
         }
-      } catch (IndexOutOfBoundsException ex) {
-        Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IndexOutOfBoundsException", ex.getStackTrace()));
-        publish((Void) null);
+      } catch (Exception ex) {
+        Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("Exception", ex.getStackTrace()));
       }
+    }
+
+    if (imdbSearchResult == null) {
+      errorSupport.firePropertyChange("closeLoadingDial", false, true);
+      publish("scrapperSeachFailed");
+      return null;
     }
 
     setProgress(100);
     Settings.LOGGER.log(Level.INFO, "found : {0} Movies", imdbSearchResult.size());
     return imdbSearchResult;
   }
-  
+
   @Override
-  public void process (List<Void> v){
-    JOptionPane.showMessageDialog(null, bundle.getString("imdbParserFail"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+  public void process(List<String> v) {
+    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

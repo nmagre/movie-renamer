@@ -48,7 +48,7 @@ public class Main {
     if (setting.laf.equals("")) {
       setting.laf = Settings.lookAndFeels[0].getName();
     }
-    
+
     try {
       boolean lafFound = false;
       for (int i = 0; i < Settings.lookAndFeels.length; i++) {
@@ -58,12 +58,12 @@ public class Main {
           break;
         }
       }
-      
-      if(!lafFound){
+
+      if (!lafFound) {
         setting.laf = Settings.lookAndFeels[0].getName();
         UIManager.setLookAndFeel(Settings.lookAndFeels[0].getClassName());
       }
-      
+
     } catch (ClassNotFoundException ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InstantiationException ex) {
@@ -72,6 +72,11 @@ public class Main {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     } catch (UnsupportedLookAndFeelException ex) {
       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    //Clear XML cache
+    if (setting.clearXMLCache) {
+      Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
     }
 
     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -132,9 +137,9 @@ public class Main {
       }
 
     } catch (ParserConfigurationException ex) {
-      Settings.LOGGER.log(Level.SEVERE,Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
     } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE,Utils.getStackTrace("SAXException", ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("SAXException", ex.getStackTrace()));
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
     } catch (InterruptedException ex) {

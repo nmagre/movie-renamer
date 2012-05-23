@@ -30,6 +30,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -57,7 +58,7 @@ public class XMLParser<T> {
     this.itp = itp;
   }
 
-  public T parseXml() throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+  public T parseXml() throws IOException, InterruptedException, ParserConfigurationException, SAXException, SAXParseException {
 
     if (itp == null) {
       throw new NullPointerException("IParser null");
