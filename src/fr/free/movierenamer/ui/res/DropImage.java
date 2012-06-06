@@ -140,7 +140,7 @@ public class DropImage implements DropTargetListener {
                 mediaPanel.addImageToList(img, mvImg, true);
               }
             } catch (IOException ex) {
-              Logger.getLogger(DropImage.class.getName()).log(Level.SEVERE, null, ex);
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
             }
           }
         }

@@ -25,12 +25,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.*;
@@ -164,8 +166,8 @@ public class Setting extends JDialog {
     rmDupSpaceChk.setSelected(setting.rmDupSpace);
 
     // Search
-    imdbFrRbtn.setSelected(setting.imdbFr);
-    imdbEnRbtn.setSelected(!setting.imdbFr);
+    scrapperFrRbtn.setSelected(setting.imdbFr);
+    scrapperEnRbtn.setSelected(!setting.imdbFr);
     displayThumbResultChk.setSelected(setting.displayThumbResult);
     scrapperGroup.setSelected(rBtnScrapper[setting.scrapper].getModel(), true);
 
@@ -296,22 +298,22 @@ public class Setting extends JDialog {
         limitField = new JTextField();
         rmSpcCharChk = new JCheckBox();
         rmDupSpaceChk = new JCheckBox();
-        jPanel2 = new JPanel();
         SearchPnl = new JPanel();
-        imdbLangPnl = new JPanel();
-        imdbFrRbtn = new JRadioButton();
-        imdbEnRbtn = new JRadioButton();
         imdbSearchPnl = new JPanel();
         displayAppResultCheckBox = new JCheckBox();
         limitResultComboBox = new JComboBox();
         limitResultLbl = new JLabel();
-        displayThumbResultChk = new JCheckBox();
-        selectFirstResChk = new JCheckBox();
-        autoSearchChk = new JCheckBox();
         jPanel3 = new JPanel();
         imdbRBtn = new JRadioButton();
         tmdbRbtn = new JRadioButton();
         allocineRbtn = new JRadioButton();
+        jLabel2 = new JLabel();
+        scrapperFrRbtn = new JRadioButton();
+        scrapperEnRbtn = new JRadioButton();
+        jLabel3 = new JLabel();
+        selectFirstResChk = new JCheckBox();
+        autoSearchChk = new JCheckBox();
+        displayThumbResultChk = new JCheckBox();
         jPanel1 = new JPanel();
         movieImagePnl = new JPanel();
         thumbExtCbBox = new JComboBox();
@@ -570,9 +572,9 @@ public class Setting extends JDialog {
         renamedMovieTitleRBtn.setEnabled(false);
 
         createDirChk.setFont(new Font("Ubuntu", 0, 12));         createDirChk.setText(bundle.getString("createDir")); // NOI18N
-        createDirChk.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent evt) {
-                createDirChkMouseReleased(evt);
+        createDirChk.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                createDirChkActionPerformed(evt);
             }
         });
 
@@ -744,19 +746,6 @@ public class Setting extends JDialog {
 
         jTabbedPane1.addTab("Movie", movieFileNamePnl);
 
-        GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(Alignment.LEADING)
-            .addGap(0, 444, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(Alignment.LEADING)
-            .addGap(0, 441, Short.MAX_VALUE)
-        );
-
-        jTabbedPane1.addTab("TvShow", jPanel2);
-
         GroupLayout renamePnlLayout = new GroupLayout(renamePnl);
         renamePnl.setLayout(renamePnlLayout);
         renamePnlLayout.setHorizontalGroup(
@@ -771,39 +760,10 @@ public class Setting extends JDialog {
             .addGroup(renamePnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab(bundle.getString("rename"), renamePnl); // NOI18N
-
-        imdbLangPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        imdbLangGroup.add(imdbFrRbtn);
-        imdbFrRbtn.setFont(new Font("Ubuntu", 0, 12));         imdbFrRbtn.setSelected(true);
-        imdbFrRbtn.setText(bundle.getString("imdbFr")); // NOI18N
-
-        imdbLangGroup.add(imdbEnRbtn);
-        imdbEnRbtn.setFont(new Font("Ubuntu", 0, 12));         imdbEnRbtn.setText(bundle.getString("imdbEn")); // NOI18N
-
-        GroupLayout imdbLangPnlLayout = new GroupLayout(imdbLangPnl);
-        imdbLangPnl.setLayout(imdbLangPnlLayout);
-        imdbLangPnlLayout.setHorizontalGroup(
-            imdbLangPnlLayout.createParallelGroup(Alignment.LEADING)
-            .addGroup(imdbLangPnlLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(imdbFrRbtn)
-                .addGap(18, 18, 18)
-                .addComponent(imdbEnRbtn)
-                .addContainerGap(283, Short.MAX_VALUE))
-        );
-        imdbLangPnlLayout.setVerticalGroup(
-            imdbLangPnlLayout.createParallelGroup(Alignment.LEADING)
-            .addGroup(imdbLangPnlLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(imdbLangPnlLayout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(imdbFrRbtn)
-                    .addComponent(imdbEnRbtn))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         imdbSearchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("result"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));         displayAppResultCheckBox.setText(bundle.getString("showAppRes")); // NOI18N
@@ -813,14 +773,6 @@ public class Setting extends JDialog {
 
         limitResultLbl.setFont(new Font("Ubuntu", 0, 12));         limitResultLbl.setText(bundle.getString("resForEachType")); // NOI18N
 
-        displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));         displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
-
-        selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
-        selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
-
-        autoSearchChk.setFont(new Font("Ubuntu", 0, 12));         autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
-        autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
-
         GroupLayout imdbSearchPnlLayout = new GroupLayout(imdbSearchPnl);
         imdbSearchPnl.setLayout(imdbSearchPnlLayout);
         imdbSearchPnlLayout.setHorizontalGroup(
@@ -828,14 +780,11 @@ public class Setting extends JDialog {
             .addGroup(imdbSearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(imdbSearchPnlLayout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(displayThumbResultChk)
                     .addGroup(imdbSearchPnlLayout.createSequentialGroup()
                         .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(limitResultLbl))
-                    .addComponent(displayAppResultCheckBox)
-                    .addComponent(autoSearchChk)
-                    .addComponent(selectFirstResChk))
+                    .addComponent(displayAppResultCheckBox))
                 .addContainerGap(123, Short.MAX_VALUE))
         );
         imdbSearchPnlLayout.setVerticalGroup(
@@ -847,12 +796,6 @@ public class Setting extends JDialog {
                     .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
                 .addComponent(displayAppResultCheckBox)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(displayThumbResultChk)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(autoSearchChk)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(selectFirstResChk)
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -866,6 +809,30 @@ public class Setting extends JDialog {
 
         scrapperGroup.add(allocineRbtn);
         allocineRbtn.setText("Allocine");
+        allocineRbtn.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent evt) {
+                allocineRbtnItemStateChanged(evt);
+            }
+        });
+
+        jLabel2.setFont(new Font("Ubuntu", 1, 12));         jLabel2.setText(bundle.getString("language")); // NOI18N
+
+        imdbLangGroup.add(scrapperFrRbtn);
+        scrapperFrRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperFrRbtn.setSelected(true);
+        scrapperFrRbtn.setText(bundle.getString("imdbFr")); // NOI18N
+
+        imdbLangGroup.add(scrapperEnRbtn);
+        scrapperEnRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn.setText(bundle.getString("imdbEn")); // NOI18N
+
+        jLabel3.setFont(new Font("Ubuntu", 1, 12));         jLabel3.setText(bundle.getString("result")); // NOI18N
+
+        selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
+        selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
+
+        autoSearchChk.setFont(new Font("Ubuntu", 0, 12));         autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
+        autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
+
+        displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));         displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
 
         GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -873,11 +840,25 @@ public class Setting extends JDialog {
             jPanel3Layout.createParallelGroup(Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(imdbRBtn)
-                .addGap(18, 18, 18)
-                .addComponent(tmdbRbtn)
-                .addGap(18, 18, 18)
-                .addComponent(allocineRbtn)
+                .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(imdbRBtn)
+                        .addGap(18, 18, 18)
+                        .addComponent(tmdbRbtn)
+                        .addGap(18, 18, 18)
+                        .addComponent(allocineRbtn))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(displayThumbResultChk)
+                            .addComponent(autoSearchChk)
+                            .addComponent(selectFirstResChk)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(scrapperFrRbtn)
+                                .addGap(18, 18, 18)
+                                .addComponent(scrapperEnRbtn)))))
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -888,7 +869,21 @@ public class Setting extends JDialog {
                     .addComponent(imdbRBtn)
                     .addComponent(tmdbRbtn)
                     .addComponent(allocineRbtn))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(scrapperFrRbtn)
+                    .addComponent(scrapperEnRbtn))
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(displayThumbResultChk)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(autoSearchChk)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(selectFirstResChk)
+                .addContainerGap(90, Short.MAX_VALUE))
         );
 
         GroupLayout SearchPnlLayout = new GroupLayout(SearchPnl);
@@ -898,21 +893,18 @@ public class Setting extends JDialog {
             .addGroup(SearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(SearchPnlLayout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(imdbLangPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(imdbSearchPnl, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(imdbSearchPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         SearchPnlLayout.setVerticalGroup(
             SearchPnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(SearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(imdbLangPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(jPanel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(jPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(imdbSearchPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(189, Short.MAX_VALUE))
+                .addGap(85, 85, 85))
         );
 
         settingTabPan.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
@@ -1213,23 +1205,23 @@ public class Setting extends JDialog {
         thumbCacheLbl.setFont(new Font("Ubuntu", 1, 13));         thumbCacheLbl.setText(bundle.getString("useForThumb")); // NOI18N
 
         clearThumbBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearThumbBtn.setToolTipText(bundle.getString("clearThumbCache")); // NOI18N
-        clearThumbBtn.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent evt) {
-                clearThumbBtnMouseReleased(evt);
+        clearThumbBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                clearThumbBtnActionPerformed(evt);
             }
         });
 
         clearFanartBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearFanartBtn.setToolTipText(bundle.getString("clearFanartCache")); // NOI18N
-        clearFanartBtn.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent evt) {
-                clearFanartBtnMouseReleased(evt);
+        clearFanartBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                clearFanartBtnActionPerformed(evt);
             }
         });
 
         clearActorBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearActorBtn.setToolTipText(bundle.getString("clearActorCache")); // NOI18N
-        clearActorBtn.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent evt) {
-                clearActorBtnMouseReleased(evt);
+        clearActorBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                clearActorBtnActionPerformed(evt);
             }
         });
 
@@ -1272,9 +1264,9 @@ public class Setting extends JDialog {
         xmlLbl.setFont(new Font("Ubuntu", 1, 13));         xmlLbl.setText(bundle.getString("useForXml")); // NOI18N
 
         clearXmlBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearXmlBtn.setToolTipText(bundle.getString("clearXmlCache")); // NOI18N
-        clearXmlBtn.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent evt) {
-                clearXmlBtnMouseReleased(evt);
+        clearXmlBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                clearXmlBtnActionPerformed(evt);
             }
         });
 
@@ -1343,9 +1335,9 @@ public class Setting extends JDialog {
         CancelBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2.png")));         CancelBtn.setText(bundle.getString("cancel")); // NOI18N
         CancelBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
         CancelBtn.setMargin(new Insets(2, 2, 2, 2));
-        CancelBtn.addMouseListener(new MouseAdapter() {
-            public void mouseReleased(MouseEvent evt) {
-                CancelBtnMouseReleased(evt);
+        CancelBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                CancelBtnActionPerformed(evt);
             }
         });
 
@@ -1377,30 +1369,6 @@ public class Setting extends JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-  private void CancelBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_CancelBtnMouseReleased
-    setVisible(false);
-  }//GEN-LAST:event_CancelBtnMouseReleased
-
-  private void clearXmlBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_clearXmlBtnMouseReleased
-    Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
-    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir)) + bundle.getString("useForXml"));
-}//GEN-LAST:event_clearXmlBtnMouseReleased
-
-  private void clearActorBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_clearActorBtnMouseReleased
-    Utils.deleteFileInDirectory(new File(setting.actorCacheDir));
-    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir)) + bundle.getString("useForActor"));
-}//GEN-LAST:event_clearActorBtnMouseReleased
-
-  private void clearFanartBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_clearFanartBtnMouseReleased
-    Utils.deleteFileInDirectory(new File(setting.fanartCacheDir));
-    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir)) + bundle.getString("useForFanart"));
-}//GEN-LAST:event_clearFanartBtnMouseReleased
-
-  private void clearThumbBtnMouseReleased(MouseEvent evt) {//GEN-FIRST:event_clearThumbBtnMouseReleased
-    Utils.deleteFileInDirectory(new File(setting.thumbCacheDir));
-    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir)) + bundle.getString("useForThumb"));
-}//GEN-LAST:event_clearThumbBtnMouseReleased
 
   private void addFilterActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addFilterActionPerformed
     String s = (String) JOptionPane.showInputDialog(this, bundle.getString("filter"), bundle.getString("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
@@ -1437,20 +1405,6 @@ public class Setting extends JDialog {
   private void helpBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
     JOptionPane.showMessageDialog(this, bundle.getString("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), bundle.getString("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
 }//GEN-LAST:event_helpBtnActionPerformed
-
-  private void createDirChkMouseReleased(MouseEvent evt) {//GEN-FIRST:event_createDirChkMouseReleased
-    if (createDirChk.isSelected()) {
-      movieTitleRBtn.setEnabled(true);
-      renamedMovieTitleRBtn.setEnabled(true);
-      customFolderField.setEnabled(true);
-      customFolderRBtn.setEnabled(true);
-    } else {
-      movieTitleRBtn.setEnabled(false);
-      renamedMovieTitleRBtn.setEnabled(false);
-      customFolderField.setEnabled(false);
-      customFolderRBtn.setEnabled(false);
-    }
-}//GEN-LAST:event_createDirChkMouseReleased
 
   private void movieInfoPanelChkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_movieInfoPanelChkItemStateChanged
     boolean activate = true;
@@ -1647,7 +1601,9 @@ public class Setting extends JDialog {
       setting.interfaceChanged = true;
     }
 
-    if(!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) setting.lafChanged = true;
+    if(!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) {
+      setting.lafChanged = true;
+    }
     setting.laf = Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName();
     setting.selectFrstMovie = selectFirstMovieChk.isSelected();
     setting.selectFrstRes = selectFirstResChk.isSelected();
@@ -1702,7 +1658,7 @@ public class Setting extends JDialog {
     setting.rmDupSpace = rmDupSpaceChk.isSelected();
 
     //Search
-    setting.imdbFr = imdbFrRbtn.isSelected();
+    setting.imdbFr = scrapperFrRbtn.isSelected();
     setting.displayThumbResult = displayThumbResultChk.isSelected();
 
     // Movie Files
@@ -1759,16 +1715,54 @@ public class Setting extends JDialog {
       UIManager.setLookAndFeel(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getClassName());
       SwingUtilities.updateComponentTreeUI(this);
     } catch (ClassNotFoundException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InstantiationException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (UnsupportedLookAndFeelException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
     pack();
   }//GEN-LAST:event_lafCmbBoxActionPerformed
+
+  private void CancelBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
+      setVisible(false);
+  }//GEN-LAST:event_CancelBtnActionPerformed
+
+  private void createDirChkActionPerformed(ActionEvent evt) {//GEN-FIRST:event_createDirChkActionPerformed
+      movieTitleRBtn.setEnabled(createDirChk.isSelected());
+      renamedMovieTitleRBtn.setEnabled(createDirChk.isSelected());
+      customFolderField.setEnabled(createDirChk.isSelected());
+      customFolderRBtn.setEnabled(createDirChk.isSelected());
+  }//GEN-LAST:event_createDirChkActionPerformed
+
+  private void clearXmlBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearXmlBtnActionPerformed
+    Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
+    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir)) + bundle.getString("useForXml"));
+  }//GEN-LAST:event_clearXmlBtnActionPerformed
+
+  private void clearActorBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearActorBtnActionPerformed
+    Utils.deleteFileInDirectory(new File(setting.actorCacheDir));
+    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir)) + bundle.getString("useForActor"));
+  }//GEN-LAST:event_clearActorBtnActionPerformed
+
+  private void clearFanartBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearFanartBtnActionPerformed
+    Utils.deleteFileInDirectory(new File(setting.fanartCacheDir));
+    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir)) + bundle.getString("useForFanart"));
+  }//GEN-LAST:event_clearFanartBtnActionPerformed
+
+  private void clearThumbBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearThumbBtnActionPerformed
+    Utils.deleteFileInDirectory(new File(setting.thumbCacheDir));
+    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir)) + bundle.getString("useForThumb"));
+  }//GEN-LAST:event_clearThumbBtnActionPerformed
+
+  private void allocineRbtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_allocineRbtnItemStateChanged
+    scrapperEnRbtn.setEnabled(!allocineRbtn.isSelected());
+    scrapperFrRbtn.setEnabled(!allocineRbtn.isSelected());
+  }//GEN-LAST:event_allocineRbtnItemStateChanged
+
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton CancelBtn;
     private JPanel SearchPnl;
@@ -1817,16 +1811,14 @@ public class Setting extends JDialog {
     private JButton helpBtn;
     private JPanel imagePnl;
     private JPanel imagesPnl;
-    private JRadioButton imdbEnRbtn;
-    private JRadioButton imdbFrRbtn;
     private ButtonGroup imdbLangGroup;
-    private JPanel imdbLangPnl;
     private JRadioButton imdbRBtn;
     private JPanel imdbSearchPnl;
     private JPanel interfacePnl;
     private JLabel jLabel1;
+    private JLabel jLabel2;
+    private JLabel jLabel3;
     private JPanel jPanel1;
-    private JPanel jPanel2;
     private JPanel jPanel3;
     private JTabbedPane jTabbedPane1;
     private JComboBox lafCmbBox;
@@ -1859,6 +1851,8 @@ public class Setting extends JDialog {
     private JCheckBox rmSpcCharChk;
     private JButton saveBtn;
     private JCheckBox scanSubfolderChk;
+    private JRadioButton scrapperEnRbtn;
+    private JRadioButton scrapperFrRbtn;
     private ButtonGroup scrapperGroup;
     private JCheckBox selectFirstMovieChk;
     private JCheckBox selectFirstResChk;

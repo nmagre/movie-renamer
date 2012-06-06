@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.media.MediaRenamed;
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
@@ -55,7 +56,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JToolBar.Separator;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -89,7 +89,7 @@ public class MovieRenamer extends JFrame {
   private final int ACTORWORKER = 4;
   private ArrayList<MediaFile> mediaFile;
   private ContextMenuListMouseListener contex;
-  private ArrayList<Renamed> renamedMediaFile;
+  private ArrayList<MediaRenamed> renamedMediaFile;
   private MoviePanel moviePnl;
   //Movie Renamer mode
   private final MovieRenamerMode[] modes = new MovieRenamerMode[]{
@@ -142,9 +142,6 @@ public class MovieRenamer extends JFrame {
 
     loadInterface();
 
-    //A refaire , a enlever quand le batch processing sera fait
-    batchProcessingBtn.setVisible(false);
-
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     setTitle(Settings.APPNAME + "-" + setting.getVersion());
     setLocationRelativeTo(null);
@@ -183,6 +180,10 @@ public class MovieRenamer extends JFrame {
     @Override
     public void valueChanged(ListSelectionEvent evt) {
       if (mediaList.getSelectedIndex() == -1) {
+        return;
+      }
+
+      if (evt.getValueIsAdjusting()) {
         return;
       }
 
@@ -302,9 +303,9 @@ public class MovieRenamer extends JFrame {
   }
 
   private void loadRenamedMovie() {
-    renamedMediaFile = new ArrayList<Renamed>();
+    renamedMediaFile = new ArrayList<MediaRenamed>();
     if (new File(setting.renamedFile).exists()) {
-      XMLParser<ArrayList<Renamed>> mmp = new XMLParser<ArrayList<Renamed>>(setting.renamedFile);
+      XMLParser<ArrayList<MediaRenamed>> mmp = new XMLParser<ArrayList<MediaRenamed>>(setting.renamedFile);
       mmp.setParser(new MrRenamedMovie());
       try {
         renamedMediaFile = mmp.parseXml();
@@ -546,7 +547,6 @@ public class MovieRenamer extends JFrame {
         topTb = new JToolBar();
         openBtn = new JButton();
         jSeparator1 = new Separator();
-        batchProcessingBtn = new JButton();
         editBtn = new JButton();
         separator = new Separator();
         modeCBox = new JComboBox();
@@ -595,17 +595,6 @@ public class MovieRenamer extends JFrame {
         });
         topTb.add(openBtn);
         topTb.add(jSeparator1);
-
-        batchProcessingBtn.setIcon(new ImageIcon(getClass().getResource("/image/arrow-down-2.png")));         batchProcessingBtn.setToolTipText(bundle.getString("batchProcessMenu")); // NOI18N
-        batchProcessingBtn.setFocusable(false);
-        batchProcessingBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-        batchProcessingBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        batchProcessingBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                batchProcessingBtnActionPerformed(evt);
-            }
-        });
-        topTb.add(batchProcessingBtn);
 
         editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")));         editBtn.setToolTipText(bundle.getString("edit")); // NOI18N
         editBtn.setEnabled(false);
@@ -876,13 +865,13 @@ public class MovieRenamer extends JFrame {
               }
               SwingUtilities.updateComponentTreeUI(MovieRenamer.this);
             } catch (ClassNotFoundException ex) {
-              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
             } catch (InstantiationException ex) {
-              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
-              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
             } catch (UnsupportedLookAndFeelException ex) {
-              Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
             }
             pack();
           }
@@ -916,6 +905,12 @@ public class MovieRenamer extends JFrame {
 
     private void searchBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
       currentMedia.setSearch(searchField.getText());
+      clearInterface(false, true);
+      searchField.setText(currentMedia.getSearch());
+      renameBtn.setEnabled(false);
+      editBtn.setEnabled(false);
+      renamedField.setText(Utils.EMPTY);
+      renamedField.setEnabled(false);
       searchMedia();
     }//GEN-LAST:event_searchBtnActionPerformed
 
@@ -956,8 +951,7 @@ public class MovieRenamer extends JFrame {
         }
 
         /*
-         * if (url.equals("") && movie.getThumbs().size() > 0) { url = movie.getThumbs().get(0).getThumbUrl();
-        }
+         * if (url.equals("") && movie.getThumbs().size() > 0) { url = movie.getThumbs().get(0).getThumbUrl(); }
          */
         renamer.setThumb(url);
 
@@ -1094,10 +1088,6 @@ public class MovieRenamer extends JFrame {
     }
   }//GEN-LAST:event_modeCBoxActionPerformed
 
-  private void batchProcessingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_batchProcessingBtnActionPerformed
-    batchProcessMenu.show(batchProcessingBtn, batchProcessingBtn.getX() - 70, batchProcessingBtn.getY() + 30);
-  }//GEN-LAST:event_batchProcessingBtnActionPerformed
-
   public class SearchWorkerListener implements PropertyChangeListener {
 
     private SwingWorker<ArrayList<SearchResult>, String> worker;
@@ -1120,9 +1110,9 @@ public class MovieRenamer extends JFrame {
         try {
           results = worker.get();
         } catch (InterruptedException ex) {
-          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
-          Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
 
         searchBtn.setEnabled(true);
@@ -1247,13 +1237,28 @@ public class MovieRenamer extends JFrame {
 
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
-          Object info = worker.get();
-          if (info == null) {
+          MovieInfo movieInfo = worker.get();
+          if (movieInfo == null) {
             loading.setValue(100, INFOWORKER);
             return;
           }
+          
+          System.out.println(movieInfo);
+          
+          if(setting.movieInfoPanel){
+            if(setting.thumb){
+              SwingWorker<Void, Void> thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), Cache.THUMB, moviePnl, setting);
+              thumbWorker.addPropertyChangeListener(new MovieImageListener(thumbWorker, THUMBWORKER));
+              thumbWorker.execute();
+            }
+            if(setting.fanart){
+              SwingWorker<Void, Void> fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(), Cache.FANART, moviePnl, setting);
+              fanartWorker.addPropertyChangeListener(new MovieImageListener(fanartWorker, FANARTWORKER));
+              fanartWorker.execute();
+            }
+          }
 
-          currentMedia.setInfo(info);
+          currentMedia.setInfo(movieInfo);
 
           String dir = "";
           if (setting.createMovieDirectory) {
@@ -1272,9 +1277,9 @@ public class MovieRenamer extends JFrame {
           renameBtn.setEnabled(true);
           renamedField.setEnabled(true);
           editBtn.setEnabled(true);
-          moviePnl.addMovieInfo((MovieInfo) info);
+          moviePnl.addMovieInfo(movieInfo);
 
-          SwingWorker<Void, Void> actor = WorkerManager.getMovieActorWorker(((MovieInfo) info).getActors(), moviePnl, setting);
+          SwingWorker<Void, Void> actor = WorkerManager.getMovieActorWorker(movieInfo.getActors(), moviePnl, setting);
           actor.addPropertyChangeListener(new MovieImageListener(actor, ACTORWORKER));
           actor.execute();
           loading.setValue(100, INFOWORKER);
@@ -1306,10 +1311,10 @@ public class MovieRenamer extends JFrame {
 
   private class MovieImageListener implements PropertyChangeListener {
 
-    private SwingWorker miw;
+    private SwingWorker<Void, Void> miw;
     private int id;
 
-    public MovieImageListener(SwingWorker miw, int id) {
+    public MovieImageListener(SwingWorker<Void, Void> miw, int id) {
       this.miw = miw;
       this.id = id;
     }
@@ -1325,7 +1330,6 @@ public class MovieRenamer extends JFrame {
   }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JPopupMenu batchProcessMenu;
-    private JButton batchProcessingBtn;
     private JToolBar btmTb;
     private JPanel centerPnl;
     private JSplitPane centerSp;

@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.CustomField;
+import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -1045,9 +1046,9 @@ public class InfoEditorFrame extends JDialog {
         }
         Desktop.getDesktop().browse(new URI(url));
       } catch (IOException ex) {
-        Logger.getLogger(InfoEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
       } catch (URISyntaxException ex) {
-        Logger.getLogger(InfoEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }//GEN-LAST:event_searchBtnActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables

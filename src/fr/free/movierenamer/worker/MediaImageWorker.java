@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import javax.swing.SwingWorker;
 
 /**
- * Class MovieImageWorker , Download and add thumbnail/fanart to moviePanel
+ * Class MovieImageWorker , Download and add thumbnail/fanart to mediaPanel
  *
  * @author Magré Nicolas
  */
@@ -49,7 +49,7 @@ public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en 
    * @param mediadPanel Movie Renamer media panel
    * @param setting Movie Renamer settings
    */
-  public MediaImageWorker(ArrayList<MediaImage> arrayImage, int cache, IMediaPanel mediadPanel, Settings setting) {//A refaire , utiliser un listener + fireporperty au lieu du jpanel
+  public MediaImageWorker(ArrayList<MediaImage> arrayImage, int cache, IMediaPanel mediadPanel, Settings setting) {
     this.arrayImage = arrayImage;
     this.cache = cache;
     this.setting = setting;

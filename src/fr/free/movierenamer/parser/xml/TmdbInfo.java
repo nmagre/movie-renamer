@@ -63,8 +63,8 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
 
       if (personnJob.equals("Director") || personnJob.equals("Actor") || personnJob.equals("Writer")) {
         try {
-          MediaPerson actor;
-          actor = movieinfo.getActorByName(attributes.getValue("name"));
+          MediaPerson person;
+          person = movieinfo.getActorByName(attributes.getValue("name"));
           int job = MediaPerson.ACTOR;
           if (personnJob.equals("Director")) {
             job = MediaPerson.DIRECTOR;
@@ -72,14 +72,14 @@ public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
           if (personnJob.equals("Writer")) {
             job = MediaPerson.WRITER;
           }
-          if (actor == null) {
-            actor = new MediaPerson(attributes.getValue("name"), attributes.getValue("thumb"), job);
+          if (person == null) {
+            person = new MediaPerson(attributes.getValue("name"), attributes.getValue("thumb"), job);
            if(job  == MediaPerson.ACTOR) {
-              actor.addRole(attributes.getValue("character"));
+              person.addRole(attributes.getValue("character"));
             }
-            movieinfo.addActor(actor);
-          } else {
-            movieinfo.addRole(actor.getName(), attributes.getValue("character"));
+            movieinfo.addPerson(person);
+          } else if(person.getJob() == MediaPerson.ACTOR){
+            movieinfo.addRole(person.getName(), attributes.getValue("character"));
           }
         } catch (ActionNotValidException ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);

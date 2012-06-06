@@ -125,7 +125,7 @@ public class AllocineSearchWorker extends SwingWorker<ArrayList<SearchResult>, S
         }
       }
       if (allores.getIcon() == null) {
-        allores.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
+        allores.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/nothumb.png", getClass())));
       }
     }
 

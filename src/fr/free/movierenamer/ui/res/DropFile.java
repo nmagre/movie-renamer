@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.utils.Renamed;
+import fr.free.movierenamer.media.MediaRenamed;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import java.awt.Cursor;
@@ -50,7 +50,7 @@ public class DropFile implements DropTargetListener {
   private JFrame parent;
   private MovieRenamer.FileWorkerListener listener;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-  private ArrayList<Renamed> renamed;
+  private ArrayList<MediaRenamed> renamed;
   private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
   private FilenameFilter folderFilter = new FilenameFilter() {
@@ -69,7 +69,7 @@ public class DropFile implements DropTargetListener {
    * @param listener Worker listener
    * @param parent Parent component to center JOptionPane
    */
-  public DropFile(Settings setting, ArrayList<Renamed> renamed, MovieRenamer.FileWorkerListener listener, JFrame parent) {
+  public DropFile(Settings setting, ArrayList<MediaRenamed> renamed, MovieRenamer.FileWorkerListener listener, JFrame parent) {
     this.setting = setting;
     this.renamed = renamed;
     this.parent = parent;

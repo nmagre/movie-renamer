@@ -309,9 +309,9 @@ public class MoviePanel extends JPanel implements IMediaPanel {
             }
 
           } catch (InterruptedException ex) {
-            Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
+            Settings.LOGGER.log(Level.SEVERE, null, ex);
           } catch (ExecutionException ex) {
-            Logger.getLogger(MoviePanel.class.getName()).log(Level.SEVERE, null, ex);
+            Settings.LOGGER.log(Level.SEVERE, null, ex);
           }
 
           if (fanart != null) {
@@ -327,6 +327,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     worker.execute();
   }
 
+  @Override
   public void addActorToList(final String actor, final Image actorImg, final String desc) {
     ImageIcon icon = null;
     if (actorImg != null) {

@@ -17,75 +17,51 @@
  */
 package fr.free.movierenamer;
 
+import fr.free.movierenamer.cli.CmdLineParser;
 import fr.free.movierenamer.parser.xml.MrSettings;
 import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class Main
- *
+ * Class MainCli
  * @author Nicolas Magré
  */
-public class Main {
-
-  private static MovieRenamer mvr;
+public class MainCli {
 
   public static void main(String args[]) {
+    
+    CmdLineParser parser = new CmdLineParser();
+    CmdLineParser.Option debug = parser.addBooleanOption('d', "debug");
+    CmdLineParser.Option verbose = parser.addBooleanOption('v', "verbose");    
+    CmdLineParser.Option mode = parser.addStringOption('m', "mode");
+            
+    try {
+      parser.parse(args);
+    } catch (CmdLineParser.CmdParserException e) {
+      System.err.println(e.getMessage());
+     // printUsage();
+      System.exit(-1);
+    }
+    
+    String modeValue = (String)parser.getOptionValue(mode);
+    
     final Settings setting = loadSetting();
 
     if (setting.laf.equals("")) {
       setting.laf = Settings.lookAndFeels[0].getName();
     }
 
-    try {
-      boolean lafFound = false;
-      for (int i = 0; i < Settings.lookAndFeels.length; i++) {
-        if (Settings.lookAndFeels[i].getName().equals(setting.laf)) {
-          UIManager.setLookAndFeel(Settings.lookAndFeels[i].getClassName());
-          lafFound = true;
-          break;
-        }
-      }
-
-      if (!lafFound) {
-        setting.laf = Settings.lookAndFeels[0].getName();
-        UIManager.setLookAndFeel(Settings.lookAndFeels[0].getClassName());
-      }
-
-    } catch (ClassNotFoundException ex) {
-     Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-     Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-
     //Clear XML cache
     if (setting.clearXMLCache) {
       Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
     }
-
-    java.awt.EventQueue.invokeLater(new Runnable() {
-
-      @Override
-      public void run() {
-        mvr = new MovieRenamer(setting);
-        mvr.setVisible(true);
-      }
-    });
   }
 
   /**
@@ -102,7 +78,7 @@ public class Main {
     if (!file.exists()) {
       saved = setting.saveSetting();
       if (!saved) {
-        JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+        System.err.println("Error : Unable to save setting");
         return setting;
       }
       return loadSetting();
@@ -150,7 +126,7 @@ public class Main {
     }
 
     if (!saved) {
-      JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+      System.err.println("Error : Unable to save setting");
     }
     return setting;
   }

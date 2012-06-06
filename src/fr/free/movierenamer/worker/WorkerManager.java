@@ -19,11 +19,12 @@ package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.ui.MoviePanel;
+import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
@@ -98,8 +99,8 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static SwingWorker<MovieImage, String> getMovieImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
-    return new TmdbImageWorker(errorSupport, id, setting);
+  public static SwingWorker<Void, Void> getMediaImageWorker(ArrayList<MediaImage> array, int cache, IMediaPanel mediaPanel, Settings setting) {
+    return new MediaImageWorker(array, cache, mediaPanel, setting);
   }
 
   public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {

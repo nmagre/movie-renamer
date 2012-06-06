@@ -18,7 +18,7 @@
 package fr.free.movierenamer.media;
 
 import fr.free.movierenamer.ui.res.IIconList;
-import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.ui.res.UiUtils;
 import java.io.File;
 import javax.swing.Icon;
 
@@ -122,13 +122,13 @@ public class MediaFile implements IIconList {
   @Override
   public Icon getIcon() {
     if (renamed) {
-      return Utils.MEDIARENAMEDICON;
+      return UiUtils.MEDIARENAMEDICON;
     }
     
     if (wasRenamed) {
-      return Utils.MEDIAWASRENAMEDICON;
+      return UiUtils.MEDIAWASRENAMEDICON;
     }
-    return Utils.MEDIAICON;
+    return UiUtils.MEDIAICON;
   }
 
   @Override

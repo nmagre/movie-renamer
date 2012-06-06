@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.media.MediaRenamed;
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class Renamer {
   private String newFileName;
   private String newPath = "";
   private String newFileNameNoExt;
-  private Renamed renamed;
+  private MediaRenamed renamed;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   public boolean cancel = false;
 
@@ -67,7 +68,7 @@ public class Renamer {
     }
     newFileNameNoExt = this.newFileName.substring(0, this.newFileName.lastIndexOf("."));
 
-    renamed = new Renamed(title);
+    renamed = new MediaRenamed(title);
   }
 
   /**
@@ -179,7 +180,7 @@ public class Renamer {
    *
    * @return Renamed
    */
-  public Renamed getRenamed() {
+  public MediaRenamed getRenamed() {
     return renamed;
   }
 

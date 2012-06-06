@@ -53,13 +53,13 @@ public class MediaID {
   public int getType() {
     return type;
   }
-  
+
   @Override
-  public boolean equals(Object obj){
+  public boolean equals(Object obj) {
     if (obj instanceof MediaID) {
-			MediaID mID = (MediaID) obj;
-			return mID.getType() == type && mID.getID().equals( id);
-		}
+      MediaID mID = (MediaID) obj;
+      return mID.getType() == type && mID.getID().equals(id);
+    }
     return false;
   }
 
@@ -69,5 +69,10 @@ public class MediaID {
     hash = 59 * hash + this.type;
     hash = 59 * hash + (this.id != null ? this.id.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public String toString() {
+    return id;
   }
 }

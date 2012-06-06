@@ -19,7 +19,7 @@ package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.utils.Renamed;
+import fr.free.movierenamer.media.MediaRenamed;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
@@ -45,7 +45,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
   private int nbFiles;
   private int count;
   private String currentParent;
-  private ArrayList<Renamed> renamed;
+  private ArrayList<MediaRenamed> renamed;
 
   /**
    * Constructor arguments
@@ -55,7 +55,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    * @param subFolders Scan subfolders
    * @param setting Movie Renamer settings
    */
-  public ListFilesWorker(ArrayList<File> files, ArrayList<Renamed> renamed, boolean subFolders, Settings setting) {
+  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, Settings setting) {
     this.setting = setting;
     this.renamed = renamed;
     this.files = files;
@@ -74,7 +74,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    * @param nbFiles Number of subfolders (only in first directory) for progressBar
    * @param setting Movie Renamer settings
    */
-  public ListFilesWorker(ArrayList<File> files, ArrayList<Renamed> renamed, boolean subFolders, int nbFiles, Settings setting) {
+  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, int nbFiles, Settings setting) {
     this.setting = setting;
     this.renamed = renamed;
     this.files = files;

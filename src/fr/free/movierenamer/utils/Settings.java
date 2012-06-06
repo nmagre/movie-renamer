@@ -18,6 +18,7 @@
 package fr.free.movierenamer.utils;
 
 import java.io.*;
+import java.util.ResourceBundle;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;

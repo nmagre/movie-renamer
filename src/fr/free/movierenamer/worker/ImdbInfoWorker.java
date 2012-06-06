@@ -24,7 +24,6 @@ import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -45,7 +44,6 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
   private Settings setting;
   private SwingPropertyChangeSupport errorSupport;
   private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-
 
   /**
    * Constructor arguments

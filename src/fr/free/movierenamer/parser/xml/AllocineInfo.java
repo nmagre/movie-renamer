@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -43,6 +44,7 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
   private MediaPerson person;
   private String personName;
   private int count;
+  private boolean mediaPicture;
 
   public AllocineInfo() {
     super();
@@ -53,6 +55,7 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
+    mediaPicture = false;
     movie = false;
     casting = false;
     mperson = false;
@@ -72,6 +75,29 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
       if (name.equalsIgnoreCase("casting")) {
         casting = true;
       }
+      if (name.equalsIgnoreCase("poster")) {
+        MediaImage movieThumb = new MediaImage(0, MediaImage.THUMB);
+        movieThumb.setThumbUrl(attributes.getValue("href"));
+        movieThumb.setMidUrl(attributes.getValue("href"));
+        movieThumb.setOrigUrl(attributes.getValue("href"));
+        movieinfo.addThumb(movieThumb);
+      }
+      if (name.equalsIgnoreCase("media")) {
+        mediaPicture = attributes.getValue("class").equals("picture");
+      }
+      if (mediaPicture) {
+        if (name.equalsIgnoreCase("thumbnail")) {
+          if (!movieinfo.getThumbs().get(0).getThumbUrl().equals(attributes.getValue("href"))) {
+            MediaImage movieFanart = new MediaImage(0, MediaImage.FANART);
+            movieFanart.setThumbUrl(attributes.getValue("href"));
+            movieFanart.setMidUrl(attributes.getValue("href"));
+            movieFanart.setOrigUrl(attributes.getValue("href"));
+            movieinfo.addFanart(movieFanart);
+          }
+        }
+      }
+
+
       if (casting) {
         if (name.equalsIgnoreCase("person")) {
           mperson = true;
@@ -110,6 +136,9 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
     if (name.equalsIgnoreCase("casting")) {
       casting = false;
     }
+    if (name.equalsIgnoreCase("media")) {
+      mediaPicture = false;
+    }
 
     if (movie) {
       if (name.equalsIgnoreCase("originalTitle")) {
@@ -139,8 +168,21 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
       if (name.equalsIgnoreCase("synopsis")) {
         movieinfo.setSynopsis(buffer.toString());
       }
+      if (name.equalsIgnoreCase("synopsisShort")) {
+        movieinfo.setOutline(buffer.toString());
+      }
       if (name.equalsIgnoreCase("certificate")) {
         movieinfo.setMpaa(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("userRating")) {
+        if (Utils.isDigit(buffer.toString())) {
+          float rating = Float.parseFloat(buffer.toString());
+          rating *= 2;//Allocine rating is on 5
+          movieinfo.setRating("" + rating);
+        }
+      }
+      if (name.equalsIgnoreCase("userReviewCount")) {
+        movieinfo.setVotes(buffer.toString());
       }
 
       if (casting) {
@@ -163,11 +205,8 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
         }
         if (name.equalsIgnoreCase("castMember")) {
           if (person != null) {
-            if (person.getJob() == MediaPerson.DIRECTOR) {
-              movieinfo.addDirector(person);
-            }
-            if (person.getJob() == MediaPerson.ACTOR) {
-              movieinfo.addActor(person);
+            if (person.getJob() == MediaPerson.DIRECTOR || person.getJob() == MediaPerson.ACTOR) {
+              movieinfo.addPerson(person);
             }
           }
           person = null;

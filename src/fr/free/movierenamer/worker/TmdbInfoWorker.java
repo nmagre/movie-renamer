@@ -18,7 +18,9 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.parser.xml.TmdbInfo;
 import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -71,12 +73,13 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
   @Override
   protected MovieInfo doInBackground() {
     MovieInfo movieInfo = null;
-
+    MovieImage movieImage = null;
     try {
       String uri = setting.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/" + id.getID();
       if (setting.imdbFr) {
         uri = uri.replace("/en/", "/fr/");
       }
+
       URL url = new URL(uri);
       File xmlFile = setting.cache.get(url, Cache.XML);
       if (xmlFile == null) {
@@ -109,6 +112,10 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
       xmp.setParser(new TmdbInfo());
       movieInfo = xmp.parseXml();
 
+      XMLParser<MovieImage> xmmp = new XMLParser<MovieImage>(xmlFile.getAbsolutePath());
+      xmmp.setParser(new TmdbImage());
+      movieImage = xmmp.parseXml();
+
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
@@ -124,6 +131,14 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
       publish("scrapperInfoFailed");
       return null;
     }
+
+    if (movieImage == null) {
+      errorSupport.firePropertyChange("closeLoadingDial", false, true);
+      publish("scrapperInfoFailed");
+      return null;
+    }
+        
+    movieInfo.setImages(movieImage);
 
     setProgress(100);
     return movieInfo;

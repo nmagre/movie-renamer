@@ -71,7 +71,7 @@ public class XMLParser<T> {
     parseur = sparser.newSAXParser();
 
     ZipFile zf = null;
-    if (Utils.isUrl(XMLFile)) {//A refaire ,openStream can failed
+    if (Utils.isUrl(XMLFile)) {
       URL url = new URL(XMLFile);
       in = new InputSource(url.openStream());
     } else {

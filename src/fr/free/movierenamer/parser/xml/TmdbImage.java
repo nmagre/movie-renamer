@@ -36,9 +36,9 @@ public class TmdbImage extends DefaultHandler implements IParser<MovieImage> {
   private StringBuffer buffer;
   private boolean imdbAPIXML;
   private boolean images;
-  private String currentId;
   private MediaImage currentMovieImage;
   private String lastAttribute;
+  private String currentId;
   private MovieImage movieImgs;
 
   public TmdbImage() {
@@ -50,9 +50,9 @@ public class TmdbImage extends DefaultHandler implements IParser<MovieImage> {
     super.startDocument();
     imdbAPIXML = false;
     images = false;
-    currentId = "";
     currentMovieImage = null;
     lastAttribute = "";
+    currentId = "";
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
     movieImgs = new MovieImage();
@@ -76,21 +76,26 @@ public class TmdbImage extends DefaultHandler implements IParser<MovieImage> {
     if (imdbAPIXML) {
       if (images) {
         if (name.equalsIgnoreCase("image")) {
-          if (attributes.getQName(0) != null && attributes.getQName(0).equals("type")) {
-            if (!currentId.equals(attributes.getValue("id"))) {
-              currentId = attributes.getValue("id");
-              currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.THUMB:MediaImage.FANART);
-              lastAttribute = attributes.getValue(0);
+          if (!currentId.equals(attributes.getValue("id"))) {
+            if (currentMovieImage != null) {
+              if (lastAttribute.equals("poster")) {
+                thumbs.add(currentMovieImage);
+              } else {
+                fanarts.add(currentMovieImage);
+              }
             }
-            if (attributes.getValue(2).equals("original")) {
-              currentMovieImage.setOrigUrl(attributes.getValue(1).replace(".png", ".jpg"));// API bug png ar jpg on server
-            }
-            if (attributes.getValue(2).equals("thumb")) {
-              currentMovieImage.setThumbUrl(attributes.getValue(1).replace(".png", ".jpg"));
-            }
-            if (attributes.getValue(2).equals("mid") || attributes.getValue(2).equals("poster")) {
-              currentMovieImage.setMidUrl(attributes.getValue(1).replace(".png", ".jpg"));
-            }
+            currentId = attributes.getValue("id");
+            currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.THUMB : MediaImage.FANART);
+            lastAttribute = attributes.getValue("type");
+          }
+          if (attributes.getValue("size").equals("original")) {
+            currentMovieImage.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png ar jpg on server
+          }
+          if (attributes.getValue("size").equals("thumb")) {
+            currentMovieImage.setThumbUrl(attributes.getValue("url").replace(".png", ".jpg"));
+          }
+          if (attributes.getValue("size").equals("mid") || attributes.getValue("type").equals("poster")) {
+            currentMovieImage.setMidUrl(attributes.getValue("url").replace(".png", ".jpg"));
           }
         }
       }
@@ -104,16 +109,8 @@ public class TmdbImage extends DefaultHandler implements IParser<MovieImage> {
       movieImgs.setThumbs(thumbs);
       movieImgs.setFanarts(fanarts);
     }
-
     if (name.equalsIgnoreCase("images")) {
       images = false;
-      if (currentMovieImage != null) {
-        if (lastAttribute.equals("poster")) {
-          thumbs.add(currentMovieImage);
-        } else {
-          fanarts.add(currentMovieImage);
-        }
-      }
     }
     buffer = null;
   }

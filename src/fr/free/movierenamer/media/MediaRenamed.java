@@ -15,16 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.utils;
+package fr.free.movierenamer.media;
 
 /**
  * Class Renamed , Renamed movie
  * @author Nicolas Magré
  */
-public class Renamed {
+public class MediaRenamed {
 //A refaire
 //l'inclure dans Media en "MediaRenamed"
-//ajouter une rotation sur le fichier XML paramétrable dans "Settings" (ex:10,50,100,illimité) et pourquoi une function "undo" 
+//ajouter une rotation sur le fichier XML paramétrable dans "Settings" (ex:10,50,100,illimité) et pourquoi une function "undo"
+//Ajouter toute les modification sur tous les fichier (création d'un dossier, move d'un fichier sous titre, dl d'une image, .....)
 
   private String title;
   private String date;
@@ -38,7 +39,7 @@ public class Renamed {
    * Constructor arguments
    * @param title Rename title
    */
-  public Renamed(String title){
+  public MediaRenamed(String title){
     this.title = title;
     renameFailed = false;
   }
@@ -50,7 +51,7 @@ public class Renamed {
    * @param movieFileSrc Rename src file
    * @param movieFileDest Rename dest file
    */
-  public Renamed(String title, String date, String movieFileSrc,String movieFileDest) {
+  public MediaRenamed(String title, String date, String movieFileSrc,String movieFileDest) {
     this.title = title;
     this.date = date;
     this.movieFileSrc = movieFileSrc;

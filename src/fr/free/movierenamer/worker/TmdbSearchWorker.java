@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.parser.xml.AllocineSearch;
 import fr.free.movierenamer.parser.xml.TmdbSearch;
 import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.Cache;
@@ -130,7 +129,7 @@ public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
         }
       }
       if (tmdbres.getIcon() == null) {
-        tmdbres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
+        tmdbres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/nothumb.png", getClass())));
       }
     }
 

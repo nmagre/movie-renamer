@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.matcher;
 
-import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;

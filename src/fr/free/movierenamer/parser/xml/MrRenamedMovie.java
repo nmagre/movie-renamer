@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.parser.xml;
 
-import fr.free.movierenamer.utils.Renamed;
+import fr.free.movierenamer.media.MediaRenamed;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
@@ -29,13 +29,13 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<Renamed>> {//A refaire , en media
+public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<MediaRenamed>> {//A refaire , en media
 
   private StringBuffer buffer;
   private boolean renamedXML;
   private boolean renamedMovie;
-  private ArrayList<Renamed> renameds;
-  private Renamed renamed;
+  private ArrayList<MediaRenamed> renameds;
+  private MediaRenamed renamed;
 
   public MrRenamedMovie() {
     super();
@@ -47,7 +47,7 @@ public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<
     renamedXML = false;
     renamedMovie = false;
     renamed = null;
-    renameds = new ArrayList<Renamed>();
+    renameds = new ArrayList<MediaRenamed>();
   }
 
   @Override
@@ -57,7 +57,7 @@ public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<
       renamedXML = true;
     }
     if (name.equalsIgnoreCase("renamedMovie")) {
-      renamed = new Renamed(Utils.unEscapeXML(attributes.getValue("title"), "UTF-8"));
+      renamed = new MediaRenamed(Utils.unEscapeXML(attributes.getValue("title"), "UTF-8"));
       renamedMovie = true;
     }
 
@@ -105,7 +105,7 @@ public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<
   }
 
   @Override
-  public ArrayList<Renamed> getObject() {
+  public ArrayList<MediaRenamed> getObject() {
     return renameds;
   }
 }

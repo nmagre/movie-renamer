@@ -21,8 +21,8 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.utils.Settings;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -95,9 +95,9 @@ public class XbmcNFOInfo extends DefaultHandler implements IParser<MovieInfo> {
       } else if (name.equalsIgnoreCase("country")) {
         movieInfo.addCountry(buffer.toString());
       } else if (name.equalsIgnoreCase("credits")) {
-        movieInfo.addWriter(new MediaPerson(buffer.toString(), "", MediaPerson.WRITER));
+        movieInfo.addPerson(new MediaPerson(buffer.toString(), "", MediaPerson.WRITER));
       } else if (name.equalsIgnoreCase("director")) {
-        movieInfo.addDirector(new MediaPerson(buffer.toString(), "", MediaPerson.DIRECTOR));
+        movieInfo.addPerson(new MediaPerson(buffer.toString(), "", MediaPerson.DIRECTOR));
       } else if (name.equalsIgnoreCase("premiered")) {
       } else if (name.equalsIgnoreCase("status")) {
       } else if (name.equalsIgnoreCase("code")) {
@@ -107,7 +107,7 @@ public class XbmcNFOInfo extends DefaultHandler implements IParser<MovieInfo> {
       } else if (name.equalsIgnoreCase("trailer")) {
         movieInfo.setTrailer(buffer.toString());
       } else if (name.equalsIgnoreCase("actor")) {
-        movieInfo.addActor(currentActor);
+        movieInfo.addPerson(currentActor);
         currentActor = null;
       } else if (name.equalsIgnoreCase("thumb")) {
         if (currentActor != null) {
@@ -125,7 +125,7 @@ public class XbmcNFOInfo extends DefaultHandler implements IParser<MovieInfo> {
         try {
           currentActor.addRole(buffer.toString());
         } catch (ActionNotValidException ex) {
-          Logger.getLogger(XMLParser.class.getName()).log(Level.SEVERE, null, ex);
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
       }
     }

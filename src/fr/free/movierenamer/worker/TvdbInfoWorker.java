@@ -90,13 +90,13 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
       tvShowInfo = xmp.parseXml();
 
     } catch (InterruptedException ex) {
-      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (ParserConfigurationException ex) {
-      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (SAXException ex) {
-      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
-      Logger.getLogger(TvdbInfoWorker.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
     return tvShowInfo;
   }

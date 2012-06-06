@@ -20,8 +20,8 @@ package fr.free.movierenamer.parser;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
@@ -75,6 +75,10 @@ public class ImdbParser {
   private static final String IMDBMOVIESTUDIO = "<h5>((Company:)|(Soci&#xE9;t&#xE9;:))</h5><div class=..*.><a href=..*.>(.*)</a><a";
   private static final String IMDBTOP250 = "<a href=./chart/top\\?tt\\d{7}.>Top 250: #(\\d{1,3})</a>";
 
+  public ImdbParser(){
+     this.french = true;
+  }
+  
   public ImdbParser(Settings setting) {
     this.setting = setting;
     this.french = setting.imdbFr;
@@ -90,16 +94,16 @@ public class ImdbParser {
    */
   public ArrayList<SearchResult> parse(String htmlSearchRes, boolean searchPage) throws IndexOutOfBoundsException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
-    int limit = setting.nbResultList[setting.nbResult];
+    int limit =-1;// setting.nbResultList[setting.nbResult];
 
     if (searchPage) {
       Settings.LOGGER.log(Level.INFO, "Imdb Search page");
       found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire" : "Popular"));//Popular title
       found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french, "Exact"));//Exact title
       found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel" : "Partial"));//Partial title
-      if (found.isEmpty() || setting.displayApproximateResult) {
+      //if (found.isEmpty() || setting.displayApproximateResult) {
         found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif" : "Approximate"));
-      }
+      //}
     } else {
       Settings.LOGGER.log(Level.INFO, "Imdb Movie page");
       getMovie(htmlSearchRes, found);
@@ -330,7 +334,7 @@ public class ImdbParser {
       director = director.substring(director.indexOf(">") + 1, director.lastIndexOf("<"));
       MediaPerson dir = new MediaPerson(Utils.unEscapeXML(director, "ISO-8859-1"), "", MediaPerson.DIRECTOR);
       dir.setImdbId(imdbId);
-      movieInfo.addDirector(dir);
+      movieInfo.addPerson(dir);
     }
 
     //Writers
@@ -339,7 +343,7 @@ public class ImdbParser {
     while (searchMatcher.find()) {
       String writer = searchMatcher.group();
       writer = writer.substring(writer.indexOf(">") + 1, writer.lastIndexOf("<"));
-      movieInfo.addWriter(new MediaPerson(Utils.unEscapeXML(writer, "ISO-8859-1"), "", MediaPerson.WRITER));
+      movieInfo.addPerson(new MediaPerson(Utils.unEscapeXML(writer, "ISO-8859-1"), "", MediaPerson.WRITER));
     }
 
     //TagLine
@@ -426,7 +430,7 @@ public class ImdbParser {
           } catch (ActionNotValidException e) {
             Settings.LOGGER.log(Level.SEVERE, e.getMessage());
           }
-          movieInfo.addActor(actor);
+          movieInfo.addPerson(actor);
         }
       }
     }

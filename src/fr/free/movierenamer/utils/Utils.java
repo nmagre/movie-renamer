@@ -53,11 +53,8 @@ public class Utils {
   public static final int FIRSTLA = 1;
   public static final int UPPER = 2;
   public static final int LOWER = 3;
-  public static final Icon MEDIARENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-32.png", Utils.class));
-  public static final Icon MEDIAWASRENAMEDICON = new ImageIcon(Utils.getImageFromJAR("/image/icon-22.png", Utils.class));
-  public static final Icon MEDIAICON = new ImageIcon(Utils.getImageFromJAR("/image/film.png", Utils.class));
-  public static final Icon MEDIAWARNINGICON = new ImageIcon(Utils.getImageFromJAR("/image/film-error.png", Utils.class));
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
+
 
   /**
    * Get token from version.properties
@@ -68,7 +65,7 @@ public class Utils {
   public static String getRbTok(String propToken) {
     String msg = "";
     try {
-      msg = rb.getString(propToken);
+     // msg = rb.getString(propToken);
     } catch (MissingResourceException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }

@@ -736,30 +736,24 @@ public class MovieInfo {
   }
 
   /**
-   * Add actor
+   * Add person (Actor, director,...)
    *
-   * @param actor Actor
+   * @param person Person to add
    */
-  public void addActor(MediaPerson actor) {//A refaire, remplacer par addPerson
-    actors.add(actor);
-  }
-
-  /**
-   * Add drector
-   *
-   * @param director Director
-   */
-  public void addDirector(MediaPerson director) {//A refaire, remplacer par addPerson
-    directors.add(director);
-  }
-
-  /**
-   * Add writer
-   *
-   * @param writer Writer
-   */
-  public void addWriter(MediaPerson writer) {
-    writers.add(writer);
+  public void addPerson(MediaPerson person) {
+    switch(person.getJob()){
+      case MediaPerson.ACTOR:
+        actors.add(person);
+        break;
+      case MediaPerson.DIRECTOR:
+        directors.add(person);
+        break;
+      case MediaPerson.WRITER:
+        writers.add(person);
+        break;
+      default: 
+        break;
+    }
   }
 
   /**
@@ -834,6 +828,7 @@ public class MovieInfo {
     res.append("  Director : ").append(getDirectorsString(" | ", 0)).append(Utils.ENDLINE);
     res.append("  Writer : ").append(getWritersString(" | ", 0)).append(Utils.ENDLINE);
     res.append("  Actor :\n");
+    
     for (int i = 0; i < actors.size(); i++) {
       res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);
     }
