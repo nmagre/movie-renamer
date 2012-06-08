@@ -1128,6 +1128,10 @@ public class MovieRenamer extends JFrame {
           JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noResult"), sError, JOptionPane.ERROR_MESSAGE);
           return;
         }
+        
+        for(SearchResult res : results){
+          System.out.println("array.add(\"" + res.getTitle().replace("\"", "") + "\");");
+        }
 
         searchResModel = new DefaultListModel();
         resultLbl.setText(bundle.getString("searchResListTitle") + " : " + results.size());

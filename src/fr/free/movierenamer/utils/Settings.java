@@ -94,16 +94,13 @@ public class Settings {
   public String[] nameFilters = {
     "notv", "readnfo", "repack", "proper", "nfo", "extended.cut", "limitededition", "limited", "k-sual",
     "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
-    "bd5", "bd9", "hddvd", "hdz", "wes-", "edition.exclusive", "unrated", "walt disney", "dvdrip", "cinefile",
-    "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "proper", "frenchedit",
+    "bd5", "bd9", "hddvd", "hdz", "edition.exclusive", "unrated", "walt disney", "dvdrip", "cinefile",
+    "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit",
     "wawamania", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null", "divx511",
-    "vorbis", "=str=", "www", "ffm", "mp3", "-arrows", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd",
-    "hd4u", "1080p", "1080i", "720p", "720i", "720", "-Liber", "truefrench", "dts", "french", "megaexclue",
-    "untoucahbles", "vostfr", "1cd", "2cd", "vff", " vo ", " vf ", "forcebleue", "hd", "knob", " ws", "bong",
-    "-fiction", " cam ", "telesync", " ts ", " tc ", "ntsc", " pal ", "dvd-r", "dvdscr", "scr", "r1", "r2", "r3", "r4",
-    "r5", "wp", "subforced", "dvd", "vcd", "avchd", "-arlbouffiard", "-redbull", " md", "-kong", "-thewarrior777",
-    "-LU3UR", "-DELUiSE", "-SURViVAL", "-vodka", "-slim", "_", "-HARIJO", "-ENJOY", "-PTN", "-fwd", "-ARTEFAC",
-    "-COGiTO", "-AYMO", "-GKS"
+    "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd",
+    "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo ", " vf ", "hd",
+    " cam ", "telesync", " ts ", " tc ", "ntsc", " pal ", "dvd-r", "dvdscr", "scr", "r1", "r2", "r3", "r4",
+    "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"
   };
   public String xmlVersion = "";
   public boolean xmlError = false;

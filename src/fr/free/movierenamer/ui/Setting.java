@@ -248,6 +248,7 @@ public class Setting extends JDialog {
         caseGroup = new ButtonGroup();
         nfoGroup = new ButtonGroup();
         scrapperGroup = new ButtonGroup();
+        sortGroup = new ButtonGroup();
         settingTabPan = new JTabbedPane();
         generalPnl = new JPanel();
         languagePnl = new JPanel();
@@ -303,17 +304,21 @@ public class Setting extends JDialog {
         displayAppResultCheckBox = new JCheckBox();
         limitResultComboBox = new JComboBox();
         limitResultLbl = new JLabel();
+        jRadioButton3 = new JRadioButton();
+        jRadioButton2 = new JRadioButton();
+        jRadioButton1 = new JRadioButton();
+        selectFirstResChk = new JCheckBox();
+        autoSearchChk = new JCheckBox();
+        displayThumbResultChk = new JCheckBox();
+        resultHelp = new JButton();
         jPanel3 = new JPanel();
         imdbRBtn = new JRadioButton();
         tmdbRbtn = new JRadioButton();
         allocineRbtn = new JRadioButton();
-        jLabel2 = new JLabel();
+        jPanel2 = new JPanel();
         scrapperFrRbtn = new JRadioButton();
         scrapperEnRbtn = new JRadioButton();
-        jLabel3 = new JLabel();
-        selectFirstResChk = new JCheckBox();
-        autoSearchChk = new JCheckBox();
-        displayThumbResultChk = new JCheckBox();
+        scrapperLangHelp = new JButton();
         jPanel1 = new JPanel();
         movieImagePnl = new JPanel();
         thumbExtCbBox = new JComboBox();
@@ -552,7 +557,7 @@ public class Setting extends JDialog {
                 .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
@@ -760,7 +765,7 @@ public class Setting extends JDialog {
             .addGroup(renamePnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(100, Short.MAX_VALUE))
+                .addContainerGap(87, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab(bundle.getString("rename"), renamePnl); // NOI18N
@@ -773,6 +778,34 @@ public class Setting extends JDialog {
 
         limitResultLbl.setFont(new Font("Ubuntu", 0, 12));         limitResultLbl.setText(bundle.getString("resForEachType")); // NOI18N
 
+        sortGroup.add(jRadioButton3);
+        jRadioButton3.setText("Sort by similarity and year");
+
+        sortGroup.add(jRadioButton2);
+        jRadioButton2.setText("Sort by similarity");
+
+        sortGroup.add(jRadioButton1);
+        jRadioButton1.setSelected(true);
+        jRadioButton1.setText("No sort");
+
+        selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
+        selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
+
+        autoSearchChk.setFont(new Font("Ubuntu", 0, 12));         autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
+        autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
+
+        displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));         displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
+
+        resultHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         resultHelp.setToolTipText(bundle.getString("help")); // NOI18N
+        resultHelp.setMaximumSize(new Dimension(26, 26));
+        resultHelp.setMinimumSize(new Dimension(26, 26));
+        resultHelp.setPreferredSize(new Dimension(26, 26));
+        resultHelp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                resultHelpActionPerformed(evt);
+            }
+        });
+
         GroupLayout imdbSearchPnlLayout = new GroupLayout(imdbSearchPnl);
         imdbSearchPnl.setLayout(imdbSearchPnlLayout);
         imdbSearchPnlLayout.setHorizontalGroup(
@@ -781,28 +814,60 @@ public class Setting extends JDialog {
                 .addContainerGap()
                 .addGroup(imdbSearchPnlLayout.createParallelGroup(Alignment.LEADING)
                     .addGroup(imdbSearchPnlLayout.createSequentialGroup()
-                        .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(limitResultLbl))
-                    .addComponent(displayAppResultCheckBox))
-                .addContainerGap(123, Short.MAX_VALUE))
+                        .addComponent(displayThumbResultChk)
+                        .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(resultHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(imdbSearchPnlLayout.createSequentialGroup()
+                        .addGroup(imdbSearchPnlLayout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(displayAppResultCheckBox)
+                            .addComponent(autoSearchChk)
+                            .addComponent(selectFirstResChk)
+                            .addComponent(jRadioButton1)
+                            .addComponent(jRadioButton2)
+                            .addComponent(jRadioButton3)
+                            .addGroup(imdbSearchPnlLayout.createSequentialGroup()
+                                .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED)
+                                .addComponent(limitResultLbl)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         imdbSearchPnlLayout.setVerticalGroup(
             imdbSearchPnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(imdbSearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(displayThumbResultChk)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(autoSearchChk)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(selectFirstResChk)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(jRadioButton1)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(jRadioButton2)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(jRadioButton3)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addGroup(imdbSearchPnlLayout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(limitResultLbl)
-                    .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(4, 4, 4)
+                    .addComponent(limitResultComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(limitResultLbl))
+                .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(displayAppResultCheckBox)
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(imdbSearchPnlLayout.createSequentialGroup()
+                .addComponent(resultHelp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(BorderFactory.createTitledBorder(null, "Scrapper", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         scrapperGroup.add(imdbRBtn);
         imdbRBtn.setSelected(true);
         imdbRBtn.setText("Imdb");
+        imdbRBtn.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent evt) {
+                imdbRBtnItemStateChanged(evt);
+            }
+        });
 
         scrapperGroup.add(tmdbRbtn);
         tmdbRbtn.setText("Tmdb");
@@ -815,8 +880,31 @@ public class Setting extends JDialog {
             }
         });
 
-        jLabel2.setFont(new Font("Ubuntu", 1, 12));         jLabel2.setText(bundle.getString("language")); // NOI18N
+        GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imdbRBtn)
+                .addGap(18, 18, 18)
+                .addComponent(tmdbRbtn)
+                .addGap(18, 18, 18)
+                .addComponent(allocineRbtn)
+                .addContainerGap(205, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(imdbRBtn)
+                    .addComponent(tmdbRbtn)
+                    .addComponent(allocineRbtn))
+                .addGap(248, 248, 248))
+        );
 
+        jPanel2.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
         imdbLangGroup.add(scrapperFrRbtn);
         scrapperFrRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperFrRbtn.setSelected(true);
         scrapperFrRbtn.setText(bundle.getString("imdbFr")); // NOI18N
@@ -824,66 +912,40 @@ public class Setting extends JDialog {
         imdbLangGroup.add(scrapperEnRbtn);
         scrapperEnRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn.setText(bundle.getString("imdbEn")); // NOI18N
 
-        jLabel3.setFont(new Font("Ubuntu", 1, 12));         jLabel3.setText(bundle.getString("result")); // NOI18N
+        scrapperLangHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         scrapperLangHelp.setToolTipText(bundle.getString("help")); // NOI18N
+        scrapperLangHelp.setMaximumSize(new Dimension(26, 26));
+        scrapperLangHelp.setMinimumSize(new Dimension(26, 26));
+        scrapperLangHelp.setPreferredSize(new Dimension(26, 26));
+        scrapperLangHelp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                scrapperLangHelpActionPerformed(evt);
+            }
+        });
 
-        selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
-        selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
-
-        autoSearchChk.setFont(new Font("Ubuntu", 0, 12));         autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
-        autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
-
-        displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));         displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
-
-        GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(imdbRBtn)
-                        .addGap(18, 18, 18)
-                        .addComponent(tmdbRbtn)
-                        .addGap(18, 18, 18)
-                        .addComponent(allocineRbtn))
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(jPanel3Layout.createParallelGroup(Alignment.LEADING)
-                            .addComponent(displayThumbResultChk)
-                            .addComponent(autoSearchChk)
-                            .addComponent(selectFirstResChk)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(scrapperFrRbtn)
-                                .addGap(18, 18, 18)
-                                .addComponent(scrapperEnRbtn)))))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(scrapperFrRbtn)
+                .addGap(18, 18, 18)
+                .addComponent(scrapperEnRbtn)
+                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(scrapperLangHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(imdbRBtn)
-                    .addComponent(tmdbRbtn)
-                    .addComponent(allocineRbtn))
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(Alignment.BASELINE)
+                .addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(scrapperFrRbtn)
                     .addComponent(scrapperEnRbtn))
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(displayThumbResultChk)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(autoSearchChk)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(selectFirstResChk)
-                .addContainerGap(90, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(scrapperLangHelp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         GroupLayout SearchPnlLayout = new GroupLayout(SearchPnl);
@@ -894,17 +956,20 @@ public class Setting extends JDialog {
                 .addContainerGap()
                 .addGroup(SearchPnlLayout.createParallelGroup(Alignment.LEADING)
                     .addComponent(jPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(imdbSearchPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(imdbSearchPnl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         SearchPnlLayout.setVerticalGroup(
             SearchPnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(SearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addComponent(jPanel3, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(imdbSearchPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addGap(85, 85, 85))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
@@ -1022,7 +1087,7 @@ public class Setting extends JDialog {
                 .addComponent(movieImagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(imagesPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(322, Short.MAX_VALUE))
+                .addContainerGap(309, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab("Image", jPanel1);
@@ -1192,7 +1257,7 @@ public class Setting extends JDialog {
                 .addComponent(extensionPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(118, Short.MAX_VALUE))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
@@ -1318,7 +1383,7 @@ public class Setting extends JDialog {
                 .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(236, Short.MAX_VALUE))
+                .addContainerGap(223, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab("Cache", cachePnl);
@@ -1762,6 +1827,19 @@ public class Setting extends JDialog {
     scrapperFrRbtn.setEnabled(!allocineRbtn.isSelected());
   }//GEN-LAST:event_allocineRbtnItemStateChanged
 
+  private void scrapperLangHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_scrapperLangHelpActionPerformed
+  //A faire
+  }//GEN-LAST:event_scrapperLangHelpActionPerformed
+
+  private void resultHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_resultHelpActionPerformed
+//A faire
+  }//GEN-LAST:event_resultHelpActionPerformed
+
+  private void imdbRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_imdbRBtnItemStateChanged
+   limitResultComboBox.setEnabled(imdbRBtn.isSelected());
+   displayAppResultCheckBox.setEnabled(imdbRBtn.isSelected());
+  }//GEN-LAST:event_imdbRBtnItemStateChanged
+
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton CancelBtn;
@@ -1816,10 +1894,12 @@ public class Setting extends JDialog {
     private JPanel imdbSearchPnl;
     private JPanel interfacePnl;
     private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
     private JPanel jPanel1;
+    private JPanel jPanel2;
     private JPanel jPanel3;
+    private JRadioButton jRadioButton1;
+    private JRadioButton jRadioButton2;
+    private JRadioButton jRadioButton3;
     private JTabbedPane jTabbedPane1;
     private JComboBox lafCmbBox;
     private ButtonGroup languageGroup;
@@ -1847,6 +1927,7 @@ public class Setting extends JDialog {
     private JButton removeFilterBtn;
     private JPanel renamePnl;
     private JRadioButton renamedMovieTitleRBtn;
+    private JButton resultHelp;
     private JCheckBox rmDupSpaceChk;
     private JCheckBox rmSpcCharChk;
     private JButton saveBtn;
@@ -1854,12 +1935,14 @@ public class Setting extends JDialog {
     private JRadioButton scrapperEnRbtn;
     private JRadioButton scrapperFrRbtn;
     private ButtonGroup scrapperGroup;
+    private JButton scrapperLangHelp;
     private JCheckBox selectFirstMovieChk;
     private JCheckBox selectFirstResChk;
     private JTextField separatorField;
     private JLabel separatorLbl;
     private JTabbedPane settingTabPan;
     private JCheckBox showNotaMovieWarnChk;
+    private ButtonGroup sortGroup;
     private JButton testBtn;
     private JTextField testField;
     private JLabel thumbCacheLbl;

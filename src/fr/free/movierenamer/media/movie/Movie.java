@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.matcher.MovieNameMatcher;
 import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -35,7 +36,6 @@ public class Movie implements Media {
   private MediaID mediaId;
   private MediaFile movieFile;
   private MovieInfo movieinfo;
-  private String filteredFileName;
   private String search;
 
   /**
@@ -47,9 +47,7 @@ public class Movie implements Media {
   public Movie(MediaFile movieFile, String[] filter) {
     this.movieFile = movieFile;
     movieinfo = new MovieInfo();
-    String fileName = movieFile.getFile().getName();
-    filteredFileName = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
-    search = Utils.getFilteredName(fileName.substring(0, fileName.lastIndexOf(Utils.DOT)), filter);
+    search = new MovieNameMatcher(movieFile, filter).getMovieName();
   }
 
   /**
@@ -67,15 +65,6 @@ public class Movie implements Media {
    */
   public File getFile() {
     return movieFile.getFile();
-  }
-
-  /**
-   * Get filtered movie title
-   *
-   * @return Movie name filtered
-   */
-  public String getFilteredName() {
-    return filteredFileName;
   }
 
   /**

@@ -28,10 +28,7 @@ import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -55,7 +52,6 @@ public class Utils {
   public static final int LOWER = 3;
   public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
 
-
   /**
    * Get token from version.properties
    *
@@ -65,7 +61,7 @@ public class Utils {
   public static String getRbTok(String propToken) {
     String msg = "";
     try {
-     // msg = rb.getString(propToken);
+      // msg = rb.getString(propToken);
     } catch (MissingResourceException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
@@ -93,17 +89,11 @@ public class Utils {
     return getOsName().startsWith("Windows");
   }
 
-  public static String getFilteredName(String movieName, String[] replaceBy) {//A refaire, améliorer + rendre compatible pour les série enfin avoir
-    String res = movieName.replaceAll("\\.", " ");
-    for (int i = 0; i < replaceBy.length; i++) {
-      res = res.replaceAll("(?i)" + replaceBy[i], "");
+  public static String getFilteredName(String movieName, List<String> replaceBy) {
+    String res = movieName.replaceAll("\\.", " ").replaceAll("_", " ");
+    for (String regex : replaceBy) {
+      res = res.replaceAll("(?i)" + regex, "");
     }
-    res = res.replaceAll(" [0-9][0-9][0-9][0-9]", "");
-    res = res.replaceAll("\\([0-9][0-9][0-9][0-9]\\)", "");
-    res = res.replaceAll("\\(.*\\)", "");
-    res = res.replaceAll(" {2,}", " ");
-    res = res.replaceAll("^ ", "");
-    res = res.replaceAll(" $", "");
     return res;
   }
 
@@ -666,5 +656,26 @@ public class Utils {
       Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
     }
     return icon;
+  }
+
+  /**
+   * Check if string is uppercase
+   * @param str
+   * @return True if all letter are uppercase except I,II,III,..., false otherwise
+   */
+  public static boolean isUpperCase(String str) {
+    String[] romanNumber = new String[]{"I","II","III","IV","V","VI","VII","VIII","IX","X"};
+    for(String number: romanNumber){
+      if(str.equals(number)){
+        return false;
+      }
+    }
+    for (int i = 0; i < str.length(); i++) {
+      char ch = str.charAt(i);
+      if (ch < 32 || ch > 96) {
+        return false;
+      }
+    }
+    return true;
   }
 }

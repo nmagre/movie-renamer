@@ -67,6 +67,12 @@ public interface Media {
   public MediaID getMediaId(int IDtype);
   
   /**
+   * Get year if it found in title or directory name
+   * @return 
+   */
+  //public String getProbaleYear();
+  
+  /**
    * Get search string
    *
    * @return Search string

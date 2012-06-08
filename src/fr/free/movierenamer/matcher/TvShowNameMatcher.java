@@ -21,7 +21,10 @@ import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,9 +39,9 @@ public class TvShowNameMatcher {
   private static final String SEASONFOLDERPATTERN = "(?i:season)|(?i:saison)|(?i:s).*\\d+";
   private static final String TVSHOWFOLDERPATTERN = ".*(?i:tvshwow)|(?i:tv)|(?i:serie)|(?i:série).*";
   private static final String TVSHOWNAMEBYEPISODE = "(([sS]\\d++\\?\\d++)|(\\d++x\\d++.?\\d++x\\d++)|(\\d++[eE]\\d\\d)|([sS]\\d++.[eE]\\d++)|(\\d++x\\d++)|(\\d++x\\d++.?\\d++\\?\\d++))";
-  private TvshowMatcher folderMatch;
-  private TvshowMatcher episodeMatch;
-  private TvshowMatcher commonFileMatch;
+  private NameMatcher folderMatch;
+  private NameMatcher episodeMatch;
+  private NameMatcher commonFileMatch;
   private final boolean DEBUG = true;
 
   public TvShowNameMatcher(MediaFile mfile) {
@@ -62,13 +65,13 @@ public class TvShowNameMatcher {
     TvShowEpisodeMatcher tvEpMacther = new TvShowEpisodeMatcher(mfile.getFile().getName());
     tvEpMacther.matchEpisode();
     
-    //Get all macther values
-    ArrayList<TvshowMatcher> names = new ArrayList<TvshowMatcher>();
+    //Get all matcher values
+    ArrayList<NameMatcher> names = new ArrayList<NameMatcher>();
     getMatcherRes(names, (folderMatch = matchByFolderName()));
     getMatcherRes(names, (episodeMatch = matchByEpisode()));
     getMatcherRes(names, (commonFileMatch = matchByCommonSeqFileName()));
     if(names.isEmpty()) {
-      return normalize(mfile.getFile().getName().substring(0, mfile.getFile().getName().lastIndexOf(".") + 1));
+      return CommonWords.normalize(mfile.getFile().getName().substring(0, mfile.getFile().getName().lastIndexOf(".") + 1));
     }
     return matchAll(names);
   }
@@ -79,8 +82,8 @@ public class TvShowNameMatcher {
    * @param matchResults List of matcher
    * @param tvshowMatcher Matcher to add
    */
-  private void getMatcherRes(List<TvshowMatcher> matchResults, TvshowMatcher tvshowMatcher) {
-    if (tvshowMatcher.found() && tvshowMatcher.getMatch().length() > 0) {
+  private void getMatcherRes(List<NameMatcher> matchResults, NameMatcher tvshowMatcher) {
+    if (tvshowMatcher.found()) {
       matchResults.add(tvshowMatcher);
       if (DEBUG) {
         System.out.println("    " + tvshowMatcher);
@@ -93,7 +96,7 @@ public class TvShowNameMatcher {
    *
    * @return Matched tvShow name or empty string if no name found
    */
-  private String matchAll(ArrayList<TvshowMatcher> names) {//A refaire , c'est nimp
+  private String matchAll(ArrayList<NameMatcher> names) {//A refaire , c'est nimp
 
     if (names.size() < 2) {
       return names.get(0).getMatch();
@@ -101,14 +104,13 @@ public class TvShowNameMatcher {
 
     //Look if we got a winner
     if (names.size() == 2) {
-      if (folderMatch.getMatch().length() > 0 && commonFileMatch.getMatch().length() > 0)//Prefer folder match
-      {
-        return normalize(folderMatch.getMatch());
+      if (folderMatch.getMatch().length() > 0 && commonFileMatch.getMatch().length() > 0) { //Prefer folder match
+        return CommonWords.normalize(folderMatch.getMatch());
       }
     } else {
       ArrayList<String> namesArray = new ArrayList<String>();
       ArrayList<Integer> countArray = new ArrayList<Integer>();
-      for (TvshowMatcher name : names) {
+      for (NameMatcher name : names) {
         if (namesArray.contains(name.getMatch())) {
           int pos = namesArray.indexOf(name.getMatch());
           int val = countArray.get(pos);
@@ -129,7 +131,7 @@ public class TvShowNameMatcher {
         }
       }
       if (pos != -1) {
-        return normalize(namesArray.get(pos));
+        return CommonWords.normalize(namesArray.get(pos));
       }
     }
 
@@ -139,15 +141,15 @@ public class TvShowNameMatcher {
     }
 
     //Check if list is already as small as possible
-    List<String> tvShowNames = commonWords(allMatch);
+    List<String> tvShowNames = CommonWords.getCommonWords(allMatch);
     if (tvShowNames == null || tvShowNames.isEmpty()) {
       return getSmallStringList(allMatch);
     }
 
     //Get list as small as possible
-    List<String> tmp = commonWords(tvShowNames);
+    List<String> tmp = CommonWords.getCommonWords(tvShowNames);
     while (tmp != null) {
-      tmp = commonWords(tmp);
+      tmp = CommonWords.getCommonWords(tmp);
       if (tmp != null) {
         tvShowNames = tmp;
       }
@@ -161,7 +163,7 @@ public class TvShowNameMatcher {
     if (folderMatch.getMatch().length() > 0 && tvShowNames.size() >= 2) {
       for (String name : tvShowNames) {
         if (name.equals(folderMatch.getMatch())) {
-          return normalize(name);
+          return CommonWords.normalize(name);
         }
       }
     }
@@ -179,76 +181,13 @@ public class TvShowNameMatcher {
   }
 
   /**
-   * Get list of common words in list of string separated by space character
-   *
-   * @param names List
-   * @return List of common words or null if
-   */
-  private List<String> commonWords(List<String> names) {
-    List<String> common = new ArrayList<String>();
-    for (int i = 0; i < names.size(); i++) {
-      for (int j = 0; j < names.size(); j++) {
-        if (i == j) {
-          continue;
-        }
-
-        //Retreive common words in names list and add it to common list
-        String res = commonList(Arrays.asList(names.get(i).toLowerCase().split(" ")), Arrays.asList(names.get(j).toLowerCase().split(" ")));
-        if (res.length() > 0) {
-          common.add(normalize(res));
-        }
-      }
-    }
-
-    //Add name to not lose it (if names < 2 , no common words have been added)
-    if (names.size() == 1) {
-      common.add(normalize(names.get(0)));
-    }
-
-    //Remove duplicate string
-    Set<String> set = new HashSet<String>(common);
-    common = new ArrayList<String>(set);
-
-    //Make sure list are in same order, we don't want an infinite loop due to same list but in different order
-    Collections.sort(names);
-    Collections.sort(common);
-    
-    //Names list is already as small as possible
-    if (names.equals(common)) {
-      return null;
-    }
-
-    return common;
-  }
-
-  /**
-   * Get common words between two string list
-   *
-   * @param list1 String list
-   * @param list2 String list
-   * @return String whith all common words separated by space character or empty string
-   */
-  private String commonList(List<String> list1, List<String> list2) {
-    StringBuilder sb = new StringBuilder();
-    for (String str : list1) {
-      if (list2.contains(str)) {//Add common words between the two list
-        if (sb.length() != 0) {
-          sb.append(" ");
-        }
-        sb.append(str);
-      }
-    }
-    return sb.toString().trim();
-  }
-
-  /**
    * Match tvShow Name by detecting episode
    *
    * @return A string from beginning to the episode detection in media filename or empty if no episode found
    */
-  private TvshowMatcher matchByEpisode() {
+  private NameMatcher matchByEpisode() {
 
-    TvshowMatcher episodeMacther = new TvshowMatcher("Episode Matcher", TvshowMatcher.MEDIUM);
+    NameMatcher episodeMatcher = new NameMatcher("Episode Matcher", NameMatcher.MEDIUM);
     String name = mfile.getFile().getName();
     Pattern pattern = Pattern.compile(TVSHOWNAMEBYEPISODE);
     Matcher matcher = pattern.matcher(name);
@@ -257,8 +196,8 @@ public class TvShowNameMatcher {
     } else {
       name = "";
     }
-    episodeMacther.setMatch(normalize(name));
-    return episodeMacther;
+    episodeMatcher.setMatch(CommonWords.normalize(name));
+    return episodeMatcher;
   }
 
   /**
@@ -266,9 +205,9 @@ public class TvShowNameMatcher {
    *
    * @return String with all common words from other files or empty
    */
-  private TvshowMatcher matchByCommonSeqFileName() {
+  private NameMatcher matchByCommonSeqFileName() {
 
-    TvshowMatcher commonMatcher = new TvshowMatcher("Common sequence in files matcher", TvshowMatcher.LOW);
+    NameMatcher commonMatcher = new NameMatcher("Common sequence in files matcher", NameMatcher.LOW);
     File file = mfile.getFile().getParentFile();
     File[] files = file.listFiles(new FileFilter() {//Retreive all file that seems to be a tvShow in parent folder
 
@@ -298,19 +237,19 @@ public class TvShowNameMatcher {
     ArrayList<String> names = new ArrayList<String>();
     for (File f : files) {
       String name = f.getName().substring(0, f.getName().lastIndexOf(".") + 1);
-      names.add(normalize(name));
+      names.add(CommonWords.normalize(name));
     }
 
     //Check if list is as small as possible
-    List<String> tvShowNames = commonWords(names);
+    List<String> tvShowNames = CommonWords.getCommonWords(names);
     if (tvShowNames == null) {
       return commonMatcher;
     }
 
     //Get list as small as possible
-    List<String> tmp = commonWords(tvShowNames);
+    List<String> tmp = CommonWords.getCommonWords(tvShowNames);
     while (tmp != null) {
-      tmp = commonWords(tmp);
+      tmp = CommonWords.getCommonWords(tmp);
       if (tmp != null) {
         tvShowNames = tmp;
       }
@@ -323,7 +262,7 @@ public class TvShowNameMatcher {
       return commonMatcher;
     }
 
-    commonMatcher.setMatch(normalize(res));
+    commonMatcher.setMatch(CommonWords.normalize(res));
     return commonMatcher;
   }
 
@@ -332,7 +271,7 @@ public class TvShowNameMatcher {
    *
    * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
    */
-  private TvshowMatcher matchByRegEx() {
+  private NameMatcher matchByRegEx() {
     return null;
   }
 
@@ -341,8 +280,8 @@ public class TvShowNameMatcher {
    *
    * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
    */
-  private TvshowMatcher matchByFolderName() {
-    TvshowMatcher folderNameMatcher = new TvshowMatcher("Folder Name Macther", TvshowMatcher.HIGHT);
+  private NameMatcher matchByFolderName() {
+    NameMatcher folderNameMatcher = new NameMatcher("Folder Name Macther", NameMatcher.HIGH);
     String res = "";
     final File mediafile = mfile.getFile();
     if (mediafile.getParent() != null) {
@@ -394,26 +333,6 @@ public class TvShowNameMatcher {
   }
 
   /**
-   * Remove all alone letters
-   *
-   * @param text
-   * @return String with alone letter removed
-   */
-  private String removeSingleLetter(String text) {
-    StringBuilder sb = new StringBuilder();
-    String[] array = text.split(" ");
-    for (String str : array) {
-      if (str.length() > 1) {
-        if (sb.length() != 0) {
-          sb.append(" ");
-        }
-        sb.append(str);
-      }
-    }
-    return sb.toString();
-  }
-
-  /**
    * Get the small string in list
    *
    * @param list
@@ -424,22 +343,7 @@ public class TvShowNameMatcher {
       return "";
     }
     Collections.sort(list, new MyStringLengthComparable());
-    return normalize(list.get(0));
-  }
-
-  /**
-   * Normalize string
-   *
-   * @param str
-   * @return String normalized
-   */
-  private String normalize(String str) {
-    str = str.replace(".", " ").replace("_", " ").replace("-", " ").trim();
-    str = removeSingleLetter(str);//Remove single letter
-    str = str.replaceAll("[,;:!]", "");//Remove ponctuation
-    str = str.replaceAll("\\s+", " ");//Remove duplicate space character
-    str = str.replaceAll("\\[.*\\]", "").replaceAll("\\(.*\\)", "");//Remoave all [...] and (...)
-    return str.toLowerCase();
+    return CommonWords.normalize(list.get(0));
   }
 
   /**
@@ -456,47 +360,6 @@ public class TvShowNameMatcher {
         return -1;
       }
       return s1.length() - s2.length();
-    }
-  }
-
-  private class TvshowMatcher {
-
-    public static final int HIGHT = 3;
-    public static final int MEDIUM = 1;
-    public static final int LOW = 2;
-    private int priority;
-    private String name;
-    private String result;
-
-    public TvshowMatcher(String name, int priority) {
-      this.name = name;
-      this.priority = priority;
-      result = "";
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getMatch() {
-      return result;
-    }
-
-    public void setMatch(String result) {
-      this.result = result;
-    }
-
-    public int getPriority() {
-      return priority;
-    }
-
-    public boolean found() {
-      return name.length() > 0;
-    }
-
-    @Override
-    public String toString() {
-      return name + " : " + result;
     }
   }
 }
