@@ -24,7 +24,10 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -40,7 +43,7 @@ import org.xml.sax.SAXException;
 public class Main {
 
   private static MovieRenamer mvr;
-
+  
   public static void main(String args[]) {
     final Settings setting = loadSetting();
 
@@ -64,13 +67,13 @@ public class Main {
       }
 
     } catch (ClassNotFoundException ex) {
-     Settings.LOGGER.log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (InstantiationException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (UnsupportedLookAndFeelException ex) {
-     Settings.LOGGER.log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
     //Clear XML cache
@@ -97,12 +100,15 @@ public class Main {
     boolean saved;
     Settings setting = new Settings();
     File file = new File(setting.configFile);
-
+    ResourceBundle bundle;
 
     if (!file.exists()) {
       saved = setting.saveSetting();
       if (!saved) {
-        JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+        // Set locale
+        Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
+        bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+        JOptionPane.showMessageDialog(null, bundle.getString("saveSettingsFailed") + " " + Settings.mrFolder, bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
         return setting;
       }
       return loadSetting();
@@ -144,14 +150,23 @@ public class Main {
     } catch (InterruptedException ex) {
       Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
+      bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
       if (!saved) {
+        if (!setting.xmlVersion.equals("Beta_2.0")) {
+          int n = JOptionPane.showConfirmDialog(null, bundle.getString("resetRegexFilter"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+          if (n == JOptionPane.OK_OPTION) {
+            setting.movieNameFilters = new ArrayList<String>();
+            setting.movieNameFilters.addAll(Arrays.asList(Settings.nameFilters));
+          }
+        }
         saved = setting.saveSetting();
       }
     }
 
     if (!saved) {
-      JOptionPane.showMessageDialog(null, "Unable to save setting", "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, bundle.getString("saveSettingsFailed") + " " + Settings.mrFolder, bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
     }
+
     return setting;
   }
 }

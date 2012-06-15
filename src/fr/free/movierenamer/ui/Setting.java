@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -49,7 +50,7 @@ public class Setting extends JDialog {
 
   private Settings setting;
   private String[] extensions;
-  private String[] filters;
+  private ArrayList<String> filters;
   private int currentExtensionIndex;
   private int currentFilterIndex;
   private JRadioButton[] rBtnThumbList;
@@ -84,7 +85,7 @@ public class Setting extends JDialog {
     rBtnScrapper = new JRadioButton[]{this.imdbRBtn, this.tmdbRbtn, this.allocineRbtn};
     this.setting = setting;
     extensions = setting.extensions;
-    filters = setting.nameFilters;
+    filters = setting.movieNameFilters;
 
     extentionJlist.addListSelectionListener(new ListSelectionListener() {
 
@@ -109,7 +110,7 @@ public class Setting extends JDialog {
           } else {
             moveLeft.setEnabled(true);
           }
-          if (currentFilterIndex == (filters.length - 1)) {
+          if (currentFilterIndex == (filters.size() - 1)) {
             moveRight.setEnabled(false);
           } else {
             moveRight.setEnabled(true);
@@ -121,7 +122,7 @@ public class Setting extends JDialog {
       }
     });
 
-    loadList(filterJlist, filters);
+    loadList(filterJlist, filters.toArray(new String[filters.size()]));
     currentFilterIndex = 0;
 
     // General Setting
@@ -183,7 +184,7 @@ public class Setting extends JDialog {
 
     thumbExtCbBox.setSelectedIndex(setting.thumbExt);
     customFolderField.setText(setting.movieDir);
-    
+
     //Cache
     clearXmlCacheOnStartChk.setSelected(setting.clearXMLCache);
 
@@ -348,6 +349,7 @@ public class Setting extends JDialog {
         filterScrollP = new JScrollPane();
         filterJlist = new JList();
         filenameFilterHelp = new JButton();
+        resetNameFilter = new JButton();
         cachePnl = new JPanel();
         imagePnl = new JPanel();
         actorCacheLbl = new JLabel();
@@ -1200,6 +1202,14 @@ public class Setting extends JDialog {
             }
         });
 
+        resetNameFilter.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png")));         resetNameFilter.setToolTipText(bundle.getString("resetFilterList")); // NOI18N
+        resetNameFilter.setMargin(new Insets(2, 2, 2, 2));
+        resetNameFilter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                resetNameFilterActionPerformed(evt);
+            }
+        });
+
         GroupLayout fileNameFilterPnlLayout = new GroupLayout(fileNameFilterPnl);
         fileNameFilterPnl.setLayout(fileNameFilterPnlLayout);
         fileNameFilterPnlLayout.setHorizontalGroup(
@@ -1219,7 +1229,9 @@ public class Setting extends JDialog {
                     .addGroup(fileNameFilterPnlLayout.createSequentialGroup()
                         .addComponent(filterScrollP, GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
                         .addPreferredGap(ComponentPlacement.UNRELATED)))
-                .addComponent(filenameFilterHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+                .addGroup(fileNameFilterPnlLayout.createParallelGroup(Alignment.LEADING, false)
+                    .addComponent(filenameFilterHelp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(resetNameFilter, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         fileNameFilterPnlLayout.setVerticalGroup(
@@ -1235,7 +1247,10 @@ public class Setting extends JDialog {
                                 .addComponent(moveRight, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
                             .addComponent(removeFilterBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
                             .addComponent(addFilter, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(filenameFilterHelp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(fileNameFilterPnlLayout.createSequentialGroup()
+                        .addComponent(filenameFilterHelp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(resetNameFilter)))
                 .addGap(22, 22, 22))
         );
 
@@ -1438,18 +1453,13 @@ public class Setting extends JDialog {
   private void addFilterActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addFilterActionPerformed
     String s = (String) JOptionPane.showInputDialog(this, bundle.getString("filter"), bundle.getString("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
     int index = currentFilterIndex;
+    if(filters.contains(s)){
+      JOptionPane.showMessageDialog(null, s + " " + bundle.getString("alreadyInList"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      return;
+    }
     if ((s != null) && (s.length() > 0)) {
-      String[] tmp = new String[filters.length + 1];
-      int pos = 0;
-      for (int i = 0; i < tmp.length; i++) {
-        if (i != index) {
-          tmp[i] = filters[pos++];
-        } else {
-          tmp[i] = s;
-        }
-      }
-      filters = tmp;
-      loadList(filterJlist, filters);
+      filters.add(index, s);
+      loadList(filterJlist, filters.toArray(new String[filters.size()]));
       filterJlist.setSelectedIndex(index);
       currentFilterIndex = index;
     }
@@ -1572,52 +1582,26 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_filenameFilterHelpActionPerformed
 
   private void moveRightActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveRightActionPerformed
-    String[] tmp = new String[filters.length];
-    for (int i = 0; i < tmp.length; i++) {
-      if (i == (currentFilterIndex + 1)) {
-        tmp[i - 1] = filters[i];
-      } else if (i == currentFilterIndex) {
-        tmp[i + 1] = filters[i];
-      } else {
-        tmp[i] = filters[i];
-      }
-    }
-    filters = tmp;
-    int index = currentFilterIndex + 1;
-    loadList(filterJlist, filters);
-    filterJlist.setSelectedIndex(index);
+    String value = filters.get(currentFilterIndex);
+    filters.remove(currentFilterIndex);
+    filters.add(currentFilterIndex + 1, value);
+    loadList(filterJlist, filters.toArray(new String[filters.size()]));
+    filterJlist.setSelectedIndex(filters.indexOf(value));
   }//GEN-LAST:event_moveRightActionPerformed
 
   private void moveLeftActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveLeftActionPerformed
-    String[] tmp = new String[filters.length];
-    for (int i = 0; i < tmp.length; i++) {
-      if (i == (currentFilterIndex - 1)) {
-        tmp[i + 1] = filters[i];
-      } else if (i == currentFilterIndex) {
-        tmp[i - 1] = filters[i];
-      } else {
-        tmp[i] = filters[i];
-      }
-    }
-    filters = tmp;
-    int index = currentFilterIndex - 1;
-    loadList(filterJlist, filters);
-    filterJlist.setSelectedIndex(index);
+    String value = filters.get(currentFilterIndex);
+    filters.remove(currentFilterIndex);
+    filters.add(currentFilterIndex - 1, value);
+    loadList(filterJlist, filters.toArray(new String[filters.size()]));
+    filterJlist.setSelectedIndex(filters.indexOf(value));
   }//GEN-LAST:event_moveLeftActionPerformed
 
   private void removeFilterBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeFilterBtnActionPerformed
-    String[] newArray = Utils.removeFromArray(filters, currentFilterIndex);
-    if (newArray != null) {
-      int index = currentFilterIndex;
-      filters = newArray;
-      loadList(filterJlist, filters);
-      int pos = index - 1;
-      if (pos < 0) {
-        pos++;
-      }
-      filterJlist.setSelectedIndex(pos);
-      currentFilterIndex = pos;
-    }
+    filters.remove(currentFilterIndex);
+    int pos = currentFilterIndex;
+    loadList(filterJlist, filters.toArray(new String[filters.size()]));
+    filterJlist.setSelectedIndex((pos - 1) > 0 ?  pos - 1:0);
   }//GEN-LAST:event_removeFilterBtnActionPerformed
 
   private void removeExtensuionBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeExtensuionBtnActionPerformed
@@ -1666,7 +1650,7 @@ public class Setting extends JDialog {
       setting.interfaceChanged = true;
     }
 
-    if(!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) {
+    if (!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) {
       setting.lafChanged = true;
     }
     setting.laf = Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName();
@@ -1709,7 +1693,7 @@ public class Setting extends JDialog {
         setting.fanartSize = i;
       }
     }
-    
+
     for (int i = 0; i < rBtnScrapper.length; i++) {
       if (rBtnScrapper[i].isSelected()) {
         setting.scrapper = i;
@@ -1749,8 +1733,8 @@ public class Setting extends JDialog {
 
     // Filter
     setting.extensions = extensions;
-    setting.nameFilters = filters;
-    
+    setting.movieNameFilters = filters;
+
     //Cache
     setting.clearXMLCache = clearXmlCacheOnStartChk.isSelected();
 
@@ -1792,14 +1776,14 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_lafCmbBoxActionPerformed
 
   private void CancelBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
-      setVisible(false);
+    setVisible(false);
   }//GEN-LAST:event_CancelBtnActionPerformed
 
   private void createDirChkActionPerformed(ActionEvent evt) {//GEN-FIRST:event_createDirChkActionPerformed
-      movieTitleRBtn.setEnabled(createDirChk.isSelected());
-      renamedMovieTitleRBtn.setEnabled(createDirChk.isSelected());
-      customFolderField.setEnabled(createDirChk.isSelected());
-      customFolderRBtn.setEnabled(createDirChk.isSelected());
+    movieTitleRBtn.setEnabled(createDirChk.isSelected());
+    renamedMovieTitleRBtn.setEnabled(createDirChk.isSelected());
+    customFolderField.setEnabled(createDirChk.isSelected());
+    customFolderRBtn.setEnabled(createDirChk.isSelected());
   }//GEN-LAST:event_createDirChkActionPerformed
 
   private void clearXmlBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearXmlBtnActionPerformed
@@ -1828,7 +1812,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_allocineRbtnItemStateChanged
 
   private void scrapperLangHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_scrapperLangHelpActionPerformed
-  //A faire
+    //A faire
   }//GEN-LAST:event_scrapperLangHelpActionPerformed
 
   private void resultHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_resultHelpActionPerformed
@@ -1836,11 +1820,14 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_resultHelpActionPerformed
 
   private void imdbRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_imdbRBtnItemStateChanged
-   limitResultComboBox.setEnabled(imdbRBtn.isSelected());
-   displayAppResultCheckBox.setEnabled(imdbRBtn.isSelected());
+    limitResultComboBox.setEnabled(imdbRBtn.isSelected());
+    displayAppResultCheckBox.setEnabled(imdbRBtn.isSelected());
   }//GEN-LAST:event_imdbRBtnItemStateChanged
 
-  
+  private void resetNameFilterActionPerformed(ActionEvent evt) {//GEN-FIRST:event_resetNameFilterActionPerformed
+   loadList(filterJlist, Settings.nameFilters);
+  }//GEN-LAST:event_resetNameFilterActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton CancelBtn;
     private JPanel SearchPnl;
@@ -1927,6 +1914,7 @@ public class Setting extends JDialog {
     private JButton removeFilterBtn;
     private JPanel renamePnl;
     private JRadioButton renamedMovieTitleRBtn;
+    private JButton resetNameFilter;
     private JButton resultHelp;
     private JCheckBox rmDupSpaceChk;
     private JCheckBox rmSpcCharChk;

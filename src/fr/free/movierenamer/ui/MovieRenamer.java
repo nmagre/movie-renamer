@@ -199,7 +199,7 @@ public class MovieRenamer extends JFrame {
 
       switch (mediaFile.getType()) {
         case Media.MOVIE:
-          currentMedia = new Movie(mediaFile, MovieRenamer.this.setting.nameFilters);
+          currentMedia = new Movie(mediaFile, MovieRenamer.this. setting.movieNameFilters);
           break;
         case Media.TVSHOW:
           currentMedia = new TvShow(mediaFile);

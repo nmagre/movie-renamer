@@ -19,6 +19,8 @@ package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -74,7 +76,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           }
           if (name.equalsIgnoreCase("nameFilters")) {
             String res = Utils.unEscapeXML(buffer.toString(), "UTF-8");
-            config.nameFilters = res.split("/_");
+            config.movieNameFilters = new ArrayList<String>();
+            config.movieNameFilters.addAll(Arrays.asList(res.split("/_")));
           }
           if (name.equalsIgnoreCase("extensions")) {
             String res = buffer.toString();

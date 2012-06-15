@@ -18,7 +18,7 @@
 package fr.free.movierenamer.matcher;
 
 /**
- *
+ * Class NameMatcher
  * @author Nicolas Magré
  */
 public class NameMatcher {

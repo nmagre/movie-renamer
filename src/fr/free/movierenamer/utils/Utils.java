@@ -660,13 +660,14 @@ public class Utils {
 
   /**
    * Check if string is uppercase
+   *
    * @param str
    * @return True if all letter are uppercase except I,II,III,..., false otherwise
    */
   public static boolean isUpperCase(String str) {
-    String[] romanNumber = new String[]{"I","II","III","IV","V","VI","VII","VIII","IX","X"};
-    for(String number: romanNumber){
-      if(str.equals(number)){
+    String[] romanNumber = new String[]{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+    for (String number : romanNumber) {
+      if (str.equals(number)) {
         return false;
       }
     }

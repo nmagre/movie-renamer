@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Class MovieNameMatcher
  * @author Nicolas Magré
  */
 public class MovieNameMatcher {
@@ -35,19 +35,23 @@ public class MovieNameMatcher {
   private String movieYear;
   private List<String> regexs;
 
-  public MovieNameMatcher(MediaFile mfile, String[] regex) {
+  public MovieNameMatcher(MediaFile mfile, List<String> regexs) {
     filename = mfile.getFile().getName();
-    regexs = Arrays.asList(regex);
+    this.regexs = regexs;
     movieYear = "";
   }
 
-  public MovieNameMatcher(MediaFile mfile, String[] regex, boolean debug) {
+  public MovieNameMatcher(MediaFile mfile, List<String> regexs, boolean debug) {
     filename = mfile.getFile().getName();
-    regexs = Arrays.asList(regex);
+    this.regexs = regexs;
     movieYear = "";
     DEBUG = debug;
   }
 
+  /**
+   * Get movie name
+   * @return Movie name
+   */
   public String getMovieName() {
     //Get all matcher values
     ArrayList<NameMatcher> names = new ArrayList<NameMatcher>();
@@ -60,6 +64,11 @@ public class MovieNameMatcher {
     return matchAll(names);
   }
 
+  /**
+   * Match all result from all matcher
+   * @param names Matchers results
+   * @return Most probable result
+   */
   private String matchAll(ArrayList<NameMatcher> names) {//A refaire , c'est nimp
 
     if (names.size() == 1) {
@@ -118,6 +127,10 @@ public class MovieNameMatcher {
     }
   }
 
+  /**
+   * Try to get movie name by detecting year
+   * @return A matcher with all from beginning to detected year in filename or empty string
+   */
   private NameMatcher getMovieNameByYear() {
     NameMatcher movieMatcher = new NameMatcher("Year Matcher", NameMatcher.MEDIUM);
     String name = "";
@@ -141,6 +154,10 @@ public class MovieNameMatcher {
     return movieMatcher;
   }
 
+  /**
+   * Try to get movie name by detecting first capital word
+   * @return A matcher with all from beginning to detected capital word in filename or empty string
+   */
   private NameMatcher getMovieNameByUpperCase() {
     NameMatcher movieMatcher = new NameMatcher("UpperCase Matcher", NameMatcher.LOW);
     String name = CommonWords.normalize(filename.substring(0, filename.lastIndexOf(".")));
@@ -161,6 +178,10 @@ public class MovieNameMatcher {
     return movieMatcher;
   }
 
+  /**
+   * Get movie name by regular expression
+   * @return A Matcher
+   */
   private NameMatcher getMovieNameByRegex() {
     NameMatcher movieMatcher = new NameMatcher("Regex Matcher", NameMatcher.MEDIUM);
     String name = filename.substring(0, filename.lastIndexOf("."));

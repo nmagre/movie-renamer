@@ -18,7 +18,8 @@
 package fr.free.movierenamer.utils;
 
 import java.io.*;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,10 +33,11 @@ public class Settings {
 
   public static final String APPNAME = "Movie Renamer";
   private final String version = Utils.getRbTok("apps.version");
-  private final String userPath = System.getProperty("user.home");
+  private static final String userPath = System.getProperty("user.home");
   private final String apkMdb = "BQRjATHjATV3Zwx2AwWxLGOvLwEwZ2WwZQWyBGyvMQx=";
   private final String apkTdb = "DmIOExH5DwV1AwZkZRZ3Zt==";
-  private final String movieRenamerFolder = Utils.isWindows() ? "Movie_Renamer" : ".Movie_Renamer";
+  private final static String movieRenamerFolder = Utils.isWindows() ? "Movie_Renamer" : ".Movie_Renamer";
+  public static final String mrFolder = userPath + File.separator + movieRenamerFolder;
   //Cache
   public Cache cache;
   public final String cacheDir = userPath + File.separator + movieRenamerFolder + File.separator + "cache" + File.separator;
@@ -66,21 +68,13 @@ public class Settings {
   //Allocine
   public final String allocineAPISearch="http://api.allocine.fr/rest/v3/search?partner=yW5kcm9pZC12M3M&filter=movie&striptags=synopsis,synopsisshort&q=";
   public final String allocineAPIInfo = "http://api.allocine.fr/rest/v3/movie?partner=yW5kcm9pZC12M3M&profile=large&filter=movie&striptags=synopsis,synopsisshort&code=";
+  //Xbmc Passion
+  public final String xbmcPassionImdblookup = "http://passion-xbmc.org/scraper/ajax.php?Ajax=Home&";
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
   public String[] fanartExtList = {".jpg", "-fanart.jpg"};
-  public String[][] genreFR = {
-    {"Action", "Action"}, {"Adventure", "Aventure"}, {"Animation", "Animation"},
-    {"Biography", "Biographie"}, {"Comedy", "Comédie"}, {"Crime", "Crime"},
-    {"Documentary", "Documentaire"}, {"Drama", "Drame"}, {"Family", "Famille"},
-    {"Fantasy", "Fantaisie"}, {"Film-Noir", "Film-Noir"}, {"History", "Histoire"},
-    {"Horror", "Horreur"}, {"Music", "Musique"}, {"Musical", "Comédie musicale"},
-    {"Mystery", "Mystère"}, {"News", "News"}, {"Reality-TV", "Télé-réalité"},
-    {"Romance", "Romance"}, {"Sci-Fi", "Sci-Fi"}, {"Sport", "Sport"},
-    {"Talk-Show", "Talk-Show"}, {"Thriller", "Thriller"}, {"War", "Guerre"},
-    {"Western", "Western"}
-  };
+
   //LAF
   public final static UIManager.LookAndFeelInfo lookAndFeels[] = UIManager.getInstalledLookAndFeels();
   public boolean lafChanged = false;
@@ -91,17 +85,18 @@ public class Settings {
   
   // Saved settings
   public String locale = "";
-  public String[] nameFilters = {
-    "notv", "readnfo", "repack", "proper", "nfo", "extended.cut", "limitededition", "limited", "k-sual",
+  public static String[] nameFilters = {
+    "notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual",
     "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
-    "bd5", "bd9", "hddvd", "hdz", "edition.exclusive", "unrated", "walt disney", "dvdrip", "cinefile",
+    "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile",
     "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit",
-    "wawamania", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null", "divx511",
+    "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$", "divx511",
     "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd",
-    "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo ", " vf ", "hd",
-    " cam ", "telesync", " ts ", " tc ", "ntsc", " pal ", "dvd-r", "dvdscr", "scr", "r1", "r2", "r3", "r4",
+    "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
+    " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4",
     "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"
   };
+  public ArrayList<String> movieNameFilters;
   public String xmlVersion = "";
   public boolean xmlError = false;
   public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
@@ -152,6 +147,8 @@ public class Settings {
    * Constructor
    */
   public Settings() {
+    movieNameFilters = new ArrayList<String>();
+    movieNameFilters.addAll(Arrays.asList(nameFilters));
     Utils.createFilePath(configFile, false);
     Utils.createFilePath(fanartCacheDir, true);
     Utils.createFilePath(thumbCacheDir, true);
