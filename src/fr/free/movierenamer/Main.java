@@ -166,7 +166,7 @@ public class Main {
     if (!saved) {
       JOptionPane.showMessageDialog(null, bundle.getString("saveSettingsFailed") + " " + Settings.mrFolder, bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
     }
-
+    
     return setting;
   }
 }

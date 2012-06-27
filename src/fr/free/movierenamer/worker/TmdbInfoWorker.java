@@ -26,6 +26,7 @@ import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.YTdecodeUrl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -139,7 +140,13 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
     }
         
     movieInfo.setImages(movieImage);
-
+    if(!movieInfo.getTrailer().equals("")){
+      String trailer = YTdecodeUrl.getRealUrl(movieInfo.getTrailer(), YTdecodeUrl.HD);
+      if(trailer != null) {
+        movieInfo.setTrailer(trailer);
+      }
+    }
+        
     setProgress(100);
     return movieInfo;
   }

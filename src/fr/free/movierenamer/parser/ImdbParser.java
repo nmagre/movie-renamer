@@ -40,7 +40,7 @@ public class ImdbParser {
   private Settings setting;
   private boolean french;
   // Search Page Pattern
-  private static final String MOVIEIMDBPATTERN = ">\\d+.<\\/td>.*?a href=.\\/title\\/tt\\d+\\/.[^>]*>([^<]*).*?\\((\\d+).*?\\)";
+  private static final String MOVIEIMDBPATTERN = ">\\d+.<\\/td>.*?a href=.\\/title\\/tt\\d+\\/.[^>]*>([^<]*).*?\\((\\d+).*?\\).?(\\(.*?\\) )?";
   private static final String MOVIENAMEPATTERN = ";\">";
   private static final String IMDBIDPATTERN = "tt\\d+";
   private static final String MOVIETHUMB = "/title/IMDBID/';.><img src=.http://ia.media-imdb.com/images/.*?. width=.\\d+. height=.\\d+. border=.\\d.>";
@@ -94,16 +94,16 @@ public class ImdbParser {
    */
   public ArrayList<SearchResult> parse(String htmlSearchRes, boolean searchPage) throws IndexOutOfBoundsException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
-    int limit =-1;// setting.nbResultList[setting.nbResult];
+    int limit = setting.nbResultList[setting.nbResult];
 
     if (searchPage) {
       Settings.LOGGER.log(Level.INFO, "Imdb Search page");
       found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire" : "Popular"));//Popular title
       found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french, "Exact"));//Exact title
       found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel" : "Partial"));//Partial title
-      //if (found.isEmpty() || setting.displayApproximateResult) {
+      if (found.isEmpty() || setting.displayApproximateResult) {
         found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif" : "Approximate"));
-      //}
+      }
     } else {
       Settings.LOGGER.log(Level.INFO, "Imdb Movie page");
       getMovie(htmlSearchRes, found);
@@ -143,7 +143,11 @@ public class ImdbParser {
 
             int nbMovie = Integer.parseInt(grps[i].substring(grps[i].lastIndexOf(start) + start.length(), grps[i].lastIndexOf(stop) - 1));
             while (movieImdbMatcher.find()) {
-
+              if(movieImdbMatcher.group(3) != null){
+               if(!movieImdbMatcher.group(3).equals("TV")){
+                 continue;
+               }
+              }
               pattern = Pattern.compile(MOVIENAMEPATTERN);
               movieNameMatcher = pattern.matcher(movieImdbMatcher.group());
 

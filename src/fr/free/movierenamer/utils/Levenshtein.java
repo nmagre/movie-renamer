@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * Class LevenshteinDistance
+ * Class Levenshtein
  *
  * @author Nicolas Magré
  *
@@ -54,13 +54,14 @@ public class Levenshtein {
     return distance[str1.length()][str2.length()];
   }
   
-  public static void sortByLevenshteinDistanceYear(final String str, int year, ArrayList<String> arrayStr) {
-    ArrayList<String> tmp = new ArrayList<String>();
+  public static void sortByLevenshteinDistanceYear(final String str, int year, ArrayList<SearchResult> arrayStr) {
+    ArrayList<SearchResult> tmp = new ArrayList<SearchResult>();
     if (year != -1) {
       for (int i = 0; i < arrayStr.size(); i++) {
-        String tmpStr = arrayStr.get(i);
+        SearchResult sres = arrayStr.get(i);
+        String tmpStr = sres.getTitle();
         if (!tmpStr.contains("" + year) && !tmpStr.contains("" + (year + 1)) && !tmpStr.contains("" + (year -1))) {
-          tmp.add(tmpStr);
+          tmp.add(sres);
         }
       }
     }
@@ -69,21 +70,21 @@ public class Levenshtein {
       arrayStr.removeAll(tmp);
     }
     
-    Collections.sort(arrayStr, new Comparator<String>() {
+    Collections.sort(arrayStr, new Comparator<SearchResult>() {
       
       @Override
-      public int compare(String str1, String str2) {
+      public int compare(SearchResult str1, SearchResult str2) {
         
-        return computeLevenshteinDistance(str, str1) - computeLevenshteinDistance(str, str2);
+        return computeLevenshteinDistance(str, str1.getTitle()) - computeLevenshteinDistance(str, str2.getTitle());
       }
     });
     if (!tmp.isEmpty()) {
-      Collections.sort(tmp, new Comparator<String>() {
+      Collections.sort(tmp, new Comparator<SearchResult>() {
         
         @Override
-        public int compare(String str1, String str2) {
+        public int compare(SearchResult str1, SearchResult str2) {
           
-          return computeLevenshteinDistance(str, str1) - computeLevenshteinDistance(str, str2);
+          return computeLevenshteinDistance(str, str1.getTitle()) - computeLevenshteinDistance(str, str2.getTitle());
         }
       });
       arrayStr.addAll(tmp);

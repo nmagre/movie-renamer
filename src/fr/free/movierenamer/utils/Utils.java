@@ -17,6 +17,9 @@
  */
 package fr.free.movierenamer.utils;
 
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
+import fr.free.movierenamer.media.MediaInfoLibrary;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -38,9 +41,12 @@ import javax.swing.ImageIcon;
  *
  * @author Nicolas Magré
  */
-public class Utils {
+public abstract class Utils {
 
   private static String OS = null;
+  private static boolean libmediainfo = false;
+  private static boolean libzen = false;
+  private static String mediainfo = null;
   private static ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   public static final String SPACE = " ";
   public static final String ENDLINE = "\n";
@@ -678,5 +684,30 @@ public class Utils {
       }
     }
     return true;
+  }
+
+  public static boolean libMediaInfo() {
+    if (mediainfo != null) {
+      return mediainfo.equals("true");
+    }
+
+    boolean linux = Platform.isLinux();
+    if (linux) {
+      try {
+        NativeLibrary.getInstance("zen");
+        libzen = true;
+      } catch (LinkageError e) {
+        Settings.LOGGER.log(Level.WARNING, "Failed to preload libzen");
+      }
+    }
+    if ((linux && libzen) || !linux) {
+      try {
+        MediaInfoLibrary.INSTANCE.New();
+        mediainfo = "true";
+      } catch (LinkageError e) {
+        mediainfo = "false";
+      }
+    }
+    return mediainfo.equals("true");
   }
 }

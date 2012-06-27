@@ -89,4 +89,9 @@ public class TvShow implements Media {//A faire
   public MediaID getMediaId(int IDtype) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public int getYear() {
+    return -1;
+  }
 }

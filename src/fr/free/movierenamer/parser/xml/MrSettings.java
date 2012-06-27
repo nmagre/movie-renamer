@@ -227,7 +227,9 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("clearXMLCache")) {
             config.clearXMLCache = buffer.toString().equals(sZero);
           }
-
+          if (name.equalsIgnoreCase("sortBySimiYear")) {
+            config.sortBySimiYear = buffer.toString().equals(sZero);
+          }
         } catch (NullPointerException ex) {
           Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
           config.xmlError = true;

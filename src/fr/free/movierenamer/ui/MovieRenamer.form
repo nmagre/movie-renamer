@@ -169,7 +169,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="centerSp" pref="922" max="32767" attributes="0"/>
+              <Component id="centerSp" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -254,13 +254,13 @@
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="searchField" pref="568" max="32767" attributes="0"/>
+                              <Component id="searchField" pref="601" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="searchBtn" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="resultLbl" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="501" max="32767" attributes="0"/>
+                              <EmptySpace pref="544" max="32767" attributes="0"/>
                           </Group>
                           <Component id="searchScroll" alignment="0" pref="604" max="32767" attributes="2"/>
                       </Group>

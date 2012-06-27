@@ -59,9 +59,17 @@ public class MovieNameMatcher {
     getMatcherRes(names, getMovieNameByUpperCase());
     getMatcherRes(names, getMovieNameByRegex());
     if (names.isEmpty()) {
-      return CommonWords.normalize(filename.substring(0, filename.lastIndexOf(".")) + (movieYear.equals("") ? "" : " " + movieYear));
+      return CommonWords.normalize(filename.substring(0, filename.lastIndexOf(".")));
     }
     return matchAll(names);
+  }
+  
+  /**
+   * Get movie year
+   * @return 
+   */
+  public String getYear(){
+    return movieYear;
   }
 
   /**
@@ -69,10 +77,10 @@ public class MovieNameMatcher {
    * @param names Matchers results
    * @return Most probable result
    */
-  private String matchAll(ArrayList<NameMatcher> names) {//A refaire , c'est nimp
+  private String matchAll(ArrayList<NameMatcher> names) {
 
     if (names.size() == 1) {
-      return CommonWords.normalize(names.get(0).getMatch() + (movieYear.equals("") ? "" : " " + movieYear));
+      return CommonWords.normalize(names.get(0).getMatch());
     }
 
     ArrayList<String> allMatch = new ArrayList<String>();
@@ -109,7 +117,7 @@ public class MovieNameMatcher {
       return "";
     }
     Collections.sort(list, new MovieNameMatcher.MyStringLengthComparable());
-    return CommonWords.normalize(list.get(0)) + (movieYear.equals("") ? "" : " " + movieYear);
+    return CommonWords.normalize(list.get(0));
   }
 
   /**

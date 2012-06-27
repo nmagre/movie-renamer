@@ -75,6 +75,11 @@ public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en 
 
         //Add image to media panel
         mediadPanel.addImageToList(image, arrayImage.get(i), false);
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e) {
+          Settings.LOGGER.log(Level.SEVERE, null, e);
+        }
 
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());

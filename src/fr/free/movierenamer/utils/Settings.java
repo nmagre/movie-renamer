@@ -142,6 +142,7 @@ public class Settings {
   public boolean rmDupSpace = true;
   public boolean tvdbFr = false;
   public boolean clearXMLCache = false;
+  public boolean sortBySimiYear = true;
 
   /**
    * Constructor
@@ -226,6 +227,7 @@ public class Settings {
       out.write("    <rmDupSpace>" + (rmDupSpace ? 0 : 1) + "</rmDupSpace>" + endl);
       out.write("    <tvdbFr>" + (tvdbFr ? 0 : 1) + "</tvdbFr>" + endl);
       out.write("    <clearXMLCache>" + (clearXMLCache ? 0 : 1) + "</clearXMLCache>" + endl);
+      out.write("    <sortBySimiYear>" + (sortBySimiYear ? 0 : 1) + "</sortBySimiYear>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

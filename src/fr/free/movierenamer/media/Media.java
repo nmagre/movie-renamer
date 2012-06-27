@@ -80,6 +80,13 @@ public interface Media {
   public String getSearch();
 
   /**
+   * Get media year if it found in filename
+   * 
+   * @return Year or -1 if it not found 
+   */
+  public int getYear();
+  
+  /**
    * Set Search
    *
    * @param search Search string

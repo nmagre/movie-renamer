@@ -37,7 +37,9 @@ public class Movie implements Media {
   private MediaID mediaId;
   private MediaFile movieFile;
   private MovieInfo movieinfo;
+  private MediaTag mtag;
   private String search;
+  private String year;
 
   /**
    * Constructor arguments
@@ -45,10 +47,13 @@ public class Movie implements Media {
    * @param movieFile A movie file
    * @param filter An array of movie title filters
    */
-  public Movie(MediaFile movieFile, List<String>filter) {
+  public Movie(MediaFile movieFile, List<String> filter) {
     this.movieFile = movieFile;
     movieinfo = new MovieInfo();
-    search = new MovieNameMatcher(movieFile, filter).getMovieName();
+    MovieNameMatcher nameMatcher = new MovieNameMatcher(movieFile, filter);
+    search = nameMatcher.getMovieName();
+    year = nameMatcher.getYear();
+    mtag = new MediaTag(movieFile.getFile());
   }
 
   /**
@@ -77,6 +82,14 @@ public class Movie implements Media {
   public String getSearch() {
     return search;
   }
+  
+  @Override
+  public int getYear(){
+    if(year.equals("")) {
+      return -1;
+    }
+    return Integer.parseInt(year);
+  }
 
   /**
    * Get renamed movie title
@@ -96,6 +109,7 @@ public class Movie implements Media {
     if (!movieinfo.getRuntime().equals("-1")) {
       runtime += movieinfo.getRuntime();
     }
+    
     String[][] replace = new String[][]{
       {"<t>", movieinfo.getTitle()},
       {"<ot>", movieinfo.getOrigTitle()},
@@ -106,7 +120,21 @@ public class Movie implements Media {
       {"<a>", movieinfo.getActorsString(separator, limit)},
       {"<d>", movieinfo.getDirectorsString(separator, limit)},
       {"<g>", movieinfo.getGenresString(separator, limit)},
-      {"<c>", movieinfo.getCountriesString(separator, limit)}
+      {"<c>", movieinfo.getCountriesString(separator, limit)},
+      {"<mrt>", mtag.getDuration()},
+      {"<mfs>", mtag.getFileSize()},
+      {"<mc>", mtag.getVideoCodec()},
+      {"<mdc>", mtag.getVideoDefinitionCategory()},
+      {"<mf>", mtag.getVideoFormat()},
+      {"<mfr>", mtag.getVideoFrameRate()},
+      {"<mr>", mtag.getVideoResolution()},
+      {"<mcf>", mtag.getContainerFormat()},
+      {"<mach>", mtag.getAudioChannelsString(separator, limit)},
+      {"<mac>", mtag.getAudioCodecString(separator, limit)},
+      {"<mal>", mtag.getAudioLanguageString(separator, limit)},
+      {"<matt>",  mtag.getAudioTitleString(separator, limit)},
+      {"<mat>", mtag.getAudioTitleString(separator, limit)},
+      {"<mtt>", mtag.getTextTitleString(separator, limit)}
     };
 
     Pattern pattern = Pattern.compile("<([adcg])(\\d+)>");
@@ -393,7 +421,7 @@ public class Movie implements Media {
 
   @Override
   public String toString() {
-    String res = movieFile.toString()+ "\n";
+    String res = movieFile.toString() + "\n";
     res += movieinfo.toString();
     return res;
   }

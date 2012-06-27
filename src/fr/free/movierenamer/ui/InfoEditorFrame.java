@@ -176,8 +176,6 @@ public class InfoEditorFrame extends JDialog {
         movietitleField = new javax.swing.JTextField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         infoPnl = new javax.swing.JPanel();
-        imdbidField = new javax.swing.JTextField();
-        imdbidLbl = new javax.swing.JLabel();
         runtimeField = new javax.swing.JTextField();
         ratingField = new javax.swing.JTextField();
         runtimeLbl = new javax.swing.JLabel();
@@ -205,7 +203,6 @@ public class InfoEditorFrame extends JDialog {
         cancelBtn7 = new javax.swing.JButton();
         cancelBtn8 = new javax.swing.JButton();
         cancelBtn9 = new javax.swing.JButton();
-        cancelBtn10 = new javax.swing.JButton();
         top250Lbl = new javax.swing.JLabel();
         top250Field = new javax.swing.JTextField();
         cancelBtn12 = new javax.swing.JButton();
@@ -236,6 +233,9 @@ public class InfoEditorFrame extends JDialog {
         cancelBtn16 = new javax.swing.JButton();
         cancelBtn17 = new javax.swing.JButton();
         cancelBtn18 = new javax.swing.JButton();
+        cancelBtn10 = new javax.swing.JButton();
+        imdbidField = new javax.swing.JTextField();
+        imdbidLbl = new javax.swing.JLabel();
         synopsPnl = new javax.swing.JPanel();
         synopsisSP = new javax.swing.JScrollPane();
         synopsisField = new javax.swing.JTextArea();
@@ -306,12 +306,6 @@ public class InfoEditorFrame extends JDialog {
         movietitleField.setEditable(false);
         movietitleField.setFont(new java.awt.Font("Ubuntu", 0, 10)); // NOI18N
         movietitleField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
-
-        imdbidField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
-        imdbidField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
-
-        imdbidLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        imdbidLbl.setText("ImdbId");
 
         runtimeField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
         runtimeField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
@@ -404,10 +398,6 @@ public class InfoEditorFrame extends JDialog {
         cancelBtn9.setToolTipText(bundle.getString("cancel")); // NOI18N
         cancelBtn9.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
-        cancelBtn10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn10.setToolTipText(bundle.getString("cancel")); // NOI18N
-        cancelBtn10.setMargin(new java.awt.Insets(2, 2, 2, 2));
-
         top250Lbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
         top250Lbl.setText("Top 250");
 
@@ -457,17 +447,11 @@ public class InfoEditorFrame extends JDialog {
                     .addComponent(titleField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPnlLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(runtimeLbl)
-                            .addComponent(imdbidLbl))
+                        .addComponent(runtimeLbl)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(imdbidField)
-                            .addComponent(runtimeField, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE))
+                        .addComponent(runtimeField, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cancelBtn8, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cancelBtn10, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cancelBtn8, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(57, 57, 57)
                         .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(infoPnlLayout.createSequentialGroup()
@@ -550,11 +534,8 @@ public class InfoEditorFrame extends JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(imdbidField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(imdbidLbl)
                         .addComponent(top250Lbl)
                         .addComponent(top250Field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(cancelBtn10, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cancelBtn12, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(infoPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(watchedChk)
@@ -678,6 +659,16 @@ public class InfoEditorFrame extends JDialog {
         cancelBtn18.setToolTipText(bundle.getString("cancel")); // NOI18N
         cancelBtn18.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
+        cancelBtn10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
+        cancelBtn10.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn10.setMargin(new java.awt.Insets(2, 2, 2, 2));
+
+        imdbidField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
+        imdbidField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
+
+        imdbidLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
+        imdbidLbl.setText("ImdbId");
+
         javax.swing.GroupLayout detailPnlLayout = new javax.swing.GroupLayout(detailPnl);
         detailPnl.setLayout(detailPnlLayout);
         detailPnlLayout.setHorizontalGroup(
@@ -685,48 +676,57 @@ public class InfoEditorFrame extends JDialog {
             .addGroup(detailPnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(studioLbl)
-                    .addComponent(countryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
-                    .addComponent(setLbl)
-                    .addComponent(directorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
-                    .addComponent(genreLbl)
-                    .addComponent(writerLbl))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(writerField, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
-                        .addComponent(countryField))
-                    .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(setField, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(genreField, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(directorField, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(studioField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)))
-                .addGap(12, 12, 12)
-                .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
-                        .addComponent(editCountryBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelBtn18, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
-                        .addComponent(editWriterBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelBtn17, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
-                        .addComponent(editSetBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelBtn16, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
-                        .addComponent(editStudioBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelBtn13, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
-                        .addComponent(editDirectorBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelBtn14, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(detailPnlLayout.createSequentialGroup()
-                        .addComponent(editGenreBtn, 0, 1, Short.MAX_VALUE)
+                        .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(studioLbl)
+                            .addComponent(countryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
+                            .addComponent(setLbl)
+                            .addComponent(directorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
+                            .addComponent(genreLbl)
+                            .addComponent(writerLbl))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelBtn15, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(writerField, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
+                                .addComponent(countryField))
+                            .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(setField, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(genreField, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(directorField, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(studioField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)))
+                        .addGap(12, 12, 12)
+                        .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
+                                .addComponent(editCountryBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelBtn18, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
+                                .addComponent(editWriterBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelBtn17, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
+                                .addComponent(editSetBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelBtn16, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
+                                .addComponent(editStudioBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelBtn13, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detailPnlLayout.createSequentialGroup()
+                                .addComponent(editDirectorBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelBtn14, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(detailPnlLayout.createSequentialGroup()
+                                .addComponent(editGenreBtn, 0, 1, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cancelBtn15, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(detailPnlLayout.createSequentialGroup()
+                        .addComponent(imdbidLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(imdbidField, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelBtn10, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 417, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         detailPnlLayout.setVerticalGroup(
@@ -778,7 +778,13 @@ public class InfoEditorFrame extends JDialog {
                         .addComponent(countryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(editCountryBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(cancelBtn18, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(detailPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(imdbidField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(imdbidLbl))
+                    .addComponent(cancelBtn10, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab(bundle.getString("details"), detailPnl); // NOI18N
@@ -913,7 +919,7 @@ public class InfoEditorFrame extends JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(movietitleField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)

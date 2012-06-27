@@ -18,6 +18,7 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -26,7 +27,9 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
@@ -51,11 +54,11 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
    * @param errorSupport Swing change support
    * @param id Movie API ID (imdb)
    * @param setting Movie Renamer settings
-   * @throws ActionNotValidException  
+   * @throws ActionNotValidException
    */
   public ImdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
     this.errorSupport = errorSupport;
-    if(id.getType() != MediaID.IMDBID) {
+    if (id.getType() != MediaID.IMDBID) {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
     this.setting = setting;
@@ -95,7 +98,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     try {
       mvi = imdbParser.getMovieInfo(res);
     } catch (Exception ex) {//Imdbparser failed
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("Exception", ex.getStackTrace()));      
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("Exception", ex.getStackTrace()));
     }
 
     if (mvi == null) {
@@ -105,7 +108,22 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     }
 
     mvi.addID(id);
-    
+
+    try {
+      TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, id, setting);
+      imgWorker.execute();
+      MovieImage mvimg = imgWorker.get();
+      if (mvimg != null) {
+        mvi.setImages(mvimg);
+      }
+    } catch (InterruptedException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (ExecutionException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (ActionNotValidException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
     setProgress(100);
     return mvi;
   }

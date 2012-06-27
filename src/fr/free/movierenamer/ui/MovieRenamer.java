@@ -17,12 +17,8 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.media.MediaRenamed;
 import fr.free.movierenamer.Main;
-import fr.free.movierenamer.media.Media;
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.media.MediaFileFilter;
-import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -121,7 +117,7 @@ public class MovieRenamer extends JFrame {
     loadRenamedMovie();
 
     //Add drag and drop listener on mediaList
-    dropFile = new DropFile(setting, renamedMediaFile, new FileWorkerListener(), this);
+    dropFile = new DropFile(setting, renamedMediaFile, new FileWorkerListener(), MovieRenamer.this);
     DropTarget dt = new DropTarget(mediaList, dropFile);
     dt.setActive(true);
 
@@ -684,12 +680,12 @@ public class MovieRenamer extends JFrame {
         searchPnlLayout.setHorizontalGroup(
             searchPnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(Alignment.TRAILING, searchPnlLayout.createSequentialGroup()
-                .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
+                .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
             .addGroup(searchPnlLayout.createSequentialGroup()
                 .addComponent(resultLbl)
-                .addContainerGap(501, Short.MAX_VALUE))
+                .addContainerGap(544, Short.MAX_VALUE))
             .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
         );
         searchPnlLayout.setVerticalGroup(
@@ -712,7 +708,7 @@ public class MovieRenamer extends JFrame {
         centerPnl.setLayout(centerPnlLayout);
         centerPnlLayout.setHorizontalGroup(
             centerPnlLayout.createParallelGroup(Alignment.LEADING)
-            .addComponent(centerSp, GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
+            .addComponent(centerSp)
         );
         centerPnlLayout.setVerticalGroup(
             centerPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -791,7 +787,7 @@ public class MovieRenamer extends JFrame {
         @Override
         public void windowClosed(WindowEvent e) {
           setting = set.getSetting();
-          nfoChk.setText(setting.nfoType == 0 ? bundle.getString("nfoXbmc") : bundle.getString("nfoMediaPortal"));
+          /*nfoChk.setText(setting.nfoType == 0 ? bundle.getString("nfoXbmc") : bundle.getString("nfoMediaPortal"));
           if (setting.interfaceChanged) {
             setting.interfaceChanged = false;
             loadInterface();
@@ -815,12 +811,12 @@ public class MovieRenamer extends JFrame {
                 }
                 if (setting.fanart) {
                   moviePnl.clearFanartList();
-                }
+                }*/
                 /*
                  * try { tmdbiw = WorkerManager.getMovieImageWorker(movie.getMediaId(MediaID.IMDBID), setting); tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw)); } catch
                  * (ActionNotValidException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); }
                  */
-              }
+             /* }
               if (setting.thumb || setting.fanart || setting.actorImage) {
                 loadDial(false);
               }
@@ -874,7 +870,7 @@ public class MovieRenamer extends JFrame {
               Settings.LOGGER.log(Level.SEVERE, null, ex);
             }
             pack();
-          }
+          }*/
         }
 
         @Override
@@ -1128,13 +1124,15 @@ public class MovieRenamer extends JFrame {
           JOptionPane.showMessageDialog(MovieRenamer.this, bundle.getString("noResult"), sError, JOptionPane.ERROR_MESSAGE);
           return;
         }
-        
-        for(SearchResult res : results){
-          System.out.println("array.add(\"" + res.getTitle().replace("\"", "") + "\");");
-        }
 
         searchResModel = new DefaultListModel();
         resultLbl.setText(bundle.getString("searchResListTitle") + " : " + results.size());
+        
+        // Sort result by similarity and year
+        if(results.size() > 1 && setting.sortBySimiYear){
+          Levenshtein.sortByLevenshteinDistanceYear(currentMedia.getSearch(), currentMedia.getYear(), results);
+        }
+        
         for (SearchResult result : results) {
           searchResModel.addElement(result);
         }
@@ -1246,8 +1244,6 @@ public class MovieRenamer extends JFrame {
             loading.setValue(100, INFOWORKER);
             return;
           }
-          
-          System.out.println(movieInfo);
           
           if(setting.movieInfoPanel){
             if(setting.thumb){
