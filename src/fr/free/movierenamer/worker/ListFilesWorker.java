@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.media.MediaRenamed;
@@ -172,25 +173,31 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
    */
   static public boolean isMovie(File file) {//A refaire , amélioré la detection
     String filename = file.getName();
-    if (searchPattern(filename, "\\d++x\\d++.?\\d++x\\d++")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.seasonPattern)) {
       return false;
     }
-    if (searchPattern(filename, "\\d++[eE]\\d\\d")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.episodePattern)) {
       return false;
     }
-    if (searchPattern(filename, "[sS]\\d++[eE]\\d++")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern)) {
       return false;
     }
-    if (searchPattern(filename, "[sS]\\d++.[eE]\\d++")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern2)) {
       return false;
     }
-    if (searchPattern(filename, "\\d++x\\d++")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern3)) {
       return false;
     }
-    if (searchPattern(filename, "\\(\\d\\d\\d\\)")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern4)) {
       return false;
     }
-    if (searchPattern(filename, "[eE][pP].?\\d++")) {
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern5)) {
+      return false;
+    }
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern6)) {
+      return false;
+    }
+    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern7)) {
       return false;
     }
     if (file.getParent().matches(".*((?i:season)|(?i:saison)).*")) {

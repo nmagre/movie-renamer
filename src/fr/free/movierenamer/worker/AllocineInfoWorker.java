@@ -61,7 +61,7 @@ public class AllocineInfoWorker extends SwingWorker<MovieInfo, String> {
   public AllocineInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
     this.errorSupport = errorSupport;
     if (id.getType() != MediaID.ALLOCINEID) {
-      throw new ActionNotValidException("AllocineInfoWorker  can only use allocine ID");
+      throw new ActionNotValidException("AllocineInfoWorker can only use allocine ID");
     }
     this.setting = setting;
     this.id = id;
@@ -71,7 +71,7 @@ public class AllocineInfoWorker extends SwingWorker<MovieInfo, String> {
   protected MovieInfo doInBackground() {
     MovieInfo movieInfo = null;
     try {
-      String uri = setting.allocineAPIInfo + id.getID();
+      String uri = setting.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
       System.out.println(uri);
       URL url = new URL(uri);
       File xmlFile = setting.cache.get(url, Cache.XML);

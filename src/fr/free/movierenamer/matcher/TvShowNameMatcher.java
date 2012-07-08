@@ -22,8 +22,6 @@ import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,17 +34,17 @@ import java.util.regex.Pattern;
 public class TvShowNameMatcher {
 
   private MediaFile mfile;
+  private String filename;
   private static final String SEASONFOLDERPATTERN = "(?i:season)|(?i:saison)|(?i:s).*\\d+";
   private static final String TVSHOWFOLDERPATTERN = ".*(?i:tvshwow)|(?i:tv)|(?i:serie)|(?i:série).*";
-  private static final String TVSHOWNAMEBYEPISODE = "(([sS]\\d++\\?\\d++)|(\\d++x\\d++.?\\d++x\\d++)|(\\d++[eE]\\d\\d)|([sS]\\d++.[eE]\\d++)|(\\d++x\\d++)|(\\d++x\\d++.?\\d++\\?\\d++))";
-  private NameMatcher folderMatch;
-  private NameMatcher episodeMatch;
-  private NameMatcher commonFileMatch;
+  private static final String TVSHOWNAMEBYEPISODE = "(([sS]\\d++\\?\\d++)|(\\d++x\\d++.?\\d++x\\d++)|(\\d++[eE]\\d\\d)|([sS]\\d++.[eE]\\d++)|(\\d++x\\d++)|(\\d++x\\d++.?\\d++\\?\\d++)|(.\\d{3}.))";
+  private List<String> regexs;
   private final boolean DEBUG = true;
 
-  public TvShowNameMatcher(MediaFile mfile) {
+  public TvShowNameMatcher(MediaFile mfile, List<String> regexs) {
     this.mfile = mfile;
-    folderMatch = episodeMatch = commonFileMatch = null;
+    filename = mfile.getFile().getName();
+    this.regexs = regexs;
   }
 
   /**
@@ -62,18 +60,16 @@ public class TvShowNameMatcher {
       System.out.println("  Match :");
     }
 
-    TvShowEpisodeMatcher tvEpMacther = new TvShowEpisodeMatcher(mfile.getFile().getName());
-    tvEpMacther.matchEpisode();
-    
     //Get all matcher values
     ArrayList<NameMatcher> names = new ArrayList<NameMatcher>();
-    getMatcherRes(names, (folderMatch = matchByFolderName()));
-    getMatcherRes(names, (episodeMatch = matchByEpisode()));
-    getMatcherRes(names, (commonFileMatch = matchByCommonSeqFileName()));
-    if(names.isEmpty()) {
-      return CommonWords.normalize(mfile.getFile().getName().substring(0, mfile.getFile().getName().lastIndexOf(".") + 1));
+    getMatcherRes(names, matchByFolderName());
+    getMatcherRes(names, matchByEpisode());
+    getMatcherRes(names, matchByCommonSeqFileName());
+    getMatcherRes(names, matchByRegEx());
+    if (names.isEmpty()) {
+      return CommonWords.normalize(filename.substring(0, filename.lastIndexOf(".")));
     }
-    return matchAll(names);
+    return CommonWords.matchAll(names, true);
   }
 
   /**
@@ -92,92 +88,27 @@ public class TvShowNameMatcher {
   }
 
   /**
-   * Match all matcher results and try to retreive tvshow name
+   * Match tvShow by parent folder name
    *
-   * @return Matched tvShow name or empty string if no name found
+   * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
    */
-  private String matchAll(ArrayList<NameMatcher> names) {//A refaire , c'est nimp
-
-    if (names.size() < 2) {
-      return names.get(0).getMatch();
-    }
-
-    //Look if we got a winner
-    if (names.size() == 2) {
-      if (folderMatch.getMatch().length() > 0 && commonFileMatch.getMatch().length() > 0) { //Prefer folder match
-        return CommonWords.normalize(folderMatch.getMatch());
-      }
-    } else {
-      ArrayList<String> namesArray = new ArrayList<String>();
-      ArrayList<Integer> countArray = new ArrayList<Integer>();
-      for (NameMatcher name : names) {
-        if (namesArray.contains(name.getMatch())) {
-          int pos = namesArray.indexOf(name.getMatch());
-          int val = countArray.get(pos);
-          countArray.set(pos, val++);
-        } else {
-          namesArray.add(name.getMatch());
-          countArray.add(1);
-        }
-      }
-
-      int pos = -1;
-      int val = -1;
-      for (int i = 0; i < countArray.size(); i++) {
-        int value = countArray.get(i);
-        if (val < value && value > 1) {
-          val = value;
-          pos = i;
-        }
-      }
-      if (pos != -1) {
-        return CommonWords.normalize(namesArray.get(pos));
-      }
-    }
-
-    ArrayList<String> allMatch = new ArrayList<String>();
-    for (int i = 0; i < names.size(); i++) {
-      allMatch.add(names.get(i).getMatch());
-    }
-
-    //Check if list is already as small as possible
-    List<String> tvShowNames = CommonWords.getCommonWords(allMatch);
-    if (tvShowNames == null || tvShowNames.isEmpty()) {
-      return getSmallStringList(allMatch);
-    }
-
-    //Get list as small as possible
-    List<String> tmp = CommonWords.getCommonWords(tvShowNames);
-    while (tmp != null) {
-      tmp = CommonWords.getCommonWords(tmp);
-      if (tmp != null) {
-        tvShowNames = tmp;
-      }
-    }
-
-    if (DEBUG) {
-      System.out.println("    Match All tvshow potential match : " + tvShowNames.toString());
-    }
-
-    //Prefer get folder match
-    if (folderMatch.getMatch().length() > 0 && tvShowNames.size() >= 2) {
-      for (String name : tvShowNames) {
-        if (name.equals(folderMatch.getMatch())) {
-          return CommonWords.normalize(name);
+  private NameMatcher matchByFolderName() {
+    NameMatcher folderNameMatcher = new NameMatcher("Folder Name Macther", NameMatcher.HIGH);
+    String res = "";
+    final File mediafile = mfile.getFile();
+    if (mediafile.getParent() != null) {
+      Pattern pattern = Pattern.compile(SEASONFOLDERPATTERN);
+      Matcher matcher = pattern.matcher(mediafile.getParent().substring(mediafile.getParent().lastIndexOf(File.separator) + 1));
+      if (matcher.find()) {//Parent folder looks like : Season 5,s3,saison 12,...
+        if (mediafile.getParentFile().getParent() != null) {//If parent folder looks like a season folder, parent folder of season folder is probably the tvshow name
+          res = getTvShowFolderName(mediafile.getParentFile().getParentFile());
         }
       }
     }
-
-    if (tvShowNames.size() == 2) {
-      if (tvShowNames.get(0).contains(tvShowNames.get(1))) {
-        return tvShowNames.get(0);
-      }
-      if (tvShowNames.get(1).contains(tvShowNames.get(0))) {
-        return tvShowNames.get(1);
-      }
-    }
-
-    return getSmallStringList(tvShowNames);
+    res = CommonWords.getFilteredName(res, regexs);
+    
+    folderNameMatcher.setMatch(CommonWords.normalize(res));
+    return folderNameMatcher;
   }
 
   /**
@@ -191,11 +122,17 @@ public class TvShowNameMatcher {
     String name = mfile.getFile().getName();
     Pattern pattern = Pattern.compile(TVSHOWNAMEBYEPISODE);
     Matcher matcher = pattern.matcher(name);
+    
     if (matcher.find()) {//Match episode in fileName
       name = name.substring(0, name.indexOf(matcher.group(0)));
     } else {
       name = "";
     }
+    
+    if(!name.equals("")){
+      name = CommonWords.getFilteredName(name, regexs);
+    }
+    
     episodeMatcher.setMatch(CommonWords.normalize(name));
     return episodeMatcher;
   }
@@ -228,7 +165,7 @@ public class TvShowNameMatcher {
         return false;
       }
     });
- 
+
     if (files == null || files.length < 2) {
       return commonMatcher;
     }
@@ -255,12 +192,8 @@ public class TvShowNameMatcher {
       }
     }
 
-    //If small string result is in folderName, prefer to keep folder match
-    String res = getSmallStringList(tvShowNames);
-    if (folderMatch != null && folderMatch.getMatch().contains(res)) {
-      commonMatcher.setMatch(folderMatch.getMatch());
-      return commonMatcher;
-    }
+    String res = CommonWords.getSmallStringList(tvShowNames);
+    res = CommonWords.getFilteredName(res, regexs);
 
     commonMatcher.setMatch(CommonWords.normalize(res));
     return commonMatcher;
@@ -272,45 +205,11 @@ public class TvShowNameMatcher {
    * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
    */
   private NameMatcher matchByRegEx() {
-    return null;
-  }
-
-  /**
-   * Match tvShow by parent folder name
-   *
-   * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
-   */
-  private NameMatcher matchByFolderName() {
-    NameMatcher folderNameMatcher = new NameMatcher("Folder Name Macther", NameMatcher.HIGH);
-    String res = "";
-    final File mediafile = mfile.getFile();
-    if (mediafile.getParent() != null) {
-      Pattern pattern = Pattern.compile(SEASONFOLDERPATTERN);
-      Matcher matcher = pattern.matcher(mediafile.getParent().substring(mediafile.getParent().lastIndexOf(File.separator) + 1));
-      if (matcher.find()) {//Parent folder looks like : Season 5,s3,saison 12,...
-        if (mediafile.getParentFile().getParent() != null) {//If parent folder looks like a season folder, parent folder of season folder is probably the tvshow name
-          res = getTvShowFolderName(mediafile.getParentFile().getParentFile());
-        }
-      } else {
-        File[] files = mediafile.getParentFile().listFiles(new FileFilter() {//Get all files that xontains parent folder name in fileName
-
-          @Override
-          public boolean accept(File file) {
-            if (file.getName().contains(mediafile.getParentFile().getName())) {
-              return true;
-            }
-            return false;
-          }
-        });
-
-        if (files != null && files.length > 0) {//If other fileName have parent folderName in their filename, parent folder is probably the tvShow name
-          res = getTvShowFolderName(mediafile.getParentFile());
-        }
-      }
-    }
-
-    folderNameMatcher.setMatch(res);
-    return folderNameMatcher;
+    NameMatcher tvshowMatcher = new NameMatcher("Regex Matcher", NameMatcher.MEDIUM);
+    String name = filename.substring(0, filename.lastIndexOf("."));
+    name = CommonWords.getFilteredName(name, regexs);
+    tvshowMatcher.setMatch(CommonWords.normalize(name));
+    return tvshowMatcher;
   }
 
   /**
@@ -330,36 +229,5 @@ public class TvShowNameMatcher {
       }
     }
     return res.toLowerCase();
-  }
-
-  /**
-   * Get the small string in list
-   *
-   * @param list
-   * @return Smaller string or empty
-   */
-  private String getSmallStringList(List<String> list) {
-    if (list.size() < 1) {
-      return "";
-    }
-    Collections.sort(list, new MyStringLengthComparable());
-    return CommonWords.normalize(list.get(0));
-  }
-
-  /**
-   * class MyStringLengthComparable , compare two string length
-   */
-  private static class MyStringLengthComparable implements Comparator<String> {
-
-    @Override
-    public int compare(String s1, String s2) {
-      if (s1.length() == 2) {
-        return 1;
-      }
-      if (s2.length() == 2) {
-        return -1;
-      }
-      return s1.length() - s2.length();
-    }
   }
 }

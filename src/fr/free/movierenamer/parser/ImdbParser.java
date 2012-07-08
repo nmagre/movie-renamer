@@ -81,7 +81,7 @@ public class ImdbParser {
   
   public ImdbParser(Settings setting) {
     this.setting = setting;
-    this.french = setting.imdbFr;
+    this.french = setting.movieScrapperFR;
   }
 
   /**

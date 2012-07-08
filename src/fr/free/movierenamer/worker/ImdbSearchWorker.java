@@ -69,7 +69,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
     setProgress(0);
     String searchres = null;
     try {
-      http = new HttpGet((setting.imdbFr ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
+      http = new HttpGet((setting.movieScrapperFR ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
       searchres = http.sendGetRequest(true, "ISO-8859-15");
     } catch (Exception e) {
       Settings.LOGGER.log(Level.SEVERE, e.toString());

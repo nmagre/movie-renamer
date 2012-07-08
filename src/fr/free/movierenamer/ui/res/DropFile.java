@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.media.MediaRenamed;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.ListFilesWorker;
 import java.awt.Cursor;

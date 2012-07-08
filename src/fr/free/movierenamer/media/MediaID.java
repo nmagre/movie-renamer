@@ -28,6 +28,9 @@ public class MediaID {
   public static final int TMDBID = 1;
   public static final int TVDBID = 2;
   public static final int ALLOCINEID = 3;
+  public static final int ALLOCINETVID = 4;
+  public static final int ALLOCINESEASONID = 5;
+  public static final int ALLOCINEEPISODEID = 6;
   private int type;
   private String id;
 

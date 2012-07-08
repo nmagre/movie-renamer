@@ -43,7 +43,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class AllocineSearchWorker
+ * Class AllocineSearchWorker Search movie or tvshow
  *
  * @author Nicolas Magré
  */
@@ -54,9 +54,11 @@ public class AllocineSearchWorker extends SwingWorker<ArrayList<SearchResult>, S
   private String searchTitle;
   private Settings setting;
   private SwingPropertyChangeSupport errorSupport;
+  private boolean tvshow;
 
-  public AllocineSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle, Settings setting) {
+  public AllocineSearchWorker(SwingPropertyChangeSupport errorSupport, boolean tvshow, String searchTitle, Settings setting) {
     this.errorSupport = errorSupport;
+    this.tvshow = tvshow;
     this.searchTitle = searchTitle;
     this.setting = setting;
   }
@@ -65,7 +67,7 @@ public class AllocineSearchWorker extends SwingWorker<ArrayList<SearchResult>, S
   protected ArrayList<SearchResult> doInBackground() {
     ArrayList<SearchResult> allocineSearchResult = null;
     try {
-      String uri = setting.allocineAPISearch + URLEncoder.encode(searchTitle, "UTF-8");
+      String uri = setting.allocineAPISearch.replace("FILTER", tvshow ? "tvseries" : "movie") + URLEncoder.encode(searchTitle, "UTF-8");
       URL url = new URL(uri);
       File xmlFile = setting.cache.get(url, Cache.XML);
       if (xmlFile == null) {
@@ -95,9 +97,9 @@ public class AllocineSearchWorker extends SwingWorker<ArrayList<SearchResult>, S
 
       //Parse allocine API XML
       XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile.getAbsolutePath());
-      xmp.setParser(new AllocineSearch());
+      xmp.setParser(new AllocineSearch(tvshow));
       allocineSearchResult = xmp.parseXml();
-      
+
     } catch (UnsupportedEncodingException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {

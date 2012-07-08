@@ -19,36 +19,27 @@ package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
+import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Class AllocineSearch
  *
  * @author Nicolas Magré
  */
-public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
+public class TvdbUpdate extends DefaultHandler implements IParser<ArrayList<MediaID>> {
 
   private StringBuffer buffer;
-  private boolean tvshow;
-  private ArrayList<SearchResult> results;
-  private boolean media;
-  private String currentId;
-  private String currentName;
-  private String currentThumb;
-
-  public AllocineSearch(boolean tvshow) {
-    super();
-    this.tvshow = tvshow;
-  }
+  private ArrayList<MediaID> mediaIds;
+  private boolean update;
 
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    results = new ArrayList<SearchResult>();
-    media = false;
+    mediaIds = new ArrayList<MediaID>();
+    update = false;
   }
 
   @Override
@@ -59,38 +50,19 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase(tvshow ? "tvseries":"movie")) {
-      media = true;
-      currentName = currentId = currentThumb = "";
-      currentId = attributes.getValue("code");
-    }
-    if (media) {
-      if (name.equalsIgnoreCase("poster")) {
-        currentThumb = attributes.getValue("href");
-      }
+    if(name.equalsIgnoreCase("Items")){
+      update = true;
     }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase(tvshow ? "tvseries":"movie")) {
-      media = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, tvshow ? MediaID.ALLOCINETVID:MediaID.ALLOCINEID), "", currentThumb));
+    if(name.equalsIgnoreCase("Items")){
+      update = false;
     }
-    if (media) {
-      if (name.equalsIgnoreCase("originalTitle")) {//Original title will be there in all case but title not
-        currentName = buffer.toString();
-      }
-      if (name.equalsIgnoreCase("title")) {
-        currentName = buffer.toString();
-      }
-      if (name.equalsIgnoreCase(tvshow ? "yearStart":"productionYear")) {
-        currentName += " (" + buffer.toString() + ")";
-      }      
-      if (tvshow && name.equalsIgnoreCase("yearEnd")) {
-        if(!buffer.toString().equals("")) {
-          currentName += " - (" + buffer.toString() + ")";
-        }
+    if(update){
+      if(name.equalsIgnoreCase("Series")){
+        mediaIds.add(new MediaID(buffer.toString(), MediaID.TVDBID));
       }
     }
     buffer = null;
@@ -105,7 +77,7 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
   }
 
   @Override
-  public ArrayList<SearchResult> getObject() {
-    return results;
+  public ArrayList<MediaID> getObject() {
+    return mediaIds;
   }
 }

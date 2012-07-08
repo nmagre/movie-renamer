@@ -19,18 +19,20 @@ package fr.free.movierenamer.matcher;
 
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.utils.Utils;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Class MovieNameMatcher
+ *
  * @author Nicolas Magré
  */
 public class MovieNameMatcher {
 
   private static final String MOVIENAMEBYYEAR = "\\D?(\\d{4})\\D";
-  private boolean DEBUG = false;
   private String filename;
   private String movieYear;
   private List<String> regexs;
@@ -41,15 +43,9 @@ public class MovieNameMatcher {
     movieYear = "";
   }
 
-  public MovieNameMatcher(MediaFile mfile, List<String> regexs, boolean debug) {
-    filename = mfile.getFile().getName();
-    this.regexs = regexs;
-    movieYear = "";
-    DEBUG = debug;
-  }
-
   /**
    * Get movie name
+   *
    * @return Movie name
    */
   public String getMovieName() {
@@ -61,63 +57,16 @@ public class MovieNameMatcher {
     if (names.isEmpty()) {
       return CommonWords.normalize(filename.substring(0, filename.lastIndexOf(".")));
     }
-    return matchAll(names);
+    return CommonWords.matchAll(names, false);
   }
-  
+
   /**
    * Get movie year
-   * @return 
-   */
-  public String getYear(){
-    return movieYear;
-  }
-
-  /**
-   * Match all result from all matcher
-   * @param names Matchers results
-   * @return Most probable result
-   */
-  private String matchAll(ArrayList<NameMatcher> names) {
-
-    if (names.size() == 1) {
-      return CommonWords.normalize(names.get(0).getMatch());
-    }
-
-    ArrayList<String> allMatch = new ArrayList<String>();
-    for (int i = 0; i < names.size(); i++) {
-      allMatch.add(names.get(i).getMatch());
-    }
-
-    //Check if list is already as small as possible
-    List<String> movieNames = CommonWords.getCommonWords(allMatch);
-    if (movieNames == null || movieNames.isEmpty()) {
-      return getFistName(allMatch);
-    }
-
-    //Get list as small as possible
-    List<String> tmp = CommonWords.getCommonWords(movieNames);
-    while (tmp != null) {
-      tmp = CommonWords.getCommonWords(tmp);
-      if (tmp != null) {
-        movieNames = tmp;
-      }
-    }
-
-    return getFistName(movieNames);
-  }
-
-  /**
-   * Get the small string in list
    *
-   * @param list
-   * @return Smaller string or empty
+   * @return
    */
-  private String getFistName(List<String> list) {
-    if (list.size() < 1) {
-      return "";
-    }
-    Collections.sort(list, new MovieNameMatcher.MyStringLengthComparable());
-    return CommonWords.normalize(list.get(0));
+  public String getYear() {
+    return movieYear;
   }
 
   /**
@@ -129,14 +78,12 @@ public class MovieNameMatcher {
   private void getMatcherRes(List<NameMatcher> matchResults, NameMatcher movieMatcher) {
     if (movieMatcher.found()) {
       matchResults.add(movieMatcher);
-      if (DEBUG) {
-        System.out.println("    " + movieMatcher);
-      }
     }
   }
 
   /**
    * Try to get movie name by detecting year
+   *
    * @return A matcher with all from beginning to detected year in filename or empty string
    */
   private NameMatcher getMovieNameByYear() {
@@ -155,7 +102,7 @@ public class MovieNameMatcher {
     }
 
     if (!name.equals("")) {
-      name = Utils.getFilteredName(CommonWords.normalize(name), regexs);
+      name = CommonWords.getFilteredName(CommonWords.normalize(name), regexs);
     }
 
     movieMatcher.setMatch(name);
@@ -164,6 +111,7 @@ public class MovieNameMatcher {
 
   /**
    * Try to get movie name by detecting first capital word
+   *
    * @return A matcher with all from beginning to detected capital word in filename or empty string
    */
   private NameMatcher getMovieNameByUpperCase() {
@@ -181,37 +129,21 @@ public class MovieNameMatcher {
 
     if (!end.equals("")) {
       name = name.substring(0, name.indexOf(end));
-      movieMatcher.setMatch(Utils.getFilteredName(name, regexs));
+      movieMatcher.setMatch(CommonWords.getFilteredName(name, regexs));
     }
     return movieMatcher;
   }
 
   /**
    * Get movie name by regular expression
+   *
    * @return A Matcher
    */
   private NameMatcher getMovieNameByRegex() {
     NameMatcher movieMatcher = new NameMatcher("Regex Matcher", NameMatcher.MEDIUM);
     String name = filename.substring(0, filename.lastIndexOf("."));
-    name = Utils.getFilteredName(CommonWords.normalize(name), regexs);
+    name = CommonWords.getFilteredName(CommonWords.normalize(name), regexs);
     movieMatcher.setMatch(name);
     return movieMatcher;
-  }
-
-  /**
-   * class MyStringLengthComparable , compare two string length
-   */
-  private static class MyStringLengthComparable implements Comparator<String> {
-
-    @Override
-    public int compare(String s1, String s2) {
-      if (s1.length() == 2) {
-        return 1;
-      }
-      if (s2.length() == 2) {
-        return -1;
-      }
-      return s1.length() - s2.length();
-    }
   }
 }

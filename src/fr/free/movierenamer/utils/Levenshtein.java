@@ -28,7 +28,7 @@ import java.util.Comparator;
  *
  * Some parts are from wikipedia
  */
-public class Levenshtein {
+public abstract class Levenshtein {
   
   private static int minimum(int a, int b, int c) {
     return Math.min(Math.min(a, b), c);
@@ -53,7 +53,7 @@ public class Levenshtein {
     
     return distance[str1.length()][str2.length()];
   }
-  
+
   public static void sortByLevenshteinDistanceYear(final String str, int year, ArrayList<SearchResult> arrayStr) {
     ArrayList<SearchResult> tmp = new ArrayList<SearchResult>();
     if (year != -1) {

@@ -17,11 +17,15 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.matcher.TvShowNameMatcher;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.MediaTag;
 import fr.free.movierenamer.utils.Settings;
+import java.io.File;
+import java.util.List;
 
 /**
  *
@@ -29,16 +33,19 @@ import fr.free.movierenamer.utils.Settings;
  */
 public class TvShow implements Media {//A faire
 
-  private MediaID mediaID;
+  private MediaID mediaId;
   private MediaFile tvShowFile;
-  private String tvShowId;
+  private TvShowSeason tvshowSeason;
+  private MediaTag mtag;
+  private SxE sxe;
   private String search;
 
-  public TvShow(MediaFile tvShowFile) {
+  public TvShow(MediaFile tvShowFile, List<String> regexs) {
     this.tvShowFile = tvShowFile;
-    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile);
+    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, regexs);
     search = tvMatcher.getTvShowName();
-    System.out.println("\n  Tv show Title : " + search + "\n");
+    sxe = new TvShowEpisodeMatcher(tvShowFile.getFile().getParent() + File.separator + tvShowFile.getFile().getName()).matchEpisode();
+    tvshowSeason = new TvShowSeason(-1);
   }
 
   @Override
@@ -59,6 +66,10 @@ public class TvShow implements Media {//A faire
   @Override
   public String getSearch() {
     return search;
+  }
+  
+  public SxE getSearchSxe() {
+    return sxe;
   }
 
   @Override
@@ -82,12 +93,22 @@ public class TvShow implements Media {//A faire
 
   @Override
   public void setMediaID(MediaID id) {
-    mediaID = id;
+    mediaId = id;
   }
 
   @Override
   public MediaID getMediaId(int IDtype) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (mediaId.getType() == IDtype) {
+      return mediaId;
+    }
+/*
+    for (MediaID mid : tvshowInfo.getIDs()) {
+      if (mid.getType() == IDtype) {
+        return mid;
+      }
+    }*/
+
+    return null;
   }
 
   @Override

@@ -44,6 +44,9 @@ public class MediaTag {
       return empty;
     }
     String extensions = getMediaInfo(StreamKind.General, 0, "Codec/Extensions", "Format");
+    if(extensions == null || extensions.length() ==0){
+      return empty;
+    }
     return new Scanner(extensions).next().toLowerCase();
   }
 
@@ -52,7 +55,7 @@ public class MediaTag {
       return empty;
     }
     String fileSize = getMediaInfo(StreamKind.General, 0, "FileSize/String4", "FileSize/String");
-    return fileSize;
+    return fileSize == null ? empty:fileSize;
   }
 
   public String getDuration() {
@@ -60,7 +63,7 @@ public class MediaTag {
       return empty;
     }
     String duration = getMediaInfo(StreamKind.General, 0, "Duration/String");
-    return duration;
+    return duration == null ? empty:duration;
   }
 
   public String getVideoCodec() {
@@ -68,6 +71,9 @@ public class MediaTag {
       return empty;
     }
     String codec = getMediaInfo(StreamKind.Video, 0, "Encoded_Library/Name", "CodecID/Hint", "Format");
+    if(codec == null || codec.length() ==0){
+      return empty;
+    }
     return new Scanner(codec).next();
   }
 
@@ -76,7 +82,7 @@ public class MediaTag {
       return empty;
     }
     String frameRate = getMediaInfo(StreamKind.Video, 0, "FrameRate", "FrameRate/String");
-    return frameRate;
+    return frameRate == null ? empty:frameRate;
   }
 
   public String getVideoFormat() {
@@ -87,7 +93,7 @@ public class MediaTag {
     String scanType = getMediaInfo(StreamKind.Video, 0, "ScanType");
 
     if (height == null || scanType == null) {
-      return "";
+      return empty;
     }
     return height + Character.toLowerCase(scanType.charAt(0));
   }
@@ -100,7 +106,7 @@ public class MediaTag {
     String height = getMediaInfo(StreamKind.Video, 0, "Height");
 
     if (width == null || height == null) {
-      return "";
+      return empty;
     }
     return width + 'x' + height;
   }
@@ -110,6 +116,9 @@ public class MediaTag {
       return empty;
     }
     String width = getMediaInfo(StreamKind.Video, 0, "Width");
+    if(width == null || !Utils.isDigit(width)){
+      return empty;
+    }
     return Integer.parseInt(width) < 900 ? "SD" : "HD";
   }
 
@@ -130,7 +139,7 @@ public class MediaTag {
       return empty;
     }
     String codec = getMediaInfo(StreamKind.Audio, stream, "CodecID/Hint", "Format");
-    return codec.replaceAll("\\p{Punct}", "");
+    return codec == null ? empty:codec.replaceAll("\\p{Punct}", "");
   }
 
   public String getAudioCodecString(String separator, int limit) {
@@ -155,7 +164,7 @@ public class MediaTag {
     }
     String language = getMediaInfo(StreamKind.Audio, stream, "Language/String");
     if (language == null) {
-      return "";
+      return empty;
     }
 
     return language.toLowerCase();
@@ -187,7 +196,7 @@ public class MediaTag {
     }
     String channels = getMediaInfo(StreamKind.Audio, stream, "Channel(s)");
     if (channels == null) {
-      return "";
+      return empty;
     }
     return channels + "ch";
   }
@@ -218,7 +227,7 @@ public class MediaTag {
     }
     String title = getMediaInfo(StreamKind.Audio, stream, "Title");
     if (title == null) {
-      return "";
+      return empty;
     }
     return title;
   }
@@ -271,7 +280,7 @@ public class MediaTag {
       return empty;
     }
 
-    int count = getAudioStreamCount();
+    int count = getTextStreamCount();
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < count; i++) {
       String textTitle = getTextTitle(i);

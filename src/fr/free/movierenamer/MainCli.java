@@ -99,7 +99,7 @@ public class MainCli {
           setting.locale = "fr";
         }
         setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
-        setting.imdbFr = setting.locale.equals("fr");
+        setting.movieScrapperFR = setting.locale.equals("fr");
         setting.tvdbFr = setting.locale.equals("fr");
       } else {
         saved = true;

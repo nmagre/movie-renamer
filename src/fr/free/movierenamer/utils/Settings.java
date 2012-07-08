@@ -27,6 +27,7 @@ import javax.swing.UIManager;
 
 /**
  * Class Settings , Movie Renamer settings
+ *
  * @author Nicolas Magré
  */
 public class Settings {
@@ -66,15 +67,14 @@ public class Settings {
   public final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";
   public static final String tvdbAPIUrlTvShowImage = "http://thetvdb.com/banners/";
   //Allocine
-  public final String allocineAPISearch="http://api.allocine.fr/rest/v3/search?partner=yW5kcm9pZC12M3M&filter=movie&striptags=synopsis,synopsisshort&q=";
-  public final String allocineAPIInfo = "http://api.allocine.fr/rest/v3/movie?partner=yW5kcm9pZC12M3M&profile=large&filter=movie&striptags=synopsis,synopsisshort&code=";
+  public final String allocineAPISearch = "http://api.allocine.fr/rest/v3/search?partner=yW5kcm9pZC12M3M&filter=FILTER&striptags=synopsis,synopsisshort&q=";
+  public final String allocineAPIInfo = "http://api.allocine.fr/rest/v3/MEDIA?partner=yW5kcm9pZC12M3M&profile=large&filter=MEDIA&striptags=synopsis,synopsisshort&code=";
   //Xbmc Passion
   public final String xbmcPassionImdblookup = "http://passion-xbmc.org/scraper/ajax.php?Ajax=Home&";
   // List
   public int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
   public String[] fanartExtList = {".jpg", "-fanart.jpg"};
-
   //LAF
   public final static UIManager.LookAndFeelInfo lookAndFeels[] = UIManager.getInstalledLookAndFeels();
   public boolean lafChanged = false;
@@ -82,7 +82,6 @@ public class Settings {
   //Apk
   public String xurlMdb = Utils.rot13(apkMdb);
   public String xurlTdb = Utils.rot13(apkTdb);
-  
   // Saved settings
   public String locale = "";
   public static String[] nameFilters = {
@@ -96,7 +95,7 @@ public class Settings {
     " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4",
     "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"
   };
-  public ArrayList<String> movieNameFilters;
+  public ArrayList<String> mediaNameFilters;
   public String xmlVersion = "";
   public boolean xmlError = false;
   public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
@@ -114,22 +113,19 @@ public class Settings {
   public String separator = ", ";
   public int limit = 3;
   public String laf = "";
-  public int scrapper = 0;
-  
+  public int movieScrapper = 0;
+  public int tvshowScrapper = 0;
   // Boolean
   public boolean useExtensionFilter = true;
   public boolean showMovieFilePath = false;
   public boolean scanSubfolder = false;
-  public boolean hideRenamedMovie = false;
+  public boolean hideRenamedMedia = false;
   public boolean displayApproximateResult = false;
   public boolean displayThumbResult = true;
-  public boolean downThumb = true;
-  public boolean downFanart = true;
-  public boolean downTrailer = false;
   public boolean createMovieDirectory = false;
-  public boolean imdbInfo = true;
-  public boolean imdbFr = false;
-  public boolean selectFrstMovie = false;
+  public boolean movieScrapperFR = false;
+  public boolean tvshowScrapperFR = false;
+  public boolean selectFrstMedia = false;
   public boolean selectFrstRes = true;
   public boolean movieInfoPanel = true;
   public boolean actorImage = true;
@@ -137,10 +133,10 @@ public class Settings {
   public boolean fanart = true;
   public boolean checkUpdate = false;
   public boolean showNotaMovieWarn = true;
-  public boolean autoSearchMovie = true;
+  public boolean autoSearchMedia = true;
   public boolean rmSpcChar = true;
   public boolean rmDupSpace = true;
-  public boolean tvdbFr = false;
+  public boolean tvdbFr = true;
   public boolean clearXMLCache = false;
   public boolean sortBySimiYear = true;
 
@@ -148,8 +144,8 @@ public class Settings {
    * Constructor
    */
   public Settings() {
-    movieNameFilters = new ArrayList<String>();
-    movieNameFilters.addAll(Arrays.asList(nameFilters));
+    mediaNameFilters = new ArrayList<String>();
+    mediaNameFilters.addAll(Arrays.asList(nameFilters));
     Utils.createFilePath(configFile, false);
     Utils.createFilePath(fanartCacheDir, true);
     Utils.createFilePath(thumbCacheDir, true);
@@ -170,6 +166,7 @@ public class Settings {
 
   /**
    * Save setting
+   *
    * @return True if setting was saved, False otherwise
    */
   public boolean saveSetting() {
@@ -199,22 +196,20 @@ public class Settings {
       out.write("    <separator>" + separator + "</separator>" + endl);
       out.write("    <limit>" + limit + "</limit>" + endl);
       out.write("    <laf>" + laf + "</laf>" + endl);
-      out.write("    <scrapper>" + scrapper + "</scrapper>" + endl);
-      
+      out.write("    <movieScrapper>" + movieScrapper + "</movieScrapper>" + endl);
+      out.write("    <tvshowScrapper>" + tvshowScrapper + "</tvshowScrapper>" + endl);
+
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);
       out.write("    <showMovieFilePath>" + (showMovieFilePath ? 0 : 1) + "</showMovieFilePath>" + endl);
       out.write("    <scanSubfolder>" + (scanSubfolder ? 0 : 1) + "</scanSubfolder>" + endl);
-      out.write("    <hideRenamedMovie>" + (hideRenamedMovie ? 0 : 1) + "</hideRenamedMovie>" + endl);
+      out.write("    <hideRenamedMedia>" + (hideRenamedMedia ? 0 : 1) + "</hideRenamedMedia>" + endl);
       out.write("    <displayApproximateResult>" + (displayApproximateResult ? 0 : 1) + "</displayApproximateResult>" + endl);
       out.write("    <displayThumbResult>" + (displayThumbResult ? 0 : 1) + "</displayThumbResult>" + endl);
-      out.write("    <downThumb>" + (downThumb ? 0 : 1) + "</downThumb>" + endl);
-      out.write("    <downFanart>" + (downFanart ? 0 : 1) + "</downFanart>" + endl);
-      out.write("    <downTrailer>" + (downTrailer ? 0 : 1) + "</downTrailer>" + endl);
       out.write("    <createMovieDirectory>" + (createMovieDirectory ? 0 : 1) + "</createMovieDirectory>" + endl);
-      out.write("    <imdbInfo>" + (imdbInfo ? 0 : 1) + "</imdbInfo>" + endl);
-      out.write("    <imdbFr>" + (imdbFr ? 0 : 1) + "</imdbFr>" + endl);
-      out.write("    <selectFrstMovie>" + (selectFrstMovie ? 0 : 1) + "</selectFrstMovie>" + endl);
+      out.write("    <movieScrapperFR>" + (movieScrapperFR ? 0 : 1) + "</movieScrapperFR>" + endl);
+      out.write("    <tvshowScrapperFR>" + (tvshowScrapperFR ? 0 : 1) + "</tvshowScrapperFR>" + endl);
+      out.write("    <selectFrstMedia>" + (selectFrstMedia ? 0 : 1) + "</selectFrstMedia>" + endl);
       out.write("    <selectFrstRes>" + (selectFrstRes ? 0 : 1) + "</selectFrstRes>" + endl);
       out.write("    <movieInfoPanel>" + (movieInfoPanel ? 0 : 1) + "</movieInfoPanel>" + endl);
       out.write("    <actorImage>" + (actorImage ? 0 : 1) + "</actorImage>" + endl);
@@ -222,7 +217,7 @@ public class Settings {
       out.write("    <fanart>" + (fanart ? 0 : 1) + "</fanart>" + endl);
       out.write("    <checkUpdate>" + (checkUpdate ? 0 : 1) + "</checkUpdate>" + endl);
       out.write("    <showNotaMovieWarn>" + (showNotaMovieWarn ? 0 : 1) + "</showNotaMovieWarn>" + endl);
-      out.write("    <autoSearchMovie>" + (autoSearchMovie ? 0 : 1) + "</autoSearchMovie>" + endl);
+      out.write("    <autoSearchMedia>" + (autoSearchMedia ? 0 : 1) + "</autoSearchMedia>" + endl);
       out.write("    <rmSpcChar>" + (rmSpcChar ? 0 : 1) + "</rmSpcChar>" + endl);
       out.write("    <rmDupSpace>" + (rmDupSpace ? 0 : 1) + "</rmDupSpace>" + endl);
       out.write("    <tvdbFr>" + (tvdbFr ? 0 : 1) + "</tvdbFr>" + endl);
@@ -241,6 +236,7 @@ public class Settings {
 
   /**
    * Get Movie Renamer version
+   *
    * @return Movie Renamer Version
    */
   public String getVersion() {

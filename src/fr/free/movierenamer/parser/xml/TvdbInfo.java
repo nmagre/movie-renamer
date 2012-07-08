@@ -17,7 +17,9 @@
  */
 package fr.free.movierenamer.parser.xml;
 
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
+import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -26,11 +28,19 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Nicolas Magré
  */
-public class TvdbInfo extends DefaultHandler implements IParser<TvShowInfo> {//A faire
+public class TvdbInfo extends DefaultHandler implements IParser<ArrayList<TvShowSeason>> {
 
   private StringBuffer buffer;
-  private boolean french;
-  private TvShowInfo tvShowInfo;
+  private ArrayList<TvShowSeason> seasons;
+  private boolean data;
+  private String title;
+  private String plot;
+  private String rating;
+  private String votes;
+  private int season;
+  private int episode;
+  private TvShowSeason currentSeason;
+  private TvShowEpisode currentEpisode;
 
   public TvdbInfo() {
     super();
@@ -39,7 +49,10 @@ public class TvdbInfo extends DefaultHandler implements IParser<TvShowInfo> {//A
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    tvShowInfo = new TvShowInfo();
+    seasons = new ArrayList<TvShowSeason>();
+    data = false;
+    currentSeason = null;
+    currentEpisode = null;
   }
 
   @Override
@@ -50,12 +63,60 @@ public class TvdbInfo extends DefaultHandler implements IParser<TvShowInfo> {//A
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-
+    if (name.equalsIgnoreCase("Data")) {
+      data = true;
+    }
+    if (name.equalsIgnoreCase("Episode")) {
+      currentEpisode = new TvShowEpisode();
+      title = "";
+      plot = "";
+      rating = "";
+      votes = "";
+      episode = -1;
+    }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("series")) {
+    if (name.equalsIgnoreCase("Data")) {
+      data = false;
+      if (currentSeason != null) {
+        seasons.add(currentSeason);
+      }
+    }
+    if (data) {
+      if (name.equalsIgnoreCase("Episode")) {
+        currentEpisode.setNum(episode);
+        currentEpisode.setTitle(title);
+        currentEpisode.setPlot(plot);
+        currentEpisode.setRating(rating);
+        currentEpisode.setVotes(votes);
+        if (currentSeason == null) {
+          currentSeason = new TvShowSeason(season);
+        } else if (currentSeason.getNum() != season) {
+          seasons.add(currentSeason);
+          currentSeason = new TvShowSeason(season);
+        }
+        currentSeason.addEpisode(currentEpisode);
+      }
+      if (name.equalsIgnoreCase("EpisodeName")) {
+        title = buffer.toString();
+      }
+      if (name.equalsIgnoreCase("SeasonNumber")) {
+        season = Integer.parseInt(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("EpisodeNumber")) {
+        episode = Integer.parseInt(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("Overview")) {
+        plot = buffer.toString();
+      }
+      if (name.equalsIgnoreCase("Rating")) {
+        rating = buffer.toString();
+      }
+      if (name.equalsIgnoreCase("RatingCount")) {
+        votes = buffer.toString();
+      }
     }
     buffer = null;
   }
@@ -69,7 +130,7 @@ public class TvdbInfo extends DefaultHandler implements IParser<TvShowInfo> {//A
   }
 
   @Override
-  public TvShowInfo getObject() {
-    return tvShowInfo;
+  public ArrayList<TvShowSeason> getObject() {
+    return seasons;
   }
 }

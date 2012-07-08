@@ -17,23 +17,34 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import fr.free.movierenamer.utils.Utils;
+
 /**
  * Class SxE
  * @author Nicolas Magré
  */
 public class SxE {
 
-  private int season = -1;
-  private int episode = -1;
+  private int season;
+  private int episode;
+  private String match;
 
   public SxE() {
     season = -1;
     episode = -1;
+    match = "";
   }
-
+  
   public SxE(int season, int episode) {
     this.season = season;
     this.episode = episode;
+    this.match = "";
+  }
+  
+  public SxE(int season, int episode, String match) {
+    this.season = season;
+    this.episode = episode;
+    this.match = match;
   }
 
   public int getSeason() {
@@ -42,6 +53,17 @@ public class SxE {
 
   public int getEpisode() {
     return episode;
+  }
+  
+  public String getMatch() {
+    return match;
+  }
+  
+  public int getAbsNum(){
+    if(!Utils.isDigit(match)){
+      return -1;
+    }
+    return Integer.parseInt(match);
   }
   
   public boolean isValid(){

@@ -67,7 +67,7 @@ public abstract class Utils {
   public static String getRbTok(String propToken) {
     String msg = "";
     try {
-      // msg = rb.getString(propToken);
+       msg = rb.getString(propToken);
     } catch (MissingResourceException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
@@ -93,14 +93,6 @@ public abstract class Utils {
    */
   public static boolean isWindows() {
     return getOsName().startsWith("Windows");
-  }
-
-  public static String getFilteredName(String movieName, List<String> replaceBy) {
-    String res = movieName.replaceAll("\\.", " ").replaceAll("_", " ");
-    for (String regex : replaceBy) {
-      res = res.replaceAll("(?i)" + regex, "");
-    }
-    return res;
   }
 
   /**

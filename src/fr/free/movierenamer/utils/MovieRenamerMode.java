@@ -31,9 +31,10 @@ public class MovieRenamerMode {
   private int mode;
   private int mediaType;
   private String title;
-  public static final ImageIcon[] modeIcon = new ImageIcon[]{//Mode icon
-    new ImageIcon(Utils.getImageFromJAR("/image/movieMode.png", MovieRenamerMode.class)),
-    new ImageIcon(Utils.getImageFromJAR("/image/tvShowMode.png", MovieRenamerMode.class))};
+  private static final ImageIcon[] modeIcon = new ImageIcon[]{//Mode icon
+    new ImageIcon(Utils.getImageFromJAR("/image/movie.png", MovieRenamerMode.class)),
+    new ImageIcon(Utils.getImageFromJAR("/image/tv.png", MovieRenamerMode.class))
+  };
 
   public MovieRenamerMode(String title, int mode, int mediaType) {
     this.title = title;
@@ -47,5 +48,9 @@ public class MovieRenamerMode {
 
   public int getMediaType() {
     return mediaType;
+  }
+
+  public ImageIcon getIcon() {
+    return modeIcon[mode];
   }
 }

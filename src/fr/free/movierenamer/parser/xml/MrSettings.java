@@ -76,8 +76,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           }
           if (name.equalsIgnoreCase("nameFilters")) {
             String res = Utils.unEscapeXML(buffer.toString(), "UTF-8");
-            config.movieNameFilters = new ArrayList<String>();
-            config.movieNameFilters.addAll(Arrays.asList(res.split("/_")));
+            config.mediaNameFilters = new ArrayList<String>();
+            config.mediaNameFilters.addAll(Arrays.asList(res.split("/_")));
           }
           if (name.equalsIgnoreCase("extensions")) {
             String res = buffer.toString();
@@ -130,13 +130,20 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
             if (name.equalsIgnoreCase("limit")) {
               config.limit = Integer.parseInt(buffer.toString());
             }
-            if (name.equalsIgnoreCase("scrapper")) {
+            if (name.equalsIgnoreCase("movieScrapper")) {
               int nb = Integer.parseInt(buffer.toString());
               if(nb< 0 || nb >2){
                 nb = 0;
               }
-              config.scrapper = nb;
-            }            
+              config.movieScrapper = nb;
+            }
+            if (name.equalsIgnoreCase("tvshowScrapper")) {
+              int nb = Integer.parseInt(buffer.toString());
+              if(nb< 0 || nb >2){//A refaire, depend du nombre de scrapper
+                nb = 0;
+              }
+              config.tvshowScrapper = nb;
+            }
           } catch (NumberFormatException ex) {
             Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
             config.xmlError = true;
@@ -161,8 +168,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("scanSubfolder")) {
             config.scanSubfolder = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("hideRenamedMovie")) {
-            config.hideRenamedMovie = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("hideRenamedMedia")) {
+            config.hideRenamedMedia = buffer.toString().equals(sZero);
           }
           if (name.equalsIgnoreCase("displayApproximateResult")) {
             config.displayApproximateResult = buffer.toString().equals(sZero);
@@ -170,26 +177,17 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("displayThumbResult")) {
             config.displayThumbResult = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("downThumb")) {
-            config.downThumb = buffer.toString().equals(sZero);
-          }
-          if (name.equalsIgnoreCase("downFanart")) {
-            config.downFanart = buffer.toString().equals(sZero);
-          }
-          if (name.equalsIgnoreCase("downTrailer")) {
-            config.downTrailer = buffer.toString().equals(sZero);
-          }
           if (name.equalsIgnoreCase("createMovieDirectory")) {
             config.createMovieDirectory = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("imdbInfo")) {
-            config.imdbInfo = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("movieScrapperFR")) {
+            config.movieScrapperFR = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("imdbFr")) {
-            config.imdbFr = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("tvshowScrapperFR")) {
+            config.tvshowScrapperFR = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("selectFrstMovie")) {
-            config.selectFrstMovie = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("selectFrstMedia")) {
+            config.selectFrstMedia = buffer.toString().equals(sZero);
           }
           if (name.equalsIgnoreCase("selectFrstRes")) {
             config.selectFrstRes = buffer.toString().equals(sZero);
@@ -212,8 +210,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("showNotaMovieWarn")) {
             config.showNotaMovieWarn = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("autoSearchMovie")) {
-            config.autoSearchMovie = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("autoSearchMedia")) {
+            config.autoSearchMedia = buffer.toString().equals(sZero);
           }
           if (name.equalsIgnoreCase("rmSpcChar")) {
             config.rmSpcChar = buffer.toString().equals(sZero);

@@ -18,8 +18,9 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
+import fr.free.movierenamer.parser.xml.TvdbUpdate;
 import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
@@ -27,10 +28,9 @@ import fr.free.movierenamer.utils.Settings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,13 +42,14 @@ import org.xml.sax.SAXException;
  * @author Nicolas Magré
  */
 //A faire
-public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
+public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String> {
 
+  private static final int RETRY = 3;
   private MediaID id;
   private Settings setting;
 
   public TvdbInfoWorker(MediaID id, Settings setting) throws ActionNotValidException {
-    if(id.getType() != MediaID.TVDBID) {
+    if (id.getType() != MediaID.TVDBID) {
       throw new ActionNotValidException("TvdbInfoWorker can only use tvdb id");
     }
     this.id = id;
@@ -56,38 +57,76 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
   }
 
   @Override
-  protected TvShowInfo doInBackground() {
-    TvShowInfo tvShowInfo = null;
+  protected ArrayList<TvShowSeason> doInBackground() {
+    System.out.println("TvdbInfoWorker");
+    ArrayList<TvShowSeason> seasons = new ArrayList<TvShowSeason>();
     try {
-      System.out.println("Tv Show info worker start");
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
       URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvdbFr ? "fr" : "en") + ".zip");
       File f = setting.cache.get(url, Cache.TVSHOWZIP);
-      if (f == null) {//A refaire, XMLPArser peut lire un fichier depuis une URL
-        InputStream in;
-        try {
-          in = url.openStream();
-        } catch (IOException e) {
+      if (f == null) {
+        for (int i = 0; i < RETRY; i++) {
+          InputStream in;
           try {
-            Thread.sleep(1200);
             in = url.openStream();
-          } catch (IOException ex) {
+            setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
+            f = setting.cache.get(url, Cache.TVSHOWZIP);
+            break;
+          } catch (Exception e) {//Don't care about exception
+            Settings.LOGGER.log(Level.SEVERE, null, e);
             try {
-              Thread.sleep(600);
-              in = url.openStream();
-            } catch (IOException exe) {
-              //A refaire , traiter erreur
-              return null;
+              Thread.sleep(300);
+            } catch (InterruptedException ex) {
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
             }
           }
         }
-        setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
-        f = setting.cache.get(url, Cache.TVSHOWZIP);
+      } else {
+        //Check if there is an update for this serie
+        long time = f.lastModified();
+        URL urlup = new URL(setting.tvdbAPIUrlTvShow + "Updates.php?type=series&time=" + time);
+        XMLParser<ArrayList<MediaID>> xmp = new XMLParser<ArrayList<MediaID>>(urlup.toString());
+        xmp.setParser(new TvdbUpdate());
+        ArrayList<MediaID> ids = xmp.parseXml();
+        boolean needUpdate = false;
+        for (MediaID mid : ids) {
+          if (mid.equals(this.id)) {
+            needUpdate = true;
+            break;
+          }
+        }
+        if (needUpdate) {
+          for (int i = 0; i < RETRY; i++) {
+            InputStream in;
+            try {
+              in = url.openStream();
+              setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
+              f = setting.cache.get(url, Cache.TVSHOWZIP);
+              break;
+            } catch (Exception e) {//Don't care about exception
+              Settings.LOGGER.log(Level.SEVERE, null, e);
+              try {
+                Thread.sleep(300);
+              } catch (InterruptedException ex) {
+                Settings.LOGGER.log(Level.SEVERE, null, ex);
+              }
+            }
+          }
+        }
       }
 
-      XMLParser<TvShowInfo> xmp = new XMLParser<TvShowInfo>(f.getAbsolutePath(), (setting.tvdbFr ? "fr" : "en") + ".xml");
+      if (f == null) {// A faire
+        //error
+        return null;
+      }
+
+      XMLParser<ArrayList<TvShowSeason>> xmp = new XMLParser<ArrayList<TvShowSeason>>(f.getAbsolutePath(), (setting.tvdbFr ? "fr" : "en") + ".xml");
       xmp.setParser(new TvdbInfo());
-      tvShowInfo = xmp.parseXml();
+      seasons = xmp.parseXml();
+
+      for (TvShowSeason season : seasons) {
+        System.out.println(season);
+      }
 
     } catch (InterruptedException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -98,6 +137,6 @@ public class TvdbInfoWorker extends SwingWorker<TvShowInfo, String> {
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
-    return tvShowInfo;
+    return seasons;
   }
 }

@@ -129,7 +129,7 @@ public class Main {
           setting.locale = "fr";
         }
         setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
-        setting.imdbFr = setting.locale.equals("fr");
+        setting.movieScrapperFR = setting.locale.equals("fr");
         setting.tvdbFr = setting.locale.equals("fr");
       } else {
         saved = true;
@@ -155,8 +155,8 @@ public class Main {
         if (!setting.xmlVersion.equals("Beta_2.0")) {
           int n = JOptionPane.showConfirmDialog(null, bundle.getString("resetRegexFilter"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
           if (n == JOptionPane.OK_OPTION) {
-            setting.movieNameFilters = new ArrayList<String>();
-            setting.movieNameFilters.addAll(Arrays.asList(Settings.nameFilters));
+            setting.mediaNameFilters = new ArrayList<String>();
+            setting.mediaNameFilters.addAll(Arrays.asList(Settings.nameFilters));
           }
         }
         saved = setting.saveSetting();

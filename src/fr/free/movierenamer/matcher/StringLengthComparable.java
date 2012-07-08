@@ -15,12 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.media.tvshow;
+package fr.free.movierenamer.matcher;
+
+import java.util.Comparator;
 
 /**
- *
- * @author duffy
+ * Class StringLengthComparable, compare two string length
+ * @author Nicolas Magré
  */
-public class TvShowInfo {//A faire
-  //A faire
+public class StringLengthComparable implements Comparator<String> {
+
+  @Override
+  public int compare(String s1, String s2) {
+    if (s1.length() == 2) {
+      return 1;
+    }
+    if (s2.length() == 2) {
+      return -1;
+    }
+    return s1.length() - s2.length();
+  }
 }

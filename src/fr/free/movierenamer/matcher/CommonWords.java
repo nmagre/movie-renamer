@@ -17,14 +17,58 @@
  */
 package fr.free.movierenamer.matcher;
 
-import fr.free.movierenamer.utils.Utils;
 import java.util.*;
 
 /**
  * Class CommonWords
+ *
  * @author Nicolas Magré
  */
-public class CommonWords {
+public abstract class CommonWords {
+
+  /**
+   * Match all result from all matcher
+   *
+   * @param names Matchers results
+   * @param priority 
+   * @return Most probable result
+   */
+  public static String matchAll(ArrayList<NameMatcher> names, boolean priority) {
+
+    if (names.size() == 1) {
+      return normalize(names.get(0).getMatch());
+    }
+    
+    if(priority){
+      for(NameMatcher name : names) {
+        if(name.getPriority() == NameMatcher.HIGH){
+          return normalize(name.getMatch());
+        }
+      }
+    }
+
+    ArrayList<String> allMatch = new ArrayList<String>();
+    for (int i = 0; i < names.size(); i++) {
+      allMatch.add(names.get(i).getMatch());
+    }
+
+    //Check if list is already as small as possible
+    List<String> movieNames = getCommonWords(allMatch);
+    if (movieNames == null || movieNames.isEmpty()) {
+      return getSmallStringList(allMatch);
+    }
+
+    //Get list as small as possible
+    List<String> tmp = getCommonWords(movieNames);
+    while (tmp != null) {
+      tmp = getCommonWords(tmp);
+      if (tmp != null) {
+        movieNames = tmp;
+      }
+    }
+
+    return getSmallStringList(movieNames);
+  }
 
   /**
    * Get list of common words in list of string separated by space character
@@ -104,29 +148,41 @@ public class CommonWords {
   }
 
   /**
+   * Get the small string in list
+   *
+   * @param list
+   * @return Smaller string or empty
+   */
+  public static String getSmallStringList(List<String> list) {
+    if (list.size() < 1) {
+      return "";
+    }
+    Collections.sort(list, new StringLengthComparable());
+    return normalize(list.get(0));
+  }
+
+  /**
+   * Replace all regular expression from list in media name by void, no case sensitive
+   *
+   * @param mediaName Media name to filtered
+   * @param replaceBy List of regular expression
+   * @return Cleaned movie name by regex
+   */
+  public static String getFilteredName(String mediaName, List<String> replaceBy) {
+    String res = mediaName.replaceAll("\\.", " ").replaceAll("_", " ");
+    for (String regex : replaceBy) {
+      res = res.replaceAll("(?i)" + regex, "");
+    }
+    return res;
+  }
+  /**
    * Remove all alone letters except current letters (i,a,y)
    *
    * @param text
    * @return String with alone letter removed
+   *
+   * public static String removeSingleLetter(String text) {//A refaire , pas utiliser StringBuilder sb = new StringBuilder(); String[] array = text.split(" "); for (String str : array) { if
+   * (str.length() > 1) { if (sb.length() != 0) { sb.append(" "); } sb.append(str); } else { if (str.equalsIgnoreCase("i") || str.equalsIgnoreCase("a") || Utils.isDigit(str) ||
+   * str.equalsIgnoreCase("y") || str.equalsIgnoreCase("à")) { if (sb.length() != 0) { sb.append(" "); } sb.append(str); } } } return sb.toString(); }
    */
-  public static String removeSingleLetter(String text) {//A refaire , pas utiliser
-    StringBuilder sb = new StringBuilder();
-    String[] array = text.split(" ");
-    for (String str : array) {
-      if (str.length() > 1) {
-        if (sb.length() != 0) {
-          sb.append(" ");
-        }
-        sb.append(str);
-      } else {
-        if (str.equalsIgnoreCase("i") || str.equalsIgnoreCase("a") || Utils.isDigit(str) || str.equalsIgnoreCase("y") || str.equalsIgnoreCase("à")) {
-          if (sb.length() != 0) {
-            sb.append(" ");
-          }
-          sb.append(str);
-        }
-      }
-    }
-    return sb.toString();
-  }
 }

@@ -65,6 +65,7 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(8, 3), "(803) test - Season 8 - Ep 03 - test - fr.avi");
     epMatchesTest.put(new SxE(10, 9), "test- Season 10 - Episode 9 - test.avi");
     epMatchesTest.put(new SxE(9, 9), "test - 9x09 - test (HD 720x400 Fr).avi");
+    epMatchesTest.put(new SxE(0, 9), "test - 009 - test (HD 720x400 Fr).avi");
     //With folder
     epMatchesTest.put(new SxE(3, 5), "S3/test - Ep. 05 -test.avi");
     epMatchesTest.put(new SxE(1, 51), "Saison 03/test - 1x51 - test.FR.avi");
