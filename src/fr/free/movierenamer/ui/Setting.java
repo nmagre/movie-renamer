@@ -81,7 +81,7 @@ public class Setting extends JDialog {
 
     rBtnThumbList = new JRadioButton[]{this.origThumbSizeRBtn, this.midThumbSizeRBtn, this.thumbThumbSizeRBtn};
     rBtnFanartList = new JRadioButton[]{this.origFanartSizeRBtn, this.midFanartSizeRBtn, this.thumbFanartSizeRBtn};
-    rBtnCase = new JRadioButton[]{this.firstLoRbtn, this.firstLaRbtn, this.upperRbtn, this.lowerRbtn};
+    rBtnCase = new JRadioButton[]{this.firstLoRbtn, this.firstLaRbtn, this.upperRbtn, this.lowerRbtn, this.noneRbtn};
     rBtnScrapper = new JRadioButton[]{this.imdbRBtn, this.tmdbRbtn, this.allocineRbtn};
     this.setting = setting;
     extensions = setting.extensions;
@@ -291,6 +291,7 @@ public class Setting extends JDialog {
         limitField = new JTextField();
         rmSpcCharChk = new JCheckBox();
         rmDupSpaceChk = new JCheckBox();
+        noneRbtn = new JRadioButton();
         jPanel4 = new JPanel();
         rmDupSpaceChk1 = new JCheckBox();
         rmSpcCharChk1 = new JCheckBox();
@@ -663,6 +664,9 @@ public class Setting extends JDialog {
 
         rmDupSpaceChk.setFont(new Font("Ubuntu", 0, 12));         rmDupSpaceChk.setText(bundle.getString("rmDupSpace")); // NOI18N
 
+        caseGroup.add(noneRbtn);
+        noneRbtn.setFont(new Font("Ubuntu", 0, 12));         noneRbtn.setText(bundle.getString("none")); // NOI18N
+
         GroupLayout movieFileNamePnlLayout = new GroupLayout(movieFileNamePnl);
         movieFileNamePnl.setLayout(movieFileNamePnlLayout);
         movieFileNamePnlLayout.setHorizontalGroup(
@@ -686,9 +690,6 @@ public class Setting extends JDialog {
                         .addGap(33, 33, 33))
                     .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                         .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
-                            .addComponent(createDirChk)
-                            .addComponent(rmDupSpaceChk)
-                            .addComponent(rmSpcCharChk)
                             .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                                 .addComponent(separatorLbl)
                                 .addPreferredGap(ComponentPlacement.RELATED)
@@ -697,15 +698,22 @@ public class Setting extends JDialog {
                                 .addComponent(limitLbl)
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(limitField, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE))
+                            .addComponent(caseLbl))
+                        .addContainerGap(209, Short.MAX_VALUE))
+                    .addGroup(movieFileNamePnlLayout.createSequentialGroup()
+                        .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
                             .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                                 .addGap(12, 12, 12)
                                 .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
+                                    .addComponent(noneRbtn)
                                     .addComponent(firstLaRbtn)
                                     .addComponent(firstLoRbtn)
                                     .addComponent(upperRbtn)
                                     .addComponent(lowerRbtn)))
-                            .addComponent(caseLbl))
-                        .addContainerGap(209, Short.MAX_VALUE))))
+                            .addComponent(createDirChk)
+                            .addComponent(rmDupSpaceChk)
+                            .addComponent(rmSpcCharChk))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         movieFileNamePnlLayout.setVerticalGroup(
             movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -724,16 +732,18 @@ public class Setting extends JDialog {
                             .addComponent(limitLbl)
                             .addComponent(limitField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                         .addGap(7, 7, 7)
-                        .addComponent(caseLbl)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(firstLoRbtn)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(firstLaRbtn)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(upperRbtn)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(lowerRbtn))
+                        .addComponent(caseLbl))
                     .addComponent(helpBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(noneRbtn)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(firstLoRbtn)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(firstLaRbtn)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(upperRbtn)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(lowerRbtn)
                 .addGap(18, 18, 18)
                 .addComponent(rmSpcCharChk)
                 .addPreferredGap(ComponentPlacement.RELATED)
@@ -744,7 +754,7 @@ public class Setting extends JDialog {
                 .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(testBtn)
                     .addComponent(testField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Movie File", movieFileNamePnl);
@@ -1359,7 +1369,7 @@ public class Setting extends JDialog {
         SearchPnl.setLayout(SearchPnlLayout);
         SearchPnlLayout.setHorizontalGroup(
             SearchPnlLayout.createParallelGroup(Alignment.LEADING)
-            .addComponent(jTabbedPane2, GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
+            .addComponent(jTabbedPane2)
         );
         SearchPnlLayout.setVerticalGroup(
             SearchPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -2332,6 +2342,7 @@ public class Setting extends JDialog {
     private JCheckBox movieInfoPanelChk;
     private ButtonGroup nfoGroup;
     private JPanel nfoPnl;
+    private JRadioButton noneRbtn;
     private JRadioButton origFanartSizeRBtn;
     public JRadioButton origThumbSizeRBtn;
     private JButton removeExtensuionBtn;

@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- *
+ * Class TvShowEpisode
  * @author Nicolas Magré
  */
 public class TvShowEpisode {
