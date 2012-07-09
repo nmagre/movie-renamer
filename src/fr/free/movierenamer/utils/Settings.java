@@ -82,8 +82,51 @@ public class Settings {
   //Apk
   public String xurlMdb = Utils.rot13(apkMdb);
   public String xurlTdb = Utils.rot13(apkTdb);
-  // Saved settings
+  public boolean xmlError = false;
+  /**
+   * Saved settings *
+   */
+  //General
+  public boolean selectFrstMedia = false;
+  public boolean scanSubfolder = false;
+  public boolean showNotaMovieWarn = true;
+  public boolean movieInfoPanel = true;
+  public boolean actorImage = true;
+  public boolean thumb = true;
+  public boolean fanart = true;
+  public String laf = "";
+  public int nfoType = 0;
+  public boolean checkUpdate = false;
   public String locale = "";
+  //Rename movie filename
+  public String movieFilenameFormat = "<t> (<y>)";
+  public String movieFilenameSeparator = ", ";
+  public int movieFilenameLimit = 3;
+  public int movieFilenameCase = 1;
+  public boolean movieFilenameTrim = true;
+  public boolean movieFilenameRmDupSpace = true;
+  public boolean movieFilenameCreateDirectory = false;
+  //Renamer movie folder
+  public String movieFolderFormat = "<t> (<y>)";
+  public String movieFolderSeparator = ", ";
+  public int movieFolderLimit = 3;
+  public int movieFolderCase = 1;
+  public boolean movieFolderTrim = true;
+  public boolean movieFolderRmDupSpace = true;
+  //Rename Tv show filename
+  public String tvShowFilenameFormat = "<st> S<s>E<e> <et>";
+  public String tvShowFilenameSeparator = ", ";
+  public int tvShowFilenameLimit = 3;
+  public int tvShowFilenameCase = 1;
+  public boolean tvShowFilenameTrim = true;
+  public boolean tvShowFilenameRmDupSpace = true;
+  //Image
+  public int thumbSize = 0;
+  public int fanartSize = 0;
+  public int thumbExt = 0;
+  //
+  //Filter 
+  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
   public static String[] nameFilters = {
     "notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual",
     "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
@@ -96,49 +139,25 @@ public class Settings {
     "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"
   };
   public ArrayList<String> mediaNameFilters;
-  public String xmlVersion = "";
-  public boolean xmlError = false;
-  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
-  public int thumbSize = 0;
-  public int fanartSize = 0;
-  public int nbResult = 2;
-  public String movieFilenameFormat = "<t> (<y>)";
-  public int thumbExt = 0;
-  public int fanartExt = 1;
-  public int renameCase = 1;
-  public String movieDir = "";
-  public int movieDirRenamedTitle = 0;
-  public String commande = "";
-  public int nfoType = 0;
-  public String separator = ", ";
-  public int limit = 3;
-  public String laf = "";
+  public boolean useExtensionFilter = true;
+  //Cache
+  public boolean clearXMLCache = false;
+  //Search
   public int movieScrapper = 0;
   public int tvshowScrapper = 0;
-  // Boolean
-  public boolean useExtensionFilter = true;
-  public boolean showMovieFilePath = false;
-  public boolean scanSubfolder = false;
-  public boolean hideRenamedMedia = false;
-  public boolean displayApproximateResult = false;
-  public boolean displayThumbResult = true;
-  public boolean createMovieDirectory = false;
   public boolean movieScrapperFR = false;
   public boolean tvshowScrapperFR = false;
-  public boolean selectFrstMedia = false;
-  public boolean selectFrstRes = true;
-  public boolean movieInfoPanel = true;
-  public boolean actorImage = true;
-  public boolean thumb = true;
-  public boolean fanart = true;
-  public boolean checkUpdate = false;
-  public boolean showNotaMovieWarn = true;
+  public boolean displayThumbResult = true;
   public boolean autoSearchMedia = true;
-  public boolean rmSpcChar = true;
-  public boolean rmDupSpace = true;
-  public boolean tvdbFr = true;
-  public boolean clearXMLCache = false;
+  public boolean selectFrstRes = true;
   public boolean sortBySimiYear = true;
+  public int nbResult = 2;
+  public boolean displayApproximateResult = false;
+  //Misc
+  public String xmlVersion = "";
+  //Not used
+  public boolean showMovieFilePath = false;
+  public boolean hideRenamedMedia = false;
 
   /**
    * Constructor
@@ -187,17 +206,21 @@ public class Settings {
       out.write("    <nbResult>" + nbResult + "</nbResult>" + endl);
       out.write("    <movieFilenameFormat>" + Utils.escapeXML(movieFilenameFormat) + "</movieFilenameFormat>" + endl);
       out.write("    <thumbExt>" + thumbExt + "</thumbExt>" + endl);
-      out.write("    <fanartExt>" + fanartExt + "</fanartExt>" + endl);
-      out.write("    <renameCase>" + renameCase + "</renameCase>" + endl);
-      out.write("    <movieDir>" + movieDir + "</movieDir>" + endl);
-      out.write("    <movieDirRenamedTitle>" + movieDirRenamedTitle + "</movieDirRenamedTitle>" + endl);
-      out.write("    <commande>" + Utils.escapeXML(commande) + "</commande>" + endl);
+      out.write("    <movieFilenameCase>" + movieFilenameCase + "</movieFilenameCase>" + endl);
       out.write("    <nfoType>" + nfoType + "</nfoType>" + endl);
-      out.write("    <separator>" + separator + "</separator>" + endl);
-      out.write("    <limit>" + limit + "</limit>" + endl);
+      out.write("    <movieFilenameSeparator>" + Utils.escapeXML(movieFilenameSeparator) + "</movieFilenameSeparator>" + endl);
+      out.write("    <movieFilenameLimit>" + movieFilenameLimit + "</movieFilenameLimit>" + endl);
       out.write("    <laf>" + laf + "</laf>" + endl);
       out.write("    <movieScrapper>" + movieScrapper + "</movieScrapper>" + endl);
       out.write("    <tvshowScrapper>" + tvshowScrapper + "</tvshowScrapper>" + endl);
+      out.write("    <movieFolderFormat>" + Utils.escapeXML(movieFolderFormat) + "</movieFolderFormat>" + endl);
+      out.write("    <movieFolderSeparator>" + Utils.escapeXML(movieFolderSeparator) + "</movieFolderSeparator>" + endl);
+      out.write("    <movieFolderLimit>" + movieFolderLimit + "</movieFolderLimit>" + endl);
+      out.write("    <movieFolderCase>" + movieFolderCase + "</movieFolderCase>" + endl);
+      out.write("    <tvShowFilenameFormat>" + Utils.escapeXML(tvShowFilenameFormat) + "</tvShowFilenameFormat>" + endl);
+      out.write("    <tvShowFilenameSeparator>" + Utils.escapeXML(tvShowFilenameSeparator) + "</tvShowFilenameSeparator>" + endl);
+      out.write("    <tvShowFilenameLimit>" + tvShowFilenameLimit + "</tvShowFilenameLimit>" + endl);
+      out.write("    <tvShowFilenameCase>" + tvShowFilenameCase + "</tvShowFilenameCase>" + endl);
 
       // booleans
       out.write("    <useExtensionFilter>" + (useExtensionFilter ? 0 : 1) + "</useExtensionFilter>" + endl);
@@ -206,7 +229,7 @@ public class Settings {
       out.write("    <hideRenamedMedia>" + (hideRenamedMedia ? 0 : 1) + "</hideRenamedMedia>" + endl);
       out.write("    <displayApproximateResult>" + (displayApproximateResult ? 0 : 1) + "</displayApproximateResult>" + endl);
       out.write("    <displayThumbResult>" + (displayThumbResult ? 0 : 1) + "</displayThumbResult>" + endl);
-      out.write("    <createMovieDirectory>" + (createMovieDirectory ? 0 : 1) + "</createMovieDirectory>" + endl);
+      out.write("    <movieFilenameCreateDirectory>" + (movieFilenameCreateDirectory ? 0 : 1) + "</movieFilenameCreateDirectory>" + endl);
       out.write("    <movieScrapperFR>" + (movieScrapperFR ? 0 : 1) + "</movieScrapperFR>" + endl);
       out.write("    <tvshowScrapperFR>" + (tvshowScrapperFR ? 0 : 1) + "</tvshowScrapperFR>" + endl);
       out.write("    <selectFrstMedia>" + (selectFrstMedia ? 0 : 1) + "</selectFrstMedia>" + endl);
@@ -218,11 +241,14 @@ public class Settings {
       out.write("    <checkUpdate>" + (checkUpdate ? 0 : 1) + "</checkUpdate>" + endl);
       out.write("    <showNotaMovieWarn>" + (showNotaMovieWarn ? 0 : 1) + "</showNotaMovieWarn>" + endl);
       out.write("    <autoSearchMedia>" + (autoSearchMedia ? 0 : 1) + "</autoSearchMedia>" + endl);
-      out.write("    <rmSpcChar>" + (rmSpcChar ? 0 : 1) + "</rmSpcChar>" + endl);
-      out.write("    <rmDupSpace>" + (rmDupSpace ? 0 : 1) + "</rmDupSpace>" + endl);
-      out.write("    <tvdbFr>" + (tvdbFr ? 0 : 1) + "</tvdbFr>" + endl);
+      out.write("    <movieFilenameTrim>" + (movieFilenameTrim ? 0 : 1) + "</movieFilenameTrim>" + endl);
+      out.write("    <movieFilenameRmDupSpace>" + (movieFilenameRmDupSpace ? 0 : 1) + "</movieFilenameRmDupSpace>" + endl);
       out.write("    <clearXMLCache>" + (clearXMLCache ? 0 : 1) + "</clearXMLCache>" + endl);
       out.write("    <sortBySimiYear>" + (sortBySimiYear ? 0 : 1) + "</sortBySimiYear>" + endl);
+      out.write("    <movieFolderTrim>" + (movieFolderTrim ? 0 : 1) + "</movieFolderTrim>" + endl);
+      out.write("    <movieFolderRmDupSpace>" + (movieFolderRmDupSpace ? 0 : 1) + "</movieFolderRmDupSpace>" + endl);
+      out.write("    <tvShowFilenameTrim>" + (tvShowFilenameTrim ? 0 : 1) + "</tvShowFilenameTrim>" + endl);
+      out.write("    <tvShowFilenameRmDupSpace>" + (tvShowFilenameRmDupSpace ? 0 : 1) + "</tvShowFilenameRmDupSpace>" + endl);
 
       out.write("  </setting>" + endl);
       out.write("</Movie_Renamer>" + endl);

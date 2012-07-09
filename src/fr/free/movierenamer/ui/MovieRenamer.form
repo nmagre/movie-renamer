@@ -95,9 +95,6 @@
           </Events>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="separator">
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="topTb.add(Box.createHorizontalGlue());"/>
-          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="movieModeBtn">
           <Properties>
@@ -124,6 +121,9 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tvShowModeBtnActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="topTb.add(Box.createHorizontalGlue());"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="updateBtn">
           <Properties>

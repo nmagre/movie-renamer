@@ -144,12 +144,12 @@ public abstract class Utils {
   }
 
   /**
-   * Get a string from an array separated by separator and limited to limit
+   * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
    *
    * @param array Object array
-   * @param separator Separator
-   * @param limit Limit
-   * @return String separated by separator or empty
+   * @param movieFilenameSeparator Separator
+   * @param movieFilenameLimit Limit
+   * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(Object[] array, String separator, int limit) {
     StringBuilder res = new StringBuilder();
@@ -173,22 +173,22 @@ public abstract class Utils {
   }
 
   /**
-   * Get a string from an array separated by separator and limited to limit
+   * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
    *
    * @param array ArrayList
-   * @param separator Separator
-   * @param limit Limit
-   * @return String separated by separator or empty
+   * @param movieFilenameSeparator Separator
+   * @param movieFilenameLimit Limit
+   * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(ArrayList<?> array, String separator, int limit) {
     return arrayToString(array.toArray(new Object[array.size()]), separator, limit);
   }
 
   /**
-   * Get an array from a string separated by separator
+   * Get an array from a string separated by movieFilenameSeparator
    *
    * @param str String
-   * @param separator Separator
+   * @param movieFilenameSeparator Separator
    * @return
    */
   public static ArrayList<String> stringToArray(String str, String separator) {

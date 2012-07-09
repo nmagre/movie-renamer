@@ -182,7 +182,7 @@ public class MovieRenamer extends JFrame {
       mediaList.ensureIndexIsVisible(mediaList.getSelectedIndex());
 
       //Check if media type is in current mode
-      if (!checkMediaTypeInCurrentMode(mediaFile)) {
+      if (!checkMediaTypeInCurrentMode(mediaFile)) {//A refaire, est-ce vraiment nécéssaire ?
         return;
       }
 
@@ -383,7 +383,7 @@ public class MovieRenamer extends JFrame {
             + "If you are sure that media is a " + currentMode.getTitle() + " ,just click \"Change type\"\n"
             + "If not you can select \"Auto change Mode\" to change Movie Renamer mode automatically\nor \"Cancel\"",
             "Media type not correspond to mode type", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
-    switch (res) {
+    switch (res) {//A refaire, mettre des variable au lieu des chiffres
       case 0:
         mediaFile.setType(currentMode.getMediaType());
         break;
@@ -479,7 +479,7 @@ public class MovieRenamer extends JFrame {
    *
    * @param showAlready Show dialog
    */
-  public final void checkUpdate(boolean showAlready) {
+  public final void checkUpdate(boolean showAlready) {//A refaire, ajouter mise a jour des libs, et à exporter ailleur
     String ver = setting.getVersion();
     if (!ver.equals("")) {
       try {
@@ -597,7 +597,6 @@ public class MovieRenamer extends JFrame {
         });
         topTb.add(editBtn);
         topTb.add(separator);
-        topTb.add(Box.createHorizontalGlue());
 
         movieModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/movie.png")));         movieModeBtn.setFocusable(false);
         movieModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -618,6 +617,7 @@ public class MovieRenamer extends JFrame {
             }
         });
         topTb.add(tvShowModeBtn);
+        topTb.add(Box.createHorizontalGlue());
 
         updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png")));         updateBtn.setToolTipText(bundle.getString("updateBtn")); // NOI18N
         updateBtn.setFocusable(false);
@@ -819,9 +819,9 @@ public class MovieRenamer extends JFrame {
            *
            * if (tmdbiw != null) { tmdbiw.execute(); } } }
            *
-           * if (currentMedia != null) { String dir = ""; if (setting.createMovieDirectory) { if (setting.movieDirRenamedTitle == 2) { dir = setting.movieDir + File.separator; } else { boolean
+           * if (currentMedia != null) { String dir = ""; if (setting.movieFilenameCreateDirectory) { if (setting.movieDirRenamedTitle == 2) { dir = setting.movieDir + File.movieFilenameSeparator; } else { boolean
            * origTitle = setting.movieFilenameFormat.contains("<ot>"); String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>" : "<t>"); dir =
-           * currentMedia.getRenamedTitle(regex, setting); dir = dir.substring(0, dir.lastIndexOf(".")); dir += File.separator; } } renamedField.setText(dir +
+           * currentMedia.getRenamedTitle(regex, setting); dir = dir.substring(0, dir.lastIndexOf(".")); dir += File.movieFilenameSeparator; } } renamedField.setText(dir +
            * currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting)); }
            *
            * if (setting.lafChanged) { setting.lafChanged = false; try { for (int i = 0; i < Settings.lookAndFeels.length; i++) { if (Settings.lookAndFeels[i].getName().equals(setting.laf)) {
@@ -890,13 +890,8 @@ public class MovieRenamer extends JFrame {
         for (int i = 0; i < images.size(); i++) {
           //movie.addFanart(images.get(i));
         }
-        boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
-        String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>" : "<t>");
 
-        String ftitle = currentMedia.getRenamedTitle(regex, setting);
-        ftitle = ftitle.substring(0, ftitle.lastIndexOf("."));
-
-        Renamer renamer = new Renamer(ftitle, currentMedia.getMediaFile().getFile(), renamedField.getText(), setting);
+        Renamer renamer = new Renamer("", currentMedia.getMediaFile().getFile(), renamedField.getText(), setting);
 
         String url = "";
         URL uri = moviePnl.getSelectedThumb(setting.thumbSize);
@@ -1231,20 +1226,7 @@ public class MovieRenamer extends JFrame {
 
           currentMedia.setInfo(movieInfo);
 
-          String dir = "";
-          if (setting.createMovieDirectory) {
-            if (setting.movieDirRenamedTitle == 2) {
-              dir = setting.movieDir + File.separator;
-            } else {
-              boolean origTitle = setting.movieFilenameFormat.contains("<ot>");
-              String regex = (setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>" : "<t>"));
-              dir = currentMedia.getRenamedTitle(regex, setting);
-              dir = dir.substring(0, dir.lastIndexOf("."));
-              dir += File.separator;
-            }
-          }
-
-          renamedField.setText(dir + currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting));
+          renamedField.setText(currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting));
           renameBtn.setEnabled(true);
           renamedField.setEnabled(true);
           editBtn.setEnabled(true);

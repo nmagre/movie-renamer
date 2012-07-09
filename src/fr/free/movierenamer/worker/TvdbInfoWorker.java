@@ -62,7 +62,7 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
     ArrayList<TvShowSeason> seasons = new ArrayList<TvShowSeason>();
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
-      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvdbFr ? "fr" : "en") + ".zip");
+      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvshowScrapperFR ? "fr" : "en") + ".zip");
       File f = setting.cache.get(url, Cache.TVSHOWZIP);
       if (f == null) {
         for (int i = 0; i < RETRY; i++) {
@@ -115,12 +115,12 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
         }
       }
 
-      if (f == null) {// A faire
+      if (f == null) {//A faire
         //error
         return null;
       }
 
-      XMLParser<ArrayList<TvShowSeason>> xmp = new XMLParser<ArrayList<TvShowSeason>>(f.getAbsolutePath(), (setting.tvdbFr ? "fr" : "en") + ".xml");
+      XMLParser<ArrayList<TvShowSeason>> xmp = new XMLParser<ArrayList<TvShowSeason>>(f.getAbsolutePath(), (setting.tvshowScrapperFR ? "fr" : "en") + ".xml");
       xmp.setParser(new TvdbInfo());
       seasons = xmp.parseXml();
 

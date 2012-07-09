@@ -65,7 +65,7 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
   protected ArrayList<SearchResult> doInBackground() {
     ArrayList<SearchResult> tvdbSearchResult = null;
     try {
-      String uri = setting.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvdbFr ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
+      String uri = setting.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvshowScrapperFR ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
       URL url = new URL(uri);
       File xmlFile = setting.cache.get(url, Cache.XML);
       if (xmlFile == null) {
@@ -95,7 +95,7 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
 
       //Parse TVDB API XML
       XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile.getAbsolutePath());
-      xmp.setParser(new TvdbSearch(setting.tvdbFr));
+      xmp.setParser(new TvdbSearch(setting.tvshowScrapperFR));
       tvdbSearchResult = xmp.parseXml();
 
     } catch (UnsupportedEncodingException ex) {

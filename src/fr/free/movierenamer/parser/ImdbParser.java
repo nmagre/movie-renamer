@@ -116,7 +116,7 @@ public class ImdbParser {
    *
    * @param htmlSearchRes Imdb search page
    * @param searchPattern Pattern of result to retreive
-   * @param limit Limitation of returned result
+   * @param movieFilenameLimit Limitation of returned result
    * @param french Is imdb french page
    * @param type Type of result search
    * @return Array of ImdbSearchResult

@@ -130,7 +130,7 @@ public class Main {
         }
         setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
         setting.movieScrapperFR = setting.locale.equals("fr");
-        setting.tvdbFr = setting.locale.equals("fr");
+        setting.tvshowScrapperFR = setting.locale.equals("fr");
       } else {
         saved = true;
       }

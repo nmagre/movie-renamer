@@ -100,10 +100,10 @@ public class Movie implements Media {
    */
   @Override
   public String getRenamedTitle(String regExp, Settings setting) {
-    String separator = setting.separator;
-    int limit = setting.limit;
-    int renameCase = setting.renameCase;
-    boolean trim = setting.rmSpcChar;
+    String separator = setting.movieFilenameSeparator;
+    int limit = setting.movieFilenameLimit;
+    int renameCase = setting.movieFilenameCase;
+    boolean trim = setting.movieFilenameTrim;
 
     String runtime = "";
     if (!movieinfo.getRuntime().equals("-1")) {
@@ -194,7 +194,7 @@ public class Movie implements Media {
       res = res.replaceAll(":", "").replaceAll("/", "");
     }
 
-    if (setting.rmDupSpace) {
+    if (setting.movieFilenameRmDupSpace) {
       res = res.replaceAll("\\s+", " ");
     }
     return res;

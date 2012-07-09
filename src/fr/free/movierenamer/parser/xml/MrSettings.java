@@ -83,14 +83,23 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
             String res = buffer.toString();
             config.extensions = res.split("/_");
           }
-          if (name.equalsIgnoreCase("movieDir")) {
-            config.movieDir = buffer.toString();
-          }
-          if (name.equalsIgnoreCase("separator")) {
-            config.separator = buffer.toString();
+          if (name.equalsIgnoreCase("movieFilenameSeparator")) {
+            config.movieFilenameSeparator = Utils.unEscapeXML(buffer.toString(), "UTF-8");
           }
           if (name.equalsIgnoreCase("laf")) {
             config.laf = buffer.toString();
+          }
+          if (name.equalsIgnoreCase("movieFolderFormat")) {
+            config.movieFolderFormat = Utils.unEscapeXML(buffer.toString(), "UTF-8");
+          }
+          if (name.equalsIgnoreCase("movieFolderSeparator")) {
+            config.movieFolderSeparator = Utils.unEscapeXML(buffer.toString(), "UTF-8");
+          }
+          if (name.equalsIgnoreCase("tvShowFilenameFormat")) {
+            config.tvShowFilenameFormat = Utils.unEscapeXML(buffer.toString(), "UTF-8");
+          }
+          if (name.equalsIgnoreCase("tvShowFilenameSeparator")) {
+            config.tvShowFilenameSeparator = Utils.unEscapeXML(buffer.toString(), "UTF-8");
           }
 
           try {
@@ -107,19 +116,10 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
             if (name.equalsIgnoreCase("thumbExt")) {
               config.thumbExt = Integer.parseInt(buffer.toString());
             }
-            if (name.equalsIgnoreCase("fanartExt")) {
-              config.fanartExt = Integer.parseInt(buffer.toString());
+            if (name.equalsIgnoreCase("movieFilenameCase")) {
+              config.movieFilenameCase = Integer.parseInt(buffer.toString());
             }
-            if (name.equalsIgnoreCase("renameCase")) {
-              config.renameCase = Integer.parseInt(buffer.toString());
-            }
-            if (name.equalsIgnoreCase("movieDirRenamedTitle")) {
-              int nb = Integer.parseInt(buffer.toString());
-              if (nb > 2) {
-                nb = 0;
-              }
-              config.movieDirRenamedTitle = nb;
-            }
+
             if (name.equalsIgnoreCase("nfoType")) {
               int nb = Integer.parseInt(buffer.toString());
               if (nb > 1) {
@@ -127,22 +127,34 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
               }
               config.nfoType = nb;
             }
-            if (name.equalsIgnoreCase("limit")) {
-              config.limit = Integer.parseInt(buffer.toString());
+            if (name.equalsIgnoreCase("movieFilenameLimit")) {
+              config.movieFilenameLimit = Integer.parseInt(buffer.toString());
             }
             if (name.equalsIgnoreCase("movieScrapper")) {
               int nb = Integer.parseInt(buffer.toString());
-              if(nb< 0 || nb >2){
+              if (nb < 0 || nb > 2) {
                 nb = 0;
               }
               config.movieScrapper = nb;
             }
             if (name.equalsIgnoreCase("tvshowScrapper")) {
               int nb = Integer.parseInt(buffer.toString());
-              if(nb< 0 || nb >2){//A refaire, depend du nombre de scrapper
+              if (nb < 0 || nb > 2) {//A refaire, depend du nombre de scrapper
                 nb = 0;
               }
               config.tvshowScrapper = nb;
+            }
+            if (name.equalsIgnoreCase("movieFolderLimit")) {
+              config.movieFolderLimit = Integer.parseInt(buffer.toString());
+            }
+            if (name.equalsIgnoreCase("movieFolderCase")) {
+              config.movieFolderCase = Integer.parseInt(buffer.toString());
+            }
+            if (name.equalsIgnoreCase("tvShowFilenameLimit")) {
+              config.tvShowFilenameLimit = Integer.parseInt(buffer.toString());
+            }
+            if (name.equalsIgnoreCase("tvShowFilenameCase")) {
+              config.tvShowFilenameCase = Integer.parseInt(buffer.toString());
             }
           } catch (NumberFormatException ex) {
             Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
@@ -177,8 +189,8 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("displayThumbResult")) {
             config.displayThumbResult = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("createMovieDirectory")) {
-            config.createMovieDirectory = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("movieFilenameCreateDirectory")) {
+            config.movieFilenameCreateDirectory = buffer.toString().equals(sZero);
           }
           if (name.equalsIgnoreCase("movieScrapperFR")) {
             config.movieScrapperFR = buffer.toString().equals(sZero);
@@ -213,20 +225,29 @@ public class MrSettings extends DefaultHandler implements IParser<Settings> {
           if (name.equalsIgnoreCase("autoSearchMedia")) {
             config.autoSearchMedia = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("rmSpcChar")) {
-            config.rmSpcChar = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("movieFilenameTrim")) {
+            config.movieFilenameTrim = buffer.toString().equals(sZero);
           }
-          if (name.equalsIgnoreCase("rmDupSpace")) {
-            config.rmDupSpace = buffer.toString().equals(sZero);
-          }
-          if (name.equalsIgnoreCase("tvdbFr")) {
-            config.tvdbFr = buffer.toString().equals(sZero);
+          if (name.equalsIgnoreCase("movieFilenameRmDupSpace")) {
+            config.movieFilenameRmDupSpace = buffer.toString().equals(sZero);
           }
           if (name.equalsIgnoreCase("clearXMLCache")) {
             config.clearXMLCache = buffer.toString().equals(sZero);
           }
           if (name.equalsIgnoreCase("sortBySimiYear")) {
             config.sortBySimiYear = buffer.toString().equals(sZero);
+          }
+          if (name.equalsIgnoreCase("movieFolderTrim")) {
+            config.movieFolderTrim = buffer.toString().equals(sZero);
+          }
+          if (name.equalsIgnoreCase("movieFolderRmDupSpace")) {
+            config.movieFolderRmDupSpace = buffer.toString().equals(sZero);
+          }
+          if (name.equalsIgnoreCase("tvShowFilenameTrim")) {
+            config.tvShowFilenameTrim = buffer.toString().equals(sZero);
+          }
+          if (name.equalsIgnoreCase("tvShowFilenameRmDupSpace")) {
+            config.tvShowFilenameRmDupSpace = buffer.toString().equals(sZero);
           }
         } catch (NullPointerException ex) {
           Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
