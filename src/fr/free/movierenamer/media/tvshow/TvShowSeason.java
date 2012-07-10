@@ -78,8 +78,8 @@ public class TvShowSeason {
   public void setEpisodeCount(int episodeCount) {
     this.episodeCount = episodeCount;
   }
-  
-  public void setEpisodes(ArrayList<TvShowEpisode> episodes){
+
+  public void setEpisodes(ArrayList<TvShowEpisode> episodes) {
     this.episodes = episodes;
   }
 
@@ -92,12 +92,12 @@ public class TvShowSeason {
       }
     });
   }
-    
+
   @Override
   public String toString() {
     String res = "Season : " + num + " => " + getEpisodeCount() + " Episodes" + Utils.ENDLINE;
-    for(TvShowEpisode episode : episodes){
-      res += "  " + episode.getNum() + " : " + (episode.getTitle().equals("") ? episode.getOriginalTitle():episode.getTitle()) + Utils.ENDLINE;
+    for (TvShowEpisode episode : episodes) {
+      res += "  " + episode.getNum() + " : " + (episode.getTitle().equals("") ? episode.getOriginalTitle() : episode.getTitle()) + Utils.ENDLINE;
       //res += "    " + episode.getPlot() + Utils.ENDLINE;
     }
     return res;

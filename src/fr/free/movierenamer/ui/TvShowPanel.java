@@ -18,21 +18,67 @@
 package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import java.awt.Image;
+import java.util.ArrayList;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 
 /**
+ * Class TvShowPanel
  *
  * @author Nicolas Magré
  */
 public class TvShowPanel extends JPanel implements IMediaPanel {
+
+  private final DefaultListModel seasonsModel = new DefaultListModel();
+  private final DefaultListModel episodesModel = new DefaultListModel();
 
   /**
    * Creates new form TvShowPanel
    */
   public TvShowPanel() {
     initComponents();
+    seasonsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    seasonsList.setModel(seasonsModel);
+    episodesList.setModel(episodesModel);
+  }
+
+  public void addTvshowInfo(ArrayList<TvShowSeason> seasons, SxE sxe) {
+    System.out.println(sxe);
+    for (final TvShowSeason season : seasons) {
+      System.out.println(season);
+      seasonsModel.addElement(season.getNum());
+      if (season.getNum() == sxe.getSeason()) {
+        seasonsList.setSelectedValue(season.getNum(), true);
+        for (TvShowEpisode episode : season.getEpisodes()) {
+          String ep = episode.getNum() + " - " + episode.getTitle() + " (" + episode.getOriginalTitle() + ")";
+          episodesModel.addElement(ep);
+          if (episode.getNum() == sxe.getEpisode()) {
+            episodesList.setSelectedValue(ep, true);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void addImageToList(Image img, MediaImage mediaImage, boolean selectLast) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void addActorToList(String actor, Image actorImg, String desc) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void clear() {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   /**
@@ -44,29 +90,27 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
+        seasonsList = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList();
+        episodesList = new javax.swing.JList();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
 
-        jLabel1.setText("jLabel1");
-
-        jList1.setModel(new javax.swing.AbstractListModel() {
+        seasonsList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(seasonsList);
 
-        jList2.setModel(new javax.swing.AbstractListModel() {
+        episodesList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList2);
+        jScrollPane2.setViewportView(episodesList);
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -102,8 +146,8 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
@@ -113,28 +157,18 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 102, Short.MAX_VALUE))
+                .addGap(0, 106, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList episodesList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JList jList1;
-    private javax.swing.JList jList2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JList seasonsList;
     // End of variables declaration//GEN-END:variables
-
-  @Override
-  public void addImageToList(Image img, MediaImage mediaImage, boolean selectLast) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public void addActorToList(String actor, Image actorImg, String desc) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
 }

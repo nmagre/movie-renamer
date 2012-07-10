@@ -106,7 +106,6 @@ public class MoviePanel extends JPanel implements IMediaPanel {
   private ArrayList<MediaImage> thumbs;
   private ArrayList<MediaImage> fanarts;
   private Settings setting;
-  private MovieInfo movieInfo;
 
   /**
    * Creates new form MoviePanel
@@ -342,7 +341,8 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     });
   }
 
-  public void clearList() {
+  @Override
+  public void clear() {
     fanarts.clear();
     thumbs.clear();
     SwingUtilities.invokeLater(new Thread() {
@@ -376,23 +376,22 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     });
   }
 
-  public void clearActorList() {
+  public void clearActorList() {//A refaire, ??? ça sert a quelque chose ?
     actorModel.clear();
     actors.clear();
   }
 
-  public void clearThumbList() {
+  public void clearThumbList() {//A refaire, ??? ça sert a quelque chose ?
     thumbnailModel.clear();
     thumbs.clear();
   }
 
-  public void clearFanartList() {
+  public void clearFanartList() {//A refaire, ??? ça sert a quelque chose ?
     fanartModel.clear();
     fanarts.clear();
   }
 
-  public void addMovieInfo(final MovieInfo movieInfo) {
-    this.movieInfo = movieInfo;
+  public void addMovieInfo(final MovieInfo movieInfo) {//A refaire, le thread est-il vraiment nécéssaire ?
     SwingUtilities.invokeLater(new Thread() {
 
       @Override

@@ -216,10 +216,6 @@ public class AllocineInfoTvWorker extends SwingWorker<ArrayList<TvShowSeason>, S
       return null;
     }
     
-    for (TvShowSeason season : seasons) {
-      System.out.println(season);
-    }
-    
     setProgress(100);
     return seasons;
   }

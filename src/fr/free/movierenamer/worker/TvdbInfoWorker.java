@@ -30,8 +30,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -41,14 +45,16 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-//A faire
 public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String> {
 
   private static final int RETRY = 3;
   private MediaID id;
   private Settings setting;
+  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private SwingPropertyChangeSupport errorSupport;
 
-  public TvdbInfoWorker(MediaID id, Settings setting) throws ActionNotValidException {
+  public TvdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
+    this.errorSupport = errorSupport;
     if (id.getType() != MediaID.TVDBID) {
       throw new ActionNotValidException("TvdbInfoWorker can only use tvdb id");
     }
@@ -115,18 +121,15 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
         }
       }
 
-      if (f == null) {//A faire
-        //error
+      if (f == null) {
+        errorSupport.firePropertyChange("closeLoadingDial", false, true);
+        publish("httpFailed");
         return null;
       }
 
       XMLParser<ArrayList<TvShowSeason>> xmp = new XMLParser<ArrayList<TvShowSeason>>(f.getAbsolutePath(), (setting.tvshowScrapperFR ? "fr" : "en") + ".xml");
       xmp.setParser(new TvdbInfo());
       seasons = xmp.parseXml();
-
-      for (TvShowSeason season : seasons) {
-        System.out.println(season);
-      }
 
     } catch (InterruptedException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -137,6 +140,14 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
+
+    setProgress(100);
+
     return seasons;
+  }
+
+  @Override
+  public void process(List<String> v) {
+    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

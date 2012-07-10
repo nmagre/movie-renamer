@@ -22,22 +22,31 @@ import java.awt.Image;
 
 /**
  * Interface IMediaPanel
+ *
  * @author Nicolas Magré
  */
 public interface IMediaPanel {
+
   /**
    * Add image to media panel
+   *
    * @param img Image
    * @param mediaImage Media image
    * @param selectLast Select last image instead of first
    */
-  void addImageToList(Image img, MediaImage mediaImage,  boolean selectLast);
-  
+  void addImageToList(Image img, MediaImage mediaImage, boolean selectLast);
+
   /**
    * Add actor to media panel
+   *
    * @param actor Actor name
    * @param actorImg Actor image
    * @param desc Actor description (html -> name + image + roles)
    */
-  void addActorToList(String actor,Image actorImg, String desc);
+  void addActorToList(String actor, Image actorImg, String desc);
+
+  /**
+   * Clear media panel
+   */
+  void clear();
 }

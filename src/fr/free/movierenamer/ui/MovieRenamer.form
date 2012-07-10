@@ -236,7 +236,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JSplitPane" name="searchSp">
+            <Container class="javax.swing.JSplitPane" name="MediaSp">
               <Properties>
                 <Property name="dividerLocation" type="int" value="200"/>
                 <Property name="orientation" type="int" value="0"/>

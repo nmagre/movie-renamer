@@ -38,7 +38,7 @@ public class TvShowEpisodeMatcher {
   public static final String seasonPattern = "(?:(?:season)|(?:saison)|(?:s)).?([0-9]{1,2})";
   public static final String episodePattern = "(?:(?:(?:[eé]p)|(?:[eé]pisode)) ([0-9]{1,2}))|(?:[^ ]([0-9]{1,2})[ -_])";
   public static final String SxEPattern = "([0-9]{1,2})x([0-9]{1,2})\\D";
-  public static final String SxEPattern2 = "s([0-9]{1,2}).?[eé]([0-9]{1,2})([^\\/]*)";
+  public static final String SxEPattern2 = "s([0-9]{1,2}).?[eé]([0-9]{1,2})";
   public static final String SxEPattern3 = "([0-9]+)([0-9][0-9])([\\._ \\-][^\\/]*)";
   public static final String SxEPattern4 = "(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})";
   public static final String SxEPattern5 = "(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})";
@@ -50,9 +50,9 @@ public class TvShowEpisodeMatcher {
   public TvShowEpisodeMatcher(String episodeName) {
     if (episodeName.contains(File.separator)) {
       parentFolder = episodeName.substring(0, episodeName.lastIndexOf(File.separator)).toLowerCase();
-      this.episodeName = CommonWords.normalize(episodeName.substring(episodeName.lastIndexOf(File.separator) + 1));
+      this.episodeName = normalize(episodeName.substring(episodeName.lastIndexOf(File.separator) + 1));
     } else {
-      this.episodeName = CommonWords.normalize(episodeName);
+      this.episodeName = normalize(episodeName);
     }
   }
 
@@ -97,6 +97,7 @@ public class TvShowEpisodeMatcher {
 
     //If no result, try to match season and episode separately
     if (SxEs.isEmpty()) {
+      System.out.println("No Match Found, Try To match Separately");
       sxe = new SxE();
       Pattern pattern = Pattern.compile(seasonPattern);
       Matcher matcher = pattern.matcher(parentFolder == null ? episodeName : parentFolder);
@@ -119,6 +120,7 @@ public class TvShowEpisodeMatcher {
 
     //Separe complete match and partial match (partial match will be empty in almost all cases)
     for (SxE match : SxEs) {
+      System.out.println("Match : " + sxe);
       if (match.isValid()) {
         completeMatch.add(match);
       } else if (match.isPartial()) {
@@ -143,7 +145,6 @@ public class TvShowEpisodeMatcher {
       return match;
     }
 
-    //Return the only case
     if (completeMatch.size() == 1) {
       return completeMatch.get(0);
     }
@@ -178,17 +179,17 @@ public class TvShowEpisodeMatcher {
     if (matcher.find()) {
       String season = matcher.group(1);
       String episode = matcher.group(2);
-      String match = matcher.group(1) +  matcher.group(2);
-      
+      String match = matcher.group(1) + matcher.group(2);
+
       int S, E;
       S = Utils.isDigit(season) ? Integer.parseInt(season) : -1;
       E = Utils.isDigit(episode) ? Integer.parseInt(episode) : -1;
-      
+
       if (E == 0 && Utils.isDigit(season)) {//Absolute number ?
         S = Integer.parseInt(season + episode);
         E = 0;
       }
-      
+
       if (S != -1 || E != -1) {
         return new SxE(S, E, match);
       }
@@ -260,5 +261,19 @@ public class TvShowEpisodeMatcher {
       }
     }
     return null;
+  }
+
+  /**
+   * Normalize tvShow fileName
+   *
+   * @param str
+   * @return String normalized
+   */
+  private String normalize(String str) {
+    str = str.substring(0, str.lastIndexOf("."));//Remove extension
+    str = str.replace(".", " ").replace("_", " ").replace("-", " ").trim();
+    str = str.replaceAll("[,;:!]", "");//Remove ponctuation
+    str = str.replaceAll("\\s+", " ");//Remove duplicate space character
+    return str.toLowerCase();
   }
 }

@@ -45,7 +45,7 @@ public abstract class WorkerManager {
   private static final int TMDB = 1;
   private static final int ALLOCINE = 2;
   private static final int TVDB = 0;
-  private static final int ALOCINETV = 1;
+  private static final int ALLOCINETV = 1;
 
   /**
    * Get media search worker
@@ -79,7 +79,7 @@ public abstract class WorkerManager {
           case TVDB:
             worker = new TvdbSearchWorker(errorSupport, media.getSearch(), setting);
             break;
-          case ALOCINETV:
+          case ALLOCINETV:
             worker = new AllocineSearchWorker(errorSupport, true, media.getSearch(), setting);
             break;
           default:
@@ -122,9 +122,9 @@ public abstract class WorkerManager {
     SwingWorker<ArrayList<TvShowSeason>, String> worker = null;
     switch (setting.tvshowScrapper) {
       case TVDB:
-        worker = new TvdbInfoWorker(id, setting);
+        worker = new TvdbInfoWorker(errorSupport, id, setting);
         break;
-      case ALOCINETV:
+      case ALLOCINETV:
         worker = new AllocineInfoTvWorker(errorSupport, id, sxe, setting);
         break;
       default:

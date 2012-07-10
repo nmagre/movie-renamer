@@ -23,8 +23,10 @@ import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaTag;
+import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +37,7 @@ public class TvShow implements Media {//A faire
 
   private MediaID mediaId;
   private MediaFile tvShowFile;
-  private TvShowSeason tvshowSeason;
+  private ArrayList<TvShowSeason> seasons;
   private MediaTag mtag;
   private SxE sxe;
   private String search;
@@ -45,7 +47,7 @@ public class TvShow implements Media {//A faire
     TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, regexs);
     search = tvMatcher.getTvShowName();
     sxe = new TvShowEpisodeMatcher(tvShowFile.getFile().getParent() + File.separator + tvShowFile.getFile().getName()).matchEpisode();
-    tvshowSeason = new TvShowSeason(-1);
+    seasons = new ArrayList<TvShowSeason>();
   }
 
   @Override
@@ -78,8 +80,13 @@ public class TvShow implements Media {//A faire
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void setInfo(Object info) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    if (info instanceof ArrayList) {
+      if(((ArrayList)info).size() > 0 && ((ArrayList)info).get(0).getClass() == TvShowSeason.class) {
+        seasons = (ArrayList<TvShowSeason>) info;
+      }
+    }
   }
 
   @Override

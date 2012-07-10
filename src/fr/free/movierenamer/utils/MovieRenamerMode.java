@@ -45,6 +45,10 @@ public class MovieRenamerMode {
   public String getTitle() {
     return title;
   }
+  
+  public int getMode(){
+    return mode;
+  }
 
   public int getMediaType() {
     return mediaType;
