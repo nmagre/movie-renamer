@@ -17,12 +17,11 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.*;
 
 /**
  * Class IconListRenderer , Display image + text in list
@@ -47,12 +46,24 @@ public class IconListRenderer<T extends IIconList> extends DefaultListCellRender
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
+    if(value.toString().startsWith("<sep>")) {
+      isSelected = false;
+      cellHasFocus = false;
+    }
     JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-    if (index >= results.size()) {
+    if (value.toString().startsWith("<sep>")) {
+      label.setText(value.toString().substring(5));
+      label.setBackground(new Color(224, 234, 241));
+      label.setBorder(BorderFactory.createLineBorder(Color.black));
+      label.setPreferredSize(new Dimension(2, 20));
       return label;
     }
     
+    if (index >= results.size()) {
+      return label;
+    }
+
     Icon icon;
     IIconList iicon = results.get(index);
     icon = iicon.getIcon();

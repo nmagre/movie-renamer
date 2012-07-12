@@ -133,10 +133,9 @@ public class Movie implements Media {
       {"<mac>", mtag.getAudioCodecString(separator, limit)},
       {"<mal>", mtag.getAudioLanguageString(separator, limit)},
       {"<matt>",  mtag.getAudioTitleString(separator, limit)},
-      {"<mat>", mtag.getAudioTitleString(separator, limit)},
       {"<mtt>", mtag.getTextTitleString(separator, limit)}
     };
-
+    
     Pattern pattern = Pattern.compile("<([adcg])(\\d+)>");
     Matcher matcher = pattern.matcher(regExp);
     while (matcher.find()) {
@@ -157,6 +156,28 @@ public class Movie implements Media {
           break;
         default:
           break;
+      }
+    }
+
+    pattern = Pattern.compile("<(ma?[chtl]*)(\\d+)>");
+    matcher = pattern.matcher(regExp);
+    while (matcher.find()) {
+      String tag = matcher.group(1);
+      int n = Integer.parseInt(matcher.group(2));
+      if(tag.equals("mach")){
+        regExp = regExp.replaceAll("<mach\\d+>", mtag.getAudioChannelsStringN(n));
+      }
+      else if(tag.equals("mac")){
+        regExp = regExp.replaceAll("<mac\\d+>", mtag.getAudioCodecStringN(n));
+      }
+      else if(tag.equals("mal")){
+        regExp = regExp.replaceAll("<mal\\d+>",mtag.getAudioLanguageStringN(n));
+      }
+      else if(tag.equals("matt")){
+        regExp = regExp.replaceAll("<matt\\d+>", mtag.getAudioTitleStringN(n));
+      }
+      else if(tag.equals("mtt")){
+        regExp = regExp.replaceAll("<mtt\\d+>", mtag.getTextTitleStringN(n));
       }
     }
 

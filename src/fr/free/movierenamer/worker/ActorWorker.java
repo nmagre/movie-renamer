@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import javax.swing.SwingWorker;
 
 /**
- * Class ActorWorker , Download and add actor images to moviePanel
+ * Class ActorWorker , Download and add actor images to mediapanel
  *
  * @author Magré Nicolas
  */
@@ -43,7 +43,7 @@ public class ActorWorker extends SwingWorker<Void, Void> {
   /**
    * Constructor arguments
    *
-   * @param actors List of actor
+   * @param actors List of actors
    * @param mediaPanel Movie Renamer media panel
    * @param setting Movie Renamer settings
    */

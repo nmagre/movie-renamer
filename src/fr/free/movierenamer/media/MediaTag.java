@@ -44,7 +44,7 @@ public class MediaTag {
       return empty;
     }
     String extensions = getMediaInfo(StreamKind.General, 0, "Codec/Extensions", "Format");
-    if(extensions == null || extensions.length() ==0){
+    if (extensions == null || extensions.length() == 0) {
       return empty;
     }
     return new Scanner(extensions).next().toLowerCase();
@@ -55,7 +55,7 @@ public class MediaTag {
       return empty;
     }
     String fileSize = getMediaInfo(StreamKind.General, 0, "FileSize/String4", "FileSize/String");
-    return fileSize == null ? empty:fileSize;
+    return fileSize == null ? empty : fileSize;
   }
 
   public String getDuration() {
@@ -63,7 +63,7 @@ public class MediaTag {
       return empty;
     }
     String duration = getMediaInfo(StreamKind.General, 0, "Duration/String");
-    return duration == null ? empty:duration;
+    return duration == null ? empty : duration;
   }
 
   public String getVideoCodec() {
@@ -71,7 +71,7 @@ public class MediaTag {
       return empty;
     }
     String codec = getMediaInfo(StreamKind.Video, 0, "Encoded_Library/Name", "CodecID/Hint", "Format");
-    if(codec == null || codec.length() ==0){
+    if (codec == null || codec.length() == 0) {
       return empty;
     }
     return new Scanner(codec).next();
@@ -82,7 +82,7 @@ public class MediaTag {
       return empty;
     }
     String frameRate = getMediaInfo(StreamKind.Video, 0, "FrameRate", "FrameRate/String");
-    return frameRate == null ? empty:frameRate;
+    return frameRate == null ? empty : frameRate;
   }
 
   public String getVideoFormat() {
@@ -116,7 +116,7 @@ public class MediaTag {
       return empty;
     }
     String width = getMediaInfo(StreamKind.Video, 0, "Width");
-    if(width == null || !Utils.isDigit(width)){
+    if (width == null || !Utils.isDigit(width)) {
       return empty;
     }
     return Integer.parseInt(width) < 900 ? "SD" : "HD";
@@ -139,7 +139,22 @@ public class MediaTag {
       return empty;
     }
     String codec = getMediaInfo(StreamKind.Audio, stream, "CodecID/Hint", "Format");
-    return codec == null ? empty:codec.replaceAll("\\p{Punct}", "");
+    return codec == null ? empty : codec.replaceAll("\\p{Punct}", "");
+  }
+
+  public String getAudioCodecStringN(int n) {
+    if (!libMediaInfo) {
+      return empty;
+    }
+    if (n > 0) {
+      n--;
+    }
+    int count = getAudioStreamCount();
+    if (n < count) {
+      return getAudioCodec(n);
+    }
+
+    return "";
   }
 
   public String getAudioCodecString(String separator, int limit) {
@@ -168,6 +183,21 @@ public class MediaTag {
     }
 
     return language.toLowerCase();
+  }
+
+  public String getAudioLanguageStringN(int n) {
+    if (!libMediaInfo) {
+      return empty;
+    }
+    if (n > 0) {
+      n--;
+    }
+    int count = getAudioStreamCount();
+    if (n < count) {
+      return getAudioLanguage(n);
+    }
+
+    return "";
   }
 
   public String getAudioLanguageString(String separator, int limit) {
@@ -201,6 +231,21 @@ public class MediaTag {
     return channels + "ch";
   }
 
+  public String getAudioChannelsStringN(int n) {
+    if (!libMediaInfo) {
+      return empty;
+    }
+    if (n > 0) {
+      n--;
+    }
+    int count = getAudioStreamCount();
+    if (n < count) {
+      return getAudioChannels(n);
+    }
+
+    return "";
+  }
+
   public String getAudioChannelsString(String separator, int limit) {
     if (!libMediaInfo) {
       return empty;
@@ -221,7 +266,7 @@ public class MediaTag {
     return res.toString();
   }
 
-  public String getAudioTitle(int stream) {
+  private String getAudioTitle(int stream) {
     if (!libMediaInfo) {
       return empty;
     }
@@ -230,6 +275,21 @@ public class MediaTag {
       return empty;
     }
     return title;
+  }
+
+  public String getAudioTitleStringN(int n) {
+    if (!libMediaInfo) {
+      return empty;
+    }
+    if (n > 0) {
+      n--;
+    }
+    int count = getAudioStreamCount();
+    if (n < count) {
+      return getAudioTitle(n);
+    }
+
+    return "";
   }
 
   public String getAudioTitleString(String separator, int limit) {
@@ -264,7 +324,7 @@ public class MediaTag {
     return Integer.parseInt(count);
   }
 
-  public String getTextTitle(int stream) {
+  private String getTextTitle(int stream) {
     if (!libMediaInfo) {
       return empty;
     }
@@ -273,6 +333,21 @@ public class MediaTag {
       return "";
     }
     return title;
+  }
+  
+  public String getTextTitleStringN(int n) {
+    if (!libMediaInfo) {
+      return empty;
+    }
+    if (n > 0) {
+      n--;
+    }
+    int count = getTextStreamCount();
+    if (n < count) {
+      return getTextTitle(n);
+    }
+
+    return "";
   }
 
   public String getTextTitleString(String separator, int limit) {

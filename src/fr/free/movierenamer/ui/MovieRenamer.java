@@ -93,6 +93,7 @@ public class MovieRenamer extends JFrame {
   private SwingWorker<MovieInfo, String> movieInfoWorker;
   private SwingWorker<ArrayList<SearchResult>, String> searchWorker;
   private SwingPropertyChangeSupport errorSupport;
+  private SwingPropertyChangeSupport settingsChange;
 
   public MovieRenamer(Settings setting) {
 
@@ -130,6 +131,20 @@ public class MovieRenamer extends JFrame {
         if (evt.getPropertyName().equals("closeLoadingDial")) {
           loading.dispose();
         }
+      }
+    });
+    
+    settingsChange = new SwingPropertyChangeSupport(setting);
+    settingsChange.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent evt) {//A faire, rafraichie, l'interface, et les infos
+        Settings conf = (Settings) evt.getNewValue();
+        if(evt.getPropertyName().equals("interfaceChange")){
+          
+        }
+        
+        MovieRenamer.this.setting = conf;
       }
     });
 
@@ -1297,7 +1312,7 @@ public class MovieRenamer extends JFrame {
           }
 
           currentMedia.setInfo(seasons);
-          tvShowPanel.addTvshowInfo(seasons, ((TvShow)currentMedia).getSearchSxe());
+          tvShowPanel.addTvshowInfo(seasons, ((TvShow) currentMedia).getSearchSxe());
 
         } catch (InterruptedException ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -1331,6 +1346,7 @@ public class MovieRenamer extends JFrame {
       }
     }
   }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JSplitPane MediaSp;
     private JPopupMenu batchProcessMenu;

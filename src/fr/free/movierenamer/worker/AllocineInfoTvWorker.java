@@ -97,7 +97,6 @@ public class AllocineInfoTvWorker extends SwingWorker<ArrayList<TvShowSeason>, S
       xmp.setParser(new AllocineTVSeason());
       seasons = xmp.parseXml();
 
-
       //Sort season by season number
       TvShowSeason.sortSeasons(seasons);
       

@@ -175,14 +175,4 @@ public abstract class CommonWords {
     }
     return res;
   }
-  /**
-   * Remove all alone letters except current letters (i,a,y)
-   *
-   * @param text
-   * @return String with alone letter removed
-   *
-   * public static String removeSingleLetter(String text) {//A refaire , pas utiliser StringBuilder sb = new StringBuilder(); String[] array = text.split(" "); for (String str : array) { if
-   * (str.length() > 1) { if (sb.length() != 0) { sb.append(" "); } sb.append(str); } else { if (str.equalsIgnoreCase("i") || str.equalsIgnoreCase("a") || Utils.isDigit(str) ||
-   * str.equalsIgnoreCase("y") || str.equalsIgnoreCase("à")) { if (sb.length() != 0) { sb.append(" "); } sb.append(str); } } } return sb.toString(); }
-   */
 }
