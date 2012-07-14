@@ -69,8 +69,8 @@ public class TvdbInfoWorker extends SwingWorker<List<TvShowSeason>, String> {
     System.out.println("TvdbInfoWorker");
     ArrayList<TvShowSeason> seasons = new ArrayList<TvShowSeason>();
     try {
-      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
-      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvshowScrapperFR ? "fr" : "en") + ".zip");
+      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb)) + "/";
+      URL url = new URL(Settings.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvshowScrapperFR ? "fr" : "en") + ".zip");
       File f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
       if (f == null) {
         for (int i = 0; i < RETRY; i++) {
@@ -92,7 +92,7 @@ public class TvdbInfoWorker extends SwingWorker<List<TvShowSeason>, String> {
       } else {
         //Check if there is an update for this serie
         long time = f.lastModified();
-        URL urlup = new URL(setting.tvdbAPIUrlTvShow + "Updates.php?type=series&time=" + time);
+        URL urlup = new URL(Settings.tvdbAPIUrlTvShow + "Updates.php?type=series&time=" + time);
         XMLParser<ArrayList<MediaID>> xmp = new XMLParser<ArrayList<MediaID>>(urlup.toString());
         xmp.setParser(new TvdbUpdate());
         ArrayList<MediaID> ids = xmp.parseXml();

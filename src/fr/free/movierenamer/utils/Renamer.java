@@ -241,8 +241,8 @@ public class Renamer {
       return true;
     }
     boolean createThum = true;
-    File thumb = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
-    File newThumb = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + setting.thumbExtList[setting.thumbExt]);
+    File thumb = new File(oldFile.getParent() + File.separator + oldFileNameNoExt + Settings.thumbExtList[setting.thumbExt]);
+    File newThumb = new File(oldFile.getParent() + File.separator + newPath + newFileNameNoExt + Settings.thumbExtList[setting.thumbExt]);
     if (create) {
       Settings.LOGGER.log(Level.INFO, "Create thumb : {0}", newThumb);
       try {

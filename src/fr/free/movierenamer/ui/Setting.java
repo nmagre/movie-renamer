@@ -220,31 +220,31 @@ public class Setting extends JDialog {
     clearXmlCacheOnStartChk.setSelected(setting.clearXMLCache);
 
     String ssize;
-    long size = Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir));
+    long size = Utils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.thumbCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.thumbCacheDir));
     }
     thumbCacheLbl.setText(ssize + Utils.i18n("useForThumb"));
 
-    size = Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir));
+    size = Utils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.fanartCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.fanartCacheDir));
     }
     fanartCacheLbl.setText(ssize + Utils.i18n("useForFanart"));
 
-    size = Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir));
+    size = Utils.getDirSizeInMegabytes(new File(Settings.actorCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.actorCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.actorCacheDir));
     }
     actorCacheLbl.setText(ssize + Utils.i18n("useForActor"));
 
-    size = Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir));
+    size = Utils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.xmlCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.xmlCacheDir));
     }
     xmlLbl.setText(ssize + Utils.i18n("useForXml"));
 
@@ -1895,20 +1895,20 @@ public class Setting extends JDialog {
 
     // General Setting
     if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
     if (setting.thumb != thumbsChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
     if (setting.fanart != fanartsChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
     if (setting.actorImage != actorImageChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
 
     if (!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) {
-      setting.lafChanged = true;
+      Settings.lafChanged = true;
     }
     setting.laf = Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName();
     setting.selectFrstMedia = selectFirstMovieChk.isSelected();
@@ -2033,23 +2033,23 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_CancelBtnActionPerformed
 
   private void clearXmlBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearXmlBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
-    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir)) + Utils.i18n("useForXml"));
+    Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
+    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir)) + Utils.i18n("useForXml"));
   }//GEN-LAST:event_clearXmlBtnActionPerformed
 
   private void clearActorBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearActorBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.actorCacheDir));
-    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir)) + Utils.i18n("useForActor"));
+    Utils.deleteFileInDirectory(new File(Settings.actorCacheDir));
+    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.actorCacheDir)) + Utils.i18n("useForActor"));
   }//GEN-LAST:event_clearActorBtnActionPerformed
 
   private void clearFanartBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearFanartBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.fanartCacheDir));
-    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir)) + Utils.i18n("useForFanart"));
+    Utils.deleteFileInDirectory(new File(Settings.fanartCacheDir));
+    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir)) + Utils.i18n("useForFanart"));
   }//GEN-LAST:event_clearFanartBtnActionPerformed
 
   private void clearThumbBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearThumbBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.thumbCacheDir));
-    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir)) + Utils.i18n("useForThumb"));
+    Utils.deleteFileInDirectory(new File(Settings.thumbCacheDir));
+    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir)) + Utils.i18n("useForThumb"));
   }//GEN-LAST:event_clearThumbBtnActionPerformed
 
   private void allocineRbtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_allocineRbtnItemStateChanged

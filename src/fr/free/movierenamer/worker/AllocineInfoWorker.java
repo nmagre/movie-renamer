@@ -73,7 +73,7 @@ public class AllocineInfoWorker extends SwingWorker<MovieInfo, String> {
   protected MovieInfo doInBackground() {
     MovieInfo movieInfo = null;
     try {
-      String uri = setting.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
+      String uri = Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
       System.out.println(uri);
       URL url = new URL(uri);
       File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);

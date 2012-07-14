@@ -68,7 +68,7 @@ public class AllocineSearchWorker extends SwingWorker<ArrayList<SearchResult>, S
   protected ArrayList<SearchResult> doInBackground() {
     ArrayList<SearchResult> allocineSearchResult = null;
     try {
-      String uri = setting.allocineAPISearch.replace("FILTER", tvshow ? "tvseries" : "movie") + URLEncoder.encode(searchTitle, "UTF-8");
+      String uri = Settings.allocineAPISearch.replace("FILTER", tvshow ? "tvseries" : "movie") + URLEncoder.encode(searchTitle, "UTF-8");
       URL url = new URL(uri);
       File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
       if (xmlFile == null) {

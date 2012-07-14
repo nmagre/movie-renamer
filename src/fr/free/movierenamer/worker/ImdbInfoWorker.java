@@ -71,7 +71,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     String res = null;
     for (int i = 0; i < RETRY; i++) {
       try {
-        http = new HttpGet((setting.movieScrapperFR ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + id.getID() + "/combined");
+        http = new HttpGet((setting.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined");
         res = http.sendGetRequest(true, "ISO-8859-15");
         break;
       } catch (Exception ex) {//Don't care about exception, "res" will be null

@@ -85,7 +85,7 @@ public class AllocineInfoTvWorker extends SwingWorker<List<TvShowSeason>, String
     
     try {
       //Get Season id
-      URL url = new URL(setting.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
+      URL url = new URL(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
       System.out.println(url);
       File xmlFile = getXML(url);
       
@@ -135,7 +135,7 @@ public class AllocineInfoTvWorker extends SwingWorker<List<TvShowSeason>, String
       setProgress(33);
 
       //Get episode id
-      url = new URL(setting.allocineAPIInfo.replace("MEDIA", "season") + seasonId);
+      url = new URL(Settings.allocineAPIInfo.replace("MEDIA", "season") + seasonId);
       System.out.println(url);
       xmlFile = getXML(url);
       if (xmlFile == null) {
@@ -165,7 +165,7 @@ public class AllocineInfoTvWorker extends SwingWorker<List<TvShowSeason>, String
       setProgress(66);
 
       //Get episode info
-      url = new URL(setting.allocineAPIInfo.replace("MEDIA", "episode") + episodes.get(ep).getIDs().get(0));
+      url = new URL(Settings.allocineAPIInfo.replace("MEDIA", "episode") + episodes.get(ep).getIDs().get(0));
       System.out.println(url);
       xmlFile = getXML(url);
       if (xmlFile == null) {

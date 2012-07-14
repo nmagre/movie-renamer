@@ -78,7 +78,7 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
     MovieInfo movieInfo = null;
     MovieImage movieImage = null;
     try {
-      String uri = setting.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/" + id.getID();
+      String uri = Settings.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
       if (setting.movieScrapperFR) {
         uri = uri.replace("/en/", "/fr/");
       }

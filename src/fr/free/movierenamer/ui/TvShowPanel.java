@@ -23,7 +23,6 @@ import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import java.awt.Image;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;

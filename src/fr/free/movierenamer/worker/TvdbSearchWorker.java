@@ -66,7 +66,7 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
   protected ArrayList<SearchResult> doInBackground() {
     ArrayList<SearchResult> tvdbSearchResult = null;
     try {
-      String uri = setting.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvshowScrapperFR ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
+      String uri = Settings.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvshowScrapperFR ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
       URL url = new URL(uri);
       File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
       if (xmlFile == null) {

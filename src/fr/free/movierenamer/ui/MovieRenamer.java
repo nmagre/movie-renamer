@@ -353,8 +353,8 @@ public class MovieRenamer extends JFrame {
 
   private void loadRenamedMovie() {
     renamedMediaFile = new ArrayList<MediaRenamed>();
-    if (new File(setting.renamedFile).exists()) {
-      XMLParser<ArrayList<MediaRenamed>> mmp = new XMLParser<ArrayList<MediaRenamed>>(setting.renamedFile);
+    if (new File(Settings.renamedFile).exists()) {
+      XMLParser<ArrayList<MediaRenamed>> mmp = new XMLParser<ArrayList<MediaRenamed>>(Settings.renamedFile);
       mmp.setParser(new MrRenamedMovie());
       try {
         renamedMediaFile = mmp.parseXml();
@@ -1048,7 +1048,7 @@ public class MovieRenamer extends JFrame {
 
         try {
           String endl = Utils.ENDLINE;
-          BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(setting.renamedFile), "UTF-8"));
+          BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Settings.renamedFile), "UTF-8"));
           out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl);
           out.write("<Movie_Renamer_Renamed>" + endl);
           for (int i = 0; i < renamedMediaFile.size(); i++) {

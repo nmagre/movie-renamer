@@ -75,7 +75,7 @@ public class TmdbImageWorker extends SwingWorker<MovieImage, String> {
     MovieImage mvImgs = null;
 
     try {
-      String uri = setting.tmdbAPMovieImdbLookUp + new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/" + id.getID();
+      String uri = Settings.tmdbAPMovieImdbLookUp + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
       URL url = new URL(uri);
       File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
       if (xmlFile == null) {

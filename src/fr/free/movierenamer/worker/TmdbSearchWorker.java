@@ -67,7 +67,7 @@ public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
   protected ArrayList<SearchResult> doInBackground() {
     ArrayList<SearchResult> tmdbSearchResult = null;
     try {
-      String uri = setting.tmdbAPISearchUrl + new String(DatatypeConverter.parseBase64Binary(setting.xurlMdb)) + "/" + URLEncoder.encode(searchTitle, "UTF-8");
+      String uri = Settings.tmdbAPISearchUrl + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + URLEncoder.encode(searchTitle, "UTF-8");
       if (setting.movieScrapperFR) {
         uri = uri.replace("/en/", "/fr/");
       }
