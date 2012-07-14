@@ -98,7 +98,7 @@ public class Main {
    */
   private static Settings loadSetting() {
     boolean saved;
-    Settings setting = new Settings();
+    Settings setting = Settings.getInstance();
     File file = new File(setting.configFile);
     ResourceBundle bundle;
 

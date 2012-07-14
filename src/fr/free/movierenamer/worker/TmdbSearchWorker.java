@@ -71,14 +71,14 @@ public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
         uri = uri.replace("/en/", "/fr/");
       }
       URL url = new URL(uri);
-      File xmlFile = setting.cache.get(url, Cache.XML);
+      File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
       if (xmlFile == null) {
         for (int i = 0; i < RETRY; i++) {
           InputStream in;
           try {
             in = url.openStream();
-            setting.cache.add(in, url.toString(), Cache.XML);
-            xmlFile = setting.cache.get(url, Cache.XML);
+            Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
+            xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
             break;
           } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
             Settings.LOGGER.log(Level.SEVERE, null, e);
@@ -123,7 +123,7 @@ public class TmdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
     for (SearchResult tmdbres : tmdbSearchResult) {
       String thumb = tmdbres.getThumb();
       if (thumb != null) {
-        Icon icon = Utils.getSearchThumb(thumb, setting.cache, new Dimension(45, 70));
+        Icon icon = Utils.getSearchThumb(thumb, Cache.getInstance(), new Dimension(45, 70));
         if (icon != null) {
           tmdbres.setIcon(icon);
         }

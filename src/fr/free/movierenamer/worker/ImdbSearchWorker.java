@@ -18,6 +18,7 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.parser.ImdbParser;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
@@ -91,7 +92,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
         for (SearchResult imsres : imdbSearchResult) {
           String thumb = imsres.getThumb();
           if (thumb != null) {
-            Icon icon = Utils.getSearchThumb(thumb, setting.cache, new Dimension(45, 70));
+            Icon icon = Utils.getSearchThumb(thumb, Cache.getInstance(), new Dimension(45, 70));
             if (icon != null) {
               imsres.setIcon(icon);
             }

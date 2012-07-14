@@ -21,6 +21,9 @@ import fr.free.movierenamer.Main;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.Utils.CaseConversionType;
+import fr.free.movierenamer.worker.WorkerManager;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -158,10 +161,10 @@ public class Setting extends JDialog {
 
     // Rename Setting
     formatField.setText(setting.movieFilenameFormat);
-    if (setting.movieFilenameCase >= caseGroup.getButtonCount()) {
+    if (setting.movieFilenameCase.ordinal() >= caseGroup.getButtonCount()) {
       caseGroup.setSelected(rBtnCase[1].getModel(), true);
     } else {
-      caseGroup.setSelected(rBtnCase[setting.movieFilenameCase].getModel(), true);
+      caseGroup.setSelected(rBtnCase[setting.movieFilenameCase.ordinal()].getModel(), true);
     }
     if (setting.movieFolderCase >= caseFolderGroup.getButtonCount()) {
       caseFolderGroup.setSelected(rBtnFolderCase[1].getModel(), true);
@@ -186,7 +189,7 @@ public class Setting extends JDialog {
     scrapperFrRbtn.setSelected(setting.movieScrapperFR);
     scrapperEnRbtn.setSelected(!setting.movieScrapperFR);
     displayThumbResultChk.setSelected(setting.displayThumbResult);
-    scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper].getModel(), true);
+    scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper.ordinal()].getModel(), true);
     sortbySimiChk.setSelected(setting.sortBySimiYear);
     limitResultComboBox.setSelectedIndex(setting.nbResult);
 
@@ -244,7 +247,7 @@ public class Setting extends JDialog {
     return setting;
   }
 
-  private String movieRenamerTest(String nameFormat, int limit, int casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
+  private String movieRenamerTest(String nameFormat, int limit, Utils.CaseConversionType casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
     String ext = "avi";
      
     for (int i = 0; i < format.length; i++) {
@@ -275,16 +278,16 @@ public class Setting extends JDialog {
     }
 
     switch (casse) {
-      case Utils.UPPER:
+      case UPPER:
         nameFormat = nameFormat.toUpperCase() + (extension ? "." + ext.toUpperCase() : "");
         break;
-      case Utils.LOWER:
+      case LOWER:
         nameFormat = nameFormat.toLowerCase() + (extension ? "." + ext.toLowerCase() : "");
         break;
-      case Utils.FIRSTLO:
+      case FIRSTLO:
         nameFormat = Utils.capitalizedLetter(nameFormat, true) + (extension ? "." + ext.toLowerCase() : "");
         break;
-      case Utils.FIRSTLA:
+      case FIRSTLA:
         nameFormat = Utils.capitalizedLetter(nameFormat, false) + (extension ? "." + ext.toLowerCase() : "");
         break;
       default:
@@ -1792,7 +1795,8 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_movieInfoPanelChkItemStateChanged
 
   private void filenameTestBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_filenameTestBtnActionPerformed
-    int limit, casse = 0;
+    int limit;
+    Utils.CaseConversionType casse = CaseConversionType.FIRSTLO;
     try {
       limit = Integer.parseInt(limitField.getText());
     } catch (NumberFormatException e) {
@@ -1802,7 +1806,7 @@ public class Setting extends JDialog {
 
     for (int i = 0; i < rBtnCase.length; i++) {
       if (rBtnCase[i].isSelected()) {
-        casse = i;
+        casse = Utils.CaseConversionType.values()[i];
       }
     }
 
@@ -1913,7 +1917,7 @@ public class Setting extends JDialog {
     // Rename Setting
     for (int i = 0; i < rBtnCase.length; i++) {
       if (rBtnCase[i].isSelected()) {
-        setting.movieFilenameCase = i;
+        setting.movieFilenameCase = Utils.CaseConversionType.values()[i];
       }
     }
 
@@ -1937,7 +1941,7 @@ public class Setting extends JDialog {
 
     for (int i = 0; i < rBtnScrapper.length; i++) {
       if (rBtnScrapper[i].isSelected()) {
-        setting.movieScrapper = i;
+        setting.movieScrapper = WorkerManager.MovieScrapper.values()[i];
       }
     }
 
@@ -2061,7 +2065,8 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_helpBtn1ActionPerformed
 
   private void folderTestBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_folderTestBtnActionPerformed
-    int limit, casse = 0;
+    int limit;
+    CaseConversionType casse = CaseConversionType.FIRSTLO;
     try {
       limit = Integer.parseInt(limitFolderField.getText());
     } catch (NumberFormatException e) {
@@ -2071,7 +2076,7 @@ public class Setting extends JDialog {
 
     for (int i = 0; i < rBtnFolderCase.length; i++) {
       if (rBtnFolderCase[i].isSelected()) {
-        casse = i;
+        casse = CaseConversionType.values()[i];
       }
     }
 

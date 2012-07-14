@@ -102,7 +102,7 @@ public class Movie implements Media {
   public String getRenamedTitle(String regExp, Settings setting) {
     String separator = setting.movieFilenameSeparator;
     int limit = setting.movieFilenameLimit;
-    int renameCase = setting.movieFilenameCase;
+    Utils.CaseConversionType renameCase = setting.movieFilenameCase;
     boolean trim = setting.movieFilenameTrim;
 
     String runtime = "";
@@ -194,21 +194,21 @@ public class Movie implements Media {
 
     String res;
     switch (renameCase) {
-      case Utils.UPPER:
-        res = regExp.toUpperCase() + "." + ext.toUpperCase();
-        break;
-      case Utils.LOWER:
-        res = regExp.toLowerCase() + "." + ext.toLowerCase();
-        break;
-      case Utils.FIRSTLO:
-        res = Utils.capitalizedLetter(regExp, true) + "." + ext.toLowerCase();
-        break;
-      case Utils.FIRSTLA:
-        res = Utils.capitalizedLetter(regExp, false) + "." + ext.toLowerCase();
-        break;
-      default:
-        res = regExp + "." + ext.toLowerCase();
-        break;
+    case UPPER:
+      res = regExp.toUpperCase() + "." + ext.toUpperCase();
+      break;
+    case LOWER:
+      res = regExp.toLowerCase() + "." + ext.toLowerCase();
+      break;
+    case FIRSTLO:
+      res = Utils.capitalizedLetter(regExp, true) + "." + ext.toLowerCase();
+      break;
+    case FIRSTLA:
+      res = Utils.capitalizedLetter(regExp, false) + "." + ext.toLowerCase();
+      break;
+    default:
+      res = regExp + "." + ext.toLowerCase();
+      break;
     }
 
     if (Utils.isWindows()) {
@@ -311,7 +311,7 @@ public class Movie implements Media {
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
     nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
 
-    ArrayList<MediaPerson> personn = movieinfo.getWriters();
+    List<MediaPerson> personn = movieinfo.getWriters();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <credits>").append(Utils.escapeXML(personn.get(i).getName())).append("</credits>\n");
     }
@@ -334,12 +334,12 @@ public class Movie implements Media {
       nfo.append("  </actor>\n");
     }
 
-    ArrayList<MediaImage> thumbs = movieinfo.getThumbs();
+    List<MediaImage> thumbs = movieinfo.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb preview=\"").append(thumbs.get(i).getThumbUrl()).append("\">").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
-    ArrayList<MediaImage> fanarts = movieinfo.getFanarts();
+    List<MediaImage> fanarts = movieinfo.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb preview=\"").append(fanarts.get(i).getThumbUrl()).append("\">").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
@@ -371,7 +371,7 @@ public class Movie implements Media {
     nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
     nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString(" / ", 0))).append("</studio>\n");
 
-    ArrayList<MediaPerson> personn = movieinfo.getDirectors();
+    List<MediaPerson> personn = movieinfo.getDirectors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
       nfo.append("  <directorimdb>").append(Utils.escapeXML(personn.get(i).getImdbId())).append("</directorimdb>\n");
@@ -383,12 +383,12 @@ public class Movie implements Media {
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
     nfo.append("  <review></review>\n");
 
-    ArrayList<MediaImage> thumbs = movieinfo.getThumbs();
+    List<MediaImage> thumbs = movieinfo.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb>").append(thumbs.get(i).getOrigUrl()).append("</thumb>\n");
     }
 
-    ArrayList<MediaImage> fanarts = movieinfo.getFanarts();
+    List<MediaImage> fanarts = movieinfo.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
       nfo.append("\n    <thumb>").append(fanarts.get(i).getOrigUrl()).append("</thumb>");
@@ -398,7 +398,7 @@ public class Movie implements Media {
     }
     nfo.append("</fanart>\n");
 
-    ArrayList<String> genres = movieinfo.getGenres();
+    List<String> genres = movieinfo.getGenres();
     nfo.append("  <genres>");
     for (int i = 0; i < genres.size(); i++) {
       nfo.append("\n    <genre>").append(Utils.escapeXML(genres.get(i))).append("</genre>");
@@ -432,7 +432,7 @@ public class Movie implements Media {
    * @param level String of space
    * @return String XML
    */
-  private String printArrayString(ArrayList<String> arrayString, String tag, String level) {
+  private String printArrayString(List<String> arrayString, String tag, String level) {
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < arrayString.size(); i++) {
       res.append(level).append("<").append(tag).append(">").append(Utils.escapeXML(arrayString.get(i))).append("</").append(tag).append(">\n");

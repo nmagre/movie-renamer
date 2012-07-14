@@ -44,6 +44,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -272,7 +273,7 @@ public class MovieRenamer extends JFrame {
             movieInfoWorker.execute();
             break;
           case Media.TVSHOW:
-            SwingWorker<ArrayList<TvShowSeason>, String> tworker = WorkerManager.getTvShowInfoWorker(errorSupport, sres.getId(), ((TvShow) currentMedia).getSearchSxe(), MovieRenamer.this.setting);
+            SwingWorker<List<TvShowSeason>, String> tworker = WorkerManager.getTvShowInfoWorker(errorSupport, sres.getId(), ((TvShow) currentMedia).getSearchSxe(), MovieRenamer.this.setting);
             TvShowInfoListener tsil = new TvShowInfoListener(tworker);
             tworker.addPropertyChangeListener(tsil);
             tworker.execute();
@@ -1258,12 +1259,12 @@ public class MovieRenamer extends JFrame {
 
           if (setting.movieInfoPanel) {
             if (setting.thumb) {
-              SwingWorker<Void, Void> thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), Cache.THUMB, moviePnl, setting);
+              SwingWorker<Void, Void> thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), Cache.CacheType.THUMB, moviePnl, setting);
               thumbWorker.addPropertyChangeListener(new MediaImageListener(thumbWorker, THUMBWORKER));
               thumbWorker.execute();
             }
             if (setting.fanart) {
-              SwingWorker<Void, Void> fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(), Cache.FANART, moviePnl, setting);
+              SwingWorker<Void, Void> fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(),  Cache.CacheType.FANART, moviePnl, setting);
               fanartWorker.addPropertyChangeListener(new MediaImageListener(fanartWorker, FANARTWORKER));
               fanartWorker.execute();
             }
@@ -1294,9 +1295,9 @@ public class MovieRenamer extends JFrame {
 
   private class TvShowInfoListener implements PropertyChangeListener {
 
-    private SwingWorker<ArrayList<TvShowSeason>, String> worker;
+    private SwingWorker<List<TvShowSeason>, String> worker;
 
-    public TvShowInfoListener(SwingWorker<ArrayList<TvShowSeason>, String> worker) {
+    public TvShowInfoListener(SwingWorker<List<TvShowSeason>, String> worker) {
       this.worker = worker;
     }
 
@@ -1304,7 +1305,7 @@ public class MovieRenamer extends JFrame {
     public void propertyChange(PropertyChangeEvent evt) {
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
-          ArrayList<TvShowSeason> seasons = worker.get();
+          List<TvShowSeason> seasons = worker.get();
           if (seasons == null) {
             System.out.println("Season is null");
             loading.setValue(100, INFOWORKER);

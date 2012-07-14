@@ -241,11 +241,11 @@ public class Renamer {
     if (create) {
       Settings.LOGGER.log(Level.INFO, "Create thumb : {0}", newThumb);
       try {
-        File file = setting.cache.get(url, Cache.THUMB);
+        File file = Cache.getInstance().get(url, Cache.CacheType.THUMB);
         if (file == null) {
-          setting.cache.add(url.openStream(), url.toString(), Cache.THUMB);
+          Cache.getInstance().add(url.openStream(), url.toString(), Cache.CacheType.THUMB);
         }
-        Utils.copyFile(setting.cache.get(url, Cache.THUMB), newThumb);
+        Utils.copyFile(Cache.getInstance().get(url, Cache.CacheType.THUMB), newThumb);
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.SEVERE, ex.toString());
       }
@@ -277,11 +277,11 @@ public class Renamer {
     if (create) {
       Settings.LOGGER.log(Level.INFO, "Create fanart : {0}", newFanart);
       try {
-        File file = setting.cache.get(url, Cache.FANART);
+        File file = Cache.getInstance().get(url, Cache.CacheType.FANART);
         if (file == null) {
-          setting.cache.add(url.openStream(), url.toString(), Cache.FANART);
+          Cache.getInstance().add(url.openStream(), url.toString(), Cache.CacheType.FANART);
         }
-        Utils.copyFile(setting.cache.get(url, Cache.FANART), newFanart);
+        Utils.copyFile(Cache.getInstance().get(url, Cache.CacheType.FANART), newFanart);
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.SEVERE, ex.toString());
       }

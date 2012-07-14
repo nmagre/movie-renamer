@@ -67,14 +67,14 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
     try {
       String uri = setting.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (setting.tvshowScrapperFR ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(tvShowName, "UTF-8");
       URL url = new URL(uri);
-      File xmlFile = setting.cache.get(url, Cache.XML);
+      File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
       if (xmlFile == null) {
         for (int i = 0; i < RETRY; i++) {
           InputStream in;
           try {
             in = url.openStream();
-            setting.cache.add(in, url.toString(), Cache.XML);
-            xmlFile = setting.cache.get(url, Cache.XML);
+            Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
+            xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
             break;
           } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
             Settings.LOGGER.log(Level.SEVERE, null, e);
@@ -119,7 +119,7 @@ public class TvdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
     for (SearchResult res : tvdbSearchResult) {
       String thumb = res.getThumb();
       if (thumb != null) {
-        Icon icon = Utils.getSearchThumb(thumb, setting.cache, new Dimension(200, 70));
+        Icon icon = Utils.getSearchThumb(thumb, Cache.getInstance(), new Dimension(200, 70));
         if (icon != null) {
           res.setIcon(icon);
         }

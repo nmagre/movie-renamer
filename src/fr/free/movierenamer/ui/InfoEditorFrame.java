@@ -33,6 +33,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -88,7 +90,7 @@ public class InfoEditorFrame extends JDialog {
 
   private void setValue() {
     listModel = new DefaultListModel();
-    ArrayList<MediaPerson> actors = movieInfo.getActors();
+    List<MediaPerson> actors = movieInfo.getActors();
     for (int i = 0; i < actors.size(); i++) {
       listModel.addElement(actors.get(i));
     }
@@ -1015,8 +1017,8 @@ public class InfoEditorFrame extends JDialog {
       movieInfo.setSet(Utils.stringToArray(setField.getText(), " \\| "));
       movieInfo.setCountries(Utils.stringToArray(countryField.getText(), " \\| "));
 
-      ArrayList<MediaPerson> person = new ArrayList<MediaPerson>();
-      ArrayList<String> array = Utils.stringToArray(directorField.getText(), " \\| ");
+      List<MediaPerson> person = new ArrayList<MediaPerson>();
+      List<String> array = Utils.stringToArray(directorField.getText(), " \\| ");
       for (int i = 0; i < array.size(); i++) {
         person.add(new MediaPerson(array.get(i), null, MediaPerson.DIRECTOR));
       }

@@ -74,14 +74,14 @@ public class AllocineInfoWorker extends SwingWorker<MovieInfo, String> {
       String uri = setting.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
       System.out.println(uri);
       URL url = new URL(uri);
-      File xmlFile = setting.cache.get(url, Cache.XML);
+      File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
       if (xmlFile == null) {
         for (int i = 0; i < RETRY; i++) {
           InputStream in;
           try {
             in = url.openStream();
-            setting.cache.add(in, url.toString(), Cache.XML);
-            xmlFile = setting.cache.get(url, Cache.XML);
+            Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
+            xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
             break;
           } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
             Settings.LOGGER.log(Level.SEVERE, null, e);

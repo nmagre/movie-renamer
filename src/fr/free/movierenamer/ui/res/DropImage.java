@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -48,7 +49,7 @@ public class DropImage implements DropTargetListener {
   private Component component;
   private IMediaPanel mediaPanel;
   private int mediaImageType;
-  private int cache;
+  private Cache.CacheType cache;
 
   /**
    * Constructor arguments
@@ -59,7 +60,7 @@ public class DropImage implements DropTargetListener {
    * @param cache
    * @param setting Movie Renamer settings
    */
-  public DropImage(Component component, IMediaPanel mediaPanel, int mediaImageType, int cache, Settings setting) {
+  public DropImage(Component component, IMediaPanel mediaPanel, int mediaImageType, Cache.CacheType cache, Settings setting) {
     this.component = component;
     this.mediaPanel = mediaPanel;
     this.mediaImageType = mediaImageType;
@@ -126,10 +127,10 @@ public class DropImage implements DropTargetListener {
             String image = res[i];
             try {
               URL url = new URL(image);
-              Image img = setting.cache.getImage(url, cache);
+              Image img = Cache.getInstance().getImage(url, cache);
               if (img == null) {
-                setting.cache.add(url.openStream(), url.toString(), cache);
-                img = setting.cache.getImage(url, cache);
+                Cache.getInstance().add(url.openStream(), url.toString(), cache);
+                img = Cache.getInstance().getImage(url, cache);
               }
               if (img != null) {
                 MediaImage mvImg = new MediaImage(-1, mediaImageType);

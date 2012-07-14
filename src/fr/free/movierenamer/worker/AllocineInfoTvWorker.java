@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class AllocineInfoTvWorker extends SwingWorker<ArrayList<TvShowSeason>, String> {
+public class AllocineInfoTvWorker extends SwingWorker<List<TvShowSeason>, String> {
   
   private static final int RETRY = 3;
   private Settings setting;
@@ -220,14 +220,14 @@ public class AllocineInfoTvWorker extends SwingWorker<ArrayList<TvShowSeason>, S
   }
   
   private File getXML(URL url) {
-    File xmlFile = setting.cache.get(url, Cache.XML);
+    File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
     if (xmlFile == null) {
       for (int i = 0; i < RETRY; i++) {
         InputStream in;
         try {
           in = url.openStream();
-          setting.cache.add(in, url.toString(), Cache.XML);
-          xmlFile = setting.cache.get(url, Cache.XML);
+          Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
+          xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
           break;
         } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
           Settings.LOGGER.log(Level.SEVERE, null, e);

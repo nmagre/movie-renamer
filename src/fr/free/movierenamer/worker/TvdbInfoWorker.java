@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String> {
+public class TvdbInfoWorker extends SwingWorker<List<TvShowSeason>, String> {
 
   private static final int RETRY = 3;
   private MediaID id;
@@ -69,14 +69,14 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
     try {
       String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
       URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvshowScrapperFR ? "fr" : "en") + ".zip");
-      File f = setting.cache.get(url, Cache.TVSHOWZIP);
+      File f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
       if (f == null) {
         for (int i = 0; i < RETRY; i++) {
           InputStream in;
           try {
             in = url.openStream();
-            setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
-            f = setting.cache.get(url, Cache.TVSHOWZIP);
+            Cache.getInstance().add(in, url.toString(), Cache.CacheType.TVSHOWZIP);
+            f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
             break;
           } catch (Exception e) {//Don't care about exception
             Settings.LOGGER.log(Level.SEVERE, null, e);
@@ -106,8 +106,8 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
             InputStream in;
             try {
               in = url.openStream();
-              setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
-              f = setting.cache.get(url, Cache.TVSHOWZIP);
+              Cache.getInstance().add(in, url.toString(), Cache.CacheType.TVSHOWZIP);
+              f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
               break;
             } catch (Exception e) {//Don't care about exception
               Settings.LOGGER.log(Level.SEVERE, null, e);
