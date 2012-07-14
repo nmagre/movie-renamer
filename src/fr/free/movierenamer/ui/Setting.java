@@ -17,6 +17,12 @@
  */
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.Main;
+import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.Utils.CaseConversionType;
+import fr.free.movierenamer.worker.WorkerManager;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -25,50 +31,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
-<<<<<<< HEAD
-import java.util.logging.Logger;
-=======
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
->>>>>>> 5017ca6a1a75cc5d8aca9e44e9811ae38bf6e696
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.SwingPropertyChangeSupport;
-
-import fr.free.movierenamer.Main;
-import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.utils.Utils.CaseConversionType;
-import fr.free.movierenamer.worker.WorkerManager;
 
 /**
  * Class Setting , Setting dialog
@@ -109,13 +82,9 @@ public class Setting extends JDialog {
    * @param settingsChange Settings property change
    * @param parent Parent to center on
    */
-<<<<<<< HEAD
+
   public Setting(Settings setting, SwingPropertyChangeSupport settingsChange, Component parent) {
     this.settingsChange = settingsChange;
-    bundle = ResourceBundle.getBundle("fr.free.movierenamer/i18n/Bundle");
-=======
-  public Setting(Settings setting, Component parent) {
->>>>>>> 5017ca6a1a75cc5d8aca9e44e9811ae38bf6e696
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     initComponents();
 
@@ -1893,11 +1862,11 @@ public class Setting extends JDialog {
 
   private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
     boolean restartApp = false;
-    Settings oldSetting = new Settings();
+    Settings oldSetting = Settings.getInstance();
     try {
       oldSetting = setting.clone();
     } catch (CloneNotSupportedException ex) {
-      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
     try {

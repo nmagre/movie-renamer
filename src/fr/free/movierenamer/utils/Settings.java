@@ -17,6 +17,9 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.parser.xml.MrSettings;
+import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.worker.WorkerManager;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -27,18 +30,10 @@ import java.util.Locale;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.xml.sax.SAXException;
-
-import com.sun.xml.internal.ws.model.FieldSignature;
-
-import fr.free.movierenamer.parser.xml.MrSettings;
-import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.worker.WorkerManager;
 
 /**
  * Class Settings , Movie Renamer settings <br>
@@ -404,8 +399,7 @@ public class Settings implements Cloneable {
         value = Integer.valueOf(configValue); // FIXME Convertir en autre que Integer ?
       } else {
         // other parsing
-        if (Settings.xmlVersion.compareToIgnoreCase("1.2.2_Alpha") < 0)// Older setting file
-        {
+        if (Settings.xmlVersion.compareToIgnoreCase("1.2.2_Alpha") < 0) {// Older setting file
           value = configValue.replace("$_", "<").replace("_$", ">");
         } else {
           value = Utils.unEscapeXML(configValue, "UTF-8");
@@ -593,7 +587,7 @@ public class Settings implements Cloneable {
     hash = 97 * hash + (this.movieFilenameFormat != null ? this.movieFilenameFormat.hashCode() : 0);
     hash = 97 * hash + (this.movieFilenameSeparator != null ? this.movieFilenameSeparator.hashCode() : 0);
     hash = 97 * hash + this.movieFilenameLimit;
-    hash = 97 * hash + this.movieFilenameCase;
+    hash = 97 * hash + this.movieFilenameCase.ordinal();
     hash = 97 * hash + (this.movieFilenameTrim ? 1 : 0);
     hash = 97 * hash + (this.movieFilenameRmDupSpace ? 1 : 0);
     hash = 97 * hash + (this.movieFilenameCreateDirectory ? 1 : 0);
@@ -616,8 +610,8 @@ public class Settings implements Cloneable {
     hash = 97 * hash + (this.mediaNameFilters != null ? this.mediaNameFilters.hashCode() : 0);
     hash = 97 * hash + (this.useExtensionFilter ? 1 : 0);
     hash = 97 * hash + (this.clearXMLCache ? 1 : 0);
-    hash = 97 * hash + this.movieScrapper;
-    hash = 97 * hash + this.tvshowScrapper;
+    hash = 97 * hash + this.movieScrapper.ordinal();
+    hash = 97 * hash + this.tvshowScrapper.ordinal();
     hash = 97 * hash + (this.movieScrapperFR ? 1 : 0);
     hash = 97 * hash + (this.tvshowScrapperFR ? 1 : 0);
     hash = 97 * hash + (this.displayThumbResult ? 1 : 0);
