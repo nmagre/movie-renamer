@@ -337,7 +337,7 @@ public class Settings implements Cloneable {
             value = Utils.arrayToString((Object[]) value, Settings.arrayEscapeChar, 0);
           } else if (Collection.class.isAssignableFrom(field.getType())) {
             // to string for Collection fields
-            value = Utils.arrayToString((ArrayList<?>)value, Settings.arrayEscapeChar, 0);
+            value = Utils.arrayToString((ArrayList<?>) value, Settings.arrayEscapeChar, 0);
           }
           out.write("    <" + field.getName() + ">" + Utils.escapeXML(value.toString()) + "</" + field.getName() + ">" + endl);
         } catch (IllegalArgumentException e) {
@@ -387,14 +387,14 @@ public class Settings implements Cloneable {
         value = Settings.sZero.equals(configValue);
       } else if (field.getType().isArray()) {
         // Array field
-        value =   configValue.split(Settings.arrayEscapeChar);
+        value = configValue.split(Settings.arrayEscapeChar);
       } else if (Collection.class.isAssignableFrom(field.getType())) {
         // Collection field
         value = Utils.stringToArray(configValue, Settings.arrayEscapeChar);
       } else if (field.getType().isEnum()) {
         // Enum field
-          @SuppressWarnings("unchecked")
-          Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
+        @SuppressWarnings("unchecked")
+        Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
         value = en;
       } else if (Utils.isNumeric(field.getType())) {
         value = Integer.valueOf(configValue); // FIXME Convertir en autre que Integer ? pas faux, mais je crois pas qu'il ya aura des float ou long ou ... un jours
@@ -625,9 +625,9 @@ public class Settings implements Cloneable {
     hash = 97 * hash + (this.hideRenamedMedia ? 1 : 0);
     return hash;
   }
-  
+
   @Override
-  public Settings clone() throws CloneNotSupportedException{
+  public Settings clone() throws CloneNotSupportedException {
     return (Settings) super.clone();
   }
 }

@@ -1354,7 +1354,7 @@ public class MovieRenamer extends JFrame {
       }
     }
   }
-  
+
   private class MediaActorListener implements PropertyChangeListener {
 
     private ActorWorker maw;
@@ -1374,7 +1374,8 @@ public class MovieRenamer extends JFrame {
       }
     }
   }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+
+  // Variables declaration - do not modify//GEN-BEGIN:variables
     private JSplitPane MediaSp;
     private JPopupMenu batchProcessMenu;
     private JToolBar btmTb;
