@@ -393,10 +393,11 @@ public class Settings implements Cloneable {
         value = Utils.stringToArray(configValue, Settings.arrayEscapeChar);
       } else if (field.getType().isEnum()) {
         // Enum field
-        Enum<?> en = Enum.valueOf((Class<Enum>) field.getType(), configValue);
+        @SuppressWarnings("unchecked")
+        Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
         value = en;
       } else if (Utils.isNumeric(field.getType())) {
-        value = Integer.valueOf(configValue); // FIXME Convertir en autre que Integer ?
+        value = Integer.valueOf(configValue); // FIXME Convertir en autre que Integer ? pas faux, mais je crois pas qu'il ya aura des float ou long ou ... un jours
       } else {
         // other parsing
         if (Settings.xmlVersion.compareToIgnoreCase("1.2.2_Alpha") < 0) {// Older setting file
