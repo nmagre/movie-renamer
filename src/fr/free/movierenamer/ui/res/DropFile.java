@@ -17,10 +17,6 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.media.MediaRenamed;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.worker.ListFilesWorker;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -35,9 +31,15 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import fr.free.movierenamer.media.MediaRenamed;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.worker.ListFilesWorker;
 
 /**
  * Class DropFile, Drop files
@@ -49,7 +51,6 @@ public class DropFile implements DropTargetListener {
   private Settings setting;
   private JFrame parent;
   private MovieRenamer.FileWorkerListener listener;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private ArrayList<MediaRenamed> renamed;
   private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -120,9 +121,9 @@ public class DropFile implements DropTargetListener {
       setMovies(files);
 
     } catch (UnsupportedFlavorException e) {
-      JOptionPane.showMessageDialog(parent, e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(parent, e.getMessage(), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
     } catch (IOException e) {
-      JOptionPane.showMessageDialog(parent, e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(parent, e.getMessage(), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
     } finally {
       evt.dropComplete(true);
       parent.setCursor(normalCursor);
@@ -149,7 +150,7 @@ public class DropFile implements DropTargetListener {
             if (subDir.length > 0) {
               if (!subFolders && !setting.scanSubfolder) {
                 parent.setCursor(normalCursor);
-                int n = JOptionPane.showConfirmDialog(parent, bundle.getString("scanSubFolder"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+                int n = JOptionPane.showConfirmDialog(parent, Utils.i18n("scanSubFolder"), Utils.i18n("question"), JOptionPane.YES_NO_OPTION);
                 if (n == JOptionPane.NO_OPTION) {
                   break;
                 }

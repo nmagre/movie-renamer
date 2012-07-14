@@ -53,8 +53,8 @@ public class Settings {
    * App general settings
    */
   // General
-  public static final String APPNAME = Utils.getRbTok("apps");
-  public static final String VERSION = Utils.getRbTok("apps.version");
+  public static final String APPNAME = Utils.getAppTok("apps");
+  public static final String VERSION = Utils.getAppTok("apps.version");
   private static final String userPath = System.getProperty("user.home");
   private static final String apkMdb = "BQRjATHjATV3Zwx2AwWxLGOvLwEwZ2WwZQWyBGyvMQx=";
   private static final String apkTdb = "DmIOExH5DwV1AwZkZRZ3Zt==";

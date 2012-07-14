@@ -17,13 +17,19 @@
  */
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.media.MediaRenamed;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.Date;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javax.swing.JOptionPane;
+
+import fr.free.movierenamer.media.MediaRenamed;
 
 /**
  * Class Renamer , Rename movie files, download thumb/fanart, create XBMC NFO
@@ -43,7 +49,6 @@ public class Renamer {
   private String newPath = "";
   private String newFileNameNoExt;
   private MediaRenamed renamed;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   public boolean cancel = false;
 
   /**
@@ -125,7 +130,7 @@ public class Renamer {
     if (!newFileNameNoExt.equals(oldFileNameNoExt) || !newPath.equals("")) {
       newFile = new File(oldFile.getParent() + File.separator + newPath + newFileName);
       if (newFile.exists()) {
-        int n = JOptionPane.showConfirmDialog(null, Settings.APPNAME + Utils.SPACE + bundle.getString("alreadyExist"), "Question", JOptionPane.YES_NO_OPTION);
+        int n = JOptionPane.showConfirmDialog(null, Settings.APPNAME + Utils.SPACE + Utils.i18n("alreadyExist"), "Question", JOptionPane.YES_NO_OPTION);
         if (n != JOptionPane.YES_OPTION) {
           cancel = true;
           return true;

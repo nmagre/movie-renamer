@@ -17,11 +17,12 @@
  */
 package fr.free.movierenamer.media;
 
+import java.io.File;
+
+import javax.swing.filechooser.FileFilter;
+
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
-import java.io.File;
-import java.util.ResourceBundle;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * Class MovieFileFilter
@@ -30,7 +31,6 @@ import javax.swing.filechooser.FileFilter;
  */
 public class MediaFileFilter extends FileFilter {
 
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private Settings setting;
 
   public MediaFileFilter(Settings setting) {
@@ -52,6 +52,6 @@ public class MediaFileFilter extends FileFilter {
 
   @Override
   public String getDescription() {
-    return bundle.getString("media");
+    return Utils.i18n("media");
   }
 }

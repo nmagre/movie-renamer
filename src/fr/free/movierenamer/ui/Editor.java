@@ -18,14 +18,12 @@
 
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.Utils;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ResourceBundle;
+
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -41,6 +39,9 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.utils.Utils;
+
 /**
  * Class Editor
  * @author Nicolas Magré
@@ -50,7 +51,6 @@ public class Editor extends JDialog {
   private ArrayList<String> array;
   private DefaultListModel listModel;
   private String initValue;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /** Creates new form Editor
    * @param text
@@ -114,8 +114,7 @@ public class Editor extends JDialog {
     jScrollPane1.setViewportView(stringList);
 
     addBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png"))); // NOI18N
-    ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-    addBtn.setToolTipText(bundle.getString("add")); // NOI18N
+    addBtn.setToolTipText(Utils.i18n("add")); // NOI18N
     addBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         addBtnActionPerformed(evt);
@@ -123,7 +122,7 @@ public class Editor extends JDialog {
     });
 
     removeBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png"))); // NOI18N
-    removeBtn.setToolTipText(bundle.getString("removeFromList")); // NOI18N
+    removeBtn.setToolTipText(Utils.i18n("removeFromList")); // NOI18N
     removeBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         removeBtnActionPerformed(evt);
@@ -133,7 +132,7 @@ public class Editor extends JDialog {
     stringField.addMouseListener(new ContextMenuFieldMouseListener());
 
     editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-    editBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+    editBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
     editBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         editBtnActionPerformed(evt);
@@ -141,8 +140,8 @@ public class Editor extends JDialog {
     });
 
     cancelBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2.png"))); // NOI18N
-    cancelBtn.setText(bundle.getString("cancel")); // NOI18N
-    cancelBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
+    cancelBtn.setText(Utils.i18n("cancel")); // NOI18N
+    cancelBtn.setToolTipText(Utils.i18n("cancel")); // NOI18N
     cancelBtn.setMargin(new Insets(2, 2, 2, 2));
     cancelBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
@@ -151,8 +150,8 @@ public class Editor extends JDialog {
     });
 
     okBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png"))); // NOI18N
-    okBtn.setText(bundle.getString("ok")); // NOI18N
-    okBtn.setToolTipText(bundle.getString("ok")); // NOI18N
+    okBtn.setText(Utils.i18n("ok")); // NOI18N
+    okBtn.setToolTipText(Utils.i18n("ok")); // NOI18N
     okBtn.setMargin(new Insets(2, 2, 2, 2));
     okBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
@@ -224,7 +223,7 @@ public class Editor extends JDialog {
   }//GEN-LAST:event_editBtnActionPerformed
 
   private void addBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-    String s = (String) JOptionPane.showInputDialog(this, bundle.getString("add"), "Movie Renamer Editor", JOptionPane.PLAIN_MESSAGE);
+    String s = (String) JOptionPane.showInputDialog(this, Utils.i18n("add"), "Movie Renamer Editor", JOptionPane.PLAIN_MESSAGE);
 
     if ((s != null) && (s.length() > 0)) {
       array.add(s);

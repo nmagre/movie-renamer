@@ -316,32 +316,31 @@ public class InfoEditorFrame extends JDialog {
         ratingField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
 
         runtimeLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-        runtimeLbl.setText(bundle.getString("runtime")); // NOI18N
+        runtimeLbl.setText(Utils.i18n("runtime")); // NOI18N
 
         ratingLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        ratingLbl.setText(bundle.getString("rating")); // NOI18N
+        ratingLbl.setText(Utils.i18n("rating")); // NOI18N
 
         yearField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
         yearField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
 
         yearLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        yearLbl.setText(bundle.getString("year")); // NOI18N
+        yearLbl.setText(Utils.i18n("year")); // NOI18N
 
         trailerLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        trailerLbl.setText(bundle.getString("trailer")); // NOI18N
+        trailerLbl.setText(Utils.i18n("trailer")); // NOI18N
 
         mpaaLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
         mpaaLbl.setText("Mpaa");
 
         originalTitleLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        originalTitleLbl.setText(bundle.getString("origTitle")); // NOI18N
+        originalTitleLbl.setText(Utils.i18n("origTitle")); // NOI18N
 
         sortTitleLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        sortTitleLbl.setText(bundle.getString("sortTitle")); // NOI18N
+        sortTitleLbl.setText(Utils.i18n("sortTitle")); // NOI18N
 
         titleLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        titleLbl.setText(bundle.getString("title")); // NOI18N
+        titleLbl.setText(Utils.i18n("title")); // NOI18N
 
         titleField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
         titleField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
@@ -365,39 +364,39 @@ public class InfoEditorFrame extends JDialog {
         taglineLbl.setText("TagLine");
 
         cancelBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn1.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn1.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn1.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn2.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn2.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn2.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn3.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn3.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn3.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn4.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn4.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn4.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn5.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn5.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn5.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn6.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn6.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn6.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn7.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn7.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn7.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn8.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn8.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn8.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn9.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn9.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn9.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         top250Lbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
@@ -407,11 +406,11 @@ public class InfoEditorFrame extends JDialog {
         yearField.addMouseListener(new fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener());
 
         cancelBtn12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn12.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn12.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn12.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         watchedLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        watchedLbl.setText(bundle.getString("watched")); // NOI18N
+        watchedLbl.setText(Utils.i18n("watched")); // NOI18N
 
         javax.swing.GroupLayout infoPnlLayout = new javax.swing.GroupLayout(infoPnl);
         infoPnl.setLayout(infoPnlLayout);
@@ -551,19 +550,19 @@ public class InfoEditorFrame extends JDialog {
         studioLbl.setText("Studio");
 
         directorLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        directorLbl.setText(bundle.getString("director")); // NOI18N
+        directorLbl.setText(Utils.i18n("director")); // NOI18N
 
         genreLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
         genreLbl.setText("Genre");
 
         setLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        setLbl.setText(bundle.getString("set")); // NOI18N
+        setLbl.setText(Utils.i18n("set")); // NOI18N
 
         writerLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        writerLbl.setText(bundle.getString("writer")); // NOI18N
+        writerLbl.setText(Utils.i18n("writer")); // NOI18N
 
         countryLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-        countryLbl.setText(bundle.getString("country")); // NOI18N
+        countryLbl.setText(Utils.i18n("country")); // NOI18N
 
         countryField.setEditable(false);
         countryField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
@@ -585,7 +584,7 @@ public class InfoEditorFrame extends JDialog {
 
         editStudioBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 10)); // NOI18N
         editStudioBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-        editStudioBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+        editStudioBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
         editStudioBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editStudioBtnActionPerformed(evt);
@@ -594,7 +593,7 @@ public class InfoEditorFrame extends JDialog {
 
         editDirectorBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 10)); // NOI18N
         editDirectorBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-        editDirectorBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+        editDirectorBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
         editDirectorBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editDirectorBtnActionPerformed(evt);
@@ -603,7 +602,7 @@ public class InfoEditorFrame extends JDialog {
 
         editGenreBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 10)); // NOI18N
         editGenreBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-        editGenreBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+        editGenreBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
         editGenreBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editGenreBtnActionPerformed(evt);
@@ -612,7 +611,7 @@ public class InfoEditorFrame extends JDialog {
 
         editSetBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 10)); // NOI18N
         editSetBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-        editSetBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+        editSetBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
         editSetBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editSetBtnActionPerformed(evt);
@@ -621,7 +620,7 @@ public class InfoEditorFrame extends JDialog {
 
         editWriterBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 10)); // NOI18N
         editWriterBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-        editWriterBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+        editWriterBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
         editWriterBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editWriterBtnActionPerformed(evt);
@@ -630,7 +629,7 @@ public class InfoEditorFrame extends JDialog {
 
         editCountryBtn.setFont(new java.awt.Font("DejaVu Sans", 0, 10)); // NOI18N
         editCountryBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/accessories-text-editor-6.png"))); // NOI18N
-        editCountryBtn.setToolTipText(bundle.getString("edit")); // NOI18N
+        editCountryBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
         editCountryBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCountryBtnActionPerformed(evt);
@@ -638,31 +637,31 @@ public class InfoEditorFrame extends JDialog {
         });
 
         cancelBtn13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn13.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn13.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn13.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn14.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn14.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn14.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn15.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn15.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn15.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn16.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn16.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn16.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn17.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn17.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn17.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn18.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn18.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn18.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         cancelBtn10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn10.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn10.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn10.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         imdbidField.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
@@ -789,7 +788,7 @@ public class InfoEditorFrame extends JDialog {
                 .addContainerGap(42, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab(bundle.getString("details"), detailPnl); // NOI18N
+        jTabbedPane1.addTab(Utils.i18n("details"), detailPnl); // NOI18N
 
         synopsisField.setColumns(20);
         synopsisField.setLineWrap(true);
@@ -802,7 +801,7 @@ public class InfoEditorFrame extends JDialog {
         synopsisLbl.setText("Synopsis");
 
         cancelBtn11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png"))); // NOI18N
-        cancelBtn11.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancelBtn11.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancelBtn11.setMargin(new java.awt.Insets(2, 2, 2, 2));
 
         javax.swing.GroupLayout synopsPnlLayout = new javax.swing.GroupLayout(synopsPnl);
@@ -834,7 +833,7 @@ public class InfoEditorFrame extends JDialog {
         jTabbedPane1.addTab("Synopsis", synopsPnl);
 
         actorLbl.setFont(new java.awt.Font("DejaVu Sans", 1, 12)); // NOI18N
-        actorLbl.setText(bundle.getString("actors")); // NOI18N
+        actorLbl.setText(Utils.i18n("actors")); // NOI18N
 
         actorsList.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         actorsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -880,11 +879,11 @@ public class InfoEditorFrame extends JDialog {
                 .addContainerGap(51, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab(bundle.getString("actor"), actorPnl); // NOI18N
+        jTabbedPane1.addTab(Utils.i18n("actor"), actorPnl); // NOI18N
 
         applyBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-ok-2.png"))); // NOI18N
-        applyBtn.setText(bundle.getString("Apply")); // NOI18N
-        applyBtn.setToolTipText(bundle.getString("Apply")); // NOI18N
+        applyBtn.setText(Utils.i18n("Apply")); // NOI18N
+        applyBtn.setToolTipText(Utils.i18n("Apply")); // NOI18N
         applyBtn.setMargin(new java.awt.Insets(2, 2, 2, 2));
         applyBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -893,8 +892,8 @@ public class InfoEditorFrame extends JDialog {
         });
 
         cancleBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/dialog-cancel-2.png"))); // NOI18N
-        cancleBtn.setText(bundle.getString("cancel")); // NOI18N
-        cancleBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
+        cancleBtn.setText(Utils.i18n("cancel")); // NOI18N
+        cancleBtn.setToolTipText(Utils.i18n("cancel")); // NOI18N
         cancleBtn.setMargin(new java.awt.Insets(2, 2, 2, 2));
         cancleBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -902,12 +901,12 @@ public class InfoEditorFrame extends JDialog {
             }
         });
 
-        seachOnLbl.setText(bundle.getString("searchOn")); // NOI18N
+        seachOnLbl.setText(Utils.i18n("searchOn")); // NOI18N
 
         siteComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "allocine.fr", "rottentomatoes.com", "allmovie.com" }));
 
         searchBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/system-search-3.png"))); // NOI18N
-        searchBtn.setToolTipText(bundle.getString("search")); // NOI18N
+        searchBtn.setToolTipText(Utils.i18n("search")); // NOI18N
         searchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBtnActionPerformed(evt);

@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
@@ -72,6 +71,7 @@ import fr.free.movierenamer.ui.res.DropImage;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class MoviePanel
@@ -682,8 +682,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
         fanartList.setMinimumSize(new Dimension(0, 110));
         fanartList.setVisibleRowCount(1);
         fanartsScrollPane.setViewportView(fanartList);
-    ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-        thumbsScrollPane.setBorder(BorderFactory.createTitledBorder(bundle.getString("thumbnails")));         thumbsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        thumbsScrollPane.setBorder(BorderFactory.createTitledBorder(Utils.i18n("thumbnails")));         thumbsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -782,7 +781,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
 
         detailsPnl.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        movieTabbedPane.addTab(bundle.getString("details"), detailsPnl); // NOI18N
+        movieTabbedPane.addTab(Utils.i18n("details"), detailsPnl); // NOI18N
 
         actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         actorScroll.setViewportView(actorList);
@@ -804,7 +803,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
                 .addContainerGap())
         );
 
-        movieTabbedPane.addTab(bundle.getString("actor"), actorPnl); // NOI18N
+        movieTabbedPane.addTab(Utils.i18n("actor"), actorPnl); // NOI18N
 
         thumbLbl.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 

@@ -17,6 +17,21 @@
  */
 package fr.free.movierenamer.worker;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -26,20 +41,8 @@ import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.utils.YTdecodeUrl;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 
 /**
  * Class TmdbInfoWorker, get movie info from the movie database
@@ -51,7 +54,6 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
   private static final int RETRY = 3;
   private Settings setting;
   private MediaID id;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private SwingPropertyChangeSupport errorSupport;
 
   /**
@@ -153,6 +155,6 @@ public class TmdbInfoWorker extends SwingWorker<MovieInfo, String> {
 
   @Override
   public void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

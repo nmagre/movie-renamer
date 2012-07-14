@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.utils.Utils;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -27,8 +25,15 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.util.ResourceBundle;
-import javax.swing.*;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+
+import fr.free.movierenamer.media.MediaFile;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class ContextMenuListMouseListener
@@ -37,7 +42,6 @@ import javax.swing.*;
  */
 public class ContextMenuListMouseListener extends MouseAdapter {
 
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private JPopupMenu popup = new JPopupMenu();
   private MediaFile moviefile;
   private PropertyChangeSupport changeSupport;
@@ -52,7 +56,7 @@ public class ContextMenuListMouseListener extends MouseAdapter {
     index = -1;
     moviename = "";
 
-    search = new AbstractAction(bundle.getString("search")) {
+    search = new AbstractAction(Utils.i18n("search")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -62,7 +66,7 @@ public class ContextMenuListMouseListener extends MouseAdapter {
       }
     };
 
-    play = new AbstractAction(bundle.getString("play")) {
+    play = new AbstractAction(Utils.i18n("play")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -75,7 +79,7 @@ public class ContextMenuListMouseListener extends MouseAdapter {
       }
     };
 
-    removeList = new AbstractAction(bundle.getString("removeFromList")) {
+    removeList = new AbstractAction(Utils.i18n("removeFromList")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -85,16 +89,16 @@ public class ContextMenuListMouseListener extends MouseAdapter {
       }
     };
 
-    removeHdd = new AbstractAction(bundle.getString("deleteFile")) {
+    removeHdd = new AbstractAction(Utils.i18n("deleteFile")) {
 
       private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(ActionEvent ae) {
-        int n = JOptionPane.showConfirmDialog(null, bundle.getString("removeFile") + Utils.ENDLINE + moviefile.getFile(), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+        int n = JOptionPane.showConfirmDialog(null, Utils.i18n("removeFile") + Utils.ENDLINE + moviefile.getFile(), Utils.i18n("question"), JOptionPane.YES_NO_OPTION);
         if (n == 0) {
           if (!moviefile.getFile().delete()) {
-            JOptionPane.showMessageDialog(null, bundle.getString("renameFileFailed"), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, Utils.i18n("renameFileFailed"), "Error", JOptionPane.ERROR_MESSAGE);
           } else {
             firePropertyChange("remove", null, index);
           }

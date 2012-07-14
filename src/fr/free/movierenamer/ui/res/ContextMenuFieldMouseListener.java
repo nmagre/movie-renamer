@@ -23,11 +23,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ResourceBundle;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.text.JTextComponent;
+
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class ContextMenuFieldMouseListener
@@ -37,7 +39,6 @@ import javax.swing.text.JTextComponent;
 public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   private JPopupMenu popup = new JPopupMenu();
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private Action cut;
   private Action copy;
   private Action paste;
@@ -51,7 +52,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   public ContextMenuFieldMouseListener() {
 
-    cut = new AbstractAction(bundle.getString("cut")) {
+    cut = new AbstractAction(Utils.i18n("cut")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -61,7 +62,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    copy = new AbstractAction(bundle.getString("copy")) {
+    copy = new AbstractAction(Utils.i18n("copy")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -71,7 +72,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    paste = new AbstractAction(bundle.getString("paste")) {
+    paste = new AbstractAction(Utils.i18n("paste")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -81,7 +82,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    selectAll = new AbstractAction(bundle.getString("selectAll")) {
+    selectAll = new AbstractAction(Utils.i18n("selectAll")) {
 
       private static final long serialVersionUID = 1L;
 

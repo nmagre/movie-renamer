@@ -17,23 +17,24 @@
  */
 package fr.free.movierenamer.worker;
 
+import java.awt.Dimension;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
+
 import fr.free.movierenamer.parser.ImdbParser;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
-import java.awt.Dimension;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class ImdbSearchWorker, Search on imdb
@@ -47,7 +48,6 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
   private HttpGet http;
   private ImdbParser imdbParser;
   private SwingPropertyChangeSupport errorSupport;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /**
    * Constructor arguments
@@ -120,6 +120,6 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
 
   @Override
   public void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

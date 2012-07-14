@@ -22,10 +22,13 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.JDialog;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+
 import fr.free.movierenamer.utils.Loading;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class LoadingDialog
@@ -110,11 +113,10 @@ public class LoadingDialog extends JDialog {
       .addGap(0, 100, Short.MAX_VALUE)
     );
 
-    java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-    setTitle(bundle.getString("loading")); // NOI18N
+    setTitle(Utils.i18n("loading")); // NOI18N
     setResizable(false);
 
-    loadingLbl.setText(bundle.getString("loadingWait")); // NOI18N
+    loadingLbl.setText(Utils.i18n("loadingWait")); // NOI18N
 
     seddPnl.setLayout(new javax.swing.BoxLayout(seddPnl, javax.swing.BoxLayout.PAGE_AXIS));
 

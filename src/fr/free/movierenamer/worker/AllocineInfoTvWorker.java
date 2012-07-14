@@ -17,6 +17,21 @@
  */
 package fr.free.movierenamer.worker;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
@@ -28,19 +43,7 @@ import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class AllocineInfoTvWorker
@@ -52,7 +55,6 @@ public class AllocineInfoTvWorker extends SwingWorker<List<TvShowSeason>, String
   private static final int RETRY = 3;
   private Settings setting;
   private MediaID id;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private SwingPropertyChangeSupport errorSupport;
   private SxE sxe;
 
@@ -244,6 +246,6 @@ public class AllocineInfoTvWorker extends SwingWorker<List<TvShowSeason>, String
   
   @Override
   public void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

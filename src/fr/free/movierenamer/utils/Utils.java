@@ -17,14 +17,21 @@
  */
 package fr.free.movierenamer.utils;
 
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Platform;
-import fr.free.movierenamer.media.MediaInfoLibrary;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.color.CMMException;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -33,10 +40,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
+
+import fr.free.movierenamer.media.MediaInfoLibrary;
 
 /**
  * Class Utils
@@ -50,7 +67,8 @@ public abstract class Utils {
   private static boolean libmediainfo = false;
   private static boolean libzen = false;
   private static String mediainfo = null;
-  private static ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private static final ResourceBundle appBundle = ResourceBundle.getBundle("fr/free/movierenamer/version");
   public static final String SPACE = " ";
   public static final String ENDLINE = System.getProperty("line.separator");
   public static final String EMPTY = "";
@@ -66,23 +84,6 @@ public abstract class Utils {
     UPPER,
     LOWER,
     NONE
-  }
-  public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
-
-  /**
-   * Get token from version.properties
-   *
-   * @param propToken Token property name
-   * @return Token value or an empty string
-   */
-  public static String getRbTok(String propToken) {
-    String msg = "";
-    try {
-       msg = rb.getString(propToken);
-    } catch (MissingResourceException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-    return msg;
   }
 
   /**
@@ -739,6 +740,23 @@ public abstract class Utils {
       Settings.LOGGER.log(Level.CONFIG, "No internationlization found for {0}, use default value", bundleKey);
       return defaultValue;
     }
+  }
+  
+  /**
+   * Get token from version.properties
+   * 
+   * @param propToken
+   *          Token property name
+   * @return Token value or an empty string
+   */
+  public static String getAppTok(String propToken) {
+    String msg = "";
+    try {
+      msg = appBundle.getString(propToken);
+    } catch (MissingResourceException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+    return msg;
   }
 
   public static String getInputStreamContent(InputStream is, String encode) throws IOException {
