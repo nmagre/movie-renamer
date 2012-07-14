@@ -94,7 +94,7 @@ public class Movie implements Media {
   /**
    * Get renamed movie title
    *
-   * @param setting
+   * @param setting Movie Renamer settings
    * @param regExp Expression to rename movie title with
    * @return Movie title renamed
    */

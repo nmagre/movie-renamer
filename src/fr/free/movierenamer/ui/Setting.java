@@ -29,17 +29,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class Setting , Setting dialog
@@ -49,6 +52,7 @@ import javax.swing.event.ListSelectionListener;
 public class Setting extends JDialog {
 
   private Settings setting;
+  private SwingPropertyChangeSupport settingsChange;
   private String[] extensions;
   private ArrayList<String> filters;
   private int currentExtensionIndex;
@@ -66,7 +70,7 @@ public class Setting extends JDialog {
     {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"}, {"<d2>", "Lana Wachowski"},
     {"<c>", "USA | Australia"}, {"<c1>", "USA"}, {"<c2>", "Australia"}, {"<rt>", "136"}, {"<ra>", "8.8"},
     {"<mrt>", "2h 16mn"}, {"<mfs>", "7.179 GiB"}, {"<mc>", "DivX"}, {"<mdc>", "HD"}, {"<mf>", "720p"}, {"<mfr>", "23.976"}, {"<mr>", "1280x720"},
-    {"<mcf>", "mkv"}, {"<mach>", "6ch | 6ch"}, {"<mach1>", "6ch"}, {"<mach2>", "6ch"}, {"<mac>", "DTS | DTS"}, {"<mac1>", "DTS"},{"<mac2>", "DTS"},
+    {"<mcf>", "mkv"}, {"<mach>", "6ch | 6ch"}, {"<mach1>", "6ch"}, {"<mach2>", "6ch"}, {"<mac>", "DTS | DTS"}, {"<mac1>", "DTS"}, {"<mac2>", "DTS"},
     {"<mal>", "english | french"}, {"<mal1>", "english"}, {"<mal2>", "french"}, {"<matt>", "English DTS 1509kbps | French DTS 755kbps"},
     {"<matt1>", "English DTS 1509kbps"}, {"<matt2>", "French DTS 755kbps"},
     {"<mtt>", "English Forced | English | French Forced,"}, {"<mtt1>", "English Forced"}, {"<mtt2>", "English"}, {"<mtt3>", "French Forced,"}
@@ -76,10 +80,12 @@ public class Setting extends JDialog {
   /**
    * Creates new form Setting
    *
-   * @param setting
-   * @param parent
+   * @param setting Movie Renamer Settings
+   * @param settingsChange Settings property change
+   * @param parent Parent to center on
    */
-  public Setting(Settings setting, Component parent) {
+  public Setting(Settings setting, SwingPropertyChangeSupport settingsChange, Component parent) {
+    this.settingsChange = settingsChange;
     bundle = ResourceBundle.getBundle("fr.free.movierenamer/i18n/Bundle");
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     initComponents();
@@ -246,7 +252,7 @@ public class Setting extends JDialog {
 
   private String movieRenamerTest(String nameFormat, int limit, int casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
     String ext = "avi";
-     
+
     for (int i = 0; i < format.length; i++) {
       if (limit > 0) {
         if (format[i][0].equals("<a>") || format[i][0].equals("<d>") || format[i][0].equals("<c>") || format[i][0].equals("<g>")
@@ -1857,6 +1863,12 @@ public class Setting extends JDialog {
 
   private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
     boolean restartApp = false;
+    Settings oldSetting = new Settings();
+    try {
+      oldSetting = setting.clone();
+    } catch (CloneNotSupportedException ex) {
+      Logger.getLogger(Setting.class.getName()).log(Level.SEVERE, null, ex);
+    }
 
     try {
       setting.movieFilenameLimit = Integer.parseInt(limitField.getText());
@@ -1973,6 +1985,7 @@ public class Setting extends JDialog {
     //Cache
     setting.clearXMLCache = clearXmlCacheOnStartChk.isSelected();
 
+    settingsChange.firePropertyChange("settingChange", oldSetting, setting);
     setting.saveSetting();
 
     if (restartApp) {
@@ -1987,6 +2000,7 @@ public class Setting extends JDialog {
         JOptionPane.showMessageDialog(this, bundle.getString("cantRestart") + Utils.ENDLINE + ex.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
       }
     }
+
     dispose();
   }//GEN-LAST:event_saveBtnActionPerformed
 

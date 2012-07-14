@@ -37,7 +37,10 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.dnd.DropTarget;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
@@ -133,18 +136,73 @@ public class MovieRenamer extends JFrame {
         }
       }
     });
-    
+
     settingsChange = new SwingPropertyChangeSupport(setting);
     settingsChange.addPropertyChangeListener(new PropertyChangeListener() {
 
       @Override
-      public void propertyChange(PropertyChangeEvent evt) {//A faire, rafraichie, l'interface, et les infos
-        Settings conf = (Settings) evt.getNewValue();
-        if(evt.getPropertyName().equals("interfaceChange")){
-          
+      public void propertyChange(PropertyChangeEvent evt) {//A refaire
+        Settings.LOGGER.log(Level.INFO, "Settings property change : {0}", evt.getPropertyName());
+        if (evt.getPropertyName().equals("settingChange")) {
+          Settings conf = (Settings) evt.getNewValue();
+
+          nfoChk.setText(conf.nfoType == 0 ? bundle.getString("nfoXbmc") : bundle.getString("nfoMediaPortal"));
+          if (conf.interfaceChanged) {
+            conf.interfaceChanged = false;
+            loadInterface();
+            if (currentMedia == null) {
+              return;
+            }
+            if (conf.movieInfoPanel) {
+              SwingWorker<MediaImage, Void> tmdbiw = null;
+              SwingWorker<Void, Void> actor = null;
+
+              Movie movie = (Movie) currentMedia;
+              if (conf.actorImage) {
+                moviePnl.clearActorList();
+                actor = WorkerManager.getMovieActorWorker(movie.getMovieInfo().getActors(), moviePnl, conf);
+                actor.addPropertyChangeListener(new MediaImageListener(actor, ACTORWORKER));
+              }
+
+              if (conf.thumb || conf.fanart) {
+                if (conf.thumb) {
+                  moviePnl.clearThumbList();
+                }
+                if (conf.fanart) {
+                  moviePnl.clearFanartList();
+                }
+
+                /*try {
+                  tmdbiw = WorkerManager.getMediaImageWorker(movie.getMediaId(MediaID.IMDBID), conf);
+                  tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
+                } catch (ActionNotValidException ex) {
+                  Settings.LOGGER.log(Level.SEVERE, null, ex);
+                }*/
+
+              }
+              if (conf.thumb || conf.fanart || conf.actorImage) {
+                loadDial(false);
+              }
+              if ((actor != null || tmdbiw != null)) {
+                loading.setValue(100, INFOWORKER);
+              }
+
+              if (actor != null) {
+                actor.execute();
+              }
+
+              if (tmdbiw != null) {
+                tmdbiw.execute();
+              }
+            }
+          }
+
+          if (currentMedia != null) {
+            renamedField.setText(currentMedia.getRenamedTitle(conf.movieFilenameFormat, conf));
+          }
+
+          MovieRenamer.this.setting = conf;
         }
-        
-        MovieRenamer.this.setting = conf;
       }
     });
 
@@ -174,6 +232,9 @@ public class MovieRenamer extends JFrame {
         mediaFile.remove(index);
         mediaFileNameModel.remove(index);
         clearInterface(false, true);
+        currentMedia = null;
+        ((TitledBorder) mediaScroll.getBorder()).setTitle(Utils.EMPTY + mediaFileNameModel.size() + Utils.SPACE + bundle.getString("medias"));
+        mediaScroll.repaint();
       } else if (pce.getPropertyName().equals("search")) {
         if (currentMedia == null) {
           return;
@@ -385,7 +446,7 @@ public class MovieRenamer extends JFrame {
       if (mediaFileNameModel != null) {
         mediaFileNameModel.clear();
       }
-      ((TitledBorder) mediaScroll.getBorder()).setTitle(bundle.getString("movies"));
+      ((TitledBorder) mediaScroll.getBorder()).setTitle(bundle.getString("media"));
       mediaScroll.validate();
       mediaScroll.repaint();
     }
@@ -826,71 +887,7 @@ public class MovieRenamer extends JFrame {
     }//GEN-LAST:event_exitBtnActionPerformed
 
     private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
-      //A refaire
-      final Setting set = new Setting(setting, this);
-      set.addWindowListener(new WindowListener() {
-
-        @Override
-        public void windowOpened(WindowEvent e) {
-        }
-
-        @Override
-        public void windowClosing(WindowEvent e) {
-        }
-
-        @Override
-        public void windowClosed(WindowEvent e) {
-          setting = set.getSetting();
-          /*
-           * nfoChk.setText(setting.nfoType == 0 ? bundle.getString("nfoXbmc") : bundle.getString("nfoMediaPortal")); if (setting.interfaceChanged) { setting.interfaceChanged = false; loadInterface();
-           * if (currentMedia == null) { return; } if (setting.movieInfoPanel) { SwingWorker<MovieImage, Void> tmdbiw = null; SwingWorker<Void, Void> actor = null;
-           *
-           * Movie movie = (Movie) currentMedia; if (setting.actorImage) { moviePnl.clearActorList(); actor = WorkerManager.getMovieActorWorker(movie.getMovieInfo().getActors(), moviePnl, setting);
-           * actor.addPropertyChangeListener(new MediaImageListener(actor, ACTORWORKER)); }
-           *
-           * if (setting.thumb || setting.fanart) { if (setting.thumb) { moviePnl.clearThumbList(); } if (setting.fanart) { moviePnl.clearFanartList(); }
-           */
-          /*
-           * try { tmdbiw = WorkerManager.getMovieImageWorker(movie.getMediaId(MediaID.IMDBID), setting); tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw)); } catch
-           * (ActionNotValidException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); }
-           */
-          /*
-           * }
-           * if (setting.thumb || setting.fanart || setting.actorImage) { loadDial(false); } if ((actor != null || tmdbiw != null)) { loading.setValue(100, INFOWORKER); }
-           *
-           * if (actor != null) { actor.execute(); }
-           *
-           * if (tmdbiw != null) { tmdbiw.execute(); } } }
-           *
-           * if (currentMedia != null) { String dir = ""; if (setting.movieFilenameCreateDirectory) { if (setting.movieDirRenamedTitle == 2) { dir = setting.movieDir + File.movieFilenameSeparator; }
-           * else { boolean origTitle = setting.movieFilenameFormat.contains("<ot>"); String regex = setting.movieDirRenamedTitle == 1 ? setting.movieFilenameFormat : (origTitle ? "<ot>" : "<t>"); dir
-           * = currentMedia.getRenamedTitle(regex, setting); dir = dir.substring(0, dir.lastIndexOf(".")); dir += File.movieFilenameSeparator; } } renamedField.setText(dir +
-           * currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting)); }
-           *
-           * if (setting.lafChanged) { setting.lafChanged = false; try { for (int i = 0; i < Settings.lookAndFeels.length; i++) { if (Settings.lookAndFeels[i].getName().equals(setting.laf)) {
-           * UIManager.setLookAndFeel(Settings.lookAndFeels[i].getClassName()); break; } } SwingUtilities.updateComponentTreeUI(MovieRenamer.this); } catch (ClassNotFoundException ex) {
-           * Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (InstantiationException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (IllegalAccessException ex) {
-           * Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (UnsupportedLookAndFeelException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); } pack(); }
-           */
-        }
-
-        @Override
-        public void windowIconified(WindowEvent e) {
-        }
-
-        @Override
-        public void windowDeiconified(WindowEvent e) {
-        }
-
-        @Override
-        public void windowActivated(WindowEvent e) {
-        }
-
-        @Override
-        public void windowDeactivated(WindowEvent e) {
-        }
-      });
-
+      final Setting set = new Setting(setting, settingsChange, this);
       java.awt.EventQueue.invokeLater(new Runnable() {
 
         @Override
@@ -1200,7 +1197,7 @@ public class MovieRenamer extends JFrame {
             mediaFileNameModel.addElement(objects.get(i));
           }
 
-          ((TitledBorder) mediaScroll.getBorder()).setTitle(Utils.EMPTY + mediaFileNameModel.size() + Utils.SPACE + bundle.getString("movies"));
+          ((TitledBorder) mediaScroll.getBorder()).setTitle(Utils.EMPTY + mediaFileNameModel.size() + Utils.SPACE + bundle.getString("medias"));
 
           mediaList.setCellRenderer(new IconListRenderer<MediaFile>(objects));
           mediaScroll.repaint();
@@ -1346,7 +1343,6 @@ public class MovieRenamer extends JFrame {
       }
     }
   }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JSplitPane MediaSp;
     private JPopupMenu batchProcessMenu;

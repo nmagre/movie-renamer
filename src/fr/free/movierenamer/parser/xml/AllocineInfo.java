@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- *
+ * Class AllocineInfo
  * @author Nicolas Magré
  */
 public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {

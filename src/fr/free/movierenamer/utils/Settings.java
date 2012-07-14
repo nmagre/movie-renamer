@@ -30,7 +30,7 @@ import javax.swing.UIManager;
  *
  * @author Nicolas Magré
  */
-public class Settings {
+public class Settings implements Cloneable {
 
   public static final String APPNAME = "Movie Renamer";
   private final String version = Utils.getRbTok("apps.version");
@@ -267,5 +267,214 @@ public class Settings {
    */
   public String getVersion() {
     return version;
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (object instanceof Settings) {
+      Settings obj = (Settings) object;
+      if (this.selectFrstMedia != obj.selectFrstMedia) {
+        return false;
+      }
+      if (this.scanSubfolder != obj.scanSubfolder) {
+        return false;
+      }
+      if (this.showNotaMovieWarn != obj.showNotaMovieWarn) {
+        return false;
+      }
+      if (this.movieInfoPanel != obj.movieInfoPanel) {
+        return false;
+      }
+      if (this.actorImage != obj.actorImage) {
+        return false;
+      }
+      if (this.thumb != obj.thumb) {
+        return false;
+      }
+      if (this.fanart != obj.fanart) {
+        return false;
+      }
+      if (!this.laf.equals(obj.laf)) {
+        return false;
+      }
+      if (this.nfoType != obj.nfoType) {
+        return false;
+      }
+      if (this.checkUpdate != obj.checkUpdate) {
+        return false;
+      }
+      if (!this.locale.equals(obj.locale)) {
+        return false;
+      }
+      if (!this.movieFilenameFormat.equals(obj.movieFilenameFormat)) {
+        return false;
+      }
+      if (!this.movieFilenameSeparator.equals(obj.movieFilenameSeparator)) {
+        return false;
+      }
+      if (this.movieFilenameLimit != obj.movieFilenameLimit) {
+        return false;
+      }
+      if (this.movieFilenameCase != obj.movieFilenameCase) {
+        return false;
+      }
+      if (this.movieFilenameTrim != obj.movieFilenameTrim) {
+        return false;
+      }
+      if (this.movieFilenameRmDupSpace != obj.movieFilenameRmDupSpace) {
+        return false;
+      }
+      if (this.movieFilenameCreateDirectory != obj.movieFilenameCreateDirectory) {
+        return false;
+      }
+      if (!this.movieFolderFormat.equals(obj.movieFolderFormat)) {
+        return false;
+      }
+      if (!this.movieFolderSeparator.equals(obj.movieFolderSeparator)) {
+        return false;
+      }
+      if (this.movieFolderLimit != obj.movieFolderLimit) {
+        return false;
+      }
+      if (this.movieFolderCase != obj.movieFolderCase) {
+        return false;
+      }
+      if (this.movieFolderTrim != obj.movieFolderTrim) {
+        return false;
+      }
+      if (this.movieFolderRmDupSpace != obj.movieFolderRmDupSpace) {
+        return false;
+      }
+      if (!this.tvShowFilenameFormat.equals(obj.tvShowFilenameFormat)) {
+        return false;
+      }
+      if (!this.tvShowFilenameSeparator.equals(obj.tvShowFilenameSeparator)) {
+        return false;
+      }
+      if (this.tvShowFilenameLimit != obj.tvShowFilenameLimit) {
+        return false;
+      }
+      if (this.tvShowFilenameCase != obj.tvShowFilenameCase) {
+        return false;
+      }
+      if (this.tvShowFilenameTrim != obj.tvShowFilenameTrim) {
+        return false;
+      }
+      if (this.tvShowFilenameRmDupSpace != obj.tvShowFilenameRmDupSpace) {
+        return false;
+      }
+      if (this.thumbSize != obj.thumbSize) {
+        return false;
+      }
+      if (this.fanartSize != obj.fanartSize) {
+        return false;
+      }
+      if (this.thumbExt != obj.thumbExt) {
+        return false;
+      }
+      if (this.extensions != obj.extensions) {
+        return false;
+      }
+      if (this.useExtensionFilter != obj.useExtensionFilter) {
+        return false;
+      }
+      if (this.clearXMLCache != obj.clearXMLCache) {
+        return false;
+      }
+      if (this.movieScrapper != obj.movieScrapper) {
+        return false;
+      }
+      if (this.tvshowScrapper != obj.tvshowScrapper) {
+        return false;
+      }
+      if (this.movieScrapperFR != obj.movieScrapperFR) {
+        return false;
+      }
+      if (this.tvshowScrapperFR != obj.tvshowScrapperFR) {
+        return false;
+      }
+      if (this.displayThumbResult != obj.displayThumbResult) {
+        return false;
+      }
+      if (this.autoSearchMedia != obj.autoSearchMedia) {
+        return false;
+      }
+      if (this.selectFrstRes != obj.selectFrstRes) {
+        return false;
+      }
+      if (this.sortBySimiYear != obj.sortBySimiYear) {
+        return false;
+      }
+      if (this.nbResult != obj.nbResult) {
+        return false;
+      }
+      if (this.displayApproximateResult != obj.displayApproximateResult) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 97 * hash + (this.interfaceChanged ? 1 : 0);
+    hash = 97 * hash + (this.selectFrstMedia ? 1 : 0);
+    hash = 97 * hash + (this.scanSubfolder ? 1 : 0);
+    hash = 97 * hash + (this.showNotaMovieWarn ? 1 : 0);
+    hash = 97 * hash + (this.movieInfoPanel ? 1 : 0);
+    hash = 97 * hash + (this.actorImage ? 1 : 0);
+    hash = 97 * hash + (this.thumb ? 1 : 0);
+    hash = 97 * hash + (this.fanart ? 1 : 0);
+    hash = 97 * hash + (this.laf != null ? this.laf.hashCode() : 0);
+    hash = 97 * hash + this.nfoType;
+    hash = 97 * hash + (this.checkUpdate ? 1 : 0);
+    hash = 97 * hash + (this.locale != null ? this.locale.hashCode() : 0);
+    hash = 97 * hash + (this.movieFilenameFormat != null ? this.movieFilenameFormat.hashCode() : 0);
+    hash = 97 * hash + (this.movieFilenameSeparator != null ? this.movieFilenameSeparator.hashCode() : 0);
+    hash = 97 * hash + this.movieFilenameLimit;
+    hash = 97 * hash + this.movieFilenameCase;
+    hash = 97 * hash + (this.movieFilenameTrim ? 1 : 0);
+    hash = 97 * hash + (this.movieFilenameRmDupSpace ? 1 : 0);
+    hash = 97 * hash + (this.movieFilenameCreateDirectory ? 1 : 0);
+    hash = 97 * hash + (this.movieFolderFormat != null ? this.movieFolderFormat.hashCode() : 0);
+    hash = 97 * hash + (this.movieFolderSeparator != null ? this.movieFolderSeparator.hashCode() : 0);
+    hash = 97 * hash + this.movieFolderLimit;
+    hash = 97 * hash + this.movieFolderCase;
+    hash = 97 * hash + (this.movieFolderTrim ? 1 : 0);
+    hash = 97 * hash + (this.movieFolderRmDupSpace ? 1 : 0);
+    hash = 97 * hash + (this.tvShowFilenameFormat != null ? this.tvShowFilenameFormat.hashCode() : 0);
+    hash = 97 * hash + (this.tvShowFilenameSeparator != null ? this.tvShowFilenameSeparator.hashCode() : 0);
+    hash = 97 * hash + this.tvShowFilenameLimit;
+    hash = 97 * hash + this.tvShowFilenameCase;
+    hash = 97 * hash + (this.tvShowFilenameTrim ? 1 : 0);
+    hash = 97 * hash + (this.tvShowFilenameRmDupSpace ? 1 : 0);
+    hash = 97 * hash + this.thumbSize;
+    hash = 97 * hash + this.fanartSize;
+    hash = 97 * hash + this.thumbExt;
+    hash = 97 * hash + Arrays.deepHashCode(this.extensions);
+    hash = 97 * hash + (this.mediaNameFilters != null ? this.mediaNameFilters.hashCode() : 0);
+    hash = 97 * hash + (this.useExtensionFilter ? 1 : 0);
+    hash = 97 * hash + (this.clearXMLCache ? 1 : 0);
+    hash = 97 * hash + this.movieScrapper;
+    hash = 97 * hash + this.tvshowScrapper;
+    hash = 97 * hash + (this.movieScrapperFR ? 1 : 0);
+    hash = 97 * hash + (this.tvshowScrapperFR ? 1 : 0);
+    hash = 97 * hash + (this.displayThumbResult ? 1 : 0);
+    hash = 97 * hash + (this.autoSearchMedia ? 1 : 0);
+    hash = 97 * hash + (this.selectFrstRes ? 1 : 0);
+    hash = 97 * hash + (this.sortBySimiYear ? 1 : 0);
+    hash = 97 * hash + this.nbResult;
+    hash = 97 * hash + (this.displayApproximateResult ? 1 : 0);
+    hash = 97 * hash + (this.showMovieFilePath ? 1 : 0);
+    hash = 97 * hash + (this.hideRenamedMedia ? 1 : 0);
+    return hash;
+  }
+  
+  @Override
+  public Settings clone() throws CloneNotSupportedException{
+    return (Settings) super.clone();
   }
 }
