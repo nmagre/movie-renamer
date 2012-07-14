@@ -17,22 +17,24 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.parser.ImdbParser;
-import fr.free.movierenamer.utils.HttpGet;
-import fr.free.movierenamer.utils.SearchResult;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
 import java.awt.Dimension;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
+
+import fr.free.movierenamer.parser.ImdbParser;
+import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.HttpGet;
+import fr.free.movierenamer.utils.SearchResult;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class ImdbSearchWorker, Search on imdb
@@ -46,7 +48,6 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
   private HttpGet http;
   private ImdbParser imdbParser;
   private SwingPropertyChangeSupport errorSupport;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /**
    * Constructor arguments
@@ -69,7 +70,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
     setProgress(0);
     String searchres = null;
     try {
-      http = new HttpGet((setting.movieScrapperFR ? setting.imdbSearchUrl_fr : setting.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
+      http = new HttpGet((setting.movieScrapperFR ? Settings.imdbSearchUrl_fr : Settings.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1"));
       searchres = http.sendGetRequest(true, "ISO-8859-15");
     } catch (Exception e) {
       Settings.LOGGER.log(Level.SEVERE, e.toString());
@@ -91,7 +92,7 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
         for (SearchResult imsres : imdbSearchResult) {
           String thumb = imsres.getThumb();
           if (thumb != null) {
-            Icon icon = Utils.getSearchThumb(thumb, setting.cache, new Dimension(45, 70));
+            Icon icon = Utils.getSearchThumb(thumb, Cache.getInstance(), new Dimension(45, 70));
             if (icon != null) {
               imsres.setIcon(icon);
             }
@@ -119,6 +120,6 @@ public class ImdbSearchWorker extends SwingWorker<ArrayList<SearchResult>, Strin
 
   @Override
   public void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

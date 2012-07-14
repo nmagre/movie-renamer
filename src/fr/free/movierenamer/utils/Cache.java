@@ -29,21 +29,42 @@ import javax.imageio.ImageIO;
  */
 public class Cache {
 
-  //Type
-  public static final int THUMB = 0;
-  public static final int FANART = 1;
-  public static final int ACTOR = 2;
-  public static final int XML = 3;
-  public static final int TVSHOWZIP = 4;
-  private Settings setting;
+  // Type
+  public enum CacheType {
+    THUMB,
+    FANART,
+    ACTOR,
+    XML,
+    TVSHOWZIP;
+  }// The only instance of Cache
+  private static Cache instance;
 
   /**
-   * Constructor arguments
-   *
-   * @param setting Movie Renamer settings
+   * Private build for singleton fix
+   * 
+   * @return
    */
-  public Cache(Settings setting) {
-    this.setting = setting;
+  private static synchronized Cache newInstance() {
+    if (instance == null) {
+      instance = new Cache();
+    }
+    return instance;
+  }
+
+  /**
+   * Access to the Cache instance
+   * 
+   * @return The only instance of Cache
+   */
+  public static Cache getInstance() {
+    if (instance == null) {
+      instance = newInstance();
+    }
+    return instance;
+  }
+
+  private Cache() {
+    // no external access
   }
 
   /**
@@ -54,7 +75,7 @@ public class Cache {
    * @param type Cache type
    * @throws IOException
    */
-  public void add(InputStream is, String url, int type) throws IOException {
+  public void add(InputStream is, String url, Cache.CacheType type) throws IOException {
     OutputStream os;
     File f = new File(getPath(type) + Utils.md5(url));
     os = new FileOutputStream(f);
@@ -70,7 +91,7 @@ public class Cache {
    * @param type Cache type
    * @return File
    */
-  public File get(URL url, int type) {
+  public File get(URL url, Cache.CacheType type) {
     String md5Name = Utils.md5(url.toString());
     File f = new File(getPath(type) + md5Name);
     if (f.exists()) {
@@ -87,7 +108,7 @@ public class Cache {
    * @return Image
    * @throws IOException
    */
-  public Image getImage(URL image, int type) throws IOException {
+  public Image getImage(URL image, Cache.CacheType type) throws IOException {
     String md5Name = Utils.md5(image.toString());
     File f = new File(getPath(type) + md5Name);
     if (f.exists()) {
@@ -102,26 +123,24 @@ public class Cache {
    * @param type cache type
    * @return Cache path
    */
-  private String getPath(int type) {
-    String path = setting.cacheDir;
+  private String getPath(Cache.CacheType type) {
+    String path = Settings.cacheDir;
     switch (type) {
-      case THUMB:
-        path = setting.thumbCacheDir;
-        break;
-      case FANART:
-        path = setting.fanartCacheDir;
-        break;
-      case ACTOR:
-        path = setting.actorCacheDir;
-        break;
-      case XML:
-        path = setting.xmlCacheDir;
-        break;
-      case TVSHOWZIP:
-        path = setting.tvshowZipCacheDir;
-        break;
-      default:
-        break;
+    case THUMB:
+      path = Settings.thumbCacheDir;
+      break;
+    case FANART:
+      path = Settings.fanartCacheDir;
+      break;
+    case ACTOR:
+      path = Settings.actorCacheDir;
+      break;
+    case XML:
+      path = Settings.xmlCacheDir;
+      break;
+    case TVSHOWZIP:
+      path = Settings.tvshowZipCacheDir;
+      break;
     }
     return path;
   }

@@ -17,6 +17,22 @@
  */
 package fr.free.movierenamer.worker;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
@@ -25,32 +41,18 @@ import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class TvdbInfoWorker
  *
  * @author Nicolas Magré
  */
-public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String> {
+public class TvdbInfoWorker extends SwingWorker<List<TvShowSeason>, String> {
 
   private static final int RETRY = 3;
   private MediaID id;
   private Settings setting;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   private SwingPropertyChangeSupport errorSupport;
 
   public TvdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
@@ -67,16 +69,16 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
     System.out.println("TvdbInfoWorker");
     ArrayList<TvShowSeason> seasons = new ArrayList<TvShowSeason>();
     try {
-      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(setting.xurlTdb)) + "/";
-      URL url = new URL(setting.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvshowScrapperFR ? "fr" : "en") + ".zip");
-      File f = setting.cache.get(url, Cache.TVSHOWZIP);
+      String xmlUrl = new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb)) + "/";
+      URL url = new URL(Settings.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (setting.tvshowScrapperFR ? "fr" : "en") + ".zip");
+      File f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
       if (f == null) {
         for (int i = 0; i < RETRY; i++) {
           InputStream in;
           try {
             in = url.openStream();
-            setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
-            f = setting.cache.get(url, Cache.TVSHOWZIP);
+            Cache.getInstance().add(in, url.toString(), Cache.CacheType.TVSHOWZIP);
+            f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
             break;
           } catch (Exception e) {//Don't care about exception
             Settings.LOGGER.log(Level.SEVERE, null, e);
@@ -90,7 +92,7 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
       } else {
         //Check if there is an update for this serie
         long time = f.lastModified();
-        URL urlup = new URL(setting.tvdbAPIUrlTvShow + "Updates.php?type=series&time=" + time);
+        URL urlup = new URL(Settings.tvdbAPIUrlTvShow + "Updates.php?type=series&time=" + time);
         XMLParser<ArrayList<MediaID>> xmp = new XMLParser<ArrayList<MediaID>>(urlup.toString());
         xmp.setParser(new TvdbUpdate());
         ArrayList<MediaID> ids = xmp.parseXml();
@@ -106,8 +108,8 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
             InputStream in;
             try {
               in = url.openStream();
-              setting.cache.add(in, url.toString(), Cache.TVSHOWZIP);
-              f = setting.cache.get(url, Cache.TVSHOWZIP);
+              Cache.getInstance().add(in, url.toString(), Cache.CacheType.TVSHOWZIP);
+              f = Cache.getInstance().get(url, Cache.CacheType.TVSHOWZIP);
               break;
             } catch (Exception e) {//Don't care about exception
               Settings.LOGGER.log(Level.SEVERE, null, e);
@@ -148,6 +150,6 @@ public class TvdbInfoWorker extends SwingWorker<ArrayList<TvShowSeason>, String>
 
   @Override
   public void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

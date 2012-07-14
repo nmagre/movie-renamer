@@ -17,13 +17,17 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.ui.res.DropImage;
-import fr.free.movierenamer.ui.res.IMediaPanel;
-import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.Settings;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Composite;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -33,16 +37,41 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.ui.res.DropImage;
+import fr.free.movierenamer.ui.res.IMediaPanel;
+import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class MoviePanel
@@ -136,14 +165,14 @@ public class MoviePanel extends JPanel implements IMediaPanel {
           return;
         }
         thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
-        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"), Cache.THUMB);
+        Image img = getImage(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl().replace(".png", ".jpg"), Cache.CacheType.THUMB);
         if (img != null) {
           thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
         }
       }
     });
 
-    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.THUMB, Cache.THUMB, setting);
+    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.THUMB, Cache.CacheType.THUMB, setting);
     dropThumbTarget = new DropTarget(thumbnailsList, dropThumb);
 
     fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -157,13 +186,13 @@ public class MoviePanel extends JPanel implements IMediaPanel {
           return;
         }
         fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
-        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.FANART);
+        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.CacheType.FANART);
         detailsPnl.validate();
         detailsPnl.repaint();
       }
     });
 
-    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.FANART, Cache.FANART, setting);
+    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.FANART, Cache.CacheType.FANART, setting);
     dropFanartTarget = new DropTarget(fanartList, dropFanart);
 
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -207,14 +236,14 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     imagePnl.setVisible(setting.thumb || setting.fanart);
   }
 
-  private Image getImage(String strUrl, int cache) {
+  private Image getImage(String strUrl, Cache.CacheType cache) {
     Image image = null;
     try {
       URL url = new URL(strUrl);
-      image = MoviePanel.this.setting.cache.getImage(url, cache);
+      image = Cache.getInstance().getImage(url, cache);
       if (image == null) {
-        MoviePanel.this.setting.cache.add(url.openStream(), url.toString(), cache);
-        image = MoviePanel.this.setting.cache.getImage(url, cache);
+        Cache.getInstance().add(url.openStream(), url.toString(), cache);
+        image = Cache.getInstance().getImage(url, cache);
       }
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, ex.toString());
@@ -245,7 +274,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       protected Image doInBackground() throws Exception {
         Image image = null;
         if (thumbnailModel.isEmpty()) {
-          image = getImage(thumbs.get(0).getThumbUrl(), Cache.THUMB);
+          image = getImage(thumbs.get(0).getThumbUrl(), Cache.CacheType.THUMB);
         }
         return image;
       }
@@ -287,7 +316,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       protected Image doInBackground() throws Exception {
         Image img = null;
         if (fanartModel.isEmpty()) {
-          img = getImage(fanarts.get(0).getThumbUrl(), Cache.FANART);
+          img = getImage(fanarts.get(0).getThumbUrl(), Cache.CacheType.FANART);
         }
 
         return img;
@@ -416,7 +445,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
 
         if (!setting.thumb) {
           if (!movieInfo.getThumb().equals("")) {
-            Image imThumb = getImage(movieInfo.getThumb(), Cache.THUMB);
+            Image imThumb = getImage(movieInfo.getThumb(), Cache.CacheType.THUMB);
             if (imThumb != null) {
               thumbLbl.setIcon(new ImageIcon(imThumb.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
             }
@@ -653,8 +682,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
         fanartList.setMinimumSize(new Dimension(0, 110));
         fanartList.setVisibleRowCount(1);
         fanartsScrollPane.setViewportView(fanartList);
-    ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-        thumbsScrollPane.setBorder(BorderFactory.createTitledBorder(bundle.getString("thumbnails")));         thumbsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        thumbsScrollPane.setBorder(BorderFactory.createTitledBorder(Utils.i18n("thumbnails")));         thumbsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -753,7 +781,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
 
         detailsPnl.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        movieTabbedPane.addTab(bundle.getString("details"), detailsPnl); // NOI18N
+        movieTabbedPane.addTab(Utils.i18n("details"), detailsPnl); // NOI18N
 
         actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         actorScroll.setViewportView(actorList);
@@ -775,7 +803,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
                 .addContainerGap())
         );
 
-        movieTabbedPane.addTab(bundle.getString("actor"), actorPnl); // NOI18N
+        movieTabbedPane.addTab(Utils.i18n("actor"), actorPnl); // NOI18N
 
         thumbLbl.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 

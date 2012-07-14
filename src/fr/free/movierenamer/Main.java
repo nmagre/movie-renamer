@@ -17,23 +17,25 @@
  */
 package fr.free.movierenamer;
 
-import fr.free.movierenamer.parser.xml.MrSettings;
-import fr.free.movierenamer.parser.xml.XMLParser;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.xml.sax.SAXException;
+
+import fr.free.movierenamer.parser.xml.MrSettings;
+import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class Main
@@ -78,7 +80,7 @@ public class Main {
 
     //Clear XML cache
     if (setting.clearXMLCache) {
-      Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
+      Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
     }
 
     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -98,17 +100,15 @@ public class Main {
    */
   private static Settings loadSetting() {
     boolean saved;
-    Settings setting = new Settings();
-    File file = new File(setting.configFile);
-    ResourceBundle bundle;
+    Settings setting = Settings.getInstance();
+    File file = new File(Settings.configFile);
 
     if (!file.exists()) {
       saved = setting.saveSetting();
       if (!saved) {
         // Set locale
         Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-        bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-        JOptionPane.showMessageDialog(null, bundle.getString("saveSettingsFailed") + " " + Settings.mrFolder, bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder, Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
         return setting;
       }
       return loadSetting();
@@ -117,7 +117,7 @@ public class Main {
     saved = false;
     try {
       // Parse Movie Renamer Settings
-      XMLParser<Settings> xmlp = new XMLParser<Settings>(setting.configFile);
+      XMLParser<Settings> xmlp = new XMLParser<Settings>(Settings.configFile);
       xmlp.setParser(new MrSettings());
       setting = xmlp.parseXml();
 
@@ -128,7 +128,7 @@ public class Main {
         } else {
           setting.locale = "fr";
         }
-        setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
+        Settings.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
         setting.movieScrapperFR = setting.locale.equals("fr");
         setting.tvshowScrapperFR = setting.locale.equals("fr");
       } else {
@@ -137,7 +137,7 @@ public class Main {
 
       // Set locale
       Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-      if (setting.getVersion().equals(setting.xmlVersion) && !setting.xmlError) {
+      if (setting.getVersion().equals(Settings.xmlVersion) && !Settings.xmlError) {
         saved = true;
       }
 
@@ -150,10 +150,9 @@ public class Main {
     } catch (InterruptedException ex) {
       Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
-      bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
       if (!saved) {
-        if (!setting.xmlVersion.equals("Beta_2.0")) {
-          int n = JOptionPane.showConfirmDialog(null, bundle.getString("resetRegexFilter"), bundle.getString("question"), JOptionPane.YES_NO_OPTION);
+        if (!Settings.xmlVersion.equals("Beta_2.0")) {
+          int n = JOptionPane.showConfirmDialog(null, Utils.i18n("resetRegexFilter"), Utils.i18n("question"), JOptionPane.YES_NO_OPTION);
           if (n == JOptionPane.OK_OPTION) {
             setting.mediaNameFilters = new ArrayList<String>();
             setting.mediaNameFilters.addAll(Arrays.asList(Settings.nameFilters));
@@ -164,7 +163,7 @@ public class Main {
     }
 
     if (!saved) {
-      JOptionPane.showMessageDialog(null, bundle.getString("saveSettingsFailed") + " " + Settings.mrFolder, bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder, Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
     }
     
     return setting;

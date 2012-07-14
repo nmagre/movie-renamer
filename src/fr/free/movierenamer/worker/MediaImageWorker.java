@@ -17,17 +17,20 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.ui.res.IMediaPanel;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
 import java.awt.Image;
 import java.awt.color.CMMException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+
 import javax.swing.SwingWorker;
+
+import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.ui.res.IMediaPanel;
+import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class MovieImageWorker , Download and add thumbnail/fanart to mediaPanel
@@ -36,8 +39,8 @@ import javax.swing.SwingWorker;
  */
 public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en Media et rajouter les images pour les series
 
-  private ArrayList<MediaImage> arrayImage;
-  private int cache;
+  private List<MediaImage> arrayImage;
+  private  Cache.CacheType cache;
   private Settings setting;
   private IMediaPanel mediadPanel;
 
@@ -49,7 +52,7 @@ public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en 
    * @param mediadPanel Movie Renamer media panel
    * @param setting Movie Renamer settings
    */
-  public MediaImageWorker(ArrayList<MediaImage> arrayImage, int cache, IMediaPanel mediadPanel, Settings setting) {
+  public MediaImageWorker(List<MediaImage> arrayImage,  Cache.CacheType cache, IMediaPanel mediadPanel, Settings setting) {
     this.arrayImage = arrayImage;
     this.cache = cache;
     this.setting = setting;
@@ -63,10 +66,10 @@ public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en 
       try {
         setProgress((i * 100) / arrayImage.size());
         URL url = new URL(arrayImage.get(i).getThumbUrl());
-        image = setting.cache.getImage(url, cache);
+        image = Cache.getInstance().getImage(url, cache);
         if (image == null) {
-          setting.cache.add(url.openStream(), url.toString(), cache);
-          image = setting.cache.getImage(url, cache);
+          Cache.getInstance().add(url.openStream(), url.toString(), cache);
+          image = Cache.getInstance().getImage(url, cache);
         }
 
         if (image == null) {

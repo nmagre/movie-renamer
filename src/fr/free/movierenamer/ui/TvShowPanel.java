@@ -23,7 +23,8 @@ import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import java.awt.Image;
-import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -48,7 +49,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     episodesList.setModel(episodesModel);
   }
 
-  public void addTvshowInfo(ArrayList<TvShowSeason> seasons, SxE sxe) {
+  public void addTvshowInfo(List<TvShowSeason> seasons, SxE sxe) {
     System.out.println(sxe);
     for (final TvShowSeason season : seasons) {
       System.out.println(season);

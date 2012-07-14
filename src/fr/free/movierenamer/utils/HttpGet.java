@@ -17,23 +17,24 @@
  */
 package fr.free.movierenamer.utils;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ResourceBundle;
 
 /**
  * Class HttpGet , Send http request and get web page in a string
- *
+ * 
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class HttpGet {
 
+  private final Settings config = Settings.getInstance();
   private URL url;
   private URL realURL;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /**
    * Default constructor
@@ -45,7 +46,7 @@ public class HttpGet {
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param url Page url
    */
   public HttpGet(URL url) {
@@ -54,7 +55,7 @@ public class HttpGet {
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param uri Page url
    * @throws MalformedURLException
    */
@@ -65,7 +66,7 @@ public class HttpGet {
 
   /**
    * Get url
-   *
+   * 
    * @return Page url
    */
   public URL getURL() {
@@ -77,7 +78,7 @@ public class HttpGet {
 
   /**
    * Set url
-   *
+   * 
    * @param url Page url
    */
   public void setUrl(URL url) {
@@ -87,7 +88,7 @@ public class HttpGet {
 
   /**
    * Set url
-   *
+   * 
    * @param uri Page url
    * @throws MalformedURLException
    */
@@ -96,9 +97,37 @@ public class HttpGet {
     url = new URL(uri);
   }
 
+  public InputStream getInputStream(boolean fakeUserAgent, String encode) throws Exception {
+    if (url == null) {
+      return null;
+    }
+    realURL = null;
+
+    try {
+      URLConnection conn;
+      if (config.useProxy) {
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxyUrl, config.proxyPort));
+        conn = url.openConnection(proxy);
+      } else {
+        conn = url.openConnection();
+      }
+
+      if (fakeUserAgent) {
+        System.setProperty("http.agent", Utils.EMPTY);
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+      }
+
+      conn.setReadTimeout(3000);
+
+      return conn.getInputStream();
+    } catch (Exception e) {
+      throw new Exception("HTTP Get " + Utils.i18n("error") + Utils.SPACE + ":" + e);
+    }
+  }
+
   /**
    * Get web page as string
-   *
+   * 
    * @param fakeUserAgent Use a fake user agent
    * @param encode
    * @return Web page or null
@@ -110,31 +139,26 @@ public class HttpGet {
     }
     realURL = null;
     String result = null;
-    
+
     try {
-      URLConnection conn = url.openConnection();
+      URLConnection conn;
+      if (config.useProxy) {
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxyUrl, config.proxyPort));
+        conn = url.openConnection(proxy);
+      } else {
+        conn = url.openConnection();
+      }
 
       if (fakeUserAgent) {
         System.setProperty("http.agent", Utils.EMPTY);
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
       }
+
       conn.setReadTimeout(3000);
 
-      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), encode));
-      StringBuilder sb = new StringBuilder();
-      String line;
-      realURL = conn.getURL();
-
-      while ((line = rd.readLine()) != null) {
-        line = line.trim();
-        if (line.length() > 0) {
-          sb.append(line).append(Utils.ENDLINE);
-        }
-      }
-      rd.close();
-      result = sb.toString();
+      result = Utils.getInputStreamContent(conn.getInputStream(), encode);
     } catch (Exception e) {
-      throw new Exception("HTTP Get " + bundle.getString("error") + Utils.SPACE + ":" + e);
+      throw new Exception("HTTP Get " + Utils.i18n("error") + Utils.SPACE + ":" + e);
     }
     return result;
   }

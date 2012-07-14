@@ -27,9 +27,11 @@ import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
@@ -38,14 +40,19 @@ import javax.swing.event.SwingPropertyChangeSupport;
  * Class WorkerManager
  *
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public abstract class WorkerManager {
 
-  private static final int IMDB = 0;
-  private static final int TMDB = 1;
-  private static final int ALLOCINE = 2;
-  private static final int TVDB = 0;
-  private static final int ALLOCINETV = 1;
+  public enum MovieScrapper {
+    IMDB,
+    TMDB,
+    ALLOCINE;
+  }
+  public enum TVShowScrapper {
+    TVDB,
+    ALLOCINETV;
+  }
 
   /**
    * Get media search worker
@@ -110,16 +117,16 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static SwingWorker<Void, Void> getMediaImageWorker(ArrayList<MediaImage> array, int cache, IMediaPanel mediaPanel, Settings setting) {
+  public static SwingWorker<Void, Void> getMediaImageWorker(List<MediaImage> array,  Cache.CacheType cache, IMediaPanel mediaPanel, Settings setting) {
     return new MediaImageWorker(array, cache, mediaPanel, setting);
   }
 
-  public static SwingWorker<Void, Void> getMovieActorWorker(ArrayList<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {
+  public static SwingWorker<Void, Void> getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {
     return new ActorWorker(actors, moviePanel, setting);
   }
 
-  public static SwingWorker<ArrayList<TvShowSeason>, String> getTvShowInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe, Settings setting) throws ActionNotValidException {
-    SwingWorker<ArrayList<TvShowSeason>, String> worker = null;
+  public static SwingWorker<List<TvShowSeason>, String> getTvShowInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe, Settings setting) throws ActionNotValidException {
+    SwingWorker<List<TvShowSeason>, String> worker = null;
     switch (setting.tvshowScrapper) {
       case TVDB:
         worker = new TvdbInfoWorker(errorSupport, id, setting);

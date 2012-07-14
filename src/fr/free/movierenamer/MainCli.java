@@ -60,7 +60,7 @@ public class MainCli {
 
     //Clear XML cache
     if (setting.clearXMLCache) {
-      Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
+      Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
     }
   }
 
@@ -71,8 +71,8 @@ public class MainCli {
    */
   private static Settings loadSetting() {
     boolean saved;
-    Settings setting = new Settings();
-    File file = new File(setting.configFile);
+    Settings setting = Settings.getInstance();
+    File file = new File(Settings.configFile);
 
 
     if (!file.exists()) {
@@ -87,7 +87,7 @@ public class MainCli {
     saved = false;
     try {
       // Parse Movie Renamer Settings
-      XMLParser<Settings> xmlp = new XMLParser<Settings>(setting.configFile);
+      XMLParser<Settings> xmlp = new XMLParser<Settings>(Settings.configFile);
       xmlp.setParser(new MrSettings());
       setting = xmlp.parseXml();
 
@@ -98,7 +98,7 @@ public class MainCli {
         } else {
           setting.locale = "fr";
         }
-        setting.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
+        Settings.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
         setting.movieScrapperFR = setting.locale.equals("fr");
         setting.tvshowScrapperFR = setting.locale.equals("fr");
       } else {
@@ -107,7 +107,7 @@ public class MainCli {
 
       // Set locale
       Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-      if (setting.getVersion().equals(setting.xmlVersion) && !setting.xmlError) {
+      if (setting.getVersion().equals(Settings.xmlVersion) && !Settings.xmlError) {
         saved = true;
       }
 

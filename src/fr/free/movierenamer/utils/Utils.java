@@ -17,29 +17,49 @@
  */
 package fr.free.movierenamer.utils;
 
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Platform;
-import fr.free.movierenamer.media.MediaInfoLibrary;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.color.CMMException;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
+
+import fr.free.movierenamer.media.MediaInfoLibrary;
 
 /**
  * Class Utils
  *
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public abstract class Utils {
 
@@ -47,31 +67,23 @@ public abstract class Utils {
   private static boolean libmediainfo = false;
   private static boolean libzen = false;
   private static String mediainfo = null;
-  private static ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  private static final ResourceBundle appBundle = ResourceBundle.getBundle("fr/free/movierenamer/version");
   public static final String SPACE = " ";
-  public static final String ENDLINE = "\n";
+  public static final String ENDLINE = System.getProperty("line.separator");
   public static final String EMPTY = "";
   public static final String DOT = ".";
-  public static final int FIRSTLO = 0;
-  public static final int FIRSTLA = 1;
-  public static final int UPPER = 2;
-  public static final int LOWER = 3;
-  public static final ResourceBundle rb = ResourceBundle.getBundle("fr/free/movierenamer/version");
 
-  /**
-   * Get token from version.properties
-   *
-   * @param propToken Token property name
-   * @return Token value or an empty string
-   */
-  public static String getRbTok(String propToken) {
-    String msg = "";
-    try {
-       msg = rb.getString(propToken);
-    } catch (MissingResourceException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-    return msg;
+  private Utils() {
+    // no access !!
+  }
+
+  public enum CaseConversionType {
+    FIRSTLO,
+    FIRSTLA,
+    UPPER,
+    LOWER,
+    NONE
   }
 
   /**
@@ -180,7 +192,7 @@ public abstract class Utils {
    * @param movieFilenameLimit Limit
    * @return String separated by movieFilenameSeparator or empty
    */
-  public static String arrayToString(ArrayList<?> array, String separator, int limit) {
+  public static String arrayToString(List<?> array, String separator, int limit) {
     return arrayToString(array.toArray(new Object[array.size()]), separator, limit);
   }
 
@@ -191,7 +203,7 @@ public abstract class Utils {
    * @param movieFilenameSeparator Separator
    * @return
    */
-  public static ArrayList<String> stringToArray(String str, String separator) {
+  public static List<String> stringToArray(String str, String separator) {
     ArrayList<String> array = new ArrayList<String>();
     if (str == null) {
       return array;
@@ -286,6 +298,20 @@ public abstract class Utils {
     return true;
   }
 
+  public static boolean isNumeric(String str) {
+    NumberFormat formatter = NumberFormat.getInstance();
+    ParsePosition pos = new ParsePosition(0);
+    formatter.parse(str, pos);
+    return str.length() == pos.getIndex();
+  }
+
+  public static boolean isNumeric(Class<?> cls) {
+    if (cls != null) {
+      return cls == int.class || cls == long.class || cls == float.class || cls == double.class || Number.class.isAssignableFrom(cls);
+    }
+    return false;
+  }
+
   /**
    * Create file path
    *
@@ -324,11 +350,11 @@ public abstract class Utils {
       File d = new File(f.getParent());
       if (!d.exists()) {
         if (!d.mkdirs()) {
-          throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+          throw new IOException(Utils.i18n("unabletoCreate") + " : " + fileName);
         }
       }
       if (!f.createNewFile()) {
-        throw new IOException(bundle.getString("unabletoCreate") + " : " + fileName);
+        throw new IOException(Utils.i18n("unabletoCreate") + " : " + fileName);
       }
     }
 
@@ -638,10 +664,10 @@ public abstract class Utils {
     try {
       Image image;
       URL uri = new URL(url);
-      image = cache.getImage(uri, Cache.THUMB);
+      image = cache.getImage(uri, Cache.CacheType.THUMB);
       if (image == null) {
-        cache.add(uri.openStream(), uri.toString(), Cache.THUMB);
-        image = cache.getImage(uri, Cache.THUMB);
+        cache.add(uri.openStream(), uri.toString(), Cache.CacheType.THUMB);
+        image = cache.getImage(uri, Cache.CacheType.THUMB);
       }
       icon = new ImageIcon(image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_DEFAULT));
     } catch (IOException ex) {
@@ -701,5 +727,50 @@ public abstract class Utils {
       }
     }
     return mediainfo.equals("true");
+  }
+
+  public static String i18n(String bundleKey) {
+    return localBundle.getString(bundleKey);
+  }
+
+  public static String i18n(String bundleKey, String defaultValue) {
+    if (localBundle.containsKey(bundleKey)) {
+      return i18n(bundleKey);
+    } else {
+      Settings.LOGGER.log(Level.CONFIG, "No internationlization found for {0}, use default value", bundleKey);
+      return defaultValue;
+    }
+  }
+  
+  /**
+   * Get token from version.properties
+   * 
+   * @param propToken
+   *          Token property name
+   * @return Token value or an empty string
+   */
+  public static String getAppTok(String propToken) {
+    String msg = "";
+    try {
+      msg = appBundle.getString(propToken);
+    } catch (MissingResourceException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+    return msg;
+  }
+
+  public static String getInputStreamContent(InputStream is, String encode) throws IOException {
+    BufferedReader rd = new BufferedReader(new InputStreamReader(is, encode));
+    StringBuilder sb = new StringBuilder();
+    String line;
+
+    while ((line = rd.readLine()) != null) {
+      line = line.trim();
+      if (line.length() > 0) {
+        sb.append(line).append(Utils.ENDLINE);
+      }
+    }
+    rd.close();
+    return sb.toString();
   }
 }

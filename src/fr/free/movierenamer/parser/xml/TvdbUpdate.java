@@ -18,8 +18,6 @@
 package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.utils.SearchResult;
-import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

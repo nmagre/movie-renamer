@@ -23,7 +23,6 @@ import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaTag;
-import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
 import java.util.ArrayList;

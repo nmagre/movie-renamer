@@ -58,7 +58,7 @@ public class XbmcPassionIDLookup extends SwingWorker<MediaID, String> {
     for (int i = 0; i < RETRY; i++) {
       try {
         String apiID = id.getType() == MediaID.ALLOCINEID ?  id.getID(): id.getID().substring(2);
-        http = new HttpGet(setting.xbmcPassionImdblookup + (id.getType() == MediaID.ALLOCINEID ? "IdAllo=":"IdImdb=" ) + apiID);
+        http = new HttpGet(Settings.xbmcPassionImdblookup + (id.getType() == MediaID.ALLOCINEID ? "IdAllo=":"IdImdb=" ) + apiID);
         res = http.sendGetRequest(false, "UTF-8");
         break;
       } catch (Exception ex) {//Don't care about exception, "res" will be null

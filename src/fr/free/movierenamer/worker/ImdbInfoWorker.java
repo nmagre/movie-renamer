@@ -17,6 +17,14 @@
  */
 package fr.free.movierenamer.worker;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -25,13 +33,6 @@ import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class ImdbInfoWorker , get movie information from imdb
@@ -45,7 +46,6 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
   private MediaID id;
   private Settings setting;
   private SwingPropertyChangeSupport errorSupport;
-  private ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
 
   /**
    * Constructor arguments
@@ -71,7 +71,7 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
     String res = null;
     for (int i = 0; i < RETRY; i++) {
       try {
-        http = new HttpGet((setting.movieScrapperFR ? setting.imdbMovieUrl_fr : setting.imdbMovieUrl) + id.getID() + "/combined");
+        http = new HttpGet((setting.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined");
         res = http.sendGetRequest(true, "ISO-8859-15");
         break;
       } catch (Exception ex) {//Don't care about exception, "res" will be null
@@ -129,6 +129,6 @@ public class ImdbInfoWorker extends SwingWorker<MovieInfo, String> {
 
   @Override
   public void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, bundle.getString(v.get(0)), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

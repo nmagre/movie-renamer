@@ -17,10 +17,6 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.Main;
-import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -33,16 +29,46 @@ import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
+<<<<<<< HEAD
 import java.util.logging.Logger;
+=======
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+>>>>>>> 5017ca6a1a75cc5d8aca9e44e9811ae38bf6e696
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.SwingPropertyChangeSupport;
+
+import fr.free.movierenamer.Main;
+import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.Utils.CaseConversionType;
+import fr.free.movierenamer.worker.WorkerManager;
 
 /**
  * Class Setting , Setting dialog
@@ -75,7 +101,6 @@ public class Setting extends JDialog {
     {"<matt1>", "English DTS 1509kbps"}, {"<matt2>", "French DTS 755kbps"},
     {"<mtt>", "English Forced | English | French Forced,"}, {"<mtt1>", "English Forced"}, {"<mtt2>", "English"}, {"<mtt3>", "French Forced,"}
   };
-  private ResourceBundle bundle;
 
   /**
    * Creates new form Setting
@@ -84,9 +109,13 @@ public class Setting extends JDialog {
    * @param settingsChange Settings property change
    * @param parent Parent to center on
    */
+<<<<<<< HEAD
   public Setting(Settings setting, SwingPropertyChangeSupport settingsChange, Component parent) {
     this.settingsChange = settingsChange;
     bundle = ResourceBundle.getBundle("fr.free.movierenamer/i18n/Bundle");
+=======
+  public Setting(Settings setting, Component parent) {
+>>>>>>> 5017ca6a1a75cc5d8aca9e44e9811ae38bf6e696
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     initComponents();
 
@@ -164,10 +193,10 @@ public class Setting extends JDialog {
 
     // Rename Setting
     formatField.setText(setting.movieFilenameFormat);
-    if (setting.movieFilenameCase >= caseGroup.getButtonCount()) {
+    if (setting.movieFilenameCase.ordinal() >= caseGroup.getButtonCount()) {
       caseGroup.setSelected(rBtnCase[1].getModel(), true);
     } else {
-      caseGroup.setSelected(rBtnCase[setting.movieFilenameCase].getModel(), true);
+      caseGroup.setSelected(rBtnCase[setting.movieFilenameCase.ordinal()].getModel(), true);
     }
     if (setting.movieFolderCase >= caseFolderGroup.getButtonCount()) {
       caseFolderGroup.setSelected(rBtnFolderCase[1].getModel(), true);
@@ -192,7 +221,7 @@ public class Setting extends JDialog {
     scrapperFrRbtn.setSelected(setting.movieScrapperFR);
     scrapperEnRbtn.setSelected(!setting.movieScrapperFR);
     displayThumbResultChk.setSelected(setting.displayThumbResult);
-    scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper].getModel(), true);
+    scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper.ordinal()].getModel(), true);
     sortbySimiChk.setSelected(setting.sortBySimiYear);
     limitResultComboBox.setSelectedIndex(setting.nbResult);
 
@@ -205,33 +234,33 @@ public class Setting extends JDialog {
     clearXmlCacheOnStartChk.setSelected(setting.clearXMLCache);
 
     String ssize;
-    long size = Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir));
+    long size = Utils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.thumbCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.thumbCacheDir));
     }
-    thumbCacheLbl.setText(ssize + bundle.getString("useForThumb"));
+    thumbCacheLbl.setText(ssize + Utils.i18n("useForThumb"));
 
-    size = Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir));
+    size = Utils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.fanartCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.fanartCacheDir));
     }
-    fanartCacheLbl.setText(ssize + bundle.getString("useForFanart"));
+    fanartCacheLbl.setText(ssize + Utils.i18n("useForFanart"));
 
-    size = Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir));
+    size = Utils.getDirSizeInMegabytes(new File(Settings.actorCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.actorCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.actorCacheDir));
     }
-    actorCacheLbl.setText(ssize + bundle.getString("useForActor"));
+    actorCacheLbl.setText(ssize + Utils.i18n("useForActor"));
 
-    size = Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir));
+    size = Utils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(setting.xmlCacheDir));
+      ssize = "0." + Utils.getDirSize(new File(Settings.xmlCacheDir));
     }
-    xmlLbl.setText(ssize + bundle.getString("useForXml"));
+    xmlLbl.setText(ssize + Utils.i18n("useForXml"));
 
     setTitle("Movie Renamer Settings " + setting.getVersion());
     setModal(true);
@@ -250,7 +279,7 @@ public class Setting extends JDialog {
     return setting;
   }
 
-  private String movieRenamerTest(String nameFormat, int limit, int casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
+  private String movieRenamerTest(String nameFormat, int limit, Utils.CaseConversionType casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
     String ext = "avi";
 
     for (int i = 0; i < format.length; i++) {
@@ -281,16 +310,16 @@ public class Setting extends JDialog {
     }
 
     switch (casse) {
-      case Utils.UPPER:
+      case UPPER:
         nameFormat = nameFormat.toUpperCase() + (extension ? "." + ext.toUpperCase() : "");
         break;
-      case Utils.LOWER:
+      case LOWER:
         nameFormat = nameFormat.toLowerCase() + (extension ? "." + ext.toLowerCase() : "");
         break;
-      case Utils.FIRSTLO:
+      case FIRSTLO:
         nameFormat = Utils.capitalizedLetter(nameFormat, true) + (extension ? "." + ext.toLowerCase() : "");
         break;
-      case Utils.FIRSTLA:
+      case FIRSTLA:
         nameFormat = Utils.capitalizedLetter(nameFormat, false) + (extension ? "." + ext.toLowerCase() : "");
         break;
       default:
@@ -462,17 +491,17 @@ public class Setting extends JDialog {
         setTitle("Movie Renamer Settings");
         setResizable(false);
 
-        generalPnl.setFont(new Font("Ubuntu", 1, 14)); ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-        languagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14)));         languagePnl.setToolTipText("Under development");
+        generalPnl.setFont(new Font("Ubuntu", 1, 14));
+        languagePnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14)));         languagePnl.setToolTipText("Under development");
 
         languageGroup.add(englishRbtn);
         englishRbtn.setFont(new Font("Ubuntu", 0, 12));         englishRbtn.setSelected(true);
-        englishRbtn.setText(bundle.getString("english")); // NOI18N
+        englishRbtn.setText(Utils.i18n("english")); // NOI18N
 
         languageGroup.add(frenchRbtn);
-        frenchRbtn.setFont(new Font("Ubuntu", 0, 12));         frenchRbtn.setText(bundle.getString("french")); // NOI18N
+        frenchRbtn.setFont(new Font("Ubuntu", 0, 12));         frenchRbtn.setText(Utils.i18n("french")); // NOI18N
 
-        lwarningLbl.setFont(new Font("Ubuntu", 1, 12));         lwarningLbl.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png")));         lwarningLbl.setText(bundle.getString("needRestart")); // NOI18N
+        lwarningLbl.setFont(new Font("Ubuntu", 1, 12));         lwarningLbl.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png")));         lwarningLbl.setText(Utils.i18n("needRestart")); // NOI18N
 
         GroupLayout languagePnlLayout = new GroupLayout(languagePnl);
         languagePnl.setLayout(languagePnlLayout);
@@ -497,9 +526,9 @@ public class Setting extends JDialog {
                 .addContainerGap())
         );
 
-        updatePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("update"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));         checkUpdateChk.setText(bundle.getString("chkUpdateOnStart")); // NOI18N
-        checkUpdateChk.setToolTipText(bundle.getString("chkUpdateOnStartTt")); // NOI18N
+        updatePnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("update"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
+        checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));         checkUpdateChk.setText(Utils.i18n("chkUpdateOnStart")); // NOI18N
+        checkUpdateChk.setToolTipText(Utils.i18n("chkUpdateOnStartTt")); // NOI18N
 
         GroupLayout updatePnlLayout = new GroupLayout(updatePnl);
         updatePnl.setLayout(updatePnlLayout);
@@ -518,34 +547,34 @@ public class Setting extends JDialog {
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        interfacePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("interface"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstMovieChk.setText(bundle.getString("autoSelFrstMovie")); // NOI18N
-        selectFirstMovieChk.setToolTipText(bundle.getString("autoSelFrstMovieTt")); // NOI18N
+        interfacePnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("interface"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
+        selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstMovieChk.setText(Utils.i18n("autoSelFrstMovie")); // NOI18N
+        selectFirstMovieChk.setToolTipText(Utils.i18n("autoSelFrstMovieTt")); // NOI18N
 
-        actorImageChk.setFont(new Font("Ubuntu", 0, 12));         actorImageChk.setText(bundle.getString("showActorImage")); // NOI18N
-        actorImageChk.setToolTipText(bundle.getString("showActorImageTt")); // NOI18N
+        actorImageChk.setFont(new Font("Ubuntu", 0, 12));         actorImageChk.setText(Utils.i18n("showActorImage")); // NOI18N
+        actorImageChk.setToolTipText(Utils.i18n("showActorImageTt")); // NOI18N
         actorImageChk.setEnabled(false);
 
-        movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12));         movieInfoPanelChk.setText(bundle.getString("showMoviePanel")); // NOI18N
+        movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12));         movieInfoPanelChk.setText(Utils.i18n("showMoviePanel")); // NOI18N
         movieInfoPanelChk.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent evt) {
                 movieInfoPanelChkItemStateChanged(evt);
             }
         });
 
-        thumbsChk.setFont(new Font("Ubuntu", 0, 12));         thumbsChk.setText(bundle.getString("showThumbs")); // NOI18N
-        thumbsChk.setToolTipText(bundle.getString("showThumbsTt")); // NOI18N
+        thumbsChk.setFont(new Font("Ubuntu", 0, 12));         thumbsChk.setText(Utils.i18n("showThumbs")); // NOI18N
+        thumbsChk.setToolTipText(Utils.i18n("showThumbsTt")); // NOI18N
         thumbsChk.setEnabled(false);
 
-        fanartsChk.setFont(new Font("Ubuntu", 0, 12));         fanartsChk.setText(bundle.getString("showFanarts")); // NOI18N
-        fanartsChk.setToolTipText(bundle.getString("showFanartsTt")); // NOI18N
+        fanartsChk.setFont(new Font("Ubuntu", 0, 12));         fanartsChk.setText(Utils.i18n("showFanarts")); // NOI18N
+        fanartsChk.setToolTipText(Utils.i18n("showFanartsTt")); // NOI18N
         fanartsChk.setEnabled(false);
 
-        scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));         scanSubfolderChk.setText(bundle.getString("autoScanSubfolder")); // NOI18N
-        scanSubfolderChk.setToolTipText(bundle.getString("autoScanSubfolderTt")); // NOI18N
+        scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));         scanSubfolderChk.setText(Utils.i18n("autoScanSubfolder")); // NOI18N
+        scanSubfolderChk.setToolTipText(Utils.i18n("autoScanSubfolderTt")); // NOI18N
 
-        showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));         showNotaMovieWarnChk.setText(bundle.getString("showNotMovieWarn")); // NOI18N
-        showNotaMovieWarnChk.setToolTipText(bundle.getString("showNotMovieWarnTt")); // NOI18N
+        showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));         showNotaMovieWarnChk.setText(Utils.i18n("showNotMovieWarn")); // NOI18N
+        showNotaMovieWarnChk.setToolTipText(Utils.i18n("showNotMovieWarnTt")); // NOI18N
 
         lafLbl.setFont(new Font("Dialog", 1, 12));         lafLbl.setText("Look and Feel");
 
@@ -603,10 +632,10 @@ public class Setting extends JDialog {
 
         nfoPnl.setBorder(BorderFactory.createTitledBorder(null, "NFO", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         nfoGroup.add(xbmcNFORBtn);
-        xbmcNFORBtn.setFont(new Font("Ubuntu", 0, 12));         xbmcNFORBtn.setText(bundle.getString("nfoXbmc")); // NOI18N
+        xbmcNFORBtn.setFont(new Font("Ubuntu", 0, 12));         xbmcNFORBtn.setText(Utils.i18n("nfoXbmc")); // NOI18N
 
         nfoGroup.add(mediaPortalNFORBtn);
-        mediaPortalNFORBtn.setFont(new Font("Ubuntu", 0, 12));         mediaPortalNFORBtn.setText(bundle.getString("nfoMediaPortal")); // NOI18N
+        mediaPortalNFORBtn.setFont(new Font("Ubuntu", 0, 12));         mediaPortalNFORBtn.setText(Utils.i18n("nfoMediaPortal")); // NOI18N
 
         GroupLayout nfoPnlLayout = new GroupLayout(nfoPnl);
         nfoPnl.setLayout(nfoPnlLayout);
@@ -656,12 +685,12 @@ public class Setting extends JDialog {
                 .addContainerGap(39, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
+        settingTabPan.addTab(Utils.i18n("general"), generalPnl); // NOI18N
 
         renamePnl.setFont(new Font("Ubuntu", 1, 14)); 
         movieFileNamePnl.setBorder(null);
 
-        defaultFormatLbl.setFont(new Font("Ubuntu", 1, 12));         defaultFormatLbl.setText(bundle.getString("defaultFormat")); // NOI18N
+        defaultFormatLbl.setFont(new Font("Ubuntu", 1, 12));         defaultFormatLbl.setText(Utils.i18n("defaultFormat")); // NOI18N
 
         filenameTestBtn.setFont(new Font("Ubuntu", 1, 12));         filenameTestBtn.setText("test");
         filenameTestBtn.addActionListener(new ActionListener() {
@@ -677,7 +706,7 @@ public class Setting extends JDialog {
 
         formatLbl.setFont(new Font("Ubuntu", 1, 12));         formatLbl.setText("Format");
 
-        helpBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         helpBtn.setToolTipText(bundle.getString("help")); // NOI18N
+        helpBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         helpBtn.setToolTipText(Utils.i18n("help")); // NOI18N
         helpBtn.setMaximumSize(new Dimension(26, 26));
         helpBtn.setMinimumSize(new Dimension(26, 26));
         helpBtn.setPreferredSize(new Dimension(26, 26));
@@ -688,33 +717,33 @@ public class Setting extends JDialog {
         });
 
         caseGroup.add(firstLoRbtn);
-        firstLoRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLoRbtn.setText(bundle.getString("firstLo")); // NOI18N
+        firstLoRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLoRbtn.setText(Utils.i18n("firstLo")); // NOI18N
 
         caseGroup.add(firstLaRbtn);
-        firstLaRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLaRbtn.setText(bundle.getString("firstLa")); // NOI18N
+        firstLaRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLaRbtn.setText(Utils.i18n("firstLa")); // NOI18N
 
         caseGroup.add(upperRbtn);
-        upperRbtn.setFont(new Font("Ubuntu", 0, 12));         upperRbtn.setText(bundle.getString("upper")); // NOI18N
+        upperRbtn.setFont(new Font("Ubuntu", 0, 12));         upperRbtn.setText(Utils.i18n("upper")); // NOI18N
 
         caseGroup.add(lowerRbtn);
-        lowerRbtn.setFont(new Font("Ubuntu", 0, 12));         lowerRbtn.setText(bundle.getString("lower")); // NOI18N
+        lowerRbtn.setFont(new Font("Ubuntu", 0, 12));         lowerRbtn.setText(Utils.i18n("lower")); // NOI18N
 
-        caseLbl.setFont(new Font("Ubuntu", 1, 13));         caseLbl.setText(bundle.getString("fileCase")); // NOI18N
+        caseLbl.setFont(new Font("Ubuntu", 1, 13));         caseLbl.setText(Utils.i18n("fileCase")); // NOI18N
 
-        separatorLbl.setFont(new Font("Ubuntu", 1, 12));         separatorLbl.setText(bundle.getString("separator")); // NOI18N
+        separatorLbl.setFont(new Font("Ubuntu", 1, 12));         separatorLbl.setText(Utils.i18n("separator")); // NOI18N
 
         separatorField.setFont(new Font("Ubuntu", 0, 12));         separatorField.setText(",");
 
-        limitLbl.setText(bundle.getString("limit")); // NOI18N
+        limitLbl.setText(Utils.i18n("limit")); // NOI18N
 
         limitField.setText("0");
 
-        rmSpcCharChk.setFont(new Font("Ubuntu", 0, 12));         rmSpcCharChk.setText(bundle.getString("rmSpcChar")); // NOI18N
+        rmSpcCharChk.setFont(new Font("Ubuntu", 0, 12));         rmSpcCharChk.setText(Utils.i18n("rmSpcChar")); // NOI18N
 
-        rmDupSpaceChk.setFont(new Font("Ubuntu", 0, 12));         rmDupSpaceChk.setText(bundle.getString("rmDupSpace")); // NOI18N
+        rmDupSpaceChk.setFont(new Font("Ubuntu", 0, 12));         rmDupSpaceChk.setText(Utils.i18n("rmDupSpace")); // NOI18N
 
         caseGroup.add(noneRbtn);
-        noneRbtn.setFont(new Font("Ubuntu", 0, 12));         noneRbtn.setText(bundle.getString("none")); // NOI18N
+        noneRbtn.setFont(new Font("Ubuntu", 0, 12));         noneRbtn.setText(Utils.i18n("none")); // NOI18N
 
         GroupLayout movieFileNamePnlLayout = new GroupLayout(movieFileNamePnl);
         movieFileNamePnl.setLayout(movieFileNamePnlLayout);
@@ -805,24 +834,24 @@ public class Setting extends JDialog {
                 .addContainerGap(38, Short.MAX_VALUE))
         );
 
-        renameTabPan.addTab(bundle.getString("movieFileName"), movieFileNamePnl); // NOI18N
+        renameTabPan.addTab(Utils.i18n("movieFileName"), movieFileNamePnl); // NOI18N
 
-        defaultFormatFolderLbl.setFont(new Font("Ubuntu", 1, 12));         defaultFormatFolderLbl.setText(bundle.getString("defaultFormat")); // NOI18N
+        defaultFormatFolderLbl.setFont(new Font("Ubuntu", 1, 12));         defaultFormatFolderLbl.setText(Utils.i18n("defaultFormat")); // NOI18N
 
         formatFolderField.setFont(new Font("Ubuntu", 0, 12));         formatFolderField.setText("<t> (<y>)");
         formatField.addMouseListener(new ContextMenuFieldMouseListener());
 
         formatFolderLbl.setFont(new Font("Ubuntu", 1, 12));         formatFolderLbl.setText("Format");
 
-        separatorFolderLbl.setFont(new Font("Ubuntu", 1, 12));         separatorFolderLbl.setText(bundle.getString("separator")); // NOI18N
+        separatorFolderLbl.setFont(new Font("Ubuntu", 1, 12));         separatorFolderLbl.setText(Utils.i18n("separator")); // NOI18N
 
         separatorFolderField.setFont(new Font("Ubuntu", 0, 12));         separatorFolderField.setText(",");
 
         limitFolderField.setText("0");
 
-        limitLbl1.setFont(new Font("Ubuntu", 1, 12));         limitLbl1.setText(bundle.getString("limit")); // NOI18N
+        limitLbl1.setFont(new Font("Ubuntu", 1, 12));         limitLbl1.setText(Utils.i18n("limit")); // NOI18N
 
-        helpBtn1.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         helpBtn1.setToolTipText(bundle.getString("help")); // NOI18N
+        helpBtn1.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         helpBtn1.setToolTipText(Utils.i18n("help")); // NOI18N
         helpBtn1.setMaximumSize(new Dimension(26, 26));
         helpBtn1.setMinimumSize(new Dimension(26, 26));
         helpBtn1.setPreferredSize(new Dimension(26, 26));
@@ -832,26 +861,26 @@ public class Setting extends JDialog {
             }
         });
 
-        caseFolderLbl.setFont(new Font("Ubuntu", 1, 13));         caseFolderLbl.setText(bundle.getString("fileCase")); // NOI18N
+        caseFolderLbl.setFont(new Font("Ubuntu", 1, 13));         caseFolderLbl.setText(Utils.i18n("fileCase")); // NOI18N
 
         caseFolderGroup.add(noneFolderRbtn);
-        noneFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         noneFolderRbtn.setText(bundle.getString("none")); // NOI18N
+        noneFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         noneFolderRbtn.setText(Utils.i18n("none")); // NOI18N
 
         caseFolderGroup.add(firstLoFolderRbtn);
-        firstLoFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLoFolderRbtn.setText(bundle.getString("firstLo")); // NOI18N
+        firstLoFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLoFolderRbtn.setText(Utils.i18n("firstLo")); // NOI18N
 
         caseFolderGroup.add(firstLaFolderRbtn);
-        firstLaFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLaFolderRbtn.setText(bundle.getString("firstLa")); // NOI18N
+        firstLaFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         firstLaFolderRbtn.setText(Utils.i18n("firstLa")); // NOI18N
 
         caseFolderGroup.add(upperFolderRbtn);
-        upperFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         upperFolderRbtn.setText(bundle.getString("upper")); // NOI18N
+        upperFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         upperFolderRbtn.setText(Utils.i18n("upper")); // NOI18N
 
         caseFolderGroup.add(lowerFolderRbtn);
-        lowerFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         lowerFolderRbtn.setText(bundle.getString("lower")); // NOI18N
+        lowerFolderRbtn.setFont(new Font("Ubuntu", 0, 12));         lowerFolderRbtn.setText(Utils.i18n("lower")); // NOI18N
 
-        rmSpcCharFolderChk.setFont(new Font("Ubuntu", 0, 12));         rmSpcCharFolderChk.setText(bundle.getString("rmSpcChar")); // NOI18N
+        rmSpcCharFolderChk.setFont(new Font("Ubuntu", 0, 12));         rmSpcCharFolderChk.setText(Utils.i18n("rmSpcChar")); // NOI18N
 
-        rmDupSpaceFolderChk.setFont(new Font("Ubuntu", 0, 12));         rmDupSpaceFolderChk.setText(bundle.getString("rmDupSpace")); // NOI18N
+        rmDupSpaceFolderChk.setFont(new Font("Ubuntu", 0, 12));         rmDupSpaceFolderChk.setText(Utils.i18n("rmDupSpace")); // NOI18N
 
         folderTestBtn.setFont(new Font("Ubuntu", 1, 12));         folderTestBtn.setText("test");
         folderTestBtn.addActionListener(new ActionListener() {
@@ -862,7 +891,7 @@ public class Setting extends JDialog {
 
         folderTestField.setEditable(false);
 
-        createDirChk.setFont(new Font("Ubuntu", 0, 12));         createDirChk.setText(bundle.getString("createDir")); // NOI18N
+        createDirChk.setFont(new Font("Ubuntu", 0, 12));         createDirChk.setText(Utils.i18n("createDir")); // NOI18N
 
         GroupLayout movieFolderTabPanLayout = new GroupLayout(movieFolderTabPan);
         movieFolderTabPan.setLayout(movieFolderTabPanLayout);
@@ -958,7 +987,7 @@ public class Setting extends JDialog {
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        renameTabPan.addTab(bundle.getString("movieFolder"), movieFolderTabPan); // NOI18N
+        renameTabPan.addTab(Utils.i18n("movieFolder"), movieFolderTabPan); // NOI18N
 
         movieFileNamePnl1.setBorder(null);
 
@@ -992,27 +1021,27 @@ public class Setting extends JDialog {
                 .addContainerGap(65, Short.MAX_VALUE))
         );
 
-        renameTabPan.getAccessibleContext().setAccessibleName(bundle.getString("movieFileName")); // NOI18N
+        renameTabPan.getAccessibleContext().setAccessibleName(Utils.i18n("movieFileName")); // NOI18N
 
-        settingTabPan.addTab(bundle.getString("rename"), renamePnl); // NOI18N
+        settingTabPan.addTab(Utils.i18n("rename"), renamePnl); // NOI18N
 
-        imdbSearchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("result"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));         displayAppResultCheckBox.setText(bundle.getString("showAppRes")); // NOI18N
-        displayAppResultCheckBox.setToolTipText(bundle.getString("showAppRestt")); // NOI18N
+        imdbSearchPnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("result"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
+        displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));         displayAppResultCheckBox.setText(Utils.i18n("showAppRes")); // NOI18N
+        displayAppResultCheckBox.setToolTipText(Utils.i18n("showAppRestt")); // NOI18N
 
-        limitResultComboBox.setFont(new Font("Ubuntu", 1, 12));         limitResultComboBox.setModel(new DefaultComboBoxModel(new String[] { bundle.getString("all"), "5", "10", "15", "20", "30" }));
+        limitResultComboBox.setFont(new Font("Ubuntu", 1, 12));         limitResultComboBox.setModel(new DefaultComboBoxModel(new String[] { Utils.i18n("all"), "5", "10", "15", "20", "30" }));
 
-        limitResultLbl.setFont(new Font("Ubuntu", 0, 12));         limitResultLbl.setText(bundle.getString("resForEachType")); // NOI18N
+        limitResultLbl.setFont(new Font("Ubuntu", 0, 12));         limitResultLbl.setText(Utils.i18n("resForEachType")); // NOI18N
 
-        selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstResChk.setText(bundle.getString("autoSelFrstRes")); // NOI18N
-        selectFirstResChk.setToolTipText(bundle.getString("autoSelFrstResTt")); // NOI18N
+        selectFirstResChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstResChk.setText(Utils.i18n("autoSelFrstRes")); // NOI18N
+        selectFirstResChk.setToolTipText(Utils.i18n("autoSelFrstResTt")); // NOI18N
 
-        autoSearchChk.setFont(new Font("Ubuntu", 0, 12));         autoSearchChk.setText(bundle.getString("autoSearch")); // NOI18N
-        autoSearchChk.setToolTipText(bundle.getString("autoSearchTt")); // NOI18N
+        autoSearchChk.setFont(new Font("Ubuntu", 0, 12));         autoSearchChk.setText(Utils.i18n("autoSearch")); // NOI18N
+        autoSearchChk.setToolTipText(Utils.i18n("autoSearchTt")); // NOI18N
 
-        displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));         displayThumbResultChk.setText(bundle.getString("showImgResList")); // NOI18N
+        displayThumbResultChk.setFont(new Font("Ubuntu", 0, 12));         displayThumbResultChk.setText(Utils.i18n("showImgResList")); // NOI18N
 
-        resultHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         resultHelp.setToolTipText(bundle.getString("help")); // NOI18N
+        resultHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         resultHelp.setToolTipText(Utils.i18n("help")); // NOI18N
         resultHelp.setMaximumSize(new Dimension(26, 26));
         resultHelp.setMinimumSize(new Dimension(26, 26));
         resultHelp.setPreferredSize(new Dimension(26, 26));
@@ -1022,7 +1051,7 @@ public class Setting extends JDialog {
             }
         });
 
-        sortbySimiChk.setFont(new Font("Ubuntu", 0, 12));         sortbySimiChk.setText(bundle.getString("sortResultBysimi")); // NOI18N
+        sortbySimiChk.setFont(new Font("Ubuntu", 0, 12));         sortbySimiChk.setText(Utils.i18n("sortResultBysimi")); // NOI18N
 
         GroupLayout imdbSearchPnlLayout = new GroupLayout(imdbSearchPnl);
         imdbSearchPnl.setLayout(imdbSearchPnlLayout);
@@ -1115,12 +1144,12 @@ public class Setting extends JDialog {
                 .addGap(248, 248, 248))
         );
 
-        jPanel2.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
+        jPanel2.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
         imdbLangGroup.add(scrapperFrRbtn);
-        scrapperFrRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperFrRbtn.setText(bundle.getString("imdbFr")); // NOI18N
+        scrapperFrRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperFrRbtn.setText(Utils.i18n("imdbFr")); // NOI18N
 
         imdbLangGroup.add(scrapperEnRbtn);
-        scrapperEnRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn.setText(bundle.getString("imdbEn")); // NOI18N
+        scrapperEnRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn.setText(Utils.i18n("imdbEn")); // NOI18N
 
         GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -1214,13 +1243,13 @@ public class Setting extends JDialog {
                 .addGap(248, 248, 248))
         );
 
-        jPanel8.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
+        jPanel8.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
         imdbLangGroup.add(scrapperFrRbtn1);
         scrapperFrRbtn1.setFont(new Font("Ubuntu", 0, 12));         scrapperFrRbtn1.setSelected(true);
-        scrapperFrRbtn1.setText(bundle.getString("imdbFr")); // NOI18N
+        scrapperFrRbtn1.setText(Utils.i18n("imdbFr")); // NOI18N
 
         imdbLangGroup.add(scrapperEnRbtn1);
-        scrapperEnRbtn1.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn1.setText(bundle.getString("imdbEn")); // NOI18N
+        scrapperEnRbtn1.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn1.setText(Utils.i18n("imdbEn")); // NOI18N
 
         GroupLayout jPanel8Layout = new GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -1280,12 +1309,12 @@ public class Setting extends JDialog {
                 .addContainerGap(107, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
+        settingTabPan.addTab(Utils.i18n("searchTitle"), SearchPnl); // NOI18N
 
-        movieImagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("imageExt"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
+        movieImagePnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("imageExt"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         thumbExtCbBox.setModel(new DefaultComboBoxModel(new String[] { ".jpg", ".tbn", "-thumb.jpg" }));
 
-        thumnailsExtLbl.setFont(new Font("Ubuntu", 1, 12));         thumnailsExtLbl.setText(bundle.getString("thumbnails")); // NOI18N
+        thumnailsExtLbl.setFont(new Font("Ubuntu", 1, 12));         thumnailsExtLbl.setText(Utils.i18n("thumbnails")); // NOI18N
 
         GroupLayout movieImagePnlLayout = new GroupLayout(movieImagePnl);
         movieImagePnl.setLayout(movieImagePnlLayout);
@@ -1309,28 +1338,28 @@ public class Setting extends JDialog {
 
         imagesPnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 14))); 
         thumbGroup.add(thumbThumbSizeRBtn);
-        thumbThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         thumbThumbSizeRBtn.setText(bundle.getString("small")); // NOI18N
+        thumbThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         thumbThumbSizeRBtn.setText(Utils.i18n("small")); // NOI18N
 
         thumbGroup.add(midThumbSizeRBtn);
-        midThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         midThumbSizeRBtn.setText(bundle.getString("medium")); // NOI18N
+        midThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         midThumbSizeRBtn.setText(Utils.i18n("medium")); // NOI18N
 
         thumbGroup.add(origThumbSizeRBtn);
         origThumbSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         origThumbSizeRBtn.setSelected(true);
         origThumbSizeRBtn.setText("Original");
 
-        thumbSzeLbl.setFont(new Font("Ubuntu", 1, 13));         thumbSzeLbl.setText(bundle.getString("thumbsSize")); // NOI18N
+        thumbSzeLbl.setFont(new Font("Ubuntu", 1, 13));         thumbSzeLbl.setText(Utils.i18n("thumbsSize")); // NOI18N
 
-        fanartSizeLbl.setFont(new Font("Ubuntu", 1, 13));         fanartSizeLbl.setText(bundle.getString("fanartsSize")); // NOI18N
+        fanartSizeLbl.setFont(new Font("Ubuntu", 1, 13));         fanartSizeLbl.setText(Utils.i18n("fanartsSize")); // NOI18N
 
         fanartGroup.add(origFanartSizeRBtn);
         origFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         origFanartSizeRBtn.setSelected(true);
         origFanartSizeRBtn.setText("Original");
 
         fanartGroup.add(midFanartSizeRBtn);
-        midFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         midFanartSizeRBtn.setText(bundle.getString("medium")); // NOI18N
+        midFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         midFanartSizeRBtn.setText(Utils.i18n("medium")); // NOI18N
 
         fanartGroup.add(thumbFanartSizeRBtn);
-        thumbFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         thumbFanartSizeRBtn.setText(bundle.getString("small")); // NOI18N
+        thumbFanartSizeRBtn.setFont(new Font("Ubuntu", 0, 12));         thumbFanartSizeRBtn.setText(Utils.i18n("small")); // NOI18N
 
         GroupLayout imagesPnlLayout = new GroupLayout(imagesPnl);
         imagesPnl.setLayout(imagesPnlLayout);
@@ -1401,14 +1430,14 @@ public class Setting extends JDialog {
         settingTabPan.addTab("Image", jPanel1);
 
         extensionPnl.setBorder(BorderFactory.createTitledBorder(null, "Extension", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        removeExtensuionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeExtensuionBtn.setToolTipText(bundle.getString("removeExt")); // NOI18N
+        removeExtensuionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeExtensuionBtn.setToolTipText(Utils.i18n("removeExt")); // NOI18N
         removeExtensuionBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 removeExtensuionBtnActionPerformed(evt);
             }
         });
 
-        addExtensionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png")));         addExtensionBtn.setToolTipText(bundle.getString("addExt")); // NOI18N
+        addExtensionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png")));         addExtensionBtn.setToolTipText(Utils.i18n("addExt")); // NOI18N
         addExtensionBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 addExtensionBtnActionPerformed(evt);
@@ -1418,7 +1447,7 @@ public class Setting extends JDialog {
         extentionJlist.setFont(new Font("Ubuntu", 0, 12));         extentionJlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         extensionScrollP.setViewportView(extentionJlist);
 
-        extensionHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         extensionHelp.setToolTipText(bundle.getString("help")); // NOI18N
+        extensionHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         extensionHelp.setToolTipText(Utils.i18n("help")); // NOI18N
         extensionHelp.setMaximumSize(new Dimension(26, 26));
         extensionHelp.setMinimumSize(new Dimension(26, 26));
         extensionHelp.setPreferredSize(new Dimension(26, 26));
@@ -1428,7 +1457,7 @@ public class Setting extends JDialog {
             }
         });
 
-        useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12));         useExtensionFilterChk.setText(bundle.getString("useExtFilter")); // NOI18N
+        useExtensionFilterChk.setFont(new Font("Ubuntu", 0, 12));         useExtensionFilterChk.setText(Utils.i18n("useExtFilter")); // NOI18N
 
         GroupLayout extensionPnlLayout = new GroupLayout(extensionPnl);
         extensionPnl.setLayout(extensionPnlLayout);
@@ -1464,8 +1493,8 @@ public class Setting extends JDialog {
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        fileNameFilterPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("movieFileNameFilter"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        moveLeft.setIcon(new ImageIcon(getClass().getResource("/image/go-previous-3.png")));         moveLeft.setToolTipText(bundle.getString("moveLeft")); // NOI18N
+        fileNameFilterPnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("movieFileNameFilter"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
+        moveLeft.setIcon(new ImageIcon(getClass().getResource("/image/go-previous-3.png")));         moveLeft.setToolTipText(Utils.i18n("moveLeft")); // NOI18N
         moveLeft.setEnabled(false);
         moveLeft.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -1473,7 +1502,7 @@ public class Setting extends JDialog {
             }
         });
 
-        moveRight.setIcon(new ImageIcon(getClass().getResource("/image/go-next-3.png")));         moveRight.setToolTipText(bundle.getString("moveRight")); // NOI18N
+        moveRight.setIcon(new ImageIcon(getClass().getResource("/image/go-next-3.png")));         moveRight.setToolTipText(Utils.i18n("moveRight")); // NOI18N
         moveRight.setEnabled(false);
         moveRight.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -1481,14 +1510,14 @@ public class Setting extends JDialog {
             }
         });
 
-        addFilter.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png")));         addFilter.setToolTipText(bundle.getString("addFilter")); // NOI18N
+        addFilter.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png")));         addFilter.setToolTipText(Utils.i18n("addFilter")); // NOI18N
         addFilter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 addFilterActionPerformed(evt);
             }
         });
 
-        removeFilterBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeFilterBtn.setToolTipText(bundle.getString("removeFilter")); // NOI18N
+        removeFilterBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeFilterBtn.setToolTipText(Utils.i18n("removeFilter")); // NOI18N
         removeFilterBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 removeFilterBtnActionPerformed(evt);
@@ -1498,7 +1527,7 @@ public class Setting extends JDialog {
         filterJlist.setFont(new Font("Ubuntu", 0, 12));         filterJlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         filterScrollP.setViewportView(filterJlist);
 
-        filenameFilterHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         filenameFilterHelp.setToolTipText(bundle.getString("help")); // NOI18N
+        filenameFilterHelp.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         filenameFilterHelp.setToolTipText(Utils.i18n("help")); // NOI18N
         filenameFilterHelp.setMaximumSize(new Dimension(26, 26));
         filenameFilterHelp.setMinimumSize(new Dimension(26, 26));
         filenameFilterHelp.setPreferredSize(new Dimension(26, 26));
@@ -1508,7 +1537,7 @@ public class Setting extends JDialog {
             }
         });
 
-        resetNameFilter.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png")));         resetNameFilter.setToolTipText(bundle.getString("resetFilterList")); // NOI18N
+        resetNameFilter.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png")));         resetNameFilter.setToolTipText(Utils.i18n("resetFilterList")); // NOI18N
         resetNameFilter.setMargin(new Insets(2, 2, 2, 2));
         resetNameFilter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -1581,30 +1610,30 @@ public class Setting extends JDialog {
                 .addContainerGap(121, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
+        settingTabPan.addTab(Utils.i18n("filter"), filtersPnl); // NOI18N
 
         imagePnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        actorCacheLbl.setFont(new Font("Ubuntu", 1, 13));         actorCacheLbl.setText(bundle.getString("useForActor")); // NOI18N
+        actorCacheLbl.setFont(new Font("Ubuntu", 1, 13));         actorCacheLbl.setText(Utils.i18n("useForActor")); // NOI18N
 
-        fanartCacheLbl.setFont(new Font("Ubuntu", 1, 13));         fanartCacheLbl.setText(bundle.getString("useForFanart")); // NOI18N
+        fanartCacheLbl.setFont(new Font("Ubuntu", 1, 13));         fanartCacheLbl.setText(Utils.i18n("useForFanart")); // NOI18N
 
-        thumbCacheLbl.setFont(new Font("Ubuntu", 1, 13));         thumbCacheLbl.setText(bundle.getString("useForThumb")); // NOI18N
+        thumbCacheLbl.setFont(new Font("Ubuntu", 1, 13));         thumbCacheLbl.setText(Utils.i18n("useForThumb")); // NOI18N
 
-        clearThumbBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearThumbBtn.setToolTipText(bundle.getString("clearThumbCache")); // NOI18N
+        clearThumbBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearThumbBtn.setToolTipText(Utils.i18n("clearThumbCache")); // NOI18N
         clearThumbBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 clearThumbBtnActionPerformed(evt);
             }
         });
 
-        clearFanartBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearFanartBtn.setToolTipText(bundle.getString("clearFanartCache")); // NOI18N
+        clearFanartBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearFanartBtn.setToolTipText(Utils.i18n("clearFanartCache")); // NOI18N
         clearFanartBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 clearFanartBtnActionPerformed(evt);
             }
         });
 
-        clearActorBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearActorBtn.setToolTipText(bundle.getString("clearActorCache")); // NOI18N
+        clearActorBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearActorBtn.setToolTipText(Utils.i18n("clearActorCache")); // NOI18N
         clearActorBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 clearActorBtnActionPerformed(evt);
@@ -1646,17 +1675,17 @@ public class Setting extends JDialog {
                 .addContainerGap())
         );
 
-        xmlFilePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("xmlFiles"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        xmlLbl.setFont(new Font("Ubuntu", 1, 13));         xmlLbl.setText(bundle.getString("useForXml")); // NOI18N
+        xmlFilePnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("xmlFiles"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
+        xmlLbl.setFont(new Font("Ubuntu", 1, 13));         xmlLbl.setText(Utils.i18n("useForXml")); // NOI18N
 
-        clearXmlBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearXmlBtn.setToolTipText(bundle.getString("clearXmlCache")); // NOI18N
+        clearXmlBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearXmlBtn.setToolTipText(Utils.i18n("clearXmlCache")); // NOI18N
         clearXmlBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 clearXmlBtnActionPerformed(evt);
             }
         });
 
-        clearXmlCacheOnStartChk.setFont(new Font("Ubuntu", 1, 13));         clearXmlCacheOnStartChk.setText(bundle.getString("clearXmlCacheOnStart")); // NOI18N
+        clearXmlCacheOnStartChk.setFont(new Font("Ubuntu", 1, 13));         clearXmlCacheOnStartChk.setText(Utils.i18n("clearXmlCacheOnStart")); // NOI18N
 
         GroupLayout xmlFilePnlLayout = new GroupLayout(xmlFilePnl);
         xmlFilePnl.setLayout(xmlFilePnlLayout);
@@ -1709,8 +1738,8 @@ public class Setting extends JDialog {
 
         settingTabPan.addTab("Cache", cachePnl);
 
-        saveBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         saveBtn.setText(bundle.getString("save")); // NOI18N
-        saveBtn.setToolTipText(bundle.getString("save")); // NOI18N
+        saveBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         saveBtn.setText(Utils.i18n("save")); // NOI18N
+        saveBtn.setToolTipText(Utils.i18n("save")); // NOI18N
         saveBtn.setMargin(new Insets(2, 2, 2, 2));
         saveBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -1718,8 +1747,8 @@ public class Setting extends JDialog {
             }
         });
 
-        CancelBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2.png")));         CancelBtn.setText(bundle.getString("cancel")); // NOI18N
-        CancelBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
+        CancelBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2.png")));         CancelBtn.setText(Utils.i18n("cancel")); // NOI18N
+        CancelBtn.setToolTipText(Utils.i18n("cancel")); // NOI18N
         CancelBtn.setMargin(new Insets(2, 2, 2, 2));
         CancelBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -1757,10 +1786,10 @@ public class Setting extends JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
   private void addFilterActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addFilterActionPerformed
-    String s = (String) JOptionPane.showInputDialog(this, bundle.getString("filter"), bundle.getString("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
+    String s = (String) JOptionPane.showInputDialog(this, Utils.i18n("filter"), Utils.i18n("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
     int index = currentFilterIndex;
     if (filters.contains(s)) {
-      JOptionPane.showMessageDialog(null, s + " " + bundle.getString("alreadyInList"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, s + " " + Utils.i18n("alreadyInList"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
     if ((s != null) && (s.length() > 0)) {
@@ -1772,7 +1801,7 @@ public class Setting extends JDialog {
 }//GEN-LAST:event_addFilterActionPerformed
 
   private void addExtensionBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addExtensionBtnActionPerformed
-    String s = (String) JOptionPane.showInputDialog(this, "Extension", bundle.getString("addExt"), JOptionPane.PLAIN_MESSAGE, null, null, null);
+    String s = (String) JOptionPane.showInputDialog(this, "Extension", Utils.i18n("addExt"), JOptionPane.PLAIN_MESSAGE, null, null, null);
 
     if ((s != null) && (s.length() > 0)) {
       extensions = Arrays.copyOf(extensions, extensions.length + 1);
@@ -1784,7 +1813,7 @@ public class Setting extends JDialog {
 }//GEN-LAST:event_addExtensionBtnActionPerformed
 
   private void helpBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
-    JOptionPane.showMessageDialog(this, bundle.getString("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), bundle.getString("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, Utils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), Utils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
 }//GEN-LAST:event_helpBtnActionPerformed
 
   private void movieInfoPanelChkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_movieInfoPanelChkItemStateChanged
@@ -1798,17 +1827,18 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_movieInfoPanelChkItemStateChanged
 
   private void filenameTestBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_filenameTestBtnActionPerformed
-    int limit, casse = 0;
+    int limit;
+    Utils.CaseConversionType casse = CaseConversionType.FIRSTLO;
     try {
       limit = Integer.parseInt(limitField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, bundle.getString("nanLimit"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, Utils.i18n("nanLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     for (int i = 0; i < rBtnCase.length; i++) {
       if (rBtnCase[i].isSelected()) {
-        casse = i;
+        casse = Utils.CaseConversionType.values()[i];
       }
     }
 
@@ -1817,11 +1847,11 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_filenameTestBtnActionPerformed
 
   private void extensionHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_extensionHelpActionPerformed
-    JOptionPane.showMessageDialog(this, bundle.getString("extensionsHelp"), "Extension", JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, Utils.i18n("extensionsHelp"), "Extension", JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_extensionHelpActionPerformed
 
   private void filenameFilterHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_filenameFilterHelpActionPerformed
-    JOptionPane.showMessageDialog(this, bundle.getString("movieFileFilterHelp"), bundle.getString("movieFileNameFilter"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, Utils.i18n("movieFileFilterHelp"), Utils.i18n("movieFileNameFilter"), JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_filenameFilterHelpActionPerformed
 
   private void moveRightActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveRightActionPerformed
@@ -1874,31 +1904,31 @@ public class Setting extends JDialog {
       setting.movieFilenameLimit = Integer.parseInt(limitField.getText());
       setting.movieFolderLimit = Integer.parseInt(limitFolderField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, bundle.getString("nanLimit"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, Utils.i18n("nanLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     if (!formatField.getText().contains("<t>") && !formatField.getText().contains("<ot>")) {
-      JOptionPane.showMessageDialog(this, bundle.getString("noTitle"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, Utils.i18n("noTitle"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     // General Setting
     if (setting.movieInfoPanel != movieInfoPanelChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
     if (setting.thumb != thumbsChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
     if (setting.fanart != fanartsChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
     if (setting.actorImage != actorImageChk.isSelected()) {
-      setting.interfaceChanged = true;
+      Settings.interfaceChanged = true;
     }
 
     if (!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) {
-      setting.lafChanged = true;
+      Settings.lafChanged = true;
     }
     setting.laf = Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName();
     setting.selectFrstMedia = selectFirstMovieChk.isSelected();
@@ -1916,7 +1946,7 @@ public class Setting extends JDialog {
     boolean langFr = setting.locale.equals("fr");
     if (langFr != frenchRbtn.isSelected()) {
       setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
-      int n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + bundle.getString("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
+      int n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + Utils.i18n("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
       if (n == JOptionPane.YES_OPTION) {
         restartApp = true;
       }
@@ -1925,7 +1955,7 @@ public class Setting extends JDialog {
     // Rename Setting
     for (int i = 0; i < rBtnCase.length; i++) {
       if (rBtnCase[i].isSelected()) {
-        setting.movieFilenameCase = i;
+        setting.movieFilenameCase = Utils.CaseConversionType.values()[i];
       }
     }
 
@@ -1949,7 +1979,7 @@ public class Setting extends JDialog {
 
     for (int i = 0; i < rBtnScrapper.length; i++) {
       if (rBtnScrapper[i].isSelected()) {
-        setting.movieScrapper = i;
+        setting.movieScrapper = WorkerManager.MovieScrapper.values()[i];
       }
     }
 
@@ -1991,13 +2021,13 @@ public class Setting extends JDialog {
     if (restartApp) {
       try {
         if (!Utils.restartApplication(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()))) {
-          JOptionPane.showMessageDialog(this, bundle.getString("cantRestart"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(this, Utils.i18n("cantRestart"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
         } else {
           dispose();
           System.exit(0);
         }
       } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, bundle.getString("cantRestart") + Utils.ENDLINE + ex.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, Utils.i18n("cantRestart") + Utils.ENDLINE + ex.getMessage(), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       }
     }
 
@@ -2025,23 +2055,23 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_CancelBtnActionPerformed
 
   private void clearXmlBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearXmlBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.xmlCacheDir));
-    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.xmlCacheDir)) + bundle.getString("useForXml"));
+    Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
+    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir)) + Utils.i18n("useForXml"));
   }//GEN-LAST:event_clearXmlBtnActionPerformed
 
   private void clearActorBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearActorBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.actorCacheDir));
-    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.actorCacheDir)) + bundle.getString("useForActor"));
+    Utils.deleteFileInDirectory(new File(Settings.actorCacheDir));
+    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.actorCacheDir)) + Utils.i18n("useForActor"));
   }//GEN-LAST:event_clearActorBtnActionPerformed
 
   private void clearFanartBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearFanartBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.fanartCacheDir));
-    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.fanartCacheDir)) + bundle.getString("useForFanart"));
+    Utils.deleteFileInDirectory(new File(Settings.fanartCacheDir));
+    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir)) + Utils.i18n("useForFanart"));
   }//GEN-LAST:event_clearFanartBtnActionPerformed
 
   private void clearThumbBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearThumbBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(setting.thumbCacheDir));
-    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(setting.thumbCacheDir)) + bundle.getString("useForThumb"));
+    Utils.deleteFileInDirectory(new File(Settings.thumbCacheDir));
+    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir)) + Utils.i18n("useForThumb"));
   }//GEN-LAST:event_clearThumbBtnActionPerformed
 
   private void allocineRbtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_allocineRbtnItemStateChanged
@@ -2050,7 +2080,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_allocineRbtnItemStateChanged
 
   private void resultHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_resultHelpActionPerformed
-    JOptionPane.showMessageDialog(this, bundle.getString("resultHelp"), bundle.getString("result"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, Utils.i18n("resultHelp"), Utils.i18n("result"), JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_resultHelpActionPerformed
 
   private void imdbRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_imdbRBtnItemStateChanged
@@ -2071,21 +2101,22 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_allocineRbtn1ItemStateChanged
 
   private void helpBtn1ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtn1ActionPerformed
-    JOptionPane.showMessageDialog(this, bundle.getString("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), bundle.getString("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, Utils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), Utils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_helpBtn1ActionPerformed
 
   private void folderTestBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_folderTestBtnActionPerformed
-    int limit, casse = 0;
+    int limit;
+    CaseConversionType casse = CaseConversionType.FIRSTLO;
     try {
       limit = Integer.parseInt(limitFolderField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, bundle.getString("nanLimit"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, Utils.i18n("nanLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     for (int i = 0; i < rBtnFolderCase.length; i++) {
       if (rBtnFolderCase[i].isSelected()) {
-        casse = i;
+        casse = CaseConversionType.values()[i];
       }
     }
 

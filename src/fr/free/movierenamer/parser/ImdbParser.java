@@ -94,7 +94,7 @@ public class ImdbParser {
    */
   public ArrayList<SearchResult> parse(String htmlSearchRes, boolean searchPage) throws IndexOutOfBoundsException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
-    int limit = setting.nbResultList[setting.nbResult];
+    int limit = Settings.nbResultList[setting.nbResult];
 
     if (searchPage) {
       Settings.LOGGER.log(Level.INFO, "Imdb Search page");

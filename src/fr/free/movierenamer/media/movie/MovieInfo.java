@@ -17,12 +17,14 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
-import java.util.ArrayList;
 
 /**
  * Class MovieInfo
@@ -47,14 +49,14 @@ public class MovieInfo {
   private String top250;
   private boolean watched;
   private MovieImage movieImage;
-  private ArrayList<MediaID> movieIDs;
-  private ArrayList<String> set;//Saga
-  private ArrayList<String> genres;
-  private ArrayList<String> studios;
-  private ArrayList<MediaPerson> actors;
-  private ArrayList<MediaPerson> directors;
-  private ArrayList<MediaPerson> writers;
-  private ArrayList<String> countries;
+  private List<MediaID> movieIDs;
+  private List<String> set;//Saga
+  private List<String> genres;
+  private List<String> studios;
+  private List<MediaPerson> actors;
+  private List<MediaPerson> directors;
+  private List<MediaPerson> writers;
+  private List<String> countries;
 
   /**
    * Default constructor
@@ -224,18 +226,18 @@ public class MovieInfo {
   /**
    * Get array of thumbnails
    *
-   * @return ArrayList of MovieImage
+   * @return List of MovieImage
    */
-  public ArrayList<MediaImage> getThumbs() {
+  public List<MediaImage> getThumbs() {
     return movieImage.getThumbs();
   }
 
   /**
    * Get array of fanarts
    *
-   * @return ArrayList of MovieImage
+   * @return List of MovieImage
    */
-  public ArrayList<MediaImage> getFanarts() {
+  public List<MediaImage> getFanarts() {
     return movieImage.getFanarts();
   }
 
@@ -244,7 +246,7 @@ public class MovieInfo {
    *
    * @return List of movie IDs
    */
-  public ArrayList<MediaID> getIDs() {
+  public List<MediaID> getIDs() {
     return movieIDs;
   }
 
@@ -253,7 +255,7 @@ public class MovieInfo {
    *
    * @return Array of set
    */
-  public ArrayList<String> getSet() {
+  public List<String> getSet() {
     return set;
   }
 
@@ -271,7 +273,7 @@ public class MovieInfo {
    *
    * @return Array of genre
    */
-  public ArrayList<String> getGenres() {
+  public List<String> getGenres() {
     return genres;
   }
 
@@ -280,7 +282,7 @@ public class MovieInfo {
    *
    * @return Array of studios
    */
-  public ArrayList<String> getStudios() {
+  public List<String> getStudios() {
     return studios;
   }
 
@@ -289,7 +291,7 @@ public class MovieInfo {
    *
    * @return Array of actors
    */
-  public ArrayList<MediaPerson> getActors() {
+  public List<MediaPerson> getActors() {
     return actors;
   }
 
@@ -298,7 +300,7 @@ public class MovieInfo {
    *
    * @return Array of directors
    */
-  public ArrayList<MediaPerson> getDirectors() {
+  public List<MediaPerson> getDirectors() {
     return directors;
   }
 
@@ -307,7 +309,7 @@ public class MovieInfo {
    *
    * @return Array of writers
    */
-  public ArrayList<MediaPerson> getWriters() {
+  public List<MediaPerson> getWriters() {
     return writers;
   }
 
@@ -316,7 +318,7 @@ public class MovieInfo {
    *
    * @return Array of countries
    */
-  public ArrayList<String> getCountries() {
+  public List<String> getCountries() {
     return countries;
   }
 
@@ -542,7 +544,7 @@ public class MovieInfo {
    *
    * @param studios Array of studio
    */
-  public void setStudios(ArrayList<String> studios) {
+  public void setStudios(List<String> studios) {
     this.studios = studios;
   }
 
@@ -551,7 +553,7 @@ public class MovieInfo {
    *
    * @param directors Array of directors
    */
-  public void setDirectors(ArrayList<MediaPerson> directors) {
+  public void setDirectors(List<MediaPerson> directors) {
     this.directors = directors;
   }
 
@@ -560,7 +562,7 @@ public class MovieInfo {
    *
    * @param genres Array of genres
    */
-  public void setGenre(ArrayList<String> genres) {
+  public void setGenre(List<String> genres) {
     this.genres = genres;
   }
 
@@ -569,7 +571,7 @@ public class MovieInfo {
    *
    * @param set Array of sets
    */
-  public void setSets(ArrayList<String> set) {
+  public void setSets(List<String> set) {
     this.set = set;
   }
 
@@ -578,7 +580,7 @@ public class MovieInfo {
    *
    * @param writers Array of writers
    */
-  public void setWriters(ArrayList<MediaPerson> writers) {
+  public void setWriters(List<MediaPerson> writers) {
     this.writers = writers;
   }
 
@@ -587,7 +589,7 @@ public class MovieInfo {
    *
    * @param countries Array of countries
    */
-  public void setCountries(ArrayList<String> countries) {
+  public void setCountries(List<String> countries) {
     this.countries = countries;
   }
 
@@ -686,7 +688,7 @@ public class MovieInfo {
    *
    * @param set Array of set
    */
-  public void setSet(ArrayList<String> set) {
+  public void setSet(List<String> set) {
     this.set = set;
   }
 
