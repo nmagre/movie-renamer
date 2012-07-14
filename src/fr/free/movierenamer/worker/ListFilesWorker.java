@@ -31,33 +31,32 @@ import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.SwingWorker;
 
 /**
  * Class listFilesWorker ,get List of media files in files list
- *
+ * 
  * @author Magré Nicolas
  */
-public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
+public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
-  private Settings setting;
-  private boolean subFolders;
-  private ArrayList<File> files;
-  private int nbFiles;
+  private final boolean subFolders;
+  private final ArrayList<File> files;
+  private final int nbFiles;
   private int count;
   private String currentParent;
-  private ArrayList<MediaRenamed> renamed;
+  private final ArrayList<MediaRenamed> renamed;
 
   /**
    * Constructor arguments
-   *
-   * @param files List of files
-   * @param renamed List of renamed files
-   * @param subFolders Scan subfolders
-   * @param setting Movie Renamer settings
+   * 
+   * @param files
+   *          List of files
+   * @param renamed
+   *          List of renamed files
+   * @param subFolders
+   *          Scan subfolders
    */
-  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, Settings setting) {
-    this.setting = setting;
+  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, Settings config) {
     this.renamed = renamed;
     this.files = files;
     this.subFolders = subFolders;
@@ -68,15 +67,17 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Constructor arguments
-   *
-   * @param files List of files
-   * @param renamed List of renamed files
-   * @param subFolders Scan subfolders
-   * @param nbFiles Number of subfolders (only in first directory) for progressBar
-   * @param setting Movie Renamer settings
+   * 
+   * @param files
+   *          List of files
+   * @param renamed
+   *          List of renamed files
+   * @param subFolders
+   *          Scan subfolders
+   * @param nbFiles
+   *          Number of subfolders (only in first directory) for progressBar
    */
-  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, int nbFiles, Settings setting) {
-    this.setting = setting;
+  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, int nbFiles) {
     this.renamed = renamed;
     this.files = files;
     this.subFolders = subFolders;
@@ -87,11 +88,11 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Retreive all media files in a folder and subfolder
-   *
+   * 
    * @return ArrayList of movies file
    */
   @Override
-  protected ArrayList<MediaFile> doInBackground() {
+  protected ArrayList<MediaFile> executeInBackground() {
     ArrayList<MediaFile> medias = new ArrayList<MediaFile>();
     for (File file : files) {
       if (isCancelled()) {
@@ -101,7 +102,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
       if (file.isDirectory()) {
         currentParent = file.getName();
         getFiles(medias, file);
-      } else if (!setting.useExtensionFilter || Utils.checkFileExt(file.getName(), setting.extensions)) {
+      } else if (!config.useExtensionFilter || Utils.checkFileExt(file.getName(), config.extensions)) {
         addMediaFile(medias, file);
       }
     }
@@ -111,9 +112,11 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Scan recursively folders and add media to a list
-   *
-   * @param medias List of movies
-   * @param file File to add or directory to scan
+   * 
+   * @param medias
+   *          List of movies
+   * @param file
+   *          File to add or directory to scan
    */
   private void getFiles(ArrayList<MediaFile> medias, File file) {
     if (isCancelled()) {
@@ -133,7 +136,7 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
           count++;
           setProgress(((count * 100) / nbFiles));
         }
-      } else if (!setting.useExtensionFilter || Utils.checkFileExt(listFiles[i].getName(), setting.extensions)) {
+      } else if (!config.useExtensionFilter || Utils.checkFileExt(listFiles[i].getName(), config.extensions)) {
         addMediaFile(medias, listFiles[i]);
       }
     }
@@ -141,19 +144,23 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Add file to media files list
-   * @param medias Media file list
-   * @param file File to add
+   * 
+   * @param medias
+   *          Media file list
+   * @param file
+   *          File to add
    */
   private void addMediaFile(ArrayList<MediaFile> medias, File file) {
     boolean wasrenamed = wasRenamed(file.getAbsolutePath());
-    int type = isMovie(file) ? Media.MOVIE : Media.TVSHOW;
-    medias.add(new MediaFile(file, type, wasrenamed, setting.showMovieFilePath));
+    Media.MediaType type = isMovie(file) ? Media.MediaType.MOVIE : Media.MediaType.TVSHOW;
+    medias.add(new MediaFile(file, type, wasrenamed, config.showMovieFilePath));
   }
 
   /**
    * Check if Movie Renamer has already renamed this file
-   *
-   * @param file File to check
+   * 
+   * @param file
+   *          File to check
    * @return True if file was renamed by Movie Renamer, False otherwise
    */
   private boolean wasRenamed(String file) {
@@ -167,38 +174,24 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Check if file is a movie
-   *
-   * @param file File to check
+   * 
+   * @param file
+   *          File to check
    * @return True if file is a movie, false otherwise
    */
-  static public boolean isMovie(File file) {//A refaire , amélioré la detection
+  static public boolean isMovie(File file) {// TODO A refaire , améliorer la
+                                            // detection !!!
     String filename = file.getName();
-    if (searchPattern(filename, TvShowEpisodeMatcher.seasonPattern)) {
+    /*if (searchPattern(filename, TvShowEpisodeMatcher.seasonPattern)) {
       return false;
     }
     if (searchPattern(filename, TvShowEpisodeMatcher.episodePattern)) {
       return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern)) {
-      return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern2)) {
-      return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern3)) {
-      return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern4)) {
-      return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern5)) {
-      return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern6)) {
-      return false;
-    }
-    if (searchPattern(filename, TvShowEpisodeMatcher.SxEPattern7)) {
-      return false;
+    }*/
+    for (TvShowEpisodeMatcher.TvShowPattern patternToTest : TvShowEpisodeMatcher.TvShowPattern.values()) {
+      if (searchPattern(filename, patternToTest.getPattern())) {
+        return false;
+      }
     }
     if (file.getParent().matches(".*((?i:season)|(?i:saison)).*")) {
       return false;
@@ -208,13 +201,14 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
 
   /**
    * Search pattern in string
-   *
-   * @param text String to search in
-   * @param sPattern Pattern
+   * 
+   * @param text
+   *          String to search in
+   * @param pattern
+   *          Pattern to match
    * @return True if pattern is find in string , False otherwise
    */
-  private static boolean searchPattern(String text, String sPattern) {
-    Pattern pattern = Pattern.compile(sPattern);
+  private static boolean searchPattern(String text, Pattern pattern) {
     Matcher searchMatcher = pattern.matcher(text);
     if (searchMatcher.find()) {
       return true;
@@ -234,4 +228,5 @@ public class ListFilesWorker extends SwingWorker<ArrayList<MediaFile>, Void> {
       return s1.getFile().getName().compareTo(s2.getFile().getName());
     }
   }
+
 }

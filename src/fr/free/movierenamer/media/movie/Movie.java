@@ -93,7 +93,7 @@ public class Movie implements Media {
   /**
    * Get renamed movie title
    *
-   * @param setting
+   * @param setting Movie Renamer settings
    * @param regExp Expression to rename movie title with
    * @return Movie title renamed
    */
@@ -457,8 +457,8 @@ public class Movie implements Media {
   }
 
   @Override
-  public int getType() {
-    return Media.MOVIE;
+  public MediaType getType() {
+    return Media.MediaType.MOVIE;
   }
 
   @Override

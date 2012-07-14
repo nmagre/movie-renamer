@@ -98,11 +98,11 @@ public class ImdbParser {
 
     if (searchPage) {
       Settings.LOGGER.log(Level.INFO, "Imdb Search page");
-      found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french, french ? "Populaire" : "Popular"));//Popular title
-      found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french, "Exact"));//Exact title
-      found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french, french ? "Partiel" : "Partial"));//Partial title
+      found.addAll(findMovies(htmlSearchRes, (french ? POPULARPATTERN_FR : POPULARPATTERN_EN), limit, french,  SearchResult.SearchResultType.POPULAR));//Popular title
+      found.addAll(findMovies(htmlSearchRes, (french ? EXACTPATTERN_FR : EXACTPATTERN_EN), limit, french,  SearchResult.SearchResultType.EXACT));//Exact title
+      found.addAll(findMovies(htmlSearchRes, (french ? PARTIALPATTERN_FR : PARTIALPATTERN_EN), limit, french,  SearchResult.SearchResultType.PARTIAL));//Partial title
       if (found.isEmpty() || setting.displayApproximateResult) {
-        found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french, french ? "Approximatif" : "Approximate"));
+        found.addAll(findMovies(htmlSearchRes, (french ? APPROXIMATEPATTERN_FR : APPROXIMATEPATTERN_EN), limit, french,  SearchResult.SearchResultType.APPROXIMATE));
       }
     } else {
       Settings.LOGGER.log(Level.INFO, "Imdb Movie page");
@@ -121,7 +121,7 @@ public class ImdbParser {
    * @param type Type of result search
    * @return Array of ImdbSearchResult
    */
-  private ArrayList<SearchResult> findMovies(String htmlSearchRes, String searchPattern, int limit, boolean french, String type) throws IndexOutOfBoundsException {
+  private ArrayList<SearchResult> findMovies(String htmlSearchRes, String searchPattern, int limit, boolean french, SearchResult.SearchResultType type) throws IndexOutOfBoundsException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
     Pattern pattern = Pattern.compile(searchPattern);
     Matcher titleMatcher = pattern.matcher(htmlSearchRes);
@@ -216,7 +216,7 @@ public class ImdbParser {
             thumb = thumbnail.substring(thumbnail.lastIndexOf("src=") + 5, thumbnail.lastIndexOf("\""));
           }
         }
-        found.add(new SearchResult(movieName, new MediaID(imdbId,  MediaID.IMDBID), "Exact", thumb));
+        found.add(new SearchResult(movieName, new MediaID(imdbId,  MediaID.IMDBID), SearchResult.SearchResultType.EXACT, thumb));
 
       } else {
         Settings.LOGGER.log(Level.SEVERE, "imdb page unrecognized");

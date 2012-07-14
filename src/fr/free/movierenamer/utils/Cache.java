@@ -75,9 +75,10 @@ public class Cache {
    * @param type Cache type
    * @throws IOException
    */
-  public void add(InputStream is, String url, Cache.CacheType type) throws IOException {
+  public void add(URL url, Cache.CacheType type) throws IOException {
     OutputStream os;
-    File f = new File(getPath(type) + Utils.md5(url));
+    InputStream is = url.openStream();
+    File f = new File(getPath(type) + Utils.md5(url.toString()));
     os = new FileOutputStream(f);
     copyStream(is, os);
     os.close();

@@ -44,11 +44,10 @@ import javax.imageio.ImageIO;
  */
 public class DropImage implements DropTargetListener {
 
-  private Settings setting;
   private Component component;
   private IMediaPanel mediaPanel;
   private int mediaImageType;
-  private Cache.CacheType cache;
+  private Cache.CacheType cacheType;
 
   /**
    * Constructor arguments
@@ -56,15 +55,14 @@ public class DropImage implements DropTargetListener {
    * @param component Component to set mouse loding cursor
    * @param mediaPanel Movie Renamer media panel
    * @param mediaImageType Media image type
-   * @param cache
+   * @param cacheType
    * @param setting Movie Renamer settings
    */
-  public DropImage(Component component, IMediaPanel mediaPanel, int mediaImageType, Cache.CacheType cache, Settings setting) {
+  public DropImage(Component component, IMediaPanel mediaPanel, int mediaImageType, Cache.CacheType cache) {
     this.component = component;
     this.mediaPanel = mediaPanel;
     this.mediaImageType = mediaImageType;
-    this.cache = cache;
-    this.setting = setting;
+    this.cacheType = cache;
   }
 
   @Override
@@ -126,10 +124,10 @@ public class DropImage implements DropTargetListener {
             String image = res[i];
             try {
               URL url = new URL(image);
-              Image img = Cache.getInstance().getImage(url, cache);
+              Image img = Cache.getInstance().getImage(url, cacheType);
               if (img == null) {
-                Cache.getInstance().add(url.openStream(), url.toString(), cache);
-                img = Cache.getInstance().getImage(url, cache);
+                Cache.getInstance().add(url, cacheType);
+                img = Cache.getInstance().getImage(url, cacheType);
               }
               if (img != null) {
                 MediaImage mvImg = new MediaImage(-1, mediaImageType);

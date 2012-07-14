@@ -23,42 +23,39 @@ import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import java.util.logging.Level;
-import javax.swing.SwingWorker;
 
 /**
- *
+ * 
  * @author Nicolas Magré
  */
-public class XbmcPassionIDLookup extends SwingWorker<MediaID, String> {
+public class XbmcPassionIDLookup extends Worker<MediaID> {
 
   private static final int RETRY = 3;
   private HttpGet http;
-  private MediaID id;
-  private Settings setting;
+  private final MediaID id;
 
   /**
    * Constructor arguments
-   *
-   * @param id Movie API ID (allocine or imdb)
-   * @param setting Movie Renamer setting
+   * 
+   * @param id
+   *          Movie API ID
    * @throws ActionNotValidException
    */
-  public XbmcPassionIDLookup(MediaID id, Settings setting) throws ActionNotValidException {
+  public XbmcPassionIDLookup(MediaID id) throws ActionNotValidException {
     if (id.getType() != MediaID.IMDBID && id.getType() != MediaID.ALLOCINEID) {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
     this.id = id;
-    this.setting = setting;
   }
 
   @Override
-  protected MediaID doInBackground() throws Exception {
+  protected MediaID executeInBackground() throws Exception {
     MediaID mediaId = null;
     String res = null;
     for (int i = 0; i < RETRY; i++) {
       try {
         String apiID = id.getType() == MediaID.ALLOCINEID ?  id.getID(): id.getID().substring(2);
-        http = new HttpGet(Settings.xbmcPassionImdblookup + (id.getType() == MediaID.ALLOCINEID ? "IdAllo=":"IdImdb=" ) + apiID);
+        http = new HttpGet(Settings.xbmcPassionImdblookup + (id.getType() == MediaID.ALLOCINEID ? "IdAllo=" : "IdImdb=") + apiID);
         res = http.sendGetRequest(false, "UTF-8");
         break;
       } catch (Exception ex) {//Don't care about exception, "res" will be null
@@ -88,4 +85,5 @@ public class XbmcPassionIDLookup extends SwingWorker<MediaID, String> {
 
     return mediaId;
   }
+
 }

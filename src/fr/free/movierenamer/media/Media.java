@@ -26,8 +26,10 @@ import fr.free.movierenamer.utils.Settings;
  */
 public interface Media {
 
-  public static final int MOVIE = 0;
-  public static final int TVSHOW = 1;
+  public enum MediaType{
+    MOVIE,
+    TVSHOW
+  }
 
   /**
    * Get media file
@@ -48,7 +50,7 @@ public interface Media {
    *
    * @return Media type
    */
-  public int getType();
+  public MediaType getType();
 
   /**
    * Get renamed title

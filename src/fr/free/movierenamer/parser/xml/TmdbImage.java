@@ -22,14 +22,13 @@ import fr.free.movierenamer.media.movie.MovieImage;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class TheMovieDbImage
  *
  * @author Nicolas Magré
  */
-public class TmdbImage extends DefaultHandler implements IParser<MovieImage> {
+public class TmdbImage extends MrParser<MovieImage> {
 
   private ArrayList<MediaImage> thumbs;
   private ArrayList<MediaImage> fanarts;

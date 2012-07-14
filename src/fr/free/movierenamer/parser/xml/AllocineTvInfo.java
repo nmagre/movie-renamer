@@ -18,18 +18,19 @@
 package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class AllocineTvInfo
+ * 
  * @author Nicolas Magré
  */
-public class AllocineTvInfo extends DefaultHandler implements IParser<TvShowEpisode> {
+public class AllocineTvInfo extends MrParser<TvShowInfo> {
 
   private StringBuffer buffer;
-  private TvShowEpisode tvshowInfo;
+  private final TvShowEpisode tvshowInfo;
   private boolean episode;
 
   public AllocineTvInfo() {
@@ -85,7 +86,7 @@ public class AllocineTvInfo extends DefaultHandler implements IParser<TvShowEpis
   }
 
   @Override
-  public TvShowEpisode getObject() {
-    return tvshowInfo;
+  public TvShowInfo getObject() {
+    return null;
   }
 }

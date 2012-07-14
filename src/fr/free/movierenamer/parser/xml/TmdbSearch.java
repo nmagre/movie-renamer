@@ -22,14 +22,13 @@ import fr.free.movierenamer.utils.SearchResult;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class TmdbSearch
- *
+ * 
  * @author Nicolas Magré
  */
-public class TmdbSearch extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
+public class TmdbSearch extends MrParser<ArrayList<SearchResult>> {
 
   private StringBuffer buffer;
   private ArrayList<SearchResult> results;
@@ -86,7 +85,7 @@ public class TmdbSearch extends DefaultHandler implements IParser<ArrayList<Sear
     }
     if (name.equalsIgnoreCase("movie")) {
       movie = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TMDBID) , "", currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TMDBID), SearchResult.SearchResultType.NONE, currentThumb));
       currentName = currentId = currentThumb = "";
     }
     if (movies) {

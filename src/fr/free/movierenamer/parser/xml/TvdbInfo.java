@@ -18,17 +18,17 @@
 package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
- *
+ * 
  * @author Nicolas Magré
  */
-public class TvdbInfo extends DefaultHandler implements IParser<ArrayList<TvShowSeason>> {
+public class TvdbInfo extends MrParser<TvShowInfo> {
 
   private StringBuffer buffer;
   private ArrayList<TvShowSeason> seasons;
@@ -130,7 +130,7 @@ public class TvdbInfo extends DefaultHandler implements IParser<ArrayList<TvShow
   }
 
   @Override
-  public ArrayList<TvShowSeason> getObject() {
-    return seasons;
+  public TvShowInfo getObject() {
+    return null;// seasons;
   }
 }

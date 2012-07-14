@@ -28,9 +28,23 @@ import javax.swing.Icon;
  */
 public class SearchResult implements IIconList {
 
+  public enum SearchResultType {
+    NONE,
+    EXACT,
+    POPULAR,
+    PARTIAL,
+    APPROXIMATE;
+
+    @Override
+    public String toString() {
+      // FIXME use internationalization
+      return Utils.capitalizedLetter(super.toString(), true);
+    }
+  }
+
   private MediaID id;
   private String title;
-  private String type;
+  private SearchResultType type;
   private String thumb;
   private Icon icon;
 
@@ -42,7 +56,7 @@ public class SearchResult implements IIconList {
    * @param type result type (Exact,...)
    * @param thumb Thumbnail
    */
-  public SearchResult(String title, MediaID id, String type, String thumb) {
+  public SearchResult(String title, MediaID id, SearchResultType type, String thumb) {
     this.id = id;
     this.title = title;
     this.thumb = thumb;

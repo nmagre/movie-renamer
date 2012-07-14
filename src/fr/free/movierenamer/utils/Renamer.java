@@ -248,7 +248,7 @@ public class Renamer {
       try {
         File file = Cache.getInstance().get(url, Cache.CacheType.THUMB);
         if (file == null) {
-          Cache.getInstance().add(url.openStream(), url.toString(), Cache.CacheType.THUMB);
+          Cache.getInstance().add(url, Cache.CacheType.THUMB);
         }
         Utils.copyFile(Cache.getInstance().get(url, Cache.CacheType.THUMB), newThumb);
       } catch (IOException ex) {
@@ -284,7 +284,7 @@ public class Renamer {
       try {
         File file = Cache.getInstance().get(url, Cache.CacheType.FANART);
         if (file == null) {
-          Cache.getInstance().add(url.openStream(), url.toString(), Cache.CacheType.FANART);
+          Cache.getInstance().add(url, Cache.CacheType.FANART);
         }
         Utils.copyFile(Cache.getInstance().get(url, Cache.CacheType.FANART), newFanart);
       } catch (IOException ex) {

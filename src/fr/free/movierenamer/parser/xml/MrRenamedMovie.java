@@ -22,14 +22,13 @@ import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class MrRenamedMovie
  *
  * @author Nicolas Magré
  */
-public class MrRenamedMovie extends DefaultHandler implements IParser<ArrayList<MediaRenamed>> {//A refaire , en media
+public class MrRenamedMovie extends MrParser<ArrayList<MediaRenamed>> {//A refaire , en media
 
   private StringBuffer buffer;
   private boolean renamedXML;

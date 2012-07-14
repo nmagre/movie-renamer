@@ -1,6 +1,6 @@
 /*
- * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * movie-renamer
+ * Copyright (C) 2012 QUÉMÉNEUR Simon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,88 +17,78 @@
  */
 package fr.free.movierenamer.worker;
 
-import java.awt.Image;
-import java.awt.color.CMMException;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.logging.Level;
-
-import javax.swing.SwingWorker;
-
-import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.ui.res.IMediaPanel;
-import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.media.IMediaImage;
+import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.parser.xml.MrParser;
+import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import javax.swing.event.SwingPropertyChangeSupport;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
- * Class MovieImageWorker , Download and add thumbnail/fanart to mediaPanel
- *
- * @author Magré Nicolas
+ * Class MediaImageWorker
+ * 
+ * @author QUÉMÉNEUR Simon
  */
-public class MediaImageWorker extends SwingWorker<Void, Void> {//A refaire , en Media et rajouter les images pour les series
+public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker<T> {
 
-  private List<MediaImage> arrayImage;
-  private  Cache.CacheType cache;
-  private Settings setting;
-  private IMediaPanel mediadPanel;
+  protected final MediaID id;
 
   /**
    * Constructor arguments
-   *
-   * @param arrayImage List of images to download (or load from cache)
-   * @param cache Cache for this type of images
-   * @param mediadPanel Movie Renamer media panel
-   * @param setting Movie Renamer settings
+   * 
+   * @param errorSupport
+   *          Swing change support
+   * @throws ActionNotValidException
    */
-  public MediaImageWorker(List<MediaImage> arrayImage,  Cache.CacheType cache, IMediaPanel mediadPanel, Settings setting) {
-    this.arrayImage = arrayImage;
-    this.cache = cache;
-    this.setting = setting;
-    this.mediadPanel = mediadPanel;
+  public MediaImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+    super(errorSupport);
+    this.id = id;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see fr.free.movierenamer.worker.HttpWorker#proccessFile(java.io.File)
+   */
   @Override
-  protected Void doInBackground() {
-    for (int i = 0; i < arrayImage.size(); i++) {
-      Image image;
-      try {
-        setProgress((i * 100) / arrayImage.size());
-        URL url = new URL(arrayImage.get(i).getThumbUrl());
-        image = Cache.getInstance().getImage(url, cache);
-        if (image == null) {
-          Cache.getInstance().add(url.openStream(), url.toString(), cache);
-          image = Cache.getInstance().getImage(url, cache);
-        }
+  protected final T proccessFile(File xmlFile) throws Exception {
+    T movieImage = null;
 
-        if (image == null) {
-          continue;
-        }
+    try {
+      XMLParser<T> xmmp = new XMLParser<T>(xmlFile.getAbsolutePath());
+      MrParser<T> imageParser = getImageParser();
+      imageParser.setOriginalFile(xmlFile);
+      xmmp.setParser(imageParser);
+      movieImage = xmmp.parseXml();
 
-        //Add image to media panel
-        mediadPanel.addImageToList(image, arrayImage.get(i), false);
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          Settings.LOGGER.log(Level.SEVERE, null, e);
-        }
-
-      } catch (IOException ex) {
-        Settings.LOGGER.log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());
-        continue;
-      } catch (CMMException ex) {
-        Settings.LOGGER.log(Level.INFO, "LCMS error 12288 : {0}", arrayImage.get(i).getThumbUrl());
-        continue;
-      } catch (IllegalArgumentException ex) {
-        Settings.LOGGER.log(Level.INFO, "BandOffsets.length is wrong! : {0}", arrayImage.get(i).getThumbUrl());
-        continue;
-      } catch (NullPointerException ex) {
-        Settings.LOGGER.log(Level.INFO, Utils.getStackTrace("NullPointerException", ex.getStackTrace()));
-        continue;
-      }
+    } catch (IOException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (InterruptedException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (ParserConfigurationException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (SAXException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
+
+    if (movieImage == null) {
+      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
+      return null;
+    }
+
     setProgress(100);
-    return null;
+    return movieImage;
   }
+
+  /**
+   * @return
+   */
+  protected abstract MrParser<T> getImageParser() throws Exception;
+
 }

@@ -17,20 +17,18 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.utils.Settings;
 import java.util.logging.Level;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import fr.free.movierenamer.utils.Settings;
 
 /**
  * Class MrSettings
- *
+ * 
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
-public class MrSettings extends DefaultHandler implements IParser<Settings> {
+public class MrSettings extends MrParser<Settings> {
 
   private final Settings config = Settings.getInstance();
   private StringBuffer buffer;

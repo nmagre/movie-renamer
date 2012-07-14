@@ -7,13 +7,12 @@ package fr.free.movierenamer.parser.xml;
 import fr.free.movierenamer.utils.Update;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
  * @author Nicolas Magré
  */
-public class MovieRenamerUpdate extends DefaultHandler implements IParser<Update> {
+public class MovieRenamerUpdate extends MrParser<Update> {
 
   private StringBuffer buffer;
   private Update update;

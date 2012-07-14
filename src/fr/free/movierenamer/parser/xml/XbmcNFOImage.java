@@ -21,14 +21,13 @@ import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.movie.MovieImage;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class XbmcNFOImage
  *
  * @author Nicolas Magré
  */
-public class XbmcNFOImage extends DefaultHandler implements IParser<MovieImage> {//A refaire, parser mieux que sa
+public class XbmcNFOImage extends MrParser<MovieImage> {//A refaire, parser mieux que sa
 
   private StringBuffer buffer;
   private MovieImage movieImage;

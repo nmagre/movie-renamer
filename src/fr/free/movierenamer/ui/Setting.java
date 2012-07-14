@@ -17,6 +17,12 @@
  */
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.Main;
+import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.Utils.CaseConversionType;
+import fr.free.movierenamer.worker.WorkerManager;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -29,40 +35,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import fr.free.movierenamer.Main;
-import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.utils.Utils.CaseConversionType;
-import fr.free.movierenamer.worker.WorkerManager;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class Setting , Setting dialog
@@ -72,6 +51,7 @@ import fr.free.movierenamer.worker.WorkerManager;
 public class Setting extends JDialog {
 
   private Settings setting;
+  private SwingPropertyChangeSupport settingsChange;
   private String[] extensions;
   private ArrayList<String> filters;
   private int currentExtensionIndex;
@@ -89,7 +69,7 @@ public class Setting extends JDialog {
     {"<d>", "Andy Wachowski | Lana Wachowski"}, {"<d1>", "Andy Wachowski"}, {"<d2>", "Lana Wachowski"},
     {"<c>", "USA | Australia"}, {"<c1>", "USA"}, {"<c2>", "Australia"}, {"<rt>", "136"}, {"<ra>", "8.8"},
     {"<mrt>", "2h 16mn"}, {"<mfs>", "7.179 GiB"}, {"<mc>", "DivX"}, {"<mdc>", "HD"}, {"<mf>", "720p"}, {"<mfr>", "23.976"}, {"<mr>", "1280x720"},
-    {"<mcf>", "mkv"}, {"<mach>", "6ch | 6ch"}, {"<mach1>", "6ch"}, {"<mach2>", "6ch"}, {"<mac>", "DTS | DTS"}, {"<mac1>", "DTS"},{"<mac2>", "DTS"},
+    {"<mcf>", "mkv"}, {"<mach>", "6ch | 6ch"}, {"<mach1>", "6ch"}, {"<mach2>", "6ch"}, {"<mac>", "DTS | DTS"}, {"<mac1>", "DTS"}, {"<mac2>", "DTS"},
     {"<mal>", "english | french"}, {"<mal1>", "english"}, {"<mal2>", "french"}, {"<matt>", "English DTS 1509kbps | French DTS 755kbps"},
     {"<matt1>", "English DTS 1509kbps"}, {"<matt2>", "French DTS 755kbps"},
     {"<mtt>", "English Forced | English | French Forced,"}, {"<mtt1>", "English Forced"}, {"<mtt2>", "English"}, {"<mtt3>", "French Forced,"}
@@ -98,10 +78,13 @@ public class Setting extends JDialog {
   /**
    * Creates new form Setting
    *
-   * @param setting
-   * @param parent
+   * @param setting Movie Renamer Settings
+   * @param settingsChange Settings property change
+   * @param parent Parent to center on
    */
-  public Setting(Settings setting, Component parent) {
+
+  public Setting(Settings setting, SwingPropertyChangeSupport settingsChange, Component parent) {
+    this.settingsChange = settingsChange;
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     initComponents();
 
@@ -267,7 +250,7 @@ public class Setting extends JDialog {
 
   private String movieRenamerTest(String nameFormat, int limit, Utils.CaseConversionType casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
     String ext = "avi";
-     
+
     for (int i = 0; i < format.length; i++) {
       if (limit > 0) {
         if (format[i][0].equals("<a>") || format[i][0].equals("<d>") || format[i][0].equals("<c>") || format[i][0].equals("<g>")
@@ -1879,6 +1862,12 @@ public class Setting extends JDialog {
 
   private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
     boolean restartApp = false;
+    Settings oldSetting = Settings.getInstance();
+    try {
+      oldSetting = setting.clone();
+    } catch (CloneNotSupportedException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
 
     try {
       setting.movieFilenameLimit = Integer.parseInt(limitField.getText());
@@ -1995,6 +1984,7 @@ public class Setting extends JDialog {
     //Cache
     setting.clearXMLCache = clearXmlCacheOnStartChk.isSelected();
 
+    settingsChange.firePropertyChange("settingChange", oldSetting, setting);
     setting.saveSetting();
 
     if (restartApp) {
@@ -2009,6 +1999,7 @@ public class Setting extends JDialog {
         JOptionPane.showMessageDialog(this, Utils.i18n("cantRestart") + Utils.ENDLINE + ex.getMessage(), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       }
     }
+
     dispose();
   }//GEN-LAST:event_saveBtnActionPerformed
 
