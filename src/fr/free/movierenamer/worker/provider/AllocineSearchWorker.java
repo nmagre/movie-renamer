@@ -15,53 +15,56 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.worker;
+package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.worker.MovieSearchWorker;
+
+import fr.free.movierenamer.parser.xml.AllocineSearch;
 import fr.free.movierenamer.parser.xml.MrParser;
-import fr.free.movierenamer.parser.xml.TvdbSearch;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
- * Class TvdbSearchWorker ,Search tv Show on tvdb
- *
- * @author Nicolas Magre
+ * Class AllocineSearchWorker Search movie or tvshow
+ * 
+ * @author Nicolas Magré
  */
-public class TvdbSearchWorker extends TvShowSearchWorker {
+public class AllocineSearchWorker extends MovieSearchWorker {
 
-  public TvdbSearchWorker(SwingPropertyChangeSupport errorSupport, String tvShowName) {
-    super(errorSupport, tvShowName);
+  public AllocineSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
+    super(errorSupport, searchTitle);
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return Settings.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (config.tvshowScrapperFR ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(searchTitle, "UTF-8");
+  protected String getSearchUri() throws UnsupportedEncodingException {
+    return Settings.allocineAPISearch.replace("FILTER", "movie") + URLEncoder.encode(searchTitle, "UTF-8");
   }
 
   @Override
   protected MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception {
-    return new TvdbSearch(config.tvshowScrapperFR);
+    return new AllocineSearch();
   }
 
   // @Override
-  // protected ArrayList<SearchResult> performSearch(ArrayList<SearchResult> tvdbSearchResult) throws Exception {
-  // for (SearchResult res : tvdbSearchResult) {
-  // String thumb = res.getThumb();
+  // protected ArrayList<SearchResult> performSearch(ArrayList<SearchResult> allocineSearchResult) {
+  // for (SearchResult allores : allocineSearchResult) {
+  // String thumb = allores.getThumb();
   // if (thumb != null) {
-  // Icon icon = Utils.getSearchThumb(thumb, new Dimension(200, 70));
+  // Icon icon = Utils.getSearchThumb(thumb, new Dimension(45, 70));
   // if (icon != null) {
-  // res.setIcon(icon);
+  // allores.setIcon(icon);
   // }
   // }
-  // if (res.getIcon() == null) {
-  // res.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/icon-48.png", getClass())));
+  // if (allores.getIcon() == null) {
+  // allores.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/nothumb.png", getClass())));
   // }
   // }
   //
-  // return tvdbSearchResult;
+  // return allocineSearchResult;
   // }
 
 }

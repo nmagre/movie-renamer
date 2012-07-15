@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.worker;
+package fr.free.movierenamer.worker.provider;
+
+import fr.free.movierenamer.worker.MovieSearchWorker;
 
 import fr.free.movierenamer.parser.xml.ImdbSearch;
 import fr.free.movierenamer.parser.xml.MrParser;

@@ -17,6 +17,17 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.worker.provider.AllocineInfoWorker;
+import fr.free.movierenamer.worker.provider.AllocineSearchWorker;
+import fr.free.movierenamer.worker.provider.AllocineTvShowInfoWorker;
+import fr.free.movierenamer.worker.provider.AllocineTvShowSearchWorker;
+import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
+import fr.free.movierenamer.worker.provider.ImdbSearchWorker;
+import fr.free.movierenamer.worker.provider.TmdbInfoWorker;
+import fr.free.movierenamer.worker.provider.TmdbSearchWorker;
+import fr.free.movierenamer.worker.provider.TvdbInfoWorker;
+import fr.free.movierenamer.worker.provider.TvdbSearchWorker;
+
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
