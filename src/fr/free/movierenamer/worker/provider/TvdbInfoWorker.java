@@ -27,7 +27,9 @@ import fr.free.movierenamer.parser.xml.TvdbImage;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache.CacheType;
+import fr.free.movierenamer.utils.Settings;
 import javax.swing.event.SwingPropertyChangeSupport;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Class TvdbInfoWorker
@@ -47,8 +49,7 @@ public class TvdbInfoWorker extends TvShowInfoWorker {
 
   @Override
   protected String getSearchUri() throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    return Settings.tvdbAPIUrlTvShow + new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb)) + "/" + "series/" + id.getID() + "/all/" + (config.tvshowScrapperFR ? "fr" : "en") + ".zip";
   }
 
   @Override

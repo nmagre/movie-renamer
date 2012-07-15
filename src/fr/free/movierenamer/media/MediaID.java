@@ -31,6 +31,7 @@ public class MediaID {
   public static final int ALLOCINETVID = 4;
   public static final int ALLOCINESEASONID = 5;
   public static final int ALLOCINEEPISODEID = 6;
+  public static final int TVRAGETVID = 7;
   private int type;
   private String id;
 

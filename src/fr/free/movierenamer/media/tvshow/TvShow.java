@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author duffy
  */
-public class TvShow implements Media {//A faire
+public class TvShow implements Media {// TODO
 
   private MediaID mediaId;
   private MediaFile tvShowFile;
@@ -89,7 +89,7 @@ public class TvShow implements Media {//A faire
   }
 
   @Override
-  public void clear() {// A faire
+  public void clear() {// TODO
   }
 
   @Override

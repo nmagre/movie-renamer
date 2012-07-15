@@ -79,7 +79,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
 
   @Override
   public void clear() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    // TODO
   }
 
   /**

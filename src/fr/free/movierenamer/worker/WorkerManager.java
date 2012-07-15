@@ -17,17 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.worker.provider.AllocineInfoWorker;
-import fr.free.movierenamer.worker.provider.AllocineSearchWorker;
-import fr.free.movierenamer.worker.provider.AllocineTvShowInfoWorker;
-import fr.free.movierenamer.worker.provider.AllocineTvShowSearchWorker;
-import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
-import fr.free.movierenamer.worker.provider.ImdbSearchWorker;
-import fr.free.movierenamer.worker.provider.TmdbInfoWorker;
-import fr.free.movierenamer.worker.provider.TmdbSearchWorker;
-import fr.free.movierenamer.worker.provider.TvdbInfoWorker;
-import fr.free.movierenamer.worker.provider.TvdbSearchWorker;
-
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
@@ -38,25 +27,30 @@ import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.provider.*;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class WorkerManager
- * 
+ *
  * @author Nicolas Magré
  */
 public abstract class WorkerManager {
 
   public enum MovieScrapper {
+
     IMDB,
     TMDB,
     ALLOCINE;
   }
+
   public enum TVShowScrapper {
+
     TVDB,
-    ALLOCINETV;
+    ALLOCINETV,
+    TVRAGE;
   }
 
   /**
@@ -72,28 +66,31 @@ public abstract class WorkerManager {
     Settings config = Settings.getInstance();
     switch (media.getType()) {
       case MOVIE:
-      switch (config.movieScrapper) {
+        switch (config.movieScrapper) {
           case IMDB:
-        worker = new ImdbSearchWorker(errorSupport, media.getSearch());
+            worker = new ImdbSearchWorker(errorSupport, media.getSearch());
             break;
           case TMDB:
-        worker = new TmdbSearchWorker(errorSupport, media.getSearch());
+            worker = new TmdbSearchWorker(errorSupport, media.getSearch());
             break;
           case ALLOCINE:
-        worker = new AllocineSearchWorker(errorSupport, media.getSearch());
+            worker = new AllocineSearchWorker(errorSupport, media.getSearch());
             break;
           default:
         }
         break;
       case TVSHOW:
-      switch (config.tvshowScrapper) {
+        switch (config.tvshowScrapper) {
           case TVDB:
-        worker = new TvdbSearchWorker(errorSupport, media.getSearch());
+            worker = new TvdbSearchWorker(errorSupport, media.getSearch());
             break;
           case ALLOCINETV:
-        worker = new AllocineTvShowSearchWorker(errorSupport, media.getSearch());
+            worker = new AllocineTvShowSearchWorker(errorSupport, media.getSearch());
             break;
           default:
+          case TVRAGE:
+            worker = new TvRageSearchWorker(errorSupport, media.getSearch());
+            break;
         }
         break;
       default:
@@ -107,13 +104,13 @@ public abstract class WorkerManager {
     MovieInfoWorker worker = null;
     switch (Settings.getInstance().movieScrapper) {
       case IMDB:
-      worker = new ImdbInfoWorker(errorSupport, id);
+        worker = new ImdbInfoWorker(errorSupport, id);
         break;
       case TMDB:
-      worker = new TmdbInfoWorker(errorSupport, id);
+        worker = new TmdbInfoWorker(errorSupport, id);
         break;
       case ALLOCINE:
-      worker = new AllocineInfoWorker(errorSupport, id);
+        worker = new AllocineInfoWorker(errorSupport, id);
         break;
     }
     Settings.LOGGER.log(Level.INFO, "Information API ID : {0}", id.getID());
@@ -124,10 +121,13 @@ public abstract class WorkerManager {
     TvShowInfoWorker worker = null;
     switch (Settings.getInstance().tvshowScrapper) {
       case TVDB:
-      worker = new TvdbInfoWorker(errorSupport, id);
+        worker = new TvdbInfoWorker(errorSupport, id);
         break;
       case ALLOCINETV:
-      worker = new AllocineTvShowInfoWorker(errorSupport, id, sxe);
+        worker = new AllocineTvShowInfoWorker(errorSupport, id, sxe);
+        break;
+      case TVRAGE:
+        // TODO
         break;
     }
     return worker;

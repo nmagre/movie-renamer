@@ -22,7 +22,7 @@ package fr.free.movierenamer.media;
  * @author Nicolas Magré
  */
 public class MediaRenamed {
-//A refaire
+// TODO A refaire
 //l'inclure dans Media en "MediaRenamed"
 //ajouter une rotation sur le fichier XML paramétrable dans "Settings" (ex:10,50,100,illimité) et pourquoi une function "undo"
 //Ajouter toute les modification sur tous les fichier (création d'un dossier, move d'un fichier sous titre, dl d'une image, .....)

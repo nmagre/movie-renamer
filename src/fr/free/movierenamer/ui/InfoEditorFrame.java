@@ -130,7 +130,7 @@ public class InfoEditorFrame extends JDialog {
     initMovie();
   }
 
-  private void initMovie() {// A refaire , ajouter les API id
+  private void initMovie() {// TODO A refaire , ajouter les API id
     movietitleField.setText(movieInfo.getTitle());
  //   imdbidCField.setInitValue(movieInfo.getImdbId());
     mpaaCField.setInitValue(movieInfo.getMpaa());
@@ -994,7 +994,7 @@ public class InfoEditorFrame extends JDialog {
     }//GEN-LAST:event_cancleBtnActionPerformed
 
     private void applyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyBtnActionPerformed
-//A refaire , ajouter les API ID
+// TODO A refaire , ajouter les API ID
 //      movieInfo.setImdbId(imdbidField.getText());
       movieInfo.setMpaa(mpaaField.getText());
       movieInfo.setOrigTitle(originalTitleField.getText());

@@ -17,9 +17,8 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
-import java.util.List;
-
 import fr.free.movierenamer.media.IMediaInfo;
+import java.util.List;
 
 /**
  * Class TvShowInfo

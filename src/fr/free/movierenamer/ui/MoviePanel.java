@@ -405,22 +405,22 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     });
   }
 
-  public void clearActorList() {//A refaire, ??? ça sert a quelque chose ?
+  public void clearActorList() {// TODO A refaire, ??? ça sert a quelque chose ?
     actorModel.clear();
     actors.clear();
   }
 
-  public void clearThumbList() {//A refaire, ??? ça sert a quelque chose ?
+  public void clearThumbList() {// TODO A refaire, ??? ça sert a quelque chose ?
     thumbnailModel.clear();
     thumbs.clear();
   }
 
-  public void clearFanartList() {//A refaire, ??? ça sert a quelque chose ?
+  public void clearFanartList() {// TODO A refaire, ??? ça sert a quelque chose ?
     fanartModel.clear();
     fanarts.clear();
   }
 
-  public void addMovieInfo(final MovieInfo movieInfo) {//A refaire, le thread est-il vraiment nécéssaire ?
+  public void addMovieInfo(final MovieInfo movieInfo) {// TODO A refaire, le thread est-il vraiment nécéssaire ?
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
