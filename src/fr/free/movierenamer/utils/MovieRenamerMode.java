@@ -17,9 +17,8 @@
  */
 package fr.free.movierenamer.utils;
 
-import javax.swing.ImageIcon;
-
 import fr.free.movierenamer.media.Media;
+import javax.swing.ImageIcon;
 
 /**
  * Enum MovieRenamerMode
@@ -53,5 +52,4 @@ public enum MovieRenamerMode {
   public ImageIcon getIcon() {
     return icon;
   }
-
 }

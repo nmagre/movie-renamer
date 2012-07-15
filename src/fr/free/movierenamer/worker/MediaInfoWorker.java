@@ -35,9 +35,11 @@ import org.xml.sax.SAXException;
 /**
  * Class MediaInfoWorker
  * 
+ * @param <T> 
+ * @param <U> 
  * @author QUÉMÉNEUR Simon
  */
-public abstract class MediaInfoWorker<T extends IMediaInfo, U extends IMediaImage> extends HttpWorker<T> {
+public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaImage> extends HttpWorker<T> {
 
   protected final MediaID id;
 
@@ -45,6 +47,7 @@ public abstract class MediaInfoWorker<T extends IMediaInfo, U extends IMediaImag
    * Constructor arguments
    * 
    * @param errorSupport Swing change support
+   * @param id Media ID
    * @throws ActionNotValidException
    */
   public MediaInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
@@ -91,12 +94,7 @@ public abstract class MediaInfoWorker<T extends IMediaInfo, U extends IMediaImag
       return null;
     }
 
-    if (mediaImage == null) {
-      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-      return null;
-    }
-
-    ((IMediaInfo) mediaInfo).setImages((IMediaImage) mediaImage);
+    ((IMediaInfo<U>) mediaInfo).setImages(mediaImage);
     if (!((IMediaInfo) mediaInfo).getTrailer().equals("")) {
       String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo) mediaInfo).getTrailer(), YTdecodeUrl.HD);
       if (trailer != null) {

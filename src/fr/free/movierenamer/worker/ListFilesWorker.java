@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class listFilesWorker ,get List of media files in files list
- * 
+ *
  * @author Magré Nicolas
  */
 public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
@@ -48,13 +48,11 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Constructor arguments
-   * 
-   * @param files
-   *          List of files
-   * @param renamed
-   *          List of renamed files
-   * @param subFolders
-   *          Scan subfolders
+   *
+   * @param files List of files
+   * @param renamed List of renamed files
+   * @param subFolders Scan subfolders
+   * @param config
    */
   public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, Settings config) {
     this.renamed = renamed;
@@ -67,15 +65,11 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Constructor arguments
-   * 
-   * @param files
-   *          List of files
-   * @param renamed
-   *          List of renamed files
-   * @param subFolders
-   *          Scan subfolders
-   * @param nbFiles
-   *          Number of subfolders (only in first directory) for progressBar
+   *
+   * @param files List of files
+   * @param renamed List of renamed files
+   * @param subFolders Scan subfolders
+   * @param nbFiles Number of subfolders (only in first directory) for progressBar
    */
   public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, int nbFiles) {
     this.renamed = renamed;
@@ -88,7 +82,7 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Retreive all media files in a folder and subfolder
-   * 
+   *
    * @return ArrayList of movies file
    */
   @Override
@@ -112,11 +106,9 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Scan recursively folders and add media to a list
-   * 
-   * @param medias
-   *          List of movies
-   * @param file
-   *          File to add or directory to scan
+   *
+   * @param medias List of movies
+   * @param file File to add or directory to scan
    */
   private void getFiles(ArrayList<MediaFile> medias, File file) {
     if (isCancelled()) {
@@ -144,11 +136,9 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Add file to media files list
-   * 
-   * @param medias
-   *          Media file list
-   * @param file
-   *          File to add
+   *
+   * @param medias Media file list
+   * @param file File to add
    */
   private void addMediaFile(ArrayList<MediaFile> medias, File file) {
     boolean wasrenamed = wasRenamed(file.getAbsolutePath());
@@ -158,9 +148,8 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Check if Movie Renamer has already renamed this file
-   * 
-   * @param file
-   *          File to check
+   *
+   * @param file File to check
    * @return True if file was renamed by Movie Renamer, False otherwise
    */
   private boolean wasRenamed(String file) {
@@ -174,20 +163,17 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Check if file is a movie
-   * 
-   * @param file
-   *          File to check
+   *
+   * @param file File to check
    * @return True if file is a movie, false otherwise
    */
   static public boolean isMovie(File file) {// TODO A refaire , améliorer la
-                                            // detection !!!
+    // detection !!!
     String filename = file.getName();
-    /*if (searchPattern(filename, TvShowEpisodeMatcher.seasonPattern)) {
-      return false;
+    /*
+     * if (searchPattern(filename, TvShowEpisodeMatcher.seasonPattern)) { return false; } if (searchPattern(filename, TvShowEpisodeMatcher.episodePattern)) { return false;
     }
-    if (searchPattern(filename, TvShowEpisodeMatcher.episodePattern)) {
-      return false;
-    }*/
+     */
     for (TvShowEpisodeMatcher.TvShowPattern patternToTest : TvShowEpisodeMatcher.TvShowPattern.values()) {
       if (searchPattern(filename, patternToTest.getPattern())) {
         return false;
@@ -201,11 +187,9 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
 
   /**
    * Search pattern in string
-   * 
-   * @param text
-   *          String to search in
-   * @param pattern
-   *          Pattern to match
+   *
+   * @param text String to search in
+   * @param pattern Pattern to match
    * @return True if pattern is find in string , False otherwise
    */
   private static boolean searchPattern(String text, Pattern pattern) {
@@ -228,5 +212,4 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
       return s1.getFile().getName().compareTo(s2.getFile().getName());
     }
   }
-
 }

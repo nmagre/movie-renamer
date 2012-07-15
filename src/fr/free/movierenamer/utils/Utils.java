@@ -17,21 +17,14 @@
  */
 package fr.free.movierenamer.utils;
 
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
+import fr.free.movierenamer.media.MediaInfoLibrary;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.color.CMMException;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -40,20 +33,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Platform;
-
-import fr.free.movierenamer.media.MediaInfoLibrary;
 
 /**
  * Class Utils
@@ -74,11 +57,12 @@ public abstract class Utils {
   public static final String EMPTY = "";
   public static final String DOT = ".";
 
-  private Utils() {
+  private Utils() {//Heu ...., Utils est abstract, donc pas nécéssaire
     // no access !!
   }
 
   public enum CaseConversionType {
+
     FIRSTLO,
     FIRSTLA,
     UPPER,
@@ -159,8 +143,8 @@ public abstract class Utils {
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
    *
    * @param array Object array
-   * @param movieFilenameSeparator Separator
-   * @param movieFilenameLimit Limit
+   * @param separator Separator
+   * @param limit Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(Object[] array, String separator, int limit) {
@@ -188,8 +172,8 @@ public abstract class Utils {
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
    *
    * @param array ArrayList
-   * @param movieFilenameSeparator Separator
-   * @param movieFilenameLimit Limit
+   * @param separator Separator
+   * @param limit Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(List<?> array, String separator, int limit) {
@@ -200,8 +184,8 @@ public abstract class Utils {
    * Get an array from a string separated by movieFilenameSeparator
    *
    * @param str String
-   * @param movieFilenameSeparator Separator
-   * @return
+   * @param separator Separator
+   * @return An array of strings
    */
   public static List<String> stringToArray(String str, String separator) {
     ArrayList<String> array = new ArrayList<String>();
@@ -704,6 +688,10 @@ public abstract class Utils {
     return true;
   }
 
+  /**
+   * Check if lib media info is installed
+   * @return Tru if lib media info is installed, otherwhise false
+   */
   public static boolean libMediaInfo() {
     if (mediainfo != null) {
       return mediainfo.equals("true");
@@ -729,10 +717,23 @@ public abstract class Utils {
     return mediainfo.equals("true");
   }
 
+  /**
+   * Get string in i18n files
+   *
+   * @param bundleKey Key to find
+   * @return String depends on locale
+   */
   public static String i18n(String bundleKey) {
     return localBundle.getString(bundleKey);
   }
 
+  /**
+   * Get string in i18n files
+   *
+   * @param bundleKey Key to find
+   * @param defaultValue Default value
+   * @return String depends on locale or default value if key dos not exist
+   */
   public static String i18n(String bundleKey, String defaultValue) {
     if (localBundle.containsKey(bundleKey)) {
       return i18n(bundleKey);
@@ -741,12 +742,11 @@ public abstract class Utils {
       return defaultValue;
     }
   }
-  
+
   /**
    * Get token from version.properties
-   * 
-   * @param propToken
-   *          Token property name
+   *
+   * @param propToken Token property name
    * @return Token value or an empty string
    */
   public static String getAppTok(String propToken) {
@@ -759,6 +759,13 @@ public abstract class Utils {
     return msg;
   }
 
+  /**
+   * Get string from an input
+   * @param is Input to read
+   * @param encode Charset
+   * @return Input content to string
+   * @throws IOException 
+   */
   public static String getInputStreamContent(InputStream is, String encode) throws IOException {
     BufferedReader rd = new BufferedReader(new InputStreamReader(is, encode));
     StringBuilder sb = new StringBuilder();

@@ -27,7 +27,7 @@ import fr.free.movierenamer.utils.Settings;
 import java.util.logging.Level;
 
 /**
- * 
+ * Class XbmcPassionIDLookup
  * @author Nicolas Magré
  */
 public class XbmcPassionIDLookup extends Worker<MediaID> {

@@ -44,7 +44,7 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
 
   @Override
   protected final ArrayList<SearchResult> proccessFile(File xmlFile) throws Exception {
-    ArrayList<SearchResult> results = null;
+    ArrayList<SearchResult> results;
     XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile.getAbsolutePath());
     MrParser<ArrayList<SearchResult>> parser = getSearchParser();
     parser.setOriginalFile(xmlFile);
@@ -72,6 +72,7 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
 
   /**
    * @return
+   * @throws Exception  
    */
   protected abstract MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception;
 

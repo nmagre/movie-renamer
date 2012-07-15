@@ -17,14 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
-import java.io.IOException;
-
-import java.io.File;
-
 import fr.free.movierenamer.utils.Cache.CacheType;
-
-import java.io.InputStream;
-
 import java.awt.Image;
 import java.io.*;
 import java.net.URL;
@@ -79,9 +72,9 @@ public class Cache {
   /**
    * Add file to cache
    * 
-   * @param is File inputStream
    * @param url File url
    * @param type Cache type
+   * @return 
    * @throws IOException
    */
   public File add(/*InputStream is, */URL url, Cache.CacheType type) throws IOException {

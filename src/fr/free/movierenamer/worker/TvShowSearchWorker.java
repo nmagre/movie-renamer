@@ -17,27 +17,22 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.utils.ActionNotValidException;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class TvShowSearchWorker
- * 
+ *
  * @author QUÉMÉNEUR Simon
  */
 public abstract class TvShowSearchWorker extends MediaSearchWorker {
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport
-   *          Swing change support
-   * @param id
-   *          Media API ID
-   * @throws ActionNotValidException
+   *
+   * @param errorSupport Swing change support
+   * @param searchTitle Serie title to search
    */
   public TvShowSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
-
 }
