@@ -92,6 +92,24 @@ public class MovieRenamer extends JFrame {
   private SwingPropertyChangeSupport errorSupport;
   private SwingPropertyChangeSupport settingsChange;
 
+  private enum CHOICE {
+
+    CONTINUE(Utils.i18n("continue")),
+    CHANGE(Utils.i18n("changeMode")),
+    CANCEL(Utils.i18n("cancel"))    ;
+    
+    private String text;
+
+    private CHOICE(String text) {
+      this.text = text;
+    }
+
+    @Override
+    public String toString() {
+      return text;
+    }
+  }
+
   public MovieRenamer(Settings setting) {
 
     this.setting = setting;
@@ -430,7 +448,7 @@ public class MovieRenamer extends JFrame {
     setTitle(Settings.APPNAME + "-" + setting.getVersion() + " Mode " + currentMode.getTitle());
   }
 
-  private void clearInterface(boolean movieList, boolean searchList) {//TODO A refaire
+  private void clearInterface(boolean movieList, boolean searchList) {
 
     if (currentMedia != null) {
       currentMedia.clear();
@@ -459,6 +477,7 @@ public class MovieRenamer extends JFrame {
       searchField.setText("");
     }
     moviePnl.clear();
+    tvShowPanel.clear();
     renameBtn.setEnabled(false);
     editBtn.setEnabled(false);
   }
@@ -468,29 +487,27 @@ public class MovieRenamer extends JFrame {
    *
    * @return True if current mode support media type, false otherwise
    */
-  private boolean checkMediaTypeInCurrentMode(MediaFile mediaFile) {//TODO A refaire , i18n
+  private boolean checkMediaTypeInCurrentMode(MediaFile mediaFile) {
 
     if (mediaFile.getType() == currentMode.getMediaType()) {
       return true;
     }
 
-    String[] choices = new String[]{"Change type", "Auto Change Mode", "Cancel"};
-    int res = JOptionPane.showOptionDialog(MovieRenamer.this,
-            "Movie Renamer think that " + mediaFile.getFile().getName() + " is not a " + currentMode.getTitle() + ".\n"
-            + "If you are sure that media is a " + currentMode.getTitle() + " ,just click \"Change type\"\n"
-            + "If not you can select \"Auto change Mode\" to change Movie Renamer mode automatically\nor \"Cancel\"",
-            "Media type not correspond to mode type", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
-    switch (res) {//FIXME A refaire, mettre des variable au lieu des chiffres
-      case 0:
+    CHOICE[] choices= {CHOICE.CONTINUE, CHOICE.CHANGE, CHOICE.CANCEL};
+    String text = Utils.i18n("whatToDo").replace("FILE", mediaFile.getFile().getName()).replace("MODE", currentMode.getTitle());
+    int res = JOptionPane.showOptionDialog(MovieRenamer.this,text, Utils.i18n("mediaModemt"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
+    
+    switch (choices[res]) {
+      case CONTINUE:
         mediaFile.setType(currentMode.getMediaType());
         break;
-      case 1:
+      case CHANGE:
         currentMode = currentMode == MovieRenamerMode.MOVIEMODE ? MovieRenamerMode.TVSHOWMODE : MovieRenamerMode.MOVIEMODE;
         movieModeBtn.setEnabled(currentMode == MovieRenamerMode.TVSHOWMODE);
         tvShowModeBtn.setEnabled(currentMode == MovieRenamerMode.MOVIEMODE);
         loadInterface();
         break;
-      case 2:
+      case CANCEL:
         return false;
       default:
     }
