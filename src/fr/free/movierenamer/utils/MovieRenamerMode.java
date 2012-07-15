@@ -28,8 +28,8 @@ import javax.swing.ImageIcon;
  */
 public enum MovieRenamerMode {
 
-  MOVIEMODE("Movie", Media.MediaType.MOVIE, "/image/movie.png"),
-  TVSHOWMODE("TvShow", Media.MediaType.TVSHOW, "/image/tv.png");
+  MOVIEMODE(Utils.i18n("movie"), Media.MediaType.MOVIE, "/image/movie.png"),
+  TVSHOWMODE(Utils.i18n("tvshow"), Media.MediaType.TVSHOW, "/image/tv.png");
 
   private Media.MediaType mediaType;
   private String title;

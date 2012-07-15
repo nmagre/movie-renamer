@@ -206,8 +206,8 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Movie">
-                      <ResourceString PropertyName="titleX" bundle="fr/free/movierenamer/i18n/Bundle.properties" key="movieListTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                    <TitledBorder title="Media">
+                      <ResourceString PropertyName="titleX" bundle="fr/free/movierenamer/i18n/Bundle.properties" key="media" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                       <Font PropertyName="font" name="Dialog" size="13" style="1"/>
                     </TitledBorder>
                   </Border>

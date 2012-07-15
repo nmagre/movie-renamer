@@ -17,28 +17,12 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.worker.ImageWorker;
-
-import fr.free.movierenamer.worker.ActorWorker;
-
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
-
-import javax.swing.SwingWorker;
-
-import fr.free.movierenamer.utils.MovieRenamerMode;
-
-import fr.free.movierenamer.worker.TvShowInfoWorker;
-
-import fr.free.movierenamer.worker.MediaSearchWorker;
-
-import fr.free.movierenamer.worker.MovieInfoWorker;
-
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.TvShow;
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.MrRenamedMovie;
 import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
@@ -46,8 +30,7 @@ import fr.free.movierenamer.ui.res.ContextMenuListMouseListener;
 import fr.free.movierenamer.ui.res.DropFile;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
-import fr.free.movierenamer.worker.ListFilesWorker;
-import fr.free.movierenamer.worker.WorkerManager;
+import fr.free.movierenamer.worker.*;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -63,7 +46,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -183,12 +166,10 @@ public class MovieRenamer extends JFrame {
                   moviePnl.clearFanartList();
                 }
 
-                /*try {
-                  tmdbiw = WorkerManager.getMediaImageWorker(movie.getMediaId(MediaID.IMDBID), conf);
-                  tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw));
-                } catch (ActionNotValidException ex) {
-                  Settings.LOGGER.log(Level.SEVERE, null, ex);
-                }*/
+                /*
+                 * try { tmdbiw = WorkerManager.getMediaImageWorker(movie.getMediaId(MediaID.IMDBID), conf); tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw)); } catch
+                 * (ActionNotValidException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); }
+                 */
 
               }
               if (conf.thumb || conf.fanart || conf.actorImage) {
@@ -220,7 +201,6 @@ public class MovieRenamer extends JFrame {
     loadInterface();
 
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
-    setTitle(Settings.APPNAME + "-" + setting.getVersion() + "  Movie Mode");
     setLocationRelativeTo(null);
 
     setVisible(true);
@@ -271,7 +251,7 @@ public class MovieRenamer extends JFrame {
       mediaList.ensureIndexIsVisible(mediaList.getSelectedIndex());
 
       //Check if media type is in current mode
-      if (!checkMediaTypeInCurrentMode(mediaFile)) {//A refaire, est-ce vraiment nécéssaire ?
+      if (!checkMediaTypeInCurrentMode(mediaFile)) {
         return;
       }
 
@@ -337,7 +317,7 @@ public class MovieRenamer extends JFrame {
             //Get movie info
             movieInfoWorker = WorkerManager.getMovieInfoWorker(errorSupport, sres.getId());
             if (movieInfoWorker == null) {
-              //FIXME A faire , afficher erreur
+              JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("errorBugReport"), sError, JOptionPane.ERROR_MESSAGE);
               return;
             }
             movieInfoWorker.addPropertyChangeListener(new MovieInfoListener(movieInfoWorker));
@@ -394,7 +374,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private void loadInterface() {//A refaire
+  private void loadInterface() {// TODO , A refaire pour l'impémentation finale des série
     switch (currentMode) {
       case MOVIEMODE:
         if (!setting.movieInfoPanel) {
@@ -406,6 +386,7 @@ public class MovieRenamer extends JFrame {
           centerSp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
           if (centerSp.getBottomComponent().equals(searchPnl)) {
             centerSp.remove(searchPnl);
+            MediaSp.removeAll();
             MediaSp.add(searchPnl);
             centerSp.add(MediaSp);
           }
@@ -427,24 +408,26 @@ public class MovieRenamer extends JFrame {
         } else {
           if (centerSp.getBottomComponent().equals(searchPnl)) {
             centerSp.remove(searchPnl);
+            MediaSp.removeAll();
             MediaSp.add(searchPnl);
             centerSp.add(MediaSp);
           }
-          centerSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
         }
+        centerSp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         MediaSp.setBottomComponent(tvShowPanel);
 
         //Not used for the moment
         thumbChk.setVisible(false);
         fanartChk.setVisible(false);
         nfoChk.setVisible(false);
-        editBtn.setVisible(false);
+        //editBtn.setVisible(false);
         break;
       default:
     }
 
     centerPnl.validate();
     centerPnl.repaint();
+    setTitle(Settings.APPNAME + "-" + setting.getVersion() + " Mode " + currentMode.getTitle());
   }
 
   private void clearInterface(boolean movieList, boolean searchList) {//TODO A refaire
@@ -498,17 +481,19 @@ public class MovieRenamer extends JFrame {
             + "If not you can select \"Auto change Mode\" to change Movie Renamer mode automatically\nor \"Cancel\"",
             "Media type not correspond to mode type", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
     switch (res) {//FIXME A refaire, mettre des variable au lieu des chiffres
-    case 0:
-      mediaFile.setType(currentMode.getMediaType());
-      break;
-    case 1://TODO A faire , change mode
-      movieModeBtn.setEnabled(currentMode == MovieRenamerMode.TVSHOWMODE);
-      tvShowModeBtn.setEnabled(currentMode == MovieRenamerMode.MOVIEMODE);
-      break;
-    case 2:
-      return false;
-    default:
-  }
+      case 0:
+        mediaFile.setType(currentMode.getMediaType());
+        break;
+      case 1:
+        currentMode = currentMode == MovieRenamerMode.MOVIEMODE ? MovieRenamerMode.TVSHOWMODE : MovieRenamerMode.MOVIEMODE;
+        movieModeBtn.setEnabled(currentMode == MovieRenamerMode.TVSHOWMODE);
+        tvShowModeBtn.setEnabled(currentMode == MovieRenamerMode.MOVIEMODE);
+        loadInterface();
+        break;
+      case 2:
+        return false;
+      default:
+    }
     return true;
   }
 
@@ -523,7 +508,7 @@ public class MovieRenamer extends JFrame {
     SearchWorkerListener sl = new SearchWorkerListener();
     searchWorker = WorkerManager.getSearchWorker(errorSupport, currentMedia);
     if (searchWorker == null) {
-      //FIXME A faire ajouter dialog erreur
+      JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("errorBugReport"), sError, JOptionPane.ERROR_MESSAGE);
       return;
     }
     searchWorker.addPropertyChangeListener(sl);
@@ -554,7 +539,7 @@ public class MovieRenamer extends JFrame {
    * @param search Add search to loading array
    * @return Array of loading
    */
-  private ArrayList<Loading> getLoading(boolean search) {//A refaire , depend du mode
+  private ArrayList<Loading> getLoading(boolean search) {
     ArrayList<Loading> loadings = new ArrayList<Loading>();
 
     if (search) {
@@ -593,7 +578,7 @@ public class MovieRenamer extends JFrame {
    *
    * @param showAlready Show dialog
    */
-  public final void checkUpdate(boolean showAlready) {//A refaire, ajouter mise a jour des libs, et à exporter ailleur
+  public final void checkUpdate(boolean showAlready) {// TODO A refaire, ajouter mise a jour des libs, et à exporter ailleur
     String ver = setting.getVersion();
     if (!ver.equals("")) {
       try {
@@ -686,8 +671,8 @@ public class MovieRenamer extends JFrame {
         topTb.setFloatable(false);
         topTb.setRollover(true);
 
-        openBtn.setIcon(new ImageIcon(getClass().getResource("/image/folder-video.png")));
-        openBtn.setToolTipText(Utils.i18n("openFolderBtn")); // NOI18N
+        openBtn.setIcon(new ImageIcon(getClass().getResource("/image/folder-video.png")));         ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
+        openBtn.setToolTipText(bundle.getString("openFolderBtn")); // NOI18N
         openBtn.setFocusable(false);
         openBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         openBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -699,7 +684,7 @@ public class MovieRenamer extends JFrame {
         topTb.add(openBtn);
         topTb.add(jSeparator1);
 
-        editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")));         editBtn.setToolTipText(Utils.i18n("edit")); // NOI18N
+        editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")));         editBtn.setToolTipText(bundle.getString("edit")); // NOI18N
         editBtn.setEnabled(false);
         editBtn.setFocusable(false);
         editBtn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -733,7 +718,7 @@ public class MovieRenamer extends JFrame {
         topTb.add(tvShowModeBtn);
         topTb.add(Box.createHorizontalGlue());
 
-        updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png")));         updateBtn.setToolTipText(Utils.i18n("updateBtn")); // NOI18N
+        updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png")));         updateBtn.setToolTipText(bundle.getString("updateBtn")); // NOI18N
         updateBtn.setFocusable(false);
         updateBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         updateBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -744,7 +729,7 @@ public class MovieRenamer extends JFrame {
         });
         topTb.add(updateBtn);
 
-        settingBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-settings.png")));         settingBtn.setToolTipText(Utils.i18n("settingBtn")); // NOI18N
+        settingBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-settings.png")));         settingBtn.setToolTipText(bundle.getString("settingBtn")); // NOI18N
         settingBtn.setFocusable(false);
         settingBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         settingBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -755,7 +740,7 @@ public class MovieRenamer extends JFrame {
         });
         topTb.add(settingBtn);
 
-        exitBtn.setIcon(new ImageIcon(getClass().getResource("/image/application-exit.png")));         exitBtn.setToolTipText(Utils.i18n("exitBtn")); // NOI18N
+        exitBtn.setIcon(new ImageIcon(getClass().getResource("/image/application-exit.png")));         exitBtn.setToolTipText(bundle.getString("exitBtn")); // NOI18N
         exitBtn.setFocusable(false);
         exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         exitBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -770,7 +755,7 @@ public class MovieRenamer extends JFrame {
 
         centerSp.setDividerLocation(300);
 
-        mediaScroll.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("movieListTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); 
+        mediaScroll.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("media"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); 
         mediaList.setFont(new Font("Dialog", 0, 12));         mediaList.addMouseListener(contex);
         mediaScroll.setViewportView(mediaList);
 
@@ -779,7 +764,7 @@ public class MovieRenamer extends JFrame {
         MediaSp.setDividerLocation(200);
         MediaSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-        searchPnl.setBorder(BorderFactory.createTitledBorder(null, Utils.i18n("searchTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); 
+        searchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("searchTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); 
         searchResultList.setFont(new Font("Dialog", 0, 12));         searchScroll.setViewportView(searchResultList);
 
         searchField.setEnabled(false);
@@ -790,7 +775,7 @@ public class MovieRenamer extends JFrame {
             }
         });
 
-        searchBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-search-3.png")));         searchBtn.setToolTipText(Utils.i18n("searchOnImdb")); // NOI18N
+        searchBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-search-3.png")));         searchBtn.setToolTipText(bundle.getString("searchOnImdb")); // NOI18N
         searchBtn.setEnabled(false);
         searchBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -798,7 +783,7 @@ public class MovieRenamer extends JFrame {
             }
         });
 
-        resultLbl.setText(Utils.i18n("searchResListTitle")); // NOI18N
+        resultLbl.setText(bundle.getString("searchResListTitle")); // NOI18N
 
         GroupLayout searchPnlLayout = new GroupLayout(searchPnl);
         searchPnl.setLayout(searchPnlLayout);
@@ -845,7 +830,7 @@ public class MovieRenamer extends JFrame {
         btmTb.setFloatable(false);
         btmTb.setRollover(true);
 
-        renameBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         renameBtn.setText(Utils.i18n("rename")); // NOI18N
+        renameBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         renameBtn.setText(bundle.getString("rename")); // NOI18N
         renameBtn.setEnabled(false);
         renameBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         renameBtn.addActionListener(new ActionListener() {
@@ -860,20 +845,20 @@ public class MovieRenamer extends JFrame {
         renamedField.addMouseListener(new ContextMenuFieldMouseListener());
         btmTb.add(renamedField);
 
-        thumbChk.setText(Utils.i18n("thumb")); // NOI18N
-        thumbChk.setToolTipText(Utils.i18n("downThumb")); // NOI18N
+        thumbChk.setText(bundle.getString("thumb")); // NOI18N
+        thumbChk.setToolTipText(bundle.getString("downThumb")); // NOI18N
         thumbChk.setFocusable(false);
         thumbChk.setVerticalTextPosition(SwingConstants.BOTTOM);
         btmTb.add(thumbChk);
 
         fanartChk.setText("Fanart");
-        fanartChk.setToolTipText(Utils.i18n("downFanart")); // NOI18N
+        fanartChk.setToolTipText(bundle.getString("downFanart")); // NOI18N
         fanartChk.setFocusable(false);
         fanartChk.setVerticalTextPosition(SwingConstants.BOTTOM);
         btmTb.add(fanartChk);
 
-        nfoChk.setText(Utils.i18n("nfoXbmc")); // NOI18N
-        nfoChk.setToolTipText(Utils.i18n("genNFO")); // NOI18N
+        nfoChk.setText(bundle.getString("nfoXbmc")); // NOI18N
+        nfoChk.setToolTipText(bundle.getString("genNFO")); // NOI18N
         nfoChk.setFocusable(false);
         nfoChk.setVerticalTextPosition(SwingConstants.BOTTOM);
         btmTb.add(nfoChk);
@@ -919,7 +904,7 @@ public class MovieRenamer extends JFrame {
     }//GEN-LAST:event_searchBtnActionPerformed
 
     private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
-      //A refaire
+      // TODO
       setMouseIcon(true);
 
       int index = mediaList.getSelectedIndex();
@@ -1078,7 +1063,6 @@ public class MovieRenamer extends JFrame {
     movieModeBtn.setEnabled(false);
     tvShowModeBtn.setEnabled(true);
     loadInterface();
-    setTitle(Settings.APPNAME + "-" + setting.getVersion() + "  Movie Mode");
   }//GEN-LAST:event_movieModeBtnActionPerformed
 
   private void tvShowModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_tvShowModeBtnActionPerformed
@@ -1086,7 +1070,6 @@ public class MovieRenamer extends JFrame {
     movieModeBtn.setEnabled(true);
     tvShowModeBtn.setEnabled(false);
     loadInterface();
-    setTitle(Settings.APPNAME + "-" + setting.getVersion() + "  Tv Show Mode");
   }//GEN-LAST:event_tvShowModeBtnActionPerformed
 
   private void searchFieldKeyReleased(KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyReleased
@@ -1244,7 +1227,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private class MovieInfoListener implements PropertyChangeListener {//A refaire
+  private class MovieInfoListener implements PropertyChangeListener {// TODO A refaire
 
     private SwingWorker<MovieInfo, String> worker;
 
@@ -1253,7 +1236,7 @@ public class MovieRenamer extends JFrame {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {//A refaire
+    public void propertyChange(PropertyChangeEvent evt) {
 
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
@@ -1270,7 +1253,7 @@ public class MovieRenamer extends JFrame {
               thumbWorker.execute();
             }
             if (setting.fanart) {
-              ImageWorker fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(),  Cache.CacheType.FANART, moviePnl);
+              ImageWorker fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(), Cache.CacheType.FANART, moviePnl);
               fanartWorker.addPropertyChangeListener(new MediaImageListener(fanartWorker, FANARTWORKER));
               fanartWorker.execute();
             }
@@ -1278,7 +1261,7 @@ public class MovieRenamer extends JFrame {
 
           currentMedia.setInfo(movieInfo);
           moviePnl.addMovieInfo(movieInfo);
-          renamedField.setText(currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting));//A refaire
+          renamedField.setText(currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting));// TODO A refaire
           renameBtn.setEnabled(true);
           renamedField.setEnabled(true);
           editBtn.setEnabled(true);
@@ -1334,7 +1317,6 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-
   private class MediaImageListener implements PropertyChangeListener {
 
     private ImageWorker miw;
@@ -1374,8 +1356,7 @@ public class MovieRenamer extends JFrame {
       }
     }
   }
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JSplitPane MediaSp;
     private JPopupMenu batchProcessMenu;
     private JToolBar btmTb;
