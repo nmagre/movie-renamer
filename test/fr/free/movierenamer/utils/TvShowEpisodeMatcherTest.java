@@ -60,6 +60,8 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(14, 2), "Les.test.Saison.14.Episode.02.-.encore.un.test.avi");
     epMatchesTest.put(new SxE(21, 22), "TeSt.S21.E22.avi");
     epMatchesTest.put(new SxE(5, 2), "test 502 - Un Monde De test.avi");
+    epMatchesTest.put(new SxE(70, 82), "test 7082 - Un Monde De test 320.avi");
+    epMatchesTest.put(new SxE(3, 20), "test 320 - Un Monde De test 7082.avi");
     epMatchesTest.put(new SxE(5, 4), "Test Test S05xE04_Tous les test.avi");
     epMatchesTest.put(new SxE(3, 9), "[Test]-[Saison.03.Épisode.09]-[x264HP]-[FR+ENG+Sub.FR+ENG].mkv");
     epMatchesTest.put(new SxE(4, 16), "test 4x16 2010.avi");
@@ -68,6 +70,9 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(9, 9), "test - 9x09 - test (HD 720x400 Fr).avi");
     epMatchesTest.put(new SxE(0, 9), "test - 009 - test (HD 720x400 Fr).avi");
     epMatchesTest.put(new SxE(1, 1), "test -test- test (HD 720x400 Fr).avi");
+    epMatchesTest.put(new SxE(1, 1), "test - test 1920x1080.avi");
+    epMatchesTest.put(new SxE(1, 1), "test2 - test 1920x1080.avi");
+    epMatchesTest.put(new SxE(1, 1), "test2 - test56 1920x1080.avi");
     //With folder
     epMatchesTest.put(new SxE(3, 5), "S3/test - Ep. 05 -test.avi");
     epMatchesTest.put(new SxE(1, 51), "Saison 03/test - 1x51 - test.FR.avi");
@@ -92,7 +97,7 @@ public class TvShowEpisodeMatcherTest {
       assertEquals(key.toString(), found.toString());
       p++;
     }
-    
+
     if (p != v) {
       fail("Only " + p + "/" + v + " test Success");
     }
