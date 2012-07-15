@@ -105,7 +105,7 @@ public class AllocineImage extends MrParser<MovieImage> {
 
   @Override
   public void endDocument() throws SAXException {
-    movieImage.setFanarts(thumbs);
+    movieImage.setThumbs(thumbs);
     movieImage.setFanarts(fanarts);
   }
 

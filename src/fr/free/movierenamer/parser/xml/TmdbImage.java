@@ -38,7 +38,7 @@ public class TmdbImage extends MrParser<MovieImage> {
   private MediaImage currentMovieImage;
   private String lastAttribute;
   private String currentId;
-  private MovieImage movieImgs;
+  private MovieImage movieImage;
 
   public TmdbImage() {
     super();
@@ -54,12 +54,14 @@ public class TmdbImage extends MrParser<MovieImage> {
     currentId = "";
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
-    movieImgs = new MovieImage();
+    movieImage = new MovieImage();
   }
 
   @Override
   public void endDocument() throws SAXException {
     super.endDocument();
+    movieImage.setThumbs(thumbs);
+    movieImage.setFanarts(fanarts);
   }
 
   @Override
@@ -105,8 +107,6 @@ public class TmdbImage extends MrParser<MovieImage> {
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("OpenSearchDescription")) {
       imdbAPIXML = false;
-      movieImgs.setThumbs(thumbs);
-      movieImgs.setFanarts(fanarts);
     }
     if (name.equalsIgnoreCase("images")) {
       images = false;
@@ -124,6 +124,6 @@ public class TmdbImage extends MrParser<MovieImage> {
 
   @Override
   public MovieImage getObject() {
-    return movieImgs;
+    return movieImage;
   }
 }
