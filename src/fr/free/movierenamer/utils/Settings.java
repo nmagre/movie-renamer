@@ -23,10 +23,7 @@ import fr.free.movierenamer.worker.WorkerManager;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Locale;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,9 +33,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class Settings , Movie Renamer settings <br>
- * Only public and non static attributes are written in conf file !
- * 
+ * Class Settings , Movie Renamer settings <br> Only public and non static attributes are written in conf file !
+ *
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
@@ -55,14 +51,12 @@ public class Settings implements Cloneable {
   private static final String apkTdb = "DmIOExH5DwV1AwZkZRZ3Zt==";
   private final static String movieRenamerFolder = Utils.isWindows() ? "Movie_Renamer" : ".Movie_Renamer";
   public static final String mrFolder = userPath + File.separator + movieRenamerFolder;
-
   // XML
   public static final String movieRenamerTag = Settings.APPNAME.replace(' ', '_');
   public static final String versionAtt = "Version";
   public static final String settingTag = "setting";
   public static final String arrayEscapeChar = "/_";
   public static final String sZero = "0";
-
   // Cache
   public static final String cacheDir = userPath + File.separator + movieRenamerFolder + File.separator + "cache" + File.separator;
   public static final String imageCacheDir = cacheDir + "images" + File.separator;
@@ -71,15 +65,12 @@ public class Settings implements Cloneable {
   public static final String actorCacheDir = imageCacheDir + "actors" + File.separator;
   public static final String xmlCacheDir = cacheDir + "XML" + File.separator;
   public static final String tvshowZipCacheDir = cacheDir + "Zip" + File.separator;
-
   // Files
   public static final String configFile = userPath + File.separator + movieRenamerFolder + File.separator + "conf" + File.separator + "movie_renamer.conf";
   public static final String renamedFile = cacheDir + "renamed.xml";
   private static final String logFile = userPath + File.separator + movieRenamerFolder + File.separator + "Logs" + File.separator + "movie_renamer.log";
-
   // Logger
   public static final Logger LOGGER = Logger.getLogger(APPNAME + " Logger");
-
   // IMDB
   public static final String imdbSearchUrl = "http://www.imdb.com/find?s=tt&q=";
   public static final String imdbMovieUrl = "http://www.imdb.com/title/";
@@ -98,9 +89,9 @@ public class Settings implements Cloneable {
   // Xbmc Passion
   public static final String xbmcPassionImdblookup = "http://passion-xbmc.org/scraper/ajax.php?Ajax=Home&";
   // List
-  public static int[] nbResultList = { -1, 5, 10, 15, 20, 30 };
-  public static String[] thumbExtList = { ".jpg", ".tbn", "-thumb.jpg" };
-  public static String[] fanartExtList = { ".jpg", "-fanart.jpg" };
+  public static int[] nbResultList = {-1, 5, 10, 15, 20, 30};
+  public static String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
+  public static String[] fanartExtList = {".jpg", "-fanart.jpg"};
   // LAF
   public static final UIManager.LookAndFeelInfo lookAndFeels[] = UIManager.getInstalledLookAndFeels();
   public static boolean lafChanged = false;
@@ -111,7 +102,6 @@ public class Settings implements Cloneable {
   public static boolean xmlError = false;
   // Misc
   public static String xmlVersion = "";
-
   /**
    * Saved settings *
    */
@@ -154,11 +144,11 @@ public class Settings implements Cloneable {
   public int fanartSize = 0;
   public int thumbExt = 0;
   // Filter
-  public String[] extensions = { "mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf" };
-  public static String[] nameFilters = { "notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
-      "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
-      "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
-      " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md" };
+  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
+  public static String[] nameFilters = {"notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
+    "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
+    "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
+    " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"};
   public ArrayList<String> mediaNameFilters;
   public boolean useExtensionFilter = true;
   // Cache
@@ -181,13 +171,12 @@ public class Settings implements Cloneable {
   // Not used
   public boolean showMovieFilePath = false;
   public boolean hideRenamedMedia = false;
-
   // The only instance of Settings
   private static Settings instance;
 
   /**
    * Private build for singleton fix
-   * 
+   *
    * @return
    */
   private static synchronized Settings newInstance() {
@@ -201,7 +190,7 @@ public class Settings implements Cloneable {
 
   /**
    * Access to the Settings instance
-   * 
+   *
    * @return The only instance of MR Settings
    */
   public static Settings getInstance() {
@@ -236,7 +225,7 @@ public class Settings implements Cloneable {
 
   /**
    * Load Movie Renamer settings
-   * 
+   *
    * @return Movie Renamer settings
    */
   private Settings loadSetting() {
@@ -270,7 +259,7 @@ public class Settings implements Cloneable {
           config.locale = "fr";
         }
         Settings.xmlVersion = Settings.VERSION;// Ensures that the settings
-                                               // file is written once only
+        // file is written once only
         config.movieScrapperFR = config.locale.equals("fr");
         config.tvshowScrapperFR = config.locale.equals("fr");
       } else {
@@ -284,13 +273,13 @@ public class Settings implements Cloneable {
       }
 
     } catch (ParserConfigurationException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
+      LOGGER.log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
     } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("SAXException", ex.getStackTrace()));
+      LOGGER.log(Level.SEVERE, Utils.getStackTrace("SAXException", ex.getStackTrace()));
     } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
+      LOGGER.log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
     } catch (InterruptedException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
+      LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
       if (!saved) {
         if (!Settings.xmlVersion.equals("Beta_2.0")) {
@@ -313,7 +302,7 @@ public class Settings implements Cloneable {
 
   /**
    * Save setting
-   * 
+   *
    * @return True if setting was saved, False otherwise
    */
   public boolean saveSetting() {
@@ -337,7 +326,7 @@ public class Settings implements Cloneable {
             value = Utils.arrayToString((Object[]) value, Settings.arrayEscapeChar, 0);
           } else if (Collection.class.isAssignableFrom(field.getType())) {
             // to string for Collection fields
-            value = Utils.arrayToString((ArrayList<?>)value, Settings.arrayEscapeChar, 0);
+            value = Utils.arrayToString((ArrayList<?>) value, Settings.arrayEscapeChar, 0);
           }
           out.write("    <" + field.getName() + ">" + Utils.escapeXML(value.toString()) + "</" + field.getName() + ">" + endl);
         } catch (IllegalArgumentException e) {
@@ -358,7 +347,7 @@ public class Settings implements Cloneable {
 
   /**
    * Get the user settings fields
-   * 
+   *
    * @return
    */
   private Collection<Field> getSettingsFields() {
@@ -374,7 +363,7 @@ public class Settings implements Cloneable {
 
   /**
    * Set a value using field name
-   * 
+   *
    * @param fieldName
    * @param configValue
    */
@@ -387,7 +376,7 @@ public class Settings implements Cloneable {
         value = Settings.sZero.equals(configValue);
       } else if (field.getType().isArray()) {
         // Array field
-        value =   configValue.split(Settings.arrayEscapeChar);
+        value = configValue.split(Settings.arrayEscapeChar);
       } else if (Collection.class.isAssignableFrom(field.getType())) {
         // Collection field
         value = Utils.stringToArray(configValue, Settings.arrayEscapeChar);
@@ -423,211 +412,73 @@ public class Settings implements Cloneable {
   }
 
   @Override
-  public boolean equals(Object object) {
-    if (object instanceof Settings) {
-      Settings obj = (Settings) object;
-      if (this.selectFrstMedia != obj.selectFrstMedia) {
-        return false;
-      }
-      if (this.scanSubfolder != obj.scanSubfolder) {
-        return false;
-      }
-      if (this.showNotaMovieWarn != obj.showNotaMovieWarn) {
-        return false;
-      }
-      if (this.movieInfoPanel != obj.movieInfoPanel) {
-        return false;
-      }
-      if (this.actorImage != obj.actorImage) {
-        return false;
-      }
-      if (this.thumb != obj.thumb) {
-        return false;
-      }
-      if (this.fanart != obj.fanart) {
-        return false;
-      }
-      if (!this.laf.equals(obj.laf)) {
-        return false;
-      }
-      if (this.nfoType != obj.nfoType) {
-        return false;
-      }
-      if (this.checkUpdate != obj.checkUpdate) {
-        return false;
-      }
-      if (!this.locale.equals(obj.locale)) {
-        return false;
-      }
-      if (!this.movieFilenameFormat.equals(obj.movieFilenameFormat)) {
-        return false;
-      }
-      if (!this.movieFilenameSeparator.equals(obj.movieFilenameSeparator)) {
-        return false;
-      }
-      if (this.movieFilenameLimit != obj.movieFilenameLimit) {
-        return false;
-      }
-      if (this.movieFilenameCase != obj.movieFilenameCase) {
-        return false;
-      }
-      if (this.movieFilenameTrim != obj.movieFilenameTrim) {
-        return false;
-      }
-      if (this.movieFilenameRmDupSpace != obj.movieFilenameRmDupSpace) {
-        return false;
-      }
-      if (this.movieFilenameCreateDirectory != obj.movieFilenameCreateDirectory) {
-        return false;
-      }
-      if (!this.movieFolderFormat.equals(obj.movieFolderFormat)) {
-        return false;
-      }
-      if (!this.movieFolderSeparator.equals(obj.movieFolderSeparator)) {
-        return false;
-      }
-      if (this.movieFolderLimit != obj.movieFolderLimit) {
-        return false;
-      }
-      if (this.movieFolderCase != obj.movieFolderCase) {
-        return false;
-      }
-      if (this.movieFolderTrim != obj.movieFolderTrim) {
-        return false;
-      }
-      if (this.movieFolderRmDupSpace != obj.movieFolderRmDupSpace) {
-        return false;
-      }
-      if (!this.tvShowFilenameFormat.equals(obj.tvShowFilenameFormat)) {
-        return false;
-      }
-      if (!this.tvShowFilenameSeparator.equals(obj.tvShowFilenameSeparator)) {
-        return false;
-      }
-      if (this.tvShowFilenameLimit != obj.tvShowFilenameLimit) {
-        return false;
-      }
-      if (this.tvShowFilenameCase != obj.tvShowFilenameCase) {
-        return false;
-      }
-      if (this.tvShowFilenameTrim != obj.tvShowFilenameTrim) {
-        return false;
-      }
-      if (this.tvShowFilenameRmDupSpace != obj.tvShowFilenameRmDupSpace) {
-        return false;
-      }
-      if (this.thumbSize != obj.thumbSize) {
-        return false;
-      }
-      if (this.fanartSize != obj.fanartSize) {
-        return false;
-      }
-      if (this.thumbExt != obj.thumbExt) {
-        return false;
-      }
-      if (this.extensions != obj.extensions) {
-        return false;
-      }
-      if (this.useExtensionFilter != obj.useExtensionFilter) {
-        return false;
-      }
-      if (this.clearXMLCache != obj.clearXMLCache) {
-        return false;
-      }
-      if (this.movieScrapper != obj.movieScrapper) {
-        return false;
-      }
-      if (this.tvshowScrapper != obj.tvshowScrapper) {
-        return false;
-      }
-      if (this.movieScrapperFR != obj.movieScrapperFR) {
-        return false;
-      }
-      if (this.tvshowScrapperFR != obj.tvshowScrapperFR) {
-        return false;
-      }
-      if (this.displayThumbResult != obj.displayThumbResult) {
-        return false;
-      }
-      if (this.autoSearchMedia != obj.autoSearchMedia) {
-        return false;
-      }
-      if (this.selectFrstRes != obj.selectFrstRes) {
-        return false;
-      }
-      if (this.sortBySimiYear != obj.sortBySimiYear) {
-        return false;
-      }
-      if (this.nbResult != obj.nbResult) {
-        return false;
-      }
-      if (this.displayApproximateResult != obj.displayApproximateResult) {
-        return false;
-      }
-    } else {
+  public boolean equals(Object obj) {
+    if (obj == null) {
       return false;
     }
+
+    if (!(obj instanceof Settings)) {
+      return false;
+    }
+
+    Settings older = (Settings) obj;
+    Collection<Field> olderFields = older.getSettingsFields();
+    Collection<Field> currentFields = this.getSettingsFields();
+    if (currentFields.size() != olderFields.size()) {
+      return false;
+    }
+
+    Iterator<Field> targetIt = currentFields.iterator();
+    for (Field field : olderFields) {
+      try {
+        if (!field.get(older).equals(targetIt.next().get(this))) {
+          return false;
+        }
+      } catch (IllegalArgumentException ex) {
+        LOGGER.log(Level.SEVERE, null, ex);
+      } catch (IllegalAccessException ex) {
+        LOGGER.log(Level.SEVERE, null, ex);
+      }
+    }
+
     return true;
   }
 
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 97 * hash + (this.interfaceChanged ? 1 : 0);
-    hash = 97 * hash + (this.selectFrstMedia ? 1 : 0);
-    hash = 97 * hash + (this.scanSubfolder ? 1 : 0);
-    hash = 97 * hash + (this.showNotaMovieWarn ? 1 : 0);
-    hash = 97 * hash + (this.movieInfoPanel ? 1 : 0);
-    hash = 97 * hash + (this.actorImage ? 1 : 0);
-    hash = 97 * hash + (this.thumb ? 1 : 0);
-    hash = 97 * hash + (this.fanart ? 1 : 0);
-    hash = 97 * hash + (this.laf != null ? this.laf.hashCode() : 0);
-    hash = 97 * hash + this.nfoType;
-    hash = 97 * hash + (this.checkUpdate ? 1 : 0);
-    hash = 97 * hash + (this.locale != null ? this.locale.hashCode() : 0);
-    hash = 97 * hash + (this.movieFilenameFormat != null ? this.movieFilenameFormat.hashCode() : 0);
-    hash = 97 * hash + (this.movieFilenameSeparator != null ? this.movieFilenameSeparator.hashCode() : 0);
-    hash = 97 * hash + this.movieFilenameLimit;
-    hash = 97 * hash + this.movieFilenameCase.ordinal();
-    hash = 97 * hash + (this.movieFilenameTrim ? 1 : 0);
-    hash = 97 * hash + (this.movieFilenameRmDupSpace ? 1 : 0);
-    hash = 97 * hash + (this.movieFilenameCreateDirectory ? 1 : 0);
-    hash = 97 * hash + (this.movieFolderFormat != null ? this.movieFolderFormat.hashCode() : 0);
-    hash = 97 * hash + (this.movieFolderSeparator != null ? this.movieFolderSeparator.hashCode() : 0);
-    hash = 97 * hash + this.movieFolderLimit;
-    hash = 97 * hash + this.movieFolderCase;
-    hash = 97 * hash + (this.movieFolderTrim ? 1 : 0);
-    hash = 97 * hash + (this.movieFolderRmDupSpace ? 1 : 0);
-    hash = 97 * hash + (this.tvShowFilenameFormat != null ? this.tvShowFilenameFormat.hashCode() : 0);
-    hash = 97 * hash + (this.tvShowFilenameSeparator != null ? this.tvShowFilenameSeparator.hashCode() : 0);
-    hash = 97 * hash + this.tvShowFilenameLimit;
-    hash = 97 * hash + this.tvShowFilenameCase;
-    hash = 97 * hash + (this.tvShowFilenameTrim ? 1 : 0);
-    hash = 97 * hash + (this.tvShowFilenameRmDupSpace ? 1 : 0);
-    hash = 97 * hash + this.thumbSize;
-    hash = 97 * hash + this.fanartSize;
-    hash = 97 * hash + this.thumbExt;
-    hash = 97 * hash + Arrays.deepHashCode(this.extensions);
-    hash = 97 * hash + (this.mediaNameFilters != null ? this.mediaNameFilters.hashCode() : 0);
-    hash = 97 * hash + (this.useExtensionFilter ? 1 : 0);
-    hash = 97 * hash + (this.clearXMLCache ? 1 : 0);
-    hash = 97 * hash + this.movieScrapper.ordinal();
-    hash = 97 * hash + this.tvshowScrapper.ordinal();
-    hash = 97 * hash + (this.movieScrapperFR ? 1 : 0);
-    hash = 97 * hash + (this.tvshowScrapperFR ? 1 : 0);
-    hash = 97 * hash + (this.displayThumbResult ? 1 : 0);
-    hash = 97 * hash + (this.autoSearchMedia ? 1 : 0);
-    hash = 97 * hash + (this.selectFrstRes ? 1 : 0);
-    hash = 97 * hash + (this.sortBySimiYear ? 1 : 0);
-    hash = 97 * hash + this.nbResult;
-    hash = 97 * hash + (this.displayApproximateResult ? 1 : 0);
-    hash = 97 * hash + (this.showMovieFilePath ? 1 : 0);
-    hash = 97 * hash + (this.hideRenamedMedia ? 1 : 0);
+    Collection<Field> fields = this.getSettingsFields();
+    for (Field field : fields) {
+      try {
+        if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
+          // Boolean field
+          hash = 29 * hash + (((Boolean) field.get(this)) ? 1 : 0);
+        } else if (field.getType().isArray()) {
+          // Array field
+          hash = 29 * hash + Arrays.deepHashCode((Object[]) field.get(this));
+        } else if (Collection.class.isAssignableFrom(field.getType())) {
+          // Collection field
+          hash = 29 * hash + ((Collection) field.get(this)).hashCode();
+        } else if (field.getType().isEnum()) {
+          // Enum field
+          hash = 29 * hash + ((Enum<?>) field.get(this)).hashCode();
+        } else if (Utils.isNumeric(field.getType())) {
+          hash = 29 * hash + (Integer) field.get(this); // FIXME Convertir en autre que Integer ? pas faux, mais je crois pas qu'il ya aura des float ou long ou ... un jours
+        }
+      } catch (SecurityException e) {
+        LOGGER.log(Level.WARNING, e.getMessage());
+      } catch (IllegalArgumentException e) {
+        LOGGER.log(Level.WARNING, "Configuration value is not in the goot format !", e);
+      } catch (IllegalAccessException e) {
+        LOGGER.log(Level.WARNING, e.getMessage());
+      }
+    }
+
     return hash;
   }
-  
+
   @Override
-  public Settings clone() throws CloneNotSupportedException{
+  public Settings clone() throws CloneNotSupportedException {
     return (Settings) super.clone();
   }
 }
