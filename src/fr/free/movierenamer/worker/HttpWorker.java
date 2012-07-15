@@ -32,7 +32,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
  * @author QUÉMÉNEUR Simon
  */
 public abstract class HttpWorker<T> extends Worker<T> {
-  protected static final int RETRY = 3;
+  private static final int RETRY = 3;
 
   public HttpWorker(SwingPropertyChangeSupport errorSupport) {
     super(errorSupport);
@@ -48,13 +48,11 @@ public abstract class HttpWorker<T> extends Worker<T> {
       Settings.LOGGER.log(Level.FINE, "Use of cache file for {0}", url);
     } else {
       for (int i = 0; i < RETRY; i++) {
-        InputStream in;
+        InputStream is;
         HttpGet http;
         try {
           http = new HttpGet(uri);
-          in = http.getInputStream(true, "ISO-8859-15");// url.openStream();
-          Cache.getInstance().add(url, cacheType);
-          file = Cache.getInstance().get(url, cacheType);
+          file = Cache.getInstance().add(http, cacheType);
           break;
         } catch (Exception e) {// Don't care about exception, "file" will be null
           Settings.LOGGER.log(Level.SEVERE, null, e);
