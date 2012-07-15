@@ -22,13 +22,12 @@ import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
  * @author Nicolas Magré
  */
-public class AllocineTVSeason extends DefaultHandler implements IParser< ArrayList<TvShowSeason>> {
+public class AllocineTvSeason extends MrParser< ArrayList<TvShowSeason>> {
 
   private StringBuffer buffer;
   private ArrayList<TvShowSeason> seasons;
@@ -36,7 +35,7 @@ public class AllocineTVSeason extends DefaultHandler implements IParser< ArrayLi
   private boolean tvseries;
   private boolean seasonList;
 
-  public AllocineTVSeason() {
+  public AllocineTvSeason() {
     super();
     tvseries = false;
     seasonList = false;

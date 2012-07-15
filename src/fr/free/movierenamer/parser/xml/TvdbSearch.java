@@ -23,17 +23,16 @@ import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class TvdbTvShow , tvShow search result XML parser
- *
+ * 
  * @author Nicolas Magré
  */
-public class TvdbSearch extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
+public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
 
   private StringBuffer buffer;
-  private boolean french;
+  private final boolean french;
   private ArrayList<SearchResult> results;
   private String currentId;
   private String currentName;
@@ -71,7 +70,7 @@ public class TvdbSearch extends DefaultHandler implements IParser<ArrayList<Sear
     if (name.equalsIgnoreCase("series")) {
       if ((french && currentLanguage.equals("fr")) || !french) {//Tvdb can return series in English + in French in same times, we just want one of both
         String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb : null;
-        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TVDBID), "", thumb));
+        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TVDBID), SearchResult.SearchResultType.NONE, thumb));
       }
       currentName = currentId = currentThumb = currentLanguage = "";
       series = false;

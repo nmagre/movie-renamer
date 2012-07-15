@@ -17,6 +17,14 @@
  */
 package fr.free.movierenamer.utils;
 
+import java.io.IOException;
+
+import java.io.File;
+
+import fr.free.movierenamer.utils.Cache.CacheType;
+
+import java.io.InputStream;
+
 import java.awt.Image;
 import java.io.*;
 import java.net.URL;
@@ -24,7 +32,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Class Cache , Really simple cache
- *
+ * 
  * @author Nicolas Magré
  */
 public class Cache {
@@ -37,6 +45,7 @@ public class Cache {
     XML,
     TVSHOWZIP;
   }// The only instance of Cache
+
   private static Cache instance;
 
   /**
@@ -69,30 +78,50 @@ public class Cache {
 
   /**
    * Add file to cache
-   *
+   * 
    * @param is File inputStream
    * @param url File url
    * @param type Cache type
    * @throws IOException
    */
-  public void add(InputStream is, String url, Cache.CacheType type) throws IOException {
+  public File add(/*InputStream is, */URL url, Cache.CacheType type) throws IOException {
+    return add(url.openStream(), url.toString(), type);
+  }
+
+  /**
+   * @param http
+   * @param cacheType
+   * @return 
+   * @throws Exception 
+   * @throws IOException 
+   */
+  public File add(HttpGet http, CacheType cacheType) throws IOException, Exception {
+    return add(http.getInputStream(true, "ISO-8859-15"), http.getURL().toString(), cacheType);
+  }
+  
+  private File add(InputStream is, String url, Cache.CacheType type) throws IOException {
     OutputStream os;
     File f = new File(getPath(type) + Utils.md5(url));
     os = new FileOutputStream(f);
     copyStream(is, os);
     os.close();
     is.close();
+    return get(url, type);
   }
 
   /**
    * Get file from cache
-   *
+   * 
    * @param url File url
    * @param type Cache type
    * @return File
    */
   public File get(URL url, Cache.CacheType type) {
-    String md5Name = Utils.md5(url.toString());
+    return get(url.toString(), type);
+  }
+  
+  private File get(String url, Cache.CacheType type) {
+    String md5Name = Utils.md5(url);
     File f = new File(getPath(type) + md5Name);
     if (f.exists()) {
       return f;
@@ -102,7 +131,7 @@ public class Cache {
 
   /**
    * Get image from cache
-   *
+   * 
    * @param image Image url
    * @param type Cache type
    * @return Image
@@ -119,7 +148,7 @@ public class Cache {
 
   /**
    * Get cache path
-   *
+   * 
    * @param type cache type
    * @return Cache path
    */
@@ -144,13 +173,14 @@ public class Cache {
     }
     return path;
   }
-  
+
   /**
    * Copy stream from unput source to output
+   * 
    * @param in Input
    * @param out Output
-   * @throws IOException 
-   */  
+   * @throws IOException
+   */
   private void copyStream(InputStream in, OutputStream out) throws IOException {
     final int buffer_size = 1024;
     byte[] bytes = new byte[buffer_size];

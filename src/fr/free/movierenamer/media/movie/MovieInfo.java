@@ -20,6 +20,7 @@ package fr.free.movierenamer.media.movie;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.free.movierenamer.media.IMediaInfo;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
@@ -28,10 +29,10 @@ import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class MovieInfo
- *
+ * 
  * @author Nicolas Magré
  */
-public class MovieInfo {
+public class MovieInfo implements IMediaInfo<MovieImage> {
 
   private String title;
   private String sortTitle;
@@ -50,7 +51,7 @@ public class MovieInfo {
   private boolean watched;
   private MovieImage movieImage;
   private List<MediaID> movieIDs;
-  private List<String> set;//Saga
+  private List<String> set;// Saga
   private List<String> genres;
   private List<String> studios;
   private List<MediaPerson> actors;
@@ -90,7 +91,7 @@ public class MovieInfo {
 
   /**
    * Get movie title
-   *
+   * 
    * @return Movie title
    */
   public String getTitle() {
@@ -99,7 +100,7 @@ public class MovieInfo {
 
   /**
    * Get sort title
-   *
+   * 
    * @return Sort title
    */
   public String getSortTitle() {
@@ -108,7 +109,7 @@ public class MovieInfo {
 
   /**
    * Get (default) movie thumb
-   *
+   * 
    * @return
    */
   public String getThumb() {
@@ -117,7 +118,7 @@ public class MovieInfo {
 
   /**
    * Get trailer
-   *
+   * 
    * @return Trailer
    */
   public String getTrailer() {
@@ -126,7 +127,7 @@ public class MovieInfo {
 
   /**
    * Get synopsis
-   *
+   * 
    * @return Synopsis
    */
   public String getSynopsis() {
@@ -135,7 +136,7 @@ public class MovieInfo {
 
   /**
    * Get outline
-   *
+   * 
    * @return Outline
    */
   public String getOutline() {
@@ -144,7 +145,7 @@ public class MovieInfo {
 
   /**
    * Get tagline
-   *
+   * 
    * @return Tagline
    */
   public String getTagline() {
@@ -153,7 +154,7 @@ public class MovieInfo {
 
   /**
    * Get original title
-   *
+   * 
    * @return Original title
    */
   public String getOrigTitle() {
@@ -162,7 +163,7 @@ public class MovieInfo {
 
   /**
    * Get rating
-   *
+   * 
    * @return Rating
    */
   public String getRating() {
@@ -171,7 +172,7 @@ public class MovieInfo {
 
   /**
    * Get runtime
-   *
+   * 
    * @return Runtime
    */
   public String getRuntime() {
@@ -180,7 +181,7 @@ public class MovieInfo {
 
   /**
    * Get year
-   *
+   * 
    * @return Year
    */
   public String getYear() {
@@ -189,7 +190,7 @@ public class MovieInfo {
 
   /**
    * Get votes
-   *
+   * 
    * @return Votes
    */
   public String getVotes() {
@@ -198,7 +199,7 @@ public class MovieInfo {
 
   /**
    * Get top 250
-   *
+   * 
    * @return 0 or top 250 position
    */
   public String getTop250() {
@@ -207,7 +208,7 @@ public class MovieInfo {
 
   /**
    * Movie was watched
-   *
+   * 
    * @return Ture or false
    */
   public boolean getWatched() {
@@ -216,7 +217,7 @@ public class MovieInfo {
 
   /**
    * Get movie images
-   *
+   * 
    * @return MovieImage
    */
   public MovieImage getMovieImage() {
@@ -225,7 +226,7 @@ public class MovieInfo {
 
   /**
    * Get array of thumbnails
-   *
+   * 
    * @return List of MovieImage
    */
   public List<MediaImage> getThumbs() {
@@ -234,7 +235,7 @@ public class MovieInfo {
 
   /**
    * Get array of fanarts
-   *
+   * 
    * @return List of MovieImage
    */
   public List<MediaImage> getFanarts() {
@@ -243,7 +244,7 @@ public class MovieInfo {
 
   /**
    * Get movie API IDs
-   *
+   * 
    * @return List of movie IDs
    */
   public List<MediaID> getIDs() {
@@ -252,7 +253,7 @@ public class MovieInfo {
 
   /**
    * Get set
-   *
+   * 
    * @return Array of set
    */
   public List<String> getSet() {
@@ -261,7 +262,7 @@ public class MovieInfo {
 
   /**
    * Get mpaa
-   *
+   * 
    * @return Mpaa
    */
   public String getMpaa() {
@@ -270,7 +271,7 @@ public class MovieInfo {
 
   /**
    * Get genres
-   *
+   * 
    * @return Array of genre
    */
   public List<String> getGenres() {
@@ -279,7 +280,7 @@ public class MovieInfo {
 
   /**
    * Get studios
-   *
+   * 
    * @return Array of studios
    */
   public List<String> getStudios() {
@@ -288,7 +289,7 @@ public class MovieInfo {
 
   /**
    * Get Actors
-   *
+   * 
    * @return Array of actors
    */
   public List<MediaPerson> getActors() {
@@ -297,7 +298,7 @@ public class MovieInfo {
 
   /**
    * Get directors
-   *
+   * 
    * @return Array of directors
    */
   public List<MediaPerson> getDirectors() {
@@ -306,7 +307,7 @@ public class MovieInfo {
 
   /**
    * Get writers
-   *
+   * 
    * @return Array of writers
    */
   public List<MediaPerson> getWriters() {
@@ -315,7 +316,7 @@ public class MovieInfo {
 
   /**
    * Get countries
-   *
+   * 
    * @return Array of countries
    */
   public List<String> getCountries() {
@@ -324,7 +325,7 @@ public class MovieInfo {
 
   /**
    * Get actors
-   *
+   * 
    * @param separator Separator
    * @param limit Number of actors to return (0 for all)
    * @return Actors separated by separator
@@ -335,7 +336,7 @@ public class MovieInfo {
 
   /**
    * Get directors
-   *
+   * 
    * @param separator Separator
    * @param limit Number of directors to return (0 for all)
    * @return Directors separated by separator
@@ -346,7 +347,7 @@ public class MovieInfo {
 
   /**
    * Get writers to string
-   *
+   * 
    * @param separator Separator
    * @param limit Number of writers to return (0 for all)
    * @return Writers separated by separator
@@ -357,7 +358,7 @@ public class MovieInfo {
 
   /**
    * Get genres to string
-   *
+   * 
    * @param separator Separator
    * @param limit Number of genres to return (0 for all)
    * @return Genre separated by separator
@@ -368,7 +369,7 @@ public class MovieInfo {
 
   /**
    * Get countries to string
-   *
+   * 
    * @param separator Separator
    * @param limit Number of countries to return (0 for all)
    * @return Countries separated by separator
@@ -379,7 +380,7 @@ public class MovieInfo {
 
   /**
    * Get studios to string
-   *
+   * 
    * @param separator Separator
    * @param limit Number of studios to return (0 for all)
    * @return Studios separated by separator
@@ -390,7 +391,7 @@ public class MovieInfo {
 
   /**
    * Get sets to string
-   *
+   * 
    * @param separator Separator
    * @param limit Number of sets to return (0 for all)
    * @return Sets separated by separator
@@ -401,7 +402,7 @@ public class MovieInfo {
 
   /**
    * Get first director
-   *
+   * 
    * @return First director
    */
   public String getFirstDirector() {
@@ -414,7 +415,7 @@ public class MovieInfo {
 
   /**
    * Get the n actor
-   *
+   * 
    * @param n Position of actor
    * @return Actor name or an empty string
    */
@@ -427,7 +428,7 @@ public class MovieInfo {
 
   /**
    * Get the n director
-   *
+   * 
    * @param n Position of director
    * @return Director name or an empty string
    */
@@ -440,7 +441,7 @@ public class MovieInfo {
 
   /**
    * Get first genre
-   *
+   * 
    * @return First genre
    */
   public String getFirstGenreString() {
@@ -453,7 +454,7 @@ public class MovieInfo {
 
   /**
    * Get the n genre
-   *
+   * 
    * @param n Position of genre
    * @return Genre or an empty string
    */
@@ -466,7 +467,7 @@ public class MovieInfo {
 
   /**
    * Get the n country
-   *
+   * 
    * @param n Position of country
    * @return Country or an empty string
    */
@@ -479,7 +480,7 @@ public class MovieInfo {
 
   /**
    * Get actor by name
-   *
+   * 
    * @param actor Actor name
    * @return MoviePerson if actor found, null otherwise
    */
@@ -496,7 +497,7 @@ public class MovieInfo {
 
   /**
    * Set movie images
-   *
+   * 
    * @param movieImage Movie Images
    */
   public void setImages(MovieImage movieImage) {
@@ -505,7 +506,7 @@ public class MovieInfo {
 
   /**
    * Set title
-   *
+   * 
    * @param title Title
    */
   public void setTitle(String title) {
@@ -514,7 +515,7 @@ public class MovieInfo {
 
   /**
    * Set sort title
-   *
+   * 
    * @param sortTitle Sort title
    */
   public void setSortTitle(String sortTitle) {
@@ -523,7 +524,7 @@ public class MovieInfo {
 
   /**
    * Set (default) thumb
-   *
+   * 
    * @param thumb
    */
   public void setThumb(String thumb) {
@@ -532,7 +533,7 @@ public class MovieInfo {
 
   /**
    * Set trailer
-   *
+   * 
    * @param trailer Trailer
    */
   public void setTrailer(String trailer) {
@@ -541,7 +542,7 @@ public class MovieInfo {
 
   /**
    * Set studios
-   *
+   * 
    * @param studios Array of studio
    */
   public void setStudios(List<String> studios) {
@@ -550,7 +551,7 @@ public class MovieInfo {
 
   /**
    * Set directors
-   *
+   * 
    * @param directors Array of directors
    */
   public void setDirectors(List<MediaPerson> directors) {
@@ -559,7 +560,7 @@ public class MovieInfo {
 
   /**
    * Set genres
-   *
+   * 
    * @param genres Array of genres
    */
   public void setGenre(List<String> genres) {
@@ -568,7 +569,7 @@ public class MovieInfo {
 
   /**
    * Set sets
-   *
+   * 
    * @param set Array of sets
    */
   public void setSets(List<String> set) {
@@ -577,7 +578,7 @@ public class MovieInfo {
 
   /**
    * Set writers
-   *
+   * 
    * @param writers Array of writers
    */
   public void setWriters(List<MediaPerson> writers) {
@@ -586,7 +587,7 @@ public class MovieInfo {
 
   /**
    * Set countries
-   *
+   * 
    * @param countries Array of countries
    */
   public void setCountries(List<String> countries) {
@@ -595,7 +596,7 @@ public class MovieInfo {
 
   /**
    * Set synopsis
-   *
+   * 
    * @param synopsis Synopsis
    */
   public void setSynopsis(String synopsis) {
@@ -604,7 +605,7 @@ public class MovieInfo {
 
   /**
    * Set outline
-   *
+   * 
    * @param outline Outline
    */
   public void setOutline(String outline) {
@@ -613,7 +614,7 @@ public class MovieInfo {
 
   /**
    * Set tagline
-   *
+   * 
    * @param tagline Tagline
    */
   public void setTagline(String tagline) {
@@ -622,7 +623,7 @@ public class MovieInfo {
 
   /**
    * Set original title
-   *
+   * 
    * @param origTitle Original title
    */
   public void setOrigTitle(String origTitle) {
@@ -631,7 +632,7 @@ public class MovieInfo {
 
   /**
    * Set rating
-   *
+   * 
    * @param rating Rating
    */
   public void setRating(String rating) {
@@ -640,7 +641,7 @@ public class MovieInfo {
 
   /**
    * Set runtime
-   *
+   * 
    * @param runtime Runtime
    */
   public void setRuntime(String runtime) {
@@ -649,7 +650,7 @@ public class MovieInfo {
 
   /**
    * Set year
-   *
+   * 
    * @param year Year
    */
   public void setYear(String year) {
@@ -658,7 +659,7 @@ public class MovieInfo {
 
   /**
    * Set votes
-   *
+   * 
    * @param votes Votes
    */
   public void setVotes(String votes) {
@@ -667,7 +668,7 @@ public class MovieInfo {
 
   /**
    * Set top 250
-   *
+   * 
    * @param top250
    */
   public void setTop250(String top250) {
@@ -676,7 +677,7 @@ public class MovieInfo {
 
   /**
    * Set movie watched
-   *
+   * 
    * @param watched
    */
   public void setWatched(boolean watched) {
@@ -685,7 +686,7 @@ public class MovieInfo {
 
   /**
    * Set sets
-   *
+   * 
    * @param set Array of set
    */
   public void setSet(List<String> set) {
@@ -694,7 +695,7 @@ public class MovieInfo {
 
   /**
    * Set mpaa
-   *
+   * 
    * @param mpaa Mpaa
    */
   public void setMpaa(String mpaa) {
@@ -703,7 +704,7 @@ public class MovieInfo {
 
   /**
    * Add a thumb to movie images
-   *
+   * 
    * @param thumb Thumb to add
    */
   public void addThumb(MediaImage thumb) {
@@ -712,7 +713,7 @@ public class MovieInfo {
 
   /**
    * Add a fanart to movie images
-   *
+   * 
    * @param fanart Fanart to add
    */
   public void addFanart(MediaImage fanart) {
@@ -721,7 +722,7 @@ public class MovieInfo {
 
   /**
    * Add genre
-   *
+   * 
    * @param genre Genre
    */
   public void addGenre(String genre) {
@@ -730,7 +731,7 @@ public class MovieInfo {
 
   /**
    * Add studio
-   *
+   * 
    * @param studio Studio
    */
   public void addStudio(String studio) {
@@ -739,28 +740,28 @@ public class MovieInfo {
 
   /**
    * Add person (Actor, director,...)
-   *
+   * 
    * @param person Person to add
    */
   public void addPerson(MediaPerson person) {
-    switch(person.getJob()){
-      case MediaPerson.ACTOR:
-        actors.add(person);
-        break;
-      case MediaPerson.DIRECTOR:
-        directors.add(person);
-        break;
-      case MediaPerson.WRITER:
-        writers.add(person);
-        break;
-      default: 
-        break;
+    switch (person.getJob()) {
+    case MediaPerson.ACTOR:
+      actors.add(person);
+      break;
+    case MediaPerson.DIRECTOR:
+      directors.add(person);
+      break;
+    case MediaPerson.WRITER:
+      writers.add(person);
+      break;
+    default:
+      break;
     }
   }
 
   /**
    * Add country
-   *
+   * 
    * @param country Country
    */
   public void addCountry(String country) {
@@ -769,7 +770,7 @@ public class MovieInfo {
 
   /**
    * Add role to actor
-   *
+   * 
    * @param actor Actor
    * @param role Role
    * @throws ActionNotValidException
@@ -785,7 +786,7 @@ public class MovieInfo {
 
   /**
    * Add movie API id
-   *
+   * 
    * @param id Movie APi id
    */
   public void addID(MediaID id) {
@@ -799,13 +800,13 @@ public class MovieInfo {
 
   /**
    * Add set
-   *
+   * 
    * @param strSet Set
    */
   public void addSet(String strSet) {
     set.add(strSet);
   }
-  
+
   @Override
   public String toString() {
     StringBuilder res = new StringBuilder();
@@ -830,7 +831,7 @@ public class MovieInfo {
     res.append("  Director : ").append(getDirectorsString(" | ", 0)).append(Utils.ENDLINE);
     res.append("  Writer : ").append(getWritersString(" | ", 0)).append(Utils.ENDLINE);
     res.append("  Actor :\n");
-    
+
     for (int i = 0; i < actors.size(); i++) {
       res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);
     }

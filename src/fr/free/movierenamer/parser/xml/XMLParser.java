@@ -31,19 +31,19 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XML parser
- *
- * @param <T> XML object to parse
+ * 
+ * @param <T>
+ *          XML object to parse
  * @author Nicolas Magré
  */
 public class XMLParser<T> {
 
-  private String XMLFile;
+  private final String XMLFile;
   private String ZIPFile;
-  private IParser<T> itp = null;
+  private MrParser<T> itp = null;
 
   public XMLParser(String XMLFile) {
     this.XMLFile = XMLFile;
@@ -54,14 +54,14 @@ public class XMLParser<T> {
     this.XMLFile = XMLFile;
   }
 
-  public void setParser(IParser<T> itp) {
+  public void setParser(MrParser<T> itp) {
     this.itp = itp;
   }
 
   public T parseXml() throws IOException, InterruptedException, ParserConfigurationException, SAXException, SAXParseException {
 
     if (itp == null) {
-      throw new NullPointerException("IParser null");
+      throw new NullPointerException("MrParser null");
     }
 
     SAXParser parseur;
@@ -103,14 +103,18 @@ public class XMLParser<T> {
       }
     }
 
-    parseur.parse(in, (DefaultHandler) itp);
+    try {
+      parseur.parse(in, itp);
+    } catch (NOSAXException mye) {
+      // nothing to catch !!!
+    }
     
     if(zf != null) {
       zf.close();
     }
     
     if (itp == null) {
-      throw new NullPointerException("IParser null");
+      throw new NullPointerException("MrParser null");
     }
 
     return itp.getObject();

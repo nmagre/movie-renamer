@@ -172,7 +172,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       }
     });
 
-    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.THUMB, Cache.CacheType.THUMB, setting);
+    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.THUMB, Cache.CacheType.THUMB);
     dropThumbTarget = new DropTarget(thumbnailsList, dropThumb);
 
     fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -192,7 +192,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       }
     });
 
-    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.FANART, Cache.CacheType.FANART, setting);
+    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.FANART, Cache.CacheType.FANART);
     dropFanartTarget = new DropTarget(fanartList, dropFanart);
 
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -242,7 +242,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       URL url = new URL(strUrl);
       image = Cache.getInstance().getImage(url, cache);
       if (image == null) {
-        Cache.getInstance().add(url.openStream(), url.toString(), cache);
+        Cache.getInstance().add(url, cache);
         image = Cache.getInstance().getImage(url, cache);
       }
     } catch (IOException ex) {

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.media.IMediaImage;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
  * Class MovieImage
  * @author Magré Nicolas
  */
-public class MovieImage {
+public class MovieImage implements IMediaImage {
   private ArrayList<MediaImage> thumbs;
   private ArrayList<MediaImage> fanarts;
 

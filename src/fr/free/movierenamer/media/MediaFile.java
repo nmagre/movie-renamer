@@ -17,10 +17,13 @@
  */
 package fr.free.movierenamer.media;
 
+import java.io.File;
+
+import javax.swing.Icon;
+
+import fr.free.movierenamer.media.Media.MediaType;
 import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.ui.res.UiUtils;
-import java.io.File;
-import javax.swing.Icon;
 
 /**
  * Class MovieFile
@@ -33,7 +36,7 @@ public class MediaFile implements IIconList {
   private boolean renamed;
   private boolean showPath;
   private boolean wasRenamed;
-  private int type;
+  private Media.MediaType type;
 
   /**
    * Constructor arguments
@@ -43,7 +46,7 @@ public class MediaFile implements IIconList {
    * @param wasRenamed Media was renamed
    * @param showPath Display path in toString()
    */
-  public MediaFile(File file, int type, boolean wasRenamed, boolean showPath) {
+  public MediaFile(File file, MediaType type, boolean wasRenamed, boolean showPath) {
     this.file = file;
     this.type = type;
     this.wasRenamed = wasRenamed;
@@ -101,7 +104,7 @@ public class MediaFile implements IIconList {
    *
    * @return Media type
    */
-  public int getType() {
+  public MediaType getType() {
     return type;
   }
 
@@ -110,7 +113,7 @@ public class MediaFile implements IIconList {
    *
    * @param type Media type
    */
-  public void setType(int type) {
+  public void setType(MediaType type) {
     this.type = type;
   }
 

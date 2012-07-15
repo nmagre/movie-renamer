@@ -60,8 +60,8 @@ public class TvShow implements Media {//A faire
   }
 
   @Override
-  public int getType() {
-    return Media.TVSHOW;
+  public MediaType getType() {
+    return Media.MediaType.TVSHOW;
   }
 
   @Override

@@ -1327,7 +1327,7 @@ public class MovieNameMatcherTest {
   public void testGetMovieName() {
      ArrayList<String> movies = createArray();
      for(String movie : movies){
-       MovieNameMatcher mvMatcher = new MovieNameMatcher(new MediaFile(new File(movie), Media.MOVIE, true, true), Arrays.asList(nameFilters));
+       MovieNameMatcher mvMatcher = new MovieNameMatcher(new MediaFile(new File(movie), Media.MediaType.MOVIE, true, true), Arrays.asList(nameFilters));
        mvMatcher.getMovieName();
      }
      System.out.println(movies.size() + " Movies traited with " + nameFilters.length + " regex");

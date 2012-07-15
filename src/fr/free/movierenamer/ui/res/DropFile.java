@@ -162,8 +162,8 @@ public class DropFile implements DropTargetListener {
       }
     }
     parent.setCursor(normalCursor);
-
-    ListFilesWorker lft = new ListFilesWorker(files, renamed, subFolders, count, setting);
+    
+    ListFilesWorker lft = new ListFilesWorker(files, renamed, subFolders, count);
     listener.setWorker(lft);
     lft.addPropertyChangeListener(listener);
     lft.execute();

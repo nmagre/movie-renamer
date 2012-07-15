@@ -26,13 +26,12 @@ import fr.free.movierenamer.utils.Utils;
 import java.util.logging.Level;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class AllocineInfo
  * @author Nicolas Magré
  */
-public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
+public class AllocineInfo extends MrParser<MovieInfo> {
 
   private static final String ACTORCODE = "8001";
   private static final String DIRECTORCODE = "8002";
@@ -40,7 +39,7 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
   private boolean movie;
   private boolean casting;
   private boolean mperson;
-  private MovieInfo movieinfo;
+  private final MovieInfo movieinfo;
   private MediaPerson person;
   private String personName;
   private int count;
@@ -54,7 +53,6 @@ public class AllocineInfo extends DefaultHandler implements IParser<MovieInfo> {
 
   @Override
   public void startDocument() throws SAXException {
-    super.startDocument();
     mediaPicture = false;
     movie = false;
     casting = false;

@@ -17,13 +17,19 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import java.io.File;
 import org.xml.sax.ContentHandler;
 
 /**
  * Interface for XML parser
- * @param <T> Object returned by parser
+ * 
+ * @param <T>
+ *          Object returned by parser
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public interface IParser<T> extends ContentHandler {
   public T getObject();
+
+  public void setOriginalFile(File originalFile);
 }

@@ -25,14 +25,13 @@ import fr.free.movierenamer.utils.Settings;
 import java.util.logging.Level;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class XbmcNFOInfo
  *
  * @author Nicolas Magré
  */
-public class XbmcNFOInfo extends DefaultHandler implements IParser<MovieInfo> {
+public class XbmcNFOInfo extends MrParser<MovieInfo> {
 
   private StringBuffer buffer;
   private MovieInfo movieInfo;

@@ -666,7 +666,7 @@ public abstract class Utils {
       URL uri = new URL(url);
       image = cache.getImage(uri, Cache.CacheType.THUMB);
       if (image == null) {
-        cache.add(uri.openStream(), uri.toString(), Cache.CacheType.THUMB);
+        cache.add(uri, Cache.CacheType.THUMB);
         image = cache.getImage(uri, Cache.CacheType.THUMB);
       }
       icon = new ImageIcon(image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_DEFAULT));

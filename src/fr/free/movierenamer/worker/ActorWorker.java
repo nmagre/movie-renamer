@@ -27,47 +27,43 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.SwingWorker;
 
 /**
- * Class ActorWorker , Download and add actor images to mediapanel
- *
+ * Class ActorWorker , Download and add actor images to moviePanel
+ * 
  * @author Magré Nicolas
  */
-public class ActorWorker extends SwingWorker<Void, Void> {
+public class ActorWorker extends Worker<Void> {
 
-  private List<MediaPerson> actors;
-  private Settings setting;
-  private IMediaPanel mediaPanel;
+  private final List<MediaPerson> actors;
+  private final IMediaPanel mediaPanel;
 
   /**
    * Constructor arguments
    *
-   * @param actors List of actors
+   * @param actors List of actor
    * @param mediaPanel Movie Renamer media panel
-   * @param setting Movie Renamer settings
    */
-  public ActorWorker(List<MediaPerson> actors, IMediaPanel mediaPanel, Settings setting) {
+  public ActorWorker(List<MediaPerson> actors, IMediaPanel mediaPanel) {
     this.actors = actors;
     this.mediaPanel = mediaPanel;
-    this.setting = setting;
   }
 
   @Override
-  protected Void doInBackground() {
+  protected Void executeInBackground() {
     setProgress(0);
     for (int i = 0; i < actors.size(); i++) {
       Image image = null;
       URL url = null;
       StringBuilder desc = new StringBuilder("<html><h1>" + actors.get(i).getName() + "</h1>");
 
-      if (!actors.get(i).getThumb().equals(Utils.EMPTY) && setting.actorImage && setting.movieInfoPanel) {
+      if (!actors.get(i).getThumb().equals(Utils.EMPTY) && config.actorImage && config.movieInfoPanel) {
 
         try {
           url = new URL(actors.get(i).getThumb().replace(".png", ".jpg"));
           image = Cache.getInstance().getImage(url, Cache.CacheType.ACTOR);
           if (image == null) {
-            Cache.getInstance().add(url.openStream(), url.toString(), Cache.CacheType.ACTOR);
+            Cache.getInstance().add(url, Cache.CacheType.ACTOR);
             image = Cache.getInstance().getImage(url, Cache.CacheType.ACTOR);
           }
         } catch (IOException ex) {

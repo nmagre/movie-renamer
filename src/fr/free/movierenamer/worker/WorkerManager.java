@@ -17,30 +17,35 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.worker.provider.AllocineInfoWorker;
+import fr.free.movierenamer.worker.provider.AllocineSearchWorker;
+import fr.free.movierenamer.worker.provider.AllocineTvShowInfoWorker;
+import fr.free.movierenamer.worker.provider.AllocineTvShowSearchWorker;
+import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
+import fr.free.movierenamer.worker.provider.ImdbSearchWorker;
+import fr.free.movierenamer.worker.provider.TmdbInfoWorker;
+import fr.free.movierenamer.worker.provider.TmdbSearchWorker;
+import fr.free.movierenamer.worker.provider.TvdbInfoWorker;
+import fr.free.movierenamer.worker.provider.TvdbSearchWorker;
+
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.SxE;
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.SwingWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class WorkerManager
- *
+ * 
  * @author Nicolas Magré
- * @author QUÉMÉNEUR Simon
  */
 public abstract class WorkerManager {
 
@@ -59,35 +64,34 @@ public abstract class WorkerManager {
    *
    * @param errorSupport
    * @param media Media
-   * @param setting Movie Renamer settings
    * @return Worker depend of media type and settings or null
    */
-  public static SwingWorker<ArrayList<SearchResult>, String> getSearchWorker(SwingPropertyChangeSupport errorSupport, Media media, Settings setting) {
-    SwingWorker<ArrayList<SearchResult>, String> worker = null;
+  public static MediaSearchWorker getSearchWorker(SwingPropertyChangeSupport errorSupport, Media media) {
+    MediaSearchWorker worker = null;
     Settings.LOGGER.log(Level.INFO, "Search : {0}", media.getSearch());
-
+    Settings config = Settings.getInstance();
     switch (media.getType()) {
-      case Media.MOVIE:
-        switch (setting.movieScrapper) {
+      case MOVIE:
+      switch (config.movieScrapper) {
           case IMDB:
-            worker = new ImdbSearchWorker(errorSupport, media.getSearch(), setting);
+        worker = new ImdbSearchWorker(errorSupport, media.getSearch());
             break;
           case TMDB:
-            worker = new TmdbSearchWorker(errorSupport, media.getSearch(), setting);
+        worker = new TmdbSearchWorker(errorSupport, media.getSearch());
             break;
           case ALLOCINE:
-            worker = new AllocineSearchWorker(errorSupport, false, media.getSearch(), setting);
+        worker = new AllocineSearchWorker(errorSupport, media.getSearch());
             break;
           default:
         }
         break;
-      case Media.TVSHOW:
-        switch (setting.tvshowScrapper) {
+      case TVSHOW:
+      switch (config.tvshowScrapper) {
           case TVDB:
-            worker = new TvdbSearchWorker(errorSupport, media.getSearch(), setting);
+        worker = new TvdbSearchWorker(errorSupport, media.getSearch());
             break;
           case ALLOCINETV:
-            worker = new AllocineSearchWorker(errorSupport, true, media.getSearch(), setting);
+        worker = new AllocineTvShowSearchWorker(errorSupport, media.getSearch());
             break;
           default:
         }
@@ -99,43 +103,41 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static SwingWorker<MovieInfo, String> getMovieInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, Settings setting) throws ActionNotValidException {
-    SwingWorker<MovieInfo, String> worker = null;
-    switch (setting.movieScrapper) {
+  public static MovieInfoWorker getMovieInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+    MovieInfoWorker worker = null;
+    switch (Settings.getInstance().movieScrapper) {
       case IMDB:
-        worker = new ImdbInfoWorker(errorSupport, id, setting);
+      worker = new ImdbInfoWorker(errorSupport, id);
         break;
       case TMDB:
-        worker = new TmdbInfoWorker(errorSupport, id, setting);
+      worker = new TmdbInfoWorker(errorSupport, id);
         break;
       case ALLOCINE:
-        worker = new AllocineInfoWorker(errorSupport, id, setting);
+      worker = new AllocineInfoWorker(errorSupport, id);
         break;
-      default:
     }
     Settings.LOGGER.log(Level.INFO, "Information API ID : {0}", id.getID());
     return worker;
   }
 
-  public static SwingWorker<Void, Void> getMediaImageWorker(List<MediaImage> array,  Cache.CacheType cache, IMediaPanel mediaPanel, Settings setting) {
-    return new MediaImageWorker(array, cache, mediaPanel, setting);
-  }
-
-  public static SwingWorker<Void, Void> getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel, Settings setting) {
-    return new ActorWorker(actors, moviePanel, setting);
-  }
-
-  public static SwingWorker<List<TvShowSeason>, String> getTvShowInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe, Settings setting) throws ActionNotValidException {
-    SwingWorker<List<TvShowSeason>, String> worker = null;
-    switch (setting.tvshowScrapper) {
+  public static TvShowInfoWorker getTvShowInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
+    TvShowInfoWorker worker = null;
+    switch (Settings.getInstance().tvshowScrapper) {
       case TVDB:
-        worker = new TvdbInfoWorker(errorSupport, id, setting);
+      worker = new TvdbInfoWorker(errorSupport, id);
         break;
       case ALLOCINETV:
-        worker = new AllocineInfoTvWorker(errorSupport, id, sxe, setting);
+      worker = new AllocineTvShowInfoWorker(errorSupport, id, sxe);
         break;
-      default:
     }
     return worker;
+  }
+
+  public static ImageWorker getMediaImageWorker(List<MediaImage> array, Cache.CacheType cache, IMediaPanel mediaPanel) {
+    return new ImageWorker(array, cache, mediaPanel);
+  }
+
+  public static ActorWorker getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel) {
+    return new ActorWorker(actors, moviePanel);
   }
 }

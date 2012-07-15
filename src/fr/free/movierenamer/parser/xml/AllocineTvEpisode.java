@@ -22,13 +22,12 @@ import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
- *
+ * 
  * @author Nicolas Magré
  */
-public class AllocineTvEpisode extends DefaultHandler implements IParser<ArrayList<TvShowEpisode>> {
+public class AllocineTvEpisode extends MrParser<ArrayList<TvShowEpisode>> {
 
   private StringBuffer buffer;
   private TvShowEpisode currentEpisode;
@@ -37,13 +36,13 @@ public class AllocineTvEpisode extends DefaultHandler implements IParser<ArrayLi
 
   public AllocineTvEpisode() {
     super();
-    tvShowEpisodes = new ArrayList<TvShowEpisode>();
-    season = episodeList = episode = false;
   }
 
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
+    tvShowEpisodes = new ArrayList<TvShowEpisode>();
+    season = episodeList = episode = false;
   }
 
   @Override

@@ -21,13 +21,12 @@ import fr.free.movierenamer.media.MediaID;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
  * @author Nicolas Magré
  */
-public class TvdbUpdate extends DefaultHandler implements IParser<ArrayList<MediaID>> {
+public class TvdbUpdate extends MrParser<ArrayList<MediaID>> {
 
   private StringBuffer buffer;
   private ArrayList<MediaID> mediaIds;

@@ -25,14 +25,13 @@ import fr.free.movierenamer.utils.Utils;
 import java.util.logging.Level;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class TheMovieDbInfo
  *
  * @author Nicolas Magré
  */
-public class TmdbInfo extends DefaultHandler implements IParser<MovieInfo> {
+public class TmdbInfo extends MrParser<MovieInfo> {
 
   private StringBuffer buffer;
   private boolean movie;

@@ -457,8 +457,8 @@ public class Movie implements Media {
   }
 
   @Override
-  public int getType() {
-    return Media.MOVIE;
+  public MediaType getType() {
+    return Media.MediaType.MOVIE;
   }
 
   @Override

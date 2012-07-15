@@ -22,26 +22,23 @@ import fr.free.movierenamer.utils.SearchResult;
 import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Class AllocineSearch
- *
+ * 
  * @author Nicolas Magré
  */
-public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<SearchResult>> {
+public class AllocineSearch extends MrParser<ArrayList<SearchResult>> {
 
   private StringBuffer buffer;
-  private boolean tvshow;
   private ArrayList<SearchResult> results;
   private boolean media;
   private String currentId;
   private String currentName;
   private String currentThumb;
 
-  public AllocineSearch(boolean tvshow) {
+  public AllocineSearch() {
     super();
-    this.tvshow = tvshow;
   }
 
   @Override
@@ -52,14 +49,9 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
   }
 
   @Override
-  public void endDocument() throws SAXException {
-    super.endDocument();
-  }
-
-  @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase(tvshow ? "tvseries":"movie")) {
+    if (name.equalsIgnoreCase("movie")) {
       media = true;
       currentName = currentId = currentThumb = "";
       currentId = attributes.getValue("code");
@@ -73,9 +65,9 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase(tvshow ? "tvseries":"movie")) {
+    if (name.equalsIgnoreCase("movie")) {
       media = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, tvshow ? MediaID.ALLOCINETVID:MediaID.ALLOCINEID), "", currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.ALLOCINEID), SearchResult.SearchResultType.NONE, currentThumb));
     }
     if (media) {
       if (name.equalsIgnoreCase("originalTitle")) {//Original title will be there in all case but title not
@@ -84,13 +76,8 @@ public class AllocineSearch extends DefaultHandler implements IParser<ArrayList<
       if (name.equalsIgnoreCase("title")) {
         currentName = buffer.toString();
       }
-      if (name.equalsIgnoreCase(tvshow ? "yearStart":"productionYear")) {
+      if (name.equalsIgnoreCase("productionYear")) {
         currentName += " (" + buffer.toString() + ")";
-      }      
-      if (tvshow && name.equalsIgnoreCase("yearEnd")) {
-        if(!buffer.toString().equals("")) {
-          currentName += " - (" + buffer.toString() + ")";
-        }
       }
     }
     buffer = null;
