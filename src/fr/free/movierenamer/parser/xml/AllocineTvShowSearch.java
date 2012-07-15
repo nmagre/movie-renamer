@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 /**
  * Class AllocineTvShowSearch
  * 
+ * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
 public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {

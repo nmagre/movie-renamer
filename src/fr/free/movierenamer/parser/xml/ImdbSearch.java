@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 /**
  * Class ImdbSearch
  * 
+ * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
 public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
@@ -60,7 +61,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
   /**
    * The exception to bypass parsing file ;)
    */
-  private final NOSAXException ex = new NOSAXException();
+  private final NOSAXException nsEx = new NOSAXException();
   
   private final URL realUrl;
 
@@ -73,7 +74,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
   public void startDocument() throws SAXException {
     results = new ArrayList<SearchResult>();
 
-    String htmlSearchRes = getContent();
+    String htmlSearchRes = getContent("ISO-8859-1");
 
     if (htmlSearchRes != null && !htmlSearchRes.contains("<b>No Matches.</b>")) {
       Pattern pattern = Pattern.compile("http://www.imdb.(com|fr)/title/tt\\d+/");
@@ -95,7 +96,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
         results.add(getMovie(htmlSearchRes));
       }
     }
-    throw ex;
+    throw nsEx;
   }
 
   @Override

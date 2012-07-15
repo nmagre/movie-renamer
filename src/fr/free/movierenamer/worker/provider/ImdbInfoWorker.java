@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MovieInfoWorker;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -27,6 +25,7 @@ import fr.free.movierenamer.parser.xml.ImdbInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.MovieInfoWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**

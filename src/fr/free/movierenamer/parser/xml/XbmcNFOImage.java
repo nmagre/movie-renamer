@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class XbmcNFOImage extends MrParser<MovieImage> {//A refaire, parser mieux que sa
+public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parser mieux que sa
 
   private StringBuffer buffer;
   private MovieImage movieImage;

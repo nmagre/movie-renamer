@@ -56,7 +56,7 @@ public class ImdbImage extends MrParser<MovieImage> {
 
   @Override
   public void startDocument() throws SAXException {
-    String moviePage = getContent();
+    String moviePage = getContent("ISO-8859-1");
     // Title + Year
     Pattern pattern = Pattern.compile(IMDBMOVIETHUMB_C);
     Matcher searchMatcher = pattern.matcher(moviePage);

@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 /**
  * Class ImdbInfo
  * 
+ * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
 public class ImdbInfo extends MrParser<MovieInfo> {
@@ -69,7 +70,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
 
   @Override
   public void startDocument() throws SAXException {
-    String moviePage = getContent();
+    String moviePage = getContent("ISO-8859-1");
     // Title + Year
     Pattern pattern = Pattern.compile(IMDBMOVIETITLE_C);
     Matcher searchMatcher = pattern.matcher(moviePage);
@@ -199,6 +200,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     if (searchMatcher.find()) {
       String plot = searchMatcher.group();
       plot = plot.substring(plot.indexOf("\n") + 1, plot.indexOf("<a") - 1);
+      System.out.println(plot);
       movieInfo.setSynopsis(Utils.unEscapeXML(plot, "ISO-8859-1"));
     }
 

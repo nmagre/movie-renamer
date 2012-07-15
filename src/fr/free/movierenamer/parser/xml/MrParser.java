@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -32,6 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @param <T>
  *          Object returned by parser
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public abstract class MrParser<T> extends DefaultHandler implements ContentHandler {
   protected final Settings config = Settings.getInstance();
@@ -43,13 +45,14 @@ public abstract class MrParser<T> extends DefaultHandler implements ContentHandl
     this.originalFile = originalFile;
   }
 
-  protected final String getContent() {
+  protected final String getContent(String charset) {
     try {
-      return Utils.getInputStreamContent(new FileInputStream(originalFile), "UTF-8");
+      return Utils.getInputStreamContent(new FileInputStream(originalFile), charset);
     } catch (FileNotFoundException e) {
-      return "";
+      //Don't care about exception
     } catch (IOException e) {
-      return "";
+      Settings.LOGGER.log(Level.SEVERE, e.getMessage());
     }
+    return "";
   }
 }

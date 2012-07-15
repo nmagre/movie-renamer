@@ -24,7 +24,6 @@ import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import java.awt.Image;
 import java.util.List;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
