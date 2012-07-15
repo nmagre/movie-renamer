@@ -25,23 +25,20 @@ import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class TvShowInfoWorker
- * 
+ *
  * @author QUÉMÉNEUR Simon
- * 
+ *
  */
 public abstract class TvShowInfoWorker extends MediaInfoWorker<TvShowInfo, TvShowImage> {
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport
-   *          Swing change support
-   * @param id
-   *          Media API ID
+   *
+   * @param errorSupport Swing change support
+   * @param id Media API ID
    * @throws ActionNotValidException
    */
   public TvShowInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
   }
-
 }

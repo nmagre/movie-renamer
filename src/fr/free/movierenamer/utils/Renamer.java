@@ -17,19 +17,12 @@
  */
 package fr.free.movierenamer.utils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import fr.free.movierenamer.media.MediaRenamed;
+import java.io.*;
 import java.net.URL;
 import java.util.Date;
 import java.util.logging.Level;
-
 import javax.swing.JOptionPane;
-
-import fr.free.movierenamer.media.MediaRenamed;
 
 /**
  * Class Renamer , Rename movie files, download thumb/fanart, create XBMC NFO

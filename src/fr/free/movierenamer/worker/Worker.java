@@ -27,6 +27,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
 /**
  * Class Worker
  * 
+ * @param <T> 
  * @author QUÉMÉNEUR Simon
  * 
  */

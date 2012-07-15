@@ -29,6 +29,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
 /**
  * Class HttpWorker
  * 
+ * @param <T> 
  * @author QUÉMÉNEUR Simon
  */
 public abstract class HttpWorker<T> extends Worker<T> {

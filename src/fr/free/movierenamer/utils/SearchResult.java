@@ -110,7 +110,7 @@ public class SearchResult implements IIconList {
 
   @Override
   public String toString() {
-    if (type.equals("")) {
+    if (type == SearchResultType.NONE) {
       return title;
     }
     return title + " : " + type;

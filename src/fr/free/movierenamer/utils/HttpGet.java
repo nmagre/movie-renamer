@@ -18,11 +18,7 @@
 package fr.free.movierenamer.utils;
 
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 
 /**
  * Class HttpGet , Send http request and get web page in a string

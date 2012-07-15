@@ -32,7 +32,8 @@ import org.xml.sax.SAXException;
 
 /**
  * Class MediaImageWorker
- * 
+ *
+ * @param <T>
  * @author QUÉMÉNEUR Simon
  */
 public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker<T> {
@@ -41,9 +42,9 @@ public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport
-   *          Swing change support
+   *
+   * @param errorSupport Swing change support
+   * @param id
    * @throws ActionNotValidException
    */
   public MediaImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
@@ -53,7 +54,7 @@ public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see fr.free.movierenamer.worker.HttpWorker#proccessFile(java.io.File)
    */
   @Override
@@ -88,7 +89,7 @@ public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker
 
   /**
    * @return
+   * @throws Exception  
    */
   protected abstract MrParser<T> getImageParser() throws Exception;
-
 }
