@@ -172,7 +172,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       }
     });
 
-    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.THUMB, Cache.CacheType.THUMB);
+    DropImage dropThumb = new DropImage(this, MoviePanel.this, MediaImage.MediaImageType.THUMB, Cache.CacheType.THUMB);
     dropThumbTarget = new DropTarget(thumbnailsList, dropThumb);
 
     fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -192,7 +192,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       }
     });
 
-    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.FANART, Cache.CacheType.FANART);
+    DropImage dropFanart = new DropImage(this, MoviePanel.this, MediaImage.MediaImageType.FANART, Cache.CacheType.FANART);
     dropFanartTarget = new DropTarget(fanartList, dropFanart);
 
     actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -254,10 +254,10 @@ public class MoviePanel extends JPanel implements IMediaPanel {
   @Override
   public void addImageToList(Image img, MediaImage mediaImage, boolean selectLast) {
     switch (mediaImage.getType()) {
-      case MediaImage.THUMB:
+      case THUMB:
         addThumbToList(img, mediaImage, selectLast);
         break;
-      case MediaImage.FANART:
+      case FANART:
         addFanartToList(img, mediaImage, selectLast);
         break;
        default: break;

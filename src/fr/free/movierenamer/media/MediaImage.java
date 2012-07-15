@@ -19,26 +19,30 @@ package fr.free.movierenamer.media;
 
 /**
  * Class Images
- *
+ * 
  * @author Nicolas Magré
  */
 public class MediaImage {
 
-  public static final int THUMB = 0;
-  public static final int FANART = 1;
+  public enum MediaImageType {
+    THUMB,
+    FANART,
+    OTHER;
+  }
+
   private int id;
-  private int type;
+  private MediaImageType type;
   private String orig;
   private String medium;
   private String thumb;
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param id Image id, "-1" -> image added from web/hdd/..., "0" image from API/NFO/...
    * @param type Media image type
    */
-  public MediaImage(int id, int type) {
+  public MediaImage(int id, MediaImageType type) {
     this.id = id;
     this.type = type;
     orig = "";
@@ -48,7 +52,7 @@ public class MediaImage {
 
   /**
    * Get Id
-   *
+   * 
    * @return Id
    */
   public int getId() {
@@ -57,16 +61,16 @@ public class MediaImage {
 
   /**
    * Get media image type
-   *
+   * 
    * @return Media image type
    */
-  public int getType() {
+  public MediaImageType getType() {
     return type;
   }
 
   /**
    * Get image original URL
-   *
+   * 
    * @return Original URL
    */
   public String getOrigUrl() {
@@ -75,7 +79,7 @@ public class MediaImage {
 
   /**
    * Get image middle URL
-   *
+   * 
    * @return Middle URL
    */
   public String getMidUrl() {
@@ -84,7 +88,7 @@ public class MediaImage {
 
   /**
    * Get image thumb URL
-   *
+   * 
    * @return Thumb URL
    */
   public String getThumbUrl() {
@@ -93,7 +97,7 @@ public class MediaImage {
 
   /**
    * Set original image URL
-   *
+   * 
    * @param url URL
    */
   public void setOrigUrl(String url) {
@@ -102,7 +106,7 @@ public class MediaImage {
 
   /**
    * Set middle image URL
-   *
+   * 
    * @param url URL
    */
   public void setMidUrl(String url) {
@@ -111,7 +115,7 @@ public class MediaImage {
 
   /**
    * Set thumb URL
-   *
+   * 
    * @param url URL
    */
   public void setThumbUrl(String url) {

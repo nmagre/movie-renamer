@@ -61,7 +61,7 @@ public class XbmcNFOImage extends MrParser<MovieImage> {//A refaire, parser mieu
     if (name.equalsIgnoreCase("thumb")) {
       if (attributes.getValue("preview") != null) {
         thumb = true;
-        image = new MediaImage(0, MediaImage.THUMB);//A refaire, selon le cas (fanart,tumb,...)
+        image = new MediaImage(0, MediaImage.MediaImageType.THUMB);//FIXME A refaire, selon le cas (fanart,tumb,...)
         image.setThumbUrl(attributes.getValue("preview"));
       }
     }

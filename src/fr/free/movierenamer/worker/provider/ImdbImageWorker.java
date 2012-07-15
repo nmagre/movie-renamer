@@ -17,12 +17,14 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MediaImageWorker;
+import fr.free.movierenamer.utils.Settings;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.parser.xml.ImdbImage;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.worker.MediaImageWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
@@ -39,6 +41,9 @@ public class ImdbImageWorker extends MediaImageWorker {
    */
   public ImdbImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
+    if (id.getType() != MediaID.IMDBID) {
+      throw new ActionNotValidException("TmdbImageWorker can only use imdb ID");
+    }
   }
 
   /*
@@ -48,7 +53,7 @@ public class ImdbImageWorker extends MediaImageWorker {
    */
   @Override
   protected String getSearchUri() throws Exception {
-    return null;
+    return (config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined";
   }
 
   /*
@@ -58,7 +63,7 @@ public class ImdbImageWorker extends MediaImageWorker {
    */
   @Override
   protected MrParser<MovieImage> getImageParser() throws Exception {
-    return null;
+    return new ImdbImage();
   }
 
 }

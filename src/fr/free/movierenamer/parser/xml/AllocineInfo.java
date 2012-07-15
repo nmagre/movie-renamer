@@ -74,7 +74,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
         casting = true;
       }
       if (name.equalsIgnoreCase("poster")) {
-        MediaImage movieThumb = new MediaImage(0, MediaImage.THUMB);
+        MediaImage movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
         movieThumb.setThumbUrl(attributes.getValue("href"));
         movieThumb.setMidUrl(attributes.getValue("href"));
         movieThumb.setOrigUrl(attributes.getValue("href"));
@@ -86,7 +86,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
       if (mediaPicture) {
         if (name.equalsIgnoreCase("thumbnail")) {
           if (!movieinfo.getThumbs().get(0).getThumbUrl().equals(attributes.getValue("href"))) {
-            MediaImage movieFanart = new MediaImage(0, MediaImage.FANART);
+            MediaImage movieFanart = new MediaImage(0, MediaImage.MediaImageType.FANART);
             movieFanart.setThumbUrl(attributes.getValue("href"));
             movieFanart.setMidUrl(attributes.getValue("href"));
             movieFanart.setOrigUrl(attributes.getValue("href"));

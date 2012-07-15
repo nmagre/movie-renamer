@@ -84,7 +84,7 @@ public class TmdbImage extends MrParser<MovieImage> {
               }
             }
             currentId = attributes.getValue("id");
-            currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.THUMB : MediaImage.FANART);
+            currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.MediaImageType.THUMB : MediaImage.MediaImageType.FANART);
             lastAttribute = attributes.getValue("type");
           }
           if (attributes.getValue("size").equals("original")) {

@@ -54,7 +54,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
 
   private static final String IMDBMOVIETITLE = "<meta property=.og:title. content=?(.*?) \\(.*\\d\\d\\d\\d.*\\)";
   private static final String IMDBMOVIETHUMB = "/tt\\d+\".*><img src=\"http://.*.jpg\"\n";
-  private static final String IMDBMOVIETITLE_C = "<title>(.* \\(.*\\d+.*\\).*)</title>";
+//  private static final String IMDBMOVIETITLE_C = "<title>(.* \\(.*\\d+.*\\).*)</title>";
   private static final String IMDBMOVIETHUMB_C = "title=\".*\" src=.http://ia.media-imdb.com/images/.*>";
   
   /**
