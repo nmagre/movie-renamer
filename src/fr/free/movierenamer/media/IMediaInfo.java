@@ -20,6 +20,7 @@ package fr.free.movierenamer.media;
 /**
  * Class IMediaInfo
  * 
+ * @param <T> 
  * @author QUÉMÉNEUR Simon
  */
 public interface IMediaInfo<T extends IMediaImage> {
