@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
  * Class Renamer , Rename movie files, download thumb/fanart, create XBMC NFO
  *
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class Renamer {
 
@@ -149,6 +150,15 @@ public class Renamer {
           return true;
         }
         if (file.getName().equals(oldFileNameNoExt + ".sub")) {
+          return true;
+        }
+        if (file.getName().equals(oldFileNameNoExt + ".jpg")) {
+          return true;
+        }
+        if (file.getName().equals(oldFileNameNoExt + ".jpeg")) {
+          return true;
+        }
+        if (file.getName().equals(oldFileNameNoExt + ".png")) {
           return true;
         }
         return false;

@@ -393,11 +393,11 @@ public abstract class Utils {
    * Delete all file in directory
    *
    * @param dir Directory
-   * @return True on succes, false otherwise
+   * @return True on success, false otherwise
    */
   public static boolean deleteFileInDirectory(File dir) {
     boolean del = true;
-    if (dir == null && !dir.isDirectory()) {
+    if (dir == null || !dir.isDirectory()) {
       return false;
     }
     for (File fils : dir.listFiles()) {

@@ -17,14 +17,13 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MediaImageWorker;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.MediaImageWorker;
 import javax.swing.event.SwingPropertyChangeSupport;
 import javax.xml.bind.DatatypeConverter;
 
@@ -33,7 +32,7 @@ import javax.xml.bind.DatatypeConverter;
  * 
  * @author QUÉMÉNEUR Simon
  */
-public class TmdbImageWorker extends MediaImageWorker {
+public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
 
   /**
    * @param errorSupport

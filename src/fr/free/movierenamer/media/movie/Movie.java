@@ -135,6 +135,7 @@ public class Movie implements Media {
       {"<mtt>", mtag.getTextTitleString(separator, limit)}
     };
     
+    //replace actors, directors, genres, coutries
     Pattern pattern = Pattern.compile("<([adcg])(\\d+)>");
     Matcher matcher = pattern.matcher(regExp);
     while (matcher.find()) {
@@ -158,6 +159,7 @@ public class Movie implements Media {
       }
     }
 
+    //replace audio attr
     pattern = Pattern.compile("<(ma?[chtl]*)(\\d+)>");
     matcher = pattern.matcher(regExp);
     while (matcher.find()) {
@@ -180,6 +182,7 @@ public class Movie implements Media {
       }
     }
 
+    //la suite ;)
     for (int i = 0; i < replace.length; i++) {
       regExp = regExp.replaceAll(replace[i][0], replace[i][1]);
     }
@@ -188,27 +191,40 @@ public class Movie implements Media {
       regExp = regExp.trim();
     }
 
-    String fileName = getFile().getName();
-    String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
-
+    //Case conversion
     String res;
     switch (renameCase) {
     case UPPER:
-      res = regExp.toUpperCase() + "." + ext.toUpperCase();
+      res = regExp.toUpperCase();
       break;
     case LOWER:
-      res = regExp.toLowerCase() + "." + ext.toLowerCase();
+      res = regExp.toLowerCase();
       break;
     case FIRSTLO:
-      res = Utils.capitalizedLetter(regExp, true) + "." + ext.toLowerCase();
+      res = Utils.capitalizedLetter(regExp, true);
       break;
     case FIRSTLA:
-      res = Utils.capitalizedLetter(regExp, false) + "." + ext.toLowerCase();
+      res = Utils.capitalizedLetter(regExp, false);
       break;
     default:
-      res = regExp + "." + ext.toLowerCase();
+      res = regExp;
       break;
     }
+    
+    //extension
+    String fileName = getFile().getName();
+    String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
+    switch (renameCase) {
+    case UPPER:
+      ext = "." + ext.toUpperCase();
+      break;
+    default:
+      ext = "." + ext.toLowerCase();
+      break;
+    }
+    
+    //construct new file name
+    res = res + ext;
 
     if (Utils.isWindows()) {
       res = res.replaceAll(":", "").replaceAll("/", "");
