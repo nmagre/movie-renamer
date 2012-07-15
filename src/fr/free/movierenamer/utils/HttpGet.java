@@ -115,7 +115,10 @@ public class HttpGet {
 
       conn.setReadTimeout(3000);
 
-      return conn.getInputStream();
+      InputStream is = conn.getInputStream();
+      realURL = conn.getURL();
+      
+      return is;
     } catch (Exception e) {
       throw new Exception("HTTP Get " + Utils.i18n("error") + Utils.SPACE + ":" + e);
     }
@@ -137,22 +140,9 @@ public class HttpGet {
     String result = null;
 
     try {
-      URLConnection conn;
-      if (config.useProxy) {
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.proxyUrl, config.proxyPort));
-        conn = url.openConnection(proxy);
-      } else {
-        conn = url.openConnection();
-      }
+      InputStream is = getInputStream(fakeUserAgent, encode);
 
-      if (fakeUserAgent) {
-        System.setProperty("http.agent", Utils.EMPTY);
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-      }
-
-      conn.setReadTimeout(3000);
-
-      result = Utils.getInputStreamContent(conn.getInputStream(), encode);
+      result = Utils.getInputStreamContent(is, encode);
     } catch (Exception e) {
       throw new Exception("HTTP Get " + Utils.i18n("error") + Utils.SPACE + ":" + e);
     }
