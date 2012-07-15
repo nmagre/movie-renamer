@@ -37,6 +37,7 @@ public class TvShowEpisodeMatcherTest {
     Map<SxE, String> epMatchesTest = new LinkedHashMap<SxE, String>();
     epMatchesTest.put(new SxE(3, 2), "Test.test.S03E02.FRENCH.HD.avi");
     epMatchesTest.put(new SxE(2, 2), "Test 2x02 - Test test test.avi");
+    epMatchesTest.put(new SxE(7, 18), "Test 07x18 - Test test test.avi");
     epMatchesTest.put(new SxE(1, 2), "Test - [1x02] - test.avi");
     epMatchesTest.put(new SxE(1, 11), "test.S01E11.FRENCH.HDRIp.avi");
     epMatchesTest.put(new SxE(1, 3), "Test Saison 1 - Ep. 03 - Un test.avi");
@@ -66,6 +67,7 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(10, 9), "test- Season 10 - Episode 9 - test.avi");
     epMatchesTest.put(new SxE(9, 9), "test - 9x09 - test (HD 720x400 Fr).avi");
     epMatchesTest.put(new SxE(0, 9), "test - 009 - test (HD 720x400 Fr).avi");
+    epMatchesTest.put(new SxE(1, 1), "test -test- test (HD 720x400 Fr).avi");
     //With folder
     epMatchesTest.put(new SxE(3, 5), "S3/test - Ep. 05 -test.avi");
     epMatchesTest.put(new SxE(1, 51), "Saison 03/test - 1x51 - test.FR.avi");

@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.matcher;
 
+import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,27 +28,25 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.free.movierenamer.media.tvshow.SxE;
-import fr.free.movierenamer.utils.Utils;
-
 /**
  * Class TvShowEpisodeMatcher , Retreive episode and season of tv Show
- * 
+ *
  * @author Nicolas Magré
  */
 public class TvShowEpisodeMatcher {
-  // public static final Pattern seasonPattern = Pattern.compile("(?:(?:season)|(?:saison)|(?:s)).?([0-9]{1,2})");
-  // public static final Pattern episodePattern = Pattern.compile("(?:(?:(?:[eé]p)|(?:[eé]pisode)) ([0-9]{1,2}))|(?:[^ ]([0-9]{1,2})[ -_])");
+
+  public static final Pattern seasonPattern = Pattern.compile("(?:(?:season)|(?:saison)|(?:s)).?([0-9]{1,2})");
+  public static final Pattern episodePattern = Pattern.compile("(?:(?:(?:[eé]p)|(?:[eé]pisode)) ([0-9]{1,2}))|(?:(?:^| )([0-9]{1,2})[ -_])");
 
   public enum TvShowPattern {
+
     SxEPattern("([0-9]{1,2})x([0-9]{1,2})\\D"),
-    SxEPattern2("s([0-9]{1,2}).?[eé]([0-9]{1,2})([^\\/]*)"),
-    SxEPattern3("([0-9]+)([0-9][0-9])([\\._ \\-][^\\/]*)"),
+    SxEPattern2("s([0-9]{1,2}).?[eé]([0-9]{1,2})"),
+    SxEPattern3("(?:^|[\\W} ])([0-9]{1,2})([0-9][0-9])[\\._ \\-]"),
     SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
     SxEPattern5("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
     SxEPattern6("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
     SxEPattern7("([0-9]{2}) ([0-9]{2})");
-
     private Pattern pattern;
 
     private TvShowPattern(String pattern) {
@@ -57,7 +57,6 @@ public class TvShowEpisodeMatcher {
       return pattern;
     }
   }
-
   private String episodeName;
   private String parentFolder;
 
@@ -72,7 +71,7 @@ public class TvShowEpisodeMatcher {
 
   /**
    * Retreive season and episode
-   * 
+   *
    * @return SxE
    */
   public SxE matchEpisode() {
@@ -81,11 +80,11 @@ public class TvShowEpisodeMatcher {
 
   /**
    * Try to get the most probable match between all matches result
-   * 
+   *
    * @return SxE
    */
   private SxE matchAll() {
-    SxE sxe = null;
+    SxE sxe;
     ArrayList<SxE> SxEs = new ArrayList<SxE>();
     for (TvShowEpisodeMatcher.TvShowPattern patternToTest : TvShowEpisodeMatcher.TvShowPattern.values()) {
       if ((sxe = match(patternToTest)) != null) {
@@ -93,32 +92,40 @@ public class TvShowEpisodeMatcher {
       }
     }
 
-    // If no result, try to match season and episode separately
-    // if (SxEs.isEmpty()) {
-    // System.out.println("No Match Found, Try To match Separately");
-    // sxe = new SxE();
-    // Pattern pattern = Pattern.compile(seasonPattern);
-    // Matcher matcher = pattern.matcher(parentFolder == null ? episodeName : parentFolder);
-    // if (matcher.find()) {
-    // String season = matcher.group(1);
-    // sxe.setSeason(Utils.isDigit(season) ? Integer.parseInt(season) : -1);
-    // }
-    //
-    // pattern = Pattern.compile(episodePattern);
-    // matcher = pattern.matcher(episodeName);
-    // if (matcher.find()) {
-    // String episode = matcher.group(1) == null ? matcher.group(2) : matcher.group(1);
-    // sxe.setEpisode(Utils.isDigit(episode) ? Integer.parseInt(episode) : -1);
-    // }
-    // return sxe;
-    // }
+    if (SxEs.isEmpty()) {
+      sxe = new SxE();
+      Matcher matcher = seasonPattern.matcher(parentFolder == null ? episodeName : parentFolder);
+      if (matcher.find()) {
+        String season = matcher.group(1);
+        sxe.setSeason(Utils.isDigit(season) ? Integer.parseInt(season) : 1);
+      }
+
+      matcher = episodePattern.matcher(episodeName);
+      if (matcher.find()) {
+        String episode = matcher.group(1) == null ? matcher.group(2) : matcher.group(1);
+        sxe.setEpisode(Utils.isDigit(episode) ? Integer.parseInt(episode) : 1);
+      }
+      
+      if(!sxe.isValid()){
+        return new SxE(1,1);
+      }
+      
+      if (sxe.isPartial()) {
+        if (sxe.getSeason() < 0) {
+          sxe.setSeason(1);
+        }
+        if (sxe.getEpisode() < 0) {
+          sxe.setEpisode(1);
+        }
+      }
+      return sxe;
+    }
 
     ArrayList<SxE> completeMatch = new ArrayList<SxE>();
     ArrayList<SxE> partialMatch = new ArrayList<SxE>();
 
     // Separe complete match and partial match (partial match will be empty in almost all cases)
     for (SxE match : SxEs) {
-      System.out.println("Match : " + sxe);
       if (match.isValid()) {
         completeMatch.add(match);
       } else if (match.isPartial()) {
@@ -162,12 +169,17 @@ public class TvShowEpisodeMatcher {
       return getSxE(completeMatch);
     }
 
+    //No match found
+    if (SxEs.isEmpty() && partialMatch.isEmpty()) {
+      return new SxE(1, 1);
+    }
+
     return partialMatch.isEmpty() ? SxEs.get(0) : partialMatch.get(0);
   }
 
   /**
    * Try to match season and episode in fileName
-   * 
+   *
    * @param EPpattern Season/Episode pattern
    * @return SxE
    */
@@ -196,7 +208,7 @@ public class TvShowEpisodeMatcher {
 
   /**
    * Get the most probable season and episode by occurrence number
-   * 
+   *
    * @param SxEs List of SxE
    * @return SxE
    */
@@ -233,7 +245,7 @@ public class TvShowEpisodeMatcher {
 
   /**
    * Get the most encountered value in Map
-   * 
+   *
    * @param map Map
    * @return Key or -1
    */
@@ -246,7 +258,7 @@ public class TvShowEpisodeMatcher {
 
   /**
    * Get key by value
-   * 
+   *
    * @param map Map
    * @param value Value to reteive key
    * @return Key or null
@@ -262,7 +274,7 @@ public class TvShowEpisodeMatcher {
 
   /**
    * Normalize tvShow fileName
-   * 
+   *
    * @param str
    * @return String normalized
    */
