@@ -33,6 +33,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
  */
 public abstract class HttpWorker<T> extends Worker<T> {
   private static final int RETRY = 3;
+  private URL realUrl;
 
   public HttpWorker(SwingPropertyChangeSupport errorSupport) {
     super(errorSupport);
@@ -42,17 +43,17 @@ public abstract class HttpWorker<T> extends Worker<T> {
   protected final T executeInBackground() throws Exception {
     Cache.CacheType cacheType = getCacheType();
     String uri = getSearchUri();
-    URL url = new URL(uri);
-    File file = Cache.getInstance().get(url, cacheType);
+    realUrl = new URL(uri);
+    File file = Cache.getInstance().get(realUrl, cacheType);
     if (file != null) {
-      Settings.LOGGER.log(Level.FINE, "Use of cache file for {0}", url);
+      Settings.LOGGER.log(Level.FINE, "Use of cache file for {0}", realUrl);
     } else {
       for (int i = 0; i < RETRY; i++) {
-        InputStream is;
         HttpGet http;
         try {
           http = new HttpGet(uri);
           file = Cache.getInstance().add(http, cacheType);
+          realUrl = http.getURL();
           break;
         } catch (Exception e) {// Don't care about exception, "file" will be null
           Settings.LOGGER.log(Level.SEVERE, null, e);
@@ -70,6 +71,13 @@ public abstract class HttpWorker<T> extends Worker<T> {
 
   protected Cache.CacheType getCacheType() {
     return Cache.CacheType.XML;
+  }
+  
+  /**
+   * @return the url
+   */
+  protected URL getUrl() {
+    return realUrl;
   }
 
   /*

@@ -54,7 +54,7 @@ public class ImdbSearchWorker extends MovieSearchWorker {
 
   @Override
   protected MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception {
-    return new ImdbSearch();
+    return new ImdbSearch(getUrl());
   }
 
   // @Override
