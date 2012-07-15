@@ -406,11 +406,7 @@ public class MovieInfo implements IMediaInfo<MovieImage> {
    * @return First director
    */
   public String getFirstDirector() {
-    String res = "";
-    for (int i = 0; i < directors.size(); i++) {
-      return directors.get(i).getName();
-    }
-    return res;
+    return getActorN(0);
   }
 
   /**
@@ -445,11 +441,7 @@ public class MovieInfo implements IMediaInfo<MovieImage> {
    * @return First genre
    */
   public String getFirstGenreString() {
-    String res = "";
-    for (int i = 0; i < genres.size(); i++) {
-      return genres.get(i);
-    }
-    return res;
+    return getGenreN(0);
   }
 
   /**

@@ -46,7 +46,7 @@ public class DropImage implements DropTargetListener {
 
   private Component component;
   private IMediaPanel mediaPanel;
-  private int mediaImageType;
+  private MediaImage.MediaImageType mediaImageType;
   private Cache.CacheType cacheType;
 
   /**
@@ -58,7 +58,7 @@ public class DropImage implements DropTargetListener {
    * @param cacheType
    * @param setting Movie Renamer settings
    */
-  public DropImage(Component component, IMediaPanel mediaPanel, int mediaImageType, Cache.CacheType cache) {
+  public DropImage(Component component, IMediaPanel mediaPanel, MediaImage.MediaImageType mediaImageType, Cache.CacheType cache) {
     this.component = component;
     this.mediaPanel = mediaPanel;
     this.mediaImageType = mediaImageType;

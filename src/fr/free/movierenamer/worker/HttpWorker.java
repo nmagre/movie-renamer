@@ -21,7 +21,6 @@ import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
 import javax.swing.event.SwingPropertyChangeSupport;

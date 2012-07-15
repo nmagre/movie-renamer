@@ -55,6 +55,7 @@ public class ImageWorker extends Worker<Void> {// A refaire , en Media et rajout
 
   @Override
   protected Void executeInBackground() {
+    setProgress(0);
     for (int i = 0; i < arrayImage.size(); i++) {
       Image image;
       try {

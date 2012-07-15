@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.utils.Cache.CacheType;
 import java.awt.Image;
 import java.io.*;
 import java.net.URL;

@@ -17,6 +17,13 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaImage;
+import java.util.ArrayList;
+
+import java.util.regex.Matcher;
+
+import java.util.regex.Pattern;
+
 import fr.free.movierenamer.media.movie.MovieImage;
 import org.xml.sax.SAXException;
 
@@ -26,7 +33,14 @@ import org.xml.sax.SAXException;
  * @author QUÉMÉNEUR Simon
  */
 public class ImdbImage extends MrParser<MovieImage> {
+
+  private ArrayList<MediaImage> thumbs;
+  private ArrayList<MediaImage> fanarts;
+  private MediaImage currentMovieImage;
   private final MovieImage movieImage;
+  
+  private static final String IMDBMOVIETHUMB_C = "title=\".*\" src=.http://ia.media-imdb.com/images/.*>";
+  
   
   /**
    * The exception to bypass parsing file ;)
@@ -35,19 +49,32 @@ public class ImdbImage extends MrParser<MovieImage> {
 
   public ImdbImage() {
     super();
+    thumbs = new ArrayList<MediaImage>();
+    fanarts = new ArrayList<MediaImage>();
     movieImage = new MovieImage();
   }
 
   @Override
   public void startDocument() throws SAXException {
-    
+    String moviePage = getContent();
+    // Title + Year
+    Pattern pattern = Pattern.compile(IMDBMOVIETHUMB_C);
+    Matcher searchMatcher = pattern.matcher(moviePage);
+
+    // Thumb
+    if (searchMatcher.find()) {
+      String imdbThumb = searchMatcher.group();
+      imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=") + 5, imdbThumb.lastIndexOf("\""));
+      currentMovieImage = new MediaImage(0, MediaImage.MediaImageType.THUMB);
+      currentMovieImage.setThumbUrl(imdbThumb);
+      currentMovieImage.setMidUrl(imdbThumb);
+      thumbs.add(currentMovieImage);
+    }
+    movieImage.setThumbs(thumbs);
+    movieImage.setFanarts(fanarts);
     throw ex;
   }
-  /*
-   * (non-Javadoc)
-   * 
-   * @see fr.free.movierenamer.parser.xml.MrParser#getObject()
-   */
+  
   @Override
   public MovieImage getObject() {
     return movieImage;

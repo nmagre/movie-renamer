@@ -95,10 +95,11 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
     }
 
     ((IMediaInfo<U>) mediaInfo).setImages(mediaImage);
-    if (!((IMediaInfo) mediaInfo).getTrailer().equals("")) {
-      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo) mediaInfo).getTrailer(), YTdecodeUrl.HD);
+    
+    if (!((IMediaInfo<U>) mediaInfo).getTrailer().equals("")) {
+      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) mediaInfo).getTrailer(), YTdecodeUrl.HD);
       if (trailer != null) {
-        ((IMediaInfo) mediaInfo).setTrailer(trailer);
+        ((IMediaInfo<U>) mediaInfo).setTrailer(trailer);
       }
     }
 
