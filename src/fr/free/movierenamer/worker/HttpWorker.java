@@ -39,12 +39,15 @@ public abstract class HttpWorker<T> extends Worker<T> {
     super(errorSupport);
   }
 
+  // FIXME Les infos change avec le temps, exemple une série peut evolué très vite sur une API (certaines gère les update),
+  // Donc un "refresh" (force) et une vérification de l'ancièneté(par exemple une semaine => plus valide) du cache me parraisse indispensable
+  // Ne concerne que les XML/ZIP
   @Override
   protected final T executeInBackground() throws Exception {
     Cache.CacheType cacheType = getCacheType();
     String uri = getSearchUri();
     realUrl = new URL(uri);
-    File file = Cache.getInstance().get(realUrl, cacheType);
+    File file = Cache.getInstance().get(realUrl, cacheType); 
     if (file != null) {
       Settings.LOGGER.log(Level.FINE, "Use of cache file for {0}", realUrl);
     } else {

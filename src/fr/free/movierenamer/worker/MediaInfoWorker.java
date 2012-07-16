@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
  * @param <U> 
  * @author QUÉMÉNEUR Simon
  */
-public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaImage> extends HttpWorker<T> {
+public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaImage> extends HttpWorker<T> {// FIXME 1 MediaInfoWorker ->1,* requete et 1,* parse
 
   protected final MediaID id;
 
@@ -97,7 +97,7 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
     ((IMediaInfo<U>) mediaInfo).setImages(mediaImage);
     
     if (!((IMediaInfo<U>) mediaInfo).getTrailer().equals("")) {
-      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) mediaInfo).getTrailer(), YTdecodeUrl.HD);
+      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) mediaInfo).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
       if (trailer != null) {
         ((IMediaInfo<U>) mediaInfo).setTrailer(trailer);
       }

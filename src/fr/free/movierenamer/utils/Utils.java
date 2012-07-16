@@ -47,7 +47,6 @@ import javax.swing.ImageIcon;
 public abstract class Utils {
 
   private static String OS = null;
-  private static boolean libmediainfo = false;
   private static boolean libzen = false;
   private static String mediainfo = null;
   private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");

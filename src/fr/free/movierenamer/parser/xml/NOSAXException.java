@@ -25,5 +25,5 @@ import org.xml.sax.SAXException;
  * @author QUÉMÉNEUR Simon
  */
 public class NOSAXException extends SAXException {
-
+  // Use for bypass parsing on files which are not XML
 }

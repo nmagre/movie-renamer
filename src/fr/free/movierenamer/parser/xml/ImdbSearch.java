@@ -39,7 +39,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
   private ArrayList<SearchResult> results;
   private final ImdbLanguage ilang = config.movieScrapperFR ? ImdbLanguage.FRENCH : ImdbLanguage.ENGLISH;
 
-  public enum ImdbLanguage {// TODO , a réfléchir, imdb.fr ne sert à rien pour la recherche revient au même que le .com
+  public enum ImdbLanguage {// TODO , imdb.fr sert-t'il ? revient au même que le .com ? (on utilise pas akas.imdb.com)
 
     ENGLISH,
     FRENCH;
