@@ -26,6 +26,7 @@ import javax.imageio.ImageIO;
  * Class Cache , Really simple cache
  * 
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class Cache {
 
@@ -57,7 +58,7 @@ public class Cache {
    * 
    * @return The only instance of Cache
    */
-  public static Cache getInstance() {
+  public static synchronized Cache getInstance() {
     if (instance == null) {
       instance = newInstance();
     }
@@ -108,7 +109,7 @@ public class Cache {
    * @param type Cache type
    * @return File
    */
-  public File get(URL url, Cache.CacheType type) {
+  public File get(URL url, Cache.CacheType type) {// FIXME Ajouter un timestamp de validité selon le type (image : infinie, XML/ZIP : 1 semaine)
     return get(url.toString(), type);
   }
   
@@ -162,12 +163,14 @@ public class Cache {
     case TVSHOWZIP:
       path = Settings.tvshowZipCacheDir;
       break;
+    default :
+      break;
     }
     return path;
   }
 
   /**
-   * Copy stream from unput source to output
+   * Copy stream from input source to output
    * 
    * @param in Input
    * @param out Output

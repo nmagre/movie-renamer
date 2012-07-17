@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author duffy
  */
-public class TvShow implements Media {//A faire
+public class TvShow implements Media {// TODO
 
   private MediaID mediaId;
   private MediaFile tvShowFile;
@@ -89,7 +89,7 @@ public class TvShow implements Media {//A faire
   }
 
   @Override
-  public void clear() {// A faire
+  public void clear() {// TODO
   }
 
   @Override
@@ -120,5 +120,10 @@ public class TvShow implements Media {//A faire
   @Override
   public int getYear() {
     return -1;
+  }
+
+  @Override
+  public void addMediaID(MediaID id) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

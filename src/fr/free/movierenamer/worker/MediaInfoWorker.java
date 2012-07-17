@@ -25,6 +25,7 @@ import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.YTdecodeUrl;
+import fr.free.movierenamer.worker.provider.XbmcPassionIDLookup;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
@@ -34,30 +35,33 @@ import org.xml.sax.SAXException;
 
 /**
  * Class MediaInfoWorker
- * 
- * @param <T> 
- * @param <U> 
+ *
+ * @param <T>
+ * @param <U>
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaImage> extends HttpWorker<T> {
 
   protected final MediaID id;
+  protected PropertyChangeSupport errorSupport;
 
   /**
    * Constructor arguments
-   * 
+   *
    * @param errorSupport Swing change support
    * @param id Media ID
    * @throws ActionNotValidException
    */
   public MediaInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport);
+    this.errorSupport = errorSupport;
     this.id = id;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see fr.free.movierenamer.worker.HttpWorker#proccessFile(java.io.File)
    */
   @Override
@@ -73,11 +77,36 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
       xmp.setParser(infoParser);
       mediaInfo = xmp.parseXml();
 
-//      XMLParser<U> xmmp = new XMLParser<U>(xmlFile.getAbsolutePath());
-//      MrParser<U> imageParser = getImageParser();
-//      imageParser.setOriginalFile(xmlFile);
-//      xmmp.setParser(imageParser);
-//      mediaImage = xmmp.parseXml();
+      MediaID imId = null;
+      if (id.getType() == MediaID.MediaIdType.IMDBID) {
+        imId = id;
+      }
+      
+      if (id.getType() == MediaID.MediaIdType.ALLOCINEID) {
+        try {
+          XbmcPassionIDLookup xbl = WorkerManager.getIdlookup(id);
+          xbl.execute();
+          imId = xbl.get();
+        } catch (ActionNotValidException ex) {
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
+        }
+      }
+//      Il n'y a plus d'image parser, ils sont intgrés aux info parser
+//      if (imId != null) {
+//        try {
+//          TmdbImageWorker<U> imgWorker = new TmdbImageWorker<U>(errorSupport, imId);
+//          imgWorker.execute();
+//          mediaImage = imgWorker.get();
+//        } catch (ActionNotValidException ex) {
+//          Settings.LOGGER.log(Level.SEVERE, null, ex);
+//        }
+//      } else {
+//        XMLParser<U> xmmp = new XMLParser<U>(xmlFile.getAbsolutePath());
+//        MrParser<U> imageParser = getImageParser();
+//        imageParser.setOriginalFile(xmlFile);
+//        xmmp.setParser(imageParser);
+//        mediaImage = xmmp.parseXml();
+//      }
 
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -94,10 +123,8 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
       return null;
     }
 
-//    ((IMediaInfo<U>) mediaInfo).setImages(mediaImage);
-    
     if (!((IMediaInfo<U>) mediaInfo).getTrailer().equals("")) {
-      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) mediaInfo).getTrailer(), YTdecodeUrl.HD);
+      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) mediaInfo).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
       if (trailer != null) {
         ((IMediaInfo<U>) mediaInfo).setTrailer(trailer);
       }

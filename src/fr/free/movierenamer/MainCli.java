@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
  */
 public class MainCli {
 
-  public static void main(String args[]) {//A faire
+  public static void main(String args[]) {// TODO
     
     CmdLineParser parser = new CmdLineParser();
     CmdLineParser.Option debug = parser.addBooleanOption('d', "debug");

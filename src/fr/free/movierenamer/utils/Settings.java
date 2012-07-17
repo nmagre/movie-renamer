@@ -89,6 +89,8 @@ public class Settings implements Cloneable {
   public static final String allocineAPIInfo = "http://api.allocine.fr/rest/v3/MEDIA?partner=yW5kcm9pZC12M3M&profile=large&filter=MEDIA&striptags=synopsis,synopsisshort&code=";
   // Xbmc Passion
   public static final String xbmcPassionImdblookup = "http://passion-xbmc.org/scraper/ajax.php?Ajax=Home&";
+  //TvRage
+  public static final String tvRageAPIsearch = "http://services.tvrage.com/feeds/search.php?show=";
   // List
   public static int[] nbResultList = { -1, 5, 10, 15, 20, 30 };
   public static String[] thumbExtList = { ".jpg", ".tbn", "-thumb.jpg" };
@@ -194,7 +196,7 @@ public class Settings implements Cloneable {
    * 
    * @return The only instance of MR Settings
    */
-  public static Settings getInstance() {
+  public static synchronized Settings getInstance() {
     if (instance == null) {
       instance = newInstance();
     }

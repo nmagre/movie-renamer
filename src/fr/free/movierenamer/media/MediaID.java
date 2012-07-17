@@ -31,7 +31,8 @@ public class MediaID {
     ALLOCINEID,
     ALLOCINETVID,
     ALLOCINESEASONID,
-    ALLOCINEEPISODEID;
+    ALLOCINEEPISODEID,
+    TVRAGETVID;
   }
 
   private MediaIdType type;

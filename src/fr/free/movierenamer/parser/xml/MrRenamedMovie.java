@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class MrRenamedMovie extends MrParser<ArrayList<MediaRenamed>> {//A refaire , en media
+public class MrRenamedMovie extends MrParser<ArrayList<MediaRenamed>> {// TODO A refaire
 
   private StringBuffer buffer;
   private boolean renamedXML;

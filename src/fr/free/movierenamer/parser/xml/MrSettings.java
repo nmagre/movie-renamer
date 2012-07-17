@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  */
 public class MrSettings extends MrParser<Settings> {
 
-  private final Settings config = Settings.getInstance();
+  private final Settings settings = Settings.getInstance();
   private StringBuffer buffer;
   private boolean settingXML;
   private boolean setting;
@@ -63,7 +63,7 @@ public class MrSettings extends MrParser<Settings> {
     if (settingXML && !name.equalsIgnoreCase(Settings.movieRenamerTag)) {
       if (setting && !name.equalsIgnoreCase(Settings.settingTag)) {
         try {
-          config.setValue(name, buffer.toString());
+          settings.setValue(name, buffer.toString());
         } catch (NullPointerException ex) {
           Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
           Settings.xmlError = true;
@@ -83,6 +83,6 @@ public class MrSettings extends MrParser<Settings> {
 
   @Override
   public Settings getObject() {
-    return this.config;
+    return this.settings;
   }
 }

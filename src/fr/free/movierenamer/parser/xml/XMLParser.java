@@ -34,9 +34,8 @@ import org.xml.sax.SAXParseException;
 
 /**
  * XML parser
- * 
- * @param <T>
- *          XML object to parse
+ *
+ * @param <T> XML object to parse
  * @author Nicolas Magré
  */
 public class XMLParser<T> {
@@ -77,7 +76,7 @@ public class XMLParser<T> {
     } else {
       if (ZIPFile != null && Utils.isZIPFile(ZIPFile)) {
 
-        zf = new ZipFile(ZIPFile);        
+        zf = new ZipFile(ZIPFile);
         ZipEntry zipEntry;
         ZipInputStream zipIn;
 
@@ -108,11 +107,11 @@ public class XMLParser<T> {
     } catch (NOSAXException mye) {
       // nothing to catch !!!
     }
-    
-    if(zf != null) {
+
+    if (zf != null) {
       zf.close();
     }
-    
+
     if (itp == null) {
       throw new NullPointerException("MrParser null");
     }

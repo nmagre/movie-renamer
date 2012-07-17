@@ -18,49 +18,45 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.parser.xml.ImdbInfo;
+import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.worker.MovieInfoWorker;
-import java.beans.PropertyChangeSupport;
+import fr.free.movierenamer.worker.TvShowInfoWorker;
+import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
- * Class ImdbInfoWorker , get movie information from imdb
+ * Class TvRageInfoWorker
  *
  * @author Nicolas Magré
- * @author QUÉMÉNEUR Simon
  */
-public class ImdbInfoWorker extends MovieInfoWorker {
+public class TvRageInfoWorker extends TvShowInfoWorker {
+
+  private final SxE sxe;
 
   /**
    * Constructor arguments
    *
    * @param errorSupport Swing change support
-   * @param id Media API ID
+   * @param id Media id
+   * @param sxe
    * @throws ActionNotValidException
    */
-  public ImdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public TvRageInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.MediaIdType.IMDBID) {
-      throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
+    if (id.getType() != MediaID.MediaIdType.TVRAGETVID) {
+      throw new ActionNotValidException("TvRageInfoWorker can only use tvrage ID");
     }
+    this.sxe = sxe;
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return (config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined";
+  protected MrParser<TvShowInfo> getInfoParser() throws Exception {// TODO
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  protected MrParser<MovieInfo> getInfoParser() throws Exception {
-    return new ImdbInfo();
+  protected String getSearchUri() throws Exception {// TODO
+    throw new UnsupportedOperationException("Not supported yet.");
   }
-
-//  @Override
-//  protected MrParser<MovieImage> getImageParser() throws Exception {
-//    return new ImdbImage();
-//  }
-
 }

@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  */
 public class TvShowEpisodeMatcher {
 
-  public static final Pattern seasonPattern = Pattern.compile("(?:(?:season)|(?:saison)|(?:s)).?([0-9]{1,2})");
+  public static final Pattern seasonPattern = Pattern.compile("(?:(?:season)|(?:saison)|(?:s))\\W?([0-9]{1,2})");
   public static final Pattern episodePattern = Pattern.compile("(?:(?:(?:[eé]p)|(?:[eé]pisode)) ([0-9]{1,2}))|(?:(?:^| )([0-9]{1,2})[ -_])");
 
   public enum TvShowPattern {
@@ -46,7 +46,7 @@ public class TvShowEpisodeMatcher {
     SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
     SxEPattern5("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
     SxEPattern6("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
-    SxEPattern7("([0-9]{2}) ([0-9]{2})");
+    SxEPattern7("([0-9]{2}) ([0-9]{2})(?:\\D|$)");
     private Pattern pattern;
 
     private TvShowPattern(String pattern) {
@@ -84,15 +84,18 @@ public class TvShowEpisodeMatcher {
    * @return SxE
    */
   private SxE matchAll() {
+    System.out.println("\nFile : " + episodeName + "\n");
     SxE sxe;
     ArrayList<SxE> SxEs = new ArrayList<SxE>();
     for (TvShowEpisodeMatcher.TvShowPattern patternToTest : TvShowEpisodeMatcher.TvShowPattern.values()) {
       if ((sxe = match(patternToTest)) != null) {
         SxEs.add(sxe);
+        System.out.println("  Matcher " + patternToTest.name() + " Match : " + sxe);
       }
     }
 
     if (SxEs.isEmpty()) {
+      System.out.println("  No Match Found, Try To match Separately");
       sxe = new SxE();
       Matcher matcher = seasonPattern.matcher(parentFolder == null ? episodeName : parentFolder);
       if (matcher.find()) {

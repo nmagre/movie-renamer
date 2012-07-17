@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui;
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.media.movie.Movie;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.TvShow;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
@@ -31,6 +32,7 @@ import fr.free.movierenamer.ui.res.DropFile;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
 import fr.free.movierenamer.worker.*;
+import fr.free.movierenamer.worker.provider.XbmcPassionIDLookup;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -96,8 +98,7 @@ public class MovieRenamer extends JFrame {
 
     CONTINUE(Utils.i18n("continue")),
     CHANGE(Utils.i18n("changeMode")),
-    CANCEL(Utils.i18n("cancel"))    ;
-    
+    CANCEL(Utils.i18n("cancel"));
     private String text;
 
     private CHOICE(String text) {
@@ -392,7 +393,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private void loadInterface() {// TODO , A refaire pour l'impémentation finale des série
+  private void loadInterface() {// TODO , A refaire pour l'impémentation finale des série (après la beta)
     switch (currentMode) {
       case MOVIEMODE:
         if (!setting.movieInfoPanel) {
@@ -493,10 +494,10 @@ public class MovieRenamer extends JFrame {
       return true;
     }
 
-    CHOICE[] choices= {CHOICE.CONTINUE, CHOICE.CHANGE, CHOICE.CANCEL};
+    CHOICE[] choices = {CHOICE.CONTINUE, CHOICE.CHANGE, CHOICE.CANCEL};
     String text = Utils.i18n("whatToDo").replace("FILE", mediaFile.getFile().getName()).replace("MODE", currentMode.getTitle());
-    int res = JOptionPane.showOptionDialog(MovieRenamer.this,text, Utils.i18n("mediaModemt"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
-    
+    int res = JOptionPane.showOptionDialog(MovieRenamer.this, text, Utils.i18n("mediaModemt"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
+
     switch (choices[res]) {
       case CONTINUE:
         mediaFile.setType(currentMode.getMediaType());
@@ -1214,7 +1215,7 @@ public class MovieRenamer extends JFrame {
 
           mediaList.setModel(mediaFileNameModel);
           if (mediaFileNameModel.isEmpty()) {
-            JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieFound"), sError, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieFound"), sError, JOptionPane.ERROR_MESSAGE);// FIXME change movie by media
           } else if (setting.selectFrstMedia) {
             mediaList.setSelectedIndex(0);
           }
@@ -1262,7 +1263,7 @@ public class MovieRenamer extends JFrame {
             loading.setValue(100, INFOWORKER);
             return;
           }
-
+          
           if (setting.movieInfoPanel) {
             if (setting.thumb) {
               ImageWorker thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), Cache.CacheType.THUMB, moviePnl);
