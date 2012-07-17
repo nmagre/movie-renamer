@@ -34,7 +34,7 @@ public class XbmcPassionIDLookupParser {
     Pattern pattern = Pattern.compile(ALLOPATTERN);
     Matcher idMatcher = pattern.matcher(html);
     if (idMatcher.find()) {
-      return new MediaID(idMatcher.group(1), MediaID.ALLOCINEID);
+      return new MediaID(idMatcher.group(1), MediaID.MediaIdType.ALLOCINEID);
     }
     return null;
   }
@@ -43,7 +43,7 @@ public class XbmcPassionIDLookupParser {
     Pattern pattern = Pattern.compile(IMDBPATTERN);
     Matcher idMatcher = pattern.matcher(html);
     if (idMatcher.find()) {
-      return new MediaID("tt" + idMatcher.group(1), MediaID.IMDBID);
+      return new MediaID("tt" + idMatcher.group(1), MediaID.MediaIdType.IMDBID);
     }
     return null;
   }

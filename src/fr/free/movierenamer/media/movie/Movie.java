@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.media.MediaID;
+
 import fr.free.movierenamer.matcher.MovieNameMatcher;
 import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.utils.Settings;
@@ -103,6 +105,16 @@ public class Movie implements Media {
     int limit = setting.movieFilenameLimit;
     Utils.CaseConversionType renameCase = setting.movieFilenameCase;
     boolean trim = setting.movieFilenameTrim;
+    
+    String titlePrefix = "";
+    String shortTitle = movieinfo.getTitle();
+
+    Pattern pattern = Pattern.compile("^((le|la|les|the)\\s|(l\\'))(.*)", Pattern.CASE_INSENSITIVE);
+    Matcher matcher = pattern.matcher(movieinfo.getTitle());
+    if(matcher.find() && matcher.groupCount() >= 2 ) {
+      titlePrefix = matcher.group(1);
+      shortTitle = matcher.group(matcher.groupCount());
+    }
 
     String runtime = "";
     if (!movieinfo.getRuntime().equals("-1")) {
@@ -110,7 +122,9 @@ public class Movie implements Media {
     }
     
     String[][] replace = new String[][]{
-      {"<t>", movieinfo.getTitle()},
+      {"<t>", "<tp><st>"},
+      {"<tp>", titlePrefix},
+      {"<st>", shortTitle},
       {"<ot>", movieinfo.getOrigTitle()},
       {"<tt>", mediaId.getID()},
       {"<y>", movieinfo.getYear()},
@@ -136,8 +150,8 @@ public class Movie implements Media {
     };
     
     //replace actors, directors, genres, coutries
-    Pattern pattern = Pattern.compile("<([adcg])(\\d+)>");
-    Matcher matcher = pattern.matcher(regExp);
+    pattern = Pattern.compile("<([adcg])(\\d+)>");
+    matcher = pattern.matcher(regExp);
     while (matcher.find()) {
       int n = Integer.parseInt(matcher.group(2));
       char x = matcher.group(1).charAt(0);
@@ -246,7 +260,7 @@ public class Movie implements Media {
   }
 
   @Override
-  public MediaID getMediaId(int IDtype) {
+  public MediaID getMediaId(MediaID.MediaIdType IDtype) {
     if (mediaId.getType() == IDtype) {
       return mediaId;
     }

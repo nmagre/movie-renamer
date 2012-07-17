@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.TvShowInfoWorker;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowImage;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
@@ -27,7 +25,9 @@ import fr.free.movierenamer.parser.xml.TvdbImage;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache.CacheType;
-import javax.swing.event.SwingPropertyChangeSupport;
+import fr.free.movierenamer.worker.TvShowInfoWorker;
+import java.beans.PropertyChangeSupport;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Class TvdbInfoWorker
@@ -38,17 +38,17 @@ import javax.swing.event.SwingPropertyChangeSupport;
 // TODO A faire
 public class TvdbInfoWorker extends TvShowInfoWorker {
 
-  public TvdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public TvdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.TVDBID) {
+    if (id.getType() != MediaID.MediaIdType.TVDBID) {
       throw new ActionNotValidException("TvdbInfoWorker can only use tvdb id");
     }
   }
 
   @Override
   protected String getSearchUri() throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    String xmlUrl = new String(DatatypeConverter.parseBase64Binary(config.xurlTdb)) + "/";
+    return config.tvdbAPIUrlTvShow + xmlUrl + "series/" + id.getID() + "/all/" + (config.tvshowScrapperFR ? "fr" : "en") + ".zip";
   }
 
   @Override

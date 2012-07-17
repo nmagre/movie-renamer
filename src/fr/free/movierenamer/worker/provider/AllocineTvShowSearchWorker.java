@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,15 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.TvShowSearchWorker;
-
 import fr.free.movierenamer.parser.xml.AllocineTvShowSearch;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.TvShowSearchWorker;
+import java.beans.PropertyChangeSupport;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class AllocineTvShowSearchWorker Search tvshow
@@ -34,7 +33,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
  * @author QUÉMÉNEUR Simon
  */
 public class AllocineTvShowSearchWorker extends TvShowSearchWorker {
-  public AllocineTvShowSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
+  public AllocineTvShowSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
 

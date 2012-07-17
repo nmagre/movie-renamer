@@ -19,41 +19,44 @@ package fr.free.movierenamer.media;
 
 /**
  * Class MediaID
- *
+ * 
  * @author Nicolas Magré
  */
 public class MediaID {
 
-  public static final int IMDBID = 0;
-  public static final int TMDBID = 1;
-  public static final int TVDBID = 2;
-  public static final int ALLOCINEID = 3;
-  public static final int ALLOCINETVID = 4;
-  public static final int ALLOCINESEASONID = 5;
-  public static final int ALLOCINEEPISODEID = 6;
-  private int type;
-  private String id;
+  public enum MediaIdType {
+    IMDBID,
+    TMDBID,
+    TVDBID,
+    ALLOCINEID,
+    ALLOCINETVID,
+    ALLOCINESEASONID,
+    ALLOCINEEPISODEID;
+  }
 
-  public MediaID(String id, int type) {
-    this.id = id;
+  private MediaIdType type;
+  private String providerId;
+
+  public MediaID(String id, MediaIdType type) {
+    this.providerId = id;
     this.type = type;
   }
 
   /**
    * Get ID
-   *
+   * 
    * @return ID
    */
   public String getID() {
-    return id;
+    return providerId;
   }
 
   /**
    * Get type
-   *
+   * 
    * @return Type
    */
-  public int getType() {
+  public MediaIdType getType() {
     return type;
   }
 
@@ -61,7 +64,7 @@ public class MediaID {
   public boolean equals(Object obj) {
     if (obj instanceof MediaID) {
       MediaID mID = (MediaID) obj;
-      return mID.getType() == type && mID.getID().equals(id);
+      return mID.type == type && mID.providerId.equals(providerId);
     }
     return false;
   }
@@ -69,13 +72,13 @@ public class MediaID {
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 59 * hash + this.type;
-    hash = 59 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 59 * hash + this.type.ordinal();
+    hash = 59 * hash + (this.providerId != null ? this.providerId.hashCode() : 0);
     return hash;
   }
 
   @Override
   public String toString() {
-    return id;
+    return providerId;
   }
 }

@@ -42,6 +42,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,14 +51,13 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JToolBar.Separator;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.SwingPropertyChangeSupport;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -89,8 +89,8 @@ public class MovieRenamer extends JFrame {
   private MovieInfoWorker movieInfoWorker;
   private TvShowInfoWorker tvShowInfoWorker;
   private MediaSearchWorker searchWorker;
-  private SwingPropertyChangeSupport errorSupport;
-  private SwingPropertyChangeSupport settingsChange;
+  private PropertyChangeSupport errorSupport;
+  private PropertyChangeSupport settingsChange;
 
   private enum CHOICE {
 
@@ -138,7 +138,7 @@ public class MovieRenamer extends JFrame {
     currentMode = MovieRenamerMode.MOVIEMODE;
     movieModeBtn.setEnabled(false);
 
-    errorSupport = new SwingPropertyChangeSupport(new Object());
+    errorSupport = new PropertyChangeSupport(new Object());
     errorSupport.addPropertyChangeListener(new PropertyChangeListener() {
 
       @Override
@@ -149,7 +149,7 @@ public class MovieRenamer extends JFrame {
       }
     });
 
-    settingsChange = new SwingPropertyChangeSupport(setting);
+    settingsChange = new PropertyChangeSupport(setting);
     settingsChange.addPropertyChangeListener(new PropertyChangeListener() {
 
       @Override

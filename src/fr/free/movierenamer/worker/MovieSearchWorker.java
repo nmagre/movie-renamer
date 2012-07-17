@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
  */
 package fr.free.movierenamer.worker;
 
-import javax.swing.event.SwingPropertyChangeSupport;
+import java.beans.PropertyChangeSupport;
 
 public abstract class MovieSearchWorker extends MediaSearchWorker {
 
-  public MovieSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
+  public MovieSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
 }

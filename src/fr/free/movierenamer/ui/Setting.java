@@ -31,17 +31,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class Setting , Setting dialog
@@ -51,7 +51,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
 public class Setting extends JDialog {
 
   private Settings setting;
-  private SwingPropertyChangeSupport settingsChange;
+  private PropertyChangeSupport settingsChange;
   private String[] extensions;
   private ArrayList<String> filters;
   private int currentExtensionIndex;
@@ -83,7 +83,7 @@ public class Setting extends JDialog {
    * @param parent Parent to center on
    */
 
-  public Setting(Settings setting, SwingPropertyChangeSupport settingsChange, Component parent) {
+  public Setting(Settings setting, PropertyChangeSupport settingsChange, Component parent) {
     this.settingsChange = settingsChange;
     setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
     initComponents();

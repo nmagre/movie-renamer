@@ -17,16 +17,15 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MovieSearchWorker;
-
 import fr.free.movierenamer.parser.xml.AllocineSearch;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.MovieSearchWorker;
+import java.beans.PropertyChangeSupport;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class AllocineSearchWorker Search movie or tvshow
@@ -35,7 +34,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
  */
 public class AllocineSearchWorker extends MovieSearchWorker {
 
-  public AllocineSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
+  public AllocineSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
 

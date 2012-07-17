@@ -103,7 +103,7 @@ public class TvShow implements Media {//A faire
   }
 
   @Override
-  public MediaID getMediaId(int IDtype) {
+  public MediaID getMediaId(MediaID.MediaIdType IDtype) {
     if (mediaId.getType() == IDtype) {
       return mediaId;
     }

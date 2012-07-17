@@ -17,15 +17,14 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MovieSearchWorker;
-
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.parser.xml.TmdbSearch;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.MovieSearchWorker;
+import java.beans.PropertyChangeSupport;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import javax.swing.event.SwingPropertyChangeSupport;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -35,7 +34,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class TmdbSearchWorker extends MovieSearchWorker {
 
-  public TmdbSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
+  public TmdbSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
 

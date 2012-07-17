@@ -66,7 +66,7 @@ public interface Media {
    * @param IDtype ID type
    * @return Media Api ID or null
    */
-  public MediaID getMediaId(int IDtype);
+  public MediaID getMediaId(MediaID.MediaIdType IDtype);
   
   /**
    * Get year if it found in title or directory name

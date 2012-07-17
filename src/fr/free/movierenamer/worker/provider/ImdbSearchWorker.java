@@ -17,15 +17,14 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MovieSearchWorker;
-
 import fr.free.movierenamer.parser.xml.ImdbSearch;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.MovieSearchWorker;
+import java.beans.PropertyChangeSupport;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class ImdbSearchWorker, Search on imdb
@@ -43,7 +42,7 @@ public class ImdbSearchWorker extends MovieSearchWorker {
    * @param searchTitle
    *          Movie title to search
    */
-  public ImdbSearchWorker(SwingPropertyChangeSupport errorSupport, String searchTitle) {
+  public ImdbSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
 

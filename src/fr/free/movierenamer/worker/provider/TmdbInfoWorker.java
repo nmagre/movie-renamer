@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MovieInfoWorker;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -27,7 +25,8 @@ import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.parser.xml.TmdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
-import javax.swing.event.SwingPropertyChangeSupport;
+import fr.free.movierenamer.worker.MovieInfoWorker;
+import java.beans.PropertyChangeSupport;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -45,9 +44,9 @@ public class TmdbInfoWorker extends MovieInfoWorker {
    * @param setting Movie Renamer settings
    * @throws ActionNotValidException
    */
-  public TmdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public TmdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.TMDBID) {
+    if (id.getType() != MediaID.MediaIdType.TMDBID) {
       throw new ActionNotValidException("TmdbInfoWorker  can only use tmdb ID");
     }
   }
@@ -70,92 +69,5 @@ public class TmdbInfoWorker extends MovieInfoWorker {
   protected MrParser<MovieImage> getImageParser() throws Exception {
     return new TmdbImage();
   }
-
-  // /*
-  // * (non-Javadoc)
-  // *
-  // * @see fr.free.movierenamer.worker.MovieInfoWorker#getImageWorker()
-  // */
-  // @Override
-  // protected MediaImageWorker getImageWorker() throws Exception {
-  // return new TmdbImageWorker(getErrorSupport(), id);
-  // }
-
-  // @Override
-  // protected MovieInfo executeInBackground() {
-  // MovieInfo movieInfo = null;
-  // MovieImage movieImage = null;
-  // try {
-  // String uri = config.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(config.xurlMdb)) + "/" + id.getID();
-  // if (config.movieScrapperFR) {
-  // uri = uri.replace("/en/", "/fr/");
-  // }
-  //
-  // URL url = new URL(uri);
-  // File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
-  // if (xmlFile == null) {
-  // for (int i = 0; i < RETRY; i++) {
-  // InputStream in;
-  // try {
-  // in = url.openStream();
-  // Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
-  // xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
-  // break;
-  // } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
-  // Settings.LOGGER.log(Level.SEVERE, null, e);
-  // try {
-  // Thread.sleep(300);
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  // }
-  // }
-  // }
-  //
-  // if (xmlFile == null) {
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // //Parse TMDB API XML
-  // XMLParser<MovieInfo> xmp = new XMLParser<MovieInfo>(xmlFile.getAbsolutePath());
-  // xmp.setParser(new TmdbInfo());
-  // movieInfo = xmp.parseXml();
-  //
-  // XMLParser<MovieImage> xmmp = new XMLParser<MovieImage>(xmlFile.getAbsolutePath());
-  // xmmp.setParser(new TmdbImage());
-  // movieImage = xmmp.parseXml();
-  //
-  // } catch (IOException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (ParserConfigurationException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (SAXException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  //
-  // if (movieInfo == null) {
-  // firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-  // return null;
-  // }
-  //
-  // if (movieImage == null) {
-  // firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-  // return null;
-  // }
-  //
-  // movieInfo.setImages(movieImage);
-  // if(!movieInfo.getTrailer().equals("")){
-  // String trailer = YTdecodeUrl.getRealUrl(movieInfo.getTrailer(), YTdecodeUrl.HD);
-  // if(trailer != null) {
-  // movieInfo.setTrailer(trailer);
-  // }
-  // }
-  //
-  // setProgress(100);
-  // return movieInfo;
-  // }
 
 }

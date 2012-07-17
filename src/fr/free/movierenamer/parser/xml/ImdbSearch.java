@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,7 +166,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
                   if (thumbMatcher.find()) {
                     thumb = thumbMatcher.group().substring(thumbMatcher.group().indexOf("img src=") + 9, thumbMatcher.group().indexOf(".jpg") + 4);
                   }
-                  found.add(new SearchResult(movieName, new MediaID(imdbIDMatcher.group(), MediaID.IMDBID), type, thumb));
+                  found.add(new SearchResult(movieName, new MediaID(imdbIDMatcher.group(), MediaID.MediaIdType.IMDBID), type, thumb));
                 }
                 count++;
               }
@@ -210,7 +210,7 @@ private SearchResult getMovie(String moviePage) throws IndexOutOfBoundsException
            thumb = thumbnail.substring(thumbnail.lastIndexOf("src=") + 5, thumbnail.lastIndexOf("\""));
          }
        }
-       return new SearchResult(movieName, new MediaID(imdbId, MediaID.IMDBID), SearchResult.SearchResultType.EXACT, thumb);
+       return new SearchResult(movieName, new MediaID(imdbId, MediaID.MediaIdType.IMDBID), SearchResult.SearchResultType.EXACT, thumb);
 
      } else {
        Settings.LOGGER.log(Level.SEVERE, "imdb page unrecognized");

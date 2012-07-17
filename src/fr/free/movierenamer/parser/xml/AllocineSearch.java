@@ -67,7 +67,7 @@ public class AllocineSearch extends MrParser<ArrayList<SearchResult>> {
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("movie")) {
       media = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.ALLOCINEID), SearchResult.SearchResultType.NONE, currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.ALLOCINEID), SearchResult.SearchResultType.NONE, currentThumb));
     }
     if (media) {
       if (name.equalsIgnoreCase("originalTitle")) {//Original title will be there in all case but title not

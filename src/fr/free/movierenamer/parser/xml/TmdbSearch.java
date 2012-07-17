@@ -85,7 +85,7 @@ public class TmdbSearch extends MrParser<ArrayList<SearchResult>> {
     }
     if (name.equalsIgnoreCase("movie")) {
       movie = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TMDBID), SearchResult.SearchResultType.NONE, currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TMDBID), SearchResult.SearchResultType.NONE, currentThumb));
       currentName = currentId = currentThumb = "";
     }
     if (movies) {

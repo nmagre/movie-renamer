@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("tvseries")) {
       media = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.ALLOCINETVID), SearchResult.SearchResultType.NONE, currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.ALLOCINETVID), SearchResult.SearchResultType.NONE, currentThumb));
     }
     if (media) {
       if (name.equalsIgnoreCase("originalTitle")) {// Original title will be there in all case but title not

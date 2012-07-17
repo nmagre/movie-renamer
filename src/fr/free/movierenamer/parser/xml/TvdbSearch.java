@@ -70,7 +70,7 @@ public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
     if (name.equalsIgnoreCase("series")) {
       if ((french && currentLanguage.equals("fr")) || !french) {//Tvdb can return series in English + in French in same times, we just want one of both
         String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb : null;
-        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.TVDBID), SearchResult.SearchResultType.NONE, thumb));
+        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TVDBID), SearchResult.SearchResultType.NONE, thumb));
       }
       currentName = currentId = currentThumb = currentLanguage = "";
       series = false;

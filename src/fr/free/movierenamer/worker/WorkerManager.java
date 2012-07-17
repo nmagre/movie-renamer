@@ -17,17 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.worker.provider.AllocineInfoWorker;
-import fr.free.movierenamer.worker.provider.AllocineSearchWorker;
-import fr.free.movierenamer.worker.provider.AllocineTvShowInfoWorker;
-import fr.free.movierenamer.worker.provider.AllocineTvShowSearchWorker;
-import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
-import fr.free.movierenamer.worker.provider.ImdbSearchWorker;
-import fr.free.movierenamer.worker.provider.TmdbInfoWorker;
-import fr.free.movierenamer.worker.provider.TmdbSearchWorker;
-import fr.free.movierenamer.worker.provider.TvdbInfoWorker;
-import fr.free.movierenamer.worker.provider.TvdbSearchWorker;
-
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
@@ -38,9 +27,10 @@ import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.provider.*;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class WorkerManager
@@ -66,7 +56,7 @@ public abstract class WorkerManager {
    * @param media Media
    * @return Worker depend of media type and settings or null
    */
-  public static MediaSearchWorker getSearchWorker(SwingPropertyChangeSupport errorSupport, Media media) {
+  public static MediaSearchWorker getSearchWorker(PropertyChangeSupport errorSupport, Media media) {
     MediaSearchWorker worker = null;
     Settings.LOGGER.log(Level.INFO, "Search : {0}", media.getSearch());
     Settings config = Settings.getInstance();
@@ -103,7 +93,7 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static MovieInfoWorker getMovieInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public static MovieInfoWorker getMovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     MovieInfoWorker worker = null;
     switch (Settings.getInstance().movieScrapper) {
       case IMDB:
@@ -120,7 +110,7 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static TvShowInfoWorker getTvShowInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
+  public static TvShowInfoWorker getTvShowInfoWorker(PropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
     TvShowInfoWorker worker = null;
     switch (Settings.getInstance().tvshowScrapper) {
       case TVDB:

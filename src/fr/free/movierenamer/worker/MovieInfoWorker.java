@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import javax.swing.event.SwingPropertyChangeSupport;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Class MrInfoWorker
@@ -40,7 +40,7 @@ public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo, MovieIm
    *          Movie API ID
    * @throws ActionNotValidException
    */
-  public MovieInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
   }
 

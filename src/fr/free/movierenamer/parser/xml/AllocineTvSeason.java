@@ -59,7 +59,7 @@ public class AllocineTvSeason extends MrParser< ArrayList<TvShowSeason>> {
       }
       if (seasonList) {
         if (name.equalsIgnoreCase("season")) {
-          currentSeason = new TvShowSeason(new MediaID(attributes.getValue("code"), MediaID.ALLOCINESEASONID));
+          currentSeason = new TvShowSeason(new MediaID(attributes.getValue("code"), MediaID.MediaIdType.ALLOCINESEASONID));
         }
       }
     }

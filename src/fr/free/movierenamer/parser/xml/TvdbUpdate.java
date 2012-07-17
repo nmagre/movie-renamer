@@ -59,7 +59,7 @@ public class TvdbUpdate extends MrParser<ArrayList<MediaID>> {
     }
     if(update){
       if(name.equalsIgnoreCase("Series")){
-        mediaIds.add(new MediaID(buffer.toString(), MediaID.TVDBID));
+        mediaIds.add(new MediaID(buffer.toString(), MediaID.MediaIdType.TVDBID));
       }
     }
     buffer = null;

@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.MovieInfoWorker;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -27,7 +25,8 @@ import fr.free.movierenamer.parser.xml.AllocineInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
-import javax.swing.event.SwingPropertyChangeSupport;
+import fr.free.movierenamer.worker.MovieInfoWorker;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Class AllocineInfoWorker
@@ -44,9 +43,9 @@ public class AllocineInfoWorker extends MovieInfoWorker {
    * @param id Media id
    * @throws ActionNotValidException
    */
-  public AllocineInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public AllocineInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.ALLOCINEID) {
+    if (id.getType() != MediaID.MediaIdType.ALLOCINEID) {
       throw new ActionNotValidException("AllocineInfoWorker can only use allocine ID");
     }
   }

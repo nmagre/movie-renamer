@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.MediaImageWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Class ImdbImageWorker
@@ -38,9 +38,9 @@ public class ImdbImageWorker extends MediaImageWorker<MovieImage> {
    * @param id
    * @throws ActionNotValidException
    */
-  public ImdbImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public ImdbImageWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.IMDBID) {
+    if (id.getType() != MediaID.MediaIdType.IMDBID) {
       throw new ActionNotValidException("TmdbImageWorker can only use imdb ID");
     }
   }

@@ -88,7 +88,7 @@ public class XbmcNFOInfo extends MrParser<MovieInfo> {
       } else if (name.equalsIgnoreCase("playcount")) {
       } else if (name.equalsIgnoreCase("lastplayed")) {
       } else if (name.equalsIgnoreCase("id")) {
-        movieInfo.addID(new MediaID(buffer.toString(), buffer.toString().startsWith("tt") ? MediaID.IMDBID:MediaID.TMDBID));
+        movieInfo.addID(new MediaID(buffer.toString(), buffer.toString().startsWith("tt") ? MediaID.MediaIdType.IMDBID:MediaID.MediaIdType.TMDBID));
       } else if (name.equalsIgnoreCase("genre")) {
         movieInfo.addGenre(buffer.toString());
       } else if (name.equalsIgnoreCase("country")) {

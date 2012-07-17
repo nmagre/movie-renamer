@@ -44,7 +44,7 @@ public class XbmcPassionIDLookup extends Worker<MediaID> {
    * @throws ActionNotValidException
    */
   public XbmcPassionIDLookup(MediaID id) throws ActionNotValidException {
-    if (id.getType() != MediaID.IMDBID && id.getType() != MediaID.ALLOCINEID) {
+    if (id.getType() != MediaID.MediaIdType.IMDBID && id.getType() != MediaID.MediaIdType.ALLOCINEID) {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
     this.id = id;
@@ -56,8 +56,8 @@ public class XbmcPassionIDLookup extends Worker<MediaID> {
     String res = null;
     for (int i = 0; i < RETRY; i++) {
       try {
-        String apiID = id.getType() == MediaID.ALLOCINEID ?  id.getID(): id.getID().substring(2);
-        http = new HttpGet(Settings.xbmcPassionImdblookup + (id.getType() == MediaID.ALLOCINEID ? "IdAllo=" : "IdImdb=") + apiID);
+        String apiID = id.getType() == MediaID.MediaIdType.ALLOCINEID ?  id.getID(): id.getID().substring(2);
+        http = new HttpGet(Settings.xbmcPassionImdblookup + (id.getType() == MediaID.MediaIdType.ALLOCINEID ? "IdAllo=" : "IdImdb=") + apiID);
         res = http.sendGetRequest(false, "UTF-8");
         break;
       } catch (Exception ex) {//Don't care about exception, "res" will be null
@@ -77,10 +77,10 @@ public class XbmcPassionIDLookup extends Worker<MediaID> {
 
     XbmcPassionIDLookupParser xpParser = new XbmcPassionIDLookupParser();
     switch(id.getType()){
-      case MediaID.ALLOCINEID:
+      case ALLOCINEID:
         mediaId = xpParser.getImdbId(res);
         break;
-      case MediaID.IMDBID:
+      case IMDBID:
         mediaId = xpParser.getAlloId(res);
         break;
     }

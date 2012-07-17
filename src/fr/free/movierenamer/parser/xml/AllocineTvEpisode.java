@@ -59,7 +59,7 @@ public class AllocineTvEpisode extends MrParser<ArrayList<TvShowEpisode>> {
         if (name.equalsIgnoreCase("episode")) {
           episode = true;
           currentEpisode = new TvShowEpisode();
-          currentEpisode.addID(new MediaID(attributes.getValue("code"), MediaID.ALLOCINEEPISODEID));
+          currentEpisode.addID(new MediaID(attributes.getValue("code"), MediaID.MediaIdType.ALLOCINEEPISODEID));
         }
       }
     }

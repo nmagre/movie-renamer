@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 QUÉMÉNEUR Simon
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@ package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class Worker
@@ -34,13 +34,13 @@ import javax.swing.event.SwingPropertyChangeSupport;
 public abstract class Worker<T> extends SwingWorker<T, String> {
 
   protected final Settings config = Settings.getInstance();
-  private final SwingPropertyChangeSupport errorSupport;
+  private final PropertyChangeSupport errorSupport;
 
   public Worker() {
     this.errorSupport = null;
   }
 
-  public Worker(SwingPropertyChangeSupport errorSupport) {
+  public Worker(PropertyChangeSupport errorSupport) {
     this.errorSupport = errorSupport;
   }
 
@@ -63,7 +63,7 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
     JOptionPane.showMessageDialog(null, Utils.i18n(v.get(0)), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
 
-  public final SwingPropertyChangeSupport getErrorSupport() {
+  public final PropertyChangeSupport getErrorSupport() {
     return errorSupport;
   }
 

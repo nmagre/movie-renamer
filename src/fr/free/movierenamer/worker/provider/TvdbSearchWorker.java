@@ -17,15 +17,14 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.worker.TvShowSearchWorker;
-
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.parser.xml.TvdbSearch;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.TvShowSearchWorker;
+import java.beans.PropertyChangeSupport;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class TvdbSearchWorker ,Search tv Show on tvdb
@@ -34,7 +33,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
  */
 public class TvdbSearchWorker extends TvShowSearchWorker {
 
-  public TvdbSearchWorker(SwingPropertyChangeSupport errorSupport, String tvShowName) {
+  public TvdbSearchWorker(PropertyChangeSupport errorSupport, String tvShowName) {
     super(errorSupport, tvShowName);
   }
 
