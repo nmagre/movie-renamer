@@ -19,9 +19,7 @@ package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
-import fr.free.movierenamer.media.tvshow.TvShowImage;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.parser.xml.AllocineTvImage;
 import fr.free.movierenamer.parser.xml.AllocineTvInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -49,7 +47,7 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {
   public AllocineTvShowInfoWorker(PropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
     super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.ALLOCINETVID) {
-      throw new ActionNotValidException("AllocineInfoWorker can only use allocine ID");
+      throw new ActionNotValidException("AllocineTvInfoWorker can only use allocine ID");
     }
     this.sxe = sxe;
   }
@@ -64,10 +62,10 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {
     return new AllocineTvInfo();
   }
 
-  @Override
-  protected MrParser<TvShowImage> getImageParser() throws Exception {
-    return new AllocineTvImage();
-  }
+//  @Override
+//  protected MrParser<TvShowImage> getImageParser() throws Exception {
+//    return new AllocineTvImage();
+//  }
   
   // @Override
   // protected ArrayList<TvShowSeason> executeInBackground() {

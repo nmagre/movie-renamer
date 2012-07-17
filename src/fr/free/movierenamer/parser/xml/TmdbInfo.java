@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaImage;
+
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -28,7 +30,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Class TheMovieDbInfo
- *
+ * 
  * @author Nicolas Magré
  */
 public class TmdbInfo extends MrParser<MovieInfo> {
@@ -57,6 +59,30 @@ public class TmdbInfo extends MrParser<MovieInfo> {
     if (name.equalsIgnoreCase("country")) {
       movieinfo.addCountry(attributes.getValue("name"));
     }
+    if (name.equalsIgnoreCase("image")) {
+      MediaImage movieThumb;
+      if (attributes.getValue("type").equals("poster")) {
+        movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
+      } else {
+        movieThumb = new MediaImage(0, MediaImage.MediaImageType.FANART);
+      }
+      if (attributes.getValue("size").equals("original")) {
+        movieThumb.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png ar jpg on server
+      }
+      if (attributes.getValue("size").equals("thumb")) {
+        movieThumb.setThumbUrl(attributes.getValue("url").replace(".png", ".jpg"));
+      }
+      if (attributes.getValue("size").equals("mid") || attributes.getValue("type").equals("poster")) {
+        movieThumb.setMidUrl(attributes.getValue("url").replace(".png", ".jpg"));
+      }
+
+      if (movieThumb.getType() == MediaImage.MediaImageType.THUMB) {
+        movieinfo.addThumb(movieThumb);
+      } else {
+        movieinfo.addFanart(movieThumb);
+      }
+    }
+
     if (name.equalsIgnoreCase("person")) {
       String personnJob = attributes.getValue("job");
 
@@ -73,11 +99,11 @@ public class TmdbInfo extends MrParser<MovieInfo> {
           }
           if (person == null) {
             person = new MediaPerson(attributes.getValue("name"), attributes.getValue("thumb"), job);
-           if(job  == MediaPerson.ACTOR) {
+            if (job == MediaPerson.ACTOR) {
               person.addRole(attributes.getValue("character"));
             }
             movieinfo.addPerson(person);
-          } else if(person.getJob() == MediaPerson.ACTOR){
+          } else if (person.getJob() == MediaPerson.ACTOR) {
             movieinfo.addRole(person.getName(), attributes.getValue("character"));
           }
         } catch (ActionNotValidException ex) {
@@ -133,9 +159,9 @@ public class TmdbInfo extends MrParser<MovieInfo> {
       if (name.equalsIgnoreCase("certification")) {
         movieinfo.setMpaa(buffer.toString());
       }
-       if (name.equalsIgnoreCase("released")) {
-         String year = buffer.toString();
-         if(year.contains("-")) {
+      if (name.equalsIgnoreCase("released")) {
+        String year = buffer.toString();
+        if (year.contains("-")) {
           year = year.substring(0, buffer.toString().indexOf("-"));
         }
         movieinfo.setYear(year);

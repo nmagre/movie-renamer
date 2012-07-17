@@ -488,15 +488,6 @@ public class MovieInfo implements IMediaInfo<MovieImage> {
   }
 
   /**
-   * Set movie images
-   * 
-   * @param movieImage Movie Images
-   */
-  public void setImages(MovieImage movieImage) {
-    this.movieImage = movieImage;
-  }
-
-  /**
    * Set title
    * 
    * @param title Title

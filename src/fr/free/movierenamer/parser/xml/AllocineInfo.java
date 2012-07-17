@@ -17,6 +17,9 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.movie.MovieImage;
+import java.util.ArrayList;
+
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -43,12 +46,20 @@ public class AllocineInfo extends MrParser<MovieInfo> {
   private MediaPerson person;
   private String personName;
   private int count;
+//  private final MovieImage movieImage;
+//  private ArrayList<MediaImage> thumbs;
+//  private ArrayList<MediaImage> fanarts;
   private boolean mediaPicture;
+  private boolean thumb = false;
+  private boolean fanart = false;
 
   public AllocineInfo() {
     super();
     movieinfo = new MovieInfo();
     count = 0;
+//    movieImage = new MovieImage();
+//    thumbs = new ArrayList<MediaImage>();
+//    fanarts = new ArrayList<MediaImage>();
   }
 
   @Override
@@ -58,6 +69,8 @@ public class AllocineInfo extends MrParser<MovieInfo> {
     casting = false;
     mperson = false;
     person = null;
+    thumb = false;
+    fanart = false;
   }
 
   @Override
@@ -73,6 +86,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
       if (name.equalsIgnoreCase("casting")) {
         casting = true;
       }
+      
       if (name.equalsIgnoreCase("poster")) {
         MediaImage movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
         movieThumb.setThumbUrl(attributes.getValue("href"));
@@ -83,18 +97,24 @@ public class AllocineInfo extends MrParser<MovieInfo> {
       if (name.equalsIgnoreCase("media")) {
         mediaPicture = attributes.getValue("class").equals("picture");
       }
+      if (name.equalsIgnoreCase("type")) {
+        thumb = attributes.getValue("code").equals("31001");
+        fanart = attributes.getValue("code").equals("31006");
+      }
       if (mediaPicture) {
         if (name.equalsIgnoreCase("thumbnail")) {
           if (!movieinfo.getThumbs().get(0).getThumbUrl().equals(attributes.getValue("href"))) {
-            MediaImage movieFanart = new MediaImage(0, MediaImage.MediaImageType.FANART);
-            movieFanart.setThumbUrl(attributes.getValue("href"));
-            movieFanart.setMidUrl(attributes.getValue("href"));
-            movieFanart.setOrigUrl(attributes.getValue("href"));
-            movieinfo.addFanart(movieFanart);
+            MediaImage movieimg = new MediaImage(0, thumb?MediaImage.MediaImageType.THUMB:MediaImage.MediaImageType.FANART);
+            movieimg.setThumbUrl(attributes.getValue("href"));
+            movieimg.setMidUrl(attributes.getValue("href"));
+            if(thumb) {
+              movieinfo.addThumb(movieimg);
+            } else {
+              movieinfo.addFanart(movieimg);
+            }
           }
         }
       }
-
 
       if (casting) {
         if (name.equalsIgnoreCase("person")) {
@@ -136,6 +156,10 @@ public class AllocineInfo extends MrParser<MovieInfo> {
     }
     if (name.equalsIgnoreCase("media")) {
       mediaPicture = false;
+    }
+    if (name.equalsIgnoreCase("type")) {
+      thumb = false;
+      fanart = false;
     }
 
     if (movie) {
@@ -213,6 +237,13 @@ public class AllocineInfo extends MrParser<MovieInfo> {
     }
     buffer = null;
   }
+
+//  @Override
+//  public void endDocument() throws SAXException {
+//    movieImage.setThumbs(thumbs);
+//    movieImage.setFanarts(fanarts);
+//    movieinfo.setImages(movieImage);
+//  }
 
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {

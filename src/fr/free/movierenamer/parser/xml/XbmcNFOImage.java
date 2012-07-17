@@ -19,6 +19,7 @@ package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.parser.xml.MrParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

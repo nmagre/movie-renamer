@@ -73,11 +73,11 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
       xmp.setParser(infoParser);
       mediaInfo = xmp.parseXml();
 
-      XMLParser<U> xmmp = new XMLParser<U>(xmlFile.getAbsolutePath());
-      MrParser<U> imageParser = getImageParser();
-      imageParser.setOriginalFile(xmlFile);
-      xmmp.setParser(imageParser);
-      mediaImage = xmmp.parseXml();
+//      XMLParser<U> xmmp = new XMLParser<U>(xmlFile.getAbsolutePath());
+//      MrParser<U> imageParser = getImageParser();
+//      imageParser.setOriginalFile(xmlFile);
+//      xmmp.setParser(imageParser);
+//      mediaImage = xmmp.parseXml();
 
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -94,7 +94,7 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
       return null;
     }
 
-    ((IMediaInfo<U>) mediaInfo).setImages(mediaImage);
+//    ((IMediaInfo<U>) mediaInfo).setImages(mediaImage);
     
     if (!((IMediaInfo<U>) mediaInfo).getTrailer().equals("")) {
       String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) mediaInfo).getTrailer(), YTdecodeUrl.HD);
@@ -113,9 +113,9 @@ public abstract class MediaInfoWorker<T extends IMediaInfo<U>, U extends IMediaI
    */
   protected abstract MrParser<T> getInfoParser() throws Exception;
 
-  /**
-   * @return The Parser for the image
-   * @throws Exception
-   */
-  protected abstract MrParser<U> getImageParser() throws Exception;
+//  /**
+//   * @return The Parser for the image
+//   * @throws Exception
+//   */
+//  protected abstract MrParser<U> getImageParser() throws Exception;
 }

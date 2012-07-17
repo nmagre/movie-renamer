@@ -18,9 +18,7 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.parser.xml.ImdbImage;
 import fr.free.movierenamer.parser.xml.ImdbInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -62,9 +60,9 @@ public class ImdbInfoWorker extends MovieInfoWorker {
     return new ImdbInfo();
   }
 
-  @Override
-  protected MrParser<MovieImage> getImageParser() throws Exception {
-    return new ImdbImage();
-  }
+//  @Override
+//  protected MrParser<MovieImage> getImageParser() throws Exception {
+//    return new ImdbImage();
+//  }
 
 }

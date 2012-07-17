@@ -18,10 +18,8 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.tvshow.TvShowImage;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
-import fr.free.movierenamer.parser.xml.TvdbImage;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache.CacheType;
@@ -56,10 +54,10 @@ public class TvdbInfoWorker extends TvShowInfoWorker {
     return new TvdbInfo();
   }
 
-  @Override
-  protected MrParser<TvShowImage> getImageParser() throws Exception {
-    return new TvdbImage();
-  }
+//  @Override
+//  protected MrParser<TvShowImage> getImageParser() throws Exception {
+//    return new TvdbImage();
+//  }
 
   @Override
   protected CacheType getCacheType() {

@@ -18,10 +18,8 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.xml.MrParser;
-import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.parser.xml.TmdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
@@ -47,7 +45,7 @@ public class TmdbInfoWorker extends MovieInfoWorker {
   public TmdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.TMDBID) {
-      throw new ActionNotValidException("TmdbInfoWorker  can only use tmdb ID");
+      throw new ActionNotValidException("TmdbInfoWorker can only use tmdb ID");
     }
   }
 
@@ -65,9 +63,9 @@ public class TmdbInfoWorker extends MovieInfoWorker {
     return new TmdbInfo();
   }
 
-  @Override
-  protected MrParser<MovieImage> getImageParser() throws Exception {
-    return new TmdbImage();
-  }
+//  @Override
+//  protected MrParser<MovieImage> getImageParser() throws Exception {
+//    return new TmdbImage();
+//  }
 
 }

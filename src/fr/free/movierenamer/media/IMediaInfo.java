@@ -25,10 +25,10 @@ package fr.free.movierenamer.media;
  */
 public interface IMediaInfo<T extends IMediaImage> {
 
-  /**
-   * @param mediaImage
-   */
-  void setImages(T mediaImage);
+//  /**
+//   * @param mediaImage
+//   */
+//  void setImages(T mediaImage);
 
   /**
    * @return

@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.parser.xml;
 
+import fr.free.movierenamer.media.MediaImage;
+
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -108,7 +110,10 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     if (searchMatcher.find()) {
       String imdbThumb = searchMatcher.group();
       imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=") + 5, imdbThumb.lastIndexOf("\""));
-      movieInfo.setThumb(imdbThumb);
+      MediaImage movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
+      movieThumb.setThumbUrl(imdbThumb);
+      movieThumb.setMidUrl(imdbThumb);
+      movieInfo.addThumb(movieThumb);
     }
 
     // Original Title

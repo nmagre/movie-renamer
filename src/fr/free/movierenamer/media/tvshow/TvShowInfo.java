@@ -31,17 +31,6 @@ public class TvShowInfo implements IMediaInfo<TvShowImage> {
   /*
    * (non-Javadoc)
    * 
-   * @see fr.free.movierenamer.media.IMediaInfo#setImages(fr.free.movierenamer.media.IMediaImage)
-   */
-  @Override
-  public void setImages(TvShowImage mediaImage) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see fr.free.movierenamer.media.IMediaInfo#getTrailer()
    */
   @Override
