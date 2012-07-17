@@ -780,4 +780,36 @@ public abstract class Utils {
     rd.close();
     return sb.toString();
   }
+
+  /**
+   * @param class1
+   * @param string
+   * @return
+   */
+  public static <T extends Number> T convertToNumber(Class<T> cls, String value) throws NumberFormatException{
+    Number num = null;
+    if(value != null && cls != null)
+    {
+      if(cls == Byte.class || cls == byte.class)
+      {
+        num = Byte.valueOf(value);
+      } else if(cls == Integer.class || cls == int.class)
+      {
+        num = Integer.valueOf(value);
+      } else if(cls == Long.class || cls == long.class)
+      {
+        num = Long.valueOf(value);
+      } else if (cls == Float.class || cls == float.class)
+      {
+        num = Float.valueOf(value);
+      } else if(cls == Double.class || cls == double.class)
+      {
+        num = Double.valueOf(value);
+      }
+    }
+    @SuppressWarnings("unchecked")
+    T toRet = (T) num;
+    return toRet;
+  }
+  
 }
