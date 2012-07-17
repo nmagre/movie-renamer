@@ -58,6 +58,7 @@ public class XbmcPassionIDLookup extends Worker<MediaID> {
       try {
         String apiID = id.getType() == MediaID.ALLOCINEID ?  id.getID(): id.getID().substring(2);
         http = new HttpGet(Settings.xbmcPassionImdblookup + (id.getType() == MediaID.ALLOCINEID ? "IdAllo=" : "IdImdb=") + apiID);
+        Settings.LOGGER.log(Level.INFO, Settings.xbmcPassionImdblookup + "{0}{1}", new Object[]{id.getType() == MediaID.ALLOCINEID ? "IdAllo=" : "IdImdb=", apiID});
         res = http.sendGetRequest(false, "UTF-8");
         break;
       } catch (Exception ex) {//Don't care about exception, "res" will be null
@@ -87,5 +88,4 @@ public class XbmcPassionIDLookup extends Worker<MediaID> {
 
     return mediaId;
   }
-
 }

@@ -21,6 +21,7 @@ import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.ui.res.IMediaPanel;
@@ -132,6 +133,17 @@ public abstract class WorkerManager {
     }
     return worker;
   }
+  
+  public static MediaImageWorker<MovieImage> getMovieImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException{
+    MediaImageWorker<MovieImage> worker = null;
+    switch(id.getType()){
+      case MediaID.IMDBID:
+        worker = new TmdbImageWorker(errorSupport, id);
+        break;
+      default:throw new ActionNotValidException("Nots needed");
+    }
+    return worker;
+  }
 
   public static ImageWorker getMediaImageWorker(List<MediaImage> array, Cache.CacheType cache, IMediaPanel mediaPanel) {
     return new ImageWorker(array, cache, mediaPanel);
@@ -139,5 +151,13 @@ public abstract class WorkerManager {
 
   public static ActorWorker getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel) {
     return new ActorWorker(actors, moviePanel);
+  }
+  
+  public static XbmcPassionIDLookup getIdlookup(MediaID id) throws ActionNotValidException{
+    if(id.getType() != MediaID.ALLOCINEID && id.getType() != MediaID.IMDBID){
+      throw new ActionNotValidException("Id lookup works only with imdb and allocine ids");
+    }
+    
+    return new XbmcPassionIDLookup(id);
   }
 }

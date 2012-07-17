@@ -22,17 +22,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Class XbmcPassionIDLookupParser
  * @author Nicolas Magré
  */
 public class XbmcPassionIDLookupParser {
 
-  private static final String ALLOPATTERN = "a href=\"http://www.allocine.fr/film/fichefilm_gen_cfilm=\\d+.html\" style=\"color: #CCCCCC;\" target=\"_blank\">(\\d+)</a>";
-  private static final String IMDBPATTERN = "a href=\" http://us.imdb.com/title/tt\\d+/\" style=\"color: #CCCCCC;\" target=\"_blank\">(\\d+)</a>";
+  private static final Pattern ALLOPATTERN = Pattern.compile("a href=\"http://www.allocine.fr/film/fichefilm_gen_cfilm=\\d+.html\" style=\"color: #CCCCCC;\" target=\"_blank\">(\\d+)</a>");
+  private static final Pattern IMDBPATTERN = Pattern.compile("a href=\" http://us.imdb.com/title/tt\\d+/\" style=\"color: #CCCCCC;\" target=\"_blank\">(\\d+)</a>");
 
   public MediaID getAlloId(String html) {
-    Pattern pattern = Pattern.compile(ALLOPATTERN);
-    Matcher idMatcher = pattern.matcher(html);
+    Matcher idMatcher = ALLOPATTERN.matcher(html);
     if (idMatcher.find()) {
       return new MediaID(idMatcher.group(1), MediaID.ALLOCINEID);
     }
@@ -40,10 +39,9 @@ public class XbmcPassionIDLookupParser {
   }
 
   public MediaID getImdbId(String html) {
-    Pattern pattern = Pattern.compile(IMDBPATTERN);
-    Matcher idMatcher = pattern.matcher(html);
+    Matcher idMatcher = IMDBPATTERN.matcher(html);
     if (idMatcher.find()) {
-      return new MediaID("tt" + idMatcher.group(1), MediaID.IMDBID);
+      return new MediaID(String.format ("tt%07d", Integer.parseInt(idMatcher.group(1))), MediaID.IMDBID);
     }
     return null;
   }

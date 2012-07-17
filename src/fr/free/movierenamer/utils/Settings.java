@@ -195,7 +195,7 @@ public class Settings implements Cloneable {
    *
    * @return The only instance of MR Settings
    */
-  public static Settings getInstance() {
+  public static synchronized Settings getInstance() {
     if (instance == null) {
       instance = newInstance();
     }

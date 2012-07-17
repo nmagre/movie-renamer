@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui;
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.media.movie.Movie;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.media.tvshow.TvShow;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
@@ -31,6 +32,7 @@ import fr.free.movierenamer.ui.res.DropFile;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
 import fr.free.movierenamer.worker.*;
+import fr.free.movierenamer.worker.provider.XbmcPassionIDLookup;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -50,6 +52,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JToolBar.Separator;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -96,8 +99,7 @@ public class MovieRenamer extends JFrame {
 
     CONTINUE(Utils.i18n("continue")),
     CHANGE(Utils.i18n("changeMode")),
-    CANCEL(Utils.i18n("cancel"))    ;
-    
+    CANCEL(Utils.i18n("cancel"));
     private String text;
 
     private CHOICE(String text) {
@@ -392,7 +394,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private void loadInterface() {// TODO , A refaire pour l'impémentation finale des série
+  private void loadInterface() {// TODO , A refaire pour l'impémentation finale des série (après la beta)
     switch (currentMode) {
       case MOVIEMODE:
         if (!setting.movieInfoPanel) {
@@ -493,10 +495,10 @@ public class MovieRenamer extends JFrame {
       return true;
     }
 
-    CHOICE[] choices= {CHOICE.CONTINUE, CHOICE.CHANGE, CHOICE.CANCEL};
+    CHOICE[] choices = {CHOICE.CONTINUE, CHOICE.CHANGE, CHOICE.CANCEL};
     String text = Utils.i18n("whatToDo").replace("FILE", mediaFile.getFile().getName()).replace("MODE", currentMode.getTitle());
-    int res = JOptionPane.showOptionDialog(MovieRenamer.this,text, Utils.i18n("mediaModemt"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
-    
+    int res = JOptionPane.showOptionDialog(MovieRenamer.this, text, Utils.i18n("mediaModemt"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, choices, "");
+
     switch (choices[res]) {
       case CONTINUE:
         mediaFile.setType(currentMode.getMediaType());
@@ -1214,7 +1216,7 @@ public class MovieRenamer extends JFrame {
 
           mediaList.setModel(mediaFileNameModel);
           if (mediaFileNameModel.isEmpty()) {
-            JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieFound"), sError, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieFound"), sError, JOptionPane.ERROR_MESSAGE);// FIXME change movie by media
           } else if (setting.selectFrstMedia) {
             mediaList.setSelectedIndex(0);
           }
@@ -1261,6 +1263,34 @@ public class MovieRenamer extends JFrame {
           if (movieInfo == null) {
             loading.setValue(100, INFOWORKER);
             return;
+          }
+
+          if(currentMedia.getMediaId(MediaID.ALLOCINEID) != null){// FIXME move it to movieinfoworker,
+            try {
+               Settings.LOGGER.log(Level.INFO, "Start XbmcPassionIDLookup");
+              XbmcPassionIDLookup xbl = WorkerManager.getIdlookup(currentMedia.getMediaId(MediaID.ALLOCINEID));
+              xbl.execute();
+              MediaID imId = xbl.get();// FIXME on ne bloque JAMAIS l' EDT
+              if(imId != null){
+                currentMedia.addMediaID(imId);
+                Settings.LOGGER.log(Level.INFO, "Id found : " + currentMedia.getMediaId(MediaID.IMDBID));
+              }
+              else {
+                Settings.LOGGER.log(Level.INFO, "id is null");
+              }
+            } catch (ActionNotValidException ex) {
+              Settings.LOGGER.log(Level.SEVERE, null, ex);
+            }       
+          }
+          
+          if (currentMedia.getMediaId(MediaID.IMDBID) != null) {// FIXME move it to movieinfoworker, imdbinfoworker if it's possible
+            try {
+              MediaImageWorker<MovieImage> imgWorker = WorkerManager.getMovieImageWorker(errorSupport, currentMedia.getMediaId(MediaID.IMDBID));
+              imgWorker.execute();
+              movieInfo.setImages(imgWorker.get());// FIXME on ne bloque JAMAIS l' EDT
+            } catch (ActionNotValidException ex) {
+               Settings.LOGGER.log(Level.SEVERE, null, ex);
+            }
           }
 
           if (setting.movieInfoPanel) {

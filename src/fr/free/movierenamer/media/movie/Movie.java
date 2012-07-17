@@ -224,7 +224,7 @@ public class Movie implements Media {
     }
     
     //construct new file name
-    res = res + ext;
+    res += ext;
 
     if (Utils.isWindows()) {
       res = res.replaceAll(":", "").replaceAll("/", "");
@@ -470,6 +470,13 @@ public class Movie implements Media {
   @Override
   public void setMediaFile(MediaFile mediaFile) {
     movieFile = mediaFile;
+  }
+  
+  @Override
+  public void addMediaID(MediaID id) {
+    if(getMediaId(id.getType()) == null){
+      movieinfo.addID(id);
+    }
   }
 
   @Override

@@ -108,6 +108,12 @@ public interface Media {
    * @param id
    */
   public void setMediaID(MediaID id);
+  
+  /**
+   * Add media id
+   * @param id 
+   */
+  public void addMediaID(MediaID id);
 
   /**
    * Clear media (images,info,..)

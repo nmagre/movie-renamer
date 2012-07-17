@@ -121,4 +121,9 @@ public class TvShow implements Media {// TODO
   public int getYear() {
     return -1;
   }
+
+  @Override
+  public void addMediaID(MediaID id) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

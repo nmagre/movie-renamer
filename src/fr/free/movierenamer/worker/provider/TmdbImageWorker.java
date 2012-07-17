@@ -31,6 +31,7 @@ import javax.xml.bind.DatatypeConverter;
  * Class TmdbImageWorker
  * 
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
 
@@ -41,8 +42,8 @@ public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
    */
   public TmdbImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.TMDBID) {
-      throw new ActionNotValidException("TmdbImageWorker can only use tmdb ID");
+    if (id.getType() != MediaID.IMDBID) {
+      throw new ActionNotValidException("TmdbImageWorker can only use imdb ID");
     }
   }
 
@@ -65,5 +66,4 @@ public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
   protected String getSearchUri() throws Exception {
     return Settings.tmdbAPMovieImdbLookUp + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
   }
-
 }

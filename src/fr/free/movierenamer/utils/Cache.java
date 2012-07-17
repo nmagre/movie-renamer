@@ -26,6 +26,7 @@ import javax.imageio.ImageIO;
  * Class Cache , Really simple cache
  * 
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class Cache {
 
@@ -57,7 +58,7 @@ public class Cache {
    * 
    * @return The only instance of Cache
    */
-  public static Cache getInstance() {
+  public static synchronized Cache getInstance() {
     if (instance == null) {
       instance = newInstance();
     }
@@ -161,6 +162,8 @@ public class Cache {
       break;
     case TVSHOWZIP:
       path = Settings.tvshowZipCacheDir;
+      break;
+    default :
       break;
     }
     return path;

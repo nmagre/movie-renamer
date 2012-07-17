@@ -90,7 +90,7 @@ public class TmdbImage extends MrParser<MovieImage> {
             lastAttribute = attributes.getValue("type");
           }
           if (attributes.getValue("size").equals("original")) {
-            currentMovieImage.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png ar jpg on server
+            currentMovieImage.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png is jpg on server
           }
           if (attributes.getValue("size").equals("thumb")) {
             currentMovieImage.setThumbUrl(attributes.getValue("url").replace(".png", ".jpg"));
