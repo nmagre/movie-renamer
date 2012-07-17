@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.media.IMediaImage;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
@@ -130,17 +131,6 @@ public abstract class WorkerManager {
       case TVRAGE:
         // TODO
         break;
-    }
-    return worker;
-  }
-  
-  public static MediaImageWorker<MovieImage> getMovieImageWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException{
-    MediaImageWorker<MovieImage> worker = null;
-    switch(id.getType()){
-      case MediaID.IMDBID:
-        worker = new TmdbImageWorker(errorSupport, id);
-        break;
-      default:throw new ActionNotValidException("Nots needed");
     }
     return worker;
   }

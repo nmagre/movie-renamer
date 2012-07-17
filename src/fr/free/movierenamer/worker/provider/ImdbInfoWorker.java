@@ -30,19 +30,17 @@ import javax.swing.event.SwingPropertyChangeSupport;
 
 /**
  * Class ImdbInfoWorker , get movie information from imdb
- * 
- * @author Magré Nicolas
+ *
+ * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
 public class ImdbInfoWorker extends MovieInfoWorker {
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport
-   *          Swing change support
-   * @param id
-   *          Media API ID
+   *
+   * @param errorSupport Swing change support
+   * @param id Media API ID
    * @throws ActionNotValidException
    */
   public ImdbInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
@@ -66,5 +64,4 @@ public class ImdbInfoWorker extends MovieInfoWorker {
   protected MrParser<MovieImage> getImageParser() throws Exception {
     return new ImdbImage();
   }
-
 }

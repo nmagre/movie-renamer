@@ -52,7 +52,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JToolBar.Separator;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -1264,35 +1263,7 @@ public class MovieRenamer extends JFrame {
             loading.setValue(100, INFOWORKER);
             return;
           }
-
-          if(currentMedia.getMediaId(MediaID.ALLOCINEID) != null){// FIXME move it to movieinfoworker,
-            try {
-               Settings.LOGGER.log(Level.INFO, "Start XbmcPassionIDLookup");
-              XbmcPassionIDLookup xbl = WorkerManager.getIdlookup(currentMedia.getMediaId(MediaID.ALLOCINEID));
-              xbl.execute();
-              MediaID imId = xbl.get();// FIXME on ne bloque JAMAIS l' EDT
-              if(imId != null){
-                currentMedia.addMediaID(imId);
-                Settings.LOGGER.log(Level.INFO, "Id found : " + currentMedia.getMediaId(MediaID.IMDBID));
-              }
-              else {
-                Settings.LOGGER.log(Level.INFO, "id is null");
-              }
-            } catch (ActionNotValidException ex) {
-              Settings.LOGGER.log(Level.SEVERE, null, ex);
-            }       
-          }
           
-          if (currentMedia.getMediaId(MediaID.IMDBID) != null) {// FIXME move it to movieinfoworker, imdbinfoworker if it's possible
-            try {
-              MediaImageWorker<MovieImage> imgWorker = WorkerManager.getMovieImageWorker(errorSupport, currentMedia.getMediaId(MediaID.IMDBID));
-              imgWorker.execute();
-              movieInfo.setImages(imgWorker.get());// FIXME on ne bloque JAMAIS l' EDT
-            } catch (ActionNotValidException ex) {
-               Settings.LOGGER.log(Level.SEVERE, null, ex);
-            }
-          }
-
           if (setting.movieInfoPanel) {
             if (setting.thumb) {
               ImageWorker thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), Cache.CacheType.THUMB, moviePnl);

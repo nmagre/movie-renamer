@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.media.IMediaImage;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.parser.xml.MrParser;
@@ -30,10 +31,11 @@ import javax.xml.bind.DatatypeConverter;
 /**
  * Class TmdbImageWorker
  * 
+ * @param <T> 
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
-public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
+public class TmdbImageWorker<T extends IMediaImage> extends MediaImageWorker<T> {
 
   /**
    * @param errorSupport
@@ -53,8 +55,8 @@ public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
    * @see fr.free.movierenamer.worker.MediaImageWorker#getImageParser()
    */
   @Override
-  protected MrParser<MovieImage> getImageParser() throws Exception {
-    return new TmdbImage();
+  protected MrParser<T> getImageParser() throws Exception {
+    return (MrParser<T>) new TmdbImage();// FIXME warning
   }
 
   /*
