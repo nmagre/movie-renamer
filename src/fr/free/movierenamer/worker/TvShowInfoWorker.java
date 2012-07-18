@@ -18,7 +18,6 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.tvshow.TvShowImage;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
@@ -27,9 +26,9 @@ import java.beans.PropertyChangeSupport;
  * Class TvShowInfoWorker
  *
  * @author QUÉMÉNEUR Simon
- *
+ * @author Nicolas Magré
  */
-public abstract class TvShowInfoWorker extends MediaInfoWorker<TvShowInfo, TvShowImage> {
+public abstract class TvShowInfoWorker extends MediaInfoWorker<TvShowInfo> {
 
   /**
    * Constructor arguments

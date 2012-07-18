@@ -47,12 +47,12 @@ public class ImdbSearchWorker extends MovieSearchWorker {
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
+  protected String getUri() throws Exception {
     return (config.movieScrapperFR ? Settings.imdbSearchUrl_fr : Settings.imdbSearchUrl) + URLEncoder.encode(searchTitle, "ISO-8859-1");
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception {
+  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
     return new ImdbSearch(getUrl());
   }
 

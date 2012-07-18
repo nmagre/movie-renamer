@@ -18,32 +18,28 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
 
 /**
  * Class MrInfoWorker
- * 
+ *
  * @author QUÉMÉNEUR Simon
- * 
+ * @author Nicolas Magré
  */
-public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo, MovieImage> {
+public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo> {
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport
-   *          Swing change support
-   * @param id
-   *          Movie API ID
+   *
+   * @param errorSupport Swing change support
+   * @param id Movie API ID
    * @throws ActionNotValidException
    */
   public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
   }
-
   // /*
   // * (non-Javadoc)
   // *
@@ -85,7 +81,6 @@ public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo, MovieIm
   // }
   //
   // protected abstract MediaImageWorker getImageWorker() throws Exception;
-
   // @Override
   // protected final MovieInfo executeInBackground() throws Exception
   // {

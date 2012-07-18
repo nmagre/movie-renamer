@@ -18,39 +18,33 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.tvshow.SxE;
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.parser.xml.MrParser;
+import fr.free.movierenamer.parser.xml.TmdbImage;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.worker.TvShowInfoWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.MediaImageWorker;
+import java.beans.PropertyChangeSupport;
+import javax.xml.bind.DatatypeConverter;
 
 /**
- * Class TvRageInfoWorker
+ * Class TmdbImageWorker
  *
  * @author Nicolas Magré
  */
-public class TvRageInfoWorker extends TvShowInfoWorker {// TODO A faire
+public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
 
-  private final SxE sxe;
-
-  /**
-   * Constructor arguments
-   *
-   * @param errorSupport Swing change support
-   * @param id Media id
-   * @param sxe
-   * @throws ActionNotValidException
-   */
-  public TvRageInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
+  public TmdbImageWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    if (id.getType() != MediaID.MediaIdType.TVRAGETVID) {
-      throw new ActionNotValidException("TvRageInfoWorker can only use tvrage ID");
-    }
-    this.sxe = sxe;
   }
 
   @Override
-  protected TvShowInfo executeInBackground() throws Exception {
-    throw new UnsupportedOperationException("Not supported yet.");
+  protected String getUri() throws Exception {
+    return Settings.tmdbAPMovieImdbLookUp + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
+  }
+
+  @Override
+  protected MrParser<MovieImage> getParser() throws Exception {
+    return new TmdbImage();
   }
 }

@@ -18,21 +18,21 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.parser.xml.TmdbInfo;
+import fr.free.movierenamer.parser.xml.XbmcPassionIDLookup;
+import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.HttpWorker;
-import fr.free.movierenamer.worker.MovieInfoWorker;
 import java.beans.PropertyChangeSupport;
-import javax.xml.bind.DatatypeConverter;
 
 /**
- * Class TmdbInfoWorker, get movie info from the movie database
+ * Class XbmcPassionIDLookupWorker
  *
  * @author Nicolas Magré
  */
-public class TmdbInfoWorker extends MovieInfoWorker {
+public class XbmcPassionIDLookupWorker extends HttpWorker<MediaID> {
+
+  private final MediaID mid;
 
   /**
    * Constructor arguments
@@ -41,27 +41,22 @@ public class TmdbInfoWorker extends MovieInfoWorker {
    * @param id
    * @throws ActionNotValidException
    */
-  public TmdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
-    super(errorSupport, id);
-    if (id.getType() != MediaID.MediaIdType.TMDBID) {
-      throw new ActionNotValidException("TmdbInfoWorker can only use tmdb ID");
+  public XbmcPassionIDLookupWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+    super(errorSupport);
+    if (id.getType() != MediaID.MediaIdType.IMDBID && id.getType() != MediaID.MediaIdType.ALLOCINEID) {
+      throw new ActionNotValidException("XbmcPassionIDLookupWorker can only use imdb or allocine ID");
     }
+    this.mid = id;
   }
 
   @Override
-  protected MovieInfo executeInBackground() throws Exception {
-    String uri = Settings.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
-    if (config.movieScrapperFR) {
-      uri = uri.replace("/en/", "/fr/");
-    }
+  protected String getUri() throws Exception {
+    String apiID = mid.getType() == MediaID.MediaIdType.ALLOCINEID ? mid.getID() : mid.getID().substring(2);
+    return (Settings.xbmcPassionImdblookup + (mid.getType() == MediaID.MediaIdType.ALLOCINEID ? "IdAllo=" : "IdImdb=") + apiID);
+  }
 
-    HttpWorker<MovieInfo> httpWorker = new HttpWorker<MovieInfo>(errorSupport);
-    httpWorker.setUri(uri);
-    httpWorker.setParser(new TmdbInfo());
-    httpWorker.execute();
-
-    MovieInfo movieInfo = httpWorker.get();// Wait for movie info
-
-    return movieInfo;
+  @Override
+  protected MrParser<MediaID> getParser() throws Exception {
+    return new XbmcPassionIDLookup(mid);
   }
 }

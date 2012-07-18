@@ -66,11 +66,4 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
   public final PropertyChangeSupport getErrorSupport() {
     return errorSupport;
   }
-
-  // /**
-  // * @return The Parser for the URI
-  // * @throws Exception
-  // */
-  // protected abstract MrParser<T> gerParser() throws Exception;
-
 }

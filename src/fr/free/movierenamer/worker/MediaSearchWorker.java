@@ -33,12 +33,14 @@ import javax.swing.ImageIcon;
  * Class MediaSearchWorker
  * 
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResult>> {
   protected final String searchTitle;
 
   public MediaSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport);
+    
     this.searchTitle = searchTitle;
   }
 
@@ -46,7 +48,7 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
   protected final ArrayList<SearchResult> proccessFile(File xmlFile) throws Exception {
     ArrayList<SearchResult> results;
     XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile.getAbsolutePath());
-    MrParser<ArrayList<SearchResult>> parser = getSearchParser();
+    MrParser<ArrayList<SearchResult>> parser = getParser();
     parser.setOriginalFile(xmlFile);
     xmp.setParser(parser);
     results = xmp.parseXml();
@@ -70,10 +72,9 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
     return results;
   }
 
-  /**
-   * @return
-   * @throws Exception  
-   */
-  protected abstract MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception;
-
+  @Override
+  protected abstract MrParser<ArrayList<SearchResult>> getParser() throws Exception;
+  
+  @Override
+  protected abstract String getUri() throws Exception;
 }

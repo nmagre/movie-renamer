@@ -323,7 +323,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Countries
-    searchMatcher = ImdbPattern.IMDBMOVIECOUNTRY.getPattern(ilang).matcher(moviePage);// FIXME , find "USA | Malaysia:18PL" instead of "USA"
+    searchMatcher = ImdbPattern.IMDBMOVIECOUNTRY.getPattern(ilang).matcher(moviePage);// FIXME , find "USA | Malaysia:18PL" instead of "USA" (E.g :bienvenue a zombiland with imdb.com)
     if (searchMatcher.find()) {
       String country = searchMatcher.group();
       if (country.contains("/country/")) {

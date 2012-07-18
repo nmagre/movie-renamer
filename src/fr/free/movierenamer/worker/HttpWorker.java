@@ -1,4 +1,4 @@
-/*
+ /*
  * movie-renamer
  * Copyright (C) 2012 Nicolas Magré
  *
@@ -17,44 +17,54 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.parser.xml.MrParser;
+import fr.free.movierenamer.parser.xml.XMLParser;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Class HttpWorker
- * 
- * @param <T> 
+ *
+ * @param <T>
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
-public abstract class HttpWorker<T> extends Worker<T> {
+public class HttpWorker<T> extends Worker<T> {
+
   private static final int RETRY = 3;
   private URL realUrl;
-
+  private String uri;
+  private MrParser<T> parser;
+  private Cache.CacheType cache;
+  
   public HttpWorker(PropertyChangeSupport errorSupport) {
     super(errorSupport);
+    cache = Cache.CacheType.XML;
   }
-
+  
   // FIXME Les infos change avec le temps, exemple une série peut evolué très vite sur une API (certaines gère les update),
   // Donc un "refresh" (force) et une vérification de l'ancièneté(par exemple une semaine => plus valide) du cache me parraisse indispensable
   // Ne concerne que les XML/ZIP
   @Override
   protected final T executeInBackground() throws Exception {
     Cache.CacheType cacheType = getCacheType();
-    String uri = getSearchUri();
-    realUrl = new URL(uri);
-    File file = Cache.getInstance().get(realUrl, cacheType); 
+    realUrl = new URL(getUri());
+    File file = Cache.getInstance().get(realUrl, cacheType);
     if (file != null) {
       Settings.LOGGER.log(Level.FINE, "Use of cache file for {0}", realUrl);
     } else {
       for (int i = 0; i < RETRY; i++) {
         HttpGet http;
         try {
-          http = new HttpGet(uri);
+          http = new HttpGet(getUri());
           file = Cache.getInstance().add(http, cacheType);
           realUrl = http.getURL();
           break;
@@ -73,67 +83,127 @@ public abstract class HttpWorker<T> extends Worker<T> {
   }
 
   protected Cache.CacheType getCacheType() {
-    return Cache.CacheType.XML;
+    return cache;
   }
   
+  public void setCache(Cache.CacheType cache) {
+    this.cache = cache;
+  }
+
   /**
    * @return the url
    */
   protected URL getUrl() {
     return realUrl;
   }
+  
+  protected String getUri()  throws Exception{
+    return uri;
+  }
+  
+  protected MrParser<T> getParser()  throws Exception{
+    return parser;
+  }
+  
+  public void setUri(String uri){
+    this.uri = uri;
+  }
+  
+  public void setParser(MrParser<T> parser){
+    this.parser = parser;
+  }
 
   /*
-   * 
+   *
    * MovieInfo movieInfo = null; MovieImage movieImage = null; try { // String uri = config.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(config.xurlMdb)) + "/" + id.getID(); // if
    * (config.movieScrapperFR) { // uri = uri.replace("/en/", "/fr/"); // } // // URL url = new URL(uri); // File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML); // if (xmlFile == null) {
    * // for (int i = 0; i < RETRY; i++) { // InputStream in; // try { // in = url.openStream(); // Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML); // xmlFile =
    * Cache.getInstance().get(url, Cache.CacheType.XML); // break; // } catch (Exception e) {// Don't care about exception, "xmlFile" will be null // Settings.LOGGER.log(Level.SEVERE, null, e); // try
    * { // Thread.sleep(300); // } catch (InterruptedException ex) { // Settings.LOGGER.log(Level.SEVERE, null, ex); // } // } // } // } File xmlFile = loadXmlFile();
-   * 
+   *
    * if (xmlFile == null) { firePropertyChange("closeLoadingDial", "httpFailed"); return null; }
-   * 
+   *
    * // Parse TMDB API XML XMLParser<MovieInfo> xmp = new XMLParser<MovieInfo>(xmlFile.getAbsolutePath()); xmp.setParser(getInfoParser()); movieInfo = xmp.parseXml();
-   * 
+   *
    * XMLParser<MovieImage> xmmp = new XMLParser<MovieImage>(xmlFile.getAbsolutePath()); xmmp.setParser((getImageParser()); movieImage = xmmp.parseXml();
-   * 
+   *
    * } catch (IOException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (InterruptedException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (ParserConfigurationException ex)
    * { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (SAXException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); }
-   * 
+   *
    * if (movieInfo == null) { firePropertyChange("closeLoadingDial", "scrapperInfoFailed"); return null; }
-   * 
+   *
    * if (movieImage == null) { firePropertyChange("closeLoadingDial", "scrapperInfoFailed"); return null; }
-   * 
+   *
    * movieInfo.setImages(movieImage); if (!movieInfo.getTrailer().equals("")) { String trailer = YTdecodeUrl.getRealUrl(movieInfo.getTrailer(), YTdecodeUrl.HD); if (trailer != null) {
    * movieInfo.setTrailer(trailer); } }
-   * 
+   *
    * setProgress(100); return movieInfo;
-   * 
-   * 
-   * 
-   * 
+   *
+   *
+   *
+   *
    * T workerResult = null; try { File xmlFile = loadXmlFile();
-   * 
+   *
    * if (xmlFile == null) { firePropertyChange("closeLoadingDial", "httpFailed"); return null; }
-   * 
+   *
    * setProgress(30);
-   * 
+   *
    * workerResult = parseXml(xmlFile);
-   * 
+   *
    * } catch (IOException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (InterruptedException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (ParserConfigurationException ex)
    * { Settings.LOGGER.log(Level.SEVERE, null, ex); } catch (SAXException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); }
-   * 
+   *
    * if (workerResult == null) { firePropertyChange("closeLoadingDial", "scrapperSearchFailed"); return null; }
-   * 
+   *
    * setProgress(50);
-   * 
+   *
    * workerResult = loadImages(workerResult); setProgress(100);
-   * 
+   *
    * // FIXME Settings.LOGGER.log(Level.INFO, "found : {0} Media", searchResult.size());
-   * 
+   *
    * return workerResult; }
    */
-  protected abstract T proccessFile(File xmlFile) throws Exception;
+  /*
+   * (non-Javadoc)
+   *
+   * @see fr.free.movierenamer.worker.HttpWorker#proccessFile(java.io.File)
+   */
+  protected T proccessFile(File xmlFile) throws Exception {
+    T object = null;
+
+    try {
+      // Parse XML
+      parser = getParser();
+      XMLParser<T> xmp = new XMLParser<T>(xmlFile.getAbsolutePath());
+      parser.setOriginalFile(xmlFile);
+      xmp.setParser(parser);
+      object = xmp.parseXml();
+
+    } catch (IOException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (InterruptedException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (ParserConfigurationException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (SAXException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    if (object == null) {
+      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
+      return null;
+    }
+
+//    if (!((IMediaInfo<U>) object).getTrailer().equals("")) {
+//      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) object).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
+//      if (trailer != null) {
+//        ((IMediaInfo<U>) object).setTrailer(trailer);
+//      }
+//    }
+
+    setProgress(100);
+    return object;
+  }
 
   // /**
   // * Load corresponding images
@@ -143,7 +213,6 @@ public abstract class HttpWorker<T> extends Worker<T> {
   // * @throws Exception
   // */
   // protected abstract T loadImages(T workerResult) throws Exception;
-
   // private File loadXmlFile() throws Exception {
   // String uri = getSearchUri();
   // URL url = new URL(uri);
@@ -173,7 +242,6 @@ public abstract class HttpWorker<T> extends Worker<T> {
   //
   // return xmlFile;
   // }
-
   // private T parseXml(File xmlFile) throws Exception {
   // // Parse XML
   // XMLParser<T> xmp = new XMLParser<T>(xmlFile.getAbsolutePath());
@@ -182,11 +250,8 @@ public abstract class HttpWorker<T> extends Worker<T> {
   // xmp.setParser(parser);
   // return xmp.parseXml();
   // }
-
   /**
    * @return The complete String URI where to look for data
    * @throws Exception
    */
-  protected abstract String getSearchUri() throws Exception;
-
 }

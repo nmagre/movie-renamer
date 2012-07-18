@@ -18,17 +18,19 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.xml.AllocineInfo;
-import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.MovieInfoWorker;
 import java.beans.PropertyChangeSupport;
+import java.util.logging.Level;
 
 /**
  * Class AllocineInfoWorker
- * 
+ *
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
@@ -49,21 +51,44 @@ public class AllocineInfoWorker extends MovieInfoWorker {
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
-  }
+  protected MovieInfo executeInBackground() throws Exception {
+    HttpWorker<MovieInfo> httpWorker = new HttpWorker<MovieInfo>(errorSupport);
+    httpWorker.setUri(Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID());
+    httpWorker.setParser(new AllocineInfo());
+    httpWorker.execute();
 
-  @Override
-  protected MrParser<MovieInfo> getInfoParser() throws Exception {
-    return new AllocineInfo();
-  }
+    MovieInfo movieInfo = httpWorker.get();// Wait for movie info
 
+    MediaID imdbId = null;
+    try {
+      XbmcPassionIDLookupWorker xbl = new XbmcPassionIDLookupWorker(errorSupport, id);
+      xbl.execute();
+      imdbId = xbl.get();// Wait for movie imdb id
+    } catch (ActionNotValidException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    if (imdbId != null) {
+      MovieImage mediaImage = null;
+      try {
+        TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, imdbId);
+        imgWorker.execute();
+        mediaImage = imgWorker.get();// Wait for movie images
+      } catch (ActionNotValidException ex) {
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
+      }
+
+      if (mediaImage != null) {
+        movieInfo.setImages(mediaImage);
+      }
+    }
+
+    return movieInfo;
+  }
 //  @Override
 //  protected MrParser<MovieImage> getImageParser() throws Exception {
 //    return new AllocineImage();
 //  }
-
-
   // /*
   // * (non-Javadoc)
   // *
@@ -73,7 +98,6 @@ public class AllocineInfoWorker extends MovieInfoWorker {
   // protected MediaImageWorker getImageWorker() {
   // return null;
   // }
-
   // @Override
   // protected MovieInfo executeInBackground() {
   // MovieInfo movieInfo = null;

@@ -25,29 +25,29 @@ import java.util.List;
  * 
  * @author QUÉMÉNEUR Simon
  */
-public class TvShowInfo implements IMediaInfo<TvShowImage> {
+public class TvShowInfo implements IMediaInfo/*<TvShowImage>*/ {
 
   /*
    * (non-Javadoc)
    * 
    * @see fr.free.movierenamer.media.IMediaInfo#getTrailer()
    */
-  @Override
-  public String getTrailer() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see fr.free.movierenamer.media.IMediaInfo#setTrailer(java.lang.String)
-   */
-  @Override
-  public void setTrailer(String trailer) {
-    // TODO Auto-generated method stub
-
-  }
+//  @Override
+//  public String getTrailer() {
+//    // TODO Auto-generated method stub
+//    return null;
+//  }
+//
+//  /*
+//   * (non-Javadoc)
+//   * 
+//   * @see fr.free.movierenamer.media.IMediaInfo#setTrailer(java.lang.String)
+//   */
+//  @Override
+//  public void setTrailer(String trailer) {
+//    // TODO Auto-generated method stub
+//
+//  }
 
   /**
    * @return

@@ -39,7 +39,7 @@ public class TmdbSearchWorker extends MovieSearchWorker {
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
+  protected String getUri() throws Exception {
     String uri = Settings.tmdbAPISearchUrl + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + URLEncoder.encode(searchTitle, "UTF-8");
     if (config.movieScrapperFR) {
       uri = uri.replace("/en/", "/fr/");
@@ -48,7 +48,7 @@ public class TmdbSearchWorker extends MovieSearchWorker {
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception {
+  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
     return new TmdbSearch();
   }
 

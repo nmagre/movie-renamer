@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
  * Class MediaImageWorker
  *
  * @param <T>
- * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker<T> {
 
@@ -51,19 +51,14 @@ public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker
     super(errorSupport);
     this.id = id;
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see fr.free.movierenamer.worker.HttpWorker#proccessFile(java.io.File)
-   */
+  
   @Override
   protected final T proccessFile(File xmlFile) throws Exception {
     T movieImage = null;
 
     try {
       XMLParser<T> xmmp = new XMLParser<T>(xmlFile.getAbsolutePath());
-      MrParser<T> imageParser = getImageParser();
+      MrParser<T> imageParser = getParser();
       imageParser.setOriginalFile(xmlFile);
       xmmp.setParser(imageParser);
       movieImage = xmmp.parseXml();
@@ -87,9 +82,9 @@ public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker
     return movieImage;
   }
 
-  /**
-   * @return
-   * @throws Exception  
-   */
-  protected abstract MrParser<T> getImageParser() throws Exception;
+  @Override
+  protected abstract String getUri() throws Exception;
+
+  @Override
+  protected abstract MrParser<T> getParser() throws Exception;
 }

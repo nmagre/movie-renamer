@@ -18,13 +18,15 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.xml.ImdbInfo;
-import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.MovieInfoWorker;
 import java.beans.PropertyChangeSupport;
+import java.util.logging.Level;
 
 /**
  * Class ImdbInfoWorker , get movie information from imdb
@@ -49,18 +51,27 @@ public class ImdbInfoWorker extends MovieInfoWorker {
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return (config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined";
+  protected final MovieInfo executeInBackground() throws Exception {
+    HttpWorker<MovieInfo> httpWorker = new HttpWorker<MovieInfo>(errorSupport);
+    httpWorker.setUri((config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined");
+    httpWorker.setParser(new ImdbInfo());
+    httpWorker.execute();
+
+    MovieInfo movieInfo = httpWorker.get();// Wait for movie info
+
+    MovieImage mediaImage = null;
+    try {
+      TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, id);
+      imgWorker.execute();
+      mediaImage = imgWorker.get();// Wait for movie images
+    } catch (ActionNotValidException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    if (mediaImage != null) {
+      movieInfo.setImages(mediaImage);
+    }
+
+    return movieInfo;
   }
-
-  @Override
-  protected MrParser<MovieInfo> getInfoParser() throws Exception {
-    return new ImdbInfo();
-  }
-
-//  @Override
-//  protected MrParser<MovieImage> getImageParser() throws Exception {
-//    return new ImdbImage();
-//  }
-
 }

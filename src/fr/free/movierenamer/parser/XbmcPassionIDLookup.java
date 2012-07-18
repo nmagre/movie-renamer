@@ -15,20 +15,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser;
+package fr.free.movierenamer.parser.xml;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.parser.xml.MrParser;
+import fr.free.movierenamer.parser.xml.NOSAXException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.xml.sax.SAXException;
 
 /**
- * Class XbmcPassionIDLookupParser
+ * Class XbmcPassionIDLookup
+ *
  * @author Nicolas Magré
  */
-public class XbmcPassionIDLookupParser {
+public class XbmcPassionIDLookup extends MrParser<MediaID> {
 
   private static final Pattern ALLOPATTERN = Pattern.compile("a href=\"http://www.allocine.fr/film/fichefilm_gen_cfilm=\\d+.html\" style=\"color: #CCCCCC;\" target=\"_blank\">(\\d+)</a>");
   private static final Pattern IMDBPATTERN = Pattern.compile("a href=\" http://us.imdb.com/title/tt\\d+/\" style=\"color: #CCCCCC;\" target=\"_blank\">(\\d+)</a>");
+  /**
+   * The exception to bypass parsing file ;)
+   */
+  private final NOSAXException ex = new NOSAXException();
+  private MediaID id;
+  private MediaID lookupId;
+
+  public XbmcPassionIDLookup(MediaID id) {
+    this.id = id;
+  }
+
+  @Override
+  public void startDocument() throws SAXException {
+    lookupId = null;
+    switch (id.getType()) {
+      case IMDBID:
+        lookupId = getAlloId(getContent("UTF-8"));
+        break;
+      case ALLOCINEID:
+        lookupId = getImdbId(getContent("UTF-8"));
+        break;
+      default:
+        break;
+    }
+    throw ex;
+  }
 
   public MediaID getAlloId(String html) {
     Matcher idMatcher = ALLOPATTERN.matcher(html);
@@ -41,8 +71,13 @@ public class XbmcPassionIDLookupParser {
   public MediaID getImdbId(String html) {
     Matcher idMatcher = IMDBPATTERN.matcher(html);
     if (idMatcher.find()) {
-      return new MediaID(String.format ("tt%07d", Integer.parseInt(idMatcher.group(1))), MediaID.MediaIdType.IMDBID);
+      return new MediaID(String.format("tt%07d", Integer.parseInt(idMatcher.group(1))), MediaID.MediaIdType.IMDBID);
     }
     return null;
+  }
+
+  @Override
+  public MediaID getObject() {
+    return lookupId;
   }
 }

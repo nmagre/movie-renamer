@@ -31,20 +31,21 @@ import java.util.ArrayList;
  * Class AllocineTvShowSearchWorker Search tvshow
  * 
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public class AllocineTvShowSearchWorker extends TvShowSearchWorker {
+  
   public AllocineTvShowSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
     super(errorSupport, searchTitle);
   }
 
   @Override
-  protected String getSearchUri() throws UnsupportedEncodingException {
+  protected String getUri() throws UnsupportedEncodingException {
     return Settings.allocineAPISearch.replace("FILTER", "tvseries" + URLEncoder.encode(searchTitle, "UTF-8"));
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception {
+  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
     return new AllocineTvShowSearch();
   }
-
 }

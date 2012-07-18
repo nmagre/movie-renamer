@@ -21,19 +21,19 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.xml.AllocineTvInfo;
-import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
 
 /**
  * Class AllocineTvShowInfoWorker
- * 
+ *
  * @author Nicolas Magré
  */
-public class AllocineTvShowInfoWorker extends TvShowInfoWorker {
-  
+public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
+
   private final SxE sxe;
 
   /**
@@ -53,20 +53,16 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID();
+  protected TvShowInfo executeInBackground() throws Exception {
+    HttpWorker<TvShowInfo> httpWorker = new HttpWorker<TvShowInfo>(errorSupport);
+    httpWorker.setUri(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
+    httpWorker.setParser(new AllocineTvInfo());
+    httpWorker.execute();
+
+
+    return httpWorker.get();
   }
 
-  @Override
-  protected MrParser<TvShowInfo> getInfoParser() throws Exception {
-    return new AllocineTvInfo();
-  }
-
-//  @Override
-//  protected MrParser<TvShowImage> getImageParser() throws Exception {
-//    return new AllocineTvImage();
-//  }
-  
   // @Override
   // protected ArrayList<TvShowSeason> executeInBackground() {
   // System.out.println("AllocineTvShowInfoWorker");
@@ -233,5 +229,4 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {
   // }
   // return xmlFile;
   // }
-
 }

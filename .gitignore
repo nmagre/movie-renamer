@@ -2,3 +2,5 @@
 /dist/
 /MacOS/Contents/Resources/Java/
 /update.xml
+/nbproject/private/private.xml
+/nbproject/private/private.properties

@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.worker.provider.TvRageSearchWorker;
-
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
@@ -38,6 +36,7 @@ import java.util.logging.Level;
  * Class WorkerManager
  *
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public abstract class WorkerManager {
 
@@ -141,13 +140,5 @@ public abstract class WorkerManager {
 
   public static ActorWorker getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel) {
     return new ActorWorker(actors, moviePanel);
-  }
-  
-  public static XbmcPassionIDLookup getIdlookup(MediaID id) throws ActionNotValidException{
-    if(id.getType() != MediaID.MediaIdType.ALLOCINEID && id.getType() != MediaID.MediaIdType.IMDBID){
-      throw new ActionNotValidException("Id lookup works only with imdb and allocine ids");
-    }
-    
-    return new XbmcPassionIDLookup(id);
   }
 }

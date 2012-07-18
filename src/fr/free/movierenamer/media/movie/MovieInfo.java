@@ -17,22 +17,21 @@
  */
 package fr.free.movierenamer.media.movie;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.free.movierenamer.media.IMediaInfo;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class MovieInfo
  * 
  * @author Nicolas Magré
  */
-public class MovieInfo implements IMediaInfo<MovieImage> {
+public class MovieInfo implements IMediaInfo/*<MovieImage>*/ {
 
   private String title;
   private String sortTitle;
@@ -683,6 +682,15 @@ public class MovieInfo implements IMediaInfo<MovieImage> {
    */
   public void setMpaa(String mpaa) {
     this.mpaa = mpaa;
+  }
+  
+  /**
+   * Set movie images
+   * 
+   * @param movieImage Movie Images
+   */
+  public void setImages(MovieImage movieImage) {
+    this.movieImage = movieImage;
   }
 
   /**

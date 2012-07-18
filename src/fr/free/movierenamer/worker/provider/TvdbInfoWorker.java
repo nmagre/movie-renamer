@@ -19,23 +19,22 @@ package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.parser.xml.MrParser;
 import fr.free.movierenamer.parser.xml.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache.CacheType;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
 import javax.xml.bind.DatatypeConverter;
 
 /**
  * Class TvdbInfoWorker
- * 
+ *
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-// TODO A faire
-public class TvdbInfoWorker extends TvShowInfoWorker {
+public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
 
   public TvdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
@@ -45,25 +44,18 @@ public class TvdbInfoWorker extends TvShowInfoWorker {
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return Settings.tvdbAPIUrlTvShow + new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb)) + "/" + "series/" + id.getID() + "/all/" + (config.tvshowScrapperFR ? "fr" : "en") + ".zip";
+  protected final TvShowInfo executeInBackground() throws Exception {
+    String uri = Settings.tvdbAPIUrlTvShow + new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb));
+    uri += "/" + "series/" + id.getID() + "/all/" + (config.tvshowScrapperFR ? "fr" : "en") + ".zip";
+    HttpWorker<TvShowInfo> httpWorker = new HttpWorker<TvShowInfo>(errorSupport);
+    httpWorker.setUri(uri);
+    httpWorker.setParser(new TvdbInfo());
+    httpWorker.setCache(CacheType.TVSHOWZIP);
+    httpWorker.execute();
+
+
+    return httpWorker.get();
   }
-
-  @Override
-  protected MrParser<TvShowInfo> getInfoParser() throws Exception {
-    return new TvdbInfo();
-  }
-
-//  @Override
-//  protected MrParser<TvShowImage> getImageParser() throws Exception {
-//    return new TvdbImage();
-//  }
-
-  @Override
-  protected CacheType getCacheType() {
-    return CacheType.TVSHOWZIP;
-  }
-
   // @Override
   // protected ArrayList<TvShowSeason> executeInBackground() {
   // System.out.println("TvdbInfoWorker");

@@ -19,25 +19,21 @@ package fr.free.movierenamer.media;
 
 /**
  * Class IMediaInfo
- * 
- * @param <T> 
+ *
  * @author QUÉMÉNEUR Simon
  */
-public interface IMediaInfo<T extends IMediaImage> {
-
+public interface IMediaInfo {
 //  /**
 //   * @param mediaImage
 //   */
 //  void setImages(T mediaImage);
-
-  /**
-   * @return
-   */
-  String getTrailer();
-
-  /**
-   * @param trailer
-   */
-  void setTrailer(String trailer);
-
+//  /**
+//   * @return
+//   */
+//  String getTrailer();
+//
+//  /**
+//   * @param trailer
+//   */
+//  void setTrailer(String trailer);
 }

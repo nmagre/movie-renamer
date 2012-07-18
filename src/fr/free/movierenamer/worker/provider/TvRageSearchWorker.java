@@ -38,12 +38,12 @@ public class TvRageSearchWorker extends TvShowSearchWorker {
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getSearchParser() throws Exception {
-    return new TvRageSearch();
+  protected String getUri() throws Exception {
+    return Settings.tvRageAPIsearch + URLEncoder.encode(searchTitle, "UTF-8");
   }
 
   @Override
-  protected String getSearchUri() throws Exception {
-    return Settings.tvRageAPIsearch + URLEncoder.encode(searchTitle, "UTF-8");
+  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
+    return new TvRageSearch();
   }
 }

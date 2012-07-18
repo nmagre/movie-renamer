@@ -32,7 +32,7 @@ import fr.free.movierenamer.ui.res.DropFile;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
 import fr.free.movierenamer.worker.*;
-import fr.free.movierenamer.worker.provider.XbmcPassionIDLookup;
+import fr.free.movierenamer.worker.provider.XbmcPassionIDLookupWorker;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -1247,9 +1247,9 @@ public class MovieRenamer extends JFrame {
 
   private class MovieInfoListener implements PropertyChangeListener {// TODO A refaire
 
-    private SwingWorker<MovieInfo, String> worker;
+    private MovieInfoWorker worker;
 
-    public MovieInfoListener(SwingWorker<MovieInfo, String> worker) {
+    public MovieInfoListener(MovieInfoWorker worker) {
       this.worker = worker;
     }
 
