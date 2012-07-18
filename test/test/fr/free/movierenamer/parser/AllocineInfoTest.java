@@ -15,9 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser;
+package test.fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.AllocineInfo;
+import fr.free.movierenamer.parser.MrParser;
+import fr.free.movierenamer.parser.XMLParser;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;

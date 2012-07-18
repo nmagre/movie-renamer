@@ -18,25 +18,31 @@
 package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaImage;
-
 import fr.free.movierenamer.media.MediaPerson;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
  * Class TheMovieDbInfo
- * 
+ *
  * @author Nicolas Magré
  */
 public class TmdbInfo extends MrParser<MovieInfo> {
 
   private StringBuffer buffer;
   private boolean movie;
+  private boolean images;
+  private MediaImage currentMovieImage;
+  private String currentId;
+  private ArrayList<MediaImage> thumbs;
+  private ArrayList<MediaImage> fanarts;
   private MovieInfo movieinfo;
 
   public TmdbInfo() {
@@ -46,8 +52,21 @@ public class TmdbInfo extends MrParser<MovieInfo> {
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    movie = false;
+    movie = images = false;
     movieinfo = new MovieInfo();
+    currentMovieImage = null;
+    currentId = "";
+    thumbs = new ArrayList<MediaImage>();
+    fanarts = new ArrayList<MediaImage>();
+  }
+
+  @Override
+  public void endDocument() throws SAXException {
+    super.endDocument();
+    MovieImage miage = new MovieImage();
+    miage.setThumbs(thumbs);
+    miage.setThumbs(fanarts);
+    movieinfo.setImages(miage);
   }
 
   @Override
@@ -59,27 +78,33 @@ public class TmdbInfo extends MrParser<MovieInfo> {
     if (name.equalsIgnoreCase("country")) {
       movieinfo.addCountry(attributes.getValue("name"));
     }
-    if (name.equalsIgnoreCase("image")) {
-      MediaImage movieThumb;
-      if (attributes.getValue("type").equals("poster")) {
-        movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
-      } else {
-        movieThumb = new MediaImage(0, MediaImage.MediaImageType.FANART);
-      }
-      if (attributes.getValue("size").equals("original")) {
-        movieThumb.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png ar jpg on server
-      }
-      if (attributes.getValue("size").equals("thumb")) {
-        movieThumb.setThumbUrl(attributes.getValue("url").replace(".png", ".jpg"));
-      }
-      if (attributes.getValue("size").equals("mid") || attributes.getValue("type").equals("poster")) {
-        movieThumb.setMidUrl(attributes.getValue("url").replace(".png", ".jpg"));
-      }
 
-      if (movieThumb.getType() == MediaImage.MediaImageType.THUMB) {
-        movieinfo.addThumb(movieThumb);
-      } else {
-        movieinfo.addFanart(movieThumb);
+    if (name.equalsIgnoreCase("images")) {
+      images = true;
+    }
+
+    if (images) {
+      if (name.equalsIgnoreCase("image")) {
+        if (!currentId.equals(attributes.getValue("id"))) {
+          if (currentMovieImage != null) {
+            if (currentMovieImage.getType() == MediaImage.MediaImageType.THUMB) {
+              thumbs.add(currentMovieImage);
+            } else {
+              fanarts.add(currentMovieImage);
+            }
+          }
+          currentId = attributes.getValue("id");
+          currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.MediaImageType.THUMB : MediaImage.MediaImageType.FANART);
+        }
+        if (attributes.getValue("size").equals("original")) {
+          currentMovieImage.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png ar jpg on server
+        }
+        if (attributes.getValue("size").equals("thumb")) {
+          currentMovieImage.setThumbUrl(attributes.getValue("url").replace(".png", ".jpg"));
+        }
+        if (attributes.getValue("size").equals("mid") || attributes.getValue("type").equals("poster")) {
+          currentMovieImage.setMidUrl(attributes.getValue("url").replace(".png", ".jpg"));
+        }
       }
     }
 
@@ -126,7 +151,9 @@ public class TmdbInfo extends MrParser<MovieInfo> {
     if (name.equalsIgnoreCase("movie")) {
       movie = false;
     }
-
+    if (name.equalsIgnoreCase("images")) {
+      images = false;
+    }
     if (movie) {
       if (name.equalsIgnoreCase("name")) {
         movieinfo.setTitle(buffer.toString());

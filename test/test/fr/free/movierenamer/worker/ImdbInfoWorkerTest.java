@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.worker;
-
-import static org.junit.Assert.fail;
+package test.fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
 import org.junit.After;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

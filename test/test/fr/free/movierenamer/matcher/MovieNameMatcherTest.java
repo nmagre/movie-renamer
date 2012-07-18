@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.matcher;
+package test.fr.free.movierenamer.matcher;
 
+import fr.free.movierenamer.matcher.MovieNameMatcher;
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaFile;
 import java.io.File;
@@ -29,7 +30,8 @@ import org.junit.Test;
  * @author Nicolas Magré
  */
 public class MovieNameMatcherTest {
-  public String[] nameFilters = {
+
+  public static String[] nameFilters = {
     "notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual",
     "extended", "uncut$", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
     "bd5", "bd9", "hddvd", "hdz", "edition.exclusive", "unrated", "walt disney", "dvdrip", "cinefile",
@@ -40,12 +42,18 @@ public class MovieNameMatcherTest {
     " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal ", "dvd-r", "dvdscr", "scr", "r1", "r2", "r3", "r4",
     "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"
   };
-  
-  public MovieNameMatcherTest() {
 
+  @Test
+  public void MovieNameMatcherTest() {
+    ArrayList<String> movies = createArray();
+    for (String movie : movies) {
+      MovieNameMatcher mvMatcher = new MovieNameMatcher(new MediaFile(new File(movie), Media.MediaType.MOVIE, true, true), Arrays.asList(nameFilters));
+      mvMatcher.getMovieName();
+    }
+    System.out.println(movies.size() + " Movies traited with " + nameFilters.length + " regex");
   }
-  
-  public ArrayList<String> createArray() {
+
+  public static ArrayList<String> createArray() {
     ArrayList<String> array = new ArrayList<String>();
 
     array.add("12 Rounds (2009).avi");
@@ -1318,18 +1326,5 @@ public class MovieNameMatcherTest {
     array.add("ZombieLand.FRENCH.TS.MD.XviD-VODKA.avi");
     array.add("Zombies! Zombies! Zombies! (2008).avi");
     return array;
-  }
-
-  /**
-   * Test of getMovieName method, of class MovieNameMatcher.
-   */
-  @Test
-  public void testGetMovieName() {
-     ArrayList<String> movies = createArray();
-     for(String movie : movies){
-       MovieNameMatcher mvMatcher = new MovieNameMatcher(new MediaFile(new File(movie), Media.MediaType.MOVIE, true, true), Arrays.asList(nameFilters));
-       mvMatcher.getMovieName();
-     }
-     System.out.println(movies.size() + " Movies traited with " + nameFilters.length + " regex");
   }
 }

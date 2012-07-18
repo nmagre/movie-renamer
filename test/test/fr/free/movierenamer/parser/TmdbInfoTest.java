@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser;
+package test.fr.free.movierenamer.parser;
 
 import org.junit.After;
 import static org.junit.Assert.fail;
@@ -24,10 +24,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Class ImdbInfoTest
+ * Class TmdbInfoTest
  * @author Simon QUÉMÉNEUR
  */
-public class ImdbInfoTest {
+public class TmdbInfoTest {
 
   /**
    * @throws java.lang.Exception

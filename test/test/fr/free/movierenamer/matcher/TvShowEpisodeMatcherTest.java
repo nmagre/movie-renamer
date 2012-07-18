@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.matcher;
+package test.fr.free.movierenamer.matcher;
 
 import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.media.tvshow.SxE;
@@ -28,12 +28,12 @@ import org.junit.Test;
 
 public class TvShowEpisodeMatcherTest {
 
-  private static Map<SxE, String> epMatches = createEPMatch();
+  private Map<SxE, String> epMatches = createEPMatch();
 
   public TvShowEpisodeMatcherTest() {
   }
 
-  private static Map<SxE, String> createEPMatch() {
+  private Map<SxE, String> createEPMatch() {
     Map<SxE, String> epMatchesTest = new LinkedHashMap<SxE, String>();
     epMatchesTest.put(new SxE(3, 2), "Test.test.S03E02.FRENCH.HD.avi");
     epMatchesTest.put(new SxE(2, 2), "Test 2x02 - Test test test.avi");
