@@ -18,8 +18,8 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.parser.xml.XbmcPassionIDLookup;
-import fr.free.movierenamer.parser.xml.MrParser;
+import fr.free.movierenamer.parser.MrParser;
+import fr.free.movierenamer.parser.XbmcPassionIDLookup;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.HttpWorker;

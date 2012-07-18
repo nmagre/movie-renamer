@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.parser.xml.MrSettings;
-import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.parser.MrSettings;
+import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.worker.WorkerManager;
 import java.io.*;
 import java.lang.reflect.Field;

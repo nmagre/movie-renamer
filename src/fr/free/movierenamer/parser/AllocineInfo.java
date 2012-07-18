@@ -15,10 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser.xml;
-
-import fr.free.movierenamer.media.movie.MovieImage;
-import java.util.ArrayList;
+package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;

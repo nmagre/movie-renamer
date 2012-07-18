@@ -15,15 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser.xml;
-
-import static org.junit.Assert.*;
+package fr.free.movierenamer.parser;
 
 import org.junit.After;
+import static org.junit.Assert.fail;
 import org.junit.Before;
-
 import org.junit.BeforeClass;
-
 import org.junit.Test;
 
 /**

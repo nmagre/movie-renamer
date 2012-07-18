@@ -15,34 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser.xml;
-
-import static org.junit.Assert.*;
-
-import java.net.URL;
-
-import java.io.InputStream;
-
-import org.junit.Assert;
-
-import java.net.URISyntaxException;
-
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.movie.MovieInfo;
-
 import java.io.File;
-
-import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-import org.junit.Test;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import javax.xml.parsers.ParserConfigurationException;
+import org.junit.*;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Class AllocineInfoTest

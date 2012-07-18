@@ -31,8 +31,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import fr.free.movierenamer.parser.xml.MrSettings;
-import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.parser.MrSettings;
+import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;

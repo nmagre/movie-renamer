@@ -15,11 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.parser.xml;
+package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.parser.xml.MrParser;
-import fr.free.movierenamer.parser.xml.NOSAXException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.xml.sax.SAXException;

@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.parser.xml.MrParser;
-import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.parser.MrParser;
+import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;

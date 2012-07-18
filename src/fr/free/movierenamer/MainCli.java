@@ -18,8 +18,8 @@
 package fr.free.movierenamer;
 
 import fr.free.movierenamer.cli.CmdLineParser;
-import fr.free.movierenamer.parser.xml.MrSettings;
-import fr.free.movierenamer.parser.xml.XMLParser;
+import fr.free.movierenamer.parser.MrSettings;
+import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;

@@ -19,7 +19,7 @@ package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.parser.xml.TvdbInfo;
+import fr.free.movierenamer.parser.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache.CacheType;
 import fr.free.movierenamer.utils.Settings;

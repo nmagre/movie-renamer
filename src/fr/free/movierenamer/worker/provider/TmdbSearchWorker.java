@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.parser.xml.MrParser;
-import fr.free.movierenamer.parser.xml.TmdbSearch;
+import fr.free.movierenamer.parser.MrParser;
+import fr.free.movierenamer.parser.TmdbSearch;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.MovieSearchWorker;
