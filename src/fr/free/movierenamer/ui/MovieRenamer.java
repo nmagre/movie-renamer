@@ -1291,6 +1291,9 @@ public class MovieRenamer extends JFrame {
           Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex){
+          Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("NullPointerException", ex.getStackTrace()));
+          // TODO display error
         }
       } else {
         loading.setValue(worker.getProgress(), INFOWORKER);

@@ -24,10 +24,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Class AllocineTvSeason
  * @author Nicolas Magré
  */
-public class AllocineTvSeason extends MrParser< ArrayList<TvShowSeason>> {
+public class AllocineTvSeason extends MrParser<ArrayList<TvShowSeason>> {
 
   private StringBuffer buffer;
   private ArrayList<TvShowSeason> seasons;

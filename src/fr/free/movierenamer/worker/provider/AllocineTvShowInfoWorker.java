@@ -19,13 +19,18 @@ package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
+import fr.free.movierenamer.parser.AllocineTvEpisode;
 import fr.free.movierenamer.parser.AllocineTvInfo;
+import fr.free.movierenamer.parser.AllocineTvSeason;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 
 /**
  * Class AllocineTvShowInfoWorker
@@ -35,6 +40,9 @@ import java.beans.PropertyChangeSupport;
 public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
 
   private final SxE sxe;
+  private final HttpWorker<ArrayList<TvShowSeason>> seasonsWorker = new HttpWorker<ArrayList<TvShowSeason>>(errorSupport, new AllocineTvSeason());
+  private final HttpWorker<ArrayList<TvShowEpisode>> episodesWorker =  new HttpWorker<ArrayList<TvShowEpisode>>(errorSupport, new AllocineTvEpisode());
+  private final HttpWorker<TvShowEpisode> episodeWorker  = new HttpWorker<TvShowEpisode>(errorSupport, new AllocineTvInfo());
 
   /**
    * Constructor arguments
@@ -53,16 +61,13 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
   }
 
   @Override
-  protected TvShowInfo executeInBackground() throws Exception {
-    HttpWorker<TvShowInfo> httpWorker = new HttpWorker<TvShowInfo>(errorSupport);
-    httpWorker.setUri(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
-    httpWorker.setParser(new AllocineTvInfo());
-    httpWorker.execute();
+  protected TvShowInfo executeInBackground() throws Exception {   
+    ArrayList<TvShowSeason> seasons = seasonsWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
+    ArrayList<TvShowEpisode> episodes = episodesWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
+    TvShowEpisode episode = episodeWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
 
-
-    return httpWorker.get();
+    return null;
   }
-
   // @Override
   // protected ArrayList<TvShowSeason> executeInBackground() {
   // System.out.println("AllocineTvShowInfoWorker");

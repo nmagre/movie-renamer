@@ -21,6 +21,7 @@ import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class SxE
+ *
  * @author Nicolas Magré
  */
 public class SxE {
@@ -34,13 +35,13 @@ public class SxE {
     episode = -1;
     match = "";
   }
-  
+
   public SxE(int season, int episode) {
     this.season = season;
     this.episode = episode;
     this.match = "";
   }
-  
+
   public SxE(int season, int episode, String match) {
     this.season = season;
     this.episode = episode;
@@ -54,40 +55,40 @@ public class SxE {
   public int getEpisode() {
     return episode;
   }
-  
+
   public String getMatch() {
     return match;
   }
-  
-  public int getAbsNum(){
-    if(!Utils.isDigit(match)){
+
+  public int getAbsNum() {
+    if (!Utils.isDigit(match)) {
       return -1;
     }
     return Integer.parseInt(match);
   }
-  
-  public boolean isValid(){
-    return season !=-1 && episode != -1;
+
+  public boolean isValid() {
+    return season != -1 && episode != -1;
   }
-  
-  public boolean isPartial(){
+
+  public boolean isPartial() {
     return season != -1 || episode != -1;
   }
-  
-  public void setEpisode(int episode){
+
+  public void setEpisode(int episode) {
     this.episode = episode;
   }
-  
-  public void setSeason(int season){
+
+  public void setSeason(int season) {
     this.season = season;
   }
-  
+
   @Override
-  public boolean equals(Object obj){
+  public boolean equals(Object obj) {
     if (obj instanceof SxE) {
-			SxE sxe = (SxE) obj;
-			return sxe.getEpisode() == episode && sxe.getSeason() == season;
-		}
+      SxE sxe = (SxE) obj;
+      return sxe.getEpisode() == episode && sxe.getSeason() == season;
+    }
     return false;
   }
 
@@ -97,6 +98,34 @@ public class SxE {
     hash = 29 * hash + this.season;
     hash = 29 * hash + this.episode;
     return hash;
+  }
+
+  public String seasonL0() {
+    return String.format("%02d", season);
+  }
+
+  public String episodeL0() {
+    return String.format("%02d", episode);
+  }
+
+  public String toXString() {
+    return season + "x" + episode;
+  }
+
+  public String toXL0String() {
+    return seasonL0() + "x" + episodeL0();
+  }
+
+  public String toSString() {
+    return "S" + season + "E" + episode;
+  }
+
+  public String toSL0String() {
+    return "S" + seasonL0() + "E" + episodeL0();
+  }
+
+  public String toNString() {
+    return season + episodeL0();
   }
 
   @Override

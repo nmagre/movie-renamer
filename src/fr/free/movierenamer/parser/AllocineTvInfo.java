@@ -18,7 +18,6 @@
 package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -27,7 +26,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Nicolas Magré
  */
-public class AllocineTvInfo extends MrParser<TvShowInfo> {
+public class AllocineTvInfo extends MrParser<TvShowEpisode> {
 
   private StringBuffer buffer;
   private final TvShowEpisode tvshowInfo;
@@ -86,7 +85,7 @@ public class AllocineTvInfo extends MrParser<TvShowInfo> {
   }
 
   @Override
-  public TvShowInfo getObject() {
+  public TvShowEpisode getObject() {
     return null;
   }
 }

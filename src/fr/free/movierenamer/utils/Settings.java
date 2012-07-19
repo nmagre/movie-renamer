@@ -33,9 +33,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Class Settings , Movie Renamer settings <br>
- * Only public and non static attributes are written in conf file !
- * 
+ * Class Settings , Movie Renamer settings <br> Only public and non static attributes are written in conf file !
+ *
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
@@ -91,9 +90,9 @@ public class Settings implements Cloneable {
   //TvRage
   public static final String tvRageAPIsearch = "http://services.tvrage.com/feeds/search.php?show=";
   // List
-  public static int[] nbResultList = { -1, 5, 10, 15, 20, 30 };
-  public static String[] thumbExtList = { ".jpg", ".tbn", "-thumb.jpg" };
-  public static String[] fanartExtList = { ".jpg", "-fanart.jpg" };
+  public static int[] nbResultList = {-1, 5, 10, 15, 20, 30};
+  public static String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
+  public static String[] fanartExtList = {".jpg", "-fanart.jpg"};
   // LAF
   public static final UIManager.LookAndFeelInfo lookAndFeels[] = UIManager.getInstalledLookAndFeels();
   public static boolean lafChanged = false;
@@ -146,11 +145,11 @@ public class Settings implements Cloneable {
   public int fanartSize = 0;
   public int thumbExt = 0;
   // Filter
-  public String[] extensions = { "mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf" };
-  public static String[] nameFilters = { "notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
-      "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
-      "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
-      " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md" };
+  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
+  public static String[] nameFilters = {"notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
+    "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
+    "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
+    " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"};
   public ArrayList<String> mediaNameFilters;
   public boolean useExtensionFilter = true;
   // Cache
@@ -178,7 +177,7 @@ public class Settings implements Cloneable {
 
   /**
    * Private build for singleton fix
-   * 
+   *
    * @return
    */
   private static synchronized Settings newInstance() {
@@ -192,7 +191,7 @@ public class Settings implements Cloneable {
 
   /**
    * Access to the Settings instance
-   * 
+   *
    * @return The only instance of MR Settings
    */
   public static synchronized Settings getInstance() {
@@ -227,7 +226,7 @@ public class Settings implements Cloneable {
 
   /**
    * Load Movie Renamer settings
-   * 
+   *
    * @return Movie Renamer settings
    */
   private Settings loadSetting() {
@@ -304,7 +303,7 @@ public class Settings implements Cloneable {
 
   /**
    * Save setting
-   * 
+   *
    * @return True if setting was saved, False otherwise
    */
   public boolean saveSetting() {
@@ -349,7 +348,7 @@ public class Settings implements Cloneable {
 
   /**
    * Get the user settings fields
-   * 
+   *
    * @return
    */
   private Collection<Field> getSettingsFields() {
@@ -365,7 +364,7 @@ public class Settings implements Cloneable {
 
   /**
    * Set a value using field name
-   * 
+   *
    * @param fieldName
    * @param configValue
    */
@@ -467,7 +466,9 @@ public class Settings implements Cloneable {
           // Enum field
           hash = 29 * hash + ((Enum<?>) field.get(this)).hashCode();
         } else if (Utils.isNumeric(field.getType())) {
-          hash = 29 * hash + (Integer) field.get(this); // FIXME Convertir en autre que Integer ? pas faux, mais je crois pas qu'il ya aura des float ou long ou ... un jours
+          @SuppressWarnings("unchecked")
+          Class<Number> type = (Class<Number>) field.getType();
+          hash = 29 * hash + Utils.convertToNumber(type,  (String) field.get(this)).hashCode();
         }
       } catch (SecurityException e) {
         LOGGER.log(Level.WARNING, e.getMessage());

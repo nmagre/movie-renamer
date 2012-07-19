@@ -43,16 +43,31 @@ public class HttpWorker<T> extends Worker<T> {
   private URL realUrl;
   private String uri;
   private MrParser<T> parser;
-  private Cache.CacheType cache;
   
   public HttpWorker(PropertyChangeSupport errorSupport) {
     super(errorSupport);
-    cache = Cache.CacheType.XML;
   }
   
-  // FIXME Les infos change avec le temps, exemple une série peut evolué très vite sur une API (certaines gère les update),
-  // Donc un "refresh" (force) et une vérification de l'ancièneté(par exemple une semaine => plus valide) du cache me parraisse indispensable
-  // Ne concerne que les XML/ZIP
+  public HttpWorker(PropertyChangeSupport errorSupport, MrParser<T> parser) {
+    super(errorSupport);
+    this.parser = parser;
+  }
+  
+  /**
+   * Start worker and get result T
+   * @param uri Url to get and parser
+   * @return T object
+   * @throws Exception 
+   */
+  public T startAndGet(String uri) throws Exception {
+    if(getParser() == null){
+      throw new NullPointerException("HttpWorker null parser");
+    }
+    this.uri = uri;
+    this.execute();
+    return this.get();
+  }
+  
   @Override
   protected final T executeInBackground() throws Exception {
     Cache.CacheType cacheType = getCacheType();
@@ -83,13 +98,9 @@ public class HttpWorker<T> extends Worker<T> {
   }
 
   protected Cache.CacheType getCacheType() {
-    return cache;
+    return Cache.CacheType.XML;
   }
   
-  public void setCache(Cache.CacheType cache) {
-    this.cache = cache;
-  }
-
   /**
    * @return the url
    */
@@ -105,14 +116,6 @@ public class HttpWorker<T> extends Worker<T> {
     return parser;
   }
   
-  public void setUri(String uri){
-    this.uri = uri;
-  }
-  
-  public void setParser(MrParser<T> parser){
-    this.parser = parser;
-  }
-
   /*
    *
    * MovieInfo movieInfo = null; MovieImage movieImage = null; try { // String uri = config.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(config.xurlMdb)) + "/" + id.getID(); // if

@@ -788,9 +788,11 @@ public abstract class Utils {
   }
 
   /**
-   * @param class1
-   * @param string
+   * @param <T> 
+   * @param cls 
+   * @param value 
    * @return
+   * @throws NumberFormatException  
    */
   public static <T extends Number> T convertToNumber(Class<T> cls, String value) throws NumberFormatException {
     Number num = null;

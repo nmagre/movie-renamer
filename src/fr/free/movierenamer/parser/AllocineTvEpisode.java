@@ -24,7 +24,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * 
+ * Class AllocineTvEpisode
  * @author Nicolas Magré
  */
 public class AllocineTvEpisode extends MrParser<ArrayList<TvShowEpisode>> {

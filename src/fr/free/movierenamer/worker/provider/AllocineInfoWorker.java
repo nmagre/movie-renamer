@@ -44,7 +44,7 @@ public class AllocineInfoWorker extends MovieInfoWorker {
    * @throws ActionNotValidException
    */
   public AllocineInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
-    super(errorSupport, id);
+    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new AllocineInfo()));
     if (id.getType() != MediaID.MediaIdType.ALLOCINEID) {
       throw new ActionNotValidException("AllocineInfoWorker can only use allocine ID");
     }
@@ -52,12 +52,7 @@ public class AllocineInfoWorker extends MovieInfoWorker {
 
   @Override
   protected MovieInfo executeInBackground() throws Exception {
-    HttpWorker<MovieInfo> httpWorker = new HttpWorker<MovieInfo>(errorSupport);
-    httpWorker.setUri(Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID());
-    httpWorker.setParser(new AllocineInfo());
-    httpWorker.execute();
-
-    MovieInfo movieInfo = httpWorker.get();// Wait for movie info
+    MovieInfo movieInfo = movieInfoWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID());// Wait for movie info
 
     MediaID imdbId = null;
     try {

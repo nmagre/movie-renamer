@@ -19,11 +19,8 @@ package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.parser.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.utils.Cache.CacheType;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
 import javax.xml.bind.DatatypeConverter;
@@ -47,14 +44,14 @@ public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
   protected final TvShowInfo executeInBackground() throws Exception {
     String uri = Settings.tvdbAPIUrlTvShow + new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb));
     uri += "/" + "series/" + id.getID() + "/all/" + (config.tvshowScrapperFR ? "fr" : "en") + ".zip";
-    HttpWorker<TvShowInfo> httpWorker = new HttpWorker<TvShowInfo>(errorSupport);
+   /* HttpWorker<TvShowInfo> httpWorker = new HttpWorker<TvShowInfo>(errorSupport);
     httpWorker.setUri(uri);
     httpWorker.setParser(new TvdbInfo());
     httpWorker.setCache(CacheType.TVSHOWZIP);
-    httpWorker.execute();
+    httpWorker.execute();*/
 
 
-    return httpWorker.get();
+    return null;//httpWorker.get();
   }
   // @Override
   // protected ArrayList<TvShowSeason> executeInBackground() {

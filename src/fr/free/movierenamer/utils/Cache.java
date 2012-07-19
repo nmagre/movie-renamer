@@ -20,30 +20,34 @@ package fr.free.movierenamer.utils;
 import java.awt.Image;
 import java.io.*;
 import java.net.URL;
+import java.util.Date;
 import javax.imageio.ImageIO;
 
 /**
  * Class Cache , Really simple cache
- * 
+ *
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
 public class Cache {
 
+  private static final int ONEWEEK = 604800;
+  private static final long TIMESTAMP = new Date().getTime() / 1000 - ONEWEEK;
+
   // Type
   public enum CacheType {
+
     THUMB,
     FANART,
     ACTOR,
     XML,
     TVSHOWZIP;
   }// The only instance of Cache
-
   private static Cache instance;
 
   /**
    * Private build for singleton fix
-   * 
+   *
    * @return
    */
   private static synchronized Cache newInstance() {
@@ -55,7 +59,7 @@ public class Cache {
 
   /**
    * Access to the Cache instance
-   * 
+   *
    * @return The only instance of Cache
    */
   public static synchronized Cache getInstance() {
@@ -71,27 +75,29 @@ public class Cache {
 
   /**
    * Add file to cache
-   * 
+   *
    * @param url File url
    * @param type Cache type
-   * @return 
+   * @return
    * @throws IOException
    */
-  public File add(/*InputStream is, */URL url, Cache.CacheType type) throws IOException {
+  public File add(/*
+           * InputStream is,
+           */URL url, Cache.CacheType type) throws IOException {
     return add(url.openStream(), url.toString(), type);
   }
 
   /**
    * @param http
    * @param cacheType
-   * @return 
-   * @throws Exception 
-   * @throws IOException 
+   * @return
+   * @throws Exception
+   * @throws IOException
    */
   public File add(HttpGet http, CacheType cacheType) throws IOException, Exception {
     return add(http.getInputStream(true, "ISO-8859-15"), http.getURL().toString(), cacheType);
   }
-  
+
   private File add(InputStream is, String url, Cache.CacheType type) throws IOException {
     OutputStream os;
     File f = new File(getPath(type) + Utils.md5(url));
@@ -104,18 +110,22 @@ public class Cache {
 
   /**
    * Get file from cache
-   * 
+   *
    * @param url File url
    * @param type Cache type
    * @return File
    */
-  public File get(URL url, Cache.CacheType type) {// FIXME Ajouter un timestamp de validité selon le type (image : infinie, XML/ZIP : 1 semaine)
+  public File get(URL url, Cache.CacheType type) {
     return get(url.toString(), type);
   }
-  
+
   private File get(String url, Cache.CacheType type) {
     String md5Name = Utils.md5(url);
     File f = new File(getPath(type) + md5Name);
+    Long lastModified = f.lastModified();
+    if(lastModified < TIMESTAMP) {// File is too old, need update
+      return null;
+    }
     if (f.exists()) {
       return f;
     }
@@ -124,7 +134,7 @@ public class Cache {
 
   /**
    * Get image from cache
-   * 
+   *
    * @param image Image url
    * @param type Cache type
    * @return Image
@@ -141,37 +151,37 @@ public class Cache {
 
   /**
    * Get cache path
-   * 
+   *
    * @param type cache type
    * @return Cache path
    */
   private String getPath(Cache.CacheType type) {
     String path = Settings.cacheDir;
     switch (type) {
-    case THUMB:
-      path = Settings.thumbCacheDir;
-      break;
-    case FANART:
-      path = Settings.fanartCacheDir;
-      break;
-    case ACTOR:
-      path = Settings.actorCacheDir;
-      break;
-    case XML:
-      path = Settings.xmlCacheDir;
-      break;
-    case TVSHOWZIP:
-      path = Settings.tvshowZipCacheDir;
-      break;
-    default :
-      break;
+      case THUMB:
+        path = Settings.thumbCacheDir;
+        break;
+      case FANART:
+        path = Settings.fanartCacheDir;
+        break;
+      case ACTOR:
+        path = Settings.actorCacheDir;
+        break;
+      case XML:
+        path = Settings.xmlCacheDir;
+        break;
+      case TVSHOWZIP:
+        path = Settings.tvshowZipCacheDir;
+        break;
+      default:
+        break;
     }
     return path;
   }
 
   /**
    * Copy stream from input source to output
-   * 
+   *
    * @param in Input
    * @param out Output
    * @throws IOException

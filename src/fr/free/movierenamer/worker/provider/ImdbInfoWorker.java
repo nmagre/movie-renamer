@@ -20,6 +20,7 @@ package fr.free.movierenamer.worker.provider;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.AllocineInfo;
 import fr.free.movierenamer.parser.ImdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
@@ -44,7 +45,7 @@ public class ImdbInfoWorker extends MovieInfoWorker {
    * @throws ActionNotValidException
    */
   public ImdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
-    super(errorSupport, id);
+    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new ImdbInfo()));
     if (id.getType() != MediaID.MediaIdType.IMDBID) {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
@@ -52,12 +53,7 @@ public class ImdbInfoWorker extends MovieInfoWorker {
 
   @Override
   protected final MovieInfo executeInBackground() throws Exception {
-    HttpWorker<MovieInfo> httpWorker = new HttpWorker<MovieInfo>(errorSupport);
-    httpWorker.setUri((config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined");
-    httpWorker.setParser(new ImdbInfo());
-    httpWorker.execute();
-
-    MovieInfo movieInfo = httpWorker.get();// Wait for movie info
+    MovieInfo movieInfo = movieInfoWorker.startAndGet((config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined");// Wait for movie info
 
     MovieImage mediaImage = null;
     try {

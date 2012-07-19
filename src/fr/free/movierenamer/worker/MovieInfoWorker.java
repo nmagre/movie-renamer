@@ -30,15 +30,18 @@ import java.beans.PropertyChangeSupport;
  */
 public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo> {
 
+  protected HttpWorker<MovieInfo> movieInfoWorker;
   /**
    * Constructor arguments
    *
    * @param errorSupport Swing change support
    * @param id Movie API ID
+   * @param movieInfoWorker 
    * @throws ActionNotValidException
    */
-  public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
+  public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id, HttpWorker<MovieInfo> movieInfoWorker) throws ActionNotValidException {
     super(errorSupport, id);
+    this.movieInfoWorker = movieInfoWorker;
   }
   // /*
   // * (non-Javadoc)
