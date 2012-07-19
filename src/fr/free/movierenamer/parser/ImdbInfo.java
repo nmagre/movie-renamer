@@ -37,14 +37,14 @@ import org.xml.sax.SAXException;
  */
 public class ImdbInfo extends MrParser<MovieInfo> {
 
-  private final MovieInfo movieInfo;
-  private final ImdbSearch.ImdbLanguage ilang = config.movieScrapperFR ? ImdbSearch.ImdbLanguage.FRENCH : ImdbSearch.ImdbLanguage.ENGLISH;
-
-  public enum ImdbLanguage {// TODO ,imdb.it, imdb.es, ....
+    public enum ImdbLanguage {// TODO ,imdb.it, imdb.es, ....
 
     ENGLISH,
     FRENCH;
   }
+  
+  private final MovieInfo movieInfo;
+  private final ImdbInfo.ImdbLanguage ilang = config.movieScrapperFR ? ImdbInfo.ImdbLanguage.FRENCH : ImdbInfo.ImdbLanguage.ENGLISH;
 
   public enum ImdbPattern {// TODO ,imdb.it, imdb.es, ....
 
@@ -73,14 +73,14 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       }
     }
 
-    public Pattern getPattern(ImdbSearch.ImdbLanguage lang) {
+    public Pattern getPattern(ImdbInfo.ImdbLanguage lang) {
       if (pattern.length == 1) {
         return pattern[0];
       }
       return pattern[lang.ordinal()];
     }
 
-    public String getPatternString(ImdbSearch.ImdbLanguage lang) {
+    public String getPatternString(ImdbInfo.ImdbLanguage lang) {
       if (pattern.length == 1) {
         return pattern[0].toString();
       }

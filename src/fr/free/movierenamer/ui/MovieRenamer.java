@@ -206,7 +206,7 @@ public class MovieRenamer extends JFrame {
             }
           }
 
-          if (currentMedia != null) {
+          if (currentMedia != null) {// FIXME currentMedia can be not null and whith no result found
             renamedField.setText(currentMedia.getRenamedTitle(conf.movieFilenameFormat, conf));
           }
 

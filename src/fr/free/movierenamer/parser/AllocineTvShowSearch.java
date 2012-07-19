@@ -36,6 +36,7 @@ public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
   private boolean media;
   private String currentId;
   private String currentName;
+  private String currentYear;
   private String currentThumb;
 
   public AllocineTvShowSearch() {
@@ -59,7 +60,7 @@ public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
     buffer = new StringBuffer();
     if (name.equalsIgnoreCase("tvseries")) {
       media = true;
-      currentName = currentId = currentThumb = "";
+      currentName = currentId = currentThumb = currentYear = "";
       currentId = attributes.getValue("code");
     }
     if (media) {
@@ -73,7 +74,7 @@ public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
   public void endElement(String uri, String localName, String name) throws SAXException {
     if (name.equalsIgnoreCase("tvseries")) {
       media = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.ALLOCINETVID), SearchResult.SearchResultType.NONE, currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.ALLOCINETVID), SearchResult.SearchResultType.NONE, currentYear, currentThumb));
     }
     if (media) {
       if (name.equalsIgnoreCase("originalTitle")) {// Original title will be there in all case but title not
@@ -83,11 +84,11 @@ public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
         currentName = buffer.toString();
       }
       if (name.equalsIgnoreCase("yearStart")) {
-        currentName += " (" + buffer.toString() + ")";
+        currentYear = " (" + buffer.toString() + ")";
       }
       if (name.equalsIgnoreCase("yearEnd")) {
         if (!buffer.toString().equals("")) {
-          currentName += " - (" + buffer.toString() + ")";
+          currentYear += " - (" + buffer.toString() + ")";
         }
       }
     }

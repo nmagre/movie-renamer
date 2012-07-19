@@ -17,25 +17,23 @@
  */
 package fr.free.movierenamer;
 
+import fr.free.movierenamer.parser.MrSettings;
+import fr.free.movierenamer.parser.XMLParser;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.logging.Level;
-
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.xml.sax.SAXException;
-
-import fr.free.movierenamer.parser.MrSettings;
-import fr.free.movierenamer.parser.XMLParser;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
+import org.xml.sax.SAXParseException;
 
 /**
  * Class Main
@@ -141,6 +139,8 @@ public class Main {
         saved = true;
       }
 
+    } catch (SAXParseException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (ParserConfigurationException ex) {
       Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
     } catch (SAXException ex) {

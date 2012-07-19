@@ -36,6 +36,7 @@ public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
   private ArrayList<SearchResult> results;
   private String currentId;
   private String currentName;
+  private String currentYear;
   private String currentThumb;
   private String currentLanguage;
   private boolean series;
@@ -70,9 +71,9 @@ public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
     if (name.equalsIgnoreCase("series")) {
       if ((french && currentLanguage.equals("fr")) || !french) {//Tvdb can return series in English + in French in same times, we just want one of both
         String thumb = currentThumb == null ? null : currentThumb.length() > 0 ? Settings.tvdbAPIUrlTvShowImage + currentThumb : null;
-        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TVDBID), SearchResult.SearchResultType.NONE, thumb));
+        results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TVDBID), SearchResult.SearchResultType.NONE, currentYear, thumb));
       }
-      currentName = currentId = currentThumb = currentLanguage = "";
+      currentName = currentId = currentThumb = currentLanguage = currentYear = "";
       series = false;
     }
     if (series) {
@@ -88,6 +89,11 @@ public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
       if (name.equalsIgnoreCase("banner")) {
         currentThumb = buffer.toString();
       }
+       if (name.equalsIgnoreCase("FirstAired")) {
+        if(buffer.toString().contains("-")){
+          currentYear = buffer.substring(0, buffer.indexOf("-")); 
+        }
+      }     
     }
     buffer = null;
   }

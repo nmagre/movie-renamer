@@ -36,6 +36,7 @@ public class TmdbSearch extends MrParser<ArrayList<SearchResult>> {
   private boolean movie;
   private String currentId;
   private String currentName;
+  private String currentYear;
   private String currentThumb;
   
   public TmdbSearch(){
@@ -46,7 +47,7 @@ public class TmdbSearch extends MrParser<ArrayList<SearchResult>> {
   public void startDocument() throws SAXException {
     super.startDocument();
     results = new ArrayList<SearchResult>();
-    currentThumb = "";
+    currentThumb = currentYear = "";
   }
 
   @Override
@@ -85,7 +86,7 @@ public class TmdbSearch extends MrParser<ArrayList<SearchResult>> {
     }
     if (name.equalsIgnoreCase("movie")) {
       movie = false;
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TMDBID), SearchResult.SearchResultType.NONE, currentThumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TMDBID), SearchResult.SearchResultType.NONE, currentYear, currentThumb));
       currentName = currentId = currentThumb = "";
     }
     if (movies) {
@@ -98,10 +99,10 @@ public class TmdbSearch extends MrParser<ArrayList<SearchResult>> {
         }
         if (name.equalsIgnoreCase("released")) {
           if(buffer.toString().contains("-")) {
-            currentName += " (" + buffer.toString().substring(0, buffer.toString().indexOf("-")) + ")";
+            currentYear = " (" + buffer.toString().substring(0, buffer.toString().indexOf("-")) + ")";
           }
           else if(buffer.toString().length() > 0){
-            currentName += " (" + buffer.toString() + ")";
+            currentYear += " (" + buffer.toString() + ")";
           }
         }
       }

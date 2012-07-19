@@ -18,43 +18,40 @@
 package fr.free.movierenamer.media.tvshow;
 
 import fr.free.movierenamer.media.IMediaInfo;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class TvShowInfo
- * 
+ *
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
-public class TvShowInfo implements IMediaInfo/*<TvShowImage>*/ {
+public class TvShowInfo implements IMediaInfo/*
+ * <TvShowImage>
+ */ {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see fr.free.movierenamer.media.IMediaInfo#getTrailer()
-   */
-//  @Override
-//  public String getTrailer() {
-//    // TODO Auto-generated method stub
-//    return null;
-//  }
-//
-//  /*
-//   * (non-Javadoc)
-//   * 
-//   * @see fr.free.movierenamer.media.IMediaInfo#setTrailer(java.lang.String)
-//   */
-//  @Override
-//  public void setTrailer(String trailer) {
-//    // TODO Auto-generated method stub
-//
-//  }
+  private SxE sxe;
+  private List<TvShowSeason> seasons;
 
-  /**
-   * @return
-   */
-  public List<TvShowSeason> getSeasons() {
-    // TODO Auto-generated method stub
-    return null;
+  public TvShowInfo() {
+    sxe = new SxE();
+    seasons = new ArrayList<TvShowSeason>();
   }
 
+  public SxE getSxe() {
+    return sxe;
+  }
+
+  public List<TvShowSeason> getSeasons() {
+    return seasons;
+  }
+
+  public void setSxe(SxE sxe) {
+    this.sxe = sxe;
+  }
+
+  public void setSeasons(List<TvShowSeason> seasons) {
+    this.seasons = seasons;
+  }
 }

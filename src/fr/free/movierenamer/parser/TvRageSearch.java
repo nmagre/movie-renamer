@@ -37,6 +37,7 @@ public class TvRageSearch extends MrParser<ArrayList<SearchResult>> {
   private boolean show;
   private String currentId;
   private String currentName;
+  private String currentYear;
   private static final String THUMB = "http://images.tvrage.com/shows/DIR/ID.jpg";
 
   public TvRageSearch() {
@@ -60,7 +61,7 @@ public class TvRageSearch extends MrParser<ArrayList<SearchResult>> {
     buffer = new StringBuffer();
     if (name.equalsIgnoreCase("Results")) {
       result = true;
-      currentName = currentId = "";
+      currentName = currentId = currentYear = "";
     }
     if (result) {
       if (name.equalsIgnoreCase("show")) {
@@ -91,7 +92,7 @@ public class TvRageSearch extends MrParser<ArrayList<SearchResult>> {
       if(dirId != -1) {
         thumb = THUMB.replace("DIR", ""+dirId).replace("ID", currentId);
       }
-      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TVRAGETVID), SearchResult.SearchResultType.NONE, thumb));
+      results.add(new SearchResult(currentName, new MediaID(currentId, MediaID.MediaIdType.TVRAGETVID), SearchResult.SearchResultType.NONE, currentYear, thumb));
     }
     if (result) {
       if (show) {
@@ -102,11 +103,11 @@ public class TvRageSearch extends MrParser<ArrayList<SearchResult>> {
           currentName = buffer.toString();
         }
         if (name.equalsIgnoreCase("started")) {
-          currentName += " (" + buffer.toString() + ")";
+          currentYear = " (" + buffer.toString() + ")";
         }
         if (name.equalsIgnoreCase("ended")) {
           if (!buffer.toString().equals("0")) {
-            currentName += " - (" + buffer.toString() + ")";
+            currentYear += " - (" + buffer.toString() + ")";
           }
         }
       }

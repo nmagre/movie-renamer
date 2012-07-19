@@ -106,6 +106,8 @@ public class XMLParser<T> {
       parseur.parse(in, itp);
     } catch (NOSAXException mye) {
       // nothing to catch !!!
+    } catch (ParserBugException ex) {
+      throw new NullPointerException("Parse  failed, bug in parserl");
     }
 
     if (zf != null) {

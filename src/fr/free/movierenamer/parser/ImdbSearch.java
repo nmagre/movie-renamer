@@ -37,54 +37,38 @@ import org.xml.sax.SAXException;
 public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
 
   private ArrayList<SearchResult> results;
-  private final ImdbLanguage ilang = config.movieScrapperFR ? ImdbLanguage.FRENCH : ImdbLanguage.ENGLISH;
-
-  public enum ImdbLanguage {// TODO , imdb.fr sert-t'il ? revient au même que le .com ? (on utilise pas akas.imdb.com)
-
-    ENGLISH,
-    FRENCH;
-  }
+  private static final Pattern IMDBURL = Pattern.compile("http://www.imdb.com/title/tt\\d+/");
+  private static final String CHARSET = "ISO-8859-1";
+  private final URL realUrl;
 
   public enum ImdbPattern {
 
-    MOVIEIMDBPATTERN(">\\d+.<\\/td>.*?a href=.\\/title\\/tt\\d+\\/.[^>]*>([^<]*).*?\\((\\d+).*?\\).?(\\(.*?\\) )?"),
-    MOVIENAMEPATTERN(";\">"),
-    IMDBIDPATTERN("tt\\d+"),
-    MOVIETHUMB("/title/IMDBID/';.><img src=.http://ia.media-imdb.com/images/.*?. width=.\\d+. height=.\\d+. border=.\\d.>"),
-    POPULARPATTERN(".*?Popular Titles.*?Displaying (\\d+).*", ".*?Titres Populaires.*?Affichant (\\d+)(.*)"),
-    EXACTPATTERN("Titles \\(Exact Matches.*?Displaying (\\d+)(.*)", "Titres \\(R&#xE9;sultats Exacts.*?Affichant (\\d+)(.*)"),
-    PARTIALPATTERN("Titles \\(Partial.*?Displaying (\\d+)(.*)", "Titres \\(R&#xE9;sultats Partiels.*?Affichant (\\d+)(.*)"),
-    APPROXIMATEPATTERN("Titles \\(Approx.*?Displaying (\\d+)(.*)", "Titres \\(R&#xE9;sultats Approximatif.*?Affichant (\\d+)(.*)"),
-    IMDBMOVIETITLE("<meta property=.og:title. content=?(.*?) \\(.*\\d\\d\\d\\d.*\\)"),
-    IMDBMOVIETHUMB("/tt\\d+\".*><img src=\"http://.*.jpg\"\n", "title=\".*\" src=.http://ia.media-imdb.com/images/.*>");
-    private Pattern[] pattern;
+    POPULARPATTERN(".*?Popular Titles.*?Displaying (\\d+)(.*?)</table>"),
+    EXACTPATTERN("Titles \\(Exact Matches.*?Displaying (\\d+)(.*?)</table>"),
+    PARTIALPATTERN("Titles \\(Partial.*?Displaying (\\d+)(.*?)</table>"),
+    APPROXIMATEPATTERN("Titles \\(Approx.*?Displaying (\\d+)(.*?)</table>"),
+    MOVIEIMDBPATTERN("(?:<img src=.(http://ia.media-imdb.com/images.*?\\.jpg).*?)?>\\d+.<\\/td>.*?a href=.\\/title\\/(tt\\d+)\\/.[^>]*>([^<]*).*?\\((\\d+)?.*?\\).?(\\(.*?\\) )?"),
+    IMDBMOVIETITLE("<meta property=.og:title. content=.(.*?) \\(.*?(\\d\\d\\d\\d).*\\)?."),
+    IMDBMOVIEID("tt\\d+{7}"),
+    IMDBMOVIETHUMB("<meta property=.og:image. content=.(http://.*.jpg).");
+    private Pattern pattern;
 
-    private ImdbPattern(String... patterns) {
-      pattern = new Pattern[patterns.length];
-      for (int i = 0; i < patterns.length; i++) {
-        pattern[i] = Pattern.compile(patterns[i]);
-      }
+    private ImdbPattern(String pattern) {
+      this.pattern = Pattern.compile(pattern);
     }
 
-    public Pattern getPattern(ImdbLanguage lang) {
-      if (pattern.length == 1) {
-        return pattern[0];
-      }
-      return pattern[lang.ordinal()];
+    public Pattern getPattern() {
+      return pattern;
     }
 
-    public String getPatternString(ImdbLanguage lang) {
-      if (pattern.length == 1) {
-        return pattern[0].toString();
-      }
-      return pattern[lang.ordinal()].toString();
+    public String getPatternString() {
+      return pattern.toString();
     }
   }
   /**
    * The exception to bypass parsing file ;)
    */
   private final NOSAXException nsEx = new NOSAXException();
-  private final URL realUrl;
 
   public ImdbSearch(URL url) {
     super();
@@ -95,22 +79,21 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
   public void startDocument() throws SAXException {
     results = new ArrayList<SearchResult>();
 
-    String htmlSearchRes = getContent("ISO-8859-1");
+    String htmlSearchRes = getContent(CHARSET);
 
     if (htmlSearchRes != null && !htmlSearchRes.contains("<b>No Matches.</b>")) {
-      Pattern pattern = Pattern.compile("http://www.imdb.(com|fr)/title/tt\\d+/");
-      Matcher moviePageMatcher = pattern.matcher(realUrl.toString());
+      Matcher moviePageMatcher = IMDBURL.matcher(realUrl.toString());
       boolean searchPage = !moviePageMatcher.find();
 
       if (searchPage) {
         int limit = Settings.nbResultList[config.nbResult];
 
         Settings.LOGGER.log(Level.INFO, "Imdb Search page");
-        results.addAll(findMovies(htmlSearchRes, ImdbPattern.POPULARPATTERN.getPattern(ilang), limit, SearchResult.SearchResultType.POPULAR));// Popular title
-        results.addAll(findMovies(htmlSearchRes, ImdbPattern.EXACTPATTERN.getPattern(ilang), limit, SearchResult.SearchResultType.EXACT));// Exact title
-        results.addAll(findMovies(htmlSearchRes, ImdbPattern.PARTIALPATTERN.getPattern(ilang), limit, SearchResult.SearchResultType.PARTIAL));// Partial title
+        results.addAll(findMovies(htmlSearchRes, ImdbPattern.POPULARPATTERN.getPattern(), limit, SearchResult.SearchResultType.POPULAR));
+        results.addAll(findMovies(htmlSearchRes, ImdbPattern.EXACTPATTERN.getPattern(), limit, SearchResult.SearchResultType.EXACT));
+        results.addAll(findMovies(htmlSearchRes, ImdbPattern.PARTIALPATTERN.getPattern(), limit, SearchResult.SearchResultType.PARTIAL));
         if (results.isEmpty() || config.displayApproximateResult) {
-          results.addAll(findMovies(htmlSearchRes, ImdbPattern.APPROXIMATEPATTERN.getPattern(ilang), limit, SearchResult.SearchResultType.APPROXIMATE));
+          results.addAll(findMovies(htmlSearchRes, ImdbPattern.APPROXIMATEPATTERN.getPattern(), limit, SearchResult.SearchResultType.APPROXIMATE));
         }
       } else {
         Settings.LOGGER.log(Level.INFO, "Imdb Movie page");
@@ -135,65 +118,46 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
    * @param type Type of result search
    * @return Array of ImdbSearchResult
    */
-  private ArrayList<SearchResult> findMovies(String htmlSearchRes, Pattern searchPattern, int limit, SearchResult.SearchResultType type) throws IndexOutOfBoundsException {
+  private ArrayList<SearchResult> findMovies(String htmlSearchRes, Pattern searchPattern, int limit, SearchResult.SearchResultType type) throws ParserBugException {
     ArrayList<SearchResult> found = new ArrayList<SearchResult>();
-    Matcher titleMatcher = searchPattern.matcher(htmlSearchRes);
-    Matcher movieImdbMatcher, movieNameMatcher, imdbIDMatcher, thumbMatcher;
-    String movieName;
+    Matcher searchResult = searchPattern.matcher(htmlSearchRes);
 
     try {
-      if (titleMatcher.find()) {
+      if (searchResult.find()) {
         int count = 1;
-        String grp = titleMatcher.group();
-        String[] grps = grp.split("</table>");
-        for (int i = 0; i < grps.length; i++) {
-          titleMatcher = searchPattern.matcher(grps[i]);
-          if (titleMatcher.find()) {
-            movieImdbMatcher = ImdbPattern.MOVIEIMDBPATTERN.getPattern(ilang).matcher(grps[i]);
-
-            while (movieImdbMatcher.find()) {
-              if (movieImdbMatcher.group(3) != null) {
-                if (!movieImdbMatcher.group(3).equals("TV")) {
-                  continue;
-                }
-              }
-
-              movieNameMatcher = ImdbPattern.MOVIENAMEPATTERN.getPattern(ilang).matcher(movieImdbMatcher.group());
-
-              if (movieNameMatcher.find()) {
-                movieName = movieImdbMatcher.group().substring(movieNameMatcher.end(), movieImdbMatcher.group().length()).replaceAll("<\\/a>", Utils.EMPTY);
-                movieName = Utils.unEscapeXML(movieName, "ISO-8859-1");
-
-                // Fix unknown date in movie title
-                if (movieName.contains("(????)")) {
-                  movieName = movieName.substring(0, movieName.indexOf("(????)") + 6);
-                }
-
-                imdbIDMatcher = ImdbPattern.IMDBIDPATTERN.getPattern(ilang).matcher(movieImdbMatcher.group());
-
-                if (imdbIDMatcher.find()) {// movie title + imdbID found
-                  String thumb = ImdbPattern.MOVIETHUMB.getPatternString(ilang).replace("IMDBID", imdbIDMatcher.group());
-                  Pattern pattern = Pattern.compile(thumb);
-                  thumbMatcher = pattern.matcher(htmlSearchRes);
-                  thumb = null;
-                  if (thumbMatcher.find()) {
-                    thumb = thumbMatcher.group().substring(thumbMatcher.group().indexOf("img src=") + 9, thumbMatcher.group().indexOf(".jpg") + 4);
-                  }
-                  found.add(new SearchResult(movieName, new MediaID(imdbIDMatcher.group(), MediaID.MediaIdType.IMDBID), type, thumb));
-                }
-                
-                count++;
-                if ((limit > -1 && count > limit)) {
-                  break;
-                }
-              }
+        searchResult = ImdbPattern.MOVIEIMDBPATTERN.getPattern().matcher(searchResult.group(2));
+        while (searchResult.find()) {
+          if (searchResult.group(5) != null) {// We do not keep results that are not a movie
+            if (!searchResult.group(5).equals("TV")) {
+              continue;
             }
+          }
+
+          String movieTitle = searchResult.group(3);
+          if (movieTitle != null) {
+            String thumb = null;
+            String year = "";
+            movieTitle = Utils.unEscapeXML(movieTitle, CHARSET);
+
+            if (searchResult.group(1) != null) {// Thumb found
+              thumb = searchResult.group(1).replaceAll("SY\\d{2}_SX\\d{2}", "SY70_SX100");
+            }
+
+            if (searchResult.group(4) != null) {// Year found
+              year = searchResult.group(4);
+            }
+
+            found.add(new SearchResult(movieTitle, new MediaID(searchResult.group(2), MediaID.MediaIdType.IMDBID), type, year, thumb));
+          }
+          count++;
+          if ((limit > -1 && count > limit)) {
             break;
           }
         }
       }
-    } catch (IllegalArgumentException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IllegalArgumentException", ex.getStackTrace()));
+    } catch (NullPointerException ex) {
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("NullPointerException", ex.getStackTrace()));
+      throw new ParserBugException("ImdbSearch parser bug : findMovies");
     }
     return found;
   }
@@ -204,34 +168,35 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
    * @param moviePage Imdb movie page
    * @return The result
    */
-  private SearchResult getMovie(String moviePage) throws IndexOutOfBoundsException {
-    Matcher titleMatcher = ImdbPattern.IMDBMOVIETITLE.getPattern(ilang).matcher(moviePage);
+  private SearchResult getMovie(String moviePage) throws ParserBugException {
+    Matcher matcher = ImdbPattern.IMDBMOVIETITLE.getPattern().matcher(moviePage);
 
-   try {
-     if (titleMatcher.find()) {
-       // Extract the movie name
-       String movieName = titleMatcher.group().substring(titleMatcher.group().indexOf("content=") + 9);
-       movieName = Utils.unEscapeXML(movieName, "ISO-8859-1");
-       // Extract the movie Id
-       String imdbId = moviePage.substring(moviePage.indexOf("/tt") + 1, moviePage.indexOf("/tt") + 10);
-       Matcher thumbMatcher = ImdbPattern.IMDBMOVIETHUMB.getPattern(ilang).matcher(moviePage);
-       // Extract thumb
-       String thumb = null;
-       if (thumbMatcher.find()) {
-         String thumbnail = thumbMatcher.group();
-         if (thumbnail.contains("img src=")) {
-           thumb = thumbnail.substring(thumbnail.indexOf("img src=") + 9, thumbnail.indexOf(".jpg") + 4);
-         } else {
-           thumb = thumbnail.substring(thumbnail.lastIndexOf("src=") + 5, thumbnail.lastIndexOf("\""));
-         }
-       }
-       return new SearchResult(movieName, new MediaID(imdbId, MediaID.MediaIdType.IMDBID), SearchResult.SearchResultType.EXACT, thumb);
+    try {
+      if (matcher.find()) {
+        String movieName = Utils.unEscapeXML(matcher.group(1), CHARSET);
+        String year = "";
+        if (matcher.group(2) != null) {
+          year = matcher.group(2);
+        }
+
+        String id = null;
+        matcher = ImdbPattern.IMDBMOVIEID.getPattern().matcher(moviePage);
+        if (matcher.find()) {
+          id = matcher.group();
+        }
+
+        String thumb = null;
+        matcher = ImdbPattern.IMDBMOVIETHUMB.getPattern().matcher(moviePage);
+        if (matcher.find()) {
+          thumb = matcher.group(1);
+        }
+        return new SearchResult(movieName, new MediaID(id, MediaID.MediaIdType.IMDBID), SearchResult.SearchResultType.EXACT, year, thumb);
       } else {
         Settings.LOGGER.log(Level.SEVERE, "imdb page unrecognized");
       }
-    } catch (IndexOutOfBoundsException e) {
-      Settings.LOGGER.log(Level.SEVERE, e.getMessage());
-      throw new IndexOutOfBoundsException("Parse failed : IndexOutOfBoundsException");
+    } catch (NullPointerException ex) {
+      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("NullPointerException", ex.getStackTrace()));
+      throw new ParserBugException("ImdbSearch parser bug : findMovies");
     }
     return null;
   }

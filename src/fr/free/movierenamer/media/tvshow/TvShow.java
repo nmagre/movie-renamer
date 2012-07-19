@@ -25,7 +25,6 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaTag;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ public class TvShow implements Media {// TODO
 
   private MediaID mediaId;
   private MediaFile tvShowFile;
-  private ArrayList<TvShowSeason> seasons;
+  private TvShowInfo tvShowInfo;
   private MediaTag mtag;
   private SxE sxe;
   private String search;
@@ -46,7 +45,7 @@ public class TvShow implements Media {// TODO
     TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, regexs);
     search = tvMatcher.getTvShowName();
     sxe = new TvShowEpisodeMatcher(tvShowFile.getFile().getParent() + File.separator + tvShowFile.getFile().getName()).matchEpisode();
-    seasons = new ArrayList<TvShowSeason>();
+    tvShowInfo = new TvShowInfo();
   }
 
   @Override
@@ -79,12 +78,9 @@ public class TvShow implements Media {// TODO
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void setInfo(Object info) {
-    if (info instanceof ArrayList) {
-      if(((ArrayList)info).size() > 0 && ((ArrayList)info).get(0).getClass() == TvShowSeason.class) {
-        seasons = (ArrayList<TvShowSeason>) info;
-      }
+    if (info instanceof TvShowInfo) {
+      this.tvShowInfo = (TvShowInfo) info;
     }
   }
 

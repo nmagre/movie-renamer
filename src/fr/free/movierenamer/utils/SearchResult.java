@@ -44,6 +44,7 @@ public class SearchResult implements IIconList {
 
   private MediaID id;
   private String title;
+  private String year;
   private SearchResultType type;
   private String thumb;
   private Icon icon;
@@ -54,11 +55,13 @@ public class SearchResult implements IIconList {
    * @param title Media title
    * @param id API ID
    * @param type result type (Exact,...)
+   * @param year Release year
    * @param thumb Thumbnail
    */
-  public SearchResult(String title, MediaID id, SearchResultType type, String thumb) {
+  public SearchResult(String title, MediaID id, SearchResultType type, String year, String thumb) {
     this.id = id;
     this.title = title;
+    this.year = year;
     this.thumb = thumb;
     this.type = type;
   }
@@ -110,9 +113,14 @@ public class SearchResult implements IIconList {
 
   @Override
   public String toString() {
-    if (type == SearchResultType.NONE) {
-      return title;
+    String myear = "";
+    if(!year.equals("")){
+      myear = " (" + year + ")";
     }
-    return title + " : " + type;
+    if (type == SearchResultType.NONE) {
+      return title + myear;
+    }
+
+    return title + myear + " : " + type;
   }
 }
