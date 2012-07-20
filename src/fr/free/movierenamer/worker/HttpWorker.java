@@ -43,31 +43,32 @@ public class HttpWorker<T> extends Worker<T> {
   private URL realUrl;
   private String uri;
   private MrParser<T> parser;
-  
+
   public HttpWorker(PropertyChangeSupport errorSupport) {
     super(errorSupport);
   }
-  
+
   public HttpWorker(PropertyChangeSupport errorSupport, MrParser<T> parser) {
     super(errorSupport);
     this.parser = parser;
   }
-  
+
   /**
    * Start worker and get result T
+   *
    * @param uri Url to get and parser
    * @return T object
-   * @throws Exception 
+   * @throws Exception
    */
   public T startAndGet(String uri) throws Exception {
-    if(getParser() == null){
+    if (getParser() == null) {
       throw new NullPointerException("HttpWorker null parser");
     }
     this.uri = uri;
     this.execute();
     return this.get();
   }
-  
+
   @Override
   protected final T executeInBackground() throws Exception {
     Cache.CacheType cacheType = getCacheType();
@@ -100,22 +101,22 @@ public class HttpWorker<T> extends Worker<T> {
   protected Cache.CacheType getCacheType() {
     return Cache.CacheType.XML;
   }
-  
+
   /**
    * @return the url
    */
   protected URL getUrl() {
     return realUrl;
   }
-  
-  protected String getUri()  throws Exception{
+
+  protected String getUri() throws Exception {
     return uri;
   }
-  
-  protected MrParser<T> getParser()  throws Exception{
+
+  protected MrParser<T> getParser() throws Exception {
     return parser;
   }
-  
+
   /*
    *
    * MovieInfo movieInfo = null; MovieImage movieImage = null; try { // String uri = config.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(config.xurlMdb)) + "/" + id.getID(); // if
@@ -207,7 +208,6 @@ public class HttpWorker<T> extends Worker<T> {
     setProgress(100);
     return object;
   }
-
   // /**
   // * Load corresponding images
   // *

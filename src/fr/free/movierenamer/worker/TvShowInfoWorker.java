@@ -19,8 +19,10 @@ package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 
 /**
  * Class TvShowInfoWorker
@@ -30,6 +32,7 @@ import java.beans.PropertyChangeSupport;
  */
 public abstract class TvShowInfoWorker extends MediaInfoWorker<TvShowInfo> {
 
+  protected HttpWorker<List<TvShowSeason>> movieInfoWorker;
   /**
    * Constructor arguments
    *

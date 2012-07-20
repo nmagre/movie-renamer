@@ -259,8 +259,7 @@ public class Settings implements Cloneable {
         } else {
           config.locale = "fr";
         }
-        Settings.xmlVersion = Settings.VERSION;// Ensures that the settings
-        // file is written once only
+        Settings.xmlVersion = Settings.VERSION;// Ensures that the settings file is written once only
         config.movieScrapperFR = config.locale.equals("fr");
         config.tvshowScrapperFR = config.locale.equals("fr");
       } else {
@@ -283,7 +282,7 @@ public class Settings implements Cloneable {
       LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
       if (!saved) {
-        if (!Settings.xmlVersion.equals("Beta_2.0")) {
+        if (!Settings.xmlVersion.equals("2.0_Beta")) {
           int n = JOptionPane.showConfirmDialog(null, Utils.i18n("resetRegexFilter"), Utils.i18n("question"), JOptionPane.YES_NO_OPTION);
           if (n == JOptionPane.OK_OPTION) {
             config.mediaNameFilters = new ArrayList<String>();

@@ -82,6 +82,10 @@ public class SxE {
   public void setSeason(int season) {
     this.season = season;
   }
+  
+  public int getAbs(){
+    return (season * 100) + episode;
+  }
 
   @Override
   public boolean equals(Object obj) {

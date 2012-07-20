@@ -129,8 +129,6 @@ public class Main {
         Settings.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
         setting.movieScrapperFR = setting.locale.equals("fr");
         setting.tvshowScrapperFR = setting.locale.equals("fr");
-      } else {
-        saved = true;
       }
 
       // Set locale
@@ -151,12 +149,8 @@ public class Main {
       Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
     } finally {
       if (!saved) {
-        if (!Settings.xmlVersion.equals("Beta_2.0")) {
-          int n = JOptionPane.showConfirmDialog(null, Utils.i18n("resetRegexFilter"), Utils.i18n("question"), JOptionPane.YES_NO_OPTION);
-          if (n == JOptionPane.OK_OPTION) {
-            setting.mediaNameFilters = new ArrayList<String>();
-            setting.mediaNameFilters.addAll(Arrays.asList(Settings.nameFilters));
-          }
+        if (!Settings.xmlVersion.equals("Beta_2.0")) {          
+          JOptionPane.showMessageDialog(null, Utils.i18n("lostSettings"), Utils.i18n("Information"), JOptionPane.INFORMATION_MESSAGE);
         }
         saved = setting.saveSetting();
       }

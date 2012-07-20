@@ -21,17 +21,18 @@ import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * 
+ * Class TvdbInfo
  * @author Nicolas Magré
  */
 public class TvdbInfo extends MrParser<TvShowInfo> {
 
   private StringBuffer buffer;
-  private ArrayList<TvShowSeason> seasons;
+  private List<TvShowSeason> seasons;
   private boolean data;
   private String title;
   private String plot;

@@ -50,8 +50,8 @@ public abstract class WorkerManager {
   public enum TVShowScrapper {
 
     TVDB,
-    ALLOCINETV,
-    TVRAGE;
+    TVRAGE,
+    ALLOCINETV;
   }
 
   /**
