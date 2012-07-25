@@ -17,8 +17,10 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.*;
-import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.media.Media;
+import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.ui.MoviePanel;
 import fr.free.movierenamer.ui.res.IMediaPanel;
@@ -110,7 +112,18 @@ public abstract class WorkerManager {
 
   public static MovieInfoWorker getMovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     MovieInfoWorker worker = null;
-
+    switch (Settings.getInstance().movieScrapper) {
+      case IMDB:
+        worker = new ImdbInfoWorker(errorSupport, id);
+        break;
+      case TMDB:
+        worker = new TmdbInfoWorker(errorSupport, id);
+        break;
+      case ALLOCINE:
+        worker = new AllocineInfoWorker(errorSupport, id);
+        break;
+      default:
+    }
     Settings.LOGGER.log(Level.INFO, "Information API ID : {0}", id.getID());
     return worker;
   }
@@ -128,6 +141,7 @@ public abstract class WorkerManager {
         // TODO
         break;
     }
+    Settings.LOGGER.log(Level.INFO, "Information API ID : {0}", id.getID());
     return worker;
   }
 
