@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * Class MediaImageWorker , Download and add thumbnail/fanart to mediaPanel
+ * Class ImageWorker , Download and add thumbnail/fanart to mediaPanel
  * 
  * @author Magré Nicolas
  */
-public class ImageWorker extends Worker<Void> {// A refaire , en Media et rajouter les images pour les series
+public class ImageWorker extends Worker<Void> {
 
   private final List<MediaImage> arrayImage;
   private final Cache.CacheType cache;
@@ -54,7 +54,8 @@ public class ImageWorker extends Worker<Void> {// A refaire , en Media et rajout
   }
 
   @Override
-  protected Void executeInBackground() {
+  protected Void executeInBackground() {// FIXME change tcp timeout, we don't want to wait
+    // FIXME Remove all images which have a problem (not found,...)
     setProgress(0);
     for (int i = 0; i < arrayImage.size(); i++) {
       Image image;

@@ -22,6 +22,7 @@ import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.res.IMediaPanel;
+import fr.free.movierenamer.utils.Settings;
 import java.awt.Image;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -171,4 +172,9 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JList seasonsList;
     // End of variables declaration//GEN-END:variables
+
+  @Override
+  public void setDisplay(Settings setting) {
+    // TODO
+  }
 }

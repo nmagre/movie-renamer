@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.worker.WorkerManager;
+
 /**
  * Class Loading , Loading info
  * @author Nicolas Magré
@@ -26,7 +28,7 @@ public class Loading {
   private String title;
   private boolean indeterminate;
   private int max;
-  private int idWorker;
+  private WorkerManager.WORKERID idWorker;
 
   /**
    * Constructor arguments
@@ -35,7 +37,7 @@ public class Loading {
    * @param max Loading max value
    * @param idWorker Loading worker ID
    */
-  public Loading(String title, boolean indeterminate, int max, int idWorker) {
+  public Loading(String title, boolean indeterminate, int max, WorkerManager.WORKERID idWorker) {
     this.title = title;
     this.indeterminate = indeterminate;
     this.max = max;
@@ -70,7 +72,7 @@ public class Loading {
    * Get worker ID
    * @return WorkerID
    */
-  public int getId() {
+  public WorkerManager.WORKERID getId() {
     return idWorker;
   }
 }

@@ -80,6 +80,6 @@ public class MediaID {
 
   @Override
   public String toString() {
-    return providerId;
+    return type.name() + " : " + providerId;
   }
 }

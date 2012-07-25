@@ -18,22 +18,19 @@
 package fr.free.movierenamer.utils;
 
 /**
- * Class ActionNotValidException, Exception on non valid action
+ * Class SettingsSaveFailedException
  * @author Nicolas Magré
  */
-public class ActionNotValidException extends Exception {
+public class SettingsSaveFailedException extends Exception {
 
-	public ActionNotValidException() {}
+  private Settings defaultSettings;
 
-	public ActionNotValidException(String message) {
-		super(message);
-	}
-
-	public ActionNotValidException(Throwable cause) {
-		super(cause);
-	}
-
-	public ActionNotValidException(String message, Throwable cause) {
-		super(message, cause);
-	} 
+  public SettingsSaveFailedException(Settings defaultSettings, String message) {
+    super(message);
+    this.defaultSettings = defaultSettings;
+  }
+  
+  public Settings getDefaultSettings(){
+    return defaultSettings;
+  }
 }

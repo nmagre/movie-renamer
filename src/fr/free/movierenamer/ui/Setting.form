@@ -44,7 +44,7 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="settingTabPan" alignment="0" max="32767" attributes="0"/>
+                  <Component id="settingTabPan" alignment="0" pref="501" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="saveBtn" min="-2" pref="84" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
@@ -144,7 +144,7 @@
                           <Component id="englishRbtn" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="frenchRbtn" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="192" max="32767" attributes="0"/>
+                          <EmptySpace pref="193" max="32767" attributes="0"/>
                           <Component id="lwarningLbl" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -224,7 +224,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="checkUpdateChk" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="260" max="32767" attributes="0"/>
+                          <EmptySpace pref="261" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -290,7 +290,7 @@
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace pref="176" max="32767" attributes="0"/>
+                          <EmptySpace pref="177" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -458,7 +458,7 @@
                           <Component id="xbmcNFORBtn" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="mediaPortalNFORBtn" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="232" max="32767" attributes="0"/>
+                          <EmptySpace pref="233" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -593,7 +593,7 @@
                                           </Group>
                                           <Component id="caseLbl" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace pref="209" max="32767" attributes="0"/>
+                                      <EmptySpace pref="210" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -923,7 +923,7 @@
                                                   <Component id="rmDupSpaceFolderChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="rmSpcCharFolderChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <EmptySpace min="0" pref="197" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="198" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace min="0" max="-2" attributes="0"/>
@@ -1223,7 +1223,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="468" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="469" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -1342,7 +1342,7 @@
                                               </Group>
                                               <Component id="sortbySimiChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace min="0" pref="131" max="32767" attributes="0"/>
+                                          <EmptySpace min="0" pref="132" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1501,7 +1501,7 @@
                                   <Component id="tmdbRbtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="allocineRbtn" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="225" max="32767" attributes="0"/>
+                                  <EmptySpace pref="226" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1572,7 +1572,7 @@
                                   <Component id="scrapperFrRbtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="scrapperEnRbtn" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="303" max="32767" attributes="0"/>
+                                  <EmptySpace pref="304" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1676,7 +1676,7 @@
                                   <Component id="tmdbRbtn1" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="allocineRbtn1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="220" max="32767" attributes="0"/>
+                                  <EmptySpace pref="221" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1748,7 +1748,7 @@
                                   <Component id="scrapperFrRbtn1" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="scrapperEnRbtn1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="303" max="32767" attributes="0"/>
+                                  <EmptySpace pref="304" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1856,7 +1856,7 @@
                           <Component id="thumnailsExtLbl" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="thumbExtCbBox" min="-2" max="-2" attributes="1"/>
-                          <EmptySpace pref="266" max="32767" attributes="0"/>
+                          <EmptySpace pref="267" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1935,7 +1935,7 @@
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace pref="185" max="32767" attributes="0"/>
+                          <EmptySpace pref="186" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2128,7 +2128,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="removeExtensuionBtn" min="-2" pref="84" max="-2" attributes="1"/>
                               </Group>
-                              <Component id="extensionScrollP" pref="398" max="32767" attributes="0"/>
+                              <Component id="extensionScrollP" pref="399" max="32767" attributes="0"/>
                               <Component id="useExtensionFilterChk" alignment="0" min="-2" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -2262,14 +2262,14 @@
                                   <Component id="moveLeft" min="-2" pref="84" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="moveRight" min="-2" pref="84" max="-2" attributes="0"/>
-                                  <EmptySpace pref="50" max="32767" attributes="0"/>
+                                  <EmptySpace pref="51" max="32767" attributes="0"/>
                                   <Component id="addFilter" min="-2" pref="84" max="-2" attributes="2"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="removeFilterBtn" min="-2" pref="84" max="-2" attributes="2"/>
                                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <Component id="filterScrollP" pref="398" max="32767" attributes="0"/>
+                                  <Component id="filterScrollP" pref="399" max="32767" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -2481,7 +2481,7 @@
                               <Component id="fanartCacheLbl" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="actorCacheLbl" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="258" max="32767" attributes="0"/>
+                          <EmptySpace pref="259" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="clearActorBtn" alignment="0" max="32767" attributes="1"/>
                               <Component id="clearFanartBtn" alignment="1" max="32767" attributes="1"/>
@@ -2606,7 +2606,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="xmlLbl" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="270" max="32767" attributes="0"/>
+                                  <EmptySpace pref="271" max="32767" attributes="0"/>
                                   <Component id="clearXmlBtn" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -2666,6 +2666,120 @@
                       <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="clearXmlCacheOnStart" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="proxyPanel">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Proxy">
+                <Property name="tabTitle" type="java.lang.String" value="Proxy"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="proxySubPanel" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="proxySubPanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="422" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="proxySubPanel">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Proxy">
+                      <Font PropertyName="font" name="Ubuntu" size="14" style="1"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="useProxyChk" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="proxyUrlField" min="-2" pref="282" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="proxyPortField" min="-2" pref="64" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace pref="19" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="useProxyChk" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="proxyUrlField" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="proxyPortField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JCheckBox" name="useProxyChk">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Ubuntu" size="13" style="1"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="useProxy" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel1">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Ubuntu" size="13" style="1"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Url"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="proxyUrlField">
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel2">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Ubuntu" size="13" style="1"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Port"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="proxyPortField">
                 </Component>
               </SubComponents>
             </Container>

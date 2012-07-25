@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.utils.Settings;
 import java.awt.Image;
 
 /**
@@ -49,4 +50,11 @@ public interface IMediaPanel {
    * Clear media panel
    */
   void clear();
+  
+  /**
+   * Set panel display on settings change
+   * @param setting 
+   */
+  void setDisplay(Settings setting);
+  
 }

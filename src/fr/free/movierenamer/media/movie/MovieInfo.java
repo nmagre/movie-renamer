@@ -828,6 +828,15 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/ {
     }
     res.append(movieImage.toString());
 
+    res.append(Utils.ENDLINE);
+    
+    res.append("IDs :").append(Utils.ENDLINE);
+    for(MediaID id : movieIDs) {
+      res.append(id);
+    }
+    res.append(Utils.ENDLINE);
+    res.append("Images : ").append(Utils.ENDLINE).append(movieImage);
+    
     return res.toString();
   }
 }

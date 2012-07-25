@@ -17,23 +17,15 @@
  */
 package fr.free.movierenamer;
 
-import fr.free.movierenamer.parser.MrSettings;
-import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.SettingsSaveFailedException;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * Class Main
@@ -45,7 +37,13 @@ public class Main {
   private static MovieRenamer mvr;
   
   public static void main(String args[]) {
-    final Settings setting = loadSetting();
+    Settings setting;
+    try {
+      setting = Settings.newInstance();
+    } catch (SettingsSaveFailedException ex) {
+       JOptionPane.showMessageDialog(null, ex.getMessage(), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      setting = ex.getDefaultSettings();
+    }
 
     if (setting.laf.equals("")) {
       setting.laf = Settings.lookAndFeels[0].getName();
@@ -81,85 +79,14 @@ public class Main {
       Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
     }
 
+    final Settings config = setting;
     java.awt.EventQueue.invokeLater(new Runnable() {
 
       @Override
       public void run() {
-        mvr = new MovieRenamer(setting);
+        mvr = new MovieRenamer(config);
         mvr.setVisible(true);
       }
     });
-  }
-
-  /**
-   * Load Movie Renamer settings
-   *
-   * @return Movie Renamer settings
-   */
-  private static Settings loadSetting() {
-    boolean saved;
-    Settings setting = Settings.getInstance();
-    File file = new File(Settings.configFile);
-
-    if (!file.exists()) {
-      saved = setting.saveSetting();
-      if (!saved) {
-        // Set locale
-        Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-        JOptionPane.showMessageDialog(null, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder, Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-        return setting;
-      }
-      return loadSetting();
-    }
-
-    saved = false;
-    try {
-      // Parse Movie Renamer Settings
-      XMLParser<Settings> xmlp = new XMLParser<Settings>(Settings.configFile);
-      xmlp.setParser(new MrSettings());
-      setting = xmlp.parseXml();
-
-      // Define locale on first run
-      if (setting.locale.equals("")) {
-        if (!Locale.getDefault().getLanguage().equals("fr")) {
-          setting.locale = "en";
-        } else {
-          setting.locale = "fr";
-        }
-        Settings.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
-        setting.movieScrapperFR = setting.locale.equals("fr");
-        setting.tvshowScrapperFR = setting.locale.equals("fr");
-      }
-
-      // Set locale
-      Locale.setDefault((setting.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-      if (setting.getVersion().equals(Settings.xmlVersion) && !Settings.xmlError) {
-        saved = true;
-      }
-
-    } catch (SAXParseException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (ParserConfigurationException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("ParserConfigurationException", ex.getStackTrace()));
-    } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("SAXException", ex.getStackTrace()));
-    } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
-    } catch (InterruptedException ex) {
-      Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("InterruptedException : " + ex.getMessage(), ex.getStackTrace()));
-    } finally {
-      if (!saved) {
-        if (!Settings.xmlVersion.equals("Beta_2.0")) {          
-          JOptionPane.showMessageDialog(null, Utils.i18n("lostSettings"), Utils.i18n("Information"), JOptionPane.INFORMATION_MESSAGE);
-        }
-        saved = setting.saveSetting();
-      }
-    }
-
-    if (!saved) {
-      JOptionPane.showMessageDialog(null, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder, Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-    }
-    
-    return setting;
   }
 }

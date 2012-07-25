@@ -64,6 +64,7 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
         }
       }
       if (imsres.getIcon() == null) {
+        // FIXME A mettre ailleur pour le cli, même si utilisé un swingworker n'est l'idéal
         imsres.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/nothumb.png", getClass())));
       }
       setProgress((30 + (++i * 50)) / results.size());

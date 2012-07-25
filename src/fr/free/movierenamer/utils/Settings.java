@@ -179,8 +179,9 @@ public class Settings implements Cloneable {
    * Private build for singleton fix
    *
    * @return
+   * @throws SettingsSaveFailedException  
    */
-  private static synchronized Settings newInstance() {
+  public static synchronized Settings newInstance() throws SettingsSaveFailedException {
     if (instance == null) {
       instance = new Settings();
       // if new, just load values
@@ -195,9 +196,6 @@ public class Settings implements Cloneable {
    * @return The only instance of MR Settings
    */
   public static synchronized Settings getInstance() {
-    if (instance == null) {
-      instance = newInstance();
-    }
     return instance;
   }
 
@@ -229,7 +227,7 @@ public class Settings implements Cloneable {
    *
    * @return Movie Renamer settings
    */
-  private Settings loadSetting() {
+  private Settings loadSetting() throws SettingsSaveFailedException {
     boolean saved;
     Settings config = new Settings();
     File file = new File(Settings.configFile);
@@ -239,8 +237,7 @@ public class Settings implements Cloneable {
       if (!saved) {
         // Set locale
         Locale.setDefault((config.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
-        JOptionPane.showMessageDialog(null, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder, Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-        return config;
+        throw new SettingsSaveFailedException(config, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder);
       }
       return loadSetting();
     }
@@ -262,8 +259,6 @@ public class Settings implements Cloneable {
         Settings.xmlVersion = Settings.VERSION;// Ensures that the settings file is written once only
         config.movieScrapperFR = config.locale.equals("fr");
         config.tvshowScrapperFR = config.locale.equals("fr");
-      } else {
-        saved = true;
       }
 
       // Set locale
@@ -283,18 +278,15 @@ public class Settings implements Cloneable {
     } finally {
       if (!saved) {
         if (!Settings.xmlVersion.equals("2.0_Beta")) {
-          int n = JOptionPane.showConfirmDialog(null, Utils.i18n("resetRegexFilter"), Utils.i18n("question"), JOptionPane.YES_NO_OPTION);
-          if (n == JOptionPane.OK_OPTION) {
-            config.mediaNameFilters = new ArrayList<String>();
-            config.mediaNameFilters.addAll(Arrays.asList(Settings.nameFilters));
-          }
+          // FIXME No swing in settings (for cli)
+          //JOptionPane.showMessageDialog(null, Utils.i18n("lostSettings"), Utils.i18n("Information"), JOptionPane.INFORMATION_MESSAGE);
         }
         saved = config.saveSetting();
       }
     }
 
     if (!saved) {
-      JOptionPane.showMessageDialog(null, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder, Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      throw new SettingsSaveFailedException(config, Utils.i18n("saveSettingsFailed") + " " + Settings.mrFolder);
     }
 
     return config;
@@ -370,7 +362,7 @@ public class Settings implements Cloneable {
   public void setValue(String fieldName, String configValue) {
     try {
       Field field = this.getClass().getField(fieldName);
-      Object value;
+      Object value = null;
       if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
         // Boolean field
         value = Settings.sZero.equals(configValue);
@@ -382,9 +374,14 @@ public class Settings implements Cloneable {
         value = Utils.stringToArray(configValue, Settings.arrayEscapeChar);
       } else if (field.getType().isEnum()) {
         // Enum field
-        @SuppressWarnings("unchecked")
-        Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
-        value = en;
+        try {
+          @SuppressWarnings("unchecked")
+          Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
+          value = en;
+        } catch (IllegalArgumentException ex) {// Wrong xml setting
+          LOGGER.log(Level.SEVERE, " No enum const named {0}", configValue);
+          xmlError = true;
+        }
       } else if (Utils.isNumeric(field.getType())) {
         @SuppressWarnings("unchecked")
         Class<Number> type = (Class<Number>) field.getType();
@@ -397,7 +394,9 @@ public class Settings implements Cloneable {
           value = Utils.unEscapeXML(configValue, "UTF-8");
         }
       }
-      field.set(this, value);
+      if (value != null) {
+        field.set(this, value);
+      }
     } catch (SecurityException e) {
       LOGGER.log(Level.WARNING, e.getMessage());
     } catch (NoSuchFieldException e) {
@@ -467,7 +466,7 @@ public class Settings implements Cloneable {
         } else if (Utils.isNumeric(field.getType())) {
           @SuppressWarnings("unchecked")
           Class<Number> type = (Class<Number>) field.getType();
-          hash = 29 * hash + Utils.convertToNumber(type,  (String) field.get(this)).hashCode();
+          hash = 29 * hash + Utils.convertToNumber(type, (String) field.get(this)).hashCode();
         }
       } catch (SecurityException e) {
         LOGGER.log(Level.WARNING, e.getMessage());
