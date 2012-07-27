@@ -28,21 +28,27 @@ import javax.swing.ImageIcon;
  */
 public enum MovieRenamerMode {
 
-  MOVIEMODE(Utils.i18n("movie"), Media.MediaType.MOVIE, "/image/movie.png"),
-  TVSHOWMODE(Utils.i18n("tvshow"), Media.MediaType.TVSHOW, "/image/tv.png");
+  MOVIEMODE(Utils.i18n("movie"), Utils.i18n("movieMode"), Media.MediaType.MOVIE, "/image/movie.png"),
+  TVSHOWMODE(Utils.i18n("tvshow"), Utils.i18n("tvshowMode"),Media.MediaType.TVSHOW, "/image/tv.png");
 
   private Media.MediaType mediaType;
   private String title;
+  private String titleMode;
   private ImageIcon icon;
 
-  private MovieRenamerMode(String title, Media.MediaType mediaType, String imgName) {
+  private MovieRenamerMode(String title, String titleMode, Media.MediaType mediaType, String imgName) {
     this.title = title;
+    this.titleMode = titleMode;
     this.mediaType = mediaType;
     this.icon = new ImageIcon(Utils.getImageFromJAR(imgName, MovieRenamerMode.class));
   }
 
   public String getTitle() {
     return title;
+  }
+  
+  public String getTitleMode(){
+    return titleMode;
   }
 
   public Media.MediaType getMediaType() {

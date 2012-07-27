@@ -22,6 +22,7 @@ import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Class TvShowEpisode
@@ -35,7 +36,7 @@ public class TvShowEpisode {
   private String plot;
   private String rating;
   private String votes;
-  private ArrayList<MediaID> tvshowIDs;
+  private List<MediaID> tvshowIDs;
 
   public TvShowEpisode() {
     num = -1;
@@ -81,7 +82,7 @@ public class TvShowEpisode {
     return votes;
   }
 
-  public ArrayList<MediaID> getIDs() {
+  public List<MediaID> getIDs() {
     return tvshowIDs;
   }
 
@@ -123,7 +124,7 @@ public class TvShowEpisode {
     this.votes = votes;
   }
   
-  public static void sortEpisodes(ArrayList<TvShowEpisode> episodes) {
+  public static void sortEpisodes(List<TvShowEpisode> episodes) {
     Collections.sort(episodes, new Comparator<TvShowEpisode>() {
 
       @Override

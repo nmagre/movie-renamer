@@ -25,7 +25,7 @@ import fr.free.movierenamer.worker.TvShowSearchWorker;
 import java.beans.PropertyChangeSupport;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class AllocineTvShowSearchWorker Search tvshow
@@ -45,7 +45,7 @@ public class AllocineTvShowSearchWorker extends TvShowSearchWorker {
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
+  protected MrParser<List<SearchResult>> getParser() throws Exception {
     return new AllocineTvShowSearch();
   }
 }

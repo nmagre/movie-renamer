@@ -55,8 +55,7 @@ public class DropImage implements DropTargetListener {
    * @param component Component to set mouse loding cursor
    * @param mediaPanel Movie Renamer media panel
    * @param mediaImageType Media image type
-   * @param cacheType
-   * @param setting Movie Renamer settings
+   * @param cache
    */
   public DropImage(Component component, IMediaPanel mediaPanel, MediaImage.MediaImageType mediaImageType, Cache.CacheType cache) {
     this.component = component;
@@ -114,9 +113,9 @@ public class DropImage implements DropTargetListener {
               }
 
               MediaImage mvImg = new MediaImage(-1, mediaImageType);
-              mvImg.setMidUrl(res[i]);
-              mvImg.setOrigUrl(res[i]);
-              mvImg.setThumbUrl(res[i]);
+              for (MediaImage.MediaImageSize size : MediaImage.MediaImageSize.values()) {
+                mvImg.setUrl(res[i], size);
+              }
 
               mediaPanel.addImageToList(img, mvImg, true);
             }
@@ -131,9 +130,9 @@ public class DropImage implements DropTargetListener {
               }
               if (img != null) {
                 MediaImage mvImg = new MediaImage(-1, mediaImageType);
-                mvImg.setMidUrl(url.toString());
-                mvImg.setOrigUrl(url.toString());
-                mvImg.setThumbUrl(url.toString());
+                for (MediaImage.MediaImageSize size : MediaImage.MediaImageSize.values()) {
+                  mvImg.setUrl(url.toString(), size);
+                }
 
                 mediaPanel.addImageToList(img, mvImg, true);
               }

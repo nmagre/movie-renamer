@@ -20,6 +20,7 @@ package fr.free.movierenamer.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Class Levenshtein
@@ -54,8 +55,8 @@ public abstract class Levenshtein {
     return distance[str1.length()][str2.length()];
   }
 
-  public static void sortByLevenshteinDistanceYear(final String str, int year, ArrayList<SearchResult> arrayStr) {
-    ArrayList<SearchResult> tmp = new ArrayList<SearchResult>();
+  public static void sortByLevenshteinDistanceYear(final String str, int year, List<SearchResult> arrayStr) {
+    List<SearchResult> tmp = new ArrayList<SearchResult>();
     if (year != -1) {
       for (int i = 0; i < arrayStr.size(); i++) {
         SearchResult sres = arrayStr.get(i);

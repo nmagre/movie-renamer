@@ -20,6 +20,7 @@ package fr.free.movierenamer.parser;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -29,10 +30,10 @@ import org.xml.sax.SAXException;
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
+public class AllocineTvShowSearch extends MrParser<List<SearchResult>> {
 
   private StringBuffer buffer;
-  private ArrayList<SearchResult> results;
+  private List<SearchResult> results;
   private boolean media;
   private String currentId;
   private String currentName;
@@ -104,7 +105,7 @@ public class AllocineTvShowSearch extends MrParser<ArrayList<SearchResult>> {
   }
 
   @Override
-  public ArrayList<SearchResult> getObject() {
+  public List<SearchResult> getObject() {
     return results;
   }
 }

@@ -18,29 +18,19 @@
 
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.utils.Utils;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout;
+import java.util.List;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class Editor
@@ -48,7 +38,7 @@ import fr.free.movierenamer.utils.Utils;
  */
 public class Editor extends JDialog {
 
-  private ArrayList<String> array;
+  private List<String> array;
   private DefaultListModel listModel;
   private String initValue;
 
@@ -61,7 +51,9 @@ public class Editor extends JDialog {
     initValue = text;
     array = new ArrayList<String>();
     String[] res = text.split(separator);
-    if(!text.equals("")) array.addAll(Arrays.asList(res));
+    if(!text.equals("")) {
+      array.addAll(Arrays.asList(res));
+    }
     listModel = new DefaultListModel();
     for (int i = 0; i < array.size(); i++) {
       listModel.addElement(array.get(i));
@@ -72,14 +64,18 @@ public class Editor extends JDialog {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         int index = stringList.getSelectedIndex();
-        if (index != -1)
+        if (index != -1) {
           stringField.setText(array.get(index));
-        else stringField.setText("");
+        }
+        else {
+          stringField.setText("");
+        }
       }
     });
 
-    if (array.size() > 0)
+    if (array.size() > 0) {
       stringList.setSelectedIndex(0);
+    }
     else {
       removeBtn.setEnabled(false);
       editBtn.setEnabled(false);
@@ -223,7 +219,7 @@ public class Editor extends JDialog {
   }//GEN-LAST:event_editBtnActionPerformed
 
   private void addBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-    String s = (String) JOptionPane.showInputDialog(this, Utils.i18n("add"), "Movie Renamer Editor", JOptionPane.PLAIN_MESSAGE);
+    String s = JOptionPane.showInputDialog(this, Utils.i18n("add"), "Movie Renamer Editor", JOptionPane.PLAIN_MESSAGE);
 
     if ((s != null) && (s.length() > 0)) {
       array.add(s);
@@ -239,7 +235,9 @@ public class Editor extends JDialog {
       for (int i = 0; i < array.size(); i++) {
         listModel.addElement(array.get(i));
       }
-      if(index >= listModel.size()) index = listModel.size() - 1;
+      if(index >= listModel.size()) {
+        index = listModel.size() - 1;
+      }
       stringField.setText("");
       stringList.setSelectedIndex(index);
     }
@@ -247,8 +245,9 @@ public class Editor extends JDialog {
 
   private void okBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
     String res = Utils.arrayToString(array, " | ", 0);
-    if(!initValue.equals(res))
+    if(!initValue.equals(res)) {
       firePropertyChange("", initValue, res);
+    }
     setVisible(false);
   }//GEN-LAST:event_okBtnActionPerformed
 

@@ -32,6 +32,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -101,9 +102,9 @@ public class MoviePanel extends JPanel implements IMediaPanel {
   private Image fanartBack;
   private DropTarget dropThumbTarget;
   private DropTarget dropFanartTarget;
-  private ArrayList<actorImage> actors;
-  private ArrayList<MediaImage> thumbs;
-  private ArrayList<MediaImage> fanarts;
+  private List<actorImage> actors;
+  private List<MediaImage> thumbs;
+  private List<MediaImage> fanarts;
   private Settings setting;
   private Cache cache = Cache.getInstance();
 
@@ -138,7 +139,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
             return;
           }
           thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
-          Image img = cache.getImage(new URL(thumbs.get(thumbnailsList.getSelectedIndex()).getThumbUrl()), Cache.CacheType.THUMB);
+          Image img = cache.getImage(new URL(thumbs.get(thumbnailsList.getSelectedIndex()).getUrl(MediaImage.MediaImageSize.THUMB)), Cache.CacheType.THUMB);
           if (img != null) {
             thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
           }
@@ -159,7 +160,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
           return;
         }
         fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
-        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getThumbUrl(), Cache.CacheType.FANART);
+        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getUrl(MediaImage.MediaImageSize.THUMB), Cache.CacheType.FANART);
         detailsPnl.validate();
         detailsPnl.repaint();
       }
@@ -208,6 +209,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     editButton.addActionListener(editActionListener);
   }
 
+  @Override
   public void setDisplay(Settings setting) {
     thumbsScrollPane.setVisible(setting.thumb);
     fanartsScrollPane.setVisible(setting.fanart);
@@ -259,7 +261,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       protected Image doInBackground() throws Exception {
         Image image = null;
         if (thumbnailModel.isEmpty()) {
-          image = cache.getImage(new URL(thumbs.get(0).getThumbUrl()), Cache.CacheType.THUMB);
+          image = cache.getImage(new URL(thumbs.get(0).getUrl(MediaImage.MediaImageSize.THUMB)), Cache.CacheType.THUMB);
         }
         return image;
       }
@@ -301,7 +303,7 @@ public class MoviePanel extends JPanel implements IMediaPanel {
       protected Image doInBackground() throws Exception {
         Image img = null;
         if (fanartModel.isEmpty()) {
-          img = getImage(fanarts.get(0).getThumbUrl(), Cache.CacheType.FANART);
+          img = getImage(fanarts.get(0).getUrl(MediaImage.MediaImageSize.THUMB), Cache.CacheType.FANART);
         }
 
         return img;
@@ -496,11 +498,11 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     }
   }
 
-  public ArrayList<MediaImage> getAddedThumb() {
-    ArrayList<MediaImage> res = new ArrayList<MediaImage>();
+  public List<MediaImage> getAddedThumb() {
+    List<MediaImage> res = new ArrayList<MediaImage>();
     for (int i = 0; i < thumbs.size(); i++) {
       if (thumbs.get(i).getId() == -1) {
-        if (!thumbs.get(i).getThumbUrl().startsWith("file://")) {
+        if (!thumbs.get(i).getUrl(MediaImage.MediaImageSize.THUMB).startsWith("file://")) {// Don't add images from hdd
           res.add(thumbs.get(i));
         }
       }
@@ -508,11 +510,11 @@ public class MoviePanel extends JPanel implements IMediaPanel {
     return res;
   }
 
-  public ArrayList<MediaImage> getAddedFanart() {
-    ArrayList<MediaImage> res = new ArrayList<MediaImage>();
+  public List<MediaImage> getAddedFanart() {
+    List<MediaImage> res = new ArrayList<MediaImage>();
     for (int i = 0; i < fanarts.size(); i++) {
       if (fanarts.get(i).getId() == -1) {
-        if (!fanarts.get(i).getThumbUrl().startsWith("file://")) {
+        if (!fanarts.get(i).getUrl(MediaImage.MediaImageSize.THUMB).startsWith("file://")) {// Don't add images from hdd
           res.add(fanarts.get(i));
         }
       }

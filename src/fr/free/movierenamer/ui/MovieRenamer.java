@@ -47,6 +47,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -75,9 +76,9 @@ public class MovieRenamer extends JFrame {
   private final String sError = Utils.i18n("error");
   private DropFile dropFile;
   private LoadingDialog loading;
-  private ArrayList<MediaFile> mediaFile;
+  private List<MediaFile> mediaFile;
   private ContextMenuListMouseListener contex;
-  private ArrayList<MediaRenamed> renamedMediaFile;
+  private List<MediaRenamed> renamedMediaFile;
   private MovieRenamerMode currentMode;
   // Worker
   private MediaSearchWorker searchWorker;
@@ -115,7 +116,7 @@ public class MovieRenamer extends JFrame {
     contex.addPropertyChangeListener(contextMenuListener);
 
     initComponents();
-
+    
     fileChooser.setFileFilter(new MediaFileFilter(setting));
     fileChooser.setAcceptAllFileFilterUsed(false);//Remove AcceptAll as an available choice in the choosable filter list
 
@@ -373,7 +374,7 @@ public class MovieRenamer extends JFrame {
   private void loadRenamedMovie() {
     renamedMediaFile = new ArrayList<MediaRenamed>();
     if (new File(Settings.renamedFile).exists()) {
-      XMLParser<ArrayList<MediaRenamed>> mmp = new XMLParser<ArrayList<MediaRenamed>>(Settings.renamedFile);
+      XMLParser<List<MediaRenamed>> mmp = new XMLParser<List<MediaRenamed>>(Settings.renamedFile);
       mmp.setParser(new MrRenamedMovie());
       try {
         renamedMediaFile = mmp.parseXml();
@@ -443,16 +444,16 @@ public class MovieRenamer extends JFrame {
 
     centerPnl.validate();
     centerPnl.repaint();
-    setTitle(Settings.APPNAME + "-" + setting.getVersion() + " Mode " + currentMode.getTitle());
+    setTitle(Settings.APPNAME + "-" + setting.getVersion() + " " + currentMode.getTitleMode());
   }
 
-  private void clearInterface(boolean movieList, boolean searchList) {
+  private void clearInterface(boolean mediaList, boolean searchList) {
 
     if (currentMedia != null) {
       currentMedia.clear();
     }
 
-    if (movieList) {
+    if (mediaList) {
       if (mediaFileNameModel != null) {
         mediaFileNameModel.clear();
       }
@@ -538,7 +539,7 @@ public class MovieRenamer extends JFrame {
    * @param search Add search to loading dialog
    */
   private void loadDial(boolean search) {
-    ArrayList<Loading> loadings = getLoading(search);
+    List<Loading> loadings = getLoading(search);
     loading = new LoadingDialog(loadings, this);
     SwingUtilities.invokeLater(new Runnable() {
 
@@ -555,8 +556,8 @@ public class MovieRenamer extends JFrame {
    * @param search Add search to loading array
    * @return Array of loading
    */
-  private ArrayList<Loading> getLoading(boolean search) {
-    ArrayList<Loading> loadings = new ArrayList<Loading>();
+  private List<Loading> getLoading(boolean search) {
+    List<Loading> loadings = new ArrayList<Loading>();
 
     if (search) {
       loadings.add(new Loading(Utils.i18n("mediaSearch"), true, 100, WorkerManager.WORKERID.SEARCHWORKER));
@@ -659,6 +660,7 @@ public class MovieRenamer extends JFrame {
         exitBtn = new JButton();
         centerPnl = new JPanel();
         centerSp = new JSplitPane();
+        jPanel1 = new JPanel();
         mediaScroll = new JScrollPane();
         mediaList = new JList();
         MediaSp = new JSplitPane();
@@ -775,7 +777,18 @@ public class MovieRenamer extends JFrame {
         mediaList.setFont(new Font("Dialog", 0, 12));         mediaList.addMouseListener(contex);
         mediaScroll.setViewportView(mediaList);
 
-        centerSp.setTopComponent(mediaScroll);
+        GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(Alignment.LEADING)
+            .addComponent(mediaScroll, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(Alignment.LEADING)
+            .addComponent(mediaScroll, GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+        );
+
+        centerSp.setLeftComponent(jPanel1);
 
         MediaSp.setDividerLocation(200);
         MediaSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -806,12 +819,12 @@ public class MovieRenamer extends JFrame {
         searchPnlLayout.setHorizontalGroup(
             searchPnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(Alignment.TRAILING, searchPnlLayout.createSequentialGroup()
-                .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
+                .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
             .addGroup(searchPnlLayout.createSequentialGroup()
                 .addComponent(resultLbl)
-                .addContainerGap(544, Short.MAX_VALUE))
+                .addContainerGap(516, Short.MAX_VALUE))
             .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
         );
         searchPnlLayout.setVerticalGroup(
@@ -838,7 +851,7 @@ public class MovieRenamer extends JFrame {
         );
         centerPnlLayout.setVerticalGroup(
             centerPnlLayout.createParallelGroup(Alignment.LEADING)
-            .addComponent(centerSp, GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+            .addComponent(centerSp)
         );
 
         getContentPane().add(centerPnl, BorderLayout.CENTER);
@@ -888,7 +901,7 @@ public class MovieRenamer extends JFrame {
       int n = fileChooser.showOpenDialog(this);
       if (n == 0) {
         File[] selectedFiles = fileChooser.getSelectedFiles();
-        ArrayList<File> files = new ArrayList<File>(Arrays.asList(selectedFiles));
+        List<File> files = new ArrayList<File>(Arrays.asList(selectedFiles));
         dropFile.setMovies(files);
       }
     }//GEN-LAST:event_openBtnActionPerformed
@@ -932,7 +945,7 @@ public class MovieRenamer extends JFrame {
 
       if (currentMedia.getType() == Media.MediaType.MOVIE) {
         Movie movie = (Movie) currentMedia;
-        ArrayList<MediaImage> images = moviePnl.getAddedThumb();
+        List<MediaImage> images = moviePnl.getAddedThumb();
         for (int i = 0; i < images.size(); i++) {
           //  movie.addThumb(images.get(i));
         }
@@ -1103,13 +1116,13 @@ public class MovieRenamer extends JFrame {
 
   public class SearchWorkerListener implements PropertyChangeListener {
 
-    private SwingWorker<ArrayList<SearchResult>, String> worker;
+    private SwingWorker<List<SearchResult>, String> worker;
 
     public SearchWorkerListener() {
       worker = null;
     }
 
-    public void setWorker(SwingWorker<ArrayList<SearchResult>, String> worker) {
+    public void setWorker(SwingWorker<List<SearchResult>, String> worker) {
       this.worker = worker;
     }
 
@@ -1118,7 +1131,7 @@ public class MovieRenamer extends JFrame {
 
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
 
-        ArrayList<SearchResult> results = null;
+        List<SearchResult> results = null;
 
         try {
           results = worker.get();
@@ -1198,7 +1211,7 @@ public class MovieRenamer extends JFrame {
       } else if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
           currentMedia = null;
-          ArrayList<MediaFile> objects = worker.get();
+          List<MediaFile> objects = worker.get();
           mediaFile = objects;
           mediaFileNameModel = new DefaultListModel();
 
@@ -1367,6 +1380,7 @@ public class MovieRenamer extends JFrame {
     private JCheckBox fanartChk;
     private JFileChooser fileChooser;
     private JMenuItem jMenuItem1;
+    private JPanel jPanel1;
     private Separator jSeparator1;
     private JList mediaList;
     private JScrollPane mediaScroll;

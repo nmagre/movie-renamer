@@ -24,7 +24,7 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.MovieSearchWorker;
 import java.beans.PropertyChangeSupport;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -48,7 +48,7 @@ public class TmdbSearchWorker extends MovieSearchWorker {
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
+  protected MrParser<List<SearchResult>> getParser() throws Exception {
     return new TmdbSearch();
   }
 

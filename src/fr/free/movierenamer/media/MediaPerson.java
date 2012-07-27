@@ -19,6 +19,7 @@ package fr.free.movierenamer.media;
 
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class MediaPerson
@@ -33,7 +34,7 @@ public class MediaPerson {
   private String name;
   private String thumb;
   private int job;// Actor, director, writer
-  private ArrayList<String> roles;// just for actor
+  private List<String> roles;// just for actor
   private String imdbId;//Only use for media portal
 
   public MediaPerson(int job) {
@@ -91,7 +92,7 @@ public class MediaPerson {
    *
    * @return Person movie roles
    */
-  public ArrayList<String> getRoles() {
+  public List<String> getRoles() {
     return roles;
   }
 

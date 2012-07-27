@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 
 /**
  * Class AllocineInfo
+ *
  * @author Nicolas Magré
  */
 public class AllocineInfo extends MrParser<MovieInfo> {
@@ -83,12 +84,12 @@ public class AllocineInfo extends MrParser<MovieInfo> {
       if (name.equalsIgnoreCase("casting")) {
         casting = true;
       }
-      
+
       if (name.equalsIgnoreCase("poster")) {
         MediaImage movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
-        movieThumb.setThumbUrl(attributes.getValue("href"));
-        movieThumb.setMidUrl(attributes.getValue("href"));
-        movieThumb.setOrigUrl(attributes.getValue("href"));
+        for (MediaImage.MediaImageSize size : MediaImage.MediaImageSize.values()) {
+          movieThumb.setUrl(attributes.getValue("href"), size);
+        }
         movieinfo.addThumb(movieThumb);
       }
       if (name.equalsIgnoreCase("media")) {
@@ -100,11 +101,12 @@ public class AllocineInfo extends MrParser<MovieInfo> {
       }
       if (mediaPicture) {
         if (name.equalsIgnoreCase("thumbnail")) {
-          if (!movieinfo.getThumbs().get(0).getThumbUrl().equals(attributes.getValue("href"))) {
-            MediaImage movieimg = new MediaImage(0, thumb?MediaImage.MediaImageType.THUMB:MediaImage.MediaImageType.FANART);
-            movieimg.setThumbUrl(attributes.getValue("href"));
-            movieimg.setMidUrl(attributes.getValue("href"));
-            if(thumb) {
+          if (!movieinfo.getThumbs().get(0).getUrl(MediaImage.MediaImageSize.THUMB).equals(attributes.getValue("href"))) {
+            MediaImage movieimg = new MediaImage(0, thumb ? MediaImage.MediaImageType.THUMB : MediaImage.MediaImageType.FANART);
+            for (MediaImage.MediaImageSize size : MediaImage.MediaImageSize.values()) {
+              movieimg.setUrl(attributes.getValue("href"), size);
+            }
+            if (thumb) {
               movieinfo.addThumb(movieimg);
             } else {
               movieinfo.addFanart(movieimg);
@@ -241,7 +243,6 @@ public class AllocineInfo extends MrParser<MovieInfo> {
 //    movieImage.setFanarts(fanarts);
 //    movieinfo.setImages(movieImage);
 //  }
-
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     String lecture = new String(ch, start, length);

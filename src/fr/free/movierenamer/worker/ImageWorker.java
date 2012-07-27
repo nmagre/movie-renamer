@@ -59,9 +59,10 @@ public class ImageWorker extends Worker<Void> {
     setProgress(0);
     for (int i = 0; i < arrayImage.size(); i++) {
       Image image;
+      URL url = null;
       try {
         setProgress((i * 100) / arrayImage.size());
-        URL url = new URL(arrayImage.get(i).getThumbUrl());
+        url = new URL(arrayImage.get(i).getUrl(MediaImage.MediaImageSize.THUMB));
         image = Cache.getInstance().getImage(url, cache);
         if (image == null) {
           Cache.getInstance().add(url, cache);
@@ -81,13 +82,13 @@ public class ImageWorker extends Worker<Void> {
         }
 
       } catch (IOException ex) {
-        Settings.LOGGER.log(Level.INFO, "File not found : {0}", arrayImage.get(i).getThumbUrl());
+        Settings.LOGGER.log(Level.INFO, "File not found : {0}", url);
         continue;
       } catch (CMMException ex) {
-        Settings.LOGGER.log(Level.INFO, "LCMS error 12288 : {0}", arrayImage.get(i).getThumbUrl());
+        Settings.LOGGER.log(Level.INFO, "LCMS error 12288 : {0}", url);
         continue;
       } catch (IllegalArgumentException ex) {
-        Settings.LOGGER.log(Level.INFO, "BandOffsets.length is wrong! : {0}", arrayImage.get(i).getThumbUrl());
+        Settings.LOGGER.log(Level.INFO, "BandOffsets.length is wrong! : {0}", url);
         continue;
       } catch (NullPointerException ex) {
         Settings.LOGGER.log(Level.INFO, Utils.getStackTrace("NullPointerException", ex.getStackTrace()));

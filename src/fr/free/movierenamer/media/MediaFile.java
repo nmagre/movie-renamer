@@ -17,13 +17,11 @@
  */
 package fr.free.movierenamer.media;
 
-import java.io.File;
-
-import javax.swing.Icon;
-
 import fr.free.movierenamer.media.Media.MediaType;
 import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.ui.res.UiUtils;
+import java.io.File;
+import javax.swing.Icon;
 
 /**
  * Class MovieFile

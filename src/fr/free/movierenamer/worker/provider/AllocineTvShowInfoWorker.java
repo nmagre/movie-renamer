@@ -30,7 +30,7 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class AllocineTvShowInfoWorker
@@ -40,8 +40,8 @@ import java.util.ArrayList;
 public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
 
   private final SxE sxe;
-  private final HttpWorker<ArrayList<TvShowSeason>> seasonsWorker = new HttpWorker<ArrayList<TvShowSeason>>(errorSupport, new AllocineTvSeason());
-  private final HttpWorker<ArrayList<TvShowEpisode>> episodesWorker = new HttpWorker<ArrayList<TvShowEpisode>>(errorSupport, new AllocineTvEpisode());
+  private final HttpWorker<List<TvShowSeason>> seasonsWorker = new HttpWorker<List<TvShowSeason>>(errorSupport, new AllocineTvSeason());
+  private final HttpWorker<List<TvShowEpisode>> episodesWorker = new HttpWorker<List<TvShowEpisode>>(errorSupport, new AllocineTvEpisode());
   private final HttpWorker<TvShowEpisode> episodeWorker = new HttpWorker<TvShowEpisode>(errorSupport, new AllocineTvInfo());
 
   /**
@@ -65,7 +65,7 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
     String seasonId = null;
 
     // Get serie seasons
-    ArrayList<TvShowSeason> seasons = seasonsWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
+    List<TvShowSeason> seasons = seasonsWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
     TvShowSeason.sortSeasons(seasons);//Sort season by season number
 
     //Absolute number
@@ -98,7 +98,7 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
     }
 
     // Get episodes for this season
-    ArrayList<TvShowEpisode> episodes = episodesWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "season") + seasonId);
+    List<TvShowEpisode> episodes = episodesWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "season") + seasonId);
     TvShowEpisode.sortEpisodes(episodes);//Sort episodes by episode number
 
     // Episode number seems to be not right, get first episode

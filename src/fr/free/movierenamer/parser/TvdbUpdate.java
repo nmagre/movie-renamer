@@ -19,6 +19,7 @@ package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaID;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -26,10 +27,10 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class TvdbUpdate extends MrParser<ArrayList<MediaID>> {
+public class TvdbUpdate extends MrParser<List<MediaID>> {
 
   private StringBuffer buffer;
-  private ArrayList<MediaID> mediaIds;
+  private List<MediaID> mediaIds;
   private boolean update;
 
   @Override
@@ -74,7 +75,7 @@ public class TvdbUpdate extends MrParser<ArrayList<MediaID>> {
   }
 
   @Override
-  public ArrayList<MediaID> getObject() {
+  public List<MediaID> getObject() {
     return mediaIds;
   }
 }

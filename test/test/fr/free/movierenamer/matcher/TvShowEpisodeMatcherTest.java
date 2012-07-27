@@ -72,6 +72,7 @@ public class TvShowEpisodeMatcherTest {
     epMatchesTest.put(new SxE(3, 5), "S3/test - Ep. 05 -test.avi");
     epMatchesTest.put(new SxE(1, 51), "Saison 03/test - 1x51 - test.FR.avi");
     epMatchesTest.put(new SxE(3, 11), "test/test s3/Episode 11.avi");
+    epMatchesTest.put(new SxE(7, 8), "test 41/test s7/Episode 08 800x900.avi");
     epMatchesTest.put(new SxE(9, 2), "Season 9/test - 180 s09e02 - le principal test.avi");
     epMatchesTest.put(new SxE(4, 3), "saison 4/03 - Un test 720p 800x600.avi");
     return epMatchesTest;

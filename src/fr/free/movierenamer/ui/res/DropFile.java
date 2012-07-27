@@ -17,6 +17,11 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.media.MediaRenamed;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.worker.ListFilesWorker;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -31,15 +36,8 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
-import fr.free.movierenamer.media.MediaRenamed;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.worker.ListFilesWorker;
 
 /**
  * Class DropFile, Drop files
@@ -51,7 +49,7 @@ public class DropFile implements DropTargetListener {
   private Settings setting;
   private JFrame parent;
   private MovieRenamer.FileWorkerListener listener;
-  private ArrayList<MediaRenamed> renamed;
+  private List<MediaRenamed> renamed;
   private Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   private Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
   private FilenameFilter folderFilter = new FilenameFilter() {
@@ -70,7 +68,7 @@ public class DropFile implements DropTargetListener {
    * @param listener Worker listener
    * @param parent Parent component to center JOptionPane
    */
-  public DropFile(Settings setting, ArrayList<MediaRenamed> renamed, MovieRenamer.FileWorkerListener listener, JFrame parent) {
+  public DropFile(Settings setting, List<MediaRenamed> renamed, MovieRenamer.FileWorkerListener listener, JFrame parent) {
     this.setting = setting;
     this.renamed = renamed;
     this.parent = parent;
@@ -103,7 +101,7 @@ public class DropFile implements DropTargetListener {
     evt.acceptDrop(action);
     try {
       Transferable data = evt.getTransferable();
-      ArrayList<File> files = new ArrayList<File>();
+      List<File> files = new ArrayList<File>();
       if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) { // Unix
 
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
@@ -135,7 +133,7 @@ public class DropFile implements DropTargetListener {
    *
    * @param files Array of movie files
    */
-  public void setMovies(ArrayList<File> files) {
+  public void setMovies(List<File> files) {
     boolean subFolders = setting.scanSubfolder;
     int count = 0;
 

@@ -62,7 +62,7 @@ public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parse
       if (attributes.getValue("preview") != null) {
         thumb = true;
         image = new MediaImage(0, MediaImage.MediaImageType.THUMB);//FIXME A refaire, selon le cas (fanart,tumb,...)
-        image.setThumbUrl(attributes.getValue("preview"));
+        image.setUrl(attributes.getValue("preview"), MediaImage.MediaImageSize.THUMB);
       }
     }
   }
@@ -79,8 +79,8 @@ public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parse
     }
     if (name.equalsIgnoreCase("thumb")) {
       if (thumb) {
-        image.setOrigUrl(buffer.toString());
-        image.setMidUrl(buffer.toString());
+        image.setUrl(buffer.toString(), MediaImage.MediaImageSize.MEDIUM);
+        image.setUrl(buffer.toString(), MediaImage.MediaImageSize.ORIGINAL);
         if (fanart) {
           movieImage.addFanart(image);
         } else {

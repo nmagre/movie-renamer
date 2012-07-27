@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -150,7 +149,7 @@ public class Settings implements Cloneable {
     "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
     "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
     " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"};
-  public ArrayList<String> mediaNameFilters;
+  public List<String> mediaNameFilters;
   public boolean useExtensionFilter = true;
   // Cache
   public boolean clearXMLCache = false;
@@ -318,7 +317,7 @@ public class Settings implements Cloneable {
             value = Utils.arrayToString((Object[]) value, Settings.arrayEscapeChar, 0);
           } else if (Collection.class.isAssignableFrom(field.getType())) {
             // to string for Collection fields
-            value = Utils.arrayToString((ArrayList<?>) value, Settings.arrayEscapeChar, 0);
+            value = Utils.arrayToString((List<?>) value, Settings.arrayEscapeChar, 0);
           }
           out.write("    <" + field.getName() + ">" + Utils.escapeXML(value.toString()) + "</" + field.getName() + ">" + endl);
         } catch (IllegalArgumentException e) {

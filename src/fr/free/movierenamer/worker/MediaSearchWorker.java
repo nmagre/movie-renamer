@@ -25,7 +25,7 @@ import fr.free.movierenamer.utils.Utils;
 import java.awt.Dimension;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -35,7 +35,7 @@ import javax.swing.ImageIcon;
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
-public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResult>> {
+public abstract class MediaSearchWorker extends HttpWorker<List<SearchResult>> {
   protected final String searchTitle;
 
   public MediaSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
@@ -45,10 +45,10 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
   }
 
   @Override
-  protected final ArrayList<SearchResult> proccessFile(File xmlFile) throws Exception {
-    ArrayList<SearchResult> results;
-    XMLParser<ArrayList<SearchResult>> xmp = new XMLParser<ArrayList<SearchResult>>(xmlFile.getAbsolutePath());
-    MrParser<ArrayList<SearchResult>> parser = getParser();
+  protected final List<SearchResult> proccessFile(File xmlFile) throws Exception {
+    List<SearchResult> results;
+    XMLParser<List<SearchResult>> xmp = new XMLParser<List<SearchResult>>(xmlFile.getAbsolutePath());
+    MrParser<List<SearchResult>> parser = getParser();
     parser.setOriginalFile(xmlFile);
     xmp.setParser(parser);
     results = xmp.parseXml();
@@ -74,7 +74,7 @@ public abstract class MediaSearchWorker extends HttpWorker<ArrayList<SearchResul
   }
 
   @Override
-  protected abstract MrParser<ArrayList<SearchResult>> getParser() throws Exception;
+  protected abstract MrParser<List<SearchResult>> getParser() throws Exception;
   
   @Override
   protected abstract String getUri() throws Exception;

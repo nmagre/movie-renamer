@@ -19,6 +19,7 @@ package fr.free.movierenamer.cli;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Original code come from Jargs (author Steve Purcell) (http://jargs.sourceforge.net/) under BSD license which is compatible with GPL license
@@ -27,7 +28,7 @@ import java.util.HashMap;
  */
 public class CmdLineParser {
 
-  private ArrayList<String> remainingArgs = null;
+  private List<String> remainingArgs = null;
   private HashMap<String, Option> options = new HashMap<String, Option>();
   private HashMap<String, Object> values;
 
@@ -151,7 +152,7 @@ public class CmdLineParser {
     return values.get(o.longForm());
   }
 
-  public final ArrayList<String> getRemainingArgs() {
+  public final List<String> getRemainingArgs() {
     return this.remainingArgs;
   }
 

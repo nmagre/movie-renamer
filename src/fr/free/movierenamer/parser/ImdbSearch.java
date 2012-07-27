@@ -23,6 +23,7 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,9 +35,9 @@ import org.xml.sax.SAXException;
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
+public class ImdbSearch extends MrParser<List<SearchResult>> {
 
-  private ArrayList<SearchResult> results;
+  private List<SearchResult> results;
   private static final Pattern IMDBURL = Pattern.compile("http://www.imdb.com/title/tt\\d+/");
   private static final String CHARSET = "ISO-8859-1";
   private final URL realUrl;
@@ -104,7 +105,7 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
   }
 
   @Override
-  public ArrayList<SearchResult> getObject() {
+  public List<SearchResult> getObject() {
     return results;
   }
 
@@ -118,8 +119,8 @@ public class ImdbSearch extends MrParser<ArrayList<SearchResult>> {
    * @param type Type of result search
    * @return Array of ImdbSearchResult
    */
-  private ArrayList<SearchResult> findMovies(String htmlSearchRes, Pattern searchPattern, int limit, SearchResult.SearchResultType type) throws ParserBugException {
-    ArrayList<SearchResult> found = new ArrayList<SearchResult>();
+  private List<SearchResult> findMovies(String htmlSearchRes, Pattern searchPattern, int limit, SearchResult.SearchResultType type) throws ParserBugException {
+    List<SearchResult> found = new ArrayList<SearchResult>();
     Matcher searchResult = searchPattern.matcher(htmlSearchRes);
 
     try {

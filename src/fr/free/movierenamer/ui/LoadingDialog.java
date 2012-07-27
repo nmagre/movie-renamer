@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JDialog;
 import javax.swing.JProgressBar;
@@ -37,7 +38,7 @@ import javax.swing.SwingUtilities;
 public class LoadingDialog extends JDialog {
 
   private Map<Integer, JProgressBar> progress;
-  private ArrayList<WorkerManager.WORKERID> workedsId;
+  private List<WorkerManager.WORKERID> workedsId;
 
   /**
    * Creates new form LoadingDialog
@@ -45,7 +46,7 @@ public class LoadingDialog extends JDialog {
    * @param loadingWorker
    * @param parent
    */
-  public LoadingDialog(ArrayList<Loading> loadingWorker, Component parent) {
+  public LoadingDialog(List<Loading> loadingWorker, Component parent) {
     initComponents();
     progress = new HashMap<Integer, JProgressBar>();
     workedsId = new ArrayList<WorkerManager.WORKERID>();

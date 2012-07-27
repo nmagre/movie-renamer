@@ -24,7 +24,7 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.TvShowSearchWorker;
 import java.beans.PropertyChangeSupport;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class TvdbSearchWorker ,Search tv Show on tvdb
@@ -43,7 +43,7 @@ public class TvdbSearchWorker extends TvShowSearchWorker {
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
+  protected MrParser<List<SearchResult>> getParser() throws Exception {
     return new TvdbSearch(config.tvshowScrapperFR);
   }
 

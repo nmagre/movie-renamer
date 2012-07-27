@@ -25,6 +25,7 @@ import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -41,8 +42,8 @@ public class TmdbInfo extends MrParser<MovieInfo> {
   private boolean images;
   private MediaImage currentMovieImage;
   private String currentId;
-  private ArrayList<MediaImage> thumbs;
-  private ArrayList<MediaImage> fanarts;
+  private List<MediaImage> thumbs;
+  private List<MediaImage> fanarts;
   private MovieInfo movieinfo;
 
   public TmdbInfo() {
@@ -97,13 +98,13 @@ public class TmdbInfo extends MrParser<MovieInfo> {
           currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.MediaImageType.THUMB : MediaImage.MediaImageType.FANART);
         }
         if (attributes.getValue("size").equals("original")) {
-          currentMovieImage.setOrigUrl(attributes.getValue("url").replace(".png", ".jpg"));// API bug png ar jpg on server
+          currentMovieImage.setUrl(attributes.getValue("url").replace(".png", ".jpg"), MediaImage.MediaImageSize.ORIGINAL);// API bug png ar jpg on server
         }
         if (attributes.getValue("size").equals("thumb")) {
-          currentMovieImage.setThumbUrl(attributes.getValue("url").replace(".png", ".jpg"));
+          currentMovieImage.setUrl(attributes.getValue("url").replace(".png", ".jpg"), MediaImage.MediaImageSize.THUMB);
         }
         if (attributes.getValue("size").equals("mid") || attributes.getValue("type").equals("poster")) {
-          currentMovieImage.setMidUrl(attributes.getValue("url").replace(".png", ".jpg"));
+          currentMovieImage.setUrl(attributes.getValue("url").replace(".png", ".jpg"), MediaImage.MediaImageSize.MEDIUM);
         }
       }
     }

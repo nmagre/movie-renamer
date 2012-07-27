@@ -21,6 +21,7 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Settings;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -29,11 +30,11 @@ import org.xml.sax.SAXException;
  * 
  * @author Nicolas Magré
  */
-public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
+public class TvdbSearch extends MrParser<List<SearchResult>> {
 
   private StringBuffer buffer;
   private final boolean french;
-  private ArrayList<SearchResult> results;
+  private List<SearchResult> results;
   private String currentId;
   private String currentName;
   private String currentYear;
@@ -107,7 +108,7 @@ public class TvdbSearch extends MrParser<ArrayList<SearchResult>> {
   }
 
   @Override
-  public ArrayList<SearchResult> getObject() {
+  public List<SearchResult> getObject() {
     return results;
   }
 }

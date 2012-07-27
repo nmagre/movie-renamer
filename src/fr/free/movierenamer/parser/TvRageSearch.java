@@ -21,6 +21,7 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -29,10 +30,10 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class TvRageSearch extends MrParser<ArrayList<SearchResult>> {
+public class TvRageSearch extends MrParser<List<SearchResult>> {
 
   private StringBuffer buffer;
-  private ArrayList<SearchResult> results;
+  private List<SearchResult> results;
   private boolean result;
   private boolean show;
   private String currentId;
@@ -124,7 +125,7 @@ public class TvRageSearch extends MrParser<ArrayList<SearchResult>> {
   }
 
   @Override
-  public ArrayList<SearchResult> getObject() {
+  public List<SearchResult> getObject() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

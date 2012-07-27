@@ -24,7 +24,7 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.worker.MovieSearchWorker;
 import java.beans.PropertyChangeSupport;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class ImdbSearchWorker, Search on imdb
@@ -52,7 +52,7 @@ public class ImdbSearchWorker extends MovieSearchWorker {
   }
 
   @Override
-  protected MrParser<ArrayList<SearchResult>> getParser() throws Exception {
+  protected MrParser<List<SearchResult>> getParser() throws Exception {
     return new ImdbSearch(getUrl());
   }
 

@@ -21,33 +21,34 @@ import fr.free.movierenamer.media.IMediaImage;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class MovieImage
  * @author Magré Nicolas
  */
 public class MovieImage implements IMediaImage {
-  private ArrayList<MediaImage> thumbs;
-  private ArrayList<MediaImage> fanarts;
+  private List<MediaImage> thumbs;
+  private List<MediaImage> fanarts;
 
   public MovieImage(){
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
   }
 
-  public ArrayList<MediaImage> getThumbs(){
+  public List<MediaImage> getThumbs(){
     return thumbs;
   }
   
-  public ArrayList<MediaImage> getFanarts(){
+  public List<MediaImage> getFanarts(){
     return fanarts;
   }
 
-  public void setThumbs(ArrayList<MediaImage> thumbs){
+  public void setThumbs(List<MediaImage> thumbs){
     this.thumbs = thumbs;
   }
 
-  public void setFanarts(ArrayList<MediaImage> fanarts){
+  public void setFanarts(List<MediaImage> fanarts){
     this.fanarts = fanarts;
   }
 

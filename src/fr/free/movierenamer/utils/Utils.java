@@ -562,6 +562,7 @@ public abstract class Utils {
     }
 
     try {
+      str = str.replace("+", "%2B");// Fixed "+" charater with url decoder
       str = str.replaceAll("&#x(\\w\\w);", "%$1");
       str = URLDecoder.decode(str.replaceAll("% ", "%25 "), encode);
     } catch (UnsupportedEncodingException ex) {

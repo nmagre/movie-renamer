@@ -50,7 +50,7 @@ public class MovieNameMatcher {
    */
   public String getMovieName() {
     //Get all matcher values
-    ArrayList<NameMatcher> names = new ArrayList<NameMatcher>();
+    List<NameMatcher> names = new ArrayList<NameMatcher>();
     getMatcherRes(names, getMovieNameByYear());
     getMatcherRes(names, getMovieNameByUpperCase());
     getMatcherRes(names, getMovieNameByRegex());

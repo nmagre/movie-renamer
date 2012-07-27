@@ -20,7 +20,7 @@ package fr.free.movierenamer.ui.res;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 /**
@@ -32,14 +32,14 @@ import javax.swing.*;
 public class IconListRenderer<T extends IIconList> extends DefaultListCellRenderer {
 
   private static final long serialVersionUID = 1L;
-  private ArrayList<T> results;
+  private List<T> results;
 
   /**
    * Constructor arguments
    *
    * @param results List object
    */
-  public IconListRenderer(ArrayList<T> results) {
+  public IconListRenderer(List<T> results) {
     this.results = results;
   }
 

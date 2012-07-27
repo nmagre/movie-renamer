@@ -22,6 +22,7 @@ import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  *
@@ -31,7 +32,7 @@ public class TvShowSeason {
 
   private int num;
   private MediaID tvshowIDs;
-  private ArrayList<TvShowEpisode> episodes;
+  private List<TvShowEpisode> episodes;
   private int episodeCount;
 
   public TvShowSeason(int num) {
@@ -55,7 +56,7 @@ public class TvShowSeason {
     return tvshowIDs;
   }
 
-  public ArrayList<TvShowEpisode> getEpisodes() {
+  public List<TvShowEpisode> getEpisodes() {
     return episodes;
   }
 
@@ -79,11 +80,11 @@ public class TvShowSeason {
     this.episodeCount = episodeCount;
   }
 
-  public void setEpisodes(ArrayList<TvShowEpisode> episodes) {
+  public void setEpisodes(List<TvShowEpisode> episodes) {
     this.episodes = episodes;
   }
 
-  public static void sortSeasons(ArrayList<TvShowSeason> seasons) {
+  public static void sortSeasons(List<TvShowSeason> seasons) {
     Collections.sort(seasons, new Comparator<TvShowSeason>() {
 
       @Override

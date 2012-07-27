@@ -33,7 +33,7 @@ public abstract class CommonWords {
    * @param priority 
    * @return Most probable result
    */
-  public static String matchAll(ArrayList<NameMatcher> names, boolean priority) {
+  public static String matchAll(List<NameMatcher> names, boolean priority) {
 
     if (names.size() == 1) {
       return normalize(names.get(0).getMatch());
@@ -47,7 +47,7 @@ public abstract class CommonWords {
       }
     }
 
-    ArrayList<String> allMatch = new ArrayList<String>();
+    List<String> allMatch = new ArrayList<String>();
     for (int i = 0; i < names.size(); i++) {
       allMatch.add(names.get(i).getMatch());
     }

@@ -20,6 +20,7 @@ package fr.free.movierenamer.parser;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -27,11 +28,11 @@ import org.xml.sax.SAXException;
  * Class AllocineTvEpisode
  * @author Nicolas Magré
  */
-public class AllocineTvEpisode extends MrParser<ArrayList<TvShowEpisode>> {
+public class AllocineTvEpisode extends MrParser<List<TvShowEpisode>> {
 
   private StringBuffer buffer;
   private TvShowEpisode currentEpisode;
-  private ArrayList<TvShowEpisode> tvShowEpisodes;
+  private List<TvShowEpisode> tvShowEpisodes;
   private boolean season, episodeList, episode;
 
   public AllocineTvEpisode() {
@@ -104,7 +105,7 @@ public class AllocineTvEpisode extends MrParser<ArrayList<TvShowEpisode>> {
   }
 
   @Override
-  public ArrayList<TvShowEpisode> getObject() {
+  public List<TvShowEpisode> getObject() {
     return tvShowEpisodes;
   }
 }

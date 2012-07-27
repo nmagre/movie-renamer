@@ -20,6 +20,7 @@ package fr.free.movierenamer.parser;
 import fr.free.movierenamer.media.MediaRenamed;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -28,12 +29,12 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class MrRenamedMovie extends MrParser<ArrayList<MediaRenamed>> {// TODO A refaire
+public class MrRenamedMovie extends MrParser<List<MediaRenamed>> {// TODO A refaire
 
   private StringBuffer buffer;
   private boolean renamedXML;
   private boolean renamedMovie;
-  private ArrayList<MediaRenamed> renameds;
+  private List<MediaRenamed> renameds;
   private MediaRenamed renamed;
 
   public MrRenamedMovie() {
@@ -104,7 +105,7 @@ public class MrRenamedMovie extends MrParser<ArrayList<MediaRenamed>> {// TODO A
   }
 
   @Override
-  public ArrayList<MediaRenamed> getObject() {
+  public List<MediaRenamed> getObject() {
     return renameds;
   }
 }

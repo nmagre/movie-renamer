@@ -37,12 +37,11 @@ import org.xml.sax.SAXException;
  */
 public class ImdbInfo extends MrParser<MovieInfo> {
 
-    public enum ImdbLanguage {// TODO ,imdb.it, imdb.es, ....
+  public enum ImdbLanguage {// TODO ,imdb.it, imdb.es, ....
 
     ENGLISH,
     FRENCH;
   }
-  
   private final MovieInfo movieInfo;
   private final ImdbInfo.ImdbLanguage ilang = config.movieScrapperFR ? ImdbInfo.ImdbLanguage.FRENCH : ImdbInfo.ImdbLanguage.ENGLISH;
 
@@ -138,8 +137,9 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       String imdbThumb = searchMatcher.group();
       imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=") + 5, imdbThumb.lastIndexOf("\""));
       MediaImage movieThumb = new MediaImage(0, MediaImage.MediaImageType.THUMB);
-      movieThumb.setThumbUrl(imdbThumb);
-      movieThumb.setMidUrl(imdbThumb);
+      for (MediaImage.MediaImageSize size : MediaImage.MediaImageSize.values()) {
+        movieThumb.setUrl(imdbThumb, size);
+      }
       movieInfo.addThumb(movieThumb);
     }
 

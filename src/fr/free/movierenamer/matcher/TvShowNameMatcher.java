@@ -61,7 +61,7 @@ public class TvShowNameMatcher {
     }
 
     //Get all matcher values
-    ArrayList<NameMatcher> names = new ArrayList<NameMatcher>();
+    List<NameMatcher> names = new ArrayList<NameMatcher>();
     getMatcherRes(names, matchByFolderName());
     getMatcherRes(names, matchByEpisode());
     getMatcherRes(names, matchByCommonSeqFileName());
@@ -171,7 +171,7 @@ public class TvShowNameMatcher {
     }
 
     //Add all words from fileName in list
-    ArrayList<String> names = new ArrayList<String>();
+    List<String> names = new ArrayList<String>();
     for (File f : files) {
       String name = f.getName().substring(0, f.getName().lastIndexOf(".") + 1);
       names.add(CommonWords.normalize(name));

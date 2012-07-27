@@ -33,8 +33,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javax.swing.GroupLayout.Alignment;
@@ -54,7 +54,7 @@ public class Setting extends JDialog {
   private Settings setting;
   private PropertyChangeSupport settingsChange;
   private String[] extensions;
-  private ArrayList<String> filters;
+  private List<String> filters;
   private int currentExtensionIndex;
   private int currentFilterIndex;
   private JRadioButton[] rBtnThumbList;

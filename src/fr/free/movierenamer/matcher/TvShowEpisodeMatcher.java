@@ -20,10 +20,7 @@ package fr.free.movierenamer.matcher;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,7 +83,7 @@ public class TvShowEpisodeMatcher {
   private SxE matchAll() {
     System.out.println("\nFile : " + episodeName + "\n");
     SxE sxe;
-    ArrayList<SxE> SxEs = new ArrayList<SxE>();
+    List<SxE> SxEs = new ArrayList<SxE>();
     for (TvShowEpisodeMatcher.TvShowPattern patternToTest : TvShowEpisodeMatcher.TvShowPattern.values()) {
       if ((sxe = match(patternToTest)) != null) {
         SxEs.add(sxe);
@@ -124,8 +121,8 @@ public class TvShowEpisodeMatcher {
       return sxe;
     }
 
-    ArrayList<SxE> completeMatch = new ArrayList<SxE>();
-    ArrayList<SxE> partialMatch = new ArrayList<SxE>();
+    List<SxE> completeMatch = new ArrayList<SxE>();
+    List<SxE> partialMatch = new ArrayList<SxE>();
 
     // Separe complete match and partial match (partial match will be empty in almost all cases)
     for (SxE match : SxEs) {
@@ -215,7 +212,7 @@ public class TvShowEpisodeMatcher {
    * @param SxEs List of SxE
    * @return SxE
    */
-  private SxE getSxE(ArrayList<SxE> SxEs) {
+  private SxE getSxE(List<SxE> SxEs) {
     SxE sxe = new SxE();
     Map<Integer, Integer> seasonMatch = new LinkedHashMap<Integer, Integer>();
     Map<Integer, Integer> episodeMatch = new LinkedHashMap<Integer, Integer>();

@@ -17,12 +17,10 @@
  */
 package fr.free.movierenamer.media;
 
-import java.io.File;
-
-import javax.swing.filechooser.FileFilter;
-
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Class MovieFileFilter

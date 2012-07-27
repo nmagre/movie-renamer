@@ -19,40 +19,43 @@ package fr.free.movierenamer.media;
 
 /**
  * Class Images
- * 
+ *
  * @author Nicolas Magré
  */
 public class MediaImage {
 
   public enum MediaImageType {
+
     THUMB,
     FANART,
     OTHER;
   }
 
+  public enum MediaImageSize {
+
+    THUMB,
+    MEDIUM,
+    ORIGINAL
+  }
   private int id;
   private MediaImageType type;
-  private String orig;
-  private String medium;
-  private String thumb;
+  private String[] images;
 
   /**
    * Constructor arguments
-   * 
+   *
    * @param id Image id, "-1" -> image added from web/hdd/..., "0" image from API/NFO/...
    * @param type Media image type
    */
   public MediaImage(int id, MediaImageType type) {
     this.id = id;
     this.type = type;
-    orig = "";
-    medium = "";
-    thumb = "";
+    images = new String[MediaImageSize.values().length];
   }
 
   /**
    * Get Id
-   * 
+   *
    * @return Id
    */
   public int getId() {
@@ -61,7 +64,7 @@ public class MediaImage {
 
   /**
    * Get media image type
-   * 
+   *
    * @return Media image type
    */
   public MediaImageType getType() {
@@ -69,61 +72,34 @@ public class MediaImage {
   }
 
   /**
-   * Get image original URL
-   * 
-   * @return Original URL
+   * Get image url
+   *
+   * @param size
+   * @return Url string of specified size if exist or low size, if there no url string null
    */
-  public String getOrigUrl() {
-    return orig;
+  public String getUrl(MediaImageSize size) {
+    if (images[size.ordinal()] != null) {
+      return images[size.ordinal()];
+    }
+    int pos = size.ordinal() - 1;
+    if (pos < 0) {
+      return null;
+    }
+    return getUrl(MediaImageSize.values()[pos]);
   }
 
   /**
-   * Get image middle URL
-   * 
-   * @return Middle URL
+   * Set url string
+   *
+   * @param url Url string
+   * @param size Media image size
    */
-  public String getMidUrl() {
-    return medium;
-  }
-
-  /**
-   * Get image thumb URL
-   * 
-   * @return Thumb URL
-   */
-  public String getThumbUrl() {
-    return thumb;
-  }
-
-  /**
-   * Set original image URL
-   * 
-   * @param url URL
-   */
-  public void setOrigUrl(String url) {
-    orig = url;
-  }
-
-  /**
-   * Set middle image URL
-   * 
-   * @param url URL
-   */
-  public void setMidUrl(String url) {
-    medium = url;
-  }
-
-  /**
-   * Set thumb URL
-   * 
-   * @param url URL
-   */
-  public void setThumbUrl(String url) {
-    thumb = url;
+  public void setUrl(String url, MediaImageSize size) {
+    images[size.ordinal()] = url;
   }
 
   @Override
   public String toString() {
-    return orig;
+    return getUrl(MediaImageSize.ORIGINAL);
   }
 }

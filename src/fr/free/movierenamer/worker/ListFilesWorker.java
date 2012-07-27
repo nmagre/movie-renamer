@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,14 +38,14 @@ import java.util.regex.Pattern;
  *
  * @author Magré Nicolas
  */
-public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
+public class ListFilesWorker extends Worker<List<MediaFile>> {
 
   private final boolean subFolders;
-  private final ArrayList<File> files;
+  private final List<File> files;
   private final int nbFiles;
   private int count;
   private String currentParent;
-  private final ArrayList<MediaRenamed> renamed;
+  private final List<MediaRenamed> renamed;
 
   /**
    * Constructor arguments
@@ -54,7 +55,7 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
    * @param subFolders Scan subfolders
    * @param config
    */
-  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, Settings config) {
+  public ListFilesWorker(List<File> files, List<MediaRenamed> renamed, boolean subFolders, Settings config) {
     this.renamed = renamed;
     this.files = files;
     this.subFolders = subFolders;
@@ -71,7 +72,7 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
    * @param subFolders Scan subfolders
    * @param nbFiles Number of subfolders (only in first directory) for progressBar
    */
-  public ListFilesWorker(ArrayList<File> files, ArrayList<MediaRenamed> renamed, boolean subFolders, int nbFiles) {
+  public ListFilesWorker(List<File> files, List<MediaRenamed> renamed, boolean subFolders, int nbFiles) {
     this.renamed = renamed;
     this.files = files;
     this.subFolders = subFolders;
@@ -86,8 +87,8 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
    * @return ArrayList of movies file
    */
   @Override
-  protected ArrayList<MediaFile> executeInBackground() {
-    ArrayList<MediaFile> medias = new ArrayList<MediaFile>();
+  protected List<MediaFile> executeInBackground() {
+    List<MediaFile> medias = new ArrayList<MediaFile>();
     for (File file : files) {
       if (isCancelled()) {
         return null;
@@ -110,7 +111,7 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
    * @param medias List of movies
    * @param file File to add or directory to scan
    */
-  private void getFiles(ArrayList<MediaFile> medias, File file) {
+  private void getFiles(List<MediaFile> medias, File file) {
     if (isCancelled()) {
       return;
     }
@@ -140,7 +141,7 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
    * @param medias Media file list
    * @param file File to add
    */
-  private void addMediaFile(ArrayList<MediaFile> medias, File file) {
+  private void addMediaFile(List<MediaFile> medias, File file) {
     boolean wasrenamed = wasRenamed(file.getAbsolutePath());
     Media.MediaType type = isMovie(file) ? Media.MediaType.MOVIE : Media.MediaType.TVSHOW;
     medias.add(new MediaFile(file, type, wasrenamed, config.showMovieFilePath));
@@ -176,6 +177,7 @@ public class ListFilesWorker extends Worker<ArrayList<MediaFile>> {
      */
     for (TvShowEpisodeMatcher.TvShowPattern patternToTest : TvShowEpisodeMatcher.TvShowPattern.values()) {
       if (searchPattern(filename, patternToTest.getPattern())) {
+        System.out.println(patternToTest.name());
         return false;
       }
     }
