@@ -15,21 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package test.fr.free.movierenamer.worker;
+package fr.free.movierenamer.matcher;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  AllocineInfoWorkerTest.class,
-  ImdbInfoWorkerTest.class,
-  TmdbInfoWorkerTest.class
+  MovieNameMatcherTest.class,
+  TvShowEpisodeMatcherTest.class
 })
+
 /**
  *
  * @author Nicolas Magré
  */
-public class AllWorkerTests {
+public class AllMatcherTests {
   
 }

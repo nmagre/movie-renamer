@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import fr.free.movierenamer.matcher.AllMatcherTests;
+import fr.free.movierenamer.parser.AllParserTests;
+import fr.free.movierenamer.worker.AllWorkerTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import test.fr.free.movierenamer.matcher.AllMatcherTests;
-import test.fr.free.movierenamer.parser.AllParserTests;
-import test.fr.free.movierenamer.worker.AllWorkerTests;
 
 
 @RunWith(Suite.class)

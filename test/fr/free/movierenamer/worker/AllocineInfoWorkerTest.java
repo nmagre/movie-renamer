@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package test.fr.free.movierenamer.parser;
+package fr.free.movierenamer.worker;
 
 import org.junit.After;
 import static org.junit.Assert.fail;
@@ -24,10 +24,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Class ImdbInfoTest
+ * Class AllocineInfoWorkerTest
  * @author Simon QUÉMÉNEUR
  */
-public class ImdbInfoTest {
+public class AllocineInfoWorkerTest {
 
   /**
    * @throws java.lang.Exception
@@ -49,6 +49,7 @@ public class ImdbInfoTest {
   @After
   public void tearDown() throws Exception {
   }
+
   @Test
   public void test() {
     fail("Not yet implemented");

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package test.fr.free.movierenamer.worker;
+package fr.free.movierenamer.worker;
 
 import org.junit.After;
 import static org.junit.Assert.fail;
@@ -24,10 +24,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Class AllocineInfoWorkerTest
+ * Class TmdbInfoWorkerTest
  * @author Simon QUÉMÉNEUR
  */
-public class AllocineInfoWorkerTest {
+public class TmdbInfoWorkerTest {
 
   /**
    * @throws java.lang.Exception

@@ -15,11 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package test.fr.free.movierenamer.worker;
+package fr.free.movierenamer.parser;
 
-import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.worker.provider.ImdbInfoWorker;
 import org.junit.After;
 import static org.junit.Assert.fail;
 import org.junit.Before;
@@ -27,10 +24,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Class ImdbInfoWorkerTest
+ * Class TmdbInfoTest
  * @author Simon QUÉMÉNEUR
  */
-public class ImdbInfoWorkerTest {
+public class TmdbInfoTest {
 
   /**
    * @throws java.lang.Exception
@@ -52,17 +49,6 @@ public class ImdbInfoWorkerTest {
   @After
   public void tearDown() throws Exception {
   }
-
-  @Test(expected=NullPointerException.class)
-  public void testNullId() throws ActionNotValidException {
-    new ImdbInfoWorker(null, null);
-  }
-
-  @Test(expected=ActionNotValidException.class)
-  public void testIdNotValid() throws ActionNotValidException {
-    new ImdbInfoWorker(null, new MediaID(null, MediaID.MediaIdType.TMDBID));
-  }
-
   @Test
   public void test() {
     fail("Not yet implemented");
