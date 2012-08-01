@@ -18,12 +18,22 @@
 package fr.free.movierenamer.media.tvshow;
 
 import fr.free.movierenamer.media.IMediaImage;
+import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.MediaImage.MediaImageType;
+import fr.free.movierenamer.utils.ActionNotValidException;
+import java.util.List;
 
 /**
  * Class TvShowImage
  * 
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public class TvShowImage implements IMediaImage {
+
+  @Override
+  public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
 }

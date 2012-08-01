@@ -18,8 +18,9 @@
 package fr.free.movierenamer.media.movie;
 
 import fr.free.movierenamer.matcher.MovieNameMatcher;
+import fr.free.movierenamer.media.MediaImage.MediaImageType;
 import fr.free.movierenamer.media.*;
-import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.regex.Pattern;
  * @author Nicolas Magré
  */
 public class Movie implements Media {
-  
+
   private MediaID mediaId;
   private MediaFile movieFile;
   private MovieInfo movieinfo;
@@ -44,12 +45,11 @@ public class Movie implements Media {
    * Constructor arguments
    *
    * @param movieFile A movie file
-   * @param filter An array of movie title filters
    */
-  public Movie(MediaFile movieFile, List<String> filter) {
+  public Movie(MediaFile movieFile) {
     this.movieFile = movieFile;
     movieinfo = new MovieInfo();
-    MovieNameMatcher nameMatcher = new MovieNameMatcher(movieFile, filter);
+    MovieNameMatcher nameMatcher = new MovieNameMatcher(movieFile, conf.mediaNameFilters);
     search = nameMatcher.getMovieName();
     year = nameMatcher.getYear();
     mtag = new MediaTag(movieFile.getFile());
@@ -81,7 +81,7 @@ public class Movie implements Media {
   public String getSearch() {
     return search;
   }
-  
+
   @Override
   public int getYear() {
     if (year.equals("")) {
@@ -93,32 +93,31 @@ public class Movie implements Media {
   /**
    * Get renamed movie title
    *
-   * @param setting Movie Renamer settings
-   * @param regExp Expression to rename movie title with
    * @return Movie title renamed
    */
   @Override
-  public String getRenamedTitle(String regExp, Settings setting) {
-    String separator = setting.movieFilenameSeparator;
-    int limit = setting.movieFilenameLimit;
-    Utils.CaseConversionType renameCase = setting.movieFilenameCase;
-    boolean trim = setting.movieFilenameTrim;
-    
+  public String getRenamedTitle() {// TODO ajouter le dossier (dépend des options)
+    String regExp = conf.movieFilenameFormat;
+    String separator = conf.movieFilenameSeparator;
+    int limit = conf.movieFilenameLimit;
+    Utils.CaseConversionType renameCase = conf.movieFilenameCase;
+    boolean trim = conf.movieFilenameTrim;
+
     String titlePrefix = "";
     String shortTitle = movieinfo.getTitle();
-    
+
     Pattern pattern = Pattern.compile("^((le|la|les|the)\\s|(l\\'))(.*)", Pattern.CASE_INSENSITIVE);
     Matcher matcher = pattern.matcher(movieinfo.getTitle());
     if (matcher.find() && matcher.groupCount() >= 2) {
       titlePrefix = matcher.group(1);
       shortTitle = matcher.group(matcher.groupCount());
     }
-    
+
     String runtime = "";
     if (!movieinfo.getRuntime().equals("-1")) {
       runtime += movieinfo.getRuntime();
     }
-    
+
     String[][] replace = new String[][]{
       {"<t>", "<tp><st>"},
       {"<tp>", titlePrefix},
@@ -194,7 +193,7 @@ public class Movie implements Media {
     for (int i = 0; i < replace.length; i++) {
       regExp = regExp.replaceAll(replace[i][0], replace[i][1]);
     }
-    
+
     if (trim) {
       regExp = regExp.trim();
     }
@@ -233,12 +232,12 @@ public class Movie implements Media {
 
     //construct new file name
     res += ext;
-    
+
     if (Utils.isWindows()) {
       res = res.replaceAll(":", "").replaceAll("/", "");
     }
-    
-    if (setting.movieFilenameRmDupSpace) {
+
+    if (conf.movieFilenameRmDupSpace) {
       res = res.replaceAll("\\s+", " ");
     }
     return res;
@@ -252,19 +251,24 @@ public class Movie implements Media {
   public MovieInfo getMovieInfo() {
     return movieinfo;
   }
+
+  @Override
+  public List<MediaPerson> getActors(){
+    return movieinfo.getActors();
+  }
   
   @Override
   public MediaID getMediaId(MediaID.MediaIdType IDtype) {
     if (mediaId.getType() == IDtype) {
       return mediaId;
     }
-    
+
     for (MediaID mid : movieinfo.getIDs()) {
       if (mid.getType() == IDtype) {
         return mid;
       }
     }
-    
+
     return null;
   }
 
@@ -295,6 +299,15 @@ public class Movie implements Media {
   public void setSearch(String search) {
     this.search = search;
   }
+  
+  /**
+   * Set default search
+   */
+  @Override
+  public void setDefaultSearch() {
+    MovieNameMatcher nameMatcher = new MovieNameMatcher(movieFile, conf.mediaNameFilters);
+    search = nameMatcher.getMovieName();
+  }
 
   /**
    * Set movie informations
@@ -311,7 +324,7 @@ public class Movie implements Media {
    * @return Xbmc NFO file
    */
   public String getXbmcNFOFromMovie() {
-    
+
     StringBuilder nfo = new StringBuilder();
     nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n");
     nfo.append("  <title>").append(Utils.escapeXML(movieinfo.getTitle())).append("</title>\n");
@@ -333,19 +346,19 @@ public class Movie implements Media {
     nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
     nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
-    
+
     List<MediaPerson> personn = movieinfo.getWriters();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <credits>").append(Utils.escapeXML(personn.get(i).getName())).append("</credits>\n");
     }
-    
+
     personn = movieinfo.getDirectors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
     }
-    
+
     nfo.append("  <trailer>").append(movieinfo.getTrailer()).append("</trailer>\n");
-    
+
     personn = movieinfo.getActors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <actor>\n");
@@ -356,13 +369,13 @@ public class Movie implements Media {
       nfo.append("    <thumb>").append(personn.get(i).getThumb()).append("</thumb>\n");
       nfo.append("  </actor>\n");
     }
-    
+
     List<MediaImage> thumbs = movieinfo.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb preview=\"").append(thumbs.get(i).getUrl(MediaImage.MediaImageSize.THUMB));
       nfo.append("\">").append(thumbs.get(i).getUrl(MediaImage.MediaImageSize.ORIGINAL)).append("</thumb>\n");
     }
-    
+
     List<MediaImage> fanarts = movieinfo.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
@@ -383,7 +396,7 @@ public class Movie implements Media {
    * @return Mediaportal NFO file
    */
   public String getMediaPortalNFOFromMovie() {
-    
+
     StringBuilder nfo = new StringBuilder();
     nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<movie>\n");
     nfo.append("  <title>").append(Utils.escapeXML(movieinfo.getTitle())).append("</title>\n");
@@ -395,24 +408,24 @@ public class Movie implements Media {
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
     nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
     nfo.append("  <studio>").append(Utils.escapeXML(movieinfo.getStudiosString(" / ", 0))).append("</studio>\n");
-    
+
     List<MediaPerson> personn = movieinfo.getDirectors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
       nfo.append("  <directorimdb>").append(Utils.escapeXML(personn.get(i).getImdbId())).append("</directorimdb>\n");
     }
-    
+
     nfo.append("  <credits>").append(Utils.escapeXML(movieinfo.getWritersString(" / ", 0))).append("</credits>\n");
     nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
     nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
     nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
     nfo.append("  <review></review>\n");
-    
+
     List<MediaImage> thumbs = movieinfo.getThumbs();
     for (int i = 0; i < thumbs.size(); i++) {
       nfo.append("  <thumb>").append(thumbs.get(i).getUrl(MediaImage.MediaImageSize.ORIGINAL)).append("</thumb>\n");
     }
-    
+
     List<MediaImage> fanarts = movieinfo.getFanarts();
     nfo.append("  <fanart>");
     for (int i = 0; i < fanarts.size(); i++) {
@@ -422,7 +435,7 @@ public class Movie implements Media {
       nfo.append("\n  ");
     }
     nfo.append("</fanart>\n");
-    
+
     List<String> genres = movieinfo.getGenres();
     nfo.append("  <genres>");
     for (int i = 0; i < genres.size(); i++) {
@@ -432,7 +445,7 @@ public class Movie implements Media {
       nfo.append("\n  ");
     }
     nfo.append("<genres>\n");
-    
+
     personn = movieinfo.getActors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <actor>\n");
@@ -444,7 +457,7 @@ public class Movie implements Media {
       }
       nfo.append("  </actor>\n");
     }
-    
+
     nfo.append("</movie>");
     return nfo.toString();
   }
@@ -464,36 +477,36 @@ public class Movie implements Media {
     }
     return res.toString();
   }
-  
+
   @Override
   public String toString() {
     String res = movieFile.toString() + "\n";
     res += movieinfo.toString();
     return res;
   }
-  
+
   @Override
   public MediaFile getMediaFile() {
     return movieFile;
   }
-  
+
   @Override
   public void setMediaFile(MediaFile mediaFile) {
     movieFile = mediaFile;
   }
-  
+
   @Override
   public void addMediaID(MediaID id) {
     if (getMediaId(id.getType()) == null) {
       movieinfo.addID(id);
     }
   }
-  
+
   @Override
   public MediaType getType() {
     return Media.MediaType.MOVIE;
   }
-  
+
   @Override
   public void setInfo(Object info) {
     if (info instanceof MovieInfo) {
@@ -502,9 +515,14 @@ public class Movie implements Media {
       movieinfo = new MovieInfo();
     }
   }
-  
+
   @Override
   public void setMediaID(MediaID id) {
     mediaId = id;
+  }
+
+  @Override
+  public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
+    return movieinfo.getMovieImage().getImages(type);
   }
 }

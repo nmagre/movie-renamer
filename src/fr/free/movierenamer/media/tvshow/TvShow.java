@@ -19,17 +19,15 @@ package fr.free.movierenamer.media.tvshow;
 
 import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.matcher.TvShowNameMatcher;
-import fr.free.movierenamer.media.Media;
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.MediaTag;
-import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.media.MediaImage.MediaImageType;
+import fr.free.movierenamer.media.*;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import java.io.File;
 import java.util.List;
 
 /**
- *
- * @author duffy
+ * Class TvShow
+ * @author Nicolas Magré
  */
 public class TvShow implements Media {// TODO
 
@@ -40,9 +38,9 @@ public class TvShow implements Media {// TODO
   private SxE sxe;
   private String search;
 
-  public TvShow(MediaFile tvShowFile, List<String> regexs) {
+  public TvShow(MediaFile tvShowFile) {
     this.tvShowFile = tvShowFile;
-    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, regexs);
+    TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, conf.mediaNameFilters);
     search = tvMatcher.getTvShowName();
     sxe = new TvShowEpisodeMatcher(tvShowFile.getFile().getParent() + File.separator + tvShowFile.getFile().getName()).matchEpisode();
     tvShowInfo = new TvShowInfo();
@@ -85,12 +83,14 @@ public class TvShow implements Media {// TODO
   }
 
   @Override
-  public void clear() {// TODO
+  public void clear() {
+    // TODO
   }
 
   @Override
-  public String getRenamedTitle(String regex, Settings setting) {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public String getRenamedTitle() {
+    // TODO
+    return "";
   }
 
   @Override
@@ -120,6 +120,21 @@ public class TvShow implements Media {// TODO
 
   @Override
   public void addMediaID(MediaID id) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void setDefaultSearch() {
+    // TODO
+  }
+
+  @Override
+  public List<MediaPerson> getActors() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

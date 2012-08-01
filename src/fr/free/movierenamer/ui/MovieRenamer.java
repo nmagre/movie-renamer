@@ -52,6 +52,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JToolBar.Separator;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -116,7 +117,7 @@ public class MovieRenamer extends JFrame {
     contex.addPropertyChangeListener(contextMenuListener);
 
     initComponents();
-    
+
     fileChooser.setFileFilter(new MediaFileFilter(setting));
     fileChooser.setAcceptAllFileFilterUsed(false);//Remove AcceptAll as an available choice in the choosable filter list
 
@@ -152,64 +153,104 @@ public class MovieRenamer extends JFrame {
 
       @Override
       public void propertyChange(PropertyChangeEvent evt) {//TODO A refaire
+
         Settings.LOGGER.log(Level.INFO, "Settings property change : {0}", evt.getPropertyName());
         if (evt.getPropertyName().equals("settingChange")) {
-          Settings conf = (Settings) evt.getNewValue();
+          Settings oldConf = (Settings) evt.getOldValue();
+          Settings newConf = (Settings) evt.getNewValue();
 
-          nfoChk.setText(conf.nfoType == 0 ? Utils.i18n("nfoXbmc") : Utils.i18n("nfoMediaPortal"));
+          boolean filterChanged = !oldConf.mediaNameFilters.equals(newConf.mediaNameFilters);
+          boolean scrapperChanged = false;
+          boolean scrapperLangChanged = false;
+          switch (currentMode) {
+            case MOVIEMODE:
+              scrapperChanged = oldConf.movieScrapper != newConf.movieScrapper;
+              scrapperLangChanged = oldConf.movieScrapperFR != newConf.movieScrapperFR;
+              break;
+            case TVSHOWMODE:
+              scrapperChanged = oldConf.tvshowScrapper != newConf.tvshowScrapper;
+              scrapperLangChanged = oldConf.tvshowScrapperFR != newConf.tvshowScrapperFR;
+              break;
+            default:
+              break;
+          }
+
+          // Update newConf
+          MovieRenamer.this.setting = newConf;
+
           if (Settings.interfaceChanged) {
+            boolean getImage = currentMedia != null && newConf.movieInfoPanel && !scrapperChanged && !scrapperLangChanged && !filterChanged && !searchResModel.isEmpty();
+
             Settings.interfaceChanged = false;
+
+            // Refresh interface
             loadInterface();
-            if (currentMedia == null) {
-              return;
-            }
-            if (conf.movieInfoPanel) {
-              SwingWorker<MediaImage, Void> tmdbiw = null;
-              ActorWorker actor = null;
 
-              Movie movie = (Movie) currentMedia;
-              if (conf.actorImage) {
+            // Get image from cache or web
+            if (getImage && currentMode == MovieRenamerMode.MOVIEMODE) {
+              ImageWorker thumbWorker = null;
+              ImageWorker fanartWorker = null;
+              ActorWorker actorWorker = null;
+
+              if (newConf.actorImage) {
                 moviePnl.clearActorList();
-                actor = WorkerManager.getMovieActorWorker(movie.getMovieInfo().getActors(), moviePnl);
-                actor.addPropertyChangeListener(new workerListener(actor, WorkerManager.WORKERID.ACTORWORKER));
+                actorWorker = WorkerManager.getMovieActorWorker(currentMedia.getActors(), moviePnl);
+                actorWorker.addPropertyChangeListener(new workerListener(actorWorker, WorkerManager.WORKERID.ACTORWORKER));
               }
 
-              if (conf.thumb || conf.fanart) {
-                if (conf.thumb) {
-                  moviePnl.clearThumbList();
+              if (newConf.thumb) {
+                moviePnl.clearThumbList();
+                try {
+                  thumbWorker = WorkerManager.getMediaImageWorker(currentMedia.getImages(MediaImage.MediaImageType.THUMB), Cache.CacheType.THUMB, moviePnl);
+                  thumbWorker.addPropertyChangeListener(new workerListener(thumbWorker, WorkerManager.WORKERID.THUMBWORKER));
+                } catch (ActionNotValidException ex) {
+                  Settings.LOGGER.log(Level.SEVERE, null, ex);
                 }
-                if (conf.fanart) {
-                  moviePnl.clearFanartList();
-                }
-
-                /*
-                 * try { tmdbiw = WorkerManager.getMediaImageWorker(movie.getMediaId(MediaID.IMDBID), conf); tmdbiw.addPropertyChangeListener(new MovieInfoListener(tmdbiw)); } catch
-                 * (ActionNotValidException ex) { Settings.LOGGER.log(Level.SEVERE, null, ex); }
-                 */
-
               }
-              if (conf.thumb || conf.fanart || conf.actorImage) {
+
+              if (newConf.fanart) {
+                moviePnl.clearFanartList();
+                try {
+                  fanartWorker = WorkerManager.getMediaImageWorker(currentMedia.getImages(MediaImage.MediaImageType.FANART), Cache.CacheType.FANART, moviePnl);
+                  fanartWorker.addPropertyChangeListener(new workerListener(fanartWorker, WorkerManager.WORKERID.FANARTWORKER));
+                } catch (ActionNotValidException ex) {
+                  Settings.LOGGER.log(Level.SEVERE, null, ex);
+                }
+              }
+
+              if (newConf.thumb || newConf.fanart || newConf.actorImage) {
                 loadDial(false);
-              }
-              if ((actor != null || tmdbiw != null)) {
                 loading.setValue(100, WorkerManager.WORKERID.INFOWORKER);
               }
 
-              if (actor != null) {
-                actor.execute();
+              if (actorWorker != null) {
+                actorWorker.execute();
               }
 
-              if (tmdbiw != null) {
-                tmdbiw.execute();
+              if (thumbWorker != null) {
+                thumbWorker.execute();
+              }
+
+              if (fanartWorker != null) {
+                fanartWorker.execute();
               }
             }
           }
 
-          if (currentMedia != null) {// FIXME currentMedia can be not null and whith no result found
-            renamedField.setText(currentMedia.getRenamedTitle(conf.movieFilenameFormat, conf));
+          nfoChk.setText(newConf.nfoType == 0 ? Utils.i18n("nfoXbmc") : Utils.i18n("nfoMediaPortal"));
+
+          // Re-generate renamed filename
+          if (currentMedia != null && !searchResModel.isEmpty()) {
+            renamedField.setText(currentMedia.getRenamedTitle());
           }
 
-          MovieRenamer.this.setting = conf;
+          if (filterChanged) {
+            currentMedia.setDefaultSearch();
+          }
+
+          if (scrapperChanged || scrapperLangChanged) {
+            searchMedia();
+          }
         }
       }
     });
@@ -275,10 +316,10 @@ public class MovieRenamer extends JFrame {
 
       switch (mediaFile.getType()) {
         case MOVIE:
-          currentMedia = new Movie(mediaFile, MovieRenamer.this.setting.mediaNameFilters);
+          currentMedia = new Movie(mediaFile);
           break;
         case TVSHOW:
-          currentMedia = new TvShow(mediaFile, setting.mediaNameFilters);
+          currentMedia = new TvShow(mediaFile);
           break;
         default:
           return;
@@ -346,7 +387,7 @@ public class MovieRenamer extends JFrame {
             tvShowInfoWorker.execute();
             break;
         }
-      } catch (ActionNotValidException ex) {
+      } catch (ActionNotValidException ex) {// FIXME close loading dialog and show error message
         Settings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }
@@ -1092,6 +1133,13 @@ public class MovieRenamer extends JFrame {
     movieModeBtn.setEnabled(false);
     tvShowModeBtn.setEnabled(true);
     loadInterface();
+    clearInterface(false, true);
+    if (currentMedia != null) {
+      MediaFile mfile = currentMedia.getMediaFile();
+      mfile.setType(Media.MediaType.MOVIE);
+      currentMedia.setMediaFile(mfile);
+      searchMedia();
+    }
   }//GEN-LAST:event_movieModeBtnActionPerformed
 
   private void tvShowModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_tvShowModeBtnActionPerformed
@@ -1099,6 +1147,13 @@ public class MovieRenamer extends JFrame {
     movieModeBtn.setEnabled(true);
     tvShowModeBtn.setEnabled(false);
     loadInterface();
+    clearInterface(false, true);
+    if (currentMedia != null) {
+      MediaFile mfile = currentMedia.getMediaFile();
+      mfile.setType(Media.MediaType.TVSHOW);
+      currentMedia.setMediaFile(mfile);
+      searchMedia();
+    }
   }//GEN-LAST:event_tvShowModeBtnActionPerformed
 
   private void searchFieldKeyReleased(KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyReleased
@@ -1290,8 +1345,8 @@ public class MovieRenamer extends JFrame {
 
           currentMedia.setInfo(movieInfo);
           moviePnl.addMovieInfo(movieInfo);
-          System.out.println(movieInfo);
-          renamedField.setText(currentMedia.getRenamedTitle(setting.movieFilenameFormat, setting));// TODO A refaire
+
+          renamedField.setText(currentMedia.getRenamedTitle());
           renameBtn.setEnabled(true);
           renamedField.setEnabled(true);
           editBtn.setEnabled(true);

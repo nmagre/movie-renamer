@@ -17,7 +17,9 @@
  */
 package fr.free.movierenamer.media;
 
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import java.util.List;
 
 /**
  * Interface Media
@@ -26,7 +28,10 @@ import fr.free.movierenamer.utils.Settings;
  */
 public interface Media {
 
-  public enum MediaType{
+  public final Settings conf = Settings.getInstance();
+
+  public enum MediaType {
+
     MOVIE,
     TVSHOW
   }
@@ -55,25 +60,24 @@ public interface Media {
   /**
    * Get renamed title
    *
-   * @param regex Expression to rename media title with
-   * @param setting Movie Renamer settings
    * @return Renamed title
    */
-  public String getRenamedTitle(String regex, Settings setting);
+  public String getRenamedTitle();
 
   /**
    * Get Media API id
+   *
    * @param IDtype ID type
    * @return Media Api ID or null
    */
   public MediaID getMediaId(MediaID.MediaIdType IDtype);
-  
+
   /**
    * Get year if it found in title or directory name
-   * @return 
+   *
+   * @return
    */
   //public String getProbaleYear();
-  
   /**
    * Get search string
    *
@@ -83,10 +87,25 @@ public interface Media {
 
   /**
    * Get media year if it found in filename
-   * 
-   * @return Year or -1 if it not found 
+   *
+   * @return Year or -1 if it not found
    */
   public int getYear();
+
+  /**
+   * Get list of actors
+   *
+   * @return
+   */
+  public List<MediaPerson> getActors();
+
+  /**
+   * Get media images
+   * @param type Image type
+   * @return list of images
+   * @throws ActionNotValidException 
+   */  
+  public List<MediaImage> getImages(MediaImage.MediaImageType type) throws ActionNotValidException;
   
   /**
    * Set Search
@@ -94,6 +113,11 @@ public interface Media {
    * @param search Search string
    */
   public void setSearch(String search);
+
+  /**
+   * Set default search, if settings changed
+   */
+  public void setDefaultSearch();
 
   /**
    * Set media info
@@ -108,10 +132,11 @@ public interface Media {
    * @param id
    */
   public void setMediaID(MediaID id);
-  
+
   /**
    * Add media id
-   * @param id 
+   *
+   * @param id
    */
   public void addMediaID(MediaID id);
 

@@ -31,7 +31,7 @@ import java.util.logging.Level;
 
 /**
  * Class ImageWorker , Download and add thumbnail/fanart to mediaPanel
- * 
+ *
  * @author Magré Nicolas
  */
 public class ImageWorker extends Worker<Void> {
@@ -67,6 +67,13 @@ public class ImageWorker extends Worker<Void> {
         if (image == null) {
           Cache.getInstance().add(url, cache);
           image = Cache.getInstance().getImage(url, cache);
+
+          // Need to wait between image
+          try {
+            Thread.sleep(100);
+          } catch (InterruptedException e) {
+            Settings.LOGGER.log(Level.SEVERE, null, e);
+          }
         }
 
         if (image == null) {
@@ -75,11 +82,6 @@ public class ImageWorker extends Worker<Void> {
 
         //Add image to media panel
         mediadPanel.addImageToList(image, arrayImage.get(i), false);
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          Settings.LOGGER.log(Level.SEVERE, null, e);
-        }
 
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.INFO, "File not found : {0}", url);
@@ -98,5 +100,4 @@ public class ImageWorker extends Worker<Void> {
     setProgress(100);
     return null;
   }
-
 }

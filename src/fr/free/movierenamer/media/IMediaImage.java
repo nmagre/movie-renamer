@@ -17,10 +17,17 @@
  */
 package fr.free.movierenamer.media;
 
+import fr.free.movierenamer.media.MediaImage.MediaImageType;
+import fr.free.movierenamer.utils.ActionNotValidException;
+import java.util.List;
+
 /**
  * Class IMediaImage
+ *
  * @author QUÉMÉNEUR Simon
+ * @author Nicolas Magré
  */
 public interface IMediaImage {
 
+  public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException;
 }

@@ -19,6 +19,8 @@ package fr.free.movierenamer.media.movie;
 
 import fr.free.movierenamer.media.IMediaImage;
 import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.MediaImage.MediaImageType;
+import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,17 @@ public class MovieImage implements IMediaImage {
   
   public List<MediaImage> getFanarts(){
     return fanarts;
+  }
+  
+  @Override
+  public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
+    switch(type){
+      case THUMB:
+        return thumbs;
+      case FANART:
+        return fanarts;
+       default: throw new ActionNotValidException("Movie Image : mediatype " + type.name() + " not supported");
+    }
   }
 
   public void setThumbs(List<MediaImage> thumbs){

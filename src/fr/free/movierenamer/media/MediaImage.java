@@ -28,7 +28,7 @@ public class MediaImage {
 
     THUMB,
     FANART,
-    OTHER;
+    SEASONTHUMB;
   }
 
   public enum MediaImageSize {
