@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.matcher.TvShowNameMatcher;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;

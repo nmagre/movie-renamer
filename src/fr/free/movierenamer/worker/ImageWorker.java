@@ -39,16 +39,19 @@ public class ImageWorker extends Worker<Void> {
   private final List<MediaImage> arrayImage;
   private final Cache.CacheType cache;
   private final IMediaPanel mediadPanel;
+  private final MediaImage.MediaImageSize imgSize;
 
   /**
    * Constructor arguments
    *
    * @param arrayImage List of images to download (or load from cache)
+   * @param imgSize 
    * @param cache Cache for this type of images
    * @param mediadPanel Movie Renamer media panel
    */
-  public ImageWorker(List<MediaImage> arrayImage, Cache.CacheType cache, IMediaPanel mediadPanel) {
+  public ImageWorker(List<MediaImage> arrayImage, MediaImage.MediaImageSize imgSize, Cache.CacheType cache, IMediaPanel mediadPanel) {
     this.arrayImage = arrayImage;
+    this.imgSize = imgSize;
     this.cache = cache;
     this.mediadPanel = mediadPanel;
   }
@@ -62,7 +65,7 @@ public class ImageWorker extends Worker<Void> {
       URL url = null;
       try {
         setProgress((i * 100) / arrayImage.size());
-        url = new URL(arrayImage.get(i).getUrl(MediaImage.MediaImageSize.THUMB));
+        url = new URL(arrayImage.get(i).getUrl(imgSize));
         image = Cache.getInstance().getImage(url, cache);
         if (image == null) {
           Cache.getInstance().add(url, cache);
@@ -81,7 +84,7 @@ public class ImageWorker extends Worker<Void> {
         }
 
         //Add image to media panel
-        mediadPanel.addImageToList(image, arrayImage.get(i), false);
+        mediadPanel.addImageToList(image, arrayImage.get(i), false);// FIXME euh... ce n'est pas dans l'EDT, a vérifier
 
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.INFO, "File not found : {0}", url);

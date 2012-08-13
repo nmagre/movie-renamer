@@ -17,11 +17,12 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JList;
 
 /**
  * Class IconListRenderer , Display image + text in list
@@ -32,41 +33,21 @@ import javax.swing.*;
 public class IconListRenderer<T extends IIconList> extends DefaultListCellRenderer {
 
   private static final long serialVersionUID = 1L;
-  private List<T> results;
 
   /**
    * Constructor arguments
    *
-   * @param results List object
    */
-  public IconListRenderer(List<T> results) {
-    this.results = results;
+  public IconListRenderer() {
   }
 
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-    if(value.toString().startsWith("<sep>")) {
-      isSelected = false;
-      cellHasFocus = false;
-    }
+    T obj = (T) value;
     JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-    if (value.toString().startsWith("<sep>")) {
-      label.setText(value.toString().substring(5));
-      label.setBackground(new Color(224, 234, 241));
-      label.setBorder(BorderFactory.createLineBorder(Color.black));
-      label.setPreferredSize(new Dimension(2, 20));
-      return label;
-    }
-    
-    if (index >= results.size()) {
-      return label;
-    }
-
-    Icon icon;
-    IIconList iicon = results.get(index);
-    icon = iicon.getIcon();
+    Icon icon = obj.getIcon();
 
     if (icon != null) {
       label.setIcon(icon);

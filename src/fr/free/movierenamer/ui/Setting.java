@@ -152,12 +152,6 @@ public class Setting extends JDialog {
     englishRbtn.setSelected(!setting.locale.equals("fr"));
     frenchRbtn.setSelected(setting.locale.equals("fr"));
 
-    for (int i = 0; i < Settings.lookAndFeels.length; i++) {
-      if (Settings.lookAndFeels[i].getName().equals(setting.laf)) {
-        lafCmbBox.setSelectedIndex(i);
-      }
-    }
-
     xbmcNFORBtn.setSelected(setting.nfoType == 0);
     mediaPortalNFORBtn.setSelected(setting.nfoType == 1);
 
@@ -340,12 +334,6 @@ public class Setting extends JDialog {
         fanartsChk = new JCheckBox();
         scanSubfolderChk = new JCheckBox();
         showNotaMovieWarnChk = new JCheckBox();
-        lafLbl = new JLabel();
-    String[] cmbmd = new String[Settings.lookAndFeels.length];
-    for (int i=0; i < Settings.lookAndFeels.length; i++) {
-      cmbmd[i] = Settings.lookAndFeels[i].getName();
-    }
-        lafCmbBox = new JComboBox(cmbmd);
         nfoPnl = new JPanel();
         xbmcNFORBtn = new JRadioButton();
         mediaPortalNFORBtn = new JRadioButton();
@@ -558,14 +546,6 @@ public class Setting extends JDialog {
         showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));         showNotaMovieWarnChk.setText(bundle.getString("showNotMovieWarn")); // NOI18N
         showNotaMovieWarnChk.setToolTipText(bundle.getString("showNotMovieWarnTt")); // NOI18N
 
-        lafLbl.setFont(new Font("Dialog", 1, 12));         lafLbl.setText("Look and Feel");
-
-        lafCmbBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                lafCmbBoxActionPerformed(evt);
-            }
-        });
-
         GroupLayout interfacePnlLayout = new GroupLayout(interfacePnl);
         interfacePnl.setLayout(interfacePnlLayout);
         interfacePnlLayout.setHorizontalGroup(
@@ -573,10 +553,6 @@ public class Setting extends JDialog {
             .addGroup(interfacePnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(interfacePnlLayout.createParallelGroup(Alignment.LEADING)
-                    .addGroup(interfacePnlLayout.createSequentialGroup()
-                        .addComponent(lafLbl)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(lafCmbBox, GroupLayout.PREFERRED_SIZE, 161, GroupLayout.PREFERRED_SIZE))
                     .addComponent(selectFirstMovieChk)
                     .addComponent(scanSubfolderChk)
                     .addComponent(showNotaMovieWarnChk)
@@ -587,7 +563,7 @@ public class Setting extends JDialog {
                             .addComponent(thumbsChk)
                             .addComponent(actorImageChk)
                             .addComponent(fanartsChk))))
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addContainerGap(225, Short.MAX_VALUE))
         );
         interfacePnlLayout.setVerticalGroup(
             interfacePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -604,12 +580,7 @@ public class Setting extends JDialog {
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(thumbsChk)
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(fanartsChk)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addGroup(interfacePnlLayout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(lafLbl)
-                    .addComponent(lafCmbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addComponent(fanartsChk))
         );
 
         nfoPnl.setBorder(BorderFactory.createTitledBorder(null, "NFO", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
@@ -664,7 +635,7 @@ public class Setting extends JDialog {
                 .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(89, Short.MAX_VALUE))
         );
 
         settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
@@ -1803,7 +1774,7 @@ public class Setting extends JDialog {
             .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-                    .addComponent(settingTabPan, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+                    .addComponent(settingTabPan, Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1980,10 +1951,6 @@ public class Setting extends JDialog {
       Settings.interfaceChanged = true;
     }
 
-    if (!setting.laf.equals(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName())) {
-      Settings.lafChanged = true;
-    }
-    setting.laf = Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getName();
     setting.selectFrstMedia = selectFirstMovieChk.isSelected();
     setting.selectFrstRes = selectFirstResChk.isSelected();
     setting.showNotaMovieWarn = showNotaMovieWarnChk.isSelected();
@@ -2090,22 +2057,6 @@ public class Setting extends JDialog {
 
     dispose();
   }//GEN-LAST:event_saveBtnActionPerformed
-
-  private void lafCmbBoxActionPerformed(ActionEvent evt) {//GEN-FIRST:event_lafCmbBoxActionPerformed
-    try {
-      UIManager.setLookAndFeel(Settings.lookAndFeels[lafCmbBox.getSelectedIndex()].getClassName());
-      SwingUtilities.updateComponentTreeUI(this);
-    } catch (ClassNotFoundException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (UnsupportedLookAndFeelException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-    pack();
-  }//GEN-LAST:event_lafCmbBoxActionPerformed
 
   private void CancelBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
     setVisible(false);
@@ -2253,8 +2204,6 @@ public class Setting extends JDialog {
     private JPanel jPanel7;
     private JPanel jPanel8;
     private JTabbedPane jTabbedPane2;
-    private JComboBox lafCmbBox;
-    private JLabel lafLbl;
     private ButtonGroup languageGroup;
     private JPanel languagePnl;
     private JTextField limitField;

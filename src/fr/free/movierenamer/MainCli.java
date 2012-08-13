@@ -54,10 +54,6 @@ public class MainCli {
     
     final Settings setting = loadSetting();
 
-    if (setting.laf.equals("")) {
-      setting.laf = Settings.lookAndFeels[0].getName();
-    }
-
     //Clear XML cache
     if (setting.clearXMLCache) {
       Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));

@@ -17,15 +17,13 @@
  */
 package fr.free.movierenamer;
 
+import com.alee.laf.WebLookAndFeel;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.SettingsSaveFailedException;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
-import java.util.logging.Level;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Class Main
@@ -37,6 +35,7 @@ public class Main {
   private static MovieRenamer mvr;
   
   public static void main(String args[]) {
+    
     Settings setting;
     try {
       setting = Settings.newInstance();
@@ -45,7 +44,10 @@ public class Main {
       setting = ex.getDefaultSettings();
     }
 
-    if (setting.laf.equals("")) {
+    // Install look and feel
+    WebLookAndFeel.install();
+    
+   /* if (setting.laf.equals("")) {
       setting.laf = Settings.lookAndFeels[0].getName();
     }
 
@@ -73,12 +75,12 @@ public class Main {
     } catch (UnsupportedLookAndFeelException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
-
+*/
     //Clear XML cache
     if (setting.clearXMLCache) {
       Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
     }
-
+    
     final Settings config = setting;
     java.awt.EventQueue.invokeLater(new Runnable() {
 

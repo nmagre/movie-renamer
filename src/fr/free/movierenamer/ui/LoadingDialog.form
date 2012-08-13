@@ -45,7 +45,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="seddPnl" alignment="0" pref="280" max="32767" attributes="0"/>
+                  <Component id="loadingsPnl" alignment="0" pref="280" max="32767" attributes="0"/>
                   <Component id="loadingLbl" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -58,7 +58,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="loadingLbl" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="seddPnl" pref="41" max="32767" attributes="0"/>
+              <Component id="loadingsPnl" pref="41" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -68,11 +68,11 @@
     <Component class="javax.swing.JLabel" name="loadingLbl">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="loadingWait" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="loadingWait" replaceFormat="Utils.i18n(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
-    <Container class="javax.swing.JPanel" name="seddPnl">
+    <Container class="javax.swing.JPanel" name="loadingsPnl">
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout">
         <Property name="axis" type="int" value="3"/>

@@ -145,8 +145,8 @@ public abstract class WorkerManager {
     return worker;
   }
 
-  public static ImageWorker getMediaImageWorker(List<MediaImage> array, Cache.CacheType cache, IMediaPanel mediaPanel) {
-    return new ImageWorker(array, cache, mediaPanel);
+  public static ImageWorker getMediaImageWorker(List<MediaImage> array, MediaImage.MediaImageSize imgSize, Cache.CacheType cache, IMediaPanel mediaPanel) {
+    return new ImageWorker(array, imgSize, cache, mediaPanel);
   }
 
   public static ActorWorker getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel) {

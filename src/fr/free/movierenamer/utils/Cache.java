@@ -42,8 +42,8 @@ public class Cache {
     ACTOR,
     XML,
     TVSHOWZIP;
-  }// The only instance of Cache
-  private static Cache instance;
+  }
+  private static Cache instance;// The only instance of Cache
 
   /**
    * Private build for singleton fix
@@ -81,9 +81,7 @@ public class Cache {
    * @return
    * @throws IOException
    */
-  public File add(/*
-           * InputStream is,
-           */URL url, Cache.CacheType type) throws IOException {
+  public File add(URL url, Cache.CacheType type) throws IOException {
     return add(url.openStream(), url.toString(), type);
   }
 

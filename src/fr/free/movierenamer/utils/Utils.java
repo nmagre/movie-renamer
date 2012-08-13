@@ -19,7 +19,7 @@ package fr.free.movierenamer.utils;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
-import fr.free.movierenamer.media.MediaInfoLibrary;
+import fr.free.movierenamer.media.mediainfo.MediaInfoLibrary;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -161,7 +161,7 @@ public abstract class Utils {
       res.append(array[i].toString());
 
       if ((i + 1) != limit) {
-        res.append((i < (array.length - 1)) ? separator : "");
+        res.append((i < (array.length - 1)) ? separator : EMPTY);
       }
     }
     return res.toString();
@@ -558,7 +558,7 @@ public abstract class Utils {
    */
   public static String unEscapeXML(String str, String encode) {
     if (str == null) {
-      return "";
+      return EMPTY;
     }
 
     try {
@@ -732,7 +732,7 @@ public abstract class Utils {
   public static String i18n(String bundleKey) {
     return localBundle.getString(bundleKey);
   }
-
+  
   /**
    * Get string in i18n files
    * 
@@ -756,7 +756,7 @@ public abstract class Utils {
    * @return Token value or an empty string
    */
   public static String getAppTok(String propToken) {
-    String msg = "";
+    String msg = EMPTY;
     try {
       msg = appBundle.getString(propToken);
     } catch (MissingResourceException ex) {

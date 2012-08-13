@@ -17,6 +17,20 @@
  */
 package fr.free.movierenamer.ui;
 
+import com.alee.extended.filechooser.FilesToChoose;
+import com.alee.extended.filechooser.SelectionMode;
+import com.alee.extended.filechooser.WebFileChooser;
+import com.alee.extended.image.transition.TransitionEffect;
+import com.alee.extended.panel.TransitionPanel;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextField;
+import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.Main;
 import fr.free.movierenamer.media.*;
 import fr.free.movierenamer.media.movie.Movie;
@@ -25,39 +39,31 @@ import fr.free.movierenamer.media.tvshow.TvShow;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.parser.MrRenamedMovie;
 import fr.free.movierenamer.parser.XMLParser;
-import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
 import fr.free.movierenamer.ui.res.ContextMenuListMouseListener;
 import fr.free.movierenamer.ui.res.DropFile;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.utils.*;
 import fr.free.movierenamer.worker.*;
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JToolBar.Separator;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.xml.parsers.ParserConfigurationException;
@@ -70,17 +76,16 @@ import org.xml.sax.SAXException;
  */
 public class MovieRenamer extends JFrame {
 
+  private final String SERROR = Utils.i18n("error");
   private Settings setting;
-  private DefaultListModel mediaFileNameModel;
-  private DefaultListModel searchResModel;
-  private Media currentMedia;
-  private final String sError = Utils.i18n("error");
   private DropFile dropFile;
   private LoadingDialog loading;
   private List<MediaFile> mediaFile;
   private ContextMenuListMouseListener contex;
   private List<MediaRenamed> renamedMediaFile;
+  // Current variables
   private MovieRenamerMode currentMode;
+  private Media currentMedia;
   // Worker
   private MediaSearchWorker searchWorker;
   private MovieInfoWorker movieInfoWorker;
@@ -91,6 +96,13 @@ public class MovieRenamer extends JFrame {
   // Media Panel
   private MoviePanel moviePnl;
   private TvShowPanel tvShowPanel;
+  // Media Panel container
+  private TransitionPanel containerTransitionMediaPanel;
+  // File chooser
+  private WebFileChooser fileChooser;
+  // List model
+  private DefaultListModel mediaFileNameModel;
+  private DefaultListModel searchResModel;
 
   private enum CHOICE {
 
@@ -116,17 +128,22 @@ public class MovieRenamer extends JFrame {
     contex = new ContextMenuListMouseListener();
     contex.addPropertyChangeListener(contextMenuListener);
 
-    initComponents();
-
-    fileChooser.setFileFilter(new MediaFileFilter(setting));
-    fileChooser.setAcceptAllFileFilterUsed(false);//Remove AcceptAll as an available choice in the choosable filter list
-
-    mediaList.addListSelectionListener(mediaListSelectionListener);
-    searchResultList.addListSelectionListener(searchresultListListener);
-
-    moviePnl = new MoviePanel(setting, editActionListener);
+    // Create media panel
+    moviePnl = new MoviePanel(setting);
     tvShowPanel = new TvShowPanel();
 
+    // Create media panel container and set transition effect
+    containerTransitionMediaPanel = new TransitionPanel(moviePnl);
+    containerTransitionMediaPanel.setTransitionEffect(TransitionEffect.fade);
+
+    initComponents();
+    init();
+
+    // Add listener to lists
+    mediaList.addMouseListener(createMediaListListener());
+    searchResultList.addListSelectionListener(createSearchResultListListener());
+
+    // Get all renamed media by Movie Renamer
     loadRenamedMovie();
 
     //Add drag and drop listener on mediaList
@@ -134,22 +151,270 @@ public class MovieRenamer extends JFrame {
     DropTarget dt = new DropTarget(mediaList, dropFile);
     dt.setActive(true);
 
+    // Set Movie Renamer mode
     currentMode = MovieRenamerMode.MOVIEMODE;
     movieModeBtn.setEnabled(false);
 
+    // Create dummy property change support for close loading dialog on error
     errorSupport = new PropertyChangeSupport(new Object());
     errorSupport.addPropertyChangeListener(new PropertyChangeListener() {
 
       @Override
       public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("closeLoadingDial")) {
-          loading.dispose();
+          if (loading.isShowing()) {
+            loading.dispose();
+          }
         }
       }
     });
 
+    // Create Movie Renamer settings property change
     settingsChange = new PropertyChangeSupport(setting);
-    settingsChange.addPropertyChangeListener(new PropertyChangeListener() {
+    settingsChange.addPropertyChangeListener(createSettingsChangeListener());
+
+    loadInterface();
+
+    setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
+    setLocationRelativeTo(null);
+
+    setVisible(true);
+
+    // Check for Movie Renamer update
+    if (setting.checkUpdate) {
+      checkUpdate(false);
+    }
+  }
+  //Right click context menu listener
+  private PropertyChangeListener contextMenuListener = new PropertyChangeListener() {
+
+    @Override
+    public void propertyChange(PropertyChangeEvent pce) {
+      if (pce.getPropertyName().equals("remove")) {
+        int index = (Integer) pce.getNewValue();
+        if (index == -1) {
+          return;
+        }
+
+        mediaFile.remove(index);
+        mediaFileNameModel.remove(index);
+        clearInterface(false, true);
+        currentMedia = null;
+        mediaLbl.setText(Utils.SPACE + Utils.i18n("media") + " : " + mediaFileNameModel.size());
+      } else if (pce.getPropertyName().equals("search")) {
+        if (currentMedia == null) {
+          return;
+        }
+        searchMedia();
+      }
+    }
+  };
+
+  private void init() {
+
+    // File chooser
+    if (setting.locale.equals("fr")) {// FIXME add to i18n files, move to main or settings
+      UIManager.put("WebFileChooser.back", "Précédent");
+      UIManager.put("WebFileChooser.forward", "Suivant");
+      UIManager.put("WebFileChooser.folderup", "Remonte d'un niveau");
+      UIManager.put("WebFileChooser.home", "Répertoire d'accueil");
+      UIManager.put("WebFileChooser.refresh", "Rafraichir");
+      UIManager.put("WebFileChooser.newfolder", "Crée un nouveau dossier");
+      UIManager.put("WebFileChooser.delete", "Supprimer");
+      UIManager.put("WebFileChooser.files.selected", "Fichiers sélectionnés");
+      UIManager.put("WebFileChooser.cancel", "Annuler");
+      UIManager.put("WebFileChooser.view", "Changer de vue");
+      UIManager.put("WebFileChooser.view.tiles", "Détails");
+      UIManager.put("WebFileChooser.choose", "Ouvrir");
+    } else {
+      UIManager.put("WebFileChooser.choose", "Open");
+    }
+
+    fileChooser = new WebFileChooser(this, "");// FIXME add title
+    fileChooser.setFilesToChoose(FilesToChoose.all);
+    fileChooser.setSelectionMode(SelectionMode.MULTIPLE_SELECTION);
+    MediaFileFilter fp = new MediaFileFilter(setting);
+    fileChooser.setPreviewFilter(fp);
+    fileChooser.setChooseFilter(fp);
+    //fileChooser.setAcceptAllFileFilterUsed(false);//Remove AcceptAll as an available choice in the choosable filter list
+
+    // Add button to main toolbar on right
+    mainTb.addToEnd(helpBtn);
+    mainTb.addToEnd(new JSeparator(JSeparator.VERTICAL));
+    mainTb.addToEnd(updateBtn);
+    mainTb.addToEnd(settingBtn);
+    mainTb.addToEnd(exitBtn);
+
+    // Add tooltip 
+    TooltipManager.setTooltip(openBtn, openTooltipLbl, TooltipWay.down);
+    TooltipManager.setTooltip(editBtn, new JLabel(Utils.i18n("edit"), new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(movieModeBtn, new JLabel(Utils.i18n("movieMode"), new ImageIcon(getClass().getResource("/image/movie.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(tvShowModeBtn, new JLabel(Utils.i18n("tvshowMode"), new ImageIcon(getClass().getResource("/image/tv.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(helpBtn, new JLabel(Utils.i18n("help"), new ImageIcon(getClass().getResource("/image/system-help-3.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(updateBtn, new JLabel(Utils.i18n("updateBtn"), new ImageIcon(getClass().getResource("/image/system-software-update-5.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(settingBtn, new JLabel(Utils.i18n("settingBtn"), new ImageIcon(getClass().getResource("/image/system-settings.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(exitBtn, new JLabel(Utils.i18n("exitBtn"), new ImageIcon(getClass().getResource("/image/application-exit.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(searchBtn, new JLabel(Utils.i18n("search"), new ImageIcon(getClass().getResource("/image/search.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(renameBtn, new JLabel(Utils.i18n("rename"), new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")),
+            SwingConstants.TRAILING), TooltipWay.down);
+
+    // Add media panel container to media split pane
+    MediaSp.setBottomComponent(containerTransitionMediaPanel);
+    fileFormatField.setText(setting.movieFilenameFormat);
+  }
+
+  /**
+   * Create media list mouse listener
+   *
+   * @return Mouse listener
+   */
+  private MouseListener createMediaListListener() {
+    return new MouseListener() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+
+        int index = mediaList.locationToIndex(e.getPoint());
+
+        if (index == -1) {
+          return;
+        }
+
+        // No media selected 
+        if (!mediaList.getCellBounds(index, index).contains(e.getPoint())) {
+          mediaList.removeSelectionInterval(index, index);
+          clearInterface(false, true);
+          currentMedia = null;
+          return;
+        }
+
+        MediaFile mediaFile = (MediaFile) mediaList.getSelectedValue();
+        mediaList.ensureIndexIsVisible(mediaList.getSelectedIndex());
+
+        //Check if media type is in current mode
+        if (!checkMediaTypeInCurrentMode(mediaFile)) {
+          return;
+        }
+
+        clearInterface(false, true);
+
+        switch (mediaFile.getType()) {
+          case MOVIE:
+            currentMedia = new Movie(mediaFile);
+            break;
+          case TVSHOW:
+            currentMedia = new TvShow(mediaFile);
+            break;
+          default:
+            return;
+        }
+
+        currentMedia.setMediaFile(mediaFile);
+
+        searchField.setText(currentMedia.getSearch());
+        renameBtn.setEnabled(false);
+        editBtn.setEnabled(false);
+        renameField.setText(Utils.EMPTY);
+        renameField.setEnabled(false);
+
+        searchBtn.setEnabled(!MovieRenamer.this.setting.autoSearchMedia);
+        searchField.setEnabled(!MovieRenamer.this.setting.autoSearchMedia);
+
+        if (MovieRenamer.this.setting.autoSearchMedia) {
+          searchMedia();
+        }
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+      }
+    };
+  }
+
+  /**
+   * Create search result list selection listener
+   *
+   * @return
+   */
+  private ListSelectionListener createSearchResultListListener() {
+    return new ListSelectionListener() {
+
+      @Override
+      public void valueChanged(ListSelectionEvent evt) {
+        try {
+          if (searchResultList.getSelectedIndex() == -1) {
+            return;
+          }
+
+          if (evt.getValueIsAdjusting()) {
+            return;
+          }
+
+          //Show loading dialog if auto select first result is not enabled 
+          if (!loading.isShown()) {
+            loadDial(false);
+          }
+
+          clearInterface(false, false);
+          currentMedia.clear();
+
+          SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
+          currentMedia.setMediaID(sres.getId());
+
+          switch (currentMedia.getType()) {
+            case MOVIE:
+              if (movieInfoWorker != null && !movieInfoWorker.isDone()) {
+                return;
+              }
+              //Get movie info
+              movieInfoWorker = WorkerManager.getMovieInfoWorker(errorSupport, sres.getId());
+              if (movieInfoWorker == null) {
+                JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("errorBugReport"), SERROR, JOptionPane.ERROR_MESSAGE);
+                return;
+              }
+              movieInfoWorker.addPropertyChangeListener(new MovieInfoListener(movieInfoWorker));
+              movieInfoWorker.execute();
+              break;
+            case TVSHOW:
+              tvShowInfoWorker = WorkerManager.getTvShowInfoWorker(errorSupport, sres.getId(), ((TvShow) currentMedia).getSearchSxe());
+              TvShowInfoListener tsil = new TvShowInfoListener(tvShowInfoWorker);
+              tvShowInfoWorker.addPropertyChangeListener(tsil);
+              tvShowInfoWorker.execute();
+              break;
+          }
+        } catch (ActionNotValidException ex) {// FIXME close loading dialog and show error message
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
+        }
+      }
+    };
+  }
+
+  /**
+   * Create settings change listener
+   *
+   * @return Property Change Listener
+   */
+  public PropertyChangeListener createSettingsChangeListener() {
+    return new PropertyChangeListener() {
 
       @Override
       public void propertyChange(PropertyChangeEvent evt) {//TODO A refaire
@@ -201,7 +466,7 @@ public class MovieRenamer extends JFrame {
               if (newConf.thumb) {
                 moviePnl.clearThumbList();
                 try {
-                  thumbWorker = WorkerManager.getMediaImageWorker(currentMedia.getImages(MediaImage.MediaImageType.THUMB), Cache.CacheType.THUMB, moviePnl);
+                  thumbWorker = WorkerManager.getMediaImageWorker(currentMedia.getImages(MediaImage.MediaImageType.THUMB), MediaImage.MediaImageSize.THUMB, Cache.CacheType.THUMB, moviePnl);
                   thumbWorker.addPropertyChangeListener(new workerListener(thumbWorker, WorkerManager.WORKERID.THUMBWORKER));
                 } catch (ActionNotValidException ex) {
                   Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -211,7 +476,7 @@ public class MovieRenamer extends JFrame {
               if (newConf.fanart) {
                 moviePnl.clearFanartList();
                 try {
-                  fanartWorker = WorkerManager.getMediaImageWorker(currentMedia.getImages(MediaImage.MediaImageType.FANART), Cache.CacheType.FANART, moviePnl);
+                  fanartWorker = WorkerManager.getMediaImageWorker(currentMedia.getImages(MediaImage.MediaImageType.FANART), MediaImage.MediaImageSize.THUMB, Cache.CacheType.FANART, moviePnl);
                   fanartWorker.addPropertyChangeListener(new workerListener(fanartWorker, WorkerManager.WORKERID.FANARTWORKER));
                 } catch (ActionNotValidException ex) {
                   Settings.LOGGER.log(Level.SEVERE, null, ex);
@@ -241,7 +506,7 @@ public class MovieRenamer extends JFrame {
 
           // Re-generate renamed filename
           if (currentMedia != null && !searchResModel.isEmpty()) {
-            renamedField.setText(currentMedia.getRenamedTitle());
+            renameField.setText(currentMedia.getRenamedTitle());
           }
 
           if (filterChanged) {
@@ -253,153 +518,19 @@ public class MovieRenamer extends JFrame {
           }
         }
       }
-    });
-
-    loadInterface();
-
-    setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
-    setLocationRelativeTo(null);
-
-    setVisible(true);
-
-    if (setting.checkUpdate) {
-      checkUpdate(false);
-    }
+    };
   }
-  //Right click context menu listener
-  private PropertyChangeListener contextMenuListener = new PropertyChangeListener() {
 
-    @Override
-    public void propertyChange(PropertyChangeEvent pce) {
-      if (pce.getPropertyName().equals("remove")) {
-        int index = (Integer) pce.getNewValue();
-        if (index == -1) {
-          return;
-        }
-
-        mediaFile.remove(index);
-        mediaFileNameModel.remove(index);
-        clearInterface(false, true);
-        currentMedia = null;
-        ((TitledBorder) mediaScroll.getBorder()).setTitle(Utils.EMPTY + mediaFileNameModel.size() + Utils.SPACE + Utils.i18n("medias"));
-        mediaScroll.repaint();
-      } else if (pce.getPropertyName().equals("search")) {
-        if (currentMedia == null) {
-          return;
-        }
-        searchMedia();
-      }
-    }
-  };
-  //MediaList selection listener
-  private ListSelectionListener mediaListSelectionListener = new ListSelectionListener() {
-
-    @Override
-    public void valueChanged(ListSelectionEvent evt) {
-      if (mediaList.getSelectedIndex() == -1) {
-        return;
-      }
-
-      if (evt.getValueIsAdjusting()) {
-        return;
-      }
-
-      MediaFile mediaFile = (MediaFile) mediaList.getSelectedValue();
-      mediaList.ensureIndexIsVisible(mediaList.getSelectedIndex());
-
-      //Check if media type is in current mode
-      if (!checkMediaTypeInCurrentMode(mediaFile)) {
-        return;
-      }
-
-      clearInterface(false, true);
-
-      switch (mediaFile.getType()) {
-        case MOVIE:
-          currentMedia = new Movie(mediaFile);
-          break;
-        case TVSHOW:
-          currentMedia = new TvShow(mediaFile);
-          break;
-        default:
-          return;
-      }
-
-      currentMedia.setMediaFile(mediaFile);
-
-      searchField.setText(currentMedia.getSearch());
-      renameBtn.setEnabled(false);
-      editBtn.setEnabled(false);
-      renamedField.setText(Utils.EMPTY);
-      renamedField.setEnabled(false);
-
-      searchBtn.setEnabled(!MovieRenamer.this.setting.autoSearchMedia);
-      searchField.setEnabled(!MovieRenamer.this.setting.autoSearchMedia);
-
-      if (MovieRenamer.this.setting.autoSearchMedia) {
-        searchMedia();
-      }
-    }
-  };
-  //Search list selection listener
-  private ListSelectionListener searchresultListListener = new ListSelectionListener() {
-
-    @Override
-    public void valueChanged(ListSelectionEvent evt) {
-      try {
-        if (searchResultList.getSelectedIndex() == -1) {
-          return;
-        }
-
-        if (evt.getValueIsAdjusting()) {
-          return;
-        }
-
-        //Show loading dialog if auto select first result is not enabled 
-        if (!loading.isShown()) {
-          loadDial(false);
-        }
-
-        clearInterface(false, false);
-        currentMedia.clear();
-
-        SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
-        currentMedia.setMediaID(sres.getId());
-
-        switch (currentMedia.getType()) {
-          case MOVIE:
-            if (movieInfoWorker != null && !movieInfoWorker.isDone()) {
-              return;
-            }
-            //Get movie info
-            movieInfoWorker = WorkerManager.getMovieInfoWorker(errorSupport, sres.getId());
-            if (movieInfoWorker == null) {
-              JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("errorBugReport"), sError, JOptionPane.ERROR_MESSAGE);
-              return;
-            }
-            movieInfoWorker.addPropertyChangeListener(new MovieInfoListener(movieInfoWorker));
-            movieInfoWorker.execute();
-            break;
-          case TVSHOW:
-            tvShowInfoWorker = WorkerManager.getTvShowInfoWorker(errorSupport, sres.getId(), ((TvShow) currentMedia).getSearchSxe());
-            TvShowInfoListener tsil = new TvShowInfoListener(tvShowInfoWorker);
-            tvShowInfoWorker.addPropertyChangeListener(tsil);
-            tvShowInfoWorker.execute();
-            break;
-        }
-      } catch (ActionNotValidException ex) {// FIXME close loading dialog and show error message
-        Settings.LOGGER.log(Level.SEVERE, null, ex);
-      }
-    }
-  };
   //Edit button action listener
-  private ActionListener editActionListener = new ActionListener() {
+  private ActionListener createEditActionListener() {
+    return new ActionListener() {
 
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-      editBtnActionPerformed(evt);
-    }
-  };
+      @Override
+      public void actionPerformed(ActionEvent evt) {
+        editBtnActionPerformed(evt);
+      }
+    };
+  }
 
   /**
    * Set mouse icon loading or default
@@ -435,7 +566,7 @@ public class MovieRenamer extends JFrame {
     switch (currentMode) {
       case MOVIEMODE:
         if (!setting.movieInfoPanel) {
-          MediaSp.remove(moviePnl);
+          MediaSp.remove(containerTransitionMediaPanel);
           centerSp.remove(MediaSp);
           centerSp.add(searchPnl);
           centerSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -449,7 +580,7 @@ public class MovieRenamer extends JFrame {
           }
           moviePnl.setDisplay(setting);
           tvShowPanel.setDisplay(setting);
-          MediaSp.setBottomComponent(moviePnl);
+          MediaSp.setBottomComponent(containerTransitionMediaPanel);
           centerSp.setDividerLocation(300);
           MediaSp.setDividerLocation(200);
         }
@@ -459,10 +590,13 @@ public class MovieRenamer extends JFrame {
 
         nfoChk.setVisible(setting.movieInfoPanel);
         editBtn.setVisible(setting.movieInfoPanel);
+
+        containerTransitionMediaPanel.switchContent(moviePnl);
+
         break;
       case TVSHOWMODE:
         if (setting.movieInfoPanel) {
-          MediaSp.remove(moviePnl);
+          MediaSp.remove(containerTransitionMediaPanel);
         } else {
           if (centerSp.getBottomComponent().equals(searchPnl)) {
             centerSp.remove(searchPnl);
@@ -472,13 +606,14 @@ public class MovieRenamer extends JFrame {
           }
         }
         centerSp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        MediaSp.setBottomComponent(tvShowPanel);
+        MediaSp.setBottomComponent(containerTransitionMediaPanel);
 
         //Not used for the moment
         thumbChk.setVisible(false);
         fanartChk.setVisible(false);
         nfoChk.setVisible(false);
         //editBtn.setVisible(false);
+        containerTransitionMediaPanel.switchContent(tvShowPanel);
         break;
       default:
     }
@@ -488,6 +623,12 @@ public class MovieRenamer extends JFrame {
     setTitle(Settings.APPNAME + "-" + setting.getVersion() + " " + currentMode.getTitleMode());
   }
 
+  /**
+   * Clear Movie Renamer interface
+   *
+   * @param mediaList Clear media list
+   * @param searchList Clear search list
+   */
   private void clearInterface(boolean mediaList, boolean searchList) {
 
     if (currentMedia != null) {
@@ -498,21 +639,18 @@ public class MovieRenamer extends JFrame {
       if (mediaFileNameModel != null) {
         mediaFileNameModel.clear();
       }
-
-      ((TitledBorder) mediaScroll.getBorder()).setTitle(Utils.i18n("media"));
-      mediaScroll.validate();
-      mediaScroll.repaint();
+      mediaLbl.setText(Utils.i18n("media"));
     }
 
     if (searchList) {
       if (searchResModel != null) {
         searchResModel.clear();
       }
-      resultLbl.setText(Utils.i18n("searchResListTitle"));
+      searchLbl.setText(Utils.i18n("search"));
       searchBtn.setEnabled(false);
       searchField.setEnabled(false);
-      renamedField.setText("");
-      renamedField.setEnabled(false);
+      renameField.setText("");
+      renameField.setEnabled(false);
       searchField.setText("");
     }
     renameBtn.setEnabled(false);
@@ -566,7 +704,7 @@ public class MovieRenamer extends JFrame {
     SearchWorkerListener sl = new SearchWorkerListener();
     searchWorker = WorkerManager.getSearchWorker(errorSupport, currentMedia);
     if (searchWorker == null) {
-      JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("errorBugReport"), sError, JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, Utils.i18n("errorBugReport"), SERROR, JOptionPane.ERROR_MESSAGE);
       return;
     }
     searchWorker.addPropertyChangeListener(sl);
@@ -686,203 +824,269 @@ public class MovieRenamer extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fileChooser = new JFileChooser();
-        batchProcessMenu = new JPopupMenu();
-        jMenuItem1 = new JMenuItem();
-        topTb = new JToolBar();
-        openBtn = new JButton();
+        updateBtn = new WebButton();
+        settingBtn = new WebButton();
+        exitBtn = new WebButton();
+        helpBtn = new WebButton();
+        openTooltipLbl = new JLabel(new ImageIcon(getClass().getResource("/image/folder-video.png")), SwingConstants.TRAILING);
+        mainTb = new WebToolBar();
+        openBtn = new WebButton();
         jSeparator1 = new Separator();
-        editBtn = new JButton();
+        editBtn = new WebButton();
         separator = new Separator();
-        movieModeBtn = new JButton();
-        tvShowModeBtn = new JButton();
-        updateBtn = new JButton();
-        settingBtn = new JButton();
-        exitBtn = new JButton();
-        centerPnl = new JPanel();
+        movieModeBtn = new WebButton();
+        tvShowModeBtn = new WebButton();
+        jSeparator2 = new Separator();
+        jLabel1 = new JLabel();
+        fileFormatField = new WebTextField();
+        renameTb = new WebToolBar();
+        renameBtn = new WebButton();
+        renameField = new JTextField();
+        thumbChk = new WebCheckBox();
+        fanartChk = new WebCheckBox();
+        nfoChk = new WebCheckBox();
+        centerPnl = new WebPanel();
         centerSp = new JSplitPane();
-        jPanel1 = new JPanel();
-        mediaScroll = new JScrollPane();
-        mediaList = new JList();
         MediaSp = new JSplitPane();
-        searchPnl = new JPanel();
+        searchPnl = new WebPanel();
         searchScroll = new JScrollPane();
-        searchResultList = new JList();
-        searchField = new JTextField();
-        searchBtn = new JButton();
-        resultLbl = new JLabel();
-        btmTb = new JToolBar();
-        renameBtn = new JButton();
-        renamedField = new JTextField();
-        thumbChk = new JCheckBox();
-        fanartChk = new JCheckBox();
-        nfoChk = new JCheckBox();
+        searchResultList = new WebList();
+        searchTb = new WebToolBar();
+        searchLbl = new WebLabel();
+        searchBtn = new WebButton();
+        searchField = new WebTextField();
+        mediaPnl = new WebPanel();
+        mediScroll = new JScrollPane();
+        mediaList = new WebList();
+        mediaTb = new WebToolBar();
+        mediaLbl = new WebLabel();
 
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        fileChooser.setMultiSelectionEnabled(true);
-
-        jMenuItem1.setText("jMenuItem1");
-        batchProcessMenu.add(jMenuItem1);
-
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(770, 570));
-
-        topTb.setFloatable(false);
-        topTb.setRollover(true);
-
-        openBtn.setIcon(new ImageIcon(getClass().getResource("/image/folder-video.png")));         ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
-        openBtn.setToolTipText(bundle.getString("openFolderBtn")); // NOI18N
-        openBtn.setFocusable(false);
-        openBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-        openBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        openBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                openBtnActionPerformed(evt);
-            }
-        });
-        topTb.add(openBtn);
-        topTb.add(jSeparator1);
-
-        editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")));         editBtn.setToolTipText(bundle.getString("edit")); // NOI18N
-        editBtn.setEnabled(false);
-        editBtn.setFocusable(false);
-        editBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-        editBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        editBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                editBtnActionPerformed(evt);
-            }
-        });
-        topTb.add(editBtn);
-        topTb.add(separator);
-
-        movieModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/movie.png")));         movieModeBtn.setFocusable(false);
-        movieModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-        movieModeBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        movieModeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                movieModeBtnActionPerformed(evt);
-            }
-        });
-        topTb.add(movieModeBtn);
-
-        tvShowModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/tv.png")));         tvShowModeBtn.setFocusable(false);
-        tvShowModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-        tvShowModeBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        tvShowModeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                tvShowModeBtnActionPerformed(evt);
-            }
-        });
-        topTb.add(tvShowModeBtn);
-        topTb.add(Box.createHorizontalGlue());
-
-        updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png")));         updateBtn.setToolTipText(bundle.getString("updateBtn")); // NOI18N
-        updateBtn.setFocusable(false);
+        updateBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-software-update-5.png")));         updateBtn.setFocusable(false);
         updateBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        updateBtn.setRolloverDarkBorderOnly(true);
+        updateBtn.setRolloverDecoratedOnly(true);
         updateBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         updateBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 updateBtnActionPerformed(evt);
             }
         });
-        topTb.add(updateBtn);
 
-        settingBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-settings.png")));         settingBtn.setToolTipText(bundle.getString("settingBtn")); // NOI18N
-        settingBtn.setFocusable(false);
+        settingBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-settings.png")));         settingBtn.setFocusable(false);
         settingBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        settingBtn.setRolloverDarkBorderOnly(true);
+        settingBtn.setRolloverDecoratedOnly(true);
         settingBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         settingBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 settingBtnActionPerformed(evt);
             }
         });
-        topTb.add(settingBtn);
 
-        exitBtn.setIcon(new ImageIcon(getClass().getResource("/image/application-exit.png")));         exitBtn.setToolTipText(bundle.getString("exitBtn")); // NOI18N
-        exitBtn.setFocusable(false);
+        exitBtn.setIcon(new ImageIcon(getClass().getResource("/image/application-exit.png")));         exitBtn.setFocusable(false);
         exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        exitBtn.setRolloverDarkBorderOnly(true);
+        exitBtn.setRolloverDecoratedOnly(true);
         exitBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         exitBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 exitBtnActionPerformed(evt);
             }
         });
-        topTb.add(exitBtn);
 
-        getContentPane().add(topTb, BorderLayout.PAGE_START);
+        helpBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         helpBtn.setFocusable(false);
+        helpBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        helpBtn.setRolloverDarkBorderOnly(true);
+        helpBtn.setRolloverDecoratedOnly(true);
+        helpBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        helpBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                helpBtnActionPerformed(evt);
+            }
+        });
+
+        openTooltipLbl.setText(Utils.i18n("openFolderBtn"));
+
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(770, 570));
+
+        mainTb.setFloatable(false);
+        mainTb.setRollover(true);
+        mainTb.setRound(10);
+
+        openBtn.setIcon(new ImageIcon(getClass().getResource("/image/folder-video.png")));         openBtn.setFocusable(false);
+        openBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        openBtn.setRolloverDarkBorderOnly(true);
+        openBtn.setRolloverDecoratedOnly(true);
+        openBtn.setRolloverShadeOnly(true);
+        openBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        openBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                openBtnActionPerformed(evt);
+            }
+        });
+        mainTb.add(openBtn);
+        mainTb.add(jSeparator1);
+
+        editBtn.setIcon(new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")));         editBtn.setEnabled(false);
+        editBtn.setFocusable(false);
+        editBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        editBtn.setRolloverDarkBorderOnly(true);
+        editBtn.setRolloverDecoratedOnly(true);
+        editBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        editBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                editBtnActionPerformed(evt);
+            }
+        });
+        mainTb.add(editBtn);
+        mainTb.add(separator);
+
+        movieModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/movie.png")));         movieModeBtn.setFocusable(false);
+        movieModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        movieModeBtn.setRolloverDarkBorderOnly(true);
+        movieModeBtn.setRolloverDecoratedOnly(true);
+        movieModeBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        movieModeBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                movieModeBtnActionPerformed(evt);
+            }
+        });
+        mainTb.add(movieModeBtn);
+
+        tvShowModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/tv.png")));         tvShowModeBtn.setFocusable(false);
+        tvShowModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        tvShowModeBtn.setRolloverDarkBorderOnly(true);
+        tvShowModeBtn.setRolloverDecoratedOnly(true);
+        tvShowModeBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        tvShowModeBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                tvShowModeBtnActionPerformed(evt);
+            }
+        });
+        mainTb.add(tvShowModeBtn);
+        mainTb.add(jSeparator2);
+
+        jLabel1.setFont(new Font("Ubuntu", 1, 13));         jLabel1.setText(Utils.i18n("mediaFileFormat"));         mainTb.add(jLabel1);
+
+        fileFormatField.setPreferredSize(new Dimension(180, 27));
+        mainTb.add(fileFormatField);
+
+        getContentPane().add(mainTb, BorderLayout.PAGE_START);
+
+        renameTb.setFloatable(false);
+        renameTb.setRollover(true);
+        renameTb.setRound(10);
+
+        renameBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         renameBtn.setText(Utils.i18n("rename"));         renameBtn.setEnabled(false);
+        renameBtn.setFocusable(false);
+        renameBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                renameBtnActionPerformed(evt);
+            }
+        });
+        renameTb.add(renameBtn);
+
+        renameField.setText("jTextField1");
+        renameField.setEnabled(false);
+        renameTb.add(renameField);
+
+        thumbChk.setText(Utils.i18n("thumb"));         thumbChk.setFocusable(false);
+        renameTb.add(thumbChk);
+
+        fanartChk.setText("Fanart");
+        fanartChk.setFocusable(false);
+        renameTb.add(fanartChk);
+
+        nfoChk.setText(Utils.i18n("nfoXbmc"));         nfoChk.setFocusable(false);
+        renameTb.add(nfoChk);
+
+        getContentPane().add(renameTb, BorderLayout.PAGE_END);
+
+        centerPnl.setMargin(new Insets(1, 1, 1, 1));
+        centerPnl.setShadeWidth(2);
 
         centerSp.setDividerLocation(300);
-
-        mediaScroll.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("media"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); 
-        mediaList.setFont(new Font("Dialog", 0, 12));         mediaList.addMouseListener(contex);
-        mediaScroll.setViewportView(mediaList);
-
-        GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(Alignment.LEADING)
-            .addComponent(mediaScroll, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(Alignment.LEADING)
-            .addComponent(mediaScroll, GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
-        );
-
-        centerSp.setLeftComponent(jPanel1);
 
         MediaSp.setDividerLocation(200);
         MediaSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-        searchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("searchTitle"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 13))); 
+        searchPnl.setMargin(new Insets(10, 10, 10, 10));
+
         searchResultList.setFont(new Font("Dialog", 0, 12));         searchScroll.setViewportView(searchResultList);
 
-        searchField.setEnabled(false);
-        searchField.addMouseListener(new ContextMenuFieldMouseListener());
-        searchField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent evt) {
-                searchFieldKeyReleased(evt);
-            }
-        });
+        searchTb.setFloatable(false);
+        searchTb.setRollover(true);
+        searchTb.setRound(0);
 
-        searchBtn.setIcon(new ImageIcon(getClass().getResource("/image/system-search-3.png")));         searchBtn.setToolTipText(bundle.getString("searchOnImdb")); // NOI18N
-        searchBtn.setEnabled(false);
+        searchLbl.setText(Utils.i18n("search"));         searchLbl.setFont(new Font("Ubuntu", 1, 14));         searchTb.add(searchLbl);
+
+        searchBtn.setIcon(new ImageIcon(getClass().getResource("/image/search.png")));         searchBtn.setEnabled(false);
         searchBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 searchBtnActionPerformed(evt);
             }
         });
 
-        resultLbl.setText(bundle.getString("searchResListTitle")); // NOI18N
+        searchField.setEnabled(false);
 
         GroupLayout searchPnlLayout = new GroupLayout(searchPnl);
         searchPnl.setLayout(searchPnlLayout);
         searchPnlLayout.setHorizontalGroup(
             searchPnlLayout.createParallelGroup(Alignment.LEADING)
-            .addGroup(Alignment.TRAILING, searchPnlLayout.createSequentialGroup()
-                .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+            .addComponent(searchTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(searchPnlLayout.createSequentialGroup()
-                .addComponent(resultLbl)
-                .addContainerGap(516, Short.MAX_VALUE))
-            .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+                .addComponent(searchField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addComponent(searchScroll, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 715, Short.MAX_VALUE)
         );
         searchPnlLayout.setVerticalGroup(
             searchPnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(searchPnlLayout.createSequentialGroup()
-                .addGroup(searchPnlLayout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addComponent(searchTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(resultLbl)
+                .addGroup(searchPnlLayout.createParallelGroup(Alignment.TRAILING)
+                    .addComponent(searchField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE))
+                .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
         );
+
+        searchField.setLeadingComponent(new JLabel(new ImageIcon(Utils.getImageFromJAR("/image/search.png", getClass()))));
 
         MediaSp.setLeftComponent(searchPnl);
 
         centerSp.setRightComponent(MediaSp);
+
+        mediaPnl.setMargin(new Insets(10, 10, 10, 10));
+        mediaPnl.setMinimumSize(new Dimension(60, 0));
+
+        mediaList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        mediScroll.setViewportView(mediaList);
+
+        mediaTb.setFloatable(false);
+        mediaTb.setRollover(true);
+        mediaTb.setRound(0);
+
+        mediaLbl.setText(Utils.i18n("media"));         mediaLbl.setFont(new Font("Ubuntu", 1, 14));         mediaTb.add(mediaLbl);
+
+        GroupLayout mediaPnlLayout = new GroupLayout(mediaPnl);
+        mediaPnl.setLayout(mediaPnlLayout);
+        mediaPnlLayout.setHorizontalGroup(
+            mediaPnlLayout.createParallelGroup(Alignment.LEADING)
+            .addComponent(mediaTb, GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
+            .addComponent(mediScroll)
+        );
+        mediaPnlLayout.setVerticalGroup(
+            mediaPnlLayout.createParallelGroup(Alignment.LEADING)
+            .addGroup(mediaPnlLayout.createSequentialGroup()
+                .addComponent(mediaTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(mediScroll, GroupLayout.DEFAULT_SIZE, 635, Short.MAX_VALUE))
+        );
+
+        centerSp.setLeftComponent(mediaPnl);
 
         GroupLayout centerPnlLayout = new GroupLayout(centerPnl);
         centerPnl.setLayout(centerPnlLayout);
@@ -897,241 +1101,46 @@ public class MovieRenamer extends JFrame {
 
         getContentPane().add(centerPnl, BorderLayout.CENTER);
 
-        btmTb.setFloatable(false);
-        btmTb.setRollover(true);
-
-        renameBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         renameBtn.setText(bundle.getString("rename")); // NOI18N
-        renameBtn.setEnabled(false);
-        renameBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        renameBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                renameBtnActionPerformed(evt);
-            }
-        });
-        btmTb.add(renameBtn);
-
-        renamedField.setEnabled(false);
-        renamedField.setPreferredSize(new Dimension(600, 25));
-        renamedField.addMouseListener(new ContextMenuFieldMouseListener());
-        btmTb.add(renamedField);
-
-        thumbChk.setText(bundle.getString("thumb")); // NOI18N
-        thumbChk.setToolTipText(bundle.getString("downThumb")); // NOI18N
-        thumbChk.setFocusable(false);
-        thumbChk.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btmTb.add(thumbChk);
-
-        fanartChk.setText("Fanart");
-        fanartChk.setToolTipText(bundle.getString("downFanart")); // NOI18N
-        fanartChk.setFocusable(false);
-        fanartChk.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btmTb.add(fanartChk);
-
-        nfoChk.setText(bundle.getString("nfoXbmc")); // NOI18N
-        nfoChk.setToolTipText(bundle.getString("genNFO")); // NOI18N
-        nfoChk.setFocusable(false);
-        nfoChk.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btmTb.add(nfoChk);
-
-        getContentPane().add(btmTb, BorderLayout.SOUTH);
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void openBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_openBtnActionPerformed
-      int n = fileChooser.showOpenDialog(this);
-      if (n == 0) {
-        File[] selectedFiles = fileChooser.getSelectedFiles();
-        List<File> files = new ArrayList<File>(Arrays.asList(selectedFiles));
-        dropFile.setMovies(files);
-      }
-    }//GEN-LAST:event_openBtnActionPerformed
+  private void openBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_openBtnActionPerformed
+    int n = fileChooser.showDialog();
+    if (n == 0) {
+      dropFile.setMovies(fileChooser.getSelectedFiles());
+    }
+  }//GEN-LAST:event_openBtnActionPerformed
 
-    private void exitBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
-      System.exit(0);
-    }//GEN-LAST:event_exitBtnActionPerformed
+  private void editBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
 
-    private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
-      final Setting set = new Setting(setting, settingsChange, this);
-      java.awt.EventQueue.invokeLater(new Runnable() {
+    if (currentMedia.getType() == Media.MediaType.MOVIE) {
+      final Movie movie = (Movie) currentMedia;
+      final InfoEditorFrame editorFrame = new InfoEditorFrame(movie.getMovieInfo(), MovieRenamer.this);
+      editorFrame.addPropertyChangeListener(new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent pce) {
+          if (pce.getPropertyName().equals("movieInfo")) { // currentMovie.setMovieInfo((MovieInfo) pce.getNewValue());
+            moviePnl.addMovieInfo(movie);
+          }
+        }
+      });
+
+      SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
-          set.setVisible(true);
+          editorFrame.setVisible(true);
         }
       });
-    }//GEN-LAST:event_settingBtnActionPerformed
-
-    private void searchBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
-      currentMedia.setSearch(searchField.getText());
-      clearInterface(false, true);
-      searchField.setText(currentMedia.getSearch());
-      renameBtn.setEnabled(false);
-      editBtn.setEnabled(false);
-      renamedField.setText(Utils.EMPTY);
-      renamedField.setEnabled(false);
-      searchMedia();
-    }//GEN-LAST:event_searchBtnActionPerformed
-
-    private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
-      // TODO
-      setMouseIcon(true);
-
-      int index = mediaList.getSelectedIndex();
-      if (index == -1) {
-        setMouseIcon(false);
-        JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieSelected"), sError, JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
-      if (currentMedia.getType() == Media.MediaType.MOVIE) {
-        Movie movie = (Movie) currentMedia;
-        List<MediaImage> images = moviePnl.getAddedThumb();
-        for (int i = 0; i < images.size(); i++) {
-          //  movie.addThumb(images.get(i));
-        }
-
-        images = moviePnl.getAddedFanart();
-        for (int i = 0; i < images.size(); i++) {
-          //movie.addFanart(images.get(i));
-        }
-
-        Renamer renamer = new Renamer("", currentMedia.getMediaFile().getFile(), renamedField.getText(), setting);
-
-        String url = "";
-        /*
-         * URL uri = moviePnl.getSelectedThumb(setting.thumbSize); if (uri != null) { url = uri.toString(); }
-         */
-
-        /*
-         * if (url.equals("") && movie.getThumbs().size() > 0) { url = movie.getThumbs().get(0).getThumbUrl(); }
-         */
-        renamer.setThumb(url);
-
-        if (!renamer.rename()) {
-          setMouseIcon(false);
-          JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("renameFileFailed"), sError, JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-
-        if (renamer.cancel) {
-          setMouseIcon(false);
-          return;
-        }
-
-        if (mediaFile.get(index).wasRenamed()) {
-          for (int i = 0; i < renamedMediaFile.size(); i++) {
-            if (renamedMediaFile.get(i).getMovieFileDest().equals(currentMedia.getMediaFile().getFile().getAbsolutePath())) {
-              renamedMediaFile.remove(i);
-              break;
-            }
-          }
-        }
-        renamedMediaFile.add(renamer.getRenamed());
-
-        mediaFile.get(index).setRenamed(true);
-
-        boolean createXNFO = false;
-        boolean createThumbnail = false;
-        boolean createFan = false;
-
-        if (setting.movieInfoPanel) {
-          createXNFO = nfoChk.isSelected();
-          if (setting.fanart) {
-            createFan = fanartChk.isSelected();
-          }
-          if (setting.thumb) {
-            createThumbnail = thumbChk.isSelected();
-          }
-        }
-
-        renamer.createNFO(createXNFO, setting.nfoType == 0 ? movie.getXbmcNFOFromMovie() : movie.getMediaPortalNFOFromMovie());
-        /*
-         * renamer.createThumb(createThumbnail, moviePnl.getSelectedThumb(setting.thumbSize)); renamer.createFanart(createFan, moviePnl.getSelectedFanart(setting.fanartSize));
-         */
-
-        mediaFile.get(index).setFile(renamer.getNewFile());
-        mediaFileNameModel = new DefaultListModel();
-        for (int i = 0; i < mediaFile.size(); i++) {
-          mediaFileNameModel.addElement(mediaFile.get(i));
-        }
-
-
-        mediaList.setCellRenderer(new IconListRenderer<MediaFile>(mediaFile));
-        mediaList.setModel(mediaFileNameModel);
-
-        try {
-          String endl = Utils.ENDLINE;
-          BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Settings.renamedFile), "UTF-8"));
-          out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl);
-          out.write("<Movie_Renamer_Renamed>" + endl);
-          for (int i = 0; i < renamedMediaFile.size(); i++) {
-            out.write("  <renamedMovie title=\"" + Utils.escapeXML(renamedMediaFile.get(i).getTitle()) + "\">" + endl);
-            out.write("    <movie src=\"" + Utils.escapeXML(renamedMediaFile.get(i).getMovieFileSrc()) + "\"");
-            out.write(" dest=\"" + Utils.escapeXML(renamedMediaFile.get(i).getMovieFileDest()) + "\"/>" + endl);
-            out.write("    <date>" + Utils.escapeXML(renamedMediaFile.get(i).getDate()) + "</date>" + endl);
-            out.write("  </renamedMovie>" + endl);
-          }
-          out.write("</Movie_Renamer_Renamed>" + endl);
-          out.close();
-        } catch (IOException ex) {
-          Settings.LOGGER.log(Level.SEVERE, ex.toString());
-        }
-      }
-
-
-      setMouseIcon(false);
-      currentMedia = null;
-      clearInterface(false, true);
-
-      int pos = index + 1;
-      while (pos < mediaFile.size()) {
-        if (!mediaFile.get(pos).isRenamed() && !mediaFile.get(pos).wasRenamed()) {
-          mediaList.setSelectedIndex(pos);
-          break;
-        } else {
-          pos++;
-        }
-      }
-
-      if (mediaFile.size() <= pos) {
-        JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("endOfList"), "Information", JOptionPane.INFORMATION_MESSAGE);
-      }
-    }//GEN-LAST:event_renameBtnActionPerformed
-
-    private void editBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-
-      if (currentMedia.getType() == Media.MediaType.MOVIE) {
-        final Movie movie = (Movie) currentMedia;
-        final InfoEditorFrame editorFrame = new InfoEditorFrame(movie.getMovieInfo(), MovieRenamer.this);
-        editorFrame.addPropertyChangeListener(new PropertyChangeListener() {
-
-          @Override
-          public void propertyChange(PropertyChangeEvent pce) {
-            if (pce.getPropertyName().equals("movieInfo")) { // currentMovie.setMovieInfo((MovieInfo) pce.getNewValue());
-              moviePnl.addMovieInfo(movie.getMovieInfo());
-            }
-          }
-        });
-
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            editorFrame.setVisible(true);
-          }
-        });
-      }
-    }//GEN-LAST:event_editBtnActionPerformed
-
-    private void updateBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
-      checkUpdate(true);
-    }//GEN-LAST:event_updateBtnActionPerformed
+    }
+  }//GEN-LAST:event_editBtnActionPerformed
 
   private void movieModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_movieModeBtnActionPerformed
     currentMode = MovieRenamerMode.MOVIEMODE;
     movieModeBtn.setEnabled(false);
     tvShowModeBtn.setEnabled(true);
+    fileFormatField.setText(setting.movieFilenameFormat);
     loadInterface();
     clearInterface(false, true);
     if (currentMedia != null) {
@@ -1146,6 +1155,7 @@ public class MovieRenamer extends JFrame {
     currentMode = MovieRenamerMode.TVSHOWMODE;
     movieModeBtn.setEnabled(true);
     tvShowModeBtn.setEnabled(false);
+    fileFormatField.setText(setting.tvShowFilenameFormat);
     loadInterface();
     clearInterface(false, true);
     if (currentMedia != null) {
@@ -1156,18 +1166,157 @@ public class MovieRenamer extends JFrame {
     }
   }//GEN-LAST:event_tvShowModeBtnActionPerformed
 
-  private void searchFieldKeyReleased(KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyReleased
-    if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-      currentMedia.setSearch(searchField.getText());
-      clearInterface(false, true);
-      searchField.setText(currentMedia.getSearch());
-      renameBtn.setEnabled(false);
-      editBtn.setEnabled(false);
-      renamedField.setText(Utils.EMPTY);
-      renamedField.setEnabled(false);
-      searchMedia();
+  private void exitBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
+    System.exit(0);
+  }//GEN-LAST:event_exitBtnActionPerformed
+
+  private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
+    final Setting set = new Setting(setting, settingsChange, this);
+    java.awt.EventQueue.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+        set.setVisible(true);
+      }
+    });  }//GEN-LAST:event_settingBtnActionPerformed
+
+  private void updateBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+    checkUpdate(true);
+  }//GEN-LAST:event_updateBtnActionPerformed
+
+  private void helpBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
+    TooltipManager.showOneTimeTooltip(mediaList, new Point(mediaList.getWidth() / 2, mediaList.getHeight() / 2), "Media list help", TooltipWay.up);
+    TooltipManager.showOneTimeTooltip(searchResultList, new Point(searchResultList.getWidth() / 2, searchResultList.getHeight() / 2), "searchResultList list help", TooltipWay.up);
+    TooltipManager.showOneTimeTooltip(openBtn, new Point(openBtn.getWidth() / 2, openBtn.getHeight()), openTooltipLbl, TooltipWay.down);
+  }//GEN-LAST:event_helpBtnActionPerformed
+
+  private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
+    // TODO
+    setMouseIcon(true);
+
+    int index = mediaList.getSelectedIndex();
+    if (index == -1) {
+      setMouseIcon(false);
+      JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieSelected"), SERROR, JOptionPane.ERROR_MESSAGE);
+      return;
     }
-  }//GEN-LAST:event_searchFieldKeyReleased
+
+    if (currentMedia.getType() == Media.MediaType.MOVIE) {
+      Movie movie = (Movie) currentMedia;
+      List<MediaImage> images = moviePnl.getAddedThumb();
+      for (int i = 0; i < images.size(); i++) {
+        //  movie.addThumb(images.get(i));
+      }
+
+      images = moviePnl.getAddedFanart();
+      for (int i = 0; i < images.size(); i++) {
+        //movie.addFanart(images.get(i));
+      }
+
+      Renamer renamer = new Renamer("", currentMedia.getMediaFile().getFile(), renameField.getText(), setting);
+
+      String url = "";
+      /*
+       * URL uri = moviePnl.getSelectedThumb(setting.thumbSize); if (uri != null) { url = uri.toString(); }
+       */
+
+      /*
+       * if (url.equals("") && movie.getThumbs().size() > 0) { url = movie.getThumbs().get(0).getThumbUrl(); }
+       */
+      renamer.setThumb(url);
+
+      if (!renamer.rename()) {
+        setMouseIcon(false);
+        JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("renameFileFailed"), SERROR, JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      if (renamer.cancel) {
+        setMouseIcon(false);
+        return;
+      }
+
+      /*
+       * if (mediaFile.get(index).wasRenamed()) { for (int i = 0; i < renamedMediaFile.size(); i++) { if
+       * (renamedMediaFile.get(i).getMovieFileDest().equals(currentMedia.getMediaFile().getFile().getAbsolutePath())) { renamedMediaFile.remove(i); break; } } }
+       * renamedMediaFile.add(renamer.getRenamed());
+       *
+       * mediaFile.get(index).setRenamed(true);
+       */
+
+      boolean createXNFO = false;
+      boolean createThumbnail = false;
+      boolean createFan = false;
+
+      if (setting.movieInfoPanel) {
+        createXNFO = nfoChk.isSelected();
+        if (setting.fanart) {
+          createFan = fanartChk.isSelected();
+        }
+        if (setting.thumb) {
+          createThumbnail = thumbChk.isSelected();
+        }
+      }
+
+      renamer.createNFO(createXNFO, setting.nfoType == 0 ? movie.getXbmcNFOFromMovie() : movie.getMediaPortalNFOFromMovie());
+      /*
+       * renamer.createThumb(createThumbnail, moviePnl.getSelectedThumb(setting.thumbSize)); renamer.createFanart(createFan, moviePnl.getSelectedFanart(setting.fanartSize));
+       */
+
+      // mediaFile.get(index).setFile(renamer.getNewFile());
+      mediaFileNameModel = new DefaultListModel();
+      for (int i = 0; i < mediaFile.size(); i++) {
+        mediaFileNameModel.addElement(mediaFile.get(i));
+      }
+
+
+      //mediaList.setCellRenderer(new IconListRenderer<MediaFile>(mediaFile));
+      mediaList.setModel(mediaFileNameModel);
+
+      try {
+        String endl = Utils.ENDLINE;
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Settings.renamedFile), "UTF-8"));
+        out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + endl);
+        out.write("<Movie_Renamer_Renamed>" + endl);
+        for (int i = 0; i < renamedMediaFile.size(); i++) {
+          out.write("  <renamedMovie title=\"" + Utils.escapeXML(renamedMediaFile.get(i).getTitle()) + "\">" + endl);
+          out.write("    <movie src=\"" + Utils.escapeXML(renamedMediaFile.get(i).getMovieFileSrc()) + "\"");
+          out.write(" dest=\"" + Utils.escapeXML(renamedMediaFile.get(i).getMovieFileDest()) + "\"/>" + endl);
+          out.write("    <date>" + Utils.escapeXML(renamedMediaFile.get(i).getDate()) + "</date>" + endl);
+          out.write("  </renamedMovie>" + endl);
+        }
+        out.write("</Movie_Renamer_Renamed>" + endl);
+        out.close();
+      } catch (IOException ex) {
+        Settings.LOGGER.log(Level.SEVERE, ex.toString());
+      }
+    }
+
+
+    setMouseIcon(false);
+    currentMedia = null;
+    clearInterface(false, true);
+
+    int pos = index + 1;
+    /*
+     * while (pos < mediaFile.size()) { if (!mediaFile.get(pos).isRenamed() && !mediaFile.get(pos).wasRenamed()) { mediaList.setSelectedIndex(pos); break; } else { pos++; } }
+     */
+
+    if (mediaFile.size() <= pos) {
+      JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("endOfList"), "Information", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }//GEN-LAST:event_renameBtnActionPerformed
+
+  private void searchBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+    currentMedia.setSearch(searchField.getText());
+    clearInterface(false, true);
+    searchField.setText(currentMedia.getSearch());
+    renameBtn.setEnabled(false);
+    editBtn.setEnabled(false);
+    renameField.setText(Utils.EMPTY);
+    renameField.setEnabled(false);
+    searchMedia();
+  }//GEN-LAST:event_searchBtnActionPerformed
 
   public class SearchWorkerListener implements PropertyChangeListener {
 
@@ -1206,12 +1355,12 @@ public class MovieRenamer extends JFrame {
 
         if (results.isEmpty()) {
           loading.dispose();
-          JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noResult"), sError, JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noResult"), SERROR, JOptionPane.ERROR_MESSAGE);
           return;
         }
 
         searchResModel = new DefaultListModel();
-        resultLbl.setText(Utils.i18n("searchResListTitle") + " : " + results.size());
+        searchLbl.setText(Utils.i18n("search") + " : " + results.size());
 
         // Sort result by similarity and year
         if (results.size() > 1 && setting.sortBySimiYear) {
@@ -1224,7 +1373,7 @@ public class MovieRenamer extends JFrame {
 
         // Display thumbs in result list          
         if (setting.displayThumbResult) {
-          searchResultList.setCellRenderer(new IconListRenderer<SearchResult>(results));
+          searchResultList.setCellRenderer(new IconListRenderer<SearchResult>());
         } else {
           searchResultList.setCellRenderer(new DefaultListCellRenderer());
         }
@@ -1274,14 +1423,13 @@ public class MovieRenamer extends JFrame {
             mediaFileNameModel.addElement(objects.get(i));
           }
 
-          ((TitledBorder) mediaScroll.getBorder()).setTitle(Utils.EMPTY + mediaFileNameModel.size() + Utils.SPACE + Utils.i18n("medias"));
+          mediaLbl.setText(Utils.i18n("media") + " : " + mediaFileNameModel.size());
 
-          mediaList.setCellRenderer(new IconListRenderer<MediaFile>(objects));
-          mediaScroll.repaint();
-
+          mediaList.setCellRenderer(new IconListRenderer<MediaFile>());
           mediaList.setModel(mediaFileNameModel);
+
           if (mediaFileNameModel.isEmpty()) {
-            JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieFound"), sError, JOptionPane.ERROR_MESSAGE);// FIXME change movie by media
+            JOptionPane.showMessageDialog(MovieRenamer.this, Utils.i18n("noMovieFound"), SERROR, JOptionPane.ERROR_MESSAGE);// FIXME change movie by media
           } else if (setting.selectFrstMedia) {
             mediaList.setSelectedIndex(0);
           }
@@ -1311,7 +1459,7 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private class MovieInfoListener implements PropertyChangeListener {// TODO A refaire
+  private class MovieInfoListener implements PropertyChangeListener {
 
     private MovieInfoWorker worker;
 
@@ -1332,23 +1480,23 @@ public class MovieRenamer extends JFrame {
 
           if (setting.movieInfoPanel) {
             if (setting.thumb) {
-              ImageWorker thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), Cache.CacheType.THUMB, moviePnl);
+              ImageWorker thumbWorker = WorkerManager.getMediaImageWorker(movieInfo.getThumbs(), MediaImage.MediaImageSize.THUMB, Cache.CacheType.THUMB, moviePnl);
               thumbWorker.addPropertyChangeListener(new workerListener(thumbWorker, WorkerManager.WORKERID.THUMBWORKER));
               thumbWorker.execute();
             }
             if (setting.fanart) {
-              ImageWorker fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(), Cache.CacheType.FANART, moviePnl);
+              ImageWorker fanartWorker = WorkerManager.getMediaImageWorker(movieInfo.getFanarts(), MediaImage.MediaImageSize.THUMB, Cache.CacheType.FANART, moviePnl);
               fanartWorker.addPropertyChangeListener(new workerListener(fanartWorker, WorkerManager.WORKERID.FANARTWORKER));
               fanartWorker.execute();
             }
           }
 
           currentMedia.setInfo(movieInfo);
-          moviePnl.addMovieInfo(movieInfo);
+          moviePnl.addMovieInfo((Movie) currentMedia);
 
-          renamedField.setText(currentMedia.getRenamedTitle());
+          renameField.setText(currentMedia.getRenamedTitle());
           renameBtn.setEnabled(true);
-          renamedField.setEnabled(true);
+          renameField.setEnabled(true);
           editBtn.setEnabled(true);
 
           ActorWorker actor = WorkerManager.getMovieActorWorker(movieInfo.getActors(), moviePnl);
@@ -1426,35 +1574,40 @@ public class MovieRenamer extends JFrame {
   }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JSplitPane MediaSp;
-    private JPopupMenu batchProcessMenu;
-    private JToolBar btmTb;
-    private JPanel centerPnl;
+    private WebPanel centerPnl;
     private JSplitPane centerSp;
-    private JButton editBtn;
-    private JButton exitBtn;
-    private JCheckBox fanartChk;
-    private JFileChooser fileChooser;
-    private JMenuItem jMenuItem1;
-    private JPanel jPanel1;
+    private WebButton editBtn;
+    private WebButton exitBtn;
+    private WebCheckBox fanartChk;
+    private WebTextField fileFormatField;
+    private WebButton helpBtn;
+    private JLabel jLabel1;
     private Separator jSeparator1;
-    private JList mediaList;
-    private JScrollPane mediaScroll;
-    private JButton movieModeBtn;
-    private JCheckBox nfoChk;
-    private JButton openBtn;
-    private JButton renameBtn;
-    private JTextField renamedField;
-    private JLabel resultLbl;
-    private JButton searchBtn;
-    private JTextField searchField;
-    private JPanel searchPnl;
+    private Separator jSeparator2;
+    private WebToolBar mainTb;
+    private JScrollPane mediScroll;
+    private WebLabel mediaLbl;
+    private WebList mediaList;
+    private WebPanel mediaPnl;
+    private WebToolBar mediaTb;
+    private WebButton movieModeBtn;
+    private WebCheckBox nfoChk;
+    private WebButton openBtn;
+    private JLabel openTooltipLbl;
+    private WebButton renameBtn;
+    private JTextField renameField;
+    private WebToolBar renameTb;
+    private WebButton searchBtn;
+    private WebTextField searchField;
+    private WebLabel searchLbl;
+    private WebPanel searchPnl;
     private JList searchResultList;
     private JScrollPane searchScroll;
+    private WebToolBar searchTb;
     private Separator separator;
-    private JButton settingBtn;
-    private JCheckBox thumbChk;
-    private JToolBar topTb;
-    private JButton tvShowModeBtn;
-    private JButton updateBtn;
+    private WebButton settingBtn;
+    private WebCheckBox thumbChk;
+    private WebButton tvShowModeBtn;
+    private WebButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

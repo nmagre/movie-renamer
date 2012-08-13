@@ -129,7 +129,7 @@ public class DropFile implements DropTargetListener {
   }
 
   /**
-   * Set movie files, and add it to UI (Call Only in EDT)
+   * Set movie files, and add it to UI (Call Only from EDT)
    *
    * @param files Array of movie files
    */

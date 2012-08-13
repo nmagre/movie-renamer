@@ -27,7 +27,6 @@ import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.UIManager;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -92,16 +91,13 @@ public class Settings implements Cloneable {
   public static int[] nbResultList = {-1, 5, 10, 15, 20, 30};
   public static String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
   public static String[] fanartExtList = {".jpg", "-fanart.jpg"};
-  // LAF
-  public static final UIManager.LookAndFeelInfo lookAndFeels[] = UIManager.getInstalledLookAndFeels();
-  public static boolean lafChanged = false;
-  public static boolean interfaceChanged = false;
   // Apk
   public static String xurlMdb = Utils.rot13(apkMdb);
   public static String xurlTdb = Utils.rot13(apkTdb);
   public static boolean xmlError = false;
   // Misc
   public static String xmlVersion = "";
+  public static boolean interfaceChanged = false;
   /**
    * Saved settings *
    */
@@ -113,7 +109,6 @@ public class Settings implements Cloneable {
   public boolean actorImage = true;
   public boolean thumb = true;
   public boolean fanart = true;
-  public String laf = "";
   public int nfoType = 0;
   public boolean checkUpdate = false;
   public String locale = "";
@@ -178,7 +173,7 @@ public class Settings implements Cloneable {
    * Private build for singleton fix
    *
    * @return
-   * @throws SettingsSaveFailedException  
+   * @throws SettingsSaveFailedException
    */
   public static synchronized Settings newInstance() throws SettingsSaveFailedException {
     if (instance == null) {

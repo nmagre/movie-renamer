@@ -26,7 +26,6 @@ import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,23 +45,6 @@ public class ListFilesWorker extends Worker<List<MediaFile>> {
   private int count;
   private String currentParent;
   private final List<MediaRenamed> renamed;
-
-  /**
-   * Constructor arguments
-   *
-   * @param files List of files
-   * @param renamed List of renamed files
-   * @param subFolders Scan subfolders
-   * @param config
-   */
-  public ListFilesWorker(List<File> files, List<MediaRenamed> renamed, boolean subFolders, Settings config) {
-    this.renamed = renamed;
-    this.files = files;
-    this.subFolders = subFolders;
-    this.nbFiles = -1;
-    count = 0;
-    currentParent = "";
-  }
 
   /**
    * Constructor arguments
@@ -101,7 +83,7 @@ public class ListFilesWorker extends Worker<List<MediaFile>> {
         addMediaFile(medias, file);
       }
     }
-    Collections.sort(medias, new MediaFileNameComparator());
+    //Collections.sort(medias, new MediaFileNameComparator());
     return medias;
   }
 
@@ -134,7 +116,7 @@ public class ListFilesWorker extends Worker<List<MediaFile>> {
       }
     }
   }
-
+  
   /**
    * Add file to media files list
    *

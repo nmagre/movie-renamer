@@ -22,7 +22,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
- *
+ * Class UiUtils
  * @author Nicolas Magré
  */
 public abstract class UiUtils {

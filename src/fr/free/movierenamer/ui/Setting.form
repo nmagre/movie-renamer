@@ -117,7 +117,7 @@
                       <Component id="updatePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="languagePnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="39" max="32767" attributes="0"/>
+                      <EmptySpace pref="89" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -272,11 +272,6 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="lafLbl" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="lafCmbBox" min="-2" pref="161" max="-2" attributes="0"/>
-                              </Group>
                               <Component id="selectFirstMovieChk" alignment="0" min="-2" max="-2" attributes="2"/>
                               <Component id="scanSubfolderChk" alignment="0" min="-2" max="-2" attributes="1"/>
                               <Component id="showNotaMovieWarnChk" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -290,7 +285,7 @@
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace pref="177" max="32767" attributes="0"/>
+                          <EmptySpace pref="225" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -310,12 +305,6 @@
                           <Component id="thumbsChk" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="fanartsChk" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="lafLbl" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="lafCmbBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace pref="19" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -414,28 +403,6 @@
                       <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="showNotMovieWarnTt" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-                </Component>
-                <Component class="javax.swing.JLabel" name="lafLbl">
-                  <Properties>
-                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Dialog" size="12" style="1"/>
-                    </Property>
-                    <Property name="text" type="java.lang.String" value="Look and Feel"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JComboBox" name="lafCmbBox">
-                  <Properties>
-                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="0"/>
-                    </Property>
-                  </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lafCmbBoxActionPerformed"/>
-                  </Events>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JComboBox(cmbmd)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="String[] cmbmd = new String[Settings.lookAndFeels.length];&#xa;for(int i=0;i&lt;Settings.lookAndFeels.length;i++){&#xa;  cmbmd[i] = Settings.lookAndFeels[i].getName();&#xa;}"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>

@@ -1,4 +1,4 @@
-package fr.free.movierenamer.media;
+package fr.free.movierenamer.media.mediainfo;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;

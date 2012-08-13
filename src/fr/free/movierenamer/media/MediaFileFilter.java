@@ -17,21 +17,22 @@
  */
 package fr.free.movierenamer.media;
 
+import com.alee.extended.filefilter.DefaultFileFilter;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * Class MovieFileFilter
  *
  * @author Nicolas Magré
  */
-public class MediaFileFilter extends FileFilter {
+public class MediaFileFilter extends DefaultFileFilter {
 
   private Settings setting;
 
   public MediaFileFilter(Settings setting) {
+    super();
     this.setting = setting;
   }
 

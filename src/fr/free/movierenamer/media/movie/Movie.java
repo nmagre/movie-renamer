@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.media.movie;
 
+import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.matcher.MovieNameMatcher;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;
 import fr.free.movierenamer.media.*;
@@ -53,6 +54,7 @@ public class Movie implements Media {
     search = nameMatcher.getMovieName();
     year = nameMatcher.getYear();
     mtag = new MediaTag(movieFile.getFile());
+    System.out.println(mtag);
   }
 
   /**
@@ -88,6 +90,10 @@ public class Movie implements Media {
       return -1;
     }
     return Integer.parseInt(year);
+  }
+  
+  public MediaTag getMediaTag(){
+    return mtag;
   }
 
   /**
@@ -139,11 +145,11 @@ public class Movie implements Media {
       {"<mfr>", mtag.getVideoFrameRate()},
       {"<mr>", mtag.getVideoResolution()},
       {"<mcf>", mtag.getContainerFormat()},
-      {"<mach>", mtag.getAudioChannelsString(separator, limit)},
-      {"<mac>", mtag.getAudioCodecString(separator, limit)},
-      {"<mal>", mtag.getAudioLanguageString(separator, limit)},
-      {"<matt>", mtag.getAudioTitleString(separator, limit)},
-      {"<mtt>", mtag.getTextTitleString(separator, limit)}
+      {"<mach>", mtag.getTagString(MediaTag.TagList.AudioChannel, separator, limit)},
+      {"<mac>", mtag.getTagString(MediaTag.TagList.AudioCodec, separator, limit)},
+      {"<mal>", mtag.getTagString(MediaTag.TagList.AudioLanguage, separator, limit)},
+      {"<matt>", mtag.getTagString(MediaTag.TagList.AudioTitleString, separator, limit)},
+      {"<mtt>", mtag.getTagString(MediaTag.TagList.TextTitle, separator, limit)}
     };
 
     //replace actors, directors, genres, coutries
@@ -170,22 +176,23 @@ public class Movie implements Media {
       }
     }
 
-    //replace audio attr
+    //replace media tags
     pattern = Pattern.compile("<(ma?[chtl]*)(\\d+)>");
     matcher = pattern.matcher(regExp);
     while (matcher.find()) {
       String tag = matcher.group(1);
-      int n = Integer.parseInt(matcher.group(2));
+      int stream = Integer.parseInt(matcher.group(2));
+      stream--;// Offset start at 0, (E.g : For <mac3> -> stream == 2)
       if (tag.equals("mach")) {
-        regExp = regExp.replaceAll("<mach\\d+>", mtag.getAudioChannelsStringN(n));
+        regExp = regExp.replaceAll("<mach\\d+>", mtag.getAudioChannels(stream));
       } else if (tag.equals("mac")) {
-        regExp = regExp.replaceAll("<mac\\d+>", mtag.getAudioCodecStringN(n));
+        regExp = regExp.replaceAll("<mac\\d+>", mtag.getAudioCodec(stream));
       } else if (tag.equals("mal")) {
-        regExp = regExp.replaceAll("<mal\\d+>", mtag.getAudioLanguageStringN(n));
+        regExp = regExp.replaceAll("<mal\\d+>", mtag.getAudioLanguage(stream));
       } else if (tag.equals("matt")) {
-        regExp = regExp.replaceAll("<matt\\d+>", mtag.getAudioTitleStringN(n));
+        regExp = regExp.replaceAll("<matt\\d+>", mtag.getAudioTitle(stream));
       } else if (tag.equals("mtt")) {
-        regExp = regExp.replaceAll("<mtt\\d+>", mtag.getTextTitleStringN(n));
+        regExp = regExp.replaceAll("<mtt\\d+>", mtag.getTextTitle(stream));
       }
     }
 
