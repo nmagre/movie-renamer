@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.res;
 
 import java.awt.Component;
-import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -34,18 +33,10 @@ public class IconListRenderer<T extends IIconList> extends DefaultListCellRender
 
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructor arguments
-   *
-   */
-  public IconListRenderer() {
-  }
-
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-    T obj = (T) value;
-    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);    
+    IIconList obj = (IIconList) value;
 
     Icon icon = obj.getIcon();
 

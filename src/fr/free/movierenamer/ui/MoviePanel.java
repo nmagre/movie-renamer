@@ -22,8 +22,6 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.mediainfo.MediaAudio;
 import fr.free.movierenamer.media.mediainfo.MediaSubTitle;
@@ -38,7 +36,6 @@ import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -66,21 +63,26 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     private JPanel InfoPnl;
     private JList actorList;
     private JScrollPane actorScroll;
+    private WebLabel audioLbl;
     private WebList audioList;
     private JScrollPane audioSp;
+    private WebToolBar audioTb;
     private WebList countryList;
     private WebToolBar countryTb;
-    private JTextField directorField;
+    private WebTextField directorField;
+    private WebLabel directorLbl;
     private final JList fanartList = new JList();
     private WebToolBar fanartTb;
     private JScrollPane fanartsScrollPane;
-    private JTextField genreField;
+    private WebTextField genreField;
+    private WebLabel genreLbl;
     private JPanel imagePnl;
     private JScrollPane jScrollPane1;
-    private JScrollPane jScrollPane2;
     private WebToolBar movieTb;
     private WebTextField origTitleField;
-    private JTextField runtimeField;
+    private WebLabel origTitleLbl;
+    private WebTextField runtimeField;
+    private WebLabel runtimeLbl;
     private JLabel star;
     private JLabel star1;
     private JLabel star2;
@@ -88,8 +90,10 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     private JLabel star4;
     private WebList subTitleList;
     private JScrollPane subTitleSp;
+    private WebToolBar subTitleTb;
     private JScrollPane synopsScroll;
     private JTextArea synopsisArea;
+    private WebLabel synopsisLbl;
     private JLabel thumbLbl;
     private WebToolBar thumbTb;
     private WebLabel thumbnailLbl;
@@ -104,15 +108,12 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     };
     private JScrollPane thumbsScrollPane;
     private WebLabel titleLbl;
-    private WebLabel webLabel1;
     private WebLabel webLabel2;
     private WebLabel webLabel3;
     private WebLabel webLabel4;
     private WebLabel webLabel5;
-    private WebPanel webPanel1;
-    private WebToolBar webToolBar1;
-    private WebToolBar webToolBar2;
     private WebToolBar webToolBar3;
+    private WebToolBar webToolBar4;
     private WebLabel yearLbl;
     // End of variables declaration//GEN-END:variables
   private static final long serialVersionUID = 1L;
@@ -138,6 +139,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   private List<MediaImage> fanarts;
   private Settings setting;
   private Cache cache = Cache.getInstance();
+  private static final String SEP = " : ";
 
   /**
    * Creates new form MoviePanel
@@ -150,7 +152,21 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     // Init
     initComponents();
 
-    origTitleField.setLeadingComponent(new JLabel(Utils.i18n("origTitle") + " : "));
+    origTitleLbl.setText(origTitleLbl.getText() + SEP);
+    directorLbl.setText(directorLbl.getText() + SEP);
+    runtimeLbl.setText(runtimeLbl.getText() + SEP);
+    genreLbl.setText(genreLbl.getText() + SEP);
+    
+    origTitleField.setLeadingComponent(origTitleLbl);
+    directorField.setLeadingComponent(directorLbl);
+    runtimeField.setLeadingComponent(runtimeLbl);
+    genreField.setLeadingComponent(genreLbl);
+    
+//    audioSp.setVisible(false);
+//    audioTb.setVisible(false);
+//    subTitleSp.setVisible(false);
+//    subTitleTb.setVisible(false);
+    
 
     // Add component to toolbar
     movieTb.addToEnd(star);
@@ -176,6 +192,12 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     countryList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     countryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     countryList.setVisibleRowCount(-1);
+    audioList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    audioList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    audioList.setVisibleRowCount(-1);
+    subTitleList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    subTitleList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    subTitleList.setVisibleRowCount(-1);
 
     thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -631,6 +653,10 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         star2 = new JLabel();
         star1 = new JLabel();
         star = new JLabel();
+        origTitleLbl = new WebLabel();
+        directorLbl = new WebLabel();
+        runtimeLbl = new WebLabel();
+        genreLbl = new WebLabel();
         InfoPnl = new JPanel();
         thumbLbl = new JLabel();
         movieTb = new WebToolBar();
@@ -659,21 +685,6 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
             }
         };
         origTitleField = new WebTextField();
-        jScrollPane2 = new JScrollPane();
-        webPanel1 = new WebPanel();
-        subTitleSp = new JScrollPane();
-        subTitleList = new WebList();
-        audioSp = new JScrollPane();
-        audioList = new WebList();
-        webToolBar1 = new WebToolBar();
-        webLabel1 = new WebLabel();
-        webToolBar2 = new WebToolBar();
-        webLabel3 = new WebLabel();
-        synopsScroll = new JScrollPane();
-        synopsisArea = new JTextArea();
-        runtimeField = new JTextField();
-        directorField = new JTextField();
-        genreField = new JTextField();
         actorScroll = new JScrollPane();
         actorList = new JList() {
             // This method is called as the cursor moves within the list.
@@ -688,12 +699,32 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         ;
         webToolBar3 = new WebToolBar();
         webLabel5 = new WebLabel();
+        directorField = new WebTextField();
+        genreField = new WebTextField();
+        runtimeField = new WebTextField();
+        synopsScroll = new JScrollPane();
+        synopsisArea = new JTextArea();
+        webToolBar4 = new WebToolBar();
+        synopsisLbl = new WebLabel();
+        audioTb = new WebToolBar();
+        audioLbl = new WebLabel();
+        subTitleTb = new WebToolBar();
+        webLabel3 = new WebLabel();
+        audioSp = new JScrollPane();
+        audioList = new WebList();
+        subTitleSp = new JScrollPane();
+        subTitleList = new WebList();
 
         star4.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); 
         star3.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); 
         star2.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); 
         star1.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); 
         star.setIcon(new ImageIcon(getClass().getResource("/image/star-empty.png"))); 
+        origTitleLbl.setText(Utils.i18n("origTitle"));         origTitleLbl.setFont(new Font("Ubuntu", 1, 13)); 
+        directorLbl.setText(Utils.i18n("director"));         directorLbl.setFont(new Font("Ubuntu", 1, 13)); 
+        runtimeLbl.setText(Utils.i18n("runtime"));         runtimeLbl.setFont(new Font("Ubuntu", 1, 13)); 
+        genreLbl.setText("Genre");
+        genreLbl.setFont(new Font("Ubuntu", 1, 13)); 
         setMargin(new Insets(10, 10, 10, 10));
         setMinimumSize(new Dimension(10, 380));
         setPreferredSize(new Dimension(562, 400));
@@ -741,13 +772,13 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         imagePnlLayout.setHorizontalGroup(
             imagePnlLayout.createParallelGroup(Alignment.LEADING)
             .addGroup(imagePnlLayout.createSequentialGroup()
-                .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING, false)
-                    .addComponent(thumbTb, GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-                    .addComponent(thumbsScrollPane))
-                .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(fanartsScrollPane)
-                    .addComponent(fanartTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(thumbTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(thumbsScrollPane))
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING)
+                    .addComponent(fanartTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(fanartsScrollPane)))
         );
         imagePnlLayout.setVerticalGroup(
             imagePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -757,8 +788,8 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
                     .addComponent(fanartTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-                    .addComponent(fanartsScrollPane)))
+                    .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                    .addComponent(thumbsScrollPane)))
         );
 
         countryTb.setFloatable(false);
@@ -772,24 +803,15 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
         origTitleField.setEditable(false);
 
-        jScrollPane2.setAutoscrolls(true);
-        jScrollPane2.setPreferredSize(new Dimension(300, 300));
+        actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        actorScroll.setViewportView(actorList);
 
-        subTitleSp.setViewportView(subTitleList);
+        webToolBar3.setFloatable(false);
+        webToolBar3.setRollover(true);
 
-        audioSp.setViewportView(audioList);
+        webLabel5.setText(Utils.i18n("actor"));         webLabel5.setFont(new Font("Ubuntu", 1, 13));         webToolBar3.add(webLabel5);
 
-        webToolBar1.setFloatable(false);
-        webToolBar1.setRollover(true);
-
-        webLabel1.setText("Audio");
-        webLabel1.setFont(new Font("Ubuntu", 1, 13));         webToolBar1.add(webLabel1);
-
-        webToolBar2.setFloatable(false);
-        webToolBar2.setRollover(true);
-
-        webLabel3.setText("SubTitle");
-        webLabel3.setFont(new Font("Ubuntu", 1, 13));         webToolBar2.add(webLabel3);
+        directorField.setEditable(false);
 
         synopsisArea.setColumns(20);
         synopsisArea.setEditable(false);
@@ -800,72 +822,27 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         synopsisArea.setOpaque(false);
         synopsScroll.setViewportView(synopsisArea);
 
-        runtimeField.setEditable(false);
-        runtimeField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        webToolBar4.setFloatable(false);
+        webToolBar4.setRollover(true);
 
-        directorField.setEditable(false);
-        directorField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        synopsisLbl.setText("Synopsis");
+        synopsisLbl.setFont(new Font("Ubuntu", 1, 13));         webToolBar4.add(synopsisLbl);
 
-        genreField.setEditable(false);
-        genreField.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        audioTb.setFloatable(false);
+        audioTb.setRollover(true);
 
-        GroupLayout webPanel1Layout = new GroupLayout(webPanel1);
-        webPanel1.setLayout(webPanel1Layout);
-        webPanel1Layout.setHorizontalGroup(
-            webPanel1Layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(webPanel1Layout.createSequentialGroup()
-                .addGap(55, 55, 55)
-                .addComponent(runtimeField, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-                .addGap(37, 37, 37)
-                .addGroup(webPanel1Layout.createParallelGroup(Alignment.TRAILING)
-                    .addComponent(directorField, GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-                    .addComponent(genreField, GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE))
-                .addGap(70, 70, 70))
-            .addGroup(Alignment.TRAILING, webPanel1Layout.createSequentialGroup()
-                .addGroup(webPanel1Layout.createParallelGroup(Alignment.LEADING, false)
-                    .addComponent(audioSp, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
-                    .addComponent(webToolBar1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addGroup(webPanel1Layout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(webToolBar2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(subTitleSp)))
-            .addGroup(Alignment.TRAILING, webPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(synopsScroll)
-                .addGap(14, 14, 14))
-        );
-        webPanel1Layout.setVerticalGroup(
-            webPanel1Layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(Alignment.TRAILING, webPanel1Layout.createSequentialGroup()
-                .addComponent(genreField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22)
-                .addGroup(webPanel1Layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(directorField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(synopsScroll, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addGroup(webPanel1Layout.createParallelGroup(Alignment.LEADING, false)
-                    .addGroup(webPanel1Layout.createSequentialGroup()
-                        .addComponent(webToolBar2, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(subTitleSp, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addGroup(webPanel1Layout.createSequentialGroup()
-                        .addComponent(webToolBar1, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(audioSp, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(150, Short.MAX_VALUE))
-        );
+        audioLbl.setText("Audio");
+        audioLbl.setFont(new Font("Ubuntu", 1, 13));         audioTb.add(audioLbl);
 
-        jScrollPane2.setViewportView(webPanel1);
+        subTitleTb.setFloatable(false);
+        subTitleTb.setRollover(true);
 
-        actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        actorScroll.setViewportView(actorList);
+        webLabel3.setText("SubTitle");
+        webLabel3.setFont(new Font("Ubuntu", 1, 13));         subTitleTb.add(webLabel3);
 
-        webToolBar3.setFloatable(false);
-        webToolBar3.setRollover(true);
+        audioSp.setViewportView(audioList);
 
-        webLabel5.setText(Utils.i18n("actor"));         webLabel5.setFont(new Font("Ubuntu", 1, 13));         webToolBar3.add(webLabel5);
+        subTitleSp.setViewportView(subTitleList);
 
         GroupLayout InfoPnlLayout = new GroupLayout(InfoPnl);
         InfoPnl.setLayout(InfoPnlLayout);
@@ -875,18 +852,29 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
             .addComponent(actorScroll, Alignment.TRAILING)
             .addGroup(InfoPnlLayout.createSequentialGroup()
                 .addGroup(InfoPnlLayout.createParallelGroup(Alignment.TRAILING, false)
-                    .addComponent(webToolBar3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(thumbLbl, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(countryTb, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, Alignment.LEADING))
+                    .addComponent(jScrollPane1, Alignment.LEADING)
+                    .addComponent(webToolBar3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
                 .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
                     .addGroup(InfoPnlLayout.createSequentialGroup()
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE))
+                        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(audioSp, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(audioTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(11, 11, 11)
+                        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(subTitleSp, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(subTitleTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(InfoPnlLayout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addComponent(imagePnl, GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE)
+                        .addComponent(directorField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(runtimeField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(webToolBar4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(genreField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(synopsScroll, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)))
+            .addComponent(imagePnl, GroupLayout.DEFAULT_SIZE, 625, Short.MAX_VALUE)
         );
         InfoPnlLayout.setVerticalGroup(
             InfoPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -900,16 +888,32 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
                         .addComponent(countryTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addPreferredGap(ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                         .addComponent(webToolBar3, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                     .addGroup(InfoPnlLayout.createSequentialGroup()
                         .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.BASELINE)
+                            .addComponent(directorField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(genreField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(webToolBar4, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(synopsScroll)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING)
+                            .addComponent(audioTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(subTitleTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addGroup(InfoPnlLayout.createParallelGroup(Alignment.LEADING, false)
+                            .addComponent(subTitleSp, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                            .addComponent(audioSp, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
+                .addComponent(actorScroll, GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(imagePnl, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
