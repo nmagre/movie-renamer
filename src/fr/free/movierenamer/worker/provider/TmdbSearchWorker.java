@@ -29,7 +29,7 @@ import javax.xml.bind.DatatypeConverter;
 
 /**
  * Class TmdbSearchWorker
- * 
+ *
  * @author Nicolas Magré
  */
 public class TmdbSearchWorker extends MovieSearchWorker {
@@ -41,9 +41,21 @@ public class TmdbSearchWorker extends MovieSearchWorker {
   @Override
   protected String getUri() throws Exception {
     String uri = Settings.tmdbAPISearchUrl + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + URLEncoder.encode(searchTitle, "UTF-8");
-    if (config.movieScrapperFR) {
-      uri = uri.replace("/en/", "/fr/");
+    switch (config.movieScrapperLang) {
+      case FRENCH:
+        uri = uri.replace("/en/", "/fr/");
+        break;
+      case ITALIAN:
+        uri = uri.replace("/en/", "/it/");
+        break;
+      case SPANISH:
+        uri = uri.replace("/en/", "/es/");
+        break;
+      case ENGLISH:
+      default:
+        break;
     }
+
     return uri;
   }
 
@@ -51,7 +63,6 @@ public class TmdbSearchWorker extends MovieSearchWorker {
   protected MrParser<List<SearchResult>> getParser() throws Exception {
     return new TmdbSearch();
   }
-
   // @Override
   // protected ArrayList<SearchResult> performSearch(ArrayList<SearchResult> tmdbSearchResult) throws Exception {
   // for (SearchResult tmdbres : tmdbSearchResult) {
@@ -68,5 +79,4 @@ public class TmdbSearchWorker extends MovieSearchWorker {
   // }
   // return tmdbSearchResult;
   // }
-
 }

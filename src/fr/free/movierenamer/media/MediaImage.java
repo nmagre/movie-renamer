@@ -17,12 +17,45 @@
  */
 package fr.free.movierenamer.media;
 
+import java.io.Serializable;
+import java.util.Arrays;
+
 /**
  * Class Images
  *
  * @author Nicolas Magré
  */
-public class MediaImage {
+public class MediaImage implements Serializable{
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final MediaImage other = (MediaImage) obj;
+    if (this.id != other.id) {
+      return false;
+    }
+    if (this.type != other.type) {
+      return false;
+    }
+    if (!Arrays.deepEquals(this.images, other.images)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 43 * hash + this.id;
+    hash = 43 * hash + (this.type != null ? this.type.hashCode() : 0);
+    hash = 43 * hash + Arrays.deepHashCode(this.images);
+    return hash;
+  }
 
   public enum MediaImageType {
 

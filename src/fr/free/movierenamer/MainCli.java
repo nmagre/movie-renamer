@@ -93,10 +93,10 @@ public class MainCli {
           setting.locale = "en";
         } else {
           setting.locale = "fr";
+          setting.movieScrapperLang = Utils.Language.FRENCH;
+          setting.tvshowScrapperLang = Utils.Language.FRENCH;
         }
         Settings.xmlVersion = setting.getVersion();// Ensures that the settings file is written once only
-        setting.movieScrapperFR = setting.locale.equals("fr");
-        setting.tvshowScrapperFR = setting.locale.equals("fr");
       } else {
         saved = true;
       }

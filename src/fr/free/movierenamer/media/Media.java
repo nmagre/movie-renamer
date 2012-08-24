@@ -60,9 +60,10 @@ public interface Media {
   /**
    * Get renamed title
    *
+   * @param format Mr rename file format
    * @return Renamed title
    */
-  public String getRenamedTitle();
+  public String getRenamedTitle(String format);
 
   /**
    * Get Media API id

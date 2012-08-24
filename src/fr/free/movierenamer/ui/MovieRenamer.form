@@ -72,6 +72,33 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JLabel(new ImageIcon(getClass().getResource(&quot;/image/folder-video.png&quot;)), SwingConstants.TRAILING)"/>
       </AuxValues>
     </Component>
+    <Component class="javax.swing.JTextField" name="renameField">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="com.alee.laf.checkbox.WebCheckBox" name="thumbChk">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="thumb" replaceFormat="Utils.i18n(&quot;{key}&quot;)"/>
+        </Property>
+        <Property name="focusable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="com.alee.laf.checkbox.WebCheckBox" name="fanartChk">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fanart"/>
+        <Property name="focusable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="com.alee.laf.checkbox.WebCheckBox" name="nfoChk">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="nfoXbmc" replaceFormat="Utils.i18n(&quot;{key}&quot;)"/>
+        </Property>
+        <Property name="focusable" type="boolean" value="false"/>
+      </Properties>
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -195,6 +222,9 @@
               <Dimension value="[180, 27]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="fileFormatFieldKeyReleased"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -226,34 +256,9 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="renameBtnActionPerformed"/>
           </Events>
-        </Component>
-        <Component class="javax.swing.JTextField" name="renameField">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="jTextField1"/>
-            <Property name="enabled" type="boolean" value="false"/>
-          </Properties>
-        </Component>
-        <Component class="com.alee.laf.checkbox.WebCheckBox" name="thumbChk">
-          <Properties>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="thumb" replaceFormat="Utils.i18n(&quot;{key}&quot;)"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-          </Properties>
-        </Component>
-        <Component class="com.alee.laf.checkbox.WebCheckBox" name="fanartChk">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Fanart"/>
-            <Property name="focusable" type="boolean" value="false"/>
-          </Properties>
-        </Component>
-        <Component class="com.alee.laf.checkbox.WebCheckBox" name="nfoChk">
-          <Properties>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="nfoXbmc" replaceFormat="Utils.i18n(&quot;{key}&quot;)"/>
-            </Property>
-            <Property name="focusable" type="boolean" value="false"/>
-          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="//Add rename text field&#xa;renameTb.add(renameField, ToolbarLayout.FILL);&#xa;renameTb.add(thumbChk, ToolbarLayout.END);&#xa;renameTb.add(fanartChk, ToolbarLayout.END);&#xa;renameTb.add(nfoChk, ToolbarLayout.END);"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
@@ -401,6 +406,9 @@
                       <Properties>
                         <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="searchFieldKeyReleased"/>
+                      </Events>
                       <AuxValues>
                         <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="searchField.setLeadingComponent(new JLabel(new ImageIcon(Utils.getImageFromJAR(&quot;/image/search.png&quot;, getClass()))));"/>
                       </AuxValues>

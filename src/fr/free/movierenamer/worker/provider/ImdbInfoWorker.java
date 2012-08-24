@@ -23,6 +23,7 @@ import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.MovieInfoWorker;
 import java.beans.PropertyChangeSupport;
@@ -35,7 +36,7 @@ import java.util.logging.Level;
  * @author QUÉMÉNEUR Simon
  */
 public class ImdbInfoWorker extends MovieInfoWorker {
-
+  
   /**
    * Constructor arguments
    *
@@ -49,10 +50,46 @@ public class ImdbInfoWorker extends MovieInfoWorker {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
   }
+  
+  /**
+   * Constructor arguments
+   *
+   * @param errorSupport Swing change support
+   * @param id Media API ID
+   * @param ilang Set language
+   * @throws ActionNotValidException
+   */
+  public ImdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id, Utils.Language ilang) throws ActionNotValidException {
+    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new ImdbInfo()));
+    if (id.getType() != MediaID.MediaIdType.IMDBID) {
+      throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
+    }
+    config.movieScrapperLang = ilang;
+  }
 
   @Override
   protected final MovieInfo executeInBackground() throws Exception {
-    MovieInfo movieInfo = movieInfoWorker.startAndGet((config.movieScrapperFR ? Settings.imdbMovieUrl_fr : Settings.imdbMovieUrl) + id.getID() + "/combined");// Wait for movie info
+
+    String url;
+    switch(config.movieScrapperLang){
+      case ENGLISH:
+        url = Settings.imdbMovieUrl;
+        break;
+      case FRENCH:
+        url = Settings.imdbMovieUrl.replace("com", "fr");
+        break;
+      case ITALIAN:
+        url = Settings.imdbMovieUrl.replace("com", "it");
+        break;
+      case SPANISH:
+        url = Settings.imdbMovieUrl.replace("com", "es");
+        break;
+      default:
+        url = Settings.imdbMovieUrl;
+        break;
+    }
+    
+    MovieInfo movieInfo = movieInfoWorker.startAndGet(url+ id.getID() + "/combined");// Wait for movie info
 
     MovieImage mediaImage = null;
     try {

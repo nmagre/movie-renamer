@@ -22,71 +22,101 @@ import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class MovieImage
+ *
  * @author Magré Nicolas
  */
-public class MovieImage implements IMediaImage {
+public class MovieImage implements IMediaImage, Serializable {
+
   private List<MediaImage> thumbs;
   private List<MediaImage> fanarts;
 
-  public MovieImage(){
+  public MovieImage() {
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
   }
 
-  public List<MediaImage> getThumbs(){
+  public List<MediaImage> getThumbs() {
     return thumbs;
   }
-  
-  public List<MediaImage> getFanarts(){
+
+  public List<MediaImage> getFanarts() {
     return fanarts;
   }
-  
+
   @Override
   public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
-    switch(type){
+    switch (type) {
       case THUMB:
         return thumbs;
       case FANART:
         return fanarts;
-       default: throw new ActionNotValidException("Movie Image : mediatype " + type.name() + " not supported");
+      default:
+        throw new ActionNotValidException("Movie Image : mediatype " + type.name() + " not supported");
     }
   }
 
-  public void setThumbs(List<MediaImage> thumbs){
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final MovieImage other = (MovieImage) obj;
+    if (this.thumbs != other.thumbs && (this.thumbs == null || !this.thumbs.equals(other.thumbs))) {
+      return false;
+    }
+    if (this.fanarts != other.fanarts && (this.fanarts == null || !this.fanarts.equals(other.fanarts))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 17 * hash + (this.thumbs != null ? this.thumbs.hashCode() : 0);
+    hash = 17 * hash + (this.fanarts != null ? this.fanarts.hashCode() : 0);
+    return hash;
+  }
+
+  public void setThumbs(List<MediaImage> thumbs) {
     this.thumbs = thumbs;
   }
 
-  public void setFanarts(List<MediaImage> fanarts){
+  public void setFanarts(List<MediaImage> fanarts) {
     this.fanarts = fanarts;
   }
 
-  public void addThumb(MediaImage thumb){
+  public void addThumb(MediaImage thumb) {
     thumbs.add(thumb);
   }
 
-  public void addFanart(MediaImage fanart){
+  public void addFanart(MediaImage fanart) {
     fanarts.add(fanart);
   }
 
-  public void clearThumbs(){
+  public void clearThumbs() {
     thumbs.clear();
   }
 
-  public void clearFanarts(){
+  public void clearFanarts() {
     fanarts.clear();
   }
 
   @Override
-  public String toString(){
+  public String toString() {
     String res = "Thumbnails :\n  ";
-    res += Utils.arrayToString(thumbs.toArray(),"\n  " , 0);
+    res += Utils.arrayToString(thumbs.toArray(), "\n  ", 0);
     res += "\nFanarts :\n  ";
-    res += Utils.arrayToString(fanarts.toArray(),"\n  " , 0);
-   return res;
+    res += Utils.arrayToString(fanarts.toArray(), "\n  ", 0);
+    return res;
   }
 }

@@ -37,15 +37,9 @@ import org.xml.sax.SAXException;
  */
 public class ImdbInfo extends MrParser<MovieInfo> {
 
-  public enum ImdbLanguage {// TODO ,imdb.it, imdb.es, ....
-
-    ENGLISH,
-    FRENCH;
-  }
   private final MovieInfo movieInfo;
-  private final ImdbInfo.ImdbLanguage ilang = config.movieScrapperFR ? ImdbInfo.ImdbLanguage.FRENCH : ImdbInfo.ImdbLanguage.ENGLISH;
 
-  public enum ImdbPattern {// TODO ,imdb.it, imdb.es, ....
+  public enum ImdbPattern {// 0: ENGLISH, 1 : FRENCH, 2: ITALIAN, 3 : SPANISH
 
     IMDBMOVIETITLE("<title>(.* \\(.*\\d+.*\\).*)</title>"),
     IMDBMOVIETHUMB("title=\".*\" src=.http://ia.media-imdb.com/images/.*>"),
@@ -63,29 +57,30 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     IMDBMOVIECOUNTRY("<h5>((Country:)|(Pays:))</h5><div class=\"info-content\">(.*)<div class=\"info\""),
     IMDBMOVIESTUDIO("<h5>((Company:)|(Soci&#xE9;t&#xE9;:))</h5><div class=..*.><a href=..*.>(.*)</a><a"),
     IMDBTOP250("<a href=./chart/top\\?tt\\d{7}.>Top 250: #(\\d{1,3})</a>");
-    private Pattern[] pattern;
+    private Pattern[] patterns;
 
     private ImdbPattern(String... patterns) {
-      pattern = new Pattern[patterns.length];
+      this.patterns = new Pattern[patterns.length];
       for (int i = 0; i < patterns.length; i++) {
-        pattern[i] = Pattern.compile(patterns[i]);
+        this.patterns[i] = Pattern.compile(patterns[i]);
       }
     }
 
-    public Pattern getPattern(ImdbInfo.ImdbLanguage lang) {
-      if (pattern.length == 1) {
-        return pattern[0];
+    public Pattern getPattern(Utils.Language lang) {
+      if (lang.ordinal() >= patterns.length) {
+        return patterns[0];
       }
-      return pattern[lang.ordinal()];
+      return patterns[lang.ordinal()];
     }
 
-    public String getPatternString(ImdbInfo.ImdbLanguage lang) {
-      if (pattern.length == 1) {
-        return pattern[0].toString();
+    public String getPatternString(Utils.Language lang) {
+      if (lang.ordinal() >= patterns.length) {
+        return patterns[0].toString();
       }
-      return pattern[lang.ordinal()].toString();
+      return patterns[lang.ordinal()].toString();
     }
   }
+  
   /**
    * The exception to bypass parsing file ;)
    */
@@ -101,7 +96,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     String moviePage = getContent("ISO-8859-1");
     Pattern pattern;
     // Title + Year
-    Matcher searchMatcher = ImdbPattern.IMDBMOVIETITLE.getPattern(ilang).matcher(moviePage);
+    Matcher searchMatcher = ImdbPattern.IMDBMOVIETITLE.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String res = searchMatcher.group(1);
 
@@ -132,7 +127,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Thumb
-    searchMatcher = ImdbPattern.IMDBMOVIETHUMB.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIETHUMB.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String imdbThumb = searchMatcher.group();
       imdbThumb = imdbThumb.substring(imdbThumb.lastIndexOf("src=") + 5, imdbThumb.lastIndexOf("\""));
@@ -144,10 +139,10 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Original Title
-    searchMatcher = ImdbPattern.IMDBMOVIEORIGTITLE.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIEORIGTITLE.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String origTitle = searchMatcher.group().replace("&#x22;", "\"");
-      switch (ilang) {
+      switch (config.movieScrapperLang) {
         case FRENCH:
           origTitle = origTitle.substring(0, origTitle.lastIndexOf("\""));
           origTitle = origTitle.substring(origTitle.lastIndexOf(">"));
@@ -166,7 +161,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Runtime
-    searchMatcher = ImdbPattern.IMDBMOVIERUNTIME.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIERUNTIME.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String runtime = searchMatcher.group();
       runtime = runtime.substring(runtime.lastIndexOf(">") + 1, runtime.length() - 4);
@@ -176,7 +171,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Rating
-    searchMatcher = ImdbPattern.IMDBMOVIERATING.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIERATING.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String rating = searchMatcher.group();
       rating = rating.replaceAll("<b>", Utils.EMPTY).replaceAll("</b>", "").split("/")[0];
@@ -184,7 +179,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Votes
-    searchMatcher = ImdbPattern.IMDBMOVIEVOTES.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIEVOTES.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String votes = searchMatcher.group();
       votes = votes.substring(votes.lastIndexOf("\"") + 2, votes.lastIndexOf(" votes"));
@@ -192,7 +187,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Directors
-    searchMatcher = ImdbPattern.IMDBMOVIEDIRECTOR.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIEDIRECTOR.getPattern(config.movieScrapperLang).matcher(moviePage);
     while (searchMatcher.find()) {
       String director = searchMatcher.group();
       String imdbId = "";
@@ -207,7 +202,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Writers
-    searchMatcher = ImdbPattern.IMDBMOVIEWRITER.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIEWRITER.getPattern(config.movieScrapperLang).matcher(moviePage);
     while (searchMatcher.find()) {
       String writer = searchMatcher.group();
       writer = writer.substring(writer.indexOf(">") + 1, writer.lastIndexOf("<"));
@@ -215,7 +210,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // TagLine
-    searchMatcher = ImdbPattern.IMDBMOVIETAGLINE.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIETAGLINE.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String tagline = searchMatcher.group();
       tagline = tagline.substring(tagline.indexOf("\n") + 1, tagline.indexOf("<a") - 1);
@@ -223,7 +218,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Plot
-    searchMatcher = ImdbPattern.IMDBMOVIEPLOT.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIEPLOT.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String plot = searchMatcher.group();
       plot = plot.substring(plot.indexOf("\n") + 1, plot.indexOf("<a") - 1);
@@ -231,10 +226,10 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Genres
-    searchMatcher = ImdbPattern.IMDBMOVIEGENRE.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIEGENRE.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String found = "";
-      switch (ilang) {
+      switch (config.movieScrapperLang) {
         case FRENCH:
           found = searchMatcher.group().split("\n")[2];
           break;
@@ -248,7 +243,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       String[] genres = found.split("\\|");
       for (int i = 0; i < genres.length; i++) {
         String genre = "";
-        switch (ilang) {
+        switch (config.movieScrapperLang) {
           case FRENCH:
             genre = genres[i].trim();
             break;
@@ -266,11 +261,11 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Actors
-    searchMatcher = ImdbPattern.IMDBMOVIECAST.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIECAST.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String[] actors = searchMatcher.group().split("</tr>");
       for (int i = 0; i < actors.length; i++) {
-        Matcher matcher2 = ImdbPattern.IMDBMOVIEACTOR.getPattern(ilang).matcher(actors[i]);
+        Matcher matcher2 = ImdbPattern.IMDBMOVIEACTOR.getPattern(config.movieScrapperLang).matcher(actors[i]);
         boolean thumb = !actors[i].contains("no_photo");
         if (matcher2.find()) {
           String thumbactor = "";
@@ -322,7 +317,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Countries
-    searchMatcher = ImdbPattern.IMDBMOVIECOUNTRY.getPattern(ilang).matcher(moviePage);// FIXME , find "USA | Malaysia:18PL" instead of "USA" (E.g :bienvenue a zombiland with imdb.com)
+    searchMatcher = ImdbPattern.IMDBMOVIECOUNTRY.getPattern(config.movieScrapperLang).matcher(moviePage);// FIXME , find "USA | Malaysia:18PL" instead of "USA" (E.g :bienvenue a zombiland with imdb.com)
     if (searchMatcher.find()) {
       String country = searchMatcher.group();
       if (country.contains("/country/")) {
@@ -360,7 +355,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Studio
-    searchMatcher = ImdbPattern.IMDBMOVIESTUDIO.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBMOVIESTUDIO.getPattern(config.movieScrapperLang).matcher(moviePage);
     while (searchMatcher.find()) {
       String studio = searchMatcher.group();
       studio = studio.substring(studio.indexOf("<a"), studio.lastIndexOf("</a>"));
@@ -370,7 +365,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     }
 
     // Top 250
-    searchMatcher = ImdbPattern.IMDBTOP250.getPattern(ilang).matcher(moviePage);
+    searchMatcher = ImdbPattern.IMDBTOP250.getPattern(config.movieScrapperLang).matcher(moviePage);
     if (searchMatcher.find()) {
       String top250 = searchMatcher.group(1);
       if (top250 != null && Utils.isDigit(top250)) {

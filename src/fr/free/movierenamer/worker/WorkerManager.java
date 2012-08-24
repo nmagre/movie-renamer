@@ -27,6 +27,7 @@ import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.worker.provider.*;
 import java.beans.PropertyChangeSupport;
 import java.util.List;

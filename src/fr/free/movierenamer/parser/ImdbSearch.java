@@ -35,15 +35,15 @@ import org.xml.sax.SAXException;
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-public class ImdbSearch extends MrParser<List<SearchResult>> {
+public class ImdbSearch extends MrParser<List<SearchResult>> {// FIXME Process take longue time in some case, maybe a wrong regex ?
 
   private List<SearchResult> results;
-  private static final Pattern IMDBURL = Pattern.compile("http://www.imdb.com/title/tt\\d+/");
   private static final String CHARSET = "ISO-8859-1";
   private final URL realUrl;
 
   public enum ImdbPattern {
 
+    IMDBURL("http://www.imdb.com/title/tt\\d+/"),
     POPULARPATTERN(".*?Popular Titles.*?Displaying (\\d+)(.*?)</table>"),
     EXACTPATTERN("Titles \\(Exact Matches.*?Displaying (\\d+)(.*?)</table>"),
     PARTIALPATTERN("Titles \\(Partial.*?Displaying (\\d+)(.*?)</table>"),
@@ -83,7 +83,7 @@ public class ImdbSearch extends MrParser<List<SearchResult>> {
     String htmlSearchRes = getContent(CHARSET);
 
     if (htmlSearchRes != null && !htmlSearchRes.contains("<b>No Matches.</b>")) {
-      Matcher moviePageMatcher = IMDBURL.matcher(realUrl.toString());
+      Matcher moviePageMatcher = ImdbPattern.IMDBURL.getPattern().matcher(realUrl.toString());
       boolean searchPage = !moviePageMatcher.find();
 
       if (searchPage) {

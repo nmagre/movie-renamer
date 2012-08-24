@@ -18,6 +18,7 @@
 package fr.free.movierenamer.media;
 
 import fr.free.movierenamer.utils.ActionNotValidException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ import java.util.List;
  *
  * @author Nicolas Magré
  */
-public class MediaPerson {
+public class MediaPerson implements Serializable {
 
   public static final int ACTOR = 0;
   public static final int DIRECTOR = 1;
@@ -144,6 +145,44 @@ public class MediaPerson {
     } else {
       roles.add(role);
     }
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final MediaPerson other = (MediaPerson) obj;
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if ((this.thumb == null) ? (other.thumb != null) : !this.thumb.equals(other.thumb)) {
+      return false;
+    }
+    if (this.job != other.job) {
+      return false;
+    }
+    if (this.roles != other.roles && (this.roles == null || !this.roles.equals(other.roles))) {
+      return false;
+    }
+    if ((this.imdbId == null) ? (other.imdbId != null) : !this.imdbId.equals(other.imdbId)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
+    hash = 89 * hash + (this.thumb != null ? this.thumb.hashCode() : 0);
+    hash = 89 * hash + this.job;
+    hash = 89 * hash + (this.roles != null ? this.roles.hashCode() : 0);
+    hash = 89 * hash + (this.imdbId != null ? this.imdbId.hashCode() : 0);
+    return hash;
   }
 
   @Override

@@ -17,13 +17,14 @@
  */
 package fr.free.movierenamer.media.movie;
 
-import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.matcher.MovieNameMatcher;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;
 import fr.free.movierenamer.media.*;
+import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +34,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Magré
  */
-public class Movie implements Media {
+public class Movie implements Media{
 
   private MediaID mediaId;
   private MediaFile movieFile;
@@ -41,6 +42,11 @@ public class Movie implements Media {
   private MediaTag mtag;
   private String search;
   private String year;
+  public enum NFO {
+    XBMC,
+    MEDIAPORTAL,
+    YAMJ
+  }
 
   /**
    * Constructor arguments
@@ -91,19 +97,19 @@ public class Movie implements Media {
     }
     return Integer.parseInt(year);
   }
-  
-  public MediaTag getMediaTag(){
+
+  public MediaTag getMediaTag() {
     return mtag;
   }
 
   /**
    * Get renamed movie title
    *
+   * @param regExp Mr rename rgex
    * @return Movie title renamed
    */
   @Override
-  public String getRenamedTitle() {// TODO ajouter le dossier (dépend des options)
-    String regExp = conf.movieFilenameFormat;
+  public String getRenamedTitle(String regExp) {// TODO ajouter le dossier (dépend des options)
     String separator = conf.movieFilenameSeparator;
     int limit = conf.movieFilenameLimit;
     Utils.CaseConversionType renameCase = conf.movieFilenameCase;
@@ -115,8 +121,8 @@ public class Movie implements Media {
     Pattern pattern = Pattern.compile("^((le|la|les|the)\\s|(l\\'))(.*)", Pattern.CASE_INSENSITIVE);
     Matcher matcher = pattern.matcher(movieinfo.getTitle());
     if (matcher.find() && matcher.groupCount() >= 2) {
-      titlePrefix = matcher.group(1);
-      shortTitle = matcher.group(matcher.groupCount());
+      titlePrefix = matcher.group(1).trim();
+      shortTitle = matcher.group(matcher.groupCount()).trim();
     }
 
     String runtime = "";
@@ -125,7 +131,7 @@ public class Movie implements Media {
     }
 
     String[][] replace = new String[][]{
-      {"<t>", "<tp><st>"},
+      {"<t>", movieinfo.getTitle()},
       {"<tp>", titlePrefix},
       {"<st>", shortTitle},
       {"<ot>", movieinfo.getOrigTitle()},
@@ -260,10 +266,10 @@ public class Movie implements Media {
   }
 
   @Override
-  public List<MediaPerson> getActors(){
+  public List<MediaPerson> getActors() {
     return movieinfo.getActors();
   }
-  
+
   @Override
   public MediaID getMediaId(MediaID.MediaIdType IDtype) {
     if (mediaId.getType() == IDtype) {
@@ -306,7 +312,7 @@ public class Movie implements Media {
   public void setSearch(String search) {
     this.search = search;
   }
-  
+
   /**
    * Set default search
    */
@@ -348,7 +354,18 @@ public class Movie implements Media {
     nfo.append("  <playcount>").append(movieinfo.getWatched() ? "1" : "0").append("</playcount>\n");
     nfo.append("  <watched>").append(movieinfo.getWatched() ? "true" : "false").append("</watched>\n");
     nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
-    nfo.append("  <id>").append(mediaId.getID()).append("</id>\n");
+    
+    MediaID imdbID = getMediaId(MediaID.MediaIdType.IMDBID);
+    if(imdbID != null){
+      nfo.append("  <id>").append(imdbID).append("</id>\n");
+    }
+    for(MediaID id : movieinfo.getIDs()){
+      if(id.getType() != MediaID.MediaIdType.IMDBID) {
+        nfo.append("  <").append(id.getType().name()).append("id>").append(imdbID);
+        nfo.append("</").append(id.getType().name()).append("id>\n");
+      }
+    }
+    
     nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
     nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
     nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
@@ -359,6 +376,91 @@ public class Movie implements Media {
       nfo.append("  <credits>").append(Utils.escapeXML(personn.get(i).getName())).append("</credits>\n");
     }
 
+    personn = movieinfo.getDirectors();
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");
+    }
+
+    nfo.append("  <trailer>").append(movieinfo.getTrailer()).append("</trailer>\n");
+
+    personn = movieinfo.getActors();
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <actor>\n");
+      nfo.append("    <name>").append(Utils.escapeXML(personn.get(i).getName())).append("</name>\n");
+      for (int j = 0; j < personn.get(i).getRoles().size(); j++) {
+        nfo.append("    <role>").append(Utils.escapeXML(personn.get(i).getRoles().get(j))).append("</role>\n");
+      }
+      nfo.append("    <thumb>").append(personn.get(i).getThumb()).append("</thumb>\n");
+      nfo.append("  </actor>\n");
+    }
+
+    List<MediaImage> thumbs = movieinfo.getThumbs();
+    for (int i = 0; i < thumbs.size(); i++) {
+      nfo.append("  <thumb preview=\"").append(thumbs.get(i).getUrl(MediaImage.MediaImageSize.THUMB));
+      nfo.append("\">").append(thumbs.get(i).getUrl(MediaImage.MediaImageSize.ORIGINAL)).append("</thumb>\n");
+    }
+
+    List<MediaImage> fanarts = movieinfo.getFanarts();
+    nfo.append("  <fanart>");
+    for (int i = 0; i < fanarts.size(); i++) {
+      nfo.append("\n    <thumb preview=\"").append(fanarts.get(i).getUrl(MediaImage.MediaImageSize.THUMB)).append("\">");
+      nfo.append(fanarts.get(i).getUrl(MediaImage.MediaImageSize.ORIGINAL)).append("</thumb>");
+    }
+    if (fanarts.size() > 0) {
+      nfo.append("\n  ");
+    }
+    nfo.append("</fanart>\n");
+    nfo.append("</movie>");
+    return nfo.toString();
+  }
+
+  /**
+   * Generate YAMJ NFO file
+   *
+   * @return YAMJ NFO file
+   */
+  public String getYamjNFOFromMovie() {
+
+    StringBuilder nfo = new StringBuilder();
+    nfo.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n<movie>\n");
+    nfo.append("  <title>").append(Utils.escapeXML(movieinfo.getTitle())).append("</title>\n");
+    nfo.append("  <originaltitle>").append(Utils.escapeXML(movieinfo.getOrigTitle())).append("</originaltitle>\n");
+    nfo.append("  <sorttitle>").append(Utils.escapeXML(movieinfo.getSortTitle())).append("</sorttitle>\n");
+    nfo.append("  <rating>").append(Utils.escapeXML(movieinfo.getRating())).append("</rating>\n");
+    nfo.append("  <votes>").append(movieinfo.getVotes()).append("</votes>\n");
+    nfo.append("  <year>").append(Utils.escapeXML(movieinfo.getYear())).append("</year>\n");
+    nfo.append("  <plot>").append(Utils.escapeXML(movieinfo.getSynopsis())).append("</plot>\n");
+    nfo.append("  <outline>").append(Utils.escapeXML(movieinfo.getOutline())).append("</outline>\n");
+    nfo.append("  <tagline>").append(Utils.escapeXML(movieinfo.getTagline())).append("</tagline>\n");
+    nfo.append("  <runtime>").append(movieinfo.getRuntime().equals("-1") ? "" : movieinfo.getRuntime()).append("</runtime>\n");
+    nfo.append("  <top250>").append(movieinfo.getTop250()).append("</top250>\n");
+    nfo.append("  <playcount>").append(movieinfo.getWatched() ? "1" : "0").append("</playcount>\n");
+    nfo.append("  <watched>").append(movieinfo.getWatched() ? "true" : "false").append("</watched>\n");
+    nfo.append("  <mpaa>").append(Utils.escapeXML(movieinfo.getMpaa())).append("</mpaa>\n");
+    
+    MediaID imdbID = getMediaId(MediaID.MediaIdType.IMDBID);
+    if(imdbID != null){
+      nfo.append("  <id>").append(imdbID).append("</id>\n");
+    }
+    for(MediaID id : movieinfo.getIDs()){
+      if(id.getType() != MediaID.MediaIdType.IMDBID) {
+        nfo.append("  <").append(id.getType().name()).append("id>").append(imdbID);
+        nfo.append("</").append(id.getType().name()).append("id>\n");
+      }
+    }
+    
+    nfo.append(printArrayString(movieinfo.getSet(), "set", "  "));
+    nfo.append(printArrayString(movieinfo.getGenres(), "genre", "  "));
+    nfo.append(printArrayString(movieinfo.getCountries(), "country", "  "));
+    nfo.append(printArrayString(movieinfo.getStudios(), "studio", "  "));
+
+    List<MediaPerson> personn = movieinfo.getWriters();
+    nfo.append("<credits>\n");
+    for (int i = 0; i < personn.size(); i++) {
+      nfo.append("  <writer>").append(Utils.escapeXML(personn.get(i).getName())).append("</writer>\n");
+    }
+    nfo.append("</credits>\n");
+    
     personn = movieinfo.getDirectors();
     for (int i = 0; i < personn.size(); i++) {
       nfo.append("  <director>").append(Utils.escapeXML(personn.get(i).getName())).append("</director>\n");

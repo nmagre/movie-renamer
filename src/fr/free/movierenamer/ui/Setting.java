@@ -17,7 +17,15 @@
  */
 package fr.free.movierenamer.ui;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.radiobutton.WebRadioButton;
+import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.Main;
+import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -63,6 +71,7 @@ public class Setting extends JDialog {
   private JRadioButton[] rBtnCase;
   private JRadioButton[] rBtnFolderCase;
   private JRadioButton[] rBtnScrapper;
+  private JRadioButton[] rBtnNFO;
   private String[][] format = {
     {"<t>", "Matrix"}, {"<ot>", "The Matrix"}, {"<y>", "1999"}, {"<tt>", "tt0133093"},
     {"<a>", "Keanu Reeves | Laurence Fishburne | Carrie-Anne Moss | Hugo Weaving | Gloria Foster"},
@@ -94,6 +103,7 @@ public class Setting extends JDialog {
     rBtnCase = new JRadioButton[]{this.firstLoRbtn, this.firstLaRbtn, this.upperRbtn, this.lowerRbtn, this.noneRbtn};
     rBtnFolderCase = new JRadioButton[]{this.firstLoFolderRbtn, this.firstLaFolderRbtn, this.upperFolderRbtn, this.lowerFolderRbtn, this.noneFolderRbtn};
     rBtnScrapper = new JRadioButton[]{this.imdbRBtn, this.tmdbRbtn, this.allocineRbtn};
+    rBtnNFO = new JRadioButton[]{this.xbmcNFORBtn, this.mediaPortalNFORBtn, this.yamjChk};
     this.setting = setting;
     extensions = setting.extensions;
     filters = new ArrayList<String>(setting.mediaNameFilters);// Fixed ref for equals method
@@ -152,8 +162,7 @@ public class Setting extends JDialog {
     englishRbtn.setSelected(!setting.locale.equals("fr"));
     frenchRbtn.setSelected(setting.locale.equals("fr"));
 
-    xbmcNFORBtn.setSelected(setting.nfoType == 0);
-    mediaPortalNFORBtn.setSelected(setting.nfoType == 1);
+    nfoGroup.setSelected(rBtnNFO[setting.nfoType.ordinal()].getModel(), true); 
 
     // Rename Setting
     formatField.setText(setting.movieFilenameFormat);
@@ -182,8 +191,12 @@ public class Setting extends JDialog {
 
     // Search
     displayAppResultCheckBox.setSelected(setting.displayApproximateResult);
-    scrapperFrRbtn.setSelected(setting.movieScrapperFR);
-    scrapperEnRbtn.setSelected(!setting.movieScrapperFR);
+    
+    //FIXME language
+    //scrapperFrRbtn.setSelected(setting.movieScrapperFR);
+    //scrapperEnRbtn.setSelected(!setting.movieScrapperFR);
+    
+    
     displayThumbResultChk.setSelected(setting.displayThumbResult);
     scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper.ordinal()].getModel(), true);
     sortbySimiChk.setSelected(setting.sortBySimiYear);
@@ -318,7 +331,9 @@ public class Setting extends JDialog {
         nfoGroup = new ButtonGroup();
         scrapperGroup = new ButtonGroup();
         caseFolderGroup = new ButtonGroup();
-        settingTabPan = new JTabbedPane();
+        saveBtn = new JButton();
+        CancelBtn = new JButton();
+        webTabbedPane1 = new WebTabbedPane();
         generalPnl = new JPanel();
         languagePnl = new JPanel();
         englishRbtn = new JRadioButton();
@@ -337,6 +352,7 @@ public class Setting extends JDialog {
         nfoPnl = new JPanel();
         xbmcNFORBtn = new JRadioButton();
         mediaPortalNFORBtn = new JRadioButton();
+        yamjChk = new WebRadioButton();
         renamePnl = new JPanel();
         renameTabPan = new JTabbedPane();
         movieFileNamePnl = new JPanel();
@@ -455,13 +471,44 @@ public class Setting extends JDialog {
         proxyUrlField = new JTextField();
         jLabel2 = new JLabel();
         proxyPortField = new JTextField();
-        saveBtn = new JButton();
-        CancelBtn = new JButton();
+        webPanel1 = new WebPanel();
+        webPanel2 = new WebPanel();
+        jScrollPane1 = new JScrollPane();
+        webList1 = new WebList();
+        webButton1 = new WebButton();
+        webButton2 = new WebButton();
+        webButton3 = new WebButton();
+        webTextField1 = new WebTextField();
+        webButton4 = new WebButton();
+        webLabel1 = new WebLabel();
+        jLabel3 = new JLabel();
+        webTextField2 = new WebTextField();
+        helpBtn2 = new JButton();
+        webButton5 = new WebButton();
 
         setTitle("Movie Renamer Settings");
         setResizable(false);
 
-        generalPnl.setFont(new Font("Ubuntu", 1, 14)); ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
+        saveBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         ResourceBundle bundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle"); // NOI18N
+        saveBtn.setText(bundle.getString("save")); // NOI18N
+        saveBtn.setToolTipText(bundle.getString("save")); // NOI18N
+        saveBtn.setMargin(new Insets(2, 2, 2, 2));
+        saveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                saveBtnActionPerformed(evt);
+            }
+        });
+
+        CancelBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2.png")));         CancelBtn.setText(bundle.getString("cancel")); // NOI18N
+        CancelBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
+        CancelBtn.setMargin(new Insets(2, 2, 2, 2));
+        CancelBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                CancelBtnActionPerformed(evt);
+            }
+        });
+
+        generalPnl.setFont(new Font("Ubuntu", 1, 14)); 
         languagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14)));         languagePnl.setToolTipText("Under development");
 
         languageGroup.add(englishRbtn);
@@ -482,7 +529,7 @@ public class Setting extends JDialog {
                 .addComponent(englishRbtn)
                 .addGap(18, 18, 18)
                 .addComponent(frenchRbtn)
-                .addPreferredGap(ComponentPlacement.RELATED, 193, Short.MAX_VALUE)
+                .addPreferredGap(ComponentPlacement.RELATED, 224, Short.MAX_VALUE)
                 .addComponent(lwarningLbl)
                 .addContainerGap())
         );
@@ -507,7 +554,7 @@ public class Setting extends JDialog {
             .addGroup(updatePnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(checkUpdateChk)
-                .addContainerGap(261, Short.MAX_VALUE))
+                .addContainerGap(292, Short.MAX_VALUE))
         );
         updatePnlLayout.setVerticalGroup(
             updatePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -563,7 +610,7 @@ public class Setting extends JDialog {
                             .addComponent(thumbsChk)
                             .addComponent(actorImageChk)
                             .addComponent(fanartsChk))))
-                .addContainerGap(225, Short.MAX_VALUE))
+                .addContainerGap(256, Short.MAX_VALUE))
         );
         interfacePnlLayout.setVerticalGroup(
             interfacePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -590,6 +637,9 @@ public class Setting extends JDialog {
         nfoGroup.add(mediaPortalNFORBtn);
         mediaPortalNFORBtn.setFont(new Font("Ubuntu", 0, 12));         mediaPortalNFORBtn.setText(bundle.getString("nfoMediaPortal")); // NOI18N
 
+        nfoGroup.add(yamjChk);
+        yamjChk.setText("YAMJ NFO");
+        yamjChk.setFont(new Font("Ubuntu", 0, 12)); 
         GroupLayout nfoPnlLayout = new GroupLayout(nfoPnl);
         nfoPnl.setLayout(nfoPnlLayout);
         nfoPnlLayout.setHorizontalGroup(
@@ -599,7 +649,9 @@ public class Setting extends JDialog {
                 .addComponent(xbmcNFORBtn)
                 .addGap(18, 18, 18)
                 .addComponent(mediaPortalNFORBtn)
-                .addContainerGap(233, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(yamjChk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         nfoPnlLayout.setVerticalGroup(
             nfoPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -607,7 +659,8 @@ public class Setting extends JDialog {
                 .addContainerGap()
                 .addGroup(nfoPnlLayout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(xbmcNFORBtn)
-                    .addComponent(mediaPortalNFORBtn))
+                    .addComponent(mediaPortalNFORBtn)
+                    .addComponent(yamjChk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -635,10 +688,10 @@ public class Setting extends JDialog {
                 .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab(bundle.getString("general"), generalPnl); // NOI18N
+        webTabbedPane1.addTab(bundle.getString("general"), generalPnl); // NOI18N
 
         renamePnl.setFont(new Font("Ubuntu", 1, 14)); 
         movieFileNamePnl.setBorder(null);
@@ -721,7 +774,7 @@ public class Setting extends JDialog {
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(limitField, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE))
                             .addComponent(caseLbl))
-                        .addContainerGap(210, Short.MAX_VALUE))
+                        .addContainerGap(241, Short.MAX_VALUE))
                     .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                         .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
                             .addGroup(movieFileNamePnlLayout.createSequentialGroup()
@@ -881,7 +934,7 @@ public class Setting extends JDialog {
                                             .addComponent(lowerFolderRbtn)))
                                     .addComponent(rmDupSpaceFolderChk)
                                     .addComponent(rmSpcCharFolderChk))
-                                .addGap(0, 198, Short.MAX_VALUE)))
+                                .addGap(0, 229, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(movieFolderTabPanLayout.createSequentialGroup()
                         .addGroup(movieFolderTabPanLayout.createParallelGroup(Alignment.LEADING)
@@ -948,7 +1001,7 @@ public class Setting extends JDialog {
         movieFileNamePnl1.setLayout(movieFileNamePnl1Layout);
         movieFileNamePnl1Layout.setHorizontalGroup(
             movieFileNamePnl1Layout.createParallelGroup(Alignment.LEADING)
-            .addGap(0, 469, Short.MAX_VALUE)
+            .addGap(0, 500, Short.MAX_VALUE)
         );
         movieFileNamePnl1Layout.setVerticalGroup(
             movieFileNamePnl1Layout.createParallelGroup(Alignment.LEADING)
@@ -971,12 +1024,12 @@ public class Setting extends JDialog {
             .addGroup(renamePnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(renameTabPan, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(65, Short.MAX_VALUE))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         renameTabPan.getAccessibleContext().setAccessibleName(bundle.getString("movieFileName")); // NOI18N
 
-        settingTabPan.addTab(bundle.getString("rename"), renamePnl); // NOI18N
+        webTabbedPane1.addTab(bundle.getString("rename"), renamePnl); // NOI18N
 
         imdbSearchPnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("result"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         displayAppResultCheckBox.setFont(new Font("Ubuntu", 0, 12));         displayAppResultCheckBox.setText(bundle.getString("showAppRes")); // NOI18N
@@ -1027,7 +1080,7 @@ public class Setting extends JDialog {
                                 .addPreferredGap(ComponentPlacement.RELATED)
                                 .addComponent(limitResultLbl))
                             .addComponent(sortbySimiChk))
-                        .addGap(0, 132, Short.MAX_VALUE)))
+                        .addGap(0, 163, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         imdbSearchPnlLayout.setVerticalGroup(
@@ -1084,7 +1137,7 @@ public class Setting extends JDialog {
                 .addComponent(tmdbRbtn)
                 .addGap(18, 18, 18)
                 .addComponent(allocineRbtn)
-                .addContainerGap(226, Short.MAX_VALUE))
+                .addContainerGap(257, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(Alignment.LEADING)
@@ -1113,7 +1166,7 @@ public class Setting extends JDialog {
                 .addComponent(scrapperFrRbtn)
                 .addGap(18, 18, 18)
                 .addComponent(scrapperEnRbtn)
-                .addContainerGap(304, Short.MAX_VALUE))
+                .addContainerGap(335, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(Alignment.LEADING)
@@ -1183,7 +1236,7 @@ public class Setting extends JDialog {
                 .addComponent(tmdbRbtn1)
                 .addGap(18, 18, 18)
                 .addComponent(allocineRbtn1)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addContainerGap(252, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(Alignment.LEADING)
@@ -1213,7 +1266,7 @@ public class Setting extends JDialog {
                 .addComponent(scrapperFrRbtn1)
                 .addGap(18, 18, 18)
                 .addComponent(scrapperEnRbtn1)
-                .addContainerGap(304, Short.MAX_VALUE))
+                .addContainerGap(335, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(Alignment.LEADING)
@@ -1259,10 +1312,10 @@ public class Setting extends JDialog {
             .addGroup(SearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(107, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
+        webTabbedPane1.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
 
         movieImagePnl.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("imageExt"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         thumbExtCbBox.setModel(new DefaultComboBoxModel(new String[] { ".jpg", ".tbn", "-thumb.jpg" }));
@@ -1278,7 +1331,7 @@ public class Setting extends JDialog {
                 .addComponent(thumnailsExtLbl)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(thumbExtCbBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(267, Short.MAX_VALUE))
+                .addContainerGap(298, Short.MAX_VALUE))
         );
         movieImagePnlLayout.setVerticalGroup(
             movieImagePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1337,7 +1390,7 @@ public class Setting extends JDialog {
                             .addComponent(midFanartSizeRBtn)
                             .addComponent(origFanartSizeRBtn)
                             .addComponent(thumbFanartSizeRBtn))))
-                .addContainerGap(186, Short.MAX_VALUE))
+                .addContainerGap(217, Short.MAX_VALUE))
         );
         imagesPnlLayout.setVerticalGroup(
             imagesPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1377,10 +1430,10 @@ public class Setting extends JDialog {
                 .addComponent(movieImagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(imagesPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(325, Short.MAX_VALUE))
+                .addContainerGap(268, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab("Image", jPanel1);
+        webTabbedPane1.addTab("Image", jPanel1);
 
         extensionPnl.setBorder(BorderFactory.createTitledBorder(null, "Extension", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         removeExtensuionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeExtensuionBtn.setToolTipText(bundle.getString("removeExt")); // NOI18N
@@ -1423,7 +1476,7 @@ public class Setting extends JDialog {
                         .addComponent(addExtensionBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(removeExtensuionBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE))
-                    .addComponent(extensionScrollP, GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                    .addComponent(extensionScrollP)
                     .addComponent(useExtensionFilterChk))
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(extensionHelp, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
@@ -1509,13 +1562,13 @@ public class Setting extends JDialog {
                         .addComponent(moveLeft, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(moveRight, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                        .addPreferredGap(ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
                         .addComponent(addFilter, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(removeFilterBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12))
                     .addGroup(fileNameFilterPnlLayout.createSequentialGroup()
-                        .addComponent(filterScrollP, GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                        .addComponent(filterScrollP)
                         .addPreferredGap(ComponentPlacement.UNRELATED)))
                 .addGroup(fileNameFilterPnlLayout.createParallelGroup(Alignment.LEADING, false)
                     .addComponent(filenameFilterHelp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1560,10 +1613,10 @@ public class Setting extends JDialog {
                 .addComponent(extensionPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(121, Short.MAX_VALUE))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
+        webTabbedPane1.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
 
         imagePnl.setBorder(BorderFactory.createTitledBorder(null, "Image", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         actorCacheLbl.setFont(new Font("Ubuntu", 1, 13));         actorCacheLbl.setText(bundle.getString("useForActor")); // NOI18N
@@ -1603,7 +1656,7 @@ public class Setting extends JDialog {
                     .addComponent(thumbCacheLbl)
                     .addComponent(fanartCacheLbl)
                     .addComponent(actorCacheLbl))
-                .addPreferredGap(ComponentPlacement.RELATED, 259, Short.MAX_VALUE)
+                .addPreferredGap(ComponentPlacement.RELATED, 290, Short.MAX_VALUE)
                 .addGroup(imagePnlLayout.createParallelGroup(Alignment.LEADING, false)
                     .addComponent(clearActorBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(clearFanartBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1649,7 +1702,7 @@ public class Setting extends JDialog {
                 .addGroup(xmlFilePnlLayout.createParallelGroup(Alignment.LEADING)
                     .addGroup(xmlFilePnlLayout.createSequentialGroup()
                         .addComponent(xmlLbl)
-                        .addPreferredGap(ComponentPlacement.RELATED, 271, Short.MAX_VALUE)
+                        .addPreferredGap(ComponentPlacement.RELATED, 302, Short.MAX_VALUE)
                         .addComponent(clearXmlBtn))
                     .addGroup(xmlFilePnlLayout.createSequentialGroup()
                         .addComponent(clearXmlCacheOnStartChk)
@@ -1686,10 +1739,10 @@ public class Setting extends JDialog {
                 .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(239, Short.MAX_VALUE))
+                .addContainerGap(182, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab("Cache", cachePnl);
+        webTabbedPane1.addTab("Cache", cachePnl);
 
         proxySubPanel.setBorder(BorderFactory.createTitledBorder(null, "Proxy", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         useProxyChk.setFont(new Font("Ubuntu", 1, 13));         useProxyChk.setText(bundle.getString("useProxy")); // NOI18N
@@ -1714,7 +1767,7 @@ public class Setting extends JDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(proxyPortField, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         proxySubPanelLayout.setVerticalGroup(
             proxySubPanelLayout.createParallelGroup(Alignment.LEADING)
@@ -1744,49 +1797,145 @@ public class Setting extends JDialog {
             .addGroup(proxyPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(proxySubPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(422, Short.MAX_VALUE))
+                .addContainerGap(365, Short.MAX_VALUE))
         );
 
-        settingTabPan.addTab("Proxy", proxyPanel);
+        webTabbedPane1.addTab("Proxy", proxyPanel);
 
-        saveBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-ok-2.png")));         saveBtn.setText(bundle.getString("save")); // NOI18N
-        saveBtn.setToolTipText(bundle.getString("save")); // NOI18N
-        saveBtn.setMargin(new Insets(2, 2, 2, 2));
-        saveBtn.addActionListener(new ActionListener() {
+        webPanel2.setBorder(BorderFactory.createTitledBorder(null, "Run script after rename process", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 14))); 
+        webList1.setModel(new AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(webList1);
+
+        webButton1.setText("Disabled");
+
+        webButton2.setText("Remove");
+
+        webButton3.setText("add");
+
+        webTextField1.setEditable(false);
+
+        webButton4.setText("...");
+
+        webLabel1.setText("Script");
+        webLabel1.setFont(new Font("DejaVu Sans", 1, 13)); 
+        jLabel3.setFont(new Font("DejaVu Sans", 1, 13));         jLabel3.setText("Args");
+
+        helpBtn2.setIcon(new ImageIcon(getClass().getResource("/image/system-help-3.png")));         helpBtn2.setToolTipText(bundle.getString("help")); // NOI18N
+        helpBtn2.setMaximumSize(new Dimension(26, 26));
+        helpBtn2.setMinimumSize(new Dimension(26, 26));
+        helpBtn2.setPreferredSize(new Dimension(26, 26));
+        helpBtn2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                saveBtnActionPerformed(evt);
+                helpBtn2ActionPerformed(evt);
             }
         });
 
-        CancelBtn.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2.png")));         CancelBtn.setText(bundle.getString("cancel")); // NOI18N
-        CancelBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
-        CancelBtn.setMargin(new Insets(2, 2, 2, 2));
-        CancelBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                CancelBtnActionPerformed(evt);
-            }
-        });
+        webButton5.setText("Run");
+
+        GroupLayout webPanel2Layout = new GroupLayout(webPanel2);
+        webPanel2.setLayout(webPanel2Layout);
+        webPanel2Layout.setHorizontalGroup(
+            webPanel2Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(webPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(webPanel2Layout.createParallelGroup(Alignment.LEADING)
+                    .addGroup(webPanel2Layout.createSequentialGroup()
+                        .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(webTextField1, GroupLayout.PREFERRED_SIZE, 384, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(webButton4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(webPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(21, 21, 21)
+                        .addComponent(webTextField2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(webPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 289, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
+                        .addGroup(webPanel2Layout.createParallelGroup(Alignment.LEADING)
+                            .addGroup(webPanel2Layout.createSequentialGroup()
+                                .addComponent(webButton1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(helpBtn2, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
+                            .addGroup(webPanel2Layout.createSequentialGroup()
+                                .addGroup(webPanel2Layout.createParallelGroup(Alignment.LEADING)
+                                    .addComponent(webButton2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(webButton5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(webButton3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        webPanel2Layout.setVerticalGroup(
+            webPanel2Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(webPanel2Layout.createSequentialGroup()
+                .addGroup(webPanel2Layout.createParallelGroup(Alignment.LEADING)
+                    .addGroup(webPanel2Layout.createSequentialGroup()
+                        .addComponent(webButton1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(webButton2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(webButton5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addComponent(helpBtn2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(webPanel2Layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(webTextField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(webButton4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addGroup(webPanel2Layout.createParallelGroup(Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(webTextField2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(webButton3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        GroupLayout webPanel1Layout = new GroupLayout(webPanel1);
+        webPanel1.setLayout(webPanel1Layout);
+        webPanel1Layout.setHorizontalGroup(
+            webPanel1Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(webPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(webPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        webPanel1Layout.setVerticalGroup(
+            webPanel1Layout.createParallelGroup(Alignment.LEADING)
+            .addGroup(webPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(webPanel2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(384, Short.MAX_VALUE))
+        );
+
+        webTabbedPane1.addTab("Script", webPanel1);
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-                    .addComponent(settingTabPan, Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(webTabbedPane1, GroupLayout.PREFERRED_SIZE, 534, GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(Alignment.LEADING)
-            .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(settingTabPan)
-                .addGap(18, 18, 18)
+                .addComponent(webTabbedPane1, GroupLayout.PREFERRED_SIZE, 509, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(saveBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
                     .addComponent(CancelBtn, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
@@ -1932,7 +2081,7 @@ public class Setting extends JDialog {
     }
 
 
-    if (!formatField.getText().contains("<t>") && !formatField.getText().contains("<ot>")) {
+    if (!formatField.getText().contains("<t>") && !formatField.getText().contains("<ot>") && !formatField.getText().contains("<st>")) {
       JOptionPane.showMessageDialog(this, Utils.i18n("noTitle"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
@@ -2002,6 +2151,12 @@ public class Setting extends JDialog {
         setting.movieScrapper = WorkerManager.MovieScrapper.values()[i];
       }
     }
+    
+    for (int i = 0; i < rBtnNFO.length; i++) {
+      if (rBtnNFO[i].isSelected()) {
+        setting.nfoType = Movie.NFO.values()[i];
+      }
+    }
 
     setting.movieFilenameTrim = rmSpcCharChk.isSelected();
     setting.movieFilenameRmDupSpace = rmDupSpaceChk.isSelected();
@@ -2013,18 +2168,19 @@ public class Setting extends JDialog {
     setting.movieFolderRmDupSpace = rmDupSpaceFolderChk.isSelected();
 
     //Search
-    setting.movieScrapperFR = scrapperFrRbtn.isSelected();
+    
+    //FIXME language
+    //setting.movieScrapperFR = scrapperFrRbtn.isSelected();
+    
     setting.displayThumbResult = displayThumbResultChk.isSelected();
     setting.sortBySimiYear = sortbySimiChk.isSelected();
     setting.displayApproximateResult = displayAppResultCheckBox.isSelected();
     setting.nbResult = limitResultComboBox.getSelectedIndex();
-    setting.nfoType = xbmcNFORBtn.isSelected() ? 0 : 1;
-
+    
     // Movie Files
     setting.movieFilenameFormat = formatField.getText();
     setting.movieFilenameCreateDirectory = createDirChk.isSelected();
     setting.thumbExt = thumbExtCbBox.getSelectedIndex();
-
 
     setting.movieFilenameSeparator = separatorField.getText();
 
@@ -2131,6 +2287,10 @@ public class Setting extends JDialog {
     String res = movieRenamerTest(formatFolderField.getText(), limit, casse, separatorFolderField.getText(), rmSpcCharFolderChk.isSelected(), rmDupSpaceFolderChk.isSelected(), false);
     folderTestField.setText(res);
   }//GEN-LAST:event_folderTestBtnActionPerformed
+
+  private void helpBtn2ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtn2ActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_helpBtn2ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton CancelBtn;
     private JPanel SearchPnl;
@@ -2187,6 +2347,7 @@ public class Setting extends JDialog {
     private JPanel generalPnl;
     private JButton helpBtn;
     private JButton helpBtn1;
+    private JButton helpBtn2;
     private JPanel imagePnl;
     private JPanel imagesPnl;
     private ButtonGroup imdbLangGroup;
@@ -2196,6 +2357,7 @@ public class Setting extends JDialog {
     private JPanel interfacePnl;
     private JLabel jLabel1;
     private JLabel jLabel2;
+    private JLabel jLabel3;
     private JPanel jPanel1;
     private JPanel jPanel2;
     private JPanel jPanel3;
@@ -2203,6 +2365,7 @@ public class Setting extends JDialog {
     private JPanel jPanel6;
     private JPanel jPanel7;
     private JPanel jPanel8;
+    private JScrollPane jScrollPane1;
     private JTabbedPane jTabbedPane2;
     private ButtonGroup languageGroup;
     private JPanel languagePnl;
@@ -2258,7 +2421,6 @@ public class Setting extends JDialog {
     private JTextField separatorFolderField;
     private JLabel separatorFolderLbl;
     private JLabel separatorLbl;
-    private JTabbedPane settingTabPan;
     private JCheckBox showNotaMovieWarnChk;
     private JCheckBox sortbySimiChk;
     private JLabel thumbCacheLbl;
@@ -2276,8 +2438,21 @@ public class Setting extends JDialog {
     private JRadioButton upperRbtn;
     private JCheckBox useExtensionFilterChk;
     private JCheckBox useProxyChk;
+    private WebButton webButton1;
+    private WebButton webButton2;
+    private WebButton webButton3;
+    private WebButton webButton4;
+    private WebButton webButton5;
+    private WebLabel webLabel1;
+    private WebList webList1;
+    private WebPanel webPanel1;
+    private WebPanel webPanel2;
+    private WebTabbedPane webTabbedPane1;
+    private WebTextField webTextField1;
+    private WebTextField webTextField2;
     private JRadioButton xbmcNFORBtn;
     private JPanel xmlFilePnl;
     private JLabel xmlLbl;
+    private WebRadioButton yamjChk;
     // End of variables declaration//GEN-END:variables
 }

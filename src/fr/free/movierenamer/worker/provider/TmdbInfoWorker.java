@@ -51,9 +51,22 @@ public class TmdbInfoWorker extends MovieInfoWorker {
   @Override
   protected MovieInfo executeInBackground() throws Exception {
     String uri = Settings.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
-    if (config.movieScrapperFR) {
-      uri = uri.replace("/en/", "/fr/");
+    
+    switch(config.movieScrapperLang){
+      case FRENCH:
+        uri = uri.replace("/en/", "/fr/");
+        break;
+      case ITALIAN:
+        uri = uri.replace("/en/", "/it/");
+        break;
+      case SPANISH:
+        uri = uri.replace("/en/", "/es/");
+        break;
+      case ENGLISH:
+      default:
+        break;
     }
+
     return movieInfoWorker.startAndGet(uri);// Wait for movie info;
   }
 }

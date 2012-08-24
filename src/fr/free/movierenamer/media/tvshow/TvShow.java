@@ -89,7 +89,7 @@ public class TvShow implements Media {// TODO
   }
 
   @Override
-  public String getRenamedTitle() {
+  public String getRenamedTitle(String regExp) {
     // TODO
     return "";
   }

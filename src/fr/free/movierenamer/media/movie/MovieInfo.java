@@ -23,6 +23,7 @@ import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.MediaPerson;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
  * 
  * @author Nicolas Magré
  */
-public class MovieInfo implements IMediaInfo/*<MovieImage>*/ {
+public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
 
   private String title;
   private String sortTitle;
@@ -798,6 +799,120 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/ {
     set.add(strSet);
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final MovieInfo other = (MovieInfo) obj;
+    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+      return false;
+    }
+    if ((this.sortTitle == null) ? (other.sortTitle != null) : !this.sortTitle.equals(other.sortTitle)) {
+      return false;
+    }
+    if ((this.thumb == null) ? (other.thumb != null) : !this.thumb.equals(other.thumb)) {
+      return false;
+    }
+    if ((this.trailer == null) ? (other.trailer != null) : !this.trailer.equals(other.trailer)) {
+      return false;
+    }
+    if ((this.synopsis == null) ? (other.synopsis != null) : !this.synopsis.equals(other.synopsis)) {
+      return false;
+    }
+    if ((this.outline == null) ? (other.outline != null) : !this.outline.equals(other.outline)) {
+      return false;
+    }
+    if ((this.tagline == null) ? (other.tagline != null) : !this.tagline.equals(other.tagline)) {
+      return false;
+    }
+    if ((this.origTitle == null) ? (other.origTitle != null) : !this.origTitle.equals(other.origTitle)) {
+      return false;
+    }
+    if ((this.rating == null) ? (other.rating != null) : !this.rating.equals(other.rating)) {
+      return false;
+    }
+    if ((this.mpaa == null) ? (other.mpaa != null) : !this.mpaa.equals(other.mpaa)) {
+      return false;
+    }
+    if ((this.runtime == null) ? (other.runtime != null) : !this.runtime.equals(other.runtime)) {
+      return false;
+    }
+    if ((this.year == null) ? (other.year != null) : !this.year.equals(other.year)) {
+      return false;
+    }
+    if ((this.votes == null) ? (other.votes != null) : !this.votes.equals(other.votes)) {
+      return false;
+    }
+    if ((this.top250 == null) ? (other.top250 != null) : !this.top250.equals(other.top250)) {
+      return false;
+    }
+    if (this.watched != other.watched) {
+      return false;
+    }
+    if (this.movieImage != other.movieImage && (this.movieImage == null || !this.movieImage.equals(other.movieImage))) {
+      return false;
+    }
+    if (this.movieIDs != other.movieIDs && (this.movieIDs == null || !this.movieIDs.equals(other.movieIDs))) {
+      return false;
+    }
+    if (this.set != other.set && (this.set == null || !this.set.equals(other.set))) {
+      return false;
+    }
+    if (this.genres != other.genres && (this.genres == null || !this.genres.equals(other.genres))) {
+      return false;
+    }
+    if (this.studios != other.studios && (this.studios == null || !this.studios.equals(other.studios))) {
+      return false;
+    }
+    if (this.actors != other.actors && (this.actors == null || !this.actors.equals(other.actors))) {
+      return false;
+    }
+    if (this.directors != other.directors && (this.directors == null || !this.directors.equals(other.directors))) {
+      return false;
+    }
+    if (this.writers != other.writers && (this.writers == null || !this.writers.equals(other.writers))) {
+      return false;
+    }
+    if (this.countries != other.countries && (this.countries == null || !this.countries.equals(other.countries))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 97 * hash + (this.title != null ? this.title.hashCode() : 0);
+    hash = 97 * hash + (this.sortTitle != null ? this.sortTitle.hashCode() : 0);
+    hash = 97 * hash + (this.thumb != null ? this.thumb.hashCode() : 0);
+    hash = 97 * hash + (this.trailer != null ? this.trailer.hashCode() : 0);
+    hash = 97 * hash + (this.synopsis != null ? this.synopsis.hashCode() : 0);
+    hash = 97 * hash + (this.outline != null ? this.outline.hashCode() : 0);
+    hash = 97 * hash + (this.tagline != null ? this.tagline.hashCode() : 0);
+    hash = 97 * hash + (this.origTitle != null ? this.origTitle.hashCode() : 0);
+    hash = 97 * hash + (this.rating != null ? this.rating.hashCode() : 0);
+    hash = 97 * hash + (this.mpaa != null ? this.mpaa.hashCode() : 0);
+    hash = 97 * hash + (this.runtime != null ? this.runtime.hashCode() : 0);
+    hash = 97 * hash + (this.year != null ? this.year.hashCode() : 0);
+    hash = 97 * hash + (this.votes != null ? this.votes.hashCode() : 0);
+    hash = 97 * hash + (this.top250 != null ? this.top250.hashCode() : 0);
+    hash = 97 * hash + (this.watched ? 1 : 0);
+    hash = 97 * hash + (this.movieImage != null ? this.movieImage.hashCode() : 0);
+    hash = 97 * hash + (this.movieIDs != null ? this.movieIDs.hashCode() : 0);
+    hash = 97 * hash + (this.set != null ? this.set.hashCode() : 0);
+    hash = 97 * hash + (this.genres != null ? this.genres.hashCode() : 0);
+    hash = 97 * hash + (this.studios != null ? this.studios.hashCode() : 0);
+    hash = 97 * hash + (this.actors != null ? this.actors.hashCode() : 0);
+    hash = 97 * hash + (this.directors != null ? this.directors.hashCode() : 0);
+    hash = 97 * hash + (this.writers != null ? this.writers.hashCode() : 0);
+    hash = 97 * hash + (this.countries != null ? this.countries.hashCode() : 0);
+    return hash;
+  }
+  
   @Override
   public String toString() {
     StringBuilder res = new StringBuilder();

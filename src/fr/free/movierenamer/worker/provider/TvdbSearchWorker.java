@@ -38,13 +38,13 @@ public class TvdbSearchWorker extends TvShowSearchWorker {
   }
 
   @Override
-  protected String getUri() throws Exception {
-    return Settings.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (config.tvshowScrapperFR ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(searchTitle, "UTF-8");
+  protected String getUri() throws Exception {// FIXME language
+    return Settings.tvdbAPIUrlTvShow + "GetSeries.php?language=" + (true ? "fr" : "en") + "&seriesname=" + URLEncoder.encode(searchTitle, "UTF-8");
   }
 
   @Override
-  protected MrParser<List<SearchResult>> getParser() throws Exception {
-    return new TvdbSearch(config.tvshowScrapperFR);
+  protected MrParser<List<SearchResult>> getParser() throws Exception {// FIXME language
+    return new TvdbSearch(true);
   }
 
   // @Override

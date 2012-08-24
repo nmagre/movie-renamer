@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.parser.MrSettings;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.worker.WorkerManager;
@@ -72,7 +73,6 @@ public class Settings implements Cloneable {
   // IMDB
   public static final String imdbSearchUrl = "http://www.imdb.com/find?s=tt&q=";
   public static final String imdbMovieUrl = "http://www.imdb.com/title/";
-  public static final String imdbMovieUrl_fr = "http://www.imdb.fr/title/";
   // The Movie DB
   public static final String tmdbAPISearchUrl = "http://api.themoviedb.org/2.1/Movie.search/en/xml/";
   public static final String tmdbAPMovieImdbLookUp = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
@@ -109,8 +109,9 @@ public class Settings implements Cloneable {
   public boolean actorImage = true;
   public boolean thumb = true;
   public boolean fanart = true;
-  public int nfoType = 0;
+  public Movie.NFO nfoType = Movie.NFO.XBMC;
   public boolean checkUpdate = false;
+  public String fileChooserPath = System.getProperty("user.home");
   public String locale = "";
   // Rename movie filename
   public String movieFilenameFormat = "<t> (<y>)";
@@ -151,8 +152,8 @@ public class Settings implements Cloneable {
   // Search
   public WorkerManager.MovieScrapper movieScrapper = WorkerManager.MovieScrapper.IMDB;
   public WorkerManager.TVShowScrapper tvshowScrapper = WorkerManager.TVShowScrapper.TVDB;
-  public boolean movieScrapperFR = false;
-  public boolean tvshowScrapperFR = false;
+  public Utils.Language movieScrapperLang = Utils.Language.ENGLISH;
+  public Utils.Language tvshowScrapperLang = Utils.Language.ENGLISH;
   public boolean displayThumbResult = true;
   public boolean autoSearchMedia = true;
   public boolean selectFrstRes = true;
@@ -249,10 +250,10 @@ public class Settings implements Cloneable {
           config.locale = "en";
         } else {
           config.locale = "fr";
+          config.movieScrapperLang = Utils.Language.FRENCH;
+          config.tvshowScrapperLang = Utils.Language.FRENCH;
         }
         Settings.xmlVersion = Settings.VERSION;// Ensures that the settings file is written once only
-        config.movieScrapperFR = config.locale.equals("fr");
-        config.tvshowScrapperFR = config.locale.equals("fr");
       }
 
       // Set locale

@@ -43,7 +43,28 @@ public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
   @Override
   protected final TvShowInfo executeInBackground() throws Exception {
     String uri = Settings.tvdbAPIUrlTvShow + new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb));
-    uri += "/" + "series/" + id.getID() + "/all/" + (config.tvshowScrapperFR ? "fr" : "en") + ".zip";
+    uri += "/" + "series/" + id.getID() + "/all/";
+    
+    switch(config.tvshowScrapperLang){
+      case ENGLISH:
+        uri += "en";
+        break;
+      case FRENCH:
+        uri += "fr";
+        break;
+      case ITALIAN:
+        uri += "en"; // API do not have italian language
+        break;
+      case SPANISH:
+        uri += "es";
+        break;
+      default:
+        uri += "en";
+        break;
+    }
+    
+    uri += ".zip";
+    
    /* HttpWorker<TvShowInfo> httpWorker = new HttpWorker<TvShowInfo>(errorSupport);
     httpWorker.setUri(uri);
     httpWorker.setParser(new TvdbInfo());

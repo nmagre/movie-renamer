@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Nicolas Magré
  */
-public class TvdbSearch extends MrParser<List<SearchResult>> {
+public class TvdbSearch extends MrParser<List<SearchResult>> {// FIXME vérifier pour les autre langue que le FR
 
   private StringBuffer buffer;
   private final boolean french;
