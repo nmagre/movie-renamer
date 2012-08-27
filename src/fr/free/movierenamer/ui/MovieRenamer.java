@@ -426,6 +426,7 @@ public class MovieRenamer extends JFrame {
           boolean filterChanged = !oldConf.mediaNameFilters.equals(newConf.mediaNameFilters);
           boolean scrapperChanged = false;
           boolean scrapperLangChanged = false;
+          boolean media = currentMedia != null && !searchResModel.isEmpty();
           switch (currentMode) {
             case MOVIEMODE:
               scrapperChanged = oldConf.movieScrapper != newConf.movieScrapper;
@@ -443,7 +444,7 @@ public class MovieRenamer extends JFrame {
           MovieRenamer.this.setting = newConf;
 
           if (Settings.interfaceChanged) {
-            boolean getImage = currentMedia != null && newConf.movieInfoPanel && !scrapperChanged && !scrapperLangChanged && !filterChanged && !searchResModel.isEmpty();
+            boolean getImage = newConf.movieInfoPanel && !scrapperChanged && !scrapperLangChanged && !filterChanged && media;
 
             Settings.interfaceChanged = false;
 
@@ -522,14 +523,13 @@ public class MovieRenamer extends JFrame {
             currentMedia.setDefaultSearch();
           }
 
-          if (scrapperChanged || scrapperLangChanged) {
+          if (media && (scrapperChanged || scrapperLangChanged)) {
             searchMedia();
           }
 
           if (!oldConf.movieFilenameFormat.equals(newConf.movieFilenameFormat)) {
             fileFormatField.setText(newConf.movieFilenameFormat);
-            // Re-generate renamed filename
-            if (currentMedia != null && !searchResModel.isEmpty()) {
+            if (media) {// Re-generate renamed filename
               renameField.setText(currentMedia.getRenamedTitle(fileFormatField.getText()));
             }
           }
@@ -1380,7 +1380,7 @@ public class MovieRenamer extends JFrame {
   }//GEN-LAST:event_searchFieldKeyReleased
 
   private void fileFormatFieldKeyReleased(KeyEvent evt) {//GEN-FIRST:event_fileFormatFieldKeyReleased
-    if(currentMedia != null && !searchResModel.isEmpty()) {
+    if (currentMedia != null && !searchResModel.isEmpty()) {
       renameField.setText(currentMedia.getRenamedTitle(fileFormatField.getText()));
     }
   }//GEN-LAST:event_fileFormatFieldKeyReleased

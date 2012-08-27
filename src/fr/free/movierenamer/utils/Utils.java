@@ -35,7 +35,6 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -66,7 +65,8 @@ public abstract class Utils {
     ENGLISH("en"),
     FRENCH("fr"),
     ITALIAN("it"),
-    SPANISH("es");
+    SPANISH("es"),
+    DEUTSCH("de");
     private String shortl;
 
     Language(String shortl) {

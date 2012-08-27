@@ -84,6 +84,9 @@ public class ImdbInfoWorker extends MovieInfoWorker {
       case SPANISH:
         url = Settings.imdbMovieUrl.replace("com", "es");
         break;
+      case DEUTSCH:
+        url = Settings.imdbMovieUrl.replace("com", "de");
+        break;
       default:
         url = Settings.imdbMovieUrl;
         break;

@@ -28,6 +28,7 @@ import java.io.IOException;
 
 /**
  * Class UpdateData
+ *
  * @author Nicolas Magré
  */
 public class UpdateData {
@@ -50,9 +51,10 @@ public class UpdateData {
 
   /**
    * Get dta folder path
+   *
    * @param spath
    * @return
-   * @throws IOException 
+   * @throws IOException
    */
   private static File getPath(String spath) throws IOException {
     File path = new File(spath);
@@ -77,9 +79,10 @@ public class UpdateData {
 
   /**
    * Write object to file
+   *
    * @param obj
    * @param file
-   * @throws IOException 
+   * @throws IOException
    */
   private static void writeToFile(Object obj, String file) throws IOException {
     File data = new File(file);
@@ -98,14 +101,13 @@ public class UpdateData {
     String imdbId = "tt0133093";
     MediaID id = new MediaID(imdbId, MediaID.MediaIdType.IMDBID);
 
-    imdbWorker(path, id, Utils.Language.ENGLISH);
-    imdbWorker(path, id, Utils.Language.FRENCH);
-    imdbWorker(path, id, Utils.Language.ITALIAN);
-    imdbWorker(path, id, Utils.Language.SPANISH);
+    for (Utils.Language lang : Utils.Language.values()) {
+      imdbWorker(path, id, lang);
+    }
   }
-  
-  private static void imdbWorker(File path, MediaID id, Utils.Language lang) throws ActionNotValidException, Exception{
-    String file =  path.getAbsolutePath() + File.separator + id.getID() + "_" + lang.getShort() + ".ser";
+
+  private static void imdbWorker(File path, MediaID id, Utils.Language lang) throws ActionNotValidException, Exception {
+    String file = path.getAbsolutePath() + File.separator + id.getID() + "_" + lang.getShort() + ".ser";
     ImdbInfoWorker worker = new ImdbInfoWorker(null, id, lang);
     worker.execute();
     writeToFile(worker.get(), file);

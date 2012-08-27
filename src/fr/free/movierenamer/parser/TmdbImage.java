@@ -19,9 +19,13 @@ package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.movie.MovieImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.xml.sax.Attributes;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,14 +35,13 @@ import org.xml.sax.SAXException;
  */
 public class TmdbImage extends MrParser<MovieImage> {
 
+  /**
+   * The exception to bypass parsing file ;)
+   */
+  private final NOSAXException ex = new NOSAXException();
+  private String url = "http://cf2.imgobject.com/t/p/w";
   private List<MediaImage> thumbs;
   private List<MediaImage> fanarts;
-  private StringBuffer buffer;
-  private boolean imdbAPIXML;
-  private boolean images;
-  private MediaImage currentMovieImage;
-  private String lastAttribute;
-  private String currentId;
   private MovieImage movieImage;
 
   public TmdbImage() {
@@ -47,79 +50,35 @@ public class TmdbImage extends MrParser<MovieImage> {
 
   @Override
   public void startDocument() throws SAXException {
-    super.startDocument();
-    imdbAPIXML = false;
-    images = false;
-    currentMovieImage = null;
-    lastAttribute = "";
-    currentId = "";
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
     movieImage = new MovieImage();
+
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      ImageJson json = mapper.readValue(getContent("UTF-8"), ImageJson.class);
+      addToList(thumbs, json.getPosters(), MediaImage.MediaImageType.THUMB, 92, 500);
+      addToList(fanarts, json.getBackdrops(), MediaImage.MediaImageType.FANART, 300, 780);
+
+      MediaImage.sortByLanguage(config.movieScrapperLang.getShort(), thumbs);
+      MediaImage.sortByLanguage(config.movieScrapperLang.getShort(), fanarts);
+
+      movieImage.setFanarts(fanarts);
+      movieImage.setThumbs(thumbs);
+    } catch (IOException exc) {
+      Logger.getLogger(TmdbImage.class.getName()).log(Level.SEVERE, null, exc);
+    }
+
+    throw ex;
   }
 
-  @Override
-  public void endDocument() throws SAXException {
-    super.endDocument();
-    movieImage.setThumbs(thumbs);
-    movieImage.setFanarts(fanarts);
-  }
-
-  @Override
-  public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
-    buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("OpenSearchDescription")) {
-      imdbAPIXML = true;
-    }
-    if (name.equalsIgnoreCase("images")) {
-      images = true;
-    }
-
-    if (imdbAPIXML) {
-      if (images) {
-        if (name.equalsIgnoreCase("image")) {
-          if (!currentId.equals(attributes.getValue("id"))) {
-            if (currentMovieImage != null) {
-              if (lastAttribute.equals("poster")) {
-                thumbs.add(currentMovieImage);
-              } else {
-                fanarts.add(currentMovieImage);
-              }
-            }
-            currentId = attributes.getValue("id");
-            currentMovieImage = new MediaImage(0, attributes.getValue("type").equals("poster") ? MediaImage.MediaImageType.THUMB : MediaImage.MediaImageType.FANART);
-            lastAttribute = attributes.getValue("type");
-          }
-          if (attributes.getValue("size").equals("original")) {
-            currentMovieImage.setUrl(attributes.getValue("url").replace(".png", ".jpg"), MediaImage.MediaImageSize.ORIGINAL);// API bug png ar jpg on server
-          }
-          if (attributes.getValue("size").equals("thumb")) {
-            currentMovieImage.setUrl(attributes.getValue("url").replace(".png", ".jpg"), MediaImage.MediaImageSize.THUMB);
-          }
-          if (attributes.getValue("size").equals("mid") || attributes.getValue("type").equals("poster")) {
-            currentMovieImage.setUrl(attributes.getValue("url").replace(".png", ".jpg"), MediaImage.MediaImageSize.MEDIUM);
-          }
-        }
-      }
-    }
-  }
-
-  @Override
-  public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("OpenSearchDescription")) {
-      imdbAPIXML = false;
-    }
-    if (name.equalsIgnoreCase("images")) {
-      images = false;
-    }
-    buffer = null;
-  }
-
-  @Override
-  public void characters(char[] ch, int start, int length) throws SAXException {
-    String lecture = new String(ch, start, length);
-    if (buffer != null) {
-      buffer.append(lecture);
+  private void addToList(List<MediaImage> list, List<Map<String, Object>> values, MediaImage.MediaImageType type, int thumb, int medium) {
+    for (Map<String, Object> value : values) {
+      MediaImage mImage = new MediaImage(0, type, (String) value.get("iso_639_1") == null ? "" : (String) value.get("iso_639_1"));
+      mImage.setUrl(url + thumb + (String) value.get("file_path"), MediaImage.MediaImageSize.THUMB);
+      mImage.setUrl(url + medium + (String) value.get("file_path"), MediaImage.MediaImageSize.MEDIUM);
+      mImage.setUrl(url + (Integer) value.get("width") + (String) value.get("file_path"), MediaImage.MediaImageSize.ORIGINAL);
+      list.add(mImage);
     }
   }
 

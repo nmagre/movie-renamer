@@ -75,7 +75,8 @@ public class Settings implements Cloneable {
   public static final String imdbMovieUrl = "http://www.imdb.com/title/";
   // The Movie DB
   public static final String tmdbAPISearchUrl = "http://api.themoviedb.org/2.1/Movie.search/en/xml/";
-  public static final String tmdbAPMovieImdbLookUp = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
+  //public static final String tmdbAPMovieImdbLookUp = "http://api.themoviedb.org/2.1/Movie.imdbLookup/en/xml/";
+  public static final String tmdbAPIV3Images = "http://api.themoviedb.org/3/movie/ID/images?api_key=";
   public static final String tmdbAPIMovieInf = "http://api.themoviedb.org/2.1/Movie.getInfo/en/xml/";
   // Tvdb
   public static final String tvdbAPIUrlTvShow = "http://thetvdb.com/api/";

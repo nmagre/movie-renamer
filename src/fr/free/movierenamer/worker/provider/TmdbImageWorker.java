@@ -40,7 +40,7 @@ public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
 
   @Override
   protected String getUri() throws Exception {
-    return Settings.tmdbAPMovieImdbLookUp + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
+    return Settings.tmdbAPIV3Images.replace("ID", id.getID())  + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb));
   }
 
   @Override
