@@ -18,12 +18,7 @@
 package fr.free.movierenamer.media;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import org.w3c.dom.stylesheets.MediaList;
+import java.util.*;
 
 /**
  * Class Images

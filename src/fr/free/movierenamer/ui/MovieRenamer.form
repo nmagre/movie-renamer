@@ -297,7 +297,7 @@
           <SubComponents>
             <Container class="javax.swing.JSplitPane" name="MediaSp">
               <Properties>
-                <Property name="dividerLocation" type="int" value="200"/>
+                <Property name="dividerLocation" type="int" value="170"/>
                 <Property name="orientation" type="int" value="0"/>
               </Properties>
               <Constraints>
@@ -336,13 +336,13 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="searchTb" min="-2" pref="25" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="searchField" min="-2" max="-2" attributes="0"/>
                                   <Component id="searchBtn" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="searchScroll" pref="116" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
+                              <Component id="searchScroll" pref="86" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>

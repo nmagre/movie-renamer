@@ -1035,7 +1035,7 @@ public class MovieRenamer extends JFrame {
 
         centerSp.setDividerLocation(300);
 
-        MediaSp.setDividerLocation(200);
+        MediaSp.setDividerLocation(170);
         MediaSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
         searchPnl.setMargin(new Insets(10, 10, 10, 10));
@@ -1082,7 +1082,7 @@ public class MovieRenamer extends JFrame {
                     .addComponent(searchField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
+                .addComponent(searchScroll, GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
         );
 
         searchField.setLeadingComponent(new JLabel(new ImageIcon(Utils.getImageFromJAR("/image/search.png", getClass()))));
