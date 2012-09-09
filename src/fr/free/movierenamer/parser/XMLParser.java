@@ -40,17 +40,18 @@ import org.xml.sax.SAXParseException;
  */
 public class XMLParser<T> {
 
-  private final String XMLFile;
-  private String ZIPFile;
+  private final String file;
+  private final String innerFile;
   private MrParser<T> itp = null;
 
   public XMLParser(String XMLFile) {
-    this.XMLFile = XMLFile;
+    this.file = XMLFile;
+    this.innerFile = null;
   }
 
   public XMLParser(String ZIPFile, String XMLFile) {
-    this.ZIPFile = ZIPFile;
-    this.XMLFile = XMLFile;
+    this.file = ZIPFile;
+    this.innerFile = XMLFile;
   }
 
   public void setParser(MrParser<T> itp) {
@@ -70,34 +71,32 @@ public class XMLParser<T> {
     parseur = sparser.newSAXParser();
 
     ZipFile zf = null;
-    if (Utils.isUrl(XMLFile)) {
-      URL url = new URL(XMLFile);
+    if (Utils.isUrl(file)) {
+      URL url = new URL(file);
       in = new InputSource(url.openStream());
     } else {
-      if (ZIPFile != null && Utils.isZIPFile(ZIPFile)) {
+      if (file != null && Utils.isZIPFile(file)) {
 
-        zf = new ZipFile(ZIPFile);
+        zf = new ZipFile(file);
         ZipEntry zipEntry;
         ZipInputStream zipIn;
 
-        zipIn = new ZipInputStream(new FileInputStream(ZIPFile));
-        zipEntry = zipIn.getNextEntry();
+        zipIn = new ZipInputStream(new FileInputStream(file));
 
-        while (zipEntry != null) {
-          if (XMLFile.equals(zipEntry.getName())) {
+        while ((zipEntry = zipIn.getNextEntry()) != null) {
+          if (zipEntry.getName().equals(innerFile)) {
             in = new InputSource(zf.getInputStream(zipEntry));
             break;
           }
           zipIn.closeEntry();
-          zipEntry = zipIn.getNextEntry();
         }
         zipIn.close();
 
         if (in == null) {
-          throw new IOException(XMLFile + " not found in zipFile " + ZIPFile);
+          throw new IOException(innerFile + " not found in zipFile " + file);
         }
       } else {
-        File f = new File(XMLFile);
+        File f = new File(file);
         in = new InputSource(new FileInputStream(f));
       }
     }

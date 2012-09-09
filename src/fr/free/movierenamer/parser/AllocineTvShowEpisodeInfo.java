@@ -22,17 +22,17 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Class AllocineTvInfo
+ * Class AllocineTvShowEpisodeInfo
  * 
  * @author Nicolas Magré
  */
-public class AllocineTvInfo extends MrParser<TvShowEpisode> {
+public class AllocineTvShowEpisodeInfo extends MrParser<TvShowEpisode> {
 
   private StringBuffer buffer;
   private final TvShowEpisode tvshowInfo;
   private boolean episode;
 
-  public AllocineTvInfo() {
+  public AllocineTvShowEpisodeInfo() {
     super();
     tvshowInfo = new TvShowEpisode();
   }

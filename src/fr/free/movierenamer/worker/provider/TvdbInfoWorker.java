@@ -17,6 +17,12 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import java.io.File;
+
+import fr.free.movierenamer.parser.TvdbInfo;
+
+import fr.free.movierenamer.parser.AllocineTvShowInfo;
+
 import fr.free.movierenamer.media.tvshow.SxE;
 
 import fr.free.movierenamer.utils.Cache.CacheType;
@@ -41,7 +47,7 @@ import javax.xml.bind.DatatypeConverter;
 public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
 
   private final SxE sxe;
-  
+
   public TvdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
     super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.TVDBID) {
@@ -55,23 +61,7 @@ public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
     String uri = Settings.tvdbAPIUrlTvShow + new String(DatatypeConverter.parseBase64Binary(Settings.xurlTdb));
     uri += "/" + "series/" + id.getID() + "/all/";
 
-    switch (config.tvshowScrapperLang) {
-    case ENGLISH:
-      uri += "en";
-      break;
-    case FRENCH:
-      uri += "fr";
-      break;
-    case ITALIAN:
-      uri += "en"; // API do not have italian language
-      break;
-    case SPANISH:
-      uri += "es";
-      break;
-    default:
-      uri += "en";
-      break;
-    }
+    uri += getLang();
 
     uri += ".zip";
     return uri;
@@ -79,11 +69,44 @@ public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
 
   @Override
   protected MrParser<TvShowInfo> getParser() throws Exception {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return new TvdbInfo();
+  }
+  
+  @Override
+  protected final TvShowInfo processFile(File xmlFile) throws Exception {
+    TvShowInfo info = super.processFile(xmlFile);
+    return info;
   }
 
   @Override
   protected CacheType getCacheType() {
     return CacheType.TVSHOWZIP;
+  }
+
+  @Override
+  protected String getInnerFileName() {
+    return getLang() + ".xml";
+  }
+
+  private String getLang() {
+    String lang;
+    switch (config.tvshowScrapperLang) {
+    case ENGLISH:
+      lang = "en";
+      break;
+    case FRENCH:
+      lang = "fr";
+      break;
+    case ITALIAN:
+      lang = "en"; // API do not have italian language
+      break;
+    case SPANISH:
+      lang = "es";
+      break;
+    default:
+      lang = "en";
+      break;
+    }
+    return lang;
   }
 }

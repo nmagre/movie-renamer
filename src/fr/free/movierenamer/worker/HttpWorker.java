@@ -105,7 +105,7 @@ public abstract class HttpWorker<T> extends Worker<T> {
     try {
       // Parse XML
       MrParser<T> parser = getParser();
-      XMLParser<T> xmp = new XMLParser<T>(xmlFile.getAbsolutePath());
+      XMLParser<T> xmp = new XMLParser<T>(xmlFile.getAbsolutePath(), getInnerFileName());
       parser.setOriginalFile(xmlFile);
       xmp.setParser(parser);
       object = xmp.parseXml();
@@ -134,6 +134,10 @@ public abstract class HttpWorker<T> extends Worker<T> {
 
     setProgress(100);
     return object;
+  }
+  
+  protected String getInnerFileName() {
+    return null;
   }
   
 }
