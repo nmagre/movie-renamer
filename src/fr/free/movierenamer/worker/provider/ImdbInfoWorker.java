@@ -17,6 +17,13 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.parser.MrParser;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -45,31 +52,14 @@ public class ImdbInfoWorker extends MovieInfoWorker {
    * @throws ActionNotValidException
    */
   public ImdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
-    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new ImdbInfo()));
+    super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.IMDBID) {
       throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
     }
   }
   
-  /**
-   * Constructor arguments
-   *
-   * @param errorSupport Swing change support
-   * @param id Media API ID
-   * @param ilang Set language
-   * @throws ActionNotValidException
-   */
-  public ImdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id, Utils.Language ilang) throws ActionNotValidException {
-    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new ImdbInfo()));
-    if (id.getType() != MediaID.MediaIdType.IMDBID) {
-      throw new ActionNotValidException("ImdbInfoWorker can only use imdb ID");
-    }
-    config.movieScrapperLang = ilang;
-  }
-
   @Override
-  protected final MovieInfo executeInBackground() throws Exception {
-
+  protected String getUri() throws Exception {
     String url;
     switch(config.movieScrapperLang){
       case ENGLISH:
@@ -91,8 +81,31 @@ public class ImdbInfoWorker extends MovieInfoWorker {
         url = Settings.imdbMovieUrl;
         break;
     }
+    return url + id.getID() + "/combined";
+  }
+  
+  @Override
+  protected MrParser<MovieInfo> getParser() throws Exception {
+    return new ImdbInfo();
+  }
+  
+  @Override
+  protected MovieImage loadExtraImages() throws Exception {
+    MovieImage mediaImage = null;
+    try {
+      TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, id);
+      mediaImage = imgWorker.executeInBackground();
+    } catch (ActionNotValidException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    return mediaImage;
+  }
+
+ /* @Override
+  protected final MovieInfo executeInBackground() throws Exception {
     
-    MovieInfo movieInfo = movieInfoWorker.startAndGet(url+ id.getID() + "/combined");// Wait for movie info
+    MovieInfo movieInfo = movieInfoWorker.startAndGet(getUri() + id.getID() + "/combined");// Wait for movie info
 
     MovieImage mediaImage = null;
     try {
@@ -108,5 +121,5 @@ public class ImdbInfoWorker extends MovieInfoWorker {
     }
 
     return movieInfo;
-  }
+  }*/
 }

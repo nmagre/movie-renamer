@@ -339,7 +339,7 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       }
     }
     
-    Settings.LOGGER.log(Level.INFO, "Totale time : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
+    Settings.LOGGER.log(Level.INFO, "Total time : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
     throw ex;
   }
 

@@ -17,20 +17,30 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.parser.AllocineTvInfo;
+
+import fr.free.movierenamer.parser.AllocineTvEpisode;
+
+import fr.free.movierenamer.worker.HttpWorker;
+
+import fr.free.movierenamer.worker.HttpWorker;
+
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
+
+import java.util.List;
+
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
-import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
-import fr.free.movierenamer.parser.AllocineTvEpisode;
-import fr.free.movierenamer.parser.AllocineTvInfo;
-import fr.free.movierenamer.parser.AllocineTvSeason;
+import fr.free.movierenamer.parser.AllocineTvShowInfo;
+import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
-import java.util.List;
+import java.io.File;
 
 /**
  * Class AllocineTvShowInfoWorker
@@ -39,10 +49,11 @@ import java.util.List;
  */
 public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
 
+  //The episode num to search
   private final SxE sxe;
-  private final HttpWorker<List<TvShowSeason>> seasonsWorker = new HttpWorker<List<TvShowSeason>>(errorSupport, new AllocineTvSeason());
-  private final HttpWorker<List<TvShowEpisode>> episodesWorker = new HttpWorker<List<TvShowEpisode>>(errorSupport, new AllocineTvEpisode());
-  private final HttpWorker<TvShowEpisode> episodeWorker = new HttpWorker<TvShowEpisode>(errorSupport, new AllocineTvInfo());
+//  private final HttpWorker<List<TvShowSeason>> seasonsWorker = new HttpWorker<List<TvShowSeason>>(errorSupport, new AllocineTvSeason());
+//  private final HttpWorker<List<TvShowEpisode>> episodesWorker = new HttpWorker<List<TvShowEpisode>>(errorSupport, new AllocineTvEpisode());
+//  private final HttpWorker<TvShowEpisode> episodeWorker = new HttpWorker<TvShowEpisode>(errorSupport, new AllocineTvShowInfo());
 
   /**
    * Constructor arguments
@@ -61,6 +72,142 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
   }
 
   @Override
+  protected String getUri() throws Exception {
+    return Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID();
+  }
+
+  @Override
+  protected MrParser<TvShowInfo> getParser() throws Exception {
+    return new AllocineTvShowInfo();
+  }
+  
+  @Override
+  protected final TvShowInfo processFile(File xmlFile) throws Exception {
+    TvShowInfo info = super.processFile(xmlFile);
+    //TODO : process extra season and episodes info
+    
+    MediaID seasonId = null;
+    List<TvShowSeason> seasons = info.getSeasons();
+  //Absolute number
+    if (sxe.getSeason() == 0 || sxe.getEpisode() == 0) {
+      int absnum = 0;
+      int num;
+      for (TvShowSeason season : seasons) {
+        if ((absnum + season.getEpisodeCount()) >= sxe.getAbs()) {
+          num = sxe.getEpisode() - absnum;
+          sxe.setEpisode(num);
+          sxe.setSeason(season.getNum());
+          seasonId = season.getID();
+          break;
+        }
+        absnum += season.getEpisodeCount();
+      }
+    }
+
+    // Season number seems to be not right, get first season
+    if (seasonId == null && (sxe.getSeason() <= 0 || sxe.getSeason() > seasons.size())) {
+      sxe.setSeason(1);
+    }
+
+    // Get season id
+    for (TvShowSeason season : info.getSeasons()) {
+      if (season.getNum() == sxe.getSeason()) {
+        seasonId = season.getID();
+        break;
+      }
+    }
+
+    final MediaID seasonIdF = seasonId;
+    // Get episodes for this season
+    List<TvShowEpisode> episodes = new HttpWorker<List<TvShowEpisode>>(errorSupport) {
+
+      @Override
+      protected String getUri() throws Exception {
+        return Settings.allocineAPIInfo.replace("MEDIA", "season") + seasonIdF.getID();
+      }
+
+      @Override
+      protected MrParser<List<TvShowEpisode>> getParser() throws Exception {
+        return new AllocineTvEpisode();
+      }
+    
+    }.executeInBackground();
+    TvShowEpisode.sortEpisodes(episodes);       
+        
+    // Episode number seems to be not right, get first episode
+    if (sxe.getEpisode() <= 0) {
+      sxe.setEpisode(1);
+    }
+
+    int ep = -1;
+    for (int i = 0; i < episodes.size(); i++) {
+      if (sxe.getEpisode() == episodes.get(i).getNum()) {
+        ep = i;
+        break;
+      }
+    }
+
+    // Episode not found
+    if (ep == -1) {
+      ep = 1;
+    }
+    
+    final MediaID epF =  episodes.get(ep).getIDs().get(0);
+
+    TvShowEpisode episode = new HttpWorker<TvShowEpisode>(errorSupport) {
+
+      @Override
+      protected String getUri() throws Exception {
+        return Settings.allocineAPIInfo.replace("MEDIA", "episode") +epF.getID();
+      }
+
+      @Override
+      protected MrParser<TvShowEpisode> getParser() throws Exception {
+        return new AllocineTvInfo();
+      }
+    
+    }.executeInBackground();
+    // Add episode info to episodes list
+//    episode.setNum(episodes.get(ep).getNum());
+    episodes.remove(ep);
+    episodes.add(episode);
+
+    // Create dummy episodes for all seasons and add episodes for this season
+    for (int i = 0; i < seasons.size(); i++) {
+      if (sxe.getSeason() == seasons.get(i).getNum()) {
+        TvShowSeason tmps = seasons.get(i);
+        tmps.setEpisodes(episodes);
+        seasons.remove(i);
+        seasons.add(i, tmps);
+      } else {
+        TvShowSeason season = seasons.get(i);
+        seasons.remove(i);
+        for (int j = 0; j < season.getEpisodeCount(); j++) {
+          season.addEpisode(new TvShowEpisode(j + 1));
+        }
+        seasons.add(i, season);
+      }
+    }
+    
+//    for (TvShowSeason season : seasons) {
+//      System.out.println(season);
+//    }
+    
+    info.setSxe(sxe);
+    
+    return info;
+  }
+  
+//    @Override
+//    protected TvShowInfo processExtraInfo(TvShowInfo originalFile) throws Exception {
+//      String seasonId = null;
+//   // Get serie seasons
+//      List<TvShowSeason> seasons = seasonsWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
+//      TvShowSeason.sortSeasons(seasons);//Sort season by season number
+//      return originalFile;
+//    }
+
+  /*@Override
   protected TvShowInfo executeInBackground() throws Exception {
     String seasonId = null;
 
@@ -150,171 +297,5 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
     tvShowInfo.setSxe(sxe);
 
     return tvShowInfo;
-  }
-  // @Override
-  // protected ArrayList<TvShowSeason> executeInBackground() {
-  // System.out.println("AllocineTvShowInfoWorker");
-  // System.out.println(sxe);
-  // ArrayList<TvShowSeason> seasons = null;
-  //
-  // try {
-  // //Get Season id
-  // URL url = new URL(config.allocineAPIInfo.replace("MEDIA", "tvseries") + id.getID());
-  // System.out.println(url);
-  // File xmlFile = getXML(url);
-  //
-  // if (xmlFile == null) {
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // XMLParser<ArrayList<TvShowSeason>> xmp = new XMLParser<ArrayList<TvShowSeason>>(xmlFile.getAbsolutePath());
-  // xmp.setParser(new AllocineTvSeason());
-  // seasons = xmp.parseXml();
-  //
-  //
-  // //Sort season by season number
-  // TvShowSeason.sortSeasons(seasons);
-  //
-  // String seasonId = null;
-  // for (TvShowSeason season : seasons) {
-  // if (season.getNum() == sxe.getSeason()) {
-  // seasonId = season.getID().getID();
-  // break;
-  // }
-  // }
-  //
-  // //Absolute number
-  // int absnum = 0;
-  // int num;
-  // if (seasonId == null && sxe.getEpisode() > 0) {
-  // for (TvShowSeason season : seasons) {
-  // if ((absnum + season.getEpisodeCount()) >= sxe.getEpisode()) {
-  // num = sxe.getEpisode() - absnum;
-  // sxe.setEpisode(num);
-  // sxe.setSeason(season.getNum());
-  // seasonId = season.getID().getID();
-  // break;
-  // }
-  // absnum += season.getEpisodeCount();
-  // }
-  // }
-  //
-  // if (seasonId == null) {
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // setProgress(33);
-  //
-  // //Get episode id
-  // url = new URL(config.allocineAPIInfo.replace("MEDIA", "season") + seasonId);
-  // System.out.println(url);
-  // xmlFile = getXML(url);
-  // if (xmlFile == null) {
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // XMLParser<ArrayList<TvShowEpisode>> xmmp = new XMLParser<ArrayList<TvShowEpisode>>(xmlFile.getAbsolutePath());
-  // xmmp.setParser(new AllocineTvEpisode());
-  // ArrayList<TvShowEpisode> episodes = xmmp.parseXml();
-  //
-  // if (sxe.getEpisode() <= 0) {
-  // sxe.setEpisode(1);
-  // }
-  // int ep = -1;
-  // for (int i = 0; i < episodes.size(); i++) {
-  // if (sxe.getEpisode() == episodes.get(i).getNum()) {
-  // ep = i;
-  // }
-  // }
-  //
-  // if (ep == -1) {
-  // ep = 0;
-  // }
-  //
-  // setProgress(66);
-  //
-  // //Get episode info
-  // url = new URL(config.allocineAPIInfo.replace("MEDIA", "episode") + episodes.get(ep).getIDs().get(0));
-  // System.out.println(url);
-  // xmlFile = getXML(url);
-  // if (xmlFile == null) {
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // //Parse allocine API XML
-  // XMLParser<TvShowEpisode> xmmmp = new XMLParser<TvShowEpisode>(xmlFile.getAbsolutePath());
-  // xmmmp.setParser(new AllocineTvInfo());
-  // TvShowEpisode tvshowInfo = xmmmp.parseXml();
-  // tvshowInfo.setNum(episodes.get(ep).getNum());
-  // episodes.remove(ep);
-  // episodes.add(tvshowInfo);
-  //
-  // //Sort episodes by episode number
-  // TvShowEpisode.sortEpisodes(episodes);
-  //
-  // for (int i = 0; i < seasons.size(); i++) {
-  // if (sxe.getSeason() == seasons.get(i).getNum()) {
-  // TvShowSeason tmps = seasons.get(i);
-  // tmps.setEpisodes(episodes);
-  // seasons.remove(i);
-  // seasons.add(i, tmps);
-  // } else {
-  // TvShowSeason season = seasons.get(i);
-  // seasons.remove(i);
-  // for (int j = 0; j < season.getEpisodeCount(); j++) {
-  // season.addEpisode(new TvShowEpisode(j + 1));
-  // }
-  // seasons.add(i, season);
-  // }
-  // }
-  //
-  // } catch (IOException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (ParserConfigurationException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (SAXException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  //
-  // if (seasons == null) {
-  // firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-  // return null;
-  // }
-  //
-  // for (TvShowSeason season : seasons) {
-  // System.out.println(season);
-  // }
-  //
-  // setProgress(100);
-  // return seasons;
-  // }
-  //
-  // private File getXML(URL url) {
-  // File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
-  // if (xmlFile == null) {
-  // for (int i = 0; i < RETRY; i++) {
-  // InputStream in;
-  // try {
-  // in = url.openStream();
-  // Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
-  // xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
-  // break;
-  // } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
-  // Settings.LOGGER.log(Level.SEVERE, null, e);
-  // try {
-  // Thread.sleep(300);
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  // }
-  // }
-  // }
-  // return xmlFile;
-  // }
+  }*/
 }

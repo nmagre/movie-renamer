@@ -69,7 +69,7 @@ public class ListFilesWorker extends Worker<List<MediaFile>> {
    * @return ArrayList of movies file
    */
   @Override
-  protected List<MediaFile> executeInBackground() {
+  public List<MediaFile> executeInBackground() {
     List<MediaFile> medias = new ArrayList<MediaFile>();
     for (File file : files) {
       if (isCancelled()) {

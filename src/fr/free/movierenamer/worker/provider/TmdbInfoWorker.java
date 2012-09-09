@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.parser.MrParser;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.TmdbInfo;
@@ -42,14 +44,14 @@ public class TmdbInfoWorker extends MovieInfoWorker {
    * @throws ActionNotValidException
    */
   public TmdbInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
-    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new TmdbInfo()));
+    super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.TMDBID) {
       throw new ActionNotValidException("TmdbInfoWorker can only use tmdb ID");
     }
   }
 
   @Override
-  protected MovieInfo executeInBackground() throws Exception {
+  protected String getUri() throws Exception {
     String uri = Settings.tmdbAPIMovieInf + new String(DatatypeConverter.parseBase64Binary(Settings.xurlMdb)) + "/" + id.getID();
     
     switch(config.movieScrapperLang){
@@ -66,7 +68,11 @@ public class TmdbInfoWorker extends MovieInfoWorker {
       default:
         break;
     }
+    return uri;
+  }
 
-    return movieInfoWorker.startAndGet(uri);// Wait for movie info;
+  @Override
+  protected MrParser<MovieInfo> getParser() throws Exception {
+    return new TmdbInfo();
   }
 }

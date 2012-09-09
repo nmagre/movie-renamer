@@ -31,6 +31,7 @@ public class TvShowInfo implements IMediaInfo/*
  * <TvShowImage>
  */ {
 
+  private String originalTitle;
   private SxE sxe;
   private List<TvShowSeason> seasons;
 
@@ -46,6 +47,10 @@ public class TvShowInfo implements IMediaInfo/*
   public List<TvShowSeason> getSeasons() {
     return seasons;
   }
+  
+  public String getOriginalTitle() {
+    return originalTitle;
+  }
 
   public void setSxe(SxE sxe) {
     this.sxe = sxe;
@@ -53,5 +58,9 @@ public class TvShowInfo implements IMediaInfo/*
 
   public void setSeasons(List<TvShowSeason> seasons) {
     this.seasons = seasons;
+  }
+
+  public void setOriginalTitle(String originalTitle) {
+    this.originalTitle = originalTitle;
   }
 }

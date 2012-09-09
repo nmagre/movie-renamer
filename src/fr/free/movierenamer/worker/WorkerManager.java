@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.worker;
 
+import fr.free.movierenamer.worker.provider.TvRageInfoWorker;
+
 import fr.free.movierenamer.media.Media;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImage;
@@ -133,13 +135,13 @@ public abstract class WorkerManager {
     TvShowInfoWorker worker = null;
     switch (Settings.getInstance().tvshowScrapper) {
       case TVDB:
-        worker = new TvdbInfoWorker(errorSupport, id);
+        worker = new TvdbInfoWorker(errorSupport, id, sxe);
         break;
       case ALLOCINETV:
         worker = new AllocineTvShowInfoWorker(errorSupport, id, sxe);
         break;
       case TVRAGE:
-        // TODO
+        worker = new TvRageInfoWorker(errorSupport, id, sxe);
         break;
     }
     Settings.LOGGER.log(Level.INFO, "Information API ID : {0}", id.getID());

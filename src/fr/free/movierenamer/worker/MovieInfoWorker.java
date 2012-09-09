@@ -18,130 +18,43 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 
 /**
- * Class MrInfoWorker
+ * Class MovieInfoWorker
  *
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
 public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo> {
 
-  protected HttpWorker<MovieInfo> movieInfoWorker;
   /**
    * Constructor arguments
    *
    * @param errorSupport Swing change support
    * @param id Movie API ID
-   * @param movieInfoWorker 
    * @throws ActionNotValidException
    */
-  public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id, HttpWorker<MovieInfo> movieInfoWorker) throws ActionNotValidException {
+  public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
-    this.movieInfoWorker = movieInfoWorker;
   }
-  // /*
-  // * (non-Javadoc)
-  // *
-  // * @see fr.free.movierenamer.worker.HttpWorker#loadImages(java.lang.Object)
-  // */
-  // @Override
-  // protected final MovieInfo loadImages(MovieInfo mvi) throws Exception {
-  // mvi.addID(id);
-  // MovieImage movieImage;
-  // try {
-  // MediaImageWorker imgWorker = getImageWorker();// new TmdbImageWorker(getErrorSupport(), id);
-  // if (imgWorker != null) {
-  // imgWorker.execute();
-  // MovieImage mvimg = imgWorker.get(3, TimeUnit.SECONDS);
-  // if (mvimg != null) {
-  // mvi.setImages(mvimg);
-  // }
-  // }
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (ExecutionException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  //
-  // if (movieImage == null) {
-  // firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-  // return null;
-  // }
-  //
-  // movieInfo.setImages(movieImage);
-  // if (!movieInfo.getTrailer().equals("")) {
-  // String trailer = YTdecodeUrl.getRealUrl(movieInfo.getTrailer(), YTdecodeUrl.HD);
-  // if (trailer != null) {
-  // movieInfo.setTrailer(trailer);
-  // }
-  // }
-  //
-  // return mvi;
-  // }
-  //
-  // protected abstract MediaImageWorker getImageWorker() throws Exception;
-  // @Override
-  // protected final MovieInfo executeInBackground() throws Exception
-  // {
-  // setProgress(0);
-  // String res = null;
-  // for (int i = 0; i < RETRY; i++) {
-  // try {
-  // http = new HttpGet();
-  // res = http.sendGetRequest(true, "ISO-8859-15");
-  // break;
-  // } catch (Exception ex) {//Don't care about exception, "res" will be null
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // try {
-  // Thread.sleep(300);
-  // } catch (InterruptedException e) {
-  // Settings.LOGGER.log(Level.SEVERE, null, e);
-  // }
-  // }
-  // }
-  //
-  // if (res == null) {//Http request failed
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // setProgress(80);
-  //
-  // MrParser<MovieInfo> imdbParser = gerParser();
-  // MovieInfo mvi = null;
-  // try {
-  // mvi = imdbParser.getMovieInfo(res);
-  // } catch (Exception ex) {//Imdbparser failed
-  // Settings.LOGGER.log(Level.SEVERE, Utils.getStackTrace("Exception", ex.getStackTrace()));
-  // }
-  //
-  // if (mvi == null) {
-  // firePropertyChange("closeLoadingDial", "imdbParserFail");
-  // return null;
-  // }
-  //
-  // mvi.addID(id);
-  //
-  // try {
-  // TmdbImageWorker imgWorker = new TmdbImageWorker(getErrorSupport(), id);
-  // imgWorker.execute();
-  // MovieImage mvimg = imgWorker.get();
-  // if (mvimg != null) {
-  // mvi.setImages(mvimg);
-  // }
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (ExecutionException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (ActionNotValidException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  //
-  // setProgress(100);
-  // return mvi;
-  // }
+  
+  @Override
+  protected final MovieInfo processFile(File xmlFile) throws Exception {
+    MovieInfo info = super.processFile(xmlFile);
+    MovieImage extraImages = loadExtraImages();
+    if(extraImages != null) {
+      info.addImages(extraImages);
+    }
+    return info;
+  }
+  
+  protected MovieImage loadExtraImages() throws Exception {
+    return null;
+  }
+  
 }

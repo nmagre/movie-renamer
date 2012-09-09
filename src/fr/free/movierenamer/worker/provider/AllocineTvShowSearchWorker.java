@@ -41,7 +41,7 @@ public class AllocineTvShowSearchWorker extends TvShowSearchWorker {
 
   @Override
   protected String getUri() throws UnsupportedEncodingException {
-    return Settings.allocineAPISearch.replace("FILTER", "tvseries" + URLEncoder.encode(searchTitle, "UTF-8"));
+    return Settings.allocineAPISearch.replace("FILTER", "tvseries") + URLEncoder.encode(searchTitle, "UTF-8");
   }
 
   @Override

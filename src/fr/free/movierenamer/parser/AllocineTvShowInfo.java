@@ -18,34 +18,42 @@
 package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
+
 import java.util.ArrayList;
+
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import java.util.List;
+
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
+
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Class AllocineTvSeason
+ * Class AllocineTvShowInfo
+ * 
  * @author Nicolas Magré
  */
-public class AllocineTvSeason extends MrParser<List<TvShowSeason>> {
+public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
 
   private StringBuffer buffer;
+  private final TvShowInfo tvshowInfo;
   private List<TvShowSeason> seasons;
   private TvShowSeason currentSeason;
-  private boolean tvseries;
-  private boolean seasonList;
+  private boolean tvseries, seasonList;
 
-  public AllocineTvSeason() {
+  public AllocineTvShowInfo() {
     super();
-    tvseries = false;
-    seasonList = false;
+    tvshowInfo = new TvShowInfo();
+    seasons = new ArrayList<TvShowSeason>();
   }
 
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    seasons = new ArrayList<TvShowSeason>();
+    tvseries = false;
+    seasonList = false;
   }
 
   @Override
@@ -72,6 +80,9 @@ public class AllocineTvSeason extends MrParser<List<TvShowSeason>> {
       tvseries = false;
     }
     if (tvseries) {
+      if (name.equalsIgnoreCase("originalTitle")) {
+        tvshowInfo.setOriginalTitle(buffer.toString());
+      }
       if (name.equalsIgnoreCase("seasonList")) {
         seasonList = false;
       }
@@ -99,7 +110,9 @@ public class AllocineTvSeason extends MrParser<List<TvShowSeason>> {
   }
 
   @Override
-  public List<TvShowSeason> getObject() {
-    return seasons;
+  public TvShowInfo getObject() {
+    TvShowSeason.sortSeasons(seasons);//Sort season by season number
+    tvshowInfo.setSeasons(seasons);
+    return tvshowInfo;
   }
 }

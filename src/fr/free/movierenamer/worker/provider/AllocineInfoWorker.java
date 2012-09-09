@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.parser.MrParser;
+
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
@@ -30,7 +32,7 @@ import java.util.logging.Level;
 
 /**
  * Class AllocineInfoWorker
- *
+ * 
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
@@ -38,114 +40,44 @@ public class AllocineInfoWorker extends MovieInfoWorker {
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param errorSupport Swing change support
    * @param id Media id
    * @throws ActionNotValidException
    */
   public AllocineInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
-    super(errorSupport, id, new HttpWorker<MovieInfo>(errorSupport, new AllocineInfo()));
+    super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.ALLOCINEID) {
       throw new ActionNotValidException("AllocineInfoWorker can only use allocine ID");
     }
   }
 
   @Override
-  protected MovieInfo executeInBackground() throws Exception {
-    MovieInfo movieInfo = movieInfoWorker.startAndGet(Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID());// Wait for movie info
+  protected String getUri() throws Exception {
+    return Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
+  }
 
-    MediaID imdbId = null;
+  @Override
+  protected MrParser<MovieInfo> getParser() throws Exception {
+    return new AllocineInfo();
+  }
+
+  @Override
+  protected MovieImage loadExtraImages() throws Exception {
+    MovieImage mediaImage = null;
     try {
       XbmcPassionIDLookupWorker xbl = new XbmcPassionIDLookupWorker(errorSupport, id);
-      xbl.execute();
-      imdbId = xbl.get();// Wait for movie imdb id
+      MediaID imdbId = xbl.executeInBackground();
+      if (imdbId != null) {
+        TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, imdbId);
+        mediaImage = imgWorker.executeInBackground();
+      }
+
     } catch (ActionNotValidException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
-    if (imdbId != null) {
-      MovieImage mediaImage = null;
-      try {
-        TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, imdbId);
-        imgWorker.execute();
-        mediaImage = imgWorker.get();// Wait for movie images
-      } catch (ActionNotValidException ex) {
-        Settings.LOGGER.log(Level.SEVERE, null, ex);
-      }
-
-      if (mediaImage != null) {
-        movieInfo.setImages(mediaImage);
-      }
-    }
-
-    return movieInfo;
+    return mediaImage;
   }
-//  @Override
-//  protected MrParser<MovieImage> getImageParser() throws Exception {
-//    return new AllocineImage();
-//  }
-  // /*
-  // * (non-Javadoc)
-  // *
-  // * @see fr.free.movierenamer.worker.MovieInfoWorker#getImageWorker()
-  // */
-  // @Override
-  // protected MediaImageWorker getImageWorker() {
-  // return null;
-  // }
-  // @Override
-  // protected MovieInfo executeInBackground() {
-  // MovieInfo movieInfo = null;
-  // try {
-  // String uri = Settings.allocineAPIInfo.replace("MEDIA", "movie") + id.getID();
-  // System.out.println(uri);
-  // URL url = new URL(uri);
-  // File xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
-  // if (xmlFile == null) {
-  // for (int i = 0; i < RETRY; i++) {
-  // InputStream in;
-  // try {
-  // in = url.openStream();
-  // Cache.getInstance().add(in, url.toString(), Cache.CacheType.XML);
-  // xmlFile = Cache.getInstance().get(url, Cache.CacheType.XML);
-  // break;
-  // } catch (Exception e) {//Don't care about exception, "xmlFile" will be null
-  // Settings.LOGGER.log(Level.SEVERE, null, e);
-  // try {
-  // Thread.sleep(300);
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  // }
-  // }
-  // }
-  //
-  // if (xmlFile == null) {
-  // firePropertyChange("closeLoadingDial", "httpFailed");
-  // return null;
-  // }
-  //
-  // //Parse allocine API XML
-  // XMLParser<MovieInfo> xmp = new XMLParser<MovieInfo>(xmlFile.getAbsolutePath());
-  // xmp.setParser(new AllocineInfo());
-  // movieInfo = xmp.parseXml();
-  //
-  // } catch (IOException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (InterruptedException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (ParserConfigurationException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (SAXException ex) {
-  // Settings.LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  //
-  // if (movieInfo == null) {
-  // firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-  // return null;
-  // }
-  //
-  // setProgress(100);
-  // return movieInfo;
-  // }
+
 }

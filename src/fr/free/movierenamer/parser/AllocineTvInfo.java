@@ -57,6 +57,11 @@ public class AllocineTvInfo extends MrParser<TvShowEpisode> {
       episode = false;
     }
     if (episode) {
+      if (name.equalsIgnoreCase("episodeNumberSeason")) {
+        tvshowInfo.setNum(Integer.parseInt(buffer.toString()));
+      }
+      /*if (name.equalsIgnoreCase("episodeNumberSeries")) {
+      }*/
       if (name.equalsIgnoreCase("originalTitle")) {
         tvshowInfo.setOriginalTitle(buffer.toString());
       }
@@ -86,6 +91,6 @@ public class AllocineTvInfo extends MrParser<TvShowEpisode> {
 
   @Override
   public TvShowEpisode getObject() {
-    return null;
+    return tvshowInfo;
   }
 }
