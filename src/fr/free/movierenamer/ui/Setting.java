@@ -69,6 +69,8 @@ public class Setting extends JDialog {
   private JRadioButton[] rBtnFolderCase;
   private JRadioButton[] rBtnScrapper;
   private JRadioButton[] rBtnScrapperLang;
+  private JRadioButton[] rBtnTvScrapper;
+  private JRadioButton[] rBtnTvScrapperLang;
   private JRadioButton[] rBtnNFO;
   private String[][] format = {
     {"<t>", "Matrix"}, {"<ot>", "The Matrix"}, {"<y>", "1999"}, {"<tt>", "tt0133093"},
@@ -102,6 +104,8 @@ public class Setting extends JDialog {
     rBtnFolderCase = new JRadioButton[]{this.firstLoFolderRbtn, this.firstLaFolderRbtn, this.upperFolderRbtn, this.lowerFolderRbtn, this.noneFolderRbtn};
     rBtnScrapper = new JRadioButton[]{this.imdbRBtn, this.tmdbRbtn, this.allocineRbtn};
     rBtnScrapperLang = new JRadioButton[]{this.scrapperEnRbtn, this.scrapperFrRbtn, this.scrapperItRbtn, this.scrapperEsRbtn, this.scrapperDeRbtn};
+    rBtnTvScrapper = new JRadioButton[]{this.tvdbRBtn, this.tvrageRbtn, this.allocineTVRbtn};
+    rBtnTvScrapperLang = new JRadioButton[]{this.scrapperTvEnRbtn, this.scrapperTvFrRbtn};
     rBtnNFO = new JRadioButton[]{this.xbmcNFORBtn, this.mediaPortalNFORBtn, this.yamjChk};
     this.setting = setting;
     extensions = setting.extensions;
@@ -192,9 +196,11 @@ public class Setting extends JDialog {
     displayAppResultCheckBox.setSelected(setting.displayApproximateResult);
 
     rBtnScrapperLang[setting.movieScrapperLang.ordinal()].setSelected(true);
+    rBtnTvScrapperLang[setting.tvshowScrapperLang.ordinal()].setSelected(true);
 
     displayThumbResultChk.setSelected(setting.displayThumbResult);
     scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper.ordinal()].getModel(), true);
+    scrapperTvGroup.setSelected(rBtnTvScrapper[setting.tvshowScrapper.ordinal()].getModel(), true);
     sortbySimiChk.setSelected(setting.sortBySimiYear);
     limitResultComboBox.setSelectedIndex(setting.nbResult);
 
@@ -327,6 +333,8 @@ public class Setting extends JDialog {
         nfoGroup = new ButtonGroup();
         scrapperGroup = new ButtonGroup();
         caseFolderGroup = new ButtonGroup();
+        scrapperTvGroup = new ButtonGroup();
+        scrapperTvLangGroup = new ButtonGroup();
         saveBtn = new JButton();
         CancelBtn = new JButton();
         webTabbedPane1 = new WebTabbedPane();
@@ -415,12 +423,12 @@ public class Setting extends JDialog {
         scrapperEnRbtn = new WebRadioButton();
         jPanel7 = new JPanel();
         jPanel5 = new JPanel();
-        imdbRBtn1 = new JRadioButton();
-        tmdbRbtn1 = new JRadioButton();
-        allocineRbtn1 = new JRadioButton();
+        tvdbRBtn = new JRadioButton();
+        tvrageRbtn = new JRadioButton();
+        allocineTVRbtn = new JRadioButton();
         jPanel8 = new JPanel();
-        scrapperFrRbtn1 = new JRadioButton();
-        scrapperEnRbtn1 = new JRadioButton();
+        scrapperTvFrRbtn = new JRadioButton();
+        scrapperTvEnRbtn = new JRadioButton();
         jPanel1 = new JPanel();
         movieImagePnl = new JPanel();
         thumbExtCbBox = new JComboBox();
@@ -650,7 +658,7 @@ public class Setting extends JDialog {
                 .addComponent(mediaPortalNFORBtn)
                 .addGap(18, 18, 18)
                 .addComponent(yamjChk, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(173, Short.MAX_VALUE))
         );
         nfoPnlLayout.setVerticalGroup(
             nfoPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -687,14 +695,12 @@ public class Setting extends JDialog {
                 .addComponent(updatePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(languagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         webTabbedPane1.addTab(bundle.getString("general"), generalPnl); // NOI18N
 
         renamePnl.setFont(new Font("Ubuntu", 1, 14)); 
-        movieFileNamePnl.setBorder(null);
-
         defaultFormatLbl.setFont(new Font("Ubuntu", 1, 12));         defaultFormatLbl.setText(bundle.getString("defaultFormat")); // NOI18N
 
         filenameTestBtn.setFont(new Font("Ubuntu", 1, 12));         filenameTestBtn.setText("test");
@@ -786,7 +792,7 @@ public class Setting extends JDialog {
                                     .addComponent(lowerRbtn)))
                             .addComponent(rmDupSpaceChk)
                             .addComponent(rmSpcCharChk))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 244, Short.MAX_VALUE))
                     .addGroup(movieFileNamePnlLayout.createSequentialGroup()
                         .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.LEADING)
                             .addGroup(movieFileNamePnlLayout.createSequentialGroup()
@@ -836,7 +842,7 @@ public class Setting extends JDialog {
                 .addGroup(movieFileNamePnlLayout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(filenameTestBtn)
                     .addComponent(filenameTestField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         renameTabPan.addTab(bundle.getString("movieFileName"), movieFileNamePnl); // NOI18N
@@ -933,7 +939,7 @@ public class Setting extends JDialog {
                                             .addComponent(lowerFolderRbtn)))
                                     .addComponent(rmDupSpaceFolderChk)
                                     .addComponent(rmSpcCharFolderChk))
-                                .addGap(0, 229, Short.MAX_VALUE)))
+                                .addGap(0, 234, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(movieFolderTabPanLayout.createSequentialGroup()
                         .addGroup(movieFolderTabPanLayout.createParallelGroup(Alignment.LEADING)
@@ -989,18 +995,16 @@ public class Setting extends JDialog {
                 .addGroup(movieFolderTabPanLayout.createParallelGroup(Alignment.BASELINE)
                     .addComponent(folderTestBtn)
                     .addComponent(folderTestField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         renameTabPan.addTab(bundle.getString("movieFolder"), movieFolderTabPan); // NOI18N
-
-        movieFileNamePnl1.setBorder(null);
 
         GroupLayout movieFileNamePnl1Layout = new GroupLayout(movieFileNamePnl1);
         movieFileNamePnl1.setLayout(movieFileNamePnl1Layout);
         movieFileNamePnl1Layout.setHorizontalGroup(
             movieFileNamePnl1Layout.createParallelGroup(Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGap(0, 503, Short.MAX_VALUE)
         );
         movieFileNamePnl1Layout.setVerticalGroup(
             movieFileNamePnl1Layout.createParallelGroup(Alignment.LEADING)
@@ -1023,7 +1027,7 @@ public class Setting extends JDialog {
             .addGroup(renamePnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(renameTabPan, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         renameTabPan.getAccessibleContext().setAccessibleName(bundle.getString("movieFileName")); // NOI18N
@@ -1175,7 +1179,7 @@ public class Setting extends JDialog {
                 .addComponent(scrapperEsRbtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(scrapperDeRbtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(111, Short.MAX_VALUE))
+                .addContainerGap(179, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(Alignment.LEADING)
@@ -1217,23 +1221,23 @@ public class Setting extends JDialog {
         jTabbedPane2.addTab("Movie", jPanel6);
 
         jPanel5.setBorder(BorderFactory.createTitledBorder(null, "Scrapper", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
-        scrapperGroup.add(imdbRBtn1);
-        imdbRBtn1.setSelected(true);
-        imdbRBtn1.setText("Tvdb");
-        imdbRBtn1.addItemListener(new ItemListener() {
+        scrapperTvGroup.add(tvdbRBtn);
+        tvdbRBtn.setSelected(true);
+        tvdbRBtn.setText("Tvdb");
+        tvdbRBtn.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent evt) {
-                imdbRBtn1ItemStateChanged(evt);
+                tvdbRBtnItemStateChanged(evt);
             }
         });
 
-        scrapperGroup.add(tmdbRbtn1);
-        tmdbRbtn1.setText("Tvrage");
+        scrapperTvGroup.add(tvrageRbtn);
+        tvrageRbtn.setText("Tvrage");
 
-        scrapperGroup.add(allocineRbtn1);
-        allocineRbtn1.setText("Allocine");
-        allocineRbtn1.addItemListener(new ItemListener() {
+        scrapperTvGroup.add(allocineTVRbtn);
+        allocineTVRbtn.setText("Allocine");
+        allocineTVRbtn.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent evt) {
-                allocineRbtn1ItemStateChanged(evt);
+                allocineTVRbtnItemStateChanged(evt);
             }
         });
 
@@ -1243,31 +1247,31 @@ public class Setting extends JDialog {
             jPanel5Layout.createParallelGroup(Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(imdbRBtn1)
+                .addComponent(tvdbRBtn)
                 .addGap(18, 18, 18)
-                .addComponent(tmdbRbtn1)
+                .addComponent(tvrageRbtn)
                 .addGap(18, 18, 18)
-                .addComponent(allocineRbtn1)
-                .addContainerGap(252, Short.MAX_VALUE))
+                .addComponent(allocineTVRbtn)
+                .addContainerGap(280, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(imdbRBtn1)
-                    .addComponent(tmdbRbtn1)
-                    .addComponent(allocineRbtn1))
+                    .addComponent(tvdbRBtn)
+                    .addComponent(tvrageRbtn)
+                    .addComponent(allocineTVRbtn))
                 .addGap(248, 248, 248))
         );
 
         jPanel8.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
-        scrapperLangGroup.add(scrapperFrRbtn1);
-        scrapperFrRbtn1.setFont(new Font("Ubuntu", 0, 12));         scrapperFrRbtn1.setSelected(true);
-        scrapperFrRbtn1.setText(bundle.getString("imdbFr")); // NOI18N
+        scrapperTvLangGroup.add(scrapperTvFrRbtn);
+        scrapperTvFrRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperTvFrRbtn.setSelected(true);
+        scrapperTvFrRbtn.setText(bundle.getString("imdbFr")); // NOI18N
 
-        scrapperLangGroup.add(scrapperEnRbtn1);
-        scrapperEnRbtn1.setFont(new Font("Ubuntu", 0, 12));         scrapperEnRbtn1.setText(bundle.getString("imdbEn")); // NOI18N
+        scrapperTvLangGroup.add(scrapperTvEnRbtn);
+        scrapperTvEnRbtn.setFont(new Font("Ubuntu", 0, 12));         scrapperTvEnRbtn.setText(bundle.getString("imdbEn")); // NOI18N
 
         GroupLayout jPanel8Layout = new GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -1275,18 +1279,18 @@ public class Setting extends JDialog {
             jPanel8Layout.createParallelGroup(Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrapperFrRbtn1)
-                .addGap(18, 18, 18)
-                .addComponent(scrapperEnRbtn1)
-                .addContainerGap(335, Short.MAX_VALUE))
+                .addComponent(scrapperTvEnRbtn)
+                .addPreferredGap(ComponentPlacement.UNRELATED)
+                .addComponent(scrapperTvFrRbtn)
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel8Layout.createParallelGroup(Alignment.BASELINE)
-                    .addComponent(scrapperFrRbtn1)
-                    .addComponent(scrapperEnRbtn1))
+                    .addComponent(scrapperTvFrRbtn)
+                    .addComponent(scrapperTvEnRbtn))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
@@ -1324,7 +1328,7 @@ public class Setting extends JDialog {
             .addGroup(SearchPnlLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(59, Short.MAX_VALUE))
         );
 
         webTabbedPane1.addTab(bundle.getString("searchTitle"), SearchPnl); // NOI18N
@@ -1402,7 +1406,7 @@ public class Setting extends JDialog {
                             .addComponent(midFanartSizeRBtn)
                             .addComponent(origFanartSizeRBtn)
                             .addComponent(thumbFanartSizeRBtn))))
-                .addContainerGap(217, Short.MAX_VALUE))
+                .addContainerGap(222, Short.MAX_VALUE))
         );
         imagesPnlLayout.setVerticalGroup(
             imagesPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1442,7 +1446,7 @@ public class Setting extends JDialog {
                 .addComponent(movieImagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(imagesPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(268, Short.MAX_VALUE))
+                .addContainerGap(279, Short.MAX_VALUE))
         );
 
         webTabbedPane1.addTab("Image", jPanel1);
@@ -1574,7 +1578,7 @@ public class Setting extends JDialog {
                         .addComponent(moveLeft, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(moveRight, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                        .addPreferredGap(ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
                         .addComponent(addFilter, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(removeFilterBtn, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
@@ -1625,7 +1629,7 @@ public class Setting extends JDialog {
                 .addComponent(extensionPnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(fileNameFilterPnl, GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addContainerGap(73, Short.MAX_VALUE))
         );
 
         webTabbedPane1.addTab(bundle.getString("filter"), filtersPnl); // NOI18N
@@ -1718,7 +1722,7 @@ public class Setting extends JDialog {
                         .addComponent(clearXmlBtn))
                     .addGroup(xmlFilePnlLayout.createSequentialGroup()
                         .addComponent(clearXmlCacheOnStartChk)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 187, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         xmlFilePnlLayout.setVerticalGroup(
@@ -1751,7 +1755,7 @@ public class Setting extends JDialog {
                 .addComponent(imagePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(xmlFilePnl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(182, Short.MAX_VALUE))
+                .addContainerGap(191, Short.MAX_VALUE))
         );
 
         webTabbedPane1.addTab("Cache", cachePnl);
@@ -1779,7 +1783,7 @@ public class Setting extends JDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(proxyPortField, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
         proxySubPanelLayout.setVerticalGroup(
             proxySubPanelLayout.createParallelGroup(Alignment.LEADING)
@@ -1809,7 +1813,7 @@ public class Setting extends JDialog {
             .addGroup(proxyPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(proxySubPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(365, Short.MAX_VALUE))
+                .addContainerGap(377, Short.MAX_VALUE))
         );
 
         webTabbedPane1.addTab("Proxy", proxyPanel);
@@ -1857,7 +1861,7 @@ public class Setting extends JDialog {
                 .addGroup(webPanel2Layout.createParallelGroup(Alignment.LEADING)
                     .addGroup(webPanel2Layout.createSequentialGroup()
                         .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
                         .addComponent(webTextField1, GroupLayout.PREFERRED_SIZE, 384, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(webButton4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -2166,6 +2170,12 @@ public class Setting extends JDialog {
       }
     }
 
+    for (int i = 0; i < rBtnTvScrapper.length; i++) {
+      if (rBtnTvScrapper[i].isSelected()) {
+        setting.tvshowScrapper = WorkerManager.TVShowScrapper.values()[i];
+      }
+    }
+
     for (int i = 0; i < rBtnNFO.length; i++) {
       if (rBtnNFO[i].isSelected()) {
         setting.nfoType = Movie.NFO.values()[i];
@@ -2175,6 +2185,12 @@ public class Setting extends JDialog {
     for (int i = 0; i < rBtnScrapperLang.length; i++) {
       if (rBtnScrapperLang[i].isSelected()) {
         setting.movieScrapperLang = Utils.Language.values()[i];
+      }
+    }
+
+    for (int i = 0; i < rBtnTvScrapperLang.length; i++) {
+      if (rBtnTvScrapperLang[i].isSelected()) {
+        setting.tvshowScrapperLang = Utils.Language.values()[i];
       }
     }
 
@@ -2276,13 +2292,13 @@ public class Setting extends JDialog {
     loadList(filterJlist, Settings.nameFilters);
   }//GEN-LAST:event_resetNameFilterActionPerformed
 
-  private void imdbRBtn1ItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_imdbRBtn1ItemStateChanged
+  private void tvdbRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_tvdbRBtnItemStateChanged
     // TODO add your handling code here:
-  }//GEN-LAST:event_imdbRBtn1ItemStateChanged
+  }//GEN-LAST:event_tvdbRBtnItemStateChanged
 
-  private void allocineRbtn1ItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_allocineRbtn1ItemStateChanged
+  private void allocineTVRbtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_allocineTVRbtnItemStateChanged
     // TODO add your handling code here:
-  }//GEN-LAST:event_allocineRbtn1ItemStateChanged
+  }//GEN-LAST:event_allocineTVRbtnItemStateChanged
 
   private void helpBtn1ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtn1ActionPerformed
     JOptionPane.showMessageDialog(this, Utils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), Utils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
@@ -2319,7 +2335,7 @@ public class Setting extends JDialog {
     private JButton addExtensionBtn;
     private JButton addFilter;
     private JRadioButton allocineRbtn;
-    private JRadioButton allocineRbtn1;
+    private JRadioButton allocineTVRbtn;
     private JCheckBox autoSearchChk;
     private JPanel cachePnl;
     private ButtonGroup caseFolderGroup;
@@ -2371,7 +2387,6 @@ public class Setting extends JDialog {
     private JPanel imagePnl;
     private JPanel imagesPnl;
     private JRadioButton imdbRBtn;
-    private JRadioButton imdbRBtn1;
     private JPanel imdbSearchPnl;
     private JPanel interfacePnl;
     private JLabel jLabel1;
@@ -2431,13 +2446,15 @@ public class Setting extends JDialog {
     private JCheckBox scanSubfolderChk;
     private WebRadioButton scrapperDeRbtn;
     private WebRadioButton scrapperEnRbtn;
-    private JRadioButton scrapperEnRbtn1;
     private WebRadioButton scrapperEsRbtn;
     private WebRadioButton scrapperFrRbtn;
-    private JRadioButton scrapperFrRbtn1;
     private ButtonGroup scrapperGroup;
     private WebRadioButton scrapperItRbtn;
     private ButtonGroup scrapperLangGroup;
+    private JRadioButton scrapperTvEnRbtn;
+    private JRadioButton scrapperTvFrRbtn;
+    private ButtonGroup scrapperTvGroup;
+    private ButtonGroup scrapperTvLangGroup;
     private JCheckBox selectFirstMovieChk;
     private JCheckBox selectFirstResChk;
     private JTextField separatorField;
@@ -2455,7 +2472,8 @@ public class Setting extends JDialog {
     private JCheckBox thumbsChk;
     private JLabel thumnailsExtLbl;
     private JRadioButton tmdbRbtn;
-    private JRadioButton tmdbRbtn1;
+    private JRadioButton tvdbRBtn;
+    private JRadioButton tvrageRbtn;
     private JPanel updatePnl;
     private JRadioButton upperFolderRbtn;
     private JRadioButton upperRbtn;
