@@ -43,7 +43,7 @@ public class TvShow implements Media {// TODO
     this.tvShowFile = tvShowFile;
     TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, conf.mediaNameFilters);
     search = tvMatcher.getTvShowName();
-    sxe = new TvShowEpisodeMatcher(tvShowFile.getFile().getParent() + File.separator + tvShowFile.getFile().getName()).matchEpisode();
+    sxe = new TvShowEpisodeMatcher(tvShowFile.getFile()).matchEpisode();
     tvShowInfo = new TvShowInfo();
   }
 

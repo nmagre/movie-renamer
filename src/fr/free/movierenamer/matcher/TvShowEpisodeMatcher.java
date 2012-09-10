@@ -37,7 +37,7 @@ public class TvShowEpisodeMatcher {
 
   public enum TvShowPattern {
 
-    SxEPattern("([0-9]{1,2})x([0-9]{1,2})\\D"),
+    SxEPattern("([0-9]{1,2})x([0-9]{1,2})(?:\\D|$)"),
     SxEPattern2("s([0-9]{1,2}).?[eé]([0-9]{1,2})"),
     SxEPattern3("(?:^|[\\W} ])([0-9]{1,2})([0-9][0-9])[\\._ \\-]"),
     SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
@@ -57,13 +57,16 @@ public class TvShowEpisodeMatcher {
   private String episodeName;
   private String parentFolder;
 
-  public TvShowEpisodeMatcher(String episodeName) {
-    if (episodeName.contains(File.separator)) {
-      parentFolder = episodeName.substring(0, episodeName.lastIndexOf(File.separator)).toLowerCase();
-      this.episodeName = normalize(episodeName.substring(episodeName.lastIndexOf(File.separator) + 1));
-    } else {
-      this.episodeName = normalize(episodeName);
-    }
+  public TvShowEpisodeMatcher(File episodeFile) {
+    this.episodeName = normalize(episodeFile.getName());
+    this.parentFolder = (episodeFile.getParent()!=null)?episodeFile.getParent().toLowerCase():null;
+//    String episodeName = episodeFile.getParent() + File.separator + episodeFile.getName();
+//    if (episodeName.contains(File.separator)) {
+//      parentFolder = episodeName.substring(0, episodeName.lastIndexOf(File.separator)).toLowerCase();
+//      this.episodeName = normalize(episodeName.substring(episodeName.lastIndexOf(File.separator) + 1));
+//    } else {
+//      this.episodeName = normalize(episodeName);
+//    }
   }
 
   /**
