@@ -31,12 +31,21 @@ public class TvShowInfo implements IMediaInfo/*
  * <TvShowImage>
  */ {
 
+  private String title;
   private String originalTitle;
   private SxE sxe;
+  private String year;
+  private String synopsis;
+  private String rating;
   private List<TvShowSeason> seasons;
 
   public TvShowInfo() {
+    title = "?";
+    originalTitle = "";
     sxe = new SxE();
+    year = "";
+    synopsis = "";
+    rating = "-1";
     seasons = new ArrayList<TvShowSeason>();
   }
 
@@ -51,6 +60,13 @@ public class TvShowInfo implements IMediaInfo/*
   public String getOriginalTitle() {
     return originalTitle;
   }
+  
+  /**
+   * @return the title
+   */
+  public String getTitle() {
+    return title;
+  }
 
   public void setSxe(SxE sxe) {
     this.sxe = sxe;
@@ -62,5 +78,54 @@ public class TvShowInfo implements IMediaInfo/*
 
   public void setOriginalTitle(String originalTitle) {
     this.originalTitle = originalTitle;
+  }
+
+  /**
+   * @return the year
+   */
+  public String getYear() {
+    return year;
+  }
+
+  /**
+   * @param year the year to set
+   */
+  public void setYear(String year) {
+    this.year = year;
+  }
+
+  /**
+   * @return the synopsis
+   */
+  public String getSynopsis() {
+    return synopsis;
+  }
+
+  /**
+   * @param synopsis the synopsis to set
+   */
+  public void setSynopsis(String synopsis) {
+    this.synopsis = synopsis;
+  }
+
+  /**
+   * @return the rating
+   */
+  public String getRating() {
+    return rating;
+  }
+
+  /**
+   * @param rating the rating to set
+   */
+  public void setRating(String rating) {
+    this.rating = rating;
+  }
+  
+  /**
+   * @param title the title to set
+   */
+  public void setTitle(String title) {
+    this.title = title;
   }
 }

@@ -34,11 +34,13 @@ public class TvShowSeason {
   private MediaID tvshowIDs;
   private List<TvShowEpisode> episodes;
   private int episodeCount;
+  private String rating;
 
   public TvShowSeason(int num) {
     this.num = num;
     episodes = new ArrayList<TvShowEpisode>();
     episodeCount = 0;
+    rating = "";
   }
 
   public TvShowSeason(MediaID tvshowIDs) {
@@ -46,6 +48,7 @@ public class TvShowSeason {
     this.tvshowIDs = tvshowIDs;
     episodes = new ArrayList<TvShowEpisode>();
     episodeCount = 0;
+    rating = "";
   }
 
   public int getNum() {
@@ -82,6 +85,19 @@ public class TvShowSeason {
 
   public void setEpisodes(List<TvShowEpisode> episodes) {
     this.episodes = episodes;
+  }
+  
+  /**
+   * @return the rating
+   */
+  public String getRating() {
+    return rating;
+  }
+  /**
+   * @param rating the rating to set
+   */
+  public void setRating(String rating) {
+    this.rating = rating;
   }
 
   public static void sortSeasons(List<TvShowSeason> seasons) {

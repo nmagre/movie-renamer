@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import fr.free.movierenamer.media.movie.MovieInfo;
+
 import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.matcher.TvShowNameMatcher;
@@ -79,7 +81,9 @@ public class TvShow implements Media {// TODO
   @Override
   public void setInfo(Object info) {
     if (info instanceof TvShowInfo) {
-      this.tvShowInfo = (TvShowInfo) info;
+      tvShowInfo = (TvShowInfo) info;
+    } else {
+      tvShowInfo = new TvShowInfo();
     }
   }
 
@@ -137,5 +141,12 @@ public class TvShow implements Media {// TODO
   @Override
   public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+  
+  /**
+   * @return the tvShowInfo
+   */
+  public TvShowInfo getTvShowInfo() {
+    return tvShowInfo;
   }
 }

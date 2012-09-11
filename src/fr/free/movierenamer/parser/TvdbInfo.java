@@ -91,7 +91,7 @@ public class TvdbInfo extends MrParser<TvShowInfo> {
       if (name.equalsIgnoreCase("Episode")) {
         currentEpisode.setNum(episode);
         currentEpisode.setTitle(title);
-        currentEpisode.setPlot(plot);
+        currentEpisode.setSynopsis(plot);
         currentEpisode.setRating(rating);
         currentEpisode.setVotes(votes);
         if (currentSeason == null) {
