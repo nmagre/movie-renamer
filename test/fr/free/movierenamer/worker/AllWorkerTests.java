@@ -26,6 +26,7 @@ import org.junit.runners.Suite;
   ImdbInfoWorkerTest.class,
   TmdbInfoWorkerTest.class
 })
+
 /**
  *
  * @author Nicolas Magré
