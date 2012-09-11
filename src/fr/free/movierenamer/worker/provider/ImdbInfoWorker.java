@@ -17,21 +17,13 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.parser.MrParser;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbInfo;
+import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.MovieInfoWorker;
 import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
@@ -61,7 +53,7 @@ public class ImdbInfoWorker extends MovieInfoWorker {
   @Override
   protected String getUri() throws Exception {
     String url;
-    switch(config.movieScrapperLang){
+    switch(config.movieScrapperLang) {
       case ENGLISH:
         url = Settings.imdbMovieUrl;
         break;
@@ -105,7 +97,15 @@ public class ImdbInfoWorker extends MovieInfoWorker {
  /* @Override
   protected final MovieInfo executeInBackground() throws Exception {
     
-    MovieInfo movieInfo = movieInfoWorker.startAndGet(getUri() + id.getID() + "/combined");// Wait for movie info
+    MovieInfo movieInfo = movieInfoWorker.startAndGet(url + id.getID() + "/combined");// Wait for movie info
+    // Get entire synopsis
+    if(!movieInfo.getSynopsis().equals("")) {
+      HttpWorker<String> hsynopsis = new HttpWorker<String>(errorSupport, new ImdbSynopsis());
+      String synopsis = hsynopsis.startAndGet(url + id.getID() + "/plotsummary");// Wait for movie synopsis
+      if(synopsis != null && !synopsis.equals("")) {
+        movieInfo.setSynopsis(synopsis);
+      }
+    }
 
     MovieImage mediaImage = null;
     try {

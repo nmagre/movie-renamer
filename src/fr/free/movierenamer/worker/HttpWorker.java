@@ -102,6 +102,11 @@ public abstract class HttpWorker<T> extends Worker<T> {
   protected T processFile(File xmlFile) throws Exception {
     T object = null;
 
+    if (xmlFile == null) {
+      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
+      return null;
+    }
+    
     try {
       // Parse XML
       MrParser<T> parser = getParser();
