@@ -21,6 +21,7 @@ import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbInfo;
+import fr.free.movierenamer.parser.ImdbSynopsis;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
@@ -71,7 +72,7 @@ public class ImdbInfoWorker extends MovieInfoWorker {
   protected final MovieInfo executeInBackground() throws Exception {
 
     String url;
-    switch(config.movieScrapperLang){
+    switch(config.movieScrapperLang) {
       case ENGLISH:
         url = Settings.imdbMovieUrl;
         break;
@@ -92,7 +93,15 @@ public class ImdbInfoWorker extends MovieInfoWorker {
         break;
     }
     
-    MovieInfo movieInfo = movieInfoWorker.startAndGet(url+ id.getID() + "/combined");// Wait for movie info
+    MovieInfo movieInfo = movieInfoWorker.startAndGet(url + id.getID() + "/combined");// Wait for movie info
+    // Get entire synopsis
+    if(!movieInfo.getSynopsis().equals("")) {
+      HttpWorker<String> hsynopsis = new HttpWorker<String>(errorSupport, new ImdbSynopsis());
+      String synopsis = hsynopsis.startAndGet(url + id.getID() + "/plotsummary");// Wait for movie synopsis
+      if(synopsis != null && !synopsis.equals("")) {
+        movieInfo.setSynopsis(synopsis);
+      }
+    }
 
     MovieImage mediaImage = null;
     try {

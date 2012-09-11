@@ -219,7 +219,7 @@
         <Component class="com.alee.laf.text.WebTextField" name="fileFormatField">
           <Properties>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[180, 27]"/>
+              <Dimension value="[250, 27]"/>
             </Property>
           </Properties>
           <Events>

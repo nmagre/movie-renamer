@@ -412,7 +412,7 @@ public class MovieRenamer extends JFrame {
    *
    * @return Property Change Listener
    */
-  public PropertyChangeListener createSettingsChangeListener() {
+  private PropertyChangeListener createSettingsChangeListener() {
     return new PropertyChangeListener() {
 
       @Override
@@ -1000,7 +1000,7 @@ public class MovieRenamer extends JFrame {
 
         jLabel1.setFont(new Font("Ubuntu", 1, 13));         jLabel1.setText(Utils.i18n("mediaFileFormat"));         mainTb.add(jLabel1);
 
-        fileFormatField.setPreferredSize(new Dimension(180, 27));
+        fileFormatField.setPreferredSize(new Dimension(250, 27));
         fileFormatField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent evt) {
                 fileFormatFieldKeyReleased(evt);

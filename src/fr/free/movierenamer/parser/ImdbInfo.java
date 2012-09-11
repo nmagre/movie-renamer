@@ -85,7 +85,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
   public void startDocument() throws SAXException {
     String moviePage = getContent("ISO-8859-1");
     Pattern pattern;
-    long begin = System.currentTimeMillis();
 
     // Title + Year
     Matcher searchMatcher = ImdbPattern.TITLE.getPattern().matcher(moviePage);
@@ -117,7 +116,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     } else {
       Settings.LOGGER.log(Level.SEVERE, "No title found in imdb page");
     }
-    Settings.LOGGER.log(Level.INFO, "Title + year in : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Thumb
     searchMatcher = ImdbPattern.THUMB.getPattern().matcher(moviePage);
@@ -130,8 +128,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       movieInfo.addThumb(movieThumb);
     }
 
-    Settings.LOGGER.log(Level.INFO, "Thumb +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
-
     // Original Title
     searchMatcher = ImdbPattern.ORIGTITLE.getPattern().matcher(moviePage);
     if (searchMatcher.find()) {
@@ -139,8 +135,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     } else {
       movieInfo.setOrigTitle(movieInfo.getTitle());
     }
-
-    Settings.LOGGER.log(Level.INFO, "Original title +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Runtime
     searchMatcher = ImdbPattern.RUNTIME.getPattern().matcher(moviePage);
@@ -151,16 +145,12 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       }
     }
 
-    Settings.LOGGER.log(Level.INFO, "Runtime +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
-
     // Rating
     searchMatcher = ImdbPattern.RATING.getPattern().matcher(moviePage);
     if (searchMatcher.find()) {
       String rating = searchMatcher.group(1);
       movieInfo.setRating(rating);
     }
-    
-        Settings.LOGGER.log(Level.INFO, "Rating +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Votes
     searchMatcher = ImdbPattern.VOTES.getPattern().matcher(moviePage);
@@ -168,8 +158,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       String votes = searchMatcher.group(1).replaceAll("[., ]", "");
       movieInfo.setVotes(votes);
     }
-    
-        Settings.LOGGER.log(Level.INFO, "Votes +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Directors
     searchMatcher = ImdbPattern.DIRECTOR.getPattern().matcher(moviePage);
@@ -180,8 +168,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       dir.setImdbId(imdbId);
       movieInfo.addPerson(dir);
     }
-    
-        Settings.LOGGER.log(Level.INFO, "Directors +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Writers
     searchMatcher = ImdbPattern.WRITER.getPattern().matcher(moviePage);
@@ -190,8 +176,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       //String imdbId = searchMatcher.group(1); // Not used
       movieInfo.addPerson(new MediaPerson(Utils.unEscapeXML(writer, "ISO-8859-1"), "", MediaPerson.WRITER));
     }
-    
-        Settings.LOGGER.log(Level.INFO, "Writers +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // TagLine
     searchMatcher = ImdbPattern.TAGLINE.getPattern().matcher(moviePage);
@@ -199,8 +183,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       String tagline = searchMatcher.group(1);
       movieInfo.setTagline(Utils.unEscapeXML(tagline, "ISO-8859-1"));
     }
-    
-        Settings.LOGGER.log(Level.INFO, "TagLine +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Plot
     searchMatcher = ImdbPattern.PLOT.getPattern().matcher(moviePage);
@@ -208,8 +190,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       String plot = searchMatcher.group(1);
       movieInfo.setSynopsis(Utils.unEscapeXML(plot, "ISO-8859-1"));
     }
-    
-    Settings.LOGGER.log(Level.INFO, "Plot +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Genres
     searchMatcher = ImdbPattern.GENRE.getPattern().matcher(moviePage);
@@ -235,8 +215,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       }
     }
     
-    Settings.LOGGER.log(Level.INFO, "Genres +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
-
     // Actors
     // TODO code not rewrite, i think we can do something much better ^^
     searchMatcher = ImdbPattern.CAST.getPattern().matcher(moviePage);
@@ -293,11 +271,9 @@ public class ImdbInfo extends MrParser<MovieInfo> {
         }
       }
     }
-    
-    Settings.LOGGER.log(Level.INFO, "Actors +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Countries
-    searchMatcher = ImdbPattern.COUNTRY.getPattern().matcher(moviePage);// FIXME , find "USA | Malaysia:18PL" instead of "USA" (E.g :bienvenue a zombiland with imdb.com)
+    searchMatcher = ImdbPattern.COUNTRY.getPattern().matcher(moviePage);
     if (searchMatcher.find()) {
       String[] countries = searchMatcher.group(1).split("\\|");
       for (int i = 0; i < countries.length; i++) {
@@ -316,9 +292,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
         }
       }
     }
-    
-    Settings.LOGGER.log(Level.INFO, "Countries +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
-
 
     // Studio
     searchMatcher = ImdbPattern.STUDIO.getPattern().matcher(moviePage);
@@ -327,8 +300,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       studio = Utils.unEscapeXML(studio, "ISO-8859-1");
       movieInfo.addStudio(studio);
     }
-    
-    Settings.LOGGER.log(Level.INFO, "Studio +  : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
 
     // Top 250
     searchMatcher = ImdbPattern.TOP250.getPattern().matcher(moviePage);
@@ -339,7 +310,6 @@ public class ImdbInfo extends MrParser<MovieInfo> {
       }
     }
     
-    Settings.LOGGER.log(Level.INFO, "Totale time : {0}", ((float) (System.currentTimeMillis() - begin)) / 1000f);
     throw ex;
   }
 

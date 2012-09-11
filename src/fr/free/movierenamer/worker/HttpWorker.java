@@ -175,6 +175,11 @@ public class HttpWorker<T> extends Worker<T> {
   protected T proccessFile(File xmlFile) throws Exception {
     T object = null;
 
+    if (xmlFile == null) {
+      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
+      return null;
+    }
+    
     try {
       // Parse XML
       parser = getParser();
