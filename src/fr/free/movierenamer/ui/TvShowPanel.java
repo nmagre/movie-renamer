@@ -57,7 +57,10 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
       if (season.getNum() == sxe.getSeason()) {
         seasonsList.setSelectedValue(season.getNum(), true);
         for (TvShowEpisode episode : season.getEpisodes()) {
-          String ep = episode.getNum() + " - " + episode.getTitle() + " (" + episode.getOriginalTitle() + ")";
+          String ep = episode.getNum() + " - " + episode.getTitle();
+          if(episode.getOriginalTitle() != null) {
+            ep += " (" + episode.getOriginalTitle() + ")";
+          }
           episodesModel.addElement(ep);
           if (episode.getNum() == sxe.getEpisode()) {
             episodesList.setSelectedValue(ep, true);

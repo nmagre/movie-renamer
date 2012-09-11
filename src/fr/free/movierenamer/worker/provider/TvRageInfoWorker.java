@@ -20,9 +20,10 @@ package fr.free.movierenamer.worker.provider;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
-import javax.swing.event.SwingPropertyChangeSupport;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Class TvRageInfoWorker
@@ -31,7 +32,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
  */
 public class TvRageInfoWorker extends TvShowInfoWorker {// TODO A faire
 
-  private final SxE sxe;
+  private SxE sxe;
 
   /**
    * Constructor arguments
@@ -41,7 +42,7 @@ public class TvRageInfoWorker extends TvShowInfoWorker {// TODO A faire
    * @param sxe
    * @throws ActionNotValidException
    */
-  public TvRageInfoWorker(SwingPropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
+  public TvRageInfoWorker(PropertyChangeSupport errorSupport, MediaID id, SxE sxe) throws ActionNotValidException {
     super(errorSupport, id);
     if (id.getType() != MediaID.MediaIdType.TVRAGETVID) {
       throw new ActionNotValidException("TvRageInfoWorker can only use tvrage ID");
@@ -50,7 +51,13 @@ public class TvRageInfoWorker extends TvShowInfoWorker {// TODO A faire
   }
 
   @Override
-  protected TvShowInfo executeInBackground() throws Exception {
+  protected String getUri() throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  protected MrParser<TvShowInfo> getParser() throws Exception {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
 }

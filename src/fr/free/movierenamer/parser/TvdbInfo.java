@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 public class TvdbInfo extends MrParser<TvShowInfo> {
 
   private StringBuffer buffer;
+  private final TvShowInfo tvshowInfo;
   private List<TvShowSeason> seasons;
   private boolean data;
   private String title;
@@ -45,6 +46,7 @@ public class TvdbInfo extends MrParser<TvShowInfo> {
 
   public TvdbInfo() {
     super();
+    tvshowInfo = new TvShowInfo();
   }
 
   @Override
@@ -132,6 +134,8 @@ public class TvdbInfo extends MrParser<TvShowInfo> {
 
   @Override
   public TvShowInfo getObject() {
-    return null;// seasons;
+    TvShowSeason.sortSeasons(seasons);//Sort season by season number
+    tvshowInfo.setSeasons(seasons);
+    return tvshowInfo;
   }
 }

@@ -53,7 +53,7 @@ public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker
   }
   
   @Override
-  protected final T proccessFile(File xmlFile) throws Exception {
+  protected final T processFile(File xmlFile) throws Exception {
     T movieImage = null;
 
     try {

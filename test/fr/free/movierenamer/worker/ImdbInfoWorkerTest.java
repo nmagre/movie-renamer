@@ -60,14 +60,15 @@ public class ImdbInfoWorkerTest {
 
   @Test(expected = NullPointerException.class)
   public void testNullId() throws ActionNotValidException, InterruptedException, ExecutionException {
-    ImdbInfoWorker worker = new ImdbInfoWorker(null, null, null);
+    ImdbInfoWorker worker = new ImdbInfoWorker(null, null);
     worker.execute();
     worker.get();
   }
 
   @Test(expected = ActionNotValidException.class)
   public void testIdNotValid() throws ActionNotValidException, ExecutionException, InterruptedException {
-    ImdbInfoWorker worker = new ImdbInfoWorker(null, new MediaID(null, MediaID.MediaIdType.TMDBID), Utils.Language.ENGLISH);
+    Settings.getInstance().movieScrapperLang =  Utils.Language.ENGLISH;
+    ImdbInfoWorker worker = new ImdbInfoWorker(null, new MediaID(null, MediaID.MediaIdType.TMDBID));
     worker.execute();
     worker.get();
   }
@@ -87,7 +88,8 @@ public class ImdbInfoWorkerTest {
   
   private void imdbWorker(MediaID id, Utils.Language lang) throws ActionNotValidException, Exception{
     String file =  "/data/" + id.getID() + "_" + lang.getShort() + ".ser";
-    ImdbInfoWorker worker = new ImdbInfoWorker(null, id, lang);
+    Settings.getInstance().movieScrapperLang = lang;
+    ImdbInfoWorker worker = new ImdbInfoWorker(null, id);
     MovieInfo mvinfo = worker.doInBackground();
     MovieInfo minfo = (MovieInfo) Utils.deserializeObjectFromFile(getClass().getResourceAsStream(file));
     assertTrue(mvinfo.equals(minfo));

@@ -18,6 +18,10 @@
     </Component>
     <Component class="javax.swing.ButtonGroup" name="caseFolderGroup">
     </Component>
+    <Component class="javax.swing.ButtonGroup" name="scrapperTvGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="scrapperTvLangGroup">
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="title" type="java.lang.String" value="Movie Renamer Settings"/>
@@ -158,7 +162,7 @@
                       <Component id="updatePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="languagePnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="32" max="32767" attributes="0"/>
+                      <EmptySpace pref="51" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -468,7 +472,7 @@
                           <Component id="mediaPortalNFORBtn" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="yamjChk" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="173" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -559,7 +563,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="renameTabPan" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="15" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -575,11 +579,6 @@
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
               <SubComponents>
                 <Container class="javax.swing.JPanel" name="movieFileNamePnl">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="null"/>
-                    </Property>
-                  </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Movie fileName">
@@ -632,7 +631,7 @@
                                           <Component id="rmDupSpaceChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="rmSpcCharChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="244" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -694,7 +693,7 @@
                                   <Component id="filenameTestBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="filenameTestField" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="38" max="32767" attributes="0"/>
+                              <EmptySpace pref="40" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -945,7 +944,7 @@
                                                   <Component id="rmDupSpaceFolderChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="rmSpcCharFolderChk" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <EmptySpace min="0" pref="229" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="234" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace min="0" max="-2" attributes="0"/>
@@ -1015,7 +1014,7 @@
                                   <Component id="folderTestBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="folderTestField" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="13" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1229,11 +1228,6 @@
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="movieFileNamePnl1">
-                  <Properties>
-                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                      <Border info="null"/>
-                    </Property>
-                  </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Tv Show File">
@@ -1245,7 +1239,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="500" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="503" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -1281,7 +1275,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jTabbedPane2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="50" max="32767" attributes="0"/>
+                      <EmptySpace pref="59" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1600,7 +1594,7 @@
                                   <Component id="scrapperEsRbtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="scrapperDeRbtn" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="111" max="32767" attributes="0"/>
+                                  <EmptySpace pref="179" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1726,12 +1720,12 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="imdbRBtn1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="tvdbRBtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="tmdbRbtn1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="tvrageRbtn" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="allocineRbtn1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="252" max="32767" attributes="0"/>
+                                  <Component id="allocineTVRbtn" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace pref="280" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1740,9 +1734,9 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="imdbRBtn1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="tmdbRbtn1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="allocineRbtn1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="tvdbRBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="tvrageRbtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="allocineTVRbtn" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="248" max="-2" attributes="0"/>
                               </Group>
@@ -1750,35 +1744,35 @@
                         </DimensionLayout>
                       </Layout>
                       <SubComponents>
-                        <Component class="javax.swing.JRadioButton" name="imdbRBtn1">
+                        <Component class="javax.swing.JRadioButton" name="tvdbRBtn">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                              <ComponentRef name="scrapperGroup"/>
+                              <ComponentRef name="scrapperTvGroup"/>
                             </Property>
                             <Property name="selected" type="boolean" value="true"/>
                             <Property name="text" type="java.lang.String" value="Tvdb"/>
                           </Properties>
                           <Events>
-                            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="imdbRBtn1ItemStateChanged"/>
+                            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="tvdbRBtnItemStateChanged"/>
                           </Events>
                         </Component>
-                        <Component class="javax.swing.JRadioButton" name="tmdbRbtn1">
+                        <Component class="javax.swing.JRadioButton" name="tvrageRbtn">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                              <ComponentRef name="scrapperGroup"/>
+                              <ComponentRef name="scrapperTvGroup"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Tvrage"/>
                           </Properties>
                         </Component>
-                        <Component class="javax.swing.JRadioButton" name="allocineRbtn1">
+                        <Component class="javax.swing.JRadioButton" name="allocineTVRbtn">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                              <ComponentRef name="scrapperGroup"/>
+                              <ComponentRef name="scrapperTvGroup"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Allocine"/>
                           </Properties>
                           <Events>
-                            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="allocineRbtn1ItemStateChanged"/>
+                            <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="allocineTVRbtnItemStateChanged"/>
                           </Events>
                         </Component>
                       </SubComponents>
@@ -1800,10 +1794,10 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="scrapperFrRbtn1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="scrapperEnRbtn1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="335" max="32767" attributes="0"/>
+                                  <Component id="scrapperTvEnRbtn" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="scrapperTvFrRbtn" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1812,8 +1806,8 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="scrapperFrRbtn1" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="scrapperEnRbtn1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="scrapperTvFrRbtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="scrapperTvEnRbtn" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace pref="15" max="32767" attributes="0"/>
                               </Group>
@@ -1821,10 +1815,10 @@
                         </DimensionLayout>
                       </Layout>
                       <SubComponents>
-                        <Component class="javax.swing.JRadioButton" name="scrapperFrRbtn1">
+                        <Component class="javax.swing.JRadioButton" name="scrapperTvFrRbtn">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                              <ComponentRef name="scrapperLangGroup"/>
+                              <ComponentRef name="scrapperTvLangGroup"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Ubuntu" size="12" style="0"/>
@@ -1835,10 +1829,10 @@
                             </Property>
                           </Properties>
                         </Component>
-                        <Component class="javax.swing.JRadioButton" name="scrapperEnRbtn1">
+                        <Component class="javax.swing.JRadioButton" name="scrapperTvEnRbtn">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                              <ComponentRef name="scrapperLangGroup"/>
+                              <ComponentRef name="scrapperTvLangGroup"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Ubuntu" size="12" style="0"/>
@@ -1885,7 +1879,7 @@
                       <Component id="movieImagePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="imagesPnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="268" max="32767" attributes="0"/>
+                      <EmptySpace pref="279" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1990,7 +1984,7 @@
                                   </Group>
                               </Group>
                           </Group>
-                          <EmptySpace pref="217" max="32767" attributes="0"/>
+                          <EmptySpace pref="222" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2155,7 +2149,7 @@
                       <Component id="extensionPnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="fileNameFilterPnl" min="-2" pref="190" max="-2" attributes="0"/>
-                      <EmptySpace pref="64" max="32767" attributes="1"/>
+                      <EmptySpace pref="73" max="32767" attributes="1"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2317,7 +2311,7 @@
                                   <Component id="moveLeft" min="-2" pref="84" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="moveRight" min="-2" pref="84" max="-2" attributes="0"/>
-                                  <EmptySpace pref="82" max="32767" attributes="0"/>
+                                  <EmptySpace pref="90" max="32767" attributes="0"/>
                                   <Component id="addFilter" min="-2" pref="84" max="-2" attributes="2"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="removeFilterBtn" min="-2" pref="84" max="-2" attributes="2"/>
@@ -2509,7 +2503,7 @@
                       <Component id="imagePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xmlFilePnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="182" max="32767" attributes="0"/>
+                      <EmptySpace pref="191" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2666,7 +2660,7 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="clearXmlCacheOnStartChk" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="187" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -2750,7 +2744,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="proxySubPanel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="365" max="32767" attributes="0"/>
+                      <EmptySpace pref="377" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2784,7 +2778,7 @@
                                   <Component id="proxyPortField" min="-2" pref="64" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="50" max="32767" attributes="0"/>
+                          <EmptySpace pref="84" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -2889,7 +2883,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="webLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
+                                  <EmptySpace pref="19" max="32767" attributes="0"/>
                                   <Component id="webTextField1" min="-2" pref="384" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="webButton4" min="-2" max="-2" attributes="0"/>

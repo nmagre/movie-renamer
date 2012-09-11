@@ -108,7 +108,8 @@ public class UpdateData {
 
   private static void imdbWorker(File path, MediaID id, Utils.Language lang) throws ActionNotValidException, Exception {
     String file = path.getAbsolutePath() + File.separator + id.getID() + "_" + lang.getShort() + ".ser";
-    ImdbInfoWorker worker = new ImdbInfoWorker(null, id, lang);
+    Settings.getInstance().movieScrapperLang = lang;
+    ImdbInfoWorker worker = new ImdbInfoWorker(null, id);
     worker.execute();
     writeToFile(worker.get(), file);
   }

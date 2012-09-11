@@ -17,6 +17,14 @@
  */
 package fr.free.movierenamer.worker;
 
+import java.util.concurrent.ExecutionException;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.beans.PropertyChangeSupport;
@@ -49,7 +57,7 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
     return executeInBackground();
   }
 
-  protected abstract T executeInBackground() throws Exception;
+  public abstract T executeInBackground() throws Exception;
 
   protected final void firePropertyChange(String propertyName, String... chunks) {
     if (errorSupport != null) {

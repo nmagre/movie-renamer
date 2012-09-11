@@ -57,7 +57,7 @@ public class ImageWorker extends Worker<Void> {
   }
 
   @Override
-  protected Void executeInBackground() {// FIXME change tcp timeout, we don't want to wait
+  public Void executeInBackground() {// FIXME change tcp timeout, we don't want to wait
     // FIXME Remove all images which have a problem (not found,...)
     setProgress(0);
     for (int i = 0; i < arrayImage.size(); i++) {

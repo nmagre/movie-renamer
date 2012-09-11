@@ -17,74 +17,65 @@
  */
 package fr.free.movierenamer.parser;
 
-import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
-import java.util.ArrayList;
-import java.util.List;
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Class AllocineTvSeason
+ * Class AllocineTvShowEpisodeInfo
+ * 
  * @author Nicolas Magré
  */
-public class AllocineTvSeason extends MrParser<List<TvShowSeason>> {
+public class AllocineTvShowEpisodeInfo extends MrParser<TvShowEpisode> {
 
   private StringBuffer buffer;
-  private List<TvShowSeason> seasons;
-  private TvShowSeason currentSeason;
-  private boolean tvseries;
-  private boolean seasonList;
+  private final TvShowEpisode tvshowInfo;
+  private boolean episode;
 
-  public AllocineTvSeason() {
+  public AllocineTvShowEpisodeInfo() {
     super();
-    tvseries = false;
-    seasonList = false;
+    tvshowInfo = new TvShowEpisode();
   }
 
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    seasons = new ArrayList<TvShowSeason>();
+    episode = false;
   }
 
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
-    if (name.equalsIgnoreCase("tvseries")) {
-      tvseries = true;
-    }
-    if (tvseries) {
-      if (name.equalsIgnoreCase("seasonList")) {
-        seasonList = true;
-      }
-      if (seasonList) {
-        if (name.equalsIgnoreCase("season")) {
-          currentSeason = new TvShowSeason(new MediaID(attributes.getValue("code"), MediaID.MediaIdType.ALLOCINESEASONID));
-        }
-      }
+    if (name.equalsIgnoreCase("episode")) {
+      episode = true;
     }
   }
 
   @Override
   public void endElement(String uri, String localName, String name) throws SAXException {
-    if (name.equalsIgnoreCase("tvseries")) {
-      tvseries = false;
+    if (name.equalsIgnoreCase("episode")) {
+      episode = false;
     }
-    if (tvseries) {
-      if (name.equalsIgnoreCase("seasonList")) {
-        seasonList = false;
+    if (episode) {
+      if (name.equalsIgnoreCase("episodeNumberSeason")) {
+        tvshowInfo.setNum(Integer.parseInt(buffer.toString()));
       }
-      if (seasonList) {
-        if (name.equalsIgnoreCase("seasonNumber")) {
-          currentSeason.setNum(Integer.parseInt(buffer.toString()));
-        }
-        if (name.equalsIgnoreCase("episodeCount")) {
-          currentSeason.setEpisodeCount(Integer.parseInt(buffer.toString()));
-        }
-        if (name.equalsIgnoreCase("season")) {
-          seasons.add(currentSeason);
-        }
+      /*if (name.equalsIgnoreCase("episodeNumberSeries")) {
+      }*/
+      if (name.equalsIgnoreCase("originalTitle")) {
+        tvshowInfo.setOriginalTitle(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("title")) {
+        tvshowInfo.setTitle(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("synopsis")) {
+        tvshowInfo.setPlot(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("userRating")) {
+        tvshowInfo.setRating(buffer.toString());
+      }
+      if (name.equalsIgnoreCase("userRatingCount")) {
+        tvshowInfo.setVotes(buffer.toString());
       }
     }
     buffer = null;
@@ -99,7 +90,7 @@ public class AllocineTvSeason extends MrParser<List<TvShowSeason>> {
   }
 
   @Override
-  public List<TvShowSeason> getObject() {
-    return seasons;
+  public TvShowEpisode getObject() {
+    return tvshowInfo;
   }
 }

@@ -711,6 +711,18 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   public void addFanart(MediaImage fanart) {
     movieImage.addFanart(fanart);
   }
+  
+  /**
+   * @param extraImages
+   */
+  public void addImages(MovieImage extraImages) {
+    for(MediaImage thumb : extraImages.getThumbs()) {
+      addThumb(thumb);
+    }
+    for(MediaImage fanart : extraImages.getFanarts()) {
+      addFanart(fanart);
+    }
+  }
 
   /**
    * Add genre

@@ -50,7 +50,7 @@ public class ActorWorker extends Worker<Void> {
   }
 
   @Override
-  protected Void executeInBackground() {
+  public Void executeInBackground() {
     setProgress(0);
     for (int i = 0; i < actors.size(); i++) {
       Image image = null;
