@@ -37,6 +37,7 @@ public class TvShowInfo implements IMediaInfo/*
   private String year;
   private String synopsis;
   private String rating;
+  private String poster;
   private List<TvShowSeason> seasons;
 
   public TvShowInfo() {
@@ -46,6 +47,7 @@ public class TvShowInfo implements IMediaInfo/*
     year = "";
     synopsis = "";
     rating = "-1";
+    poster = "";
     seasons = new ArrayList<TvShowSeason>();
   }
 
@@ -127,5 +129,19 @@ public class TvShowInfo implements IMediaInfo/*
    */
   public void setTitle(String title) {
     this.title = title;
+  }
+  
+  /**
+   * @return the poster
+   */
+  public String getPoster() {
+    return poster;
+  }
+  
+  /**
+   * @param poster the poster to set
+   */
+  public void setPoster(String poster) {
+    this.poster = poster;
   }
 }

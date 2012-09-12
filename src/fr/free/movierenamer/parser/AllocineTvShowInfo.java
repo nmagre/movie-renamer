@@ -64,6 +64,9 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
       tvseries = true;
     }
     if (tvseries) {
+      if (name.equalsIgnoreCase("poster")) {
+        tvshowInfo.setPoster(attributes.getValue("href"));
+      }
       if (name.equalsIgnoreCase("seasonList")) {
         seasonList = true;
       }
@@ -109,6 +112,10 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
         if (name.equalsIgnoreCase("season")) {
           seasons.add(currentSeason);
         }
+      } else {
+        if (name.equalsIgnoreCase("userRating")) {
+          tvshowInfo.setRating((Float.parseFloat(buffer.toString()) * 2)+""); //set rating out of 10
+        } 
       }
     }
     buffer = null;
