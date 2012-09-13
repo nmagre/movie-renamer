@@ -2,6 +2,14 @@
 
 <Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
+    <Component class="com.alee.laf.label.WebLabel" name="genreLbl">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Genre"/>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="13" style="1"/>
+        </Property>
+      </Properties>
+    </Component>
     <Container class="com.alee.laf.panel.WebPanel" name="starPanel">
       <Properties>
         <Property name="alignmentY" type="float" value="0.0"/>
@@ -89,29 +97,34 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="tvshowTb" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="thumbLbl" min="-2" pref="160" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="tvshowTb" alignment="1" max="32767" attributes="0"/>
-                          <Component id="synopsisPane" alignment="1" pref="411" max="32767" attributes="0"/>
+                          <Component id="synopsisPane" pref="411" max="32767" attributes="0"/>
+                          <Component id="genreField" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="seasonsPane" alignment="0" min="-2" pref="53" max="-2" attributes="0"/>
+                                  <Component id="seasonLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="episodeLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Component id="episodesPane" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
                       </Group>
                   </Group>
                   <Component id="episodeSynopsisPane" alignment="0" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="seasonsPane" alignment="0" min="-2" pref="134" max="-2" attributes="0"/>
-                          <Component id="seasonLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="episodeLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="episodesPane" max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
+                  <Component id="webToolBar3" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -121,27 +134,31 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="tvshowTb" min="-2" pref="30" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="synopsisPane" max="32767" attributes="0"/>
-                  </Group>
-                  <Component id="thumbLbl" min="-2" pref="200" max="-2" attributes="1"/>
-              </Group>
+              <Component id="tvshowTb" min="-2" pref="30" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="seasonLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="episodeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="thumbLbl" min="-2" pref="200" max="-2" attributes="1"/>
+                  <Group type="102" attributes="0">
+                      <Component id="synopsisPane" min="-2" pref="78" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="genreField" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="seasonLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="episodeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="seasonsPane" min="-2" pref="67" max="-2" attributes="0"/>
+                          <Component id="episodesPane" min="-2" pref="67" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="seasonsPane" min="-2" pref="121" max="-2" attributes="0"/>
-                  <Component id="episodesPane" min="-2" pref="121" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="webToolBar3" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="episodeSynopsisPane" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="297" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="735" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -171,6 +188,8 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="com.alee.laf.text.WebTextField" name="genreField">
+    </Component>
     <Container class="javax.swing.JScrollPane" name="synopsisPane">
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -181,7 +200,9 @@
         <Component class="javax.swing.JTextArea" name="synopsisArea">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="rows" type="int" value="5"/>
+            <Property name="wrapStyleWord" type="boolean" value="true"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -266,5 +287,23 @@
         </Property>
       </Properties>
     </Component>
+    <Container class="com.alee.laf.toolbar.WebToolBar" name="webToolBar3">
+      <Properties>
+        <Property name="floatable" type="boolean" value="false"/>
+        <Property name="rollover" type="boolean" value="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+      <SubComponents>
+        <Component class="com.alee.laf.label.WebLabel" name="webLabel5">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Episode Synopsis"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Ubuntu" size="13" style="1"/>
+            </Property>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>

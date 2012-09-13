@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import fr.free.movierenamer.utils.Utils;
+
 import fr.free.movierenamer.media.IMediaInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class TvShowInfo implements IMediaInfo/*
   private String synopsis;
   private String rating;
   private String poster;
+  private List<String> genres;
   private List<TvShowSeason> seasons;
 
   public TvShowInfo() {
@@ -48,6 +51,7 @@ public class TvShowInfo implements IMediaInfo/*
     synopsis = "";
     rating = "-1";
     poster = "";
+    genres = new ArrayList<String>();
     seasons = new ArrayList<TvShowSeason>();
   }
 
@@ -143,5 +147,56 @@ public class TvShowInfo implements IMediaInfo/*
    */
   public void setPoster(String poster) {
     this.poster = poster;
+  }
+
+  /**
+   * Get genres
+   * 
+   * @return Array of genre
+   */
+  public List<String> getGenres() {
+    return genres;
+  }
+  
+  /**
+   * Get genres to string
+   * 
+   * @param separator Separator
+   * @param limit Number of genres to return (0 for all)
+   * @return Genre separated by separator
+   */
+  public String getGenresString(String separator, int limit) {
+    return Utils.arrayToString(genres, separator, limit);
+  }
+  
+  /**
+   * Get the n genre
+   * 
+   * @param n Position of genre
+   * @return Genre or an empty string
+   */
+  public String getGenreN(int n) {
+    if (n >= genres.size()) {
+      return "";
+    }
+    return genres.get(n);
+  }
+  
+  /**
+   * Set genres
+   * 
+   * @param genres Array of genres
+   */
+  public void setGenre(List<String> genres) {
+    this.genres = genres;
+  }
+  
+  /**
+   * Add genre
+   * 
+   * @param genre Genre
+   */
+  public void addGenre(String genre) {
+    genres.add(genre);
   }
 }

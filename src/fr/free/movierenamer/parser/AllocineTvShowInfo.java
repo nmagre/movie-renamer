@@ -113,6 +113,12 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
           seasons.add(currentSeason);
         }
       } else {
+        if (name.equalsIgnoreCase("genre")) {
+          tvshowInfo.addGenre(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("synopsis")) {
+          tvshowInfo.setSynopsis(buffer.toString());
+        }
         if (name.equalsIgnoreCase("userRating")) {
           tvshowInfo.setRating((Float.parseFloat(buffer.toString()) * 2)+""); //set rating out of 10
         } 
