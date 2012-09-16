@@ -33,18 +33,18 @@ public class TvShowEpisode {
   private int num;
   private String title;
   private String originalTitle;
-  private String plot;
   private String rating;
   private String votes;
+  private String synopsis;
   private List<MediaID> tvshowIDs;
 
   public TvShowEpisode() {
     num = -1;
     title = "?";
     originalTitle = "";
-    plot = "";
-    rating = "";
+    rating = "-1";
     votes = "";
+    synopsis = "";
     tvshowIDs = new ArrayList<MediaID>();
   }
 
@@ -52,9 +52,9 @@ public class TvShowEpisode {
     this.num = num;
     title = "?";
     originalTitle = "";
-    plot = "";
     rating = "";
     votes = "";
+    synopsis = "";
     tvshowIDs = new ArrayList<MediaID>();
   }
   
@@ -69,10 +69,7 @@ public class TvShowEpisode {
   public String getOriginalTitle() {
     return originalTitle;
   }
-
-  public String getPlot() {
-    return plot;
-  }
+  
 
   public String getRating() {
     return rating;
@@ -112,10 +109,6 @@ public class TvShowEpisode {
     this.originalTitle = originalTitle;
   }
 
-  public void setPlot(String plot) {
-    this.plot = plot;
-  }
-
   public void setRating(String rating) {
     this.rating = rating;
   }
@@ -138,9 +131,22 @@ public class TvShowEpisode {
   public String toString() {
     String res = "Title : " + title + Utils.ENDLINE;
     res += "Original title : " + originalTitle + Utils.ENDLINE;
-    res += "Plot : " + plot + Utils.ENDLINE;
     res += "Rating :" + rating + Utils.ENDLINE;
     res += "Votes :" + votes + Utils.ENDLINE;
     return res;
+  }
+
+  /**
+   * @return the synopsis
+   */
+  public String getSynopsis() {
+    return synopsis;
+  }
+
+  /**
+   * @param synopsis the synopsis to set
+   */
+  public void setSynopsis(String synopsis) {
+    this.synopsis = synopsis;
   }
 }

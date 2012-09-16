@@ -33,7 +33,7 @@ public class AllocineTvShowSeasonInfo extends MrParser<List<TvShowEpisode>> {
   private StringBuffer buffer;
   private TvShowEpisode currentEpisode;
   private List<TvShowEpisode> tvShowEpisodes;
-  private boolean season, episodeList, episode;
+  private boolean season, episodeList, episode, statistics;
 
   public AllocineTvShowSeasonInfo() {
     super();
@@ -53,6 +53,9 @@ public class AllocineTvShowSeasonInfo extends MrParser<List<TvShowEpisode>> {
       season = true;
     }
     if (season) {
+      if (name.equalsIgnoreCase("statistics")) {
+        statistics = true;
+      }
       if (name.equalsIgnoreCase("episodeList")) {
         episodeList = true;
       }
@@ -72,8 +75,16 @@ public class AllocineTvShowSeasonInfo extends MrParser<List<TvShowEpisode>> {
       season = false;
     }
     if (season) {
+      if (name.equalsIgnoreCase("statistics")) {
+        statistics = false;
+      }
       if (name.equalsIgnoreCase("episodeList")) {
         episodeList = false;
+      }
+      if(statistics) {
+        if (name.equalsIgnoreCase("userRating")) {
+          currentEpisode.setRating(buffer.toString());
+        }
       }
       if (episodeList) {
         if (episode) {

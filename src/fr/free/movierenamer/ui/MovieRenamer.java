@@ -1605,7 +1605,7 @@ public class MovieRenamer extends JFrame {
           }
 
           currentMedia.setInfo(seasons);
-          tvShowPanel.addTvshowInfo(seasons.getSeasons(), ((TvShow) currentMedia).getSearchSxe());
+          tvShowPanel.addTvshowInfo((TvShow) currentMedia);//seasons.getSeasons(), ((TvShow) currentMedia).getSearchSxe());
 
         } catch (InterruptedException ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);

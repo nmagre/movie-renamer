@@ -17,6 +17,29 @@
  */
 package fr.free.movierenamer.ui;
 
+import javax.swing.Icon;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import java.awt.Dimension;
+
+import fr.free.movierenamer.utils.Cache;
+import java.net.URL;
+import javax.swing.ImageIcon;
+
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
+
+import fr.free.movierenamer.media.movie.MovieInfo;
+
+import fr.free.movierenamer.media.tvshow.TvShow;
+
+import fr.free.movierenamer.media.movie.Movie;
+
+import javax.swing.event.ListSelectionEvent;
+
+import javax.swing.event.ListSelectionListener;
+
 import fr.free.movierenamer.media.MediaImage;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
@@ -33,40 +56,174 @@ import javax.swing.ListSelectionModel;
  * Class TvShowPanel
  *
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class TvShowPanel extends JPanel implements IMediaPanel {
 
   private final DefaultListModel seasonsModel = new DefaultListModel();
   private final DefaultListModel episodesModel = new DefaultListModel();
+  private TvShow tvshow;
+  private Dimension thumbDim = new Dimension(160, 200);
+  private final ImageIcon actorDefault = new ImageIcon(getClass().getResource("/image/unknown.png"));
+  private final Icon STAR = new ImageIcon(getClass().getResource("/image/star.png"));
+  private final Icon STAR_HALF = new ImageIcon(getClass().getResource("/image/star-half.png"));
+  private final Icon STAR_EMPTY = new ImageIcon(getClass().getResource("/image/star-empty.png"));
+  private Cache cache = Cache.getInstance();
+  private static final String SEP = " : ";
 
   /**
    * Creates new form TvShowPanel
    */
   public TvShowPanel() {
     initComponents();
+    tvshowTb.addToEnd(starPanel);
+    genreLbl.setText(genreLbl.getText() + SEP);
+    genreField.setLeadingComponent(genreLbl);
     seasonsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     seasonsList.setModel(seasonsModel);
+    seasonsList.addListSelectionListener(createSeasonsListListener());
+    episodesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     episodesList.setModel(episodesModel);
+    episodesList.addListSelectionListener(createEpisodesListListener());
   }
 
-  public void addTvshowInfo(List<TvShowSeason> seasons, SxE sxe) {
-    System.out.println(sxe);
-    for (final TvShowSeason season : seasons) {
-      System.out.println(season);
-      seasonsModel.addElement(season.getNum());
-      if (season.getNum() == sxe.getSeason()) {
-        seasonsList.setSelectedValue(season.getNum(), true);
+  /**
+   * Create seasons list selection listener
+   *
+   * @return
+   */
+  private ListSelectionListener createSeasonsListListener() {
+    return new ListSelectionListener() {
+
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        TvShowInfo tvshowInfo = tvshow.getTvShowInfo();
+        TvShowSeason season = tvshowInfo.getSeasons().get(seasonsList.getSelectedIndex());
         for (TvShowEpisode episode : season.getEpisodes()) {
           String ep = episode.getNum() + " - " + episode.getTitle();
-          if(episode.getOriginalTitle() != null) {
+          if (episode.getOriginalTitle() != null && episode.getOriginalTitle().trim().length()>0) {
             ep += " (" + episode.getOriginalTitle() + ")";
           }
           episodesModel.addElement(ep);
-          if (episode.getNum() == sxe.getEpisode()) {
-            episodesList.setSelectedValue(ep, true);
+          if(episodesList.getSelectedIndex() < 0)
+          {
+            if (episode.getNum() == tvshow.getSearchSxe().getEpisode()) {
+              episodesList.setSelectedValue(ep, true);
+            }
           }
         }
       }
+
+    };
+  }
+
+  /**
+   * Create episodes list selection listener
+   *
+   * @return
+   */
+  private ListSelectionListener createEpisodesListListener() {
+    return new ListSelectionListener() {
+
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        TvShowInfo tvshowInfo = tvshow.getTvShowInfo();
+        TvShowSeason season = tvshowInfo.getSeasons().get(seasonsList.getSelectedIndex());
+        TvShowEpisode episode = season.getEpisodes().get(episodesList.getSelectedIndex());
+        episodeSynopsisArea.setText(episode.getSynopsis());
+        episodeSynopsisArea.setCaretPosition(0);
+      }
+
+    };
+  }
+
+  public void addTvshowInfo(final TvShow tvshow) {// List<TvShowSeason> seasons, SxE sxe) {
+    this.tvshow = tvshow;
+    TvShowInfo tvshowInfo = tvshow.getTvShowInfo();
+
+    try {
+      Image img = cache.getImage(new URL(tvshowInfo.getPoster()), Cache.CacheType.THUMB);
+      if (img != null) {
+        thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+      }
+    } catch (MalformedURLException e) {
+    } catch (IOException e) {
+    }
+
+    titleLbl.setText(tvshowInfo.getTitle());
+    if(tvshowInfo.getYear() != null && tvshowInfo.getYear().trim().length() > 0) {
+      yearLbl.setText("(" + tvshowInfo.getYear() + ")");
+    }
+    genreField.setText(tvshowInfo.getGenresString(" | ", 0));
+    synopsisArea.setText(tvshowInfo.getSynopsis());
+    synopsisArea.setCaretPosition(0);
+    setRate(Float.parseFloat(tvshowInfo.getRating().replace(",", ".")));
+
+    for (final TvShowSeason season : tvshowInfo.getSeasons()) {
+      System.out.println(season);
+      seasonsModel.addElement(season.getNum());
+      if(seasonsList.getSelectedIndex() < 0)
+      {
+        if (season.getNum() == tvshow.getSearchSxe().getSeason()) {
+          seasonsList.setSelectedValue(season.getNum(), true);
+        }
+      }
+    }
+  }
+
+  /**
+   * Set star compared with rate
+   *
+   * @param rate
+   */
+  private void setRate(Float rate) {
+    if (rate < 0.00) {
+      return;
+    }
+    rate /= 2;
+    int n = rate.intValue();
+    switch (n) {
+      case 0:
+        break;
+      case 1:
+        star.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star1.setIcon(STAR_HALF);
+        }
+        break;
+      case 2:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star2.setIcon(STAR_HALF);
+        }
+        break;
+      case 3:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        star2.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star3.setIcon(STAR_HALF);
+        }
+        break;
+      case 4:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        star2.setIcon(STAR);
+        star3.setIcon(STAR);
+        if ((rate - rate.intValue()) >= 0.50) {
+          star4.setIcon(STAR_HALF);
+        }
+        break;
+      case 5:
+        star.setIcon(STAR);
+        star1.setIcon(STAR);
+        star2.setIcon(STAR);
+        star3.setIcon(STAR);
+        star4.setIcon(STAR);
+        break;
+      default:
+        break;
     }
   }
 
@@ -83,6 +240,13 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
   @Override
   public void clear() {
     // TODO
+    thumbLbl.setIcon(null);
+    genreField.setText("");
+    star.setIcon(STAR_EMPTY);
+    star1.setIcon(STAR_EMPTY);
+    star2.setIcon(STAR_EMPTY);
+    star3.setIcon(STAR_EMPTY);
+    star4.setIcon(STAR_EMPTY);
   }
 
   /**
@@ -92,88 +256,200 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        genreLbl = new com.alee.laf.label.WebLabel();
+        starPanel = new com.alee.laf.panel.WebPanel();
+        star4 = new javax.swing.JLabel();
+        star3 = new javax.swing.JLabel();
+        star2 = new javax.swing.JLabel();
+        star1 = new javax.swing.JLabel();
+        star = new javax.swing.JLabel();
+        tvshowTb = new com.alee.laf.toolbar.WebToolBar();
+        titleLbl = new com.alee.laf.label.WebLabel();
+        yearLbl = new com.alee.laf.label.WebLabel();
+        genreField = new com.alee.laf.text.WebTextField();
+        synopsisPane = new javax.swing.JScrollPane();
+        synopsisArea = new javax.swing.JTextArea();
+        seasonsPane = new javax.swing.JScrollPane();
         seasonsList = new javax.swing.JList();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        episodesPane = new javax.swing.JScrollPane();
         episodesList = new javax.swing.JList();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        episodeSynopsisPane = new javax.swing.JScrollPane();
+        episodeSynopsisArea = new javax.swing.JTextArea();
+        seasonLabel = new javax.swing.JLabel();
+        episodeLabel = new javax.swing.JLabel();
+        thumbLbl = new javax.swing.JLabel();
+        webToolBar3 = new com.alee.laf.toolbar.WebToolBar();
+        webLabel5 = new com.alee.laf.label.WebLabel();
+
+        genreLbl.setText("Genre");
+        genreLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+
+        starPanel.setAlignmentY(0.0F);
+
+        star4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+
+        star3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+
+        star2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+
+        star1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+
+        star.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/star-empty.png"))); // NOI18N
+
+        javax.swing.GroupLayout starPanelLayout = new javax.swing.GroupLayout(starPanel);
+        starPanel.setLayout(starPanelLayout);
+        starPanelLayout.setHorizontalGroup(
+            starPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(starPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(star)
+                .addGap(8, 8, 8)
+                .addComponent(star1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(star2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(star3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(star4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        starPanelLayout.setVerticalGroup(
+            starPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(star1)
+            .addComponent(star2)
+            .addComponent(star3)
+            .addComponent(star4)
+            .addComponent(star)
+        );
+
+        tvshowTb.setFloatable(false);
+        tvshowTb.setRollover(true);
+
+        titleLbl.setFont(new java.awt.Font("Ubuntu", 1, 14)); // NOI18N
+        tvshowTb.add(titleLbl);
+
+        yearLbl.setFont(new java.awt.Font("Ubuntu", 1, 14)); // NOI18N
+        tvshowTb.add(yearLbl);
+
+        synopsisArea.setColumns(20);
+        synopsisArea.setLineWrap(true);
+        synopsisArea.setRows(5);
+        synopsisArea.setWrapStyleWord(true);
+        synopsisPane.setViewportView(synopsisArea);
 
         seasonsList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(seasonsList);
+        seasonsPane.setViewportView(seasonsList);
 
         episodesList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(episodesList);
+        episodesPane.setViewportView(episodesList);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
+        episodeSynopsisArea.setColumns(20);
+        episodeSynopsisArea.setLineWrap(true);
+        episodeSynopsisArea.setRows(5);
+        episodeSynopsisArea.setWrapStyleWord(true);
+        episodeSynopsisPane.setViewportView(episodeSynopsisArea);
 
-        jLabel2.setText("Season");
+        seasonLabel.setText("Season");
 
-        jLabel3.setText("Episode");
+        episodeLabel.setText("Episode");
+
+        thumbLbl.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        webToolBar3.setFloatable(false);
+        webToolBar3.setRollover(true);
+
+        webLabel5.setText("Episode Synopsis");
+        webLabel5.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        webToolBar3.add(webLabel5);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(tvshowTb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(thumbLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(synopsisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
+                            .addComponent(genreField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane2)))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(seasonsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(seasonLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(episodeLabel)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(episodesPane)))))
+                    .addComponent(episodeSynopsisPane, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(webToolBar3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap()
+                .addComponent(tvshowTb, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 106, Short.MAX_VALUE))
+                    .addComponent(thumbLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(synopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(genreField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(seasonLabel)
+                            .addComponent(episodeLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(seasonsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(episodesPane, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(webToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(episodeSynopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(735, 735, 735))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel episodeLabel;
+    private javax.swing.JTextArea episodeSynopsisArea;
+    private javax.swing.JScrollPane episodeSynopsisPane;
     private javax.swing.JList episodesList;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane episodesPane;
+    private com.alee.laf.text.WebTextField genreField;
+    private com.alee.laf.label.WebLabel genreLbl;
+    private javax.swing.JLabel seasonLabel;
     private javax.swing.JList seasonsList;
+    private javax.swing.JScrollPane seasonsPane;
+    private javax.swing.JLabel star;
+    private javax.swing.JLabel star1;
+    private javax.swing.JLabel star2;
+    private javax.swing.JLabel star3;
+    private javax.swing.JLabel star4;
+    private com.alee.laf.panel.WebPanel starPanel;
+    private javax.swing.JTextArea synopsisArea;
+    private javax.swing.JScrollPane synopsisPane;
+    private javax.swing.JLabel thumbLbl;
+    private com.alee.laf.label.WebLabel titleLbl;
+    private com.alee.laf.toolbar.WebToolBar tvshowTb;
+    private com.alee.laf.label.WebLabel webLabel5;
+    private com.alee.laf.toolbar.WebToolBar webToolBar3;
+    private com.alee.laf.label.WebLabel yearLbl;
     // End of variables declaration//GEN-END:variables
 
   @Override
