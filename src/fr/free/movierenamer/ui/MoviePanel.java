@@ -23,8 +23,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.mediainfo.MediaAudio;
-import fr.free.movierenamer.media.mediainfo.MediaSubTitle;
+import fr.free.movierenamer.media.mediainfo.MIAudio;
+import fr.free.movierenamer.media.mediainfo.MISubTitle;
 import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
@@ -117,8 +117,8 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   private List<actorImage> actors;
   private List<MediaImage> thumbs;
   private List<MediaImage> fanarts;
-  private Settings setting;
-  private Cache cache = Cache.getInstance();
+  private final Settings setting =Settings.getInstance();
+  private final Cache cache = Cache.getInstance();
   private static final String SEP = " : ";
 
   /**
@@ -126,10 +126,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
    *
    * @param setting
    */
-  public MoviePanel(Settings setting) {
-    this.setting = setting;
-
-    // Init
+  public MoviePanel() {
     initComponents();
 
     origTitleLbl.setText(origTitleLbl.getText() + SEP);
@@ -443,15 +440,15 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
       @Override
       public void run() {
-        MovieInfo movieInfo = movie.getMovieInfo();
-        List<MediaSubTitle> subtitles = movie.getMediaTag().getMediaSubTitles();
-        List<MediaAudio> audios = movie.getMediaTag().getMediaAudios();
+        MovieInfo movieInfo = movie.getInfo();
+        List<MISubTitle> subtitles = movie.getMediaTag().getMediaSubTitles();
+        List<MIAudio> audios = movie.getMediaTag().getMediaAudios();
         List<String> countries = movieInfo.getCountries();
-        for (MediaSubTitle sub : subtitles) {
+        for (MISubTitle sub : subtitles) {
           System.out.println(sub.getTitle() + " : " + sub.getLanguage());
           subTitleModel.addElement(sub);
         }
-        for (MediaAudio audio : audios) {
+        for (MIAudio audio : audios) {
           audioModel.addElement(audio);
         }
         for (String country : countries) {
@@ -463,7 +460,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         countryList.setModel(countryModel);
 
         titleLbl.setText(movieInfo.getTitle());
-        origTitleField.setText(movieInfo.getOrigTitle());
+        origTitleField.setText(movieInfo.getOriginalTitle());
         yearLbl.setText("(" + movieInfo.getYear() + ")");
         runtimeField.setText(movieInfo.getRuntime() + " min");
         synopsisArea.setText(movieInfo.getSynopsis());

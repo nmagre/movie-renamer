@@ -18,7 +18,7 @@
 package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.media.MediaImages;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -27,10 +27,10 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parser mieux que sa
+public class XbmcNFOImage extends MrParser<MediaImages> {// TODO A refaire, parser mieux que sa
 
   private StringBuffer buffer;
-  private MovieImage movieImage;
+  private MediaImages movieImages;
   private boolean movie;
   private MediaImage image;
   private boolean fanart;
@@ -43,7 +43,7 @@ public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parse
   @Override
   public void startDocument() throws SAXException {
     super.startDocument();
-    movieImage = new MovieImage();
+    movieImages = new MediaImages();
     movie = false;
     fanart = false;
     thumb = false;
@@ -82,9 +82,9 @@ public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parse
         image.setUrl(buffer.toString(), MediaImage.MediaImageSize.MEDIUM);
         image.setUrl(buffer.toString(), MediaImage.MediaImageSize.ORIGINAL);
         if (fanart) {
-          movieImage.addFanart(image);
+          movieImages.addFanart(image);
         } else {
-          movieImage.addThumb(image);
+          movieImages.addThumb(image);
         }
       }
       thumb = false;
@@ -101,7 +101,7 @@ public class XbmcNFOImage extends MrParser<MovieImage> {// TODO A refaire, parse
   }
 
   @Override
-  public MovieImage getObject() {
-    return movieImage;
+  public MediaImages getObject() {
+    return movieImages;
   }
 }

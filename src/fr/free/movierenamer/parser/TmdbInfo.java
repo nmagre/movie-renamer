@@ -18,8 +18,8 @@
 package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaImage;
+import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
@@ -64,10 +64,10 @@ public class TmdbInfo extends MrParser<MovieInfo> {
   @Override
   public void endDocument() throws SAXException {
     super.endDocument();
-    MovieImage miage = new MovieImage();
-    miage.setThumbs(thumbs);
-    miage.setThumbs(fanarts);
-    movieinfo.setImages(miage);
+    MediaImages images = new MediaImages();
+    images.setThumbs(thumbs);
+    images.setThumbs(fanarts);
+    movieinfo.addImages(images);
   }
 
   @Override
@@ -160,7 +160,7 @@ public class TmdbInfo extends MrParser<MovieInfo> {
         movieinfo.setTitle(buffer.toString());
       }
       if (name.equalsIgnoreCase("original_name")) {
-        movieinfo.setOrigTitle(buffer.toString());
+        movieinfo.setOriginalTitle(buffer.toString());
       }
       if (name.equalsIgnoreCase("trailer")) {
         movieinfo.setTrailer(buffer.toString());

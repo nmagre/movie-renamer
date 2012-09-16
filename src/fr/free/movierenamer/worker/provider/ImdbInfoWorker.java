@@ -17,8 +17,9 @@
  */
 package fr.free.movierenamer.worker.provider;
 
+import fr.free.movierenamer.media.MediaImages;
+
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.ImdbInfo;
 import fr.free.movierenamer.parser.MrParser;
@@ -82,8 +83,8 @@ public class ImdbInfoWorker extends MovieInfoWorker {
   }
   
   @Override
-  protected MovieImage loadExtraImages() throws Exception {
-    MovieImage mediaImage = null;
+  protected MediaImages loadExtraImages() throws Exception {
+    MediaImages mediaImage = null;
     try {
       TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, id);
       mediaImage = imgWorker.executeInBackground();
@@ -107,7 +108,7 @@ public class ImdbInfoWorker extends MovieInfoWorker {
       }
     }
 
-    MovieImage mediaImage = null;
+    MovieImages mediaImage = null;
     try {
       TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, id);
       imgWorker.execute();

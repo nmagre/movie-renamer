@@ -18,7 +18,7 @@
 package fr.free.movierenamer.parser;
 
 import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.media.MediaImages;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  *
  * @author Nicolas Magré
  */
-public class TmdbImage extends MrParser<MovieImage> {
+public class TmdbImage extends MrParser<MediaImages> {
 
   /**
    * The exception to bypass parsing file ;)
@@ -42,7 +42,7 @@ public class TmdbImage extends MrParser<MovieImage> {
   private String url = "http://cf2.imgobject.com/t/p/w";
   private List<MediaImage> thumbs;
   private List<MediaImage> fanarts;
-  private MovieImage movieImage;
+  private MediaImages movieImages;
 
   public TmdbImage() {
     super();
@@ -52,7 +52,7 @@ public class TmdbImage extends MrParser<MovieImage> {
   public void startDocument() throws SAXException {
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
-    movieImage = new MovieImage();
+    movieImages = new MediaImages();
 
     ObjectMapper mapper = new ObjectMapper();
     try {
@@ -63,8 +63,8 @@ public class TmdbImage extends MrParser<MovieImage> {
       MediaImage.sortByLanguage(config.movieScrapperLang.getShort(), thumbs);
       MediaImage.sortByLanguage(config.movieScrapperLang.getShort(), fanarts);
 
-      movieImage.setFanarts(fanarts);
-      movieImage.setThumbs(thumbs);
+      movieImages.setFanarts(fanarts);
+      movieImages.setThumbs(thumbs);
     } catch (IOException exc) {
       Logger.getLogger(TmdbImage.class.getName()).log(Level.SEVERE, null, exc);
     }
@@ -83,7 +83,7 @@ public class TmdbImage extends MrParser<MovieImage> {
   }
 
   @Override
-  public MovieImage getObject() {
-    return movieImage;
+  public MediaImages getObject() {
+    return movieImages;
   }
 }

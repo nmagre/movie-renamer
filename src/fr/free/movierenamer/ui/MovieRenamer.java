@@ -75,7 +75,7 @@ import org.xml.sax.SAXException;
 public class MovieRenamer extends JFrame {
 
   private final String SERROR = Utils.i18n("error");
-  private Settings setting;
+  private Settings setting = Settings.getInstance();
   private DropFile dropFile;
   private LoadingDialog loading;
   private List<MediaFile> mediaFile;
@@ -119,15 +119,13 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  public MovieRenamer(Settings setting) {
-
-    this.setting = setting;
+  public MovieRenamer() {
 
     contex = new ContextMenuListMouseListener();
     contex.addPropertyChangeListener(contextMenuListener);
 
     // Create media panel
-    moviePnl = new MoviePanel(setting);
+    moviePnl = new MoviePanel();
     tvShowPanel = new TvShowPanel();
 
     // Create media panel container and set transition effect
@@ -314,16 +312,14 @@ public class MovieRenamer extends JFrame {
 
         switch (mediaFile.getType()) {
           case MOVIE:
-            currentMedia = new Movie(mediaFile);
+            currentMedia = new Movie(mediaFile, renameField);
             break;
           case TVSHOW:
-            currentMedia = new TvShow(mediaFile);
+            currentMedia = new TvShow(mediaFile, renameField);
             break;
           default:
             return;
         }
-
-        currentMedia.setMediaFile(mediaFile);
 
         searchField.setText(currentMedia.getSearch());
         renameBtn.setEnabled(false);
@@ -377,7 +373,7 @@ public class MovieRenamer extends JFrame {
           currentMedia.clear();
 
           SearchResult sres = (SearchResult) searchResultList.getSelectedValue();
-          currentMedia.setMediaID(sres.getId());
+          currentMedia.setMediaId(sres.getId());
 
           switch (currentMedia.getType()) {
             case MOVIE:
@@ -520,7 +516,7 @@ public class MovieRenamer extends JFrame {
           nfoChk.setText(text);
 
           if (filterChanged) {
-            currentMedia.setDefaultSearch();
+            currentMedia.resetDefaultSearch();
           }
 
           if (media && (scrapperChanged || scrapperLangChanged)) {
@@ -1153,7 +1149,7 @@ public class MovieRenamer extends JFrame {
 
     if (currentMedia.getType() == Media.MediaType.MOVIE) {
       final Movie movie = (Movie) currentMedia;
-      final InfoEditorFrame editorFrame = new InfoEditorFrame(movie.getMovieInfo(), MovieRenamer.this);
+      final InfoEditorFrame editorFrame = new InfoEditorFrame(movie.getInfo(), MovieRenamer.this);
       editorFrame.addPropertyChangeListener(new PropertyChangeListener() {
 
         @Override
@@ -1606,6 +1602,11 @@ public class MovieRenamer extends JFrame {
 
           currentMedia.setInfo(seasons);
           tvShowPanel.addTvshowInfo((TvShow) currentMedia);//seasons.getSeasons(), ((TvShow) currentMedia).getSearchSxe());
+          
+          renameField.setText(currentMedia.getRenamedTitle(fileFormatField.getText()));
+          renameBtn.setEnabled(true);
+          renameField.setEnabled(true);
+          editBtn.setEnabled(true);
 
         } catch (InterruptedException ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);

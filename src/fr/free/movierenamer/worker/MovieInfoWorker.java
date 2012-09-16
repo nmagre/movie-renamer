@@ -18,7 +18,7 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
@@ -46,14 +46,14 @@ public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo> {
   @Override
   protected final MovieInfo processFile(File xmlFile) throws Exception {
     MovieInfo info = super.processFile(xmlFile);
-    MovieImage extraImages = loadExtraImages();
+    MediaImages extraImages = loadExtraImages();
     if(extraImages != null) {
       info.addImages(extraImages);
     }
     return info;
   }
   
-  protected MovieImage loadExtraImages() throws Exception {
+  protected MediaImages loadExtraImages() throws Exception {
     return null;
   }
   

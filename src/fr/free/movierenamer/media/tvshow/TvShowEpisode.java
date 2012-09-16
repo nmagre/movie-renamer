@@ -37,18 +37,14 @@ public class TvShowEpisode {
   private String votes;
   private String synopsis;
   private List<MediaID> tvshowIDs;
+  private TvShowSeason season;
 
   public TvShowEpisode() {
-    num = -1;
-    title = "?";
-    originalTitle = "";
-    rating = "-1";
-    votes = "";
-    synopsis = "";
-    tvshowIDs = new ArrayList<MediaID>();
+    this(null, -1);
   }
 
-  public TvShowEpisode(int num) {
+  public TvShowEpisode(TvShowSeason season, int num) {
+    this.season = season;
     this.num = num;
     title = "?";
     originalTitle = "";
@@ -75,7 +71,7 @@ public class TvShowEpisode {
     return rating;
   }
 
-  public String getvotes() {
+  public String getVotes() {
     return votes;
   }
 
@@ -148,5 +144,16 @@ public class TvShowEpisode {
    */
   public void setSynopsis(String synopsis) {
     this.synopsis = synopsis;
+  }
+
+  public TvShowSeason getSeason() {
+    return this.season;
+  }
+  
+  /**
+   * @param season the season to set
+   */
+  public void setSeason(TvShowSeason season) {
+    this.season = season;
   }
 }

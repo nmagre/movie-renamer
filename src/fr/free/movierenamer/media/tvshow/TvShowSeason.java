@@ -32,19 +32,20 @@ public class TvShowSeason {
 
   private int num;
   private MediaID tvshowIDs;
-  private List<TvShowEpisode> episodes;
+  private final List<TvShowEpisode> episodes;
   private int episodeCount;
   private String rating;
 
   public TvShowSeason(int num) {
-    this.num = num;
-    episodes = new ArrayList<TvShowEpisode>();
-    episodeCount = 0;
-    rating = "";
+    this(num, null);
   }
 
   public TvShowSeason(MediaID tvshowIDs) {
-    num = 0;
+    this(0, tvshowIDs);
+  }
+  
+  private TvShowSeason(int num, MediaID tvshowIDs) {
+    this.num = num;
     this.tvshowIDs = tvshowIDs;
     episodes = new ArrayList<TvShowEpisode>();
     episodeCount = 0;
@@ -77,6 +78,7 @@ public class TvShowSeason {
 
   public void addEpisode(TvShowEpisode episode) {
     episodes.add(episode);
+    episode.setSeason(this);
   }
 
   public void setEpisodeCount(int episodeCount) {
@@ -84,7 +86,10 @@ public class TvShowSeason {
   }
 
   public void setEpisodes(List<TvShowEpisode> episodes) {
-    this.episodes = episodes;
+    this.episodes.clear();
+    for(TvShowEpisode episode : episodes) {
+      addEpisode(episode);
+    }
   }
   
   /**

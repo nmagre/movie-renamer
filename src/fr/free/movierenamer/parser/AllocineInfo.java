@@ -44,7 +44,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
   private MediaPerson person;
   private String personName;
   private int count;
-//  private final MovieImage movieImage;
+//  private final MovieImages movieImage;
 //  private ArrayList<MediaImage> thumbs;
 //  private ArrayList<MediaImage> fanarts;
   private boolean mediaPicture;
@@ -55,7 +55,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
     super();
     movieinfo = new MovieInfo();
     count = 0;
-//    movieImage = new MovieImage();
+//    movieImage = new MovieImages();
 //    thumbs = new ArrayList<MediaImage>();
 //    fanarts = new ArrayList<MediaImage>();
   }
@@ -147,7 +147,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
     if (name.equalsIgnoreCase("movie")) {
       movie = false;
       if (movieinfo.getTitle().equals("")) {
-        movieinfo.setTitle(movieinfo.getOrigTitle());
+        movieinfo.setTitle(movieinfo.getOriginalTitle());
       }
     }
     if (name.equalsIgnoreCase("casting")) {
@@ -163,7 +163,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
 
     if (movie) {
       if (name.equalsIgnoreCase("originalTitle")) {
-        movieinfo.setOrigTitle(buffer.toString());
+        movieinfo.setOriginalTitle(buffer.toString());
       }
       if (name.equalsIgnoreCase("title")) {
         if (count == 4) {

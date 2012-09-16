@@ -21,7 +21,7 @@ import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.SearchResult;
 import java.util.List;
 
-import fr.free.movierenamer.media.IMediaInfo;
+import fr.free.movierenamer.media.MediaInfo;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
@@ -33,7 +33,7 @@ import java.beans.PropertyChangeSupport;
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
-public abstract class MediaInfoWorker<T extends IMediaInfo> extends HttpWorker<T> {
+public abstract class MediaInfoWorker<T extends MediaInfo> extends HttpWorker<T> {
 
   protected final MediaID id;
   protected final PropertyChangeSupport errorSupport;

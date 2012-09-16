@@ -17,15 +17,14 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.parser.MrParser;
+import fr.free.movierenamer.media.MediaImages;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.parser.AllocineInfo;
+import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.MovieInfoWorker;
 import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
@@ -63,8 +62,8 @@ public class AllocineInfoWorker extends MovieInfoWorker {
   }
 
   @Override
-  protected MovieImage loadExtraImages() throws Exception {
-    MovieImage mediaImage = null;
+  protected MediaImages loadExtraImages() throws Exception {
+    MediaImages mediaImage = null;
     try {
       XbmcPassionIDLookupWorker xbl = new XbmcPassionIDLookupWorker(errorSupport, id);
       MediaID imdbId = xbl.executeInBackground();

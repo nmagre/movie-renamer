@@ -17,9 +17,13 @@
  */
 package fr.free.movierenamer.media.tvshow;
 
+import javax.swing.JTextField;
+
+import fr.free.movierenamer.ui.TvShowPanel;
+
 import fr.free.movierenamer.media.movie.MovieInfo;
 
-import fr.free.movierenamer.media.mediainfo.MediaTag;
+import fr.free.movierenamer.media.mediainfo.MITag;
 import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.matcher.TvShowNameMatcher;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;
@@ -31,32 +35,18 @@ import java.util.List;
 /**
  * Class TvShow
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
-public class TvShow implements Media {// TODO
+public class TvShow extends Media<TvShowInfo> {// TODO
 
-  private MediaID mediaId;
-  private MediaFile tvShowFile;
-  private TvShowInfo tvShowInfo;
-  private MediaTag mtag;
   private SxE sxe;
-  private String search;
+  private TvShowEpisode selectedEpisode;
 
-  public TvShow(MediaFile tvShowFile) {
-    this.tvShowFile = tvShowFile;
+  public TvShow(MediaFile tvShowFile, JTextField renameField) {
+    super(tvShowFile, new TvShowInfo(), renameField);
     TvShowNameMatcher tvMatcher = new TvShowNameMatcher(tvShowFile, conf.mediaNameFilters);
-    search = tvMatcher.getTvShowName();
+    setSearch(tvMatcher.getTvShowName());
     sxe = new TvShowEpisodeMatcher(tvShowFile.getFile()).matchEpisode();
-    tvShowInfo = new TvShowInfo();
-  }
-
-  @Override
-  public MediaFile getMediaFile() {
-    return tvShowFile;
-  }
-
-  @Override
-  public void setMediaFile(MediaFile tvShowFile) {
-    this.tvShowFile = tvShowFile;
   }
 
   @Override
@@ -64,89 +54,32 @@ public class TvShow implements Media {// TODO
     return Media.MediaType.TVSHOW;
   }
 
-  @Override
-  public String getSearch() {
-    return search;
-  }
-  
   public SxE getSearchSxe() {
     return sxe;
   }
 
   @Override
-  public void setSearch(String search) {
-    this.search = search;
-  }
-
-  @Override
-  public void setInfo(Object info) {
-    if (info instanceof TvShowInfo) {
-      tvShowInfo = (TvShowInfo) info;
-    } else {
-      tvShowInfo = new TvShowInfo();
-    }
-  }
-
-  @Override
-  public void clear() {
-    // TODO
-  }
-
-  @Override
   public String getRenamedTitle(String regExp) {
     // TODO
-    return "";
-  }
-
-  @Override
-  public void setMediaID(MediaID id) {
-    mediaId = id;
-  }
-
-  @Override
-  public MediaID getMediaId(MediaID.MediaIdType IDtype) {
-    if (mediaId.getType() == IDtype) {
-      return mediaId;
+    String shortTitle = mediaInfo.getTitle();
+    TvShowEpisode episode = selectedEpisode;
+    String[][] replace = new String[][]{
+        {"<st>", shortTitle},
+        {"<et>", episode.getTitle()},
+        {"<s>", episode.getSeason().getNum()+""},
+          {"<e>", episode.getNum()+""}
+      };
+    for (int i = 0; i < replace.length; i++) {
+      regExp = regExp.replaceAll(replace[i][0], replace[i][1]);
     }
-/*
-    for (MediaID mid : tvshowInfo.getIDs()) {
-      if (mid.getType() == IDtype) {
-        return mid;
-      }
-    }*/
-
-    return null;
-  }
-
-  @Override
-  public int getYear() {
-    return -1;
-  }
-
-  @Override
-  public void addMediaID(MediaID id) {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public void setDefaultSearch() {
-    // TODO
-  }
-
-  @Override
-  public List<MediaPerson> getActors() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public List<MediaImage> getImages(MediaImageType type) throws ActionNotValidException {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return regExp;
   }
   
   /**
-   * @return the tvShowInfo
+   * @param selectedEpisode the selectedEpisode to set
    */
-  public TvShowInfo getTvShowInfo() {
-    return tvShowInfo;
+  public void setSelectedEpisode(TvShowEpisode selectedEpisode) {
+    this.selectedEpisode = selectedEpisode;
   }
+
 }

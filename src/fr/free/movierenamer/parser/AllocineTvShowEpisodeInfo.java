@@ -29,12 +29,12 @@ import org.xml.sax.SAXException;
 public class AllocineTvShowEpisodeInfo extends MrParser<TvShowEpisode> {
 
   private StringBuffer buffer;
-  private final TvShowEpisode tvshowInfo;
+  private final TvShowEpisode tvshow;
   private boolean episode, statistics;
 
   public AllocineTvShowEpisodeInfo() {
     super();
-    tvshowInfo = new TvShowEpisode();
+    tvshow = new TvShowEpisode();
   }
 
   @Override
@@ -67,28 +67,28 @@ public class AllocineTvShowEpisodeInfo extends MrParser<TvShowEpisode> {
       }
       if(statistics) {
         if (name.equalsIgnoreCase("userRating")) {
-          tvshowInfo.setRating(buffer.toString());
+          tvshow.setRating(buffer.toString());
         }
       }
       if (name.equalsIgnoreCase("episodeNumberSeason")) {
-        tvshowInfo.setNum(Integer.parseInt(buffer.toString()));
+        tvshow.setNum(Integer.parseInt(buffer.toString()));
       }
       /*if (name.equalsIgnoreCase("episodeNumberSeries")) {
       }*/
       if (name.equalsIgnoreCase("originalTitle")) {
-        tvshowInfo.setOriginalTitle(buffer.toString());
+        tvshow.setOriginalTitle(buffer.toString());
       }
       if (name.equalsIgnoreCase("title")) {
-        tvshowInfo.setTitle(buffer.toString());
+        tvshow.setTitle(buffer.toString());
       }
       if (name.equalsIgnoreCase("synopsis")) {
-        tvshowInfo.setSynopsis(buffer.toString());
+        tvshow.setSynopsis(buffer.toString());
       }
       if (name.equalsIgnoreCase("userRating")) {
-        tvshowInfo.setRating(buffer.toString());
+        tvshow.setRating(buffer.toString());
       }
       if (name.equalsIgnoreCase("userRatingCount")) {
-        tvshowInfo.setVotes(buffer.toString());
+        tvshow.setVotes(buffer.toString());
       }
     }
     buffer = null;
@@ -104,6 +104,6 @@ public class AllocineTvShowEpisodeInfo extends MrParser<TvShowEpisode> {
 
   @Override
   public TvShowEpisode getObject() {
-    return tvshowInfo;
+    return tvshow;
   }
 }

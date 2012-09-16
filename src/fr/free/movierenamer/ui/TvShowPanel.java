@@ -68,7 +68,8 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
   private final Icon STAR = new ImageIcon(getClass().getResource("/image/star.png"));
   private final Icon STAR_HALF = new ImageIcon(getClass().getResource("/image/star-half.png"));
   private final Icon STAR_EMPTY = new ImageIcon(getClass().getResource("/image/star-empty.png"));
-  private Cache cache = Cache.getInstance();
+  private final Settings setting =Settings.getInstance();
+  private final Cache cache = Cache.getInstance();
   private static final String SEP = " : ";
 
   /**
@@ -79,9 +80,11 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     tvshowTb.addToEnd(starPanel);
     genreLbl.setText(genreLbl.getText() + SEP);
     genreField.setLeadingComponent(genreLbl);
+    
     seasonsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     seasonsList.setModel(seasonsModel);
     seasonsList.addListSelectionListener(createSeasonsListListener());
+    
     episodesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     episodesList.setModel(episodesModel);
     episodesList.addListSelectionListener(createEpisodesListListener());
@@ -97,7 +100,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        TvShowInfo tvshowInfo = tvshow.getTvShowInfo();
+        TvShowInfo tvshowInfo = tvshow.getInfo();
         TvShowSeason season = tvshowInfo.getSeasons().get(seasonsList.getSelectedIndex());
         for (TvShowEpisode episode : season.getEpisodes()) {
           String ep = episode.getNum() + " - " + episode.getTitle();
@@ -127,19 +130,19 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
-        TvShowInfo tvshowInfo = tvshow.getTvShowInfo();
+        TvShowInfo tvshowInfo = tvshow.getInfo();
         TvShowSeason season = tvshowInfo.getSeasons().get(seasonsList.getSelectedIndex());
         TvShowEpisode episode = season.getEpisodes().get(episodesList.getSelectedIndex());
         episodeSynopsisArea.setText(episode.getSynopsis());
         episodeSynopsisArea.setCaretPosition(0);
+        tvshow.setSelectedEpisode(episode);
       }
-
     };
   }
 
   public void addTvshowInfo(final TvShow tvshow) {// List<TvShowSeason> seasons, SxE sxe) {
     this.tvshow = tvshow;
-    TvShowInfo tvshowInfo = tvshow.getTvShowInfo();
+    TvShowInfo tvshowInfo = tvshow.getInfo();
 
     try {
       Image img = cache.getImage(new URL(tvshowInfo.getPoster()), Cache.CacheType.THUMB);
@@ -170,7 +173,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
       }
     }
   }
-
+  
   /**
    * Set star compared with rate
    *

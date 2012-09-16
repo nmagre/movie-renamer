@@ -19,7 +19,7 @@ package fr.free.movierenamer.media.tvshow;
 
 import fr.free.movierenamer.utils.Utils;
 
-import fr.free.movierenamer.media.IMediaInfo;
+import fr.free.movierenamer.media.MediaInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,29 +29,16 @@ import java.util.List;
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
-public class TvShowInfo implements IMediaInfo/*
- * <TvShowImage>
- */ {
+public class TvShowInfo extends MediaInfo {
 
-  private String title;
-  private String originalTitle;
-  private SxE sxe;
-  private String year;
-  private String synopsis;
-  private String rating;
+  private final SxE sxe;
   private String poster;
-  private List<String> genres;
   private List<TvShowSeason> seasons;
 
   public TvShowInfo() {
-    title = "?";
-    originalTitle = "";
+    super();
     sxe = new SxE();
-    year = "";
-    synopsis = "";
-    rating = "-1";
     poster = "";
-    genres = new ArrayList<String>();
     seasons = new ArrayList<TvShowSeason>();
   }
 
@@ -63,78 +50,13 @@ public class TvShowInfo implements IMediaInfo/*
     return seasons;
   }
   
-  public String getOriginalTitle() {
-    return originalTitle;
-  }
-  
   /**
-   * @return the title
+   * @param seasons the seasons to set
    */
-  public String getTitle() {
-    return title;
-  }
-
-  public void setSxe(SxE sxe) {
-    this.sxe = sxe;
-  }
-
   public void setSeasons(List<TvShowSeason> seasons) {
     this.seasons = seasons;
   }
 
-  public void setOriginalTitle(String originalTitle) {
-    this.originalTitle = originalTitle;
-  }
-
-  /**
-   * @return the year
-   */
-  public String getYear() {
-    return year;
-  }
-
-  /**
-   * @param year the year to set
-   */
-  public void setYear(String year) {
-    this.year = year;
-  }
-
-  /**
-   * @return the synopsis
-   */
-  public String getSynopsis() {
-    return synopsis;
-  }
-
-  /**
-   * @param synopsis the synopsis to set
-   */
-  public void setSynopsis(String synopsis) {
-    this.synopsis = synopsis;
-  }
-
-  /**
-   * @return the rating
-   */
-  public String getRating() {
-    return rating;
-  }
-
-  /**
-   * @param rating the rating to set
-   */
-  public void setRating(String rating) {
-    this.rating = rating;
-  }
-  
-  /**
-   * @param title the title to set
-   */
-  public void setTitle(String title) {
-    this.title = title;
-  }
-  
   /**
    * @return the poster
    */
@@ -148,55 +70,13 @@ public class TvShowInfo implements IMediaInfo/*
   public void setPoster(String poster) {
     this.poster = poster;
   }
-
-  /**
-   * Get genres
-   * 
-   * @return Array of genre
-   */
-  public List<String> getGenres() {
-    return genres;
-  }
   
   /**
-   * Get genres to string
-   * 
-   * @param separator Separator
-   * @param limit Number of genres to return (0 for all)
-   * @return Genre separated by separator
+   * @param sxe the sxe to set
    */
-  public String getGenresString(String separator, int limit) {
-    return Utils.arrayToString(genres, separator, limit);
+  public void setSxe(SxE sxe) {
+    this.sxe.setEpisode(sxe.getEpisode());
+    this.sxe.setSeason(sxe.getSeason());
   }
   
-  /**
-   * Get the n genre
-   * 
-   * @param n Position of genre
-   * @return Genre or an empty string
-   */
-  public String getGenreN(int n) {
-    if (n >= genres.size()) {
-      return "";
-    }
-    return genres.get(n);
-  }
-  
-  /**
-   * Set genres
-   * 
-   * @param genres Array of genres
-   */
-  public void setGenre(List<String> genres) {
-    this.genres = genres;
-  }
-  
-  /**
-   * Add genre
-   * 
-   * @param genre Genre
-   */
-  public void addGenre(String genre) {
-    genres.add(genre);
-  }
 }

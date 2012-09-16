@@ -7,24 +7,24 @@ import java.io.Closeable;
 import java.io.File;
 import java.util.*;
 
-public class MediaInfo implements Closeable {
+public class MI implements Closeable {
   
   private Pointer handle;
 
-  public MediaInfo() {
+  public MI() {
     try {
-      handle = MediaInfoLibrary.INSTANCE.New();
+      handle = MILibrary.INSTANCE.New();
     } catch (LinkageError e) {
       throw new MediaInfoException(e);
     }
   }
 
   public synchronized boolean open(File file) {
-    return file.isFile() && MediaInfoLibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath())) > 0;
+    return file.isFile() && MILibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath())) > 0;
   }
 
   public synchronized String inform() {
-    return MediaInfoLibrary.INSTANCE.Inform(handle).toString();
+    return MILibrary.INSTANCE.Inform(handle).toString();
   }
 
   public String option(String option) {
@@ -32,7 +32,7 @@ public class MediaInfo implements Closeable {
   }
 
   public synchronized String option(String option, String value) {
-    return MediaInfoLibrary.INSTANCE.Option(handle, new WString(option), new WString(value)).toString();
+    return MILibrary.INSTANCE.Option(handle, new WString(option), new WString(value)).toString();
   }
 
   public String get(StreamKind streamKind, int streamNumber, String parameter) {
@@ -44,7 +44,7 @@ public class MediaInfo implements Closeable {
   }
 
   public synchronized String get(StreamKind streamKind, int streamNumber, String parameter, InfoKind infoKind, InfoKind searchKind) {
-    return MediaInfoLibrary.INSTANCE.Get(handle, streamKind.ordinal(), streamNumber, new WString(parameter), infoKind.ordinal(), searchKind.ordinal()).toString();
+    return MILibrary.INSTANCE.Get(handle, streamKind.ordinal(), streamNumber, new WString(parameter), infoKind.ordinal(), searchKind.ordinal()).toString();
   }
 
   public String get(StreamKind streamKind, int streamNumber, int parameterIndex) {
@@ -52,15 +52,15 @@ public class MediaInfo implements Closeable {
   }
 
   public synchronized String get(StreamKind streamKind, int streamNumber, int parameterIndex, InfoKind infoKind) {
-    return MediaInfoLibrary.INSTANCE.GetI(handle, streamKind.ordinal(), streamNumber, parameterIndex, infoKind.ordinal()).toString();
+    return MILibrary.INSTANCE.GetI(handle, streamKind.ordinal(), streamNumber, parameterIndex, infoKind.ordinal()).toString();
   }
 
   public synchronized int streamCount(StreamKind streamKind) {
-    return MediaInfoLibrary.INSTANCE.Count_Get(handle, streamKind.ordinal(), -1);
+    return MILibrary.INSTANCE.Count_Get(handle, streamKind.ordinal(), -1);
   }
 
   public synchronized int parameterCount(StreamKind streamKind, int streamNumber) {
-    return MediaInfoLibrary.INSTANCE.Count_Get(handle, streamKind.ordinal(), streamNumber);
+    return MILibrary.INSTANCE.Count_Get(handle, streamKind.ordinal(), streamNumber);
   }
 
   public Map<StreamKind, List<Map<String, String>>> snapshot() {
@@ -99,7 +99,7 @@ public class MediaInfo implements Closeable {
 
   @Override
   public synchronized void close() {
-    MediaInfoLibrary.INSTANCE.Close(handle);
+    MILibrary.INSTANCE.Close(handle);
   }
 
   public synchronized void dispose() {
@@ -108,7 +108,7 @@ public class MediaInfo implements Closeable {
     }
 
     // delete handle
-    MediaInfoLibrary.INSTANCE.Delete(handle);
+    MILibrary.INSTANCE.Delete(handle);
     handle = null;
   }
 
@@ -188,7 +188,7 @@ public class MediaInfo implements Closeable {
 
   public static String staticOption(String option, String value) {
     try {
-      return MediaInfoLibrary.INSTANCE.Option(null, new WString(option), new WString(value)).toString();
+      return MILibrary.INSTANCE.Option(null, new WString(option), new WString(value)).toString();
     } catch (LinkageError e) {
       throw new MediaInfoException(e);
     }

@@ -17,10 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.movie.MovieImage;
-
-import java.util.concurrent.TimeUnit;
-
 import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Cache;
@@ -130,10 +126,10 @@ public abstract class HttpWorker<T> extends Worker<T> {
       return null;
     }
 
-//    if (!((IMediaInfo<U>) object).getTrailer().equals("")) {
-//      String trailer = YTdecodeUrl.getRealUrl(((IMediaInfo<U>) object).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
+//    if (!((MI<U>) object).getTrailer().equals("")) {
+//      String trailer = YTdecodeUrl.getRealUrl(((MI<U>) object).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
 //      if (trailer != null) {
-//        ((IMediaInfo<U>) object).setTrailer(trailer);
+//        ((MI<U>) object).setTrailer(trailer);
 //      }
 //    }
 

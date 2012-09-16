@@ -25,10 +25,10 @@ import javax.swing.Icon;
 
 /**
  * Class MovieFile
- *
+ * 
  * @author Nicolas Magré
  */
-public class MediaFile implements IIconList {
+public final class MediaFile implements IIconList {
 
   private File file;
   private boolean renamed;
@@ -38,7 +38,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param file A media file
    * @param type Media type
    * @param wasRenamed Media was renamed
@@ -54,7 +54,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Get file
-   *
+   * 
    * @return File
    */
   public File getFile() {
@@ -63,7 +63,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Set file
-   *
+   * 
    * @param file File
    */
   public void setFile(File file) {
@@ -72,7 +72,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Set media renamed
-   *
+   * 
    * @param renamed Renamed
    */
   public void setRenamed(boolean renamed) {
@@ -81,7 +81,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Media is renamed
-   *
+   * 
    * @return True if media is renamed, false otherwise
    */
   public boolean isRenamed() {
@@ -90,7 +90,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Media has been renamed
-   *
+   * 
    * @return True is media was renamed, false otherwise
    */
   public boolean wasRenamed() {
@@ -99,7 +99,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Get file type
-   *
+   * 
    * @return Media type
    */
   public MediaType getType() {
@@ -108,7 +108,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Set file type
-   *
+   * 
    * @param type Media type
    */
   public void setType(MediaType type) {
@@ -117,7 +117,7 @@ public class MediaFile implements IIconList {
 
   /**
    * Get media icon to display in list
-   *
+   * 
    * @return Icon
    */
   @Override
@@ -125,7 +125,7 @@ public class MediaFile implements IIconList {
     if (renamed) {
       return UiUtils.MEDIARENAMEDICON;
     }
-    
+
     if (wasRenamed) {
       return UiUtils.MEDIAWASRENAMEDICON;
     }
