@@ -41,7 +41,7 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
   private final TvShowInfo tvshowInfo;
   private List<TvShowSeason> seasons;
   private TvShowSeason currentSeason;
-  private boolean tvseries, seasonList, statistics;
+  private boolean tvseries, seasonList, statistics, nationalityList,genreList,casting;
 
   public AllocineTvShowInfo() {
     super();
@@ -55,6 +55,9 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
     tvseries = false;
     seasonList = false;
     statistics = false;
+    nationalityList = false;
+    genreList = false;
+    casting=false;
   }
 
   @Override
@@ -78,6 +81,15 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
           statistics = true;
         }
       }
+      if (name.equalsIgnoreCase("nationalityList")) {
+        nationalityList = true;
+      }
+      if (name.equalsIgnoreCase("genreList")) {
+        genreList = true;
+      }
+      if (name.equalsIgnoreCase("casting")) {
+        casting = true;
+      }
     }
   }
 
@@ -93,6 +105,15 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
       }
       if (name.equalsIgnoreCase("seasonList")) {
         seasonList = false;
+      }
+      if (name.equalsIgnoreCase("nationalityList")) {
+        nationalityList = false;
+      }
+      if (name.equalsIgnoreCase("genreList")) {
+        genreList = false;
+      }
+      if (name.equalsIgnoreCase("genreList")) {
+        casting = false;
       }
       if (seasonList) {
         if (name.equalsIgnoreCase("statistics")) {
@@ -112,16 +133,22 @@ public class AllocineTvShowInfo extends MrParser<TvShowInfo> {
         if (name.equalsIgnoreCase("season")) {
           seasons.add(currentSeason);
         }
-      } else {
+      } else if(nationalityList){
+        if (name.equalsIgnoreCase("nationality")) {
+          tvshowInfo.addCountry(buffer.toString());
+        }
+      } else if(genreList){
         if (name.equalsIgnoreCase("genre")) {
           tvshowInfo.addGenre(buffer.toString());
         }
+      } else {
         if (name.equalsIgnoreCase("synopsis")) {
           tvshowInfo.setSynopsis(buffer.toString());
         }
         if (name.equalsIgnoreCase("userRating")) {
           tvshowInfo.setRating((Float.parseFloat(buffer.toString()) * 2)+""); //set rating out of 10
-        } 
+        }
+        
       }
     }
     buffer = null;

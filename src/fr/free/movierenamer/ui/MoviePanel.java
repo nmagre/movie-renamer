@@ -114,7 +114,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   private Image fanartBack;
   private DropTarget dropThumbTarget;
   private DropTarget dropFanartTarget;
-  private List<actorImage> actors;
+  private List<ActorImage> actors;
   private List<MediaImage> thumbs;
   private List<MediaImage> fanarts;
   private final Settings setting =Settings.getInstance();
@@ -142,7 +142,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     // Add component to toolbar
     movieTb.addToEnd(starPanel);
 
-    actors = new ArrayList<actorImage>();
+    actors = new ArrayList<ActorImage>();
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
 
@@ -372,7 +372,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     if (actorImg != null) {
       icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
     }
-    actors.add(new actorImage(actor, desc, icon));
+    actors.add(new ActorImage(actor, desc, icon));
     SwingUtilities.invokeLater(new Thread() {
 
       @Override
@@ -567,13 +567,13 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     return res;
   }
 
-  private class actorImage {
+  private class ActorImage {
 
     private String name;
     private String desc;
     private ImageIcon img;
 
-    public actorImage(String name, String desc, ImageIcon img) {
+    public ActorImage(String name, String desc, ImageIcon img) {
       this.name = name;
       this.desc = desc;
       if (img == null) {
@@ -760,7 +760,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
             layout.createParallelGroup(Alignment.LEADING)
             .addComponent(movieTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)
+                .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
                     .addComponent(directorField, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -768,7 +768,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
                     .addComponent(jScrollPane3)
                     .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(webToolBar3, GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                        .addComponent(webToolBar3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(9, 9, 9)
                         .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 156, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.UNRELATED)
@@ -777,11 +777,11 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
             .addComponent(webToolBar4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                    .addComponent(thumbsScrollPane, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(thumbnailTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                    .addComponent(fanartsScrollPane)
                     .addComponent(fanartTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
@@ -790,7 +790,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
                 .addComponent(movieTb, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING, false)
-                    .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.RELATED)
@@ -800,21 +800,22 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(Alignment.TRAILING)
                             .addComponent(webToolBar3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(Alignment.TRAILING, false)
+                                .addComponent(runtimeField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1)))
                         .addPreferredGap(ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(webToolBar4, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(synopsScroll, GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addComponent(synopsScroll, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(Alignment.TRAILING)
                     .addComponent(thumbnailTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
                     .addComponent(fanartTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(Alignment.LEADING)
-                    .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
+                    .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
                     .addComponent(fanartsScrollPane, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents

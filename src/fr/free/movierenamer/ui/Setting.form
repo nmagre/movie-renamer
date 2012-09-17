@@ -1762,6 +1762,7 @@
                               <ComponentRef name="scrapperTvGroup"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Tvrage"/>
+                            <Property name="enabled" type="boolean" value="false"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JRadioButton" name="allocineTVRbtn">

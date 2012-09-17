@@ -17,40 +17,26 @@
  */
 package fr.free.movierenamer.ui;
 
-import javax.swing.Icon;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-
-import java.awt.Dimension;
-
-import fr.free.movierenamer.utils.Cache;
-import java.net.URL;
-import javax.swing.ImageIcon;
-
-import fr.free.movierenamer.media.tvshow.TvShowInfo;
-
-import fr.free.movierenamer.media.movie.MovieInfo;
-
-import fr.free.movierenamer.media.tvshow.TvShow;
-
-import fr.free.movierenamer.media.movie.Movie;
-
-import javax.swing.event.ListSelectionEvent;
-
-import javax.swing.event.ListSelectionListener;
-
 import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.media.tvshow.TvShow;
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
+import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.ui.res.IMediaPanel;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListModel;
-import javax.swing.JPanel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * Class TvShowPanel
@@ -59,15 +45,50 @@ import javax.swing.ListSelectionModel;
  * @author QUÉMÉNEUR Simon
  */
 public class TvShowPanel extends JPanel implements IMediaPanel {
+  
+  private class ActorImage {
+
+    private String name;
+    private String desc;
+    private ImageIcon img;
+
+    public ActorImage(String name, String desc, ImageIcon img) {
+      this.name = name;
+      this.desc = desc;
+      if (img == null) {
+        this.img = new ImageIcon(actorDefault.getImage().getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT));
+      } else {
+        this.img = img;
+      }
+    }
+
+    public ImageIcon getImage() {
+      return img;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+
+    public String getName() {
+      return name;
+    }
+  }
 
   private final DefaultListModel seasonsModel = new DefaultListModel();
   private final DefaultListModel episodesModel = new DefaultListModel();
   private TvShow tvshow;
   private Dimension thumbDim = new Dimension(160, 200);
+  public Dimension thumbListDim = new Dimension(60, 90);
+  public Dimension fanartListDim = new Dimension(200, 90);
+  public Dimension actorListDim = new Dimension(30, 53);
   private final ImageIcon actorDefault = new ImageIcon(getClass().getResource("/image/unknown.png"));
-  private final Icon STAR = new ImageIcon(getClass().getResource("/image/star.png"));
+   private final Icon STAR = new ImageIcon(getClass().getResource("/image/star.png"));
   private final Icon STAR_HALF = new ImageIcon(getClass().getResource("/image/star-half.png"));
   private final Icon STAR_EMPTY = new ImageIcon(getClass().getResource("/image/star-empty.png"));
+  private List<ActorImage> actors;
+  private List<MediaImage> thumbs;
+  private List<MediaImage> fanarts;
   private final Settings setting =Settings.getInstance();
   private final Cache cache = Cache.getInstance();
   private static final String SEP = " : ";
@@ -77,14 +98,28 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
    */
   public TvShowPanel() {
     initComponents();
-    tvshowTb.addToEnd(starPanel);
+
+    origTitleLbl.setText(origTitleLbl.getText() + SEP);
+    directorLbl.setText(directorLbl.getText() + SEP);
+    runtimeLbl.setText(runtimeLbl.getText() + SEP);
     genreLbl.setText(genreLbl.getText() + SEP);
+
+    origTitleField.setLeadingComponent(origTitleLbl);
+    directorField.setLeadingComponent(directorLbl);
+    runtimeField.setLeadingComponent(runtimeLbl);
     genreField.setLeadingComponent(genreLbl);
-    
+
+    // Add component to toolbar
+    tvshowTb.addToEnd(starPanel);
+
+    actors = new ArrayList<ActorImage>();
+    thumbs = new ArrayList<MediaImage>();
+    fanarts = new ArrayList<MediaImage>();
+
     seasonsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     seasonsList.setModel(seasonsModel);
     seasonsList.addListSelectionListener(createSeasonsListListener());
-    
+
     episodesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     episodesList.setModel(episodesModel);
     episodesList.addListSelectionListener(createEpisodesListListener());
@@ -173,7 +208,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
       }
     }
   }
-  
+
   /**
    * Set star compared with rate
    *
@@ -259,6 +294,9 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        origTitleLbl = new com.alee.laf.label.WebLabel();
+        directorLbl = new com.alee.laf.label.WebLabel();
+        runtimeLbl = new com.alee.laf.label.WebLabel();
         genreLbl = new com.alee.laf.label.WebLabel();
         starPanel = new com.alee.laf.panel.WebPanel();
         star4 = new javax.swing.JLabel();
@@ -278,11 +316,44 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         episodesList = new javax.swing.JList();
         episodeSynopsisPane = new javax.swing.JScrollPane();
         episodeSynopsisArea = new javax.swing.JTextArea();
-        seasonLabel = new javax.swing.JLabel();
-        episodeLabel = new javax.swing.JLabel();
         thumbLbl = new javax.swing.JLabel();
         webToolBar3 = new com.alee.laf.toolbar.WebToolBar();
         webLabel5 = new com.alee.laf.label.WebLabel();
+        webToolBar4 = new com.alee.laf.toolbar.WebToolBar();
+        synopsisLbl = new com.alee.laf.label.WebLabel();
+        directorField = new com.alee.laf.text.WebTextField();
+        origTitleField = new com.alee.laf.text.WebTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        actorList = new com.alee.laf.list.WebList();
+        webToolBar5 = new com.alee.laf.toolbar.WebToolBar();
+        webLabel6 = new com.alee.laf.label.WebLabel();
+        runtimeField = new com.alee.laf.text.WebTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        countryList = new com.alee.laf.list.WebList(){
+            public String getToolTipText(MouseEvent evt) {
+                // Get item index
+                int index = locationToIndex(evt.getPoint());
+
+                // Get item
+                ImageIcon item = (ImageIcon) getModel().getElementAt(index);
+
+                // Return the tool tip text
+                return item.getDescription();
+            }
+        };
+        webToolBar6 = new com.alee.laf.toolbar.WebToolBar();
+        seasonLbl = new com.alee.laf.label.WebLabel();
+        webToolBar7 = new com.alee.laf.toolbar.WebToolBar();
+        episodeLbl = new com.alee.laf.label.WebLabel();
+
+        origTitleLbl.setText(Utils.i18n("origTitle")); // NOI18N
+        origTitleLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+
+        directorLbl.setText(Utils.i18n("director")); // NOI18N
+        directorLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+
+        runtimeLbl.setText(Utils.i18n("runtime")); // NOI18N
+        runtimeLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
 
         genreLbl.setText("Genre");
         genreLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
@@ -360,10 +431,6 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         episodeSynopsisArea.setWrapStyleWord(true);
         episodeSynopsisPane.setViewportView(episodeSynopsisArea);
 
-        seasonLabel.setText("Season");
-
-        episodeLabel.setText("Episode");
-
         thumbLbl.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
         webToolBar3.setFloatable(false);
@@ -373,32 +440,80 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         webLabel5.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         webToolBar3.add(webLabel5);
 
+        webToolBar4.setFloatable(false);
+        webToolBar4.setRollover(true);
+
+        synopsisLbl.setText("Synopsis");
+        synopsisLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        webToolBar4.add(synopsisLbl);
+
+        directorField.setEditable(false);
+
+        origTitleField.setEditable(false);
+
+        actorList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane3.setViewportView(actorList);
+
+        webToolBar5.setFloatable(false);
+        webToolBar5.setRollover(true);
+
+        webLabel6.setText(Utils.i18n("actor")); // NOI18N
+        webLabel6.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        webToolBar5.add(webLabel6);
+
+        countryList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        countryList.setAutoscrolls(false);
+        countryList.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
+        jScrollPane1.setViewportView(countryList);
+
+        webToolBar6.setFloatable(false);
+        webToolBar6.setRollover(true);
+
+        seasonLbl.setText("Seasons");
+        seasonLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        webToolBar6.add(seasonLbl);
+
+        webToolBar7.setFloatable(false);
+        webToolBar7.setRollover(true);
+
+        episodeLbl.setText("Episodes");
+        episodeLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        webToolBar7.add(episodeLbl);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tvshowTb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tvshowTb, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(thumbLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(synopsisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
-                            .addComponent(genreField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(genreField, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+                            .addComponent(directorField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+                            .addComponent(origTitleField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(seasonsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(seasonLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(episodeLabel)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(episodesPane)))))
-                    .addComponent(episodeSynopsisPane, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(webToolBar3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(webToolBar5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(9, 9, 9)
+                                .addComponent(runtimeField, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(episodeSynopsisPane)
+                    .addComponent(webToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(synopsisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
+                    .addComponent(webToolBar4, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(webToolBar6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(seasonsPane))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(webToolBar7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(episodesPane))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -407,36 +522,60 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
                 .addContainerGap()
                 .addComponent(tvshowTb, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(thumbLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(synopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(origTitleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(directorField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(genreField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(seasonLabel)
-                            .addComponent(episodeLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(seasonsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(episodesPane, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(webToolBar5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(runtimeField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                .addGap(5, 5, 5)
+                .addComponent(webToolBar4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(synopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(webToolBar6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(webToolBar7, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(seasonsPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(episodesPane, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(webToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(episodeSynopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(735, 735, 735))
+                .addComponent(episodeSynopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(655, 655, 655))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel episodeLabel;
+    private com.alee.laf.list.WebList actorList;
+    private com.alee.laf.list.WebList countryList;
+    private com.alee.laf.text.WebTextField directorField;
+    private com.alee.laf.label.WebLabel directorLbl;
+    private com.alee.laf.label.WebLabel episodeLbl;
     private javax.swing.JTextArea episodeSynopsisArea;
     private javax.swing.JScrollPane episodeSynopsisPane;
     private javax.swing.JList episodesList;
     private javax.swing.JScrollPane episodesPane;
     private com.alee.laf.text.WebTextField genreField;
     private com.alee.laf.label.WebLabel genreLbl;
-    private javax.swing.JLabel seasonLabel;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private com.alee.laf.text.WebTextField origTitleField;
+    private com.alee.laf.label.WebLabel origTitleLbl;
+    private com.alee.laf.text.WebTextField runtimeField;
+    private com.alee.laf.label.WebLabel runtimeLbl;
+    private com.alee.laf.label.WebLabel seasonLbl;
     private javax.swing.JList seasonsList;
     private javax.swing.JScrollPane seasonsPane;
     private javax.swing.JLabel star;
@@ -446,12 +585,18 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     private javax.swing.JLabel star4;
     private com.alee.laf.panel.WebPanel starPanel;
     private javax.swing.JTextArea synopsisArea;
+    private com.alee.laf.label.WebLabel synopsisLbl;
     private javax.swing.JScrollPane synopsisPane;
     private javax.swing.JLabel thumbLbl;
     private com.alee.laf.label.WebLabel titleLbl;
     private com.alee.laf.toolbar.WebToolBar tvshowTb;
     private com.alee.laf.label.WebLabel webLabel5;
+    private com.alee.laf.label.WebLabel webLabel6;
     private com.alee.laf.toolbar.WebToolBar webToolBar3;
+    private com.alee.laf.toolbar.WebToolBar webToolBar4;
+    private com.alee.laf.toolbar.WebToolBar webToolBar5;
+    private com.alee.laf.toolbar.WebToolBar webToolBar6;
+    private com.alee.laf.toolbar.WebToolBar webToolBar7;
     private com.alee.laf.label.WebLabel yearLbl;
     // End of variables declaration//GEN-END:variables
 

@@ -1232,6 +1232,7 @@ public class Setting extends JDialog {
 
         scrapperTvGroup.add(tvrageRbtn);
         tvrageRbtn.setText("Tvrage");
+        tvrageRbtn.setEnabled(false);
 
         scrapperTvGroup.add(allocineTVRbtn);
         allocineTVRbtn.setText("Allocine");
