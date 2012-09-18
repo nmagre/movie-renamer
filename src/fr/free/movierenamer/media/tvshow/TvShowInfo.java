@@ -34,6 +34,7 @@ public class TvShowInfo extends MediaInfo {
   private final SxE sxe;
   private String poster;
   private List<TvShowSeason> seasons;
+  private String productionStatus;
 
   public TvShowInfo() {
     super();
@@ -78,5 +79,20 @@ public class TvShowInfo extends MediaInfo {
     this.sxe.setEpisode(sxe.getEpisode());
     this.sxe.setSeason(sxe.getSeason());
   }
+  
+  /**
+   * @param productionStatus the productionStatus to set
+   */
+  public void setProductionStatus(String productionStatus) {
+    this.productionStatus = productionStatus;
+  }
+  
+  /**
+   * @return the productionStatus
+   */
+  public String getProductionStatus() {
+    return productionStatus;
+  }
+
   
 }

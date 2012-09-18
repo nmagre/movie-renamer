@@ -36,10 +36,8 @@ public class AllocineInfo extends MrParser<MovieInfo> {
 
   private static final String ACTORCODE = "8001";
   private static final String DIRECTORCODE = "8002";
+  
   private StringBuffer buffer;
-  private boolean movie;
-  private boolean casting;
-  private boolean mperson;
   private final MovieInfo movieinfo;
   private MediaPerson person;
   private String personName;
@@ -47,9 +45,7 @@ public class AllocineInfo extends MrParser<MovieInfo> {
 //  private final MovieImages movieImage;
 //  private ArrayList<MediaImage> thumbs;
 //  private ArrayList<MediaImage> fanarts;
-  private boolean mediaPicture;
-  private boolean thumb = false;
-  private boolean fanart = false;
+  private boolean movie, casting, mperson, mediaPicture, thumb, fanart;
 
   public AllocineInfo() {
     super();

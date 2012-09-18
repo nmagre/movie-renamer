@@ -22,10 +22,12 @@ import fr.free.movierenamer.media.tvshow.TvShow;
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
+import fr.free.movierenamer.ui.res.Flag;
 import fr.free.movierenamer.ui.res.IMediaPanel;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -75,8 +77,15 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     }
   }
 
+  private static final long serialVersionUID = 1L;
   private final DefaultListModel seasonsModel = new DefaultListModel();
   private final DefaultListModel episodesModel = new DefaultListModel();
+  private final DefaultListModel fanartModel = new DefaultListModel();
+  private final DefaultListModel thumbnailModel = new DefaultListModel();
+  private final DefaultListModel actorModel = new DefaultListModel();
+  private final DefaultListModel subTitleModel = new DefaultListModel();
+  private final DefaultListModel audioModel = new DefaultListModel();
+  private final DefaultListModel countryModel = new DefaultListModel();
   private TvShow tvshow;
   private Dimension thumbDim = new Dimension(160, 200);
   public Dimension thumbListDim = new Dimension(60, 90);
@@ -116,6 +125,13 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
 
+    actorList.setModel(actorModel);
+    countryList.setModel(countryModel);
+
+    countryList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    countryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    countryList.setVisibleRowCount(-1);
+
     seasonsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     seasonsList.setModel(seasonsModel);
     seasonsList.addListSelectionListener(createSeasonsListListener());
@@ -123,6 +139,32 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     episodesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     episodesList.setModel(episodesModel);
     episodesList.addListSelectionListener(createEpisodesListListener());
+
+    actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    actorList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    actorList.setVisibleRowCount(-1);
+    actorList.setCellRenderer(new DefaultListCellRenderer() {
+
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+        if (index >= actors.size()) {
+          return label;
+        }
+        Icon icon = actors.get(index).getImage();
+
+        if (icon != null) {
+          label.setIcon(icon);
+        } else {
+          label.setIcon(new ImageIcon(actorDefault.getImage().getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT)));
+        }
+        return label;
+      }
+    });
   }
 
   /**
@@ -178,6 +220,24 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
   public void addTvshowInfo(final TvShow tvshow) {// List<TvShowSeason> seasons, SxE sxe) {
     this.tvshow = tvshow;
     TvShowInfo tvshowInfo = tvshow.getInfo();
+    
+//    List<MISubTitle> subtitles = this.tvshow.getMediaTag().getMediaSubTitles();
+//    List<MIAudio> audios = this.tvshow.getMediaTag().getMediaAudios();
+    List<String> countries = tvshowInfo.getCountries();
+//    for (MISubTitle sub : subtitles) {
+//      System.out.println(sub.getTitle() + " : " + sub.getLanguage());
+//      subTitleModel.addElement(sub);
+//    }
+//    for (MIAudio audio : audios) {
+//      audioModel.addElement(audio);
+//    }
+    for (String country : countries) {
+      ImageIcon icon = Flag.getFlagByCountry(country);
+      icon.setDescription(country);
+      countryModel.addElement(icon);
+    }
+
+    countryList.setModel(countryModel);
 
     try {
       Image img = cache.getImage(new URL(tvshowInfo.getPoster()), Cache.CacheType.THUMB);
@@ -188,14 +248,20 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     } catch (IOException e) {
     }
 
-    titleLbl.setText(tvshowInfo.getTitle());
+    titleLbl.setText(tvshowInfo.getTitle());// + " " + tvshowInfo.getProductionStatus());
+    origTitleField.setText(tvshowInfo.getOriginalTitle());
     if(tvshowInfo.getYear() != null && tvshowInfo.getYear().trim().length() > 0) {
       yearLbl.setText("(" + tvshowInfo.getYear() + ")");
     }
     genreField.setText(tvshowInfo.getGenresString(" | ", 0));
+    directorField.setText(tvshowInfo.getDirectorsString(" | ", 0));
     synopsisArea.setText(tvshowInfo.getSynopsis());
-    synopsisArea.setCaretPosition(0);
     setRate(Float.parseFloat(tvshowInfo.getRating().replace(",", ".")));
+    
+    origTitleField.setCaretPosition(0);
+    synopsisArea.setCaretPosition(0);
+    genreField.setCaretPosition(0);
+    directorField.setCaretPosition(0);
 
     for (final TvShowSeason season : tvshowInfo.getSeasons()) {
       System.out.println(season);
@@ -267,24 +333,160 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
 
   @Override
   public void addImageToList(Image img, MediaImage mediaImage, boolean selectLast) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    switch (mediaImage.getType()) {
+    case THUMB:
+      addThumbToList(img, mediaImage, selectLast);
+      break;
+    case FANART:
+      addFanartToList(img, mediaImage, selectLast);
+      break;
+    default:
+      break;
+    }
+  }/**
+   * Add thumb to thumb list
+   * 
+   * @param thumb
+   * @param mvImg
+   * @param selectLast
+   */
+  private synchronized void addThumbToList(final Image thumb, final MediaImage mvImg, final boolean selectLast) {
+    thumbs.add(mvImg);
+
+//    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
+//
+//      @Override
+//      protected Image doInBackground() throws Exception {
+//        Image image = null;
+//        if (thumbnailModel.isEmpty()) {
+//          image = cache.getImage(new URL(thumbs.get(0).getUrl(MediaImage.MediaImageSize.THUMB)), Cache.CacheType.THUMB);
+//        }
+//        return image;
+//      }
+//    };
+//
+//    worker.addPropertyChangeListener(new PropertyChangeListener() {
+//
+//      @Override
+//      public void propertyChange(PropertyChangeEvent pce) {
+//        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+//          try {
+//            Image img = worker.get();
+//            if (img != null) {
+//              thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+//            }
+//            if (thumb != null) {
+//              thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
+//            }
+//            if (!thumbnailModel.isEmpty()) {
+//              thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
+//            }
+//          } catch (InterruptedException ex) {
+//            Settings.LOGGER.log(Level.SEVERE, ex.toString());
+//          } catch (ExecutionException ex) {
+//            Settings.LOGGER.log(Level.SEVERE, ex.toString());
+//          }
+//        }
+//      }
+//    });
+//
+//    worker.execute();
+  }
+
+  private synchronized void addFanartToList(final Image fanart, final MediaImage mvImg, final boolean selectLast) {
+    fanarts.add(mvImg);
+//    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
+//
+//      @Override
+//      protected Image doInBackground() throws Exception {
+//        Image img = null;
+//        if (fanartModel.isEmpty()) {
+//          img = getImage(fanarts.get(0).getUrl(MediaImage.MediaImageSize.THUMB), Cache.CacheType.FANART);
+//        }
+//
+//        return img;
+//      }
+//    };
+//
+//    worker.addPropertyChangeListener(new PropertyChangeListener() {
+//
+//      @Override
+//      public void propertyChange(PropertyChangeEvent pce) {
+//        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+//          try {
+//            fanartBack = worker.get();
+//            if (fanartBack != null) {
+//            }
+//
+//          } catch (InterruptedException ex) {
+//            Settings.LOGGER.log(Level.SEVERE, null, ex);
+//          } catch (ExecutionException ex) {
+//            Settings.LOGGER.log(Level.SEVERE, null, ex);
+//          }
+//
+//          if (fanart != null) {
+//            fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
+//          }
+//          if (!fanartModel.isEmpty()) {
+//            fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
+//          }
+//        }
+//      }
+//    });
+//
+//    worker.execute();
   }
 
   @Override
-  public void addActorToList(String actor, Image actorImg, String desc) {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public void addActorToList(final String actor, final Image actorImg, final String desc) {
+    ImageIcon icon = null;
+    if (actorImg != null) {
+      icon = new ImageIcon(actorImg.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT), desc);
+    }
+    actors.add(new ActorImage(actor, desc, icon));
+    SwingUtilities.invokeLater(new Thread() {
+
+      @Override
+      public void run() {
+        actorModel.addElement(actor);
+      }
+    });
   }
 
-  @Override
   public void clear() {
-    // TODO
-    thumbLbl.setIcon(null);
-    genreField.setText("");
-    star.setIcon(STAR_EMPTY);
-    star1.setIcon(STAR_EMPTY);
-    star2.setIcon(STAR_EMPTY);
-    star3.setIcon(STAR_EMPTY);
-    star4.setIcon(STAR_EMPTY);
+    fanarts.clear();
+    thumbs.clear();
+    SwingUtilities.invokeLater(new Thread() {
+
+      @Override
+      public void run() {
+//        dropFanartTarget.setActive(false);
+//        dropThumbTarget.setActive(false);
+//        fanartBack = null;
+//        fanartModel.clear();
+//        thumbnailModel.clear();
+        actorModel.clear();
+//        subTitleModel.clear();
+//        audioModel.clear();
+        countryModel.clear();
+        origTitleField.setText("");
+        yearLbl.setText("");
+        runtimeField.setText("");
+        synopsisArea.setText("");
+        genreField.setText("");
+        directorField.setText("");
+        titleLbl.setText("");
+        thumbLbl.setIcon(null);
+        star.setIcon(STAR_EMPTY);
+        star1.setIcon(STAR_EMPTY);
+        star2.setIcon(STAR_EMPTY);
+        star3.setIcon(STAR_EMPTY);
+        star4.setIcon(STAR_EMPTY);
+        actors.clear();
+        validate();
+        repaint();
+      }
+    });
   }
 
   /**

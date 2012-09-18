@@ -1608,6 +1608,11 @@ public class MovieRenamer extends JFrame {
           renameField.setEnabled(true);
           editBtn.setEnabled(true);
 
+          ActorWorker actor = WorkerManager.getMovieActorWorker(seasons.getActors(), tvShowPanel);
+          actor.addPropertyChangeListener(new workerListener(actor, WorkerManager.WORKERID.ACTORWORKER));
+          actor.execute();
+          loading.setValue(100, WorkerManager.WORKERID.INFOWORKER);
+
         } catch (InterruptedException ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (ExecutionException ex) {
