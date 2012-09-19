@@ -17,13 +17,8 @@
  */
 package fr.free.movierenamer.media.movie;
 
-import fr.free.movierenamer.media.IMediaInfo;
-import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.MediaPerson;
-import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.media.MediaInfo;
 import fr.free.movierenamer.utils.Utils;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,106 +27,28 @@ import java.util.List;
  * 
  * @author Nicolas Magré
  */
-public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
+public class MovieInfo extends MediaInfo {
 
-  private String title;
-  private String sortTitle;
-  private String thumb;
-  private String trailer;
-  private String synopsis;
   private String outline;
   private String tagline;
-  private String origTitle;
-  private String rating;
   private String mpaa;
-  private String runtime;
-  private String year;
-  private String votes;
   private String top250;
   private boolean watched;
-  private MovieImage movieImage;
-  private List<MediaID> movieIDs;
   private List<String> set;// Saga
-  private List<String> genres;
   private List<String> studios;
-  private List<MediaPerson> actors;
-  private List<MediaPerson> directors;
-  private List<MediaPerson> writers;
-  private List<String> countries;
 
   /**
    * Default constructor
    */
   public MovieInfo() {
-    title = "";
-    trailer = "";
-    thumb = "";
-    synopsis = "";
+    super();
     outline = "";
     tagline = "";
-    origTitle = "";
-    rating = "-1";
-    runtime = "-1";
-    year = "";
-    votes = "-1";
     top250 = "0";
     watched = false;
     mpaa = "";
-    sortTitle = "";
-    movieImage = new MovieImage();
-    movieIDs = new ArrayList<MediaID>();
     set = new ArrayList<String>();
-    genres = new ArrayList<String>();
     studios = new ArrayList<String>();
-    actors = new ArrayList<MediaPerson>();
-    directors = new ArrayList<MediaPerson>();
-    writers = new ArrayList<MediaPerson>();
-    countries = new ArrayList<String>();
-  }
-
-  /**
-   * Get movie title
-   * 
-   * @return Movie title
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Get sort title
-   * 
-   * @return Sort title
-   */
-  public String getSortTitle() {
-    return (sortTitle.equals("") ? title : sortTitle);
-  }
-
-  /**
-   * Get (default) movie thumb
-   * 
-   * @return
-   */
-  public String getThumb() {
-    return thumb;
-  }
-
-  /**
-   * Get trailer
-   * 
-   * @return Trailer
-   */
-  public String getTrailer() {
-    return trailer;
-  }
-
-  /**
-   * Get synopsis
-   * 
-   * @return Synopsis
-   */
-  public String getSynopsis() {
-    return synopsis;
   }
 
   /**
@@ -153,51 +70,6 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   }
 
   /**
-   * Get original title
-   * 
-   * @return Original title
-   */
-  public String getOrigTitle() {
-    return origTitle;
-  }
-
-  /**
-   * Get rating
-   * 
-   * @return Rating
-   */
-  public String getRating() {
-    return rating;
-  }
-
-  /**
-   * Get runtime
-   * 
-   * @return Runtime
-   */
-  public String getRuntime() {
-    return runtime;
-  }
-
-  /**
-   * Get year
-   * 
-   * @return Year
-   */
-  public String getYear() {
-    return year;
-  }
-
-  /**
-   * Get votes
-   * 
-   * @return Votes
-   */
-  public String getVotes() {
-    return votes;
-  }
-
-  /**
    * Get top 250
    * 
    * @return 0 or top 250 position
@@ -213,42 +85,6 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
    */
   public boolean getWatched() {
     return watched;
-  }
-
-  /**
-   * Get movie images
-   * 
-   * @return MovieImage
-   */
-  public MovieImage getMovieImage() {
-    return movieImage;
-  }
-
-  /**
-   * Get array of thumbnails
-   * 
-   * @return List of MovieImage
-   */
-  public List<MediaImage> getThumbs() {
-    return movieImage.getThumbs();
-  }
-
-  /**
-   * Get array of fanarts
-   * 
-   * @return List of MovieImage
-   */
-  public List<MediaImage> getFanarts() {
-    return movieImage.getFanarts();
-  }
-
-  /**
-   * Get movie API IDs
-   * 
-   * @return List of movie IDs
-   */
-  public List<MediaID> getIDs() {
-    return movieIDs;
   }
 
   /**
@@ -270,112 +106,12 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   }
 
   /**
-   * Get genres
-   * 
-   * @return Array of genre
-   */
-  public List<String> getGenres() {
-    return genres;
-  }
-
-  /**
    * Get studios
    * 
    * @return Array of studios
    */
   public List<String> getStudios() {
     return studios;
-  }
-
-  /**
-   * Get Actors
-   * 
-   * @return Array of actors
-   */
-  public List<MediaPerson> getActors() {
-    return actors;
-  }
-
-  /**
-   * Get directors
-   * 
-   * @return Array of directors
-   */
-  public List<MediaPerson> getDirectors() {
-    return directors;
-  }
-
-  /**
-   * Get writers
-   * 
-   * @return Array of writers
-   */
-  public List<MediaPerson> getWriters() {
-    return writers;
-  }
-
-  /**
-   * Get countries
-   * 
-   * @return Array of countries
-   */
-  public List<String> getCountries() {
-    return countries;
-  }
-
-  /**
-   * Get actors
-   * 
-   * @param separator Separator
-   * @param limit Number of actors to return (0 for all)
-   * @return Actors separated by separator
-   */
-  public String getActorsString(String separator, int limit) {
-    return Utils.arrayToString(actors, separator, limit);
-  }
-
-  /**
-   * Get directors
-   * 
-   * @param separator Separator
-   * @param limit Number of directors to return (0 for all)
-   * @return Directors separated by separator
-   */
-  public String getDirectorsString(String separator, int limit) {
-    return Utils.arrayToString(directors, separator, limit);
-  }
-
-  /**
-   * Get writers to string
-   * 
-   * @param separator Separator
-   * @param limit Number of writers to return (0 for all)
-   * @return Writers separated by separator
-   */
-  public String getWritersString(String separator, int limit) {
-    return Utils.arrayToString(writers, separator, limit);
-  }
-
-  /**
-   * Get genres to string
-   * 
-   * @param separator Separator
-   * @param limit Number of genres to return (0 for all)
-   * @return Genre separated by separator
-   */
-  public String getGenresString(String separator, int limit) {
-    return Utils.arrayToString(genres, separator, limit);
-  }
-
-  /**
-   * Get countries to string
-   * 
-   * @param separator Separator
-   * @param limit Number of countries to return (0 for all)
-   * @return Countries separated by separator
-   */
-  public String getCountriesString(String separator, int limit) {
-    return Utils.arrayToString(countries, separator, limit);
   }
 
   /**
@@ -401,129 +137,6 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   }
 
   /**
-   * Get first director
-   * 
-   * @return First director
-   */
-  public String getFirstDirector() {
-    return getActorN(0);
-  }
-
-  /**
-   * Get the n actor
-   * 
-   * @param n Position of actor
-   * @return Actor name or an empty string
-   */
-  public String getActorN(int n) {
-    if (n >= actors.size()) {
-      return "";
-    }
-    return actors.get(n).getName();
-  }
-
-  /**
-   * Get the n director
-   * 
-   * @param n Position of director
-   * @return Director name or an empty string
-   */
-  public String getDirectorN(int n) {
-    if (n >= directors.size()) {
-      return "";
-    }
-    return directors.get(n).getName();
-  }
-
-  /**
-   * Get first genre
-   * 
-   * @return First genre
-   */
-  public String getFirstGenreString() {
-    return getGenreN(0);
-  }
-
-  /**
-   * Get the n genre
-   * 
-   * @param n Position of genre
-   * @return Genre or an empty string
-   */
-  public String getGenreN(int n) {
-    if (n >= genres.size()) {
-      return "";
-    }
-    return genres.get(n);
-  }
-
-  /**
-   * Get the n country
-   * 
-   * @param n Position of country
-   * @return Country or an empty string
-   */
-  public String getCountryN(int n) {
-    if (n >= countries.size()) {
-      return "";
-    }
-    return countries.get(n);
-  }
-
-  /**
-   * Get actor by name
-   * 
-   * @param actor Actor name
-   * @return MoviePerson if actor found, null otherwise
-   */
-  public MediaPerson getActorByName(String actor) {
-    MediaPerson res = null;
-    for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getName().equals(actor)) {
-        res = actors.get(i);
-        break;
-      }
-    }
-    return res;
-  }
-
-  /**
-   * Set title
-   * 
-   * @param title Title
-   */
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  /**
-   * Set sort title
-   * 
-   * @param sortTitle Sort title
-   */
-  public void setSortTitle(String sortTitle) {
-    this.sortTitle = sortTitle;
-  }
-
-  /**
-   * Set (default) thumb
-   * 
-   * @param thumb
-   */
-  public void setThumb(String thumb) {
-    this.thumb = thumb;
-  }
-
-  /**
-   * Set trailer
-   * 
-   * @param trailer Trailer
-   */
-  public void setTrailer(String trailer) {
-    this.trailer = trailer;
-  }
-
-  /**
    * Set studios
    * 
    * @param studios Array of studio
@@ -533,57 +146,12 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   }
 
   /**
-   * Set directors
-   * 
-   * @param directors Array of directors
-   */
-  public void setDirectors(List<MediaPerson> directors) {
-    this.directors = directors;
-  }
-
-  /**
-   * Set genres
-   * 
-   * @param genres Array of genres
-   */
-  public void setGenre(List<String> genres) {
-    this.genres = genres;
-  }
-
-  /**
    * Set sets
    * 
    * @param set Array of sets
    */
-  public void setSets(List<String> set) {
+  public void setSet(List<String> set) {
     this.set = set;
-  }
-
-  /**
-   * Set writers
-   * 
-   * @param writers Array of writers
-   */
-  public void setWriters(List<MediaPerson> writers) {
-    this.writers = writers;
-  }
-
-  /**
-   * Set countries
-   * 
-   * @param countries Array of countries
-   */
-  public void setCountries(List<String> countries) {
-    this.countries = countries;
-  }
-
-  /**
-   * Set synopsis
-   * 
-   * @param synopsis Synopsis
-   */
-  public void setSynopsis(String synopsis) {
-    this.synopsis = synopsis;
   }
 
   /**
@@ -605,51 +173,6 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   }
 
   /**
-   * Set original title
-   * 
-   * @param origTitle Original title
-   */
-  public void setOrigTitle(String origTitle) {
-    this.origTitle = origTitle;
-  }
-
-  /**
-   * Set rating
-   * 
-   * @param rating Rating
-   */
-  public void setRating(String rating) {
-    this.rating = rating;
-  }
-
-  /**
-   * Set runtime
-   * 
-   * @param runtime Runtime
-   */
-  public void setRuntime(String runtime) {
-    this.runtime = runtime;
-  }
-
-  /**
-   * Set year
-   * 
-   * @param year Year
-   */
-  public void setYear(String year) {
-    this.year = year;
-  }
-
-  /**
-   * Set votes
-   * 
-   * @param votes Votes
-   */
-  public void setVotes(String votes) {
-    this.votes = votes;
-  }
-
-  /**
    * Set top 250
    * 
    * @param top250
@@ -667,14 +190,14 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
     this.watched = watched;
   }
 
-  /**
-   * Set sets
-   * 
-   * @param set Array of set
-   */
-  public void setSet(List<String> set) {
-    this.set = set;
-  }
+//  /**
+//   * Set sets
+//   * 
+//   * @param set Array of set
+//   */
+//  public void setSet(List<String> set) {
+//    this.set = set;
+//  }
 
   /**
    * Set mpaa
@@ -686,54 +209,6 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
   }
   
   /**
-   * Set movie images
-   * 
-   * @param movieImage Movie Images
-   */
-  public void setImages(MovieImage movieImage) {
-    this.movieImage = movieImage;
-  }
-
-  /**
-   * Add a thumb to movie images
-   * 
-   * @param thumb Thumb to add
-   */
-  public void addThumb(MediaImage thumb) {
-    movieImage.addThumb(thumb);
-  }
-
-  /**
-   * Add a fanart to movie images
-   * 
-   * @param fanart Fanart to add
-   */
-  public void addFanart(MediaImage fanart) {
-    movieImage.addFanart(fanart);
-  }
-  
-  /**
-   * @param extraImages
-   */
-  public void addImages(MovieImage extraImages) {
-    for(MediaImage thumb : extraImages.getThumbs()) {
-      addThumb(thumb);
-    }
-    for(MediaImage fanart : extraImages.getFanarts()) {
-      addFanart(fanart);
-    }
-  }
-
-  /**
-   * Add genre
-   * 
-   * @param genre Genre
-   */
-  public void addGenre(String genre) {
-    genres.add(genre);
-  }
-
-  /**
    * Add studio
    * 
    * @param studio Studio
@@ -742,228 +217,168 @@ public class MovieInfo implements IMediaInfo/*<MovieImage>*/, Serializable {
     studios.add(studio);
   }
 
-  /**
-   * Add person (Actor, director,...)
-   * 
-   * @param person Person to add
-   */
-  public void addPerson(MediaPerson person) {
-    switch (person.getJob()) {
-    case MediaPerson.ACTOR:
-      actors.add(person);
-      break;
-    case MediaPerson.DIRECTOR:
-      directors.add(person);
-      break;
-    case MediaPerson.WRITER:
-      writers.add(person);
-      break;
-    default:
-      break;
-    }
-  }
+//  /**
+//   * Add set
+//   * 
+//   * @param strSet Set
+//   */
+//  public void addSet(String strSet) {
+//    set.add(strSet);
+//  }
 
-  /**
-   * Add country
-   * 
-   * @param country Country
-   */
-  public void addCountry(String country) {
-    countries.add(country);
-  }
-
-  /**
-   * Add role to actor
-   * 
-   * @param actor Actor
-   * @param role Role
-   * @throws ActionNotValidException
-   */
-  public void addRole(String actor, String role) throws ActionNotValidException {
-    for (int i = 0; i < actors.size(); i++) {
-      if (actors.get(i).getName().equals(actor)) {
-        actors.get(i).addRole(role);
-        break;
-      }
-    }
-  }
-
-  /**
-   * Add movie API id
-   * 
-   * @param id Movie APi id
-   */
-  public void addID(MediaID id) {
-    for (MediaID mID : movieIDs) {
-      if (mID.equals(id)) {
-        return;
-      }
-    }
-    movieIDs.add(id);
-  }
-
-  /**
-   * Add set
-   * 
-   * @param strSet Set
-   */
-  public void addSet(String strSet) {
-    set.add(strSet);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final MovieInfo other = (MovieInfo) obj;
-    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
-      return false;
-    }
-    if ((this.sortTitle == null) ? (other.sortTitle != null) : !this.sortTitle.equals(other.sortTitle)) {
-      return false;
-    }
-    if ((this.thumb == null) ? (other.thumb != null) : !this.thumb.equals(other.thumb)) {
-      return false;
-    }
-    if ((this.trailer == null) ? (other.trailer != null) : !this.trailer.equals(other.trailer)) {
-      return false;
-    }
-    if ((this.synopsis == null) ? (other.synopsis != null) : !this.synopsis.equals(other.synopsis)) {
-      return false;
-    }
-    if ((this.outline == null) ? (other.outline != null) : !this.outline.equals(other.outline)) {
-      return false;
-    }
-    if ((this.tagline == null) ? (other.tagline != null) : !this.tagline.equals(other.tagline)) {
-      return false;
-    }
-    if ((this.origTitle == null) ? (other.origTitle != null) : !this.origTitle.equals(other.origTitle)) {
-      return false;
-    }
-    if ((this.rating == null) ? (other.rating != null) : !this.rating.equals(other.rating)) {
-      return false;
-    }
-    if ((this.mpaa == null) ? (other.mpaa != null) : !this.mpaa.equals(other.mpaa)) {
-      return false;
-    }
-    if ((this.runtime == null) ? (other.runtime != null) : !this.runtime.equals(other.runtime)) {
-      return false;
-    }
-    if ((this.year == null) ? (other.year != null) : !this.year.equals(other.year)) {
-      return false;
-    }
-    if ((this.votes == null) ? (other.votes != null) : !this.votes.equals(other.votes)) {
-      return false;
-    }
-    if ((this.top250 == null) ? (other.top250 != null) : !this.top250.equals(other.top250)) {
-      return false;
-    }
-    if (this.watched != other.watched) {
-      return false;
-    }
-    if (this.movieImage != other.movieImage && (this.movieImage == null || !this.movieImage.equals(other.movieImage))) {
-      return false;
-    }
-    if (this.movieIDs != other.movieIDs && (this.movieIDs == null || !this.movieIDs.equals(other.movieIDs))) {
-      return false;
-    }
-    if (this.set != other.set && (this.set == null || !this.set.equals(other.set))) {
-      return false;
-    }
-    if (this.genres != other.genres && (this.genres == null || !this.genres.equals(other.genres))) {
-      return false;
-    }
-    if (this.studios != other.studios && (this.studios == null || !this.studios.equals(other.studios))) {
-      return false;
-    }
-    if (this.actors != other.actors && (this.actors == null || !this.actors.equals(other.actors))) {
-      return false;
-    }
-    if (this.directors != other.directors && (this.directors == null || !this.directors.equals(other.directors))) {
-      return false;
-    }
-    if (this.writers != other.writers && (this.writers == null || !this.writers.equals(other.writers))) {
-      return false;
-    }
-    if (this.countries != other.countries && (this.countries == null || !this.countries.equals(other.countries))) {
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    hash = 97 * hash + (this.title != null ? this.title.hashCode() : 0);
-    hash = 97 * hash + (this.sortTitle != null ? this.sortTitle.hashCode() : 0);
-    hash = 97 * hash + (this.thumb != null ? this.thumb.hashCode() : 0);
-    hash = 97 * hash + (this.trailer != null ? this.trailer.hashCode() : 0);
-    hash = 97 * hash + (this.synopsis != null ? this.synopsis.hashCode() : 0);
-    hash = 97 * hash + (this.outline != null ? this.outline.hashCode() : 0);
-    hash = 97 * hash + (this.tagline != null ? this.tagline.hashCode() : 0);
-    hash = 97 * hash + (this.origTitle != null ? this.origTitle.hashCode() : 0);
-    hash = 97 * hash + (this.rating != null ? this.rating.hashCode() : 0);
-    hash = 97 * hash + (this.mpaa != null ? this.mpaa.hashCode() : 0);
-    hash = 97 * hash + (this.runtime != null ? this.runtime.hashCode() : 0);
-    hash = 97 * hash + (this.year != null ? this.year.hashCode() : 0);
-    hash = 97 * hash + (this.votes != null ? this.votes.hashCode() : 0);
-    hash = 97 * hash + (this.top250 != null ? this.top250.hashCode() : 0);
-    hash = 97 * hash + (this.watched ? 1 : 0);
-    hash = 97 * hash + (this.movieImage != null ? this.movieImage.hashCode() : 0);
-    hash = 97 * hash + (this.movieIDs != null ? this.movieIDs.hashCode() : 0);
-    hash = 97 * hash + (this.set != null ? this.set.hashCode() : 0);
-    hash = 97 * hash + (this.genres != null ? this.genres.hashCode() : 0);
-    hash = 97 * hash + (this.studios != null ? this.studios.hashCode() : 0);
-    hash = 97 * hash + (this.actors != null ? this.actors.hashCode() : 0);
-    hash = 97 * hash + (this.directors != null ? this.directors.hashCode() : 0);
-    hash = 97 * hash + (this.writers != null ? this.writers.hashCode() : 0);
-    hash = 97 * hash + (this.countries != null ? this.countries.hashCode() : 0);
-    return hash;
-  }
-  
-  @Override
-  public String toString() {
-    StringBuilder res = new StringBuilder();
-    res.append(title).append(Utils.ENDLINE);
-    res.append("  Trailer : ").append(trailer).append(Utils.ENDLINE);
-    res.append("  Thumbnail : ").append(thumb).append(Utils.ENDLINE);
-    res.append("  Synopsis : ").append(synopsis).append(Utils.ENDLINE);
-    res.append("  Short-Synopsis : ").append(outline).append(Utils.ENDLINE);
-    res.append("  Set(Saga) : ").append(getSetString(" | ", 0)).append(Utils.ENDLINE);
-    res.append("  Mpaa : ").append(mpaa).append(Utils.ENDLINE);
-    res.append("  Tagline : ").append(tagline).append(Utils.ENDLINE);
-    res.append("  OrigTitle : ").append(origTitle).append(Utils.ENDLINE);
-    res.append("  Rating : ").append(rating).append(Utils.ENDLINE);
-    res.append("  Runtime : ").append(runtime).append(Utils.ENDLINE);
-    res.append("  Year : ").append(year).append(Utils.ENDLINE);
-    res.append("  Vote : ").append(votes).append(Utils.ENDLINE);
-    res.append("  Top 250 : ").append(top250).append(Utils.ENDLINE);
-    res.append("  Watched : ").append(watched ? "True" : "False").append(Utils.ENDLINE);
-    res.append("  Genre : ").append(Utils.arrayToString(genres, " | ", 0)).append(Utils.ENDLINE);
-    res.append("  Studio : ").append(Utils.arrayToString(studios, " | ", 0)).append(Utils.ENDLINE);
-    res.append("  Country : ").append(Utils.arrayToString(countries, " | ", 0)).append(Utils.ENDLINE);
-    res.append("  Director : ").append(getDirectorsString(" | ", 0)).append(Utils.ENDLINE);
-    res.append("  Writer : ").append(getWritersString(" | ", 0)).append(Utils.ENDLINE);
-    res.append("  Actor :\n");
-
-    for (int i = 0; i < actors.size(); i++) {
-      res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);
-    }
-    res.append(movieImage.toString());
-
-    res.append(Utils.ENDLINE);
-    
-    res.append("IDs :").append(Utils.ENDLINE);
-    for(MediaID id : movieIDs) {
-      res.append(id);
-    }
-    res.append(Utils.ENDLINE);
-    res.append("Images : ").append(Utils.ENDLINE).append(movieImage);
-    
-    return res.toString();
-  }
+//  @Override
+//  public boolean equals(Object obj) {
+//    if (obj == null) {
+//      return false;
+//    }
+//    if (getClass() != obj.getClass()) {
+//      return false;
+//    }
+//    final MovieInfo other = (MovieInfo) obj;
+//    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+//      return false;
+//    }
+//    if ((this.sortTitle == null) ? (other.sortTitle != null) : !this.sortTitle.equals(other.sortTitle)) {
+//      return false;
+//    }
+//    if ((this.thumb == null) ? (other.thumb != null) : !this.thumb.equals(other.thumb)) {
+//      return false;
+//    }
+//    if ((this.trailer == null) ? (other.trailer != null) : !this.trailer.equals(other.trailer)) {
+//      return false;
+//    }
+//    if ((this.synopsis == null) ? (other.synopsis != null) : !this.synopsis.equals(other.synopsis)) {
+//      return false;
+//    }
+//    if ((this.outline == null) ? (other.outline != null) : !this.outline.equals(other.outline)) {
+//      return false;
+//    }
+//    if ((this.tagline == null) ? (other.tagline != null) : !this.tagline.equals(other.tagline)) {
+//      return false;
+//    }
+//    if ((this.origTitle == null) ? (other.origTitle != null) : !this.origTitle.equals(other.origTitle)) {
+//      return false;
+//    }
+//    if ((this.rating == null) ? (other.rating != null) : !this.rating.equals(other.rating)) {
+//      return false;
+//    }
+//    if ((this.mpaa == null) ? (other.mpaa != null) : !this.mpaa.equals(other.mpaa)) {
+//      return false;
+//    }
+//    if ((this.runtime == null) ? (other.runtime != null) : !this.runtime.equals(other.runtime)) {
+//      return false;
+//    }
+//    if ((this.year == null) ? (other.year != null) : !this.year.equals(other.year)) {
+//      return false;
+//    }
+//    if ((this.votes == null) ? (other.votes != null) : !this.votes.equals(other.votes)) {
+//      return false;
+//    }
+//    if ((this.top250 == null) ? (other.top250 != null) : !this.top250.equals(other.top250)) {
+//      return false;
+//    }
+//    if (this.watched != other.watched) {
+//      return false;
+//    }
+//    if (this.movieImages != other.movieImages && (this.movieImages == null || !this.movieImages.equals(other.movieImages))) {
+//      return false;
+//    }
+//    if (this.movieIDs != other.movieIDs && (this.movieIDs == null || !this.movieIDs.equals(other.movieIDs))) {
+//      return false;
+//    }
+//    if (this.set != other.set && (this.set == null || !this.set.equals(other.set))) {
+//      return false;
+//    }
+//    if (this.genres != other.genres && (this.genres == null || !this.genres.equals(other.genres))) {
+//      return false;
+//    }
+//    if (this.studios != other.studios && (this.studios == null || !this.studios.equals(other.studios))) {
+//      return false;
+//    }
+//    if (this.actors != other.actors && (this.actors == null || !this.actors.equals(other.actors))) {
+//      return false;
+//    }
+//    if (this.directors != other.directors && (this.directors == null || !this.directors.equals(other.directors))) {
+//      return false;
+//    }
+//    if (this.writers != other.writers && (this.writers == null || !this.writers.equals(other.writers))) {
+//      return false;
+//    }
+//    if (this.countries != other.countries && (this.countries == null || !this.countries.equals(other.countries))) {
+//      return false;
+//    }
+//    return true;
+//  }
+//
+//  @Override
+//  public int hashCode() {
+//    int hash = 7;
+//    hash = 97 * hash + (this.title != null ? this.title.hashCode() : 0);
+//    hash = 97 * hash + (this.sortTitle != null ? this.sortTitle.hashCode() : 0);
+//    hash = 97 * hash + (this.thumb != null ? this.thumb.hashCode() : 0);
+//    hash = 97 * hash + (this.trailer != null ? this.trailer.hashCode() : 0);
+//    hash = 97 * hash + (this.synopsis != null ? this.synopsis.hashCode() : 0);
+//    hash = 97 * hash + (this.outline != null ? this.outline.hashCode() : 0);
+//    hash = 97 * hash + (this.tagline != null ? this.tagline.hashCode() : 0);
+//    hash = 97 * hash + (this.origTitle != null ? this.origTitle.hashCode() : 0);
+//    hash = 97 * hash + (this.rating != null ? this.rating.hashCode() : 0);
+//    hash = 97 * hash + (this.mpaa != null ? this.mpaa.hashCode() : 0);
+//    hash = 97 * hash + (this.runtime != null ? this.runtime.hashCode() : 0);
+//    hash = 97 * hash + (this.year != null ? this.year.hashCode() : 0);
+//    hash = 97 * hash + (this.votes != null ? this.votes.hashCode() : 0);
+//    hash = 97 * hash + (this.top250 != null ? this.top250.hashCode() : 0);
+//    hash = 97 * hash + (this.watched ? 1 : 0);
+//    hash = 97 * hash + (this.movieImages != null ? this.movieImages.hashCode() : 0);
+//    hash = 97 * hash + (this.movieIDs != null ? this.movieIDs.hashCode() : 0);
+//    hash = 97 * hash + (this.set != null ? this.set.hashCode() : 0);
+//    hash = 97 * hash + (this.genres != null ? this.genres.hashCode() : 0);
+//    hash = 97 * hash + (this.studios != null ? this.studios.hashCode() : 0);
+//    hash = 97 * hash + (this.actors != null ? this.actors.hashCode() : 0);
+//    hash = 97 * hash + (this.directors != null ? this.directors.hashCode() : 0);
+//    hash = 97 * hash + (this.writers != null ? this.writers.hashCode() : 0);
+//    hash = 97 * hash + (this.countries != null ? this.countries.hashCode() : 0);
+//    return hash;
+//  }
+//  
+//  @Override
+//  public String toString() {
+//    StringBuilder res = new StringBuilder();
+//    res.append(title).append(Utils.ENDLINE);
+//    res.append("  Trailer : ").append(trailer).append(Utils.ENDLINE);
+//    res.append("  Thumbnail : ").append(thumb).append(Utils.ENDLINE);
+//    res.append("  Synopsis : ").append(synopsis).append(Utils.ENDLINE);
+//    res.append("  Short-Synopsis : ").append(outline).append(Utils.ENDLINE);
+//    res.append("  Set(Saga) : ").append(getSetString(" | ", 0)).append(Utils.ENDLINE);
+//    res.append("  Mpaa : ").append(mpaa).append(Utils.ENDLINE);
+//    res.append("  Tagline : ").append(tagline).append(Utils.ENDLINE);
+//    res.append("  OrigTitle : ").append(origTitle).append(Utils.ENDLINE);
+//    res.append("  Rating : ").append(rating).append(Utils.ENDLINE);
+//    res.append("  Runtime : ").append(runtime).append(Utils.ENDLINE);
+//    res.append("  Year : ").append(year).append(Utils.ENDLINE);
+//    res.append("  Vote : ").append(votes).append(Utils.ENDLINE);
+//    res.append("  Top 250 : ").append(top250).append(Utils.ENDLINE);
+//    res.append("  Watched : ").append(watched ? "True" : "False").append(Utils.ENDLINE);
+//    res.append("  Genre : ").append(Utils.arrayToString(genres, " | ", 0)).append(Utils.ENDLINE);
+//    res.append("  Studio : ").append(Utils.arrayToString(studios, " | ", 0)).append(Utils.ENDLINE);
+//    res.append("  Country : ").append(Utils.arrayToString(countries, " | ", 0)).append(Utils.ENDLINE);
+//    res.append("  Director : ").append(getDirectorsString(" | ", 0)).append(Utils.ENDLINE);
+//    res.append("  Writer : ").append(getWritersString(" | ", 0)).append(Utils.ENDLINE);
+//    res.append("  Actor :\n");
+//
+//    for (int i = 0; i < actors.size(); i++) {
+//      res.append("    ").append(actors.get(i).getName()).append(" : ").append(actors.get(i).getRoles()).append(Utils.ENDLINE);
+//    }
+//    res.append(movieImages.toString());
+//
+//    res.append(Utils.ENDLINE);
+//    
+//    res.append("IDs :").append(Utils.ENDLINE);
+//    for(MediaID id : movieIDs) {
+//      res.append(id);
+//    }
+//    res.append(Utils.ENDLINE);
+//    res.append("Images : ").append(Utils.ENDLINE).append(movieImages);
+//    
+//    return res.toString();
+//  }
 }

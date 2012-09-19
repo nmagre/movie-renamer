@@ -131,9 +131,9 @@ public class ImdbInfo extends MrParser<MovieInfo> {
     // Original Title
     searchMatcher = ImdbPattern.ORIGTITLE.getPattern().matcher(moviePage);
     if (searchMatcher.find()) {
-      movieInfo.setOrigTitle(Utils.unEscapeXML(searchMatcher.group(1), "ISO-8859-1"));
+      movieInfo.setOriginalTitle(Utils.unEscapeXML(searchMatcher.group(1), "ISO-8859-1"));
     } else {
-      movieInfo.setOrigTitle(movieInfo.getTitle());
+      movieInfo.setOriginalTitle(movieInfo.getTitle());
     }
 
     // Runtime

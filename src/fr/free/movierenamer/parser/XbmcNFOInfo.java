@@ -68,7 +68,7 @@ public class XbmcNFOInfo extends MrParser<MovieInfo> {
       } else if (name.equalsIgnoreCase("title")) {
         movieInfo.setTitle(buffer.toString());
       } else if (name.equalsIgnoreCase("originaltitle")) {
-        movieInfo.setOrigTitle(buffer.toString());
+        movieInfo.setOriginalTitle(buffer.toString());
       } else if (name.equalsIgnoreCase("rating")) {
         movieInfo.setRating(buffer.toString());
       } else if (name.equalsIgnoreCase("year")) {
@@ -88,7 +88,7 @@ public class XbmcNFOInfo extends MrParser<MovieInfo> {
       } else if (name.equalsIgnoreCase("playcount")) {
       } else if (name.equalsIgnoreCase("lastplayed")) {
       } else if (name.equalsIgnoreCase("id")) {
-        movieInfo.addID(new MediaID(buffer.toString(), buffer.toString().startsWith("tt") ? MediaID.MediaIdType.IMDBID:MediaID.MediaIdType.TMDBID));
+        movieInfo.addId(new MediaID(buffer.toString(), buffer.toString().startsWith("tt") ? MediaID.MediaIdType.IMDBID:MediaID.MediaIdType.TMDBID));
       } else if (name.equalsIgnoreCase("genre")) {
         movieInfo.addGenre(buffer.toString());
       } else if (name.equalsIgnoreCase("country")) {
@@ -118,8 +118,8 @@ public class XbmcNFOInfo extends MrParser<MovieInfo> {
         }
       } else if (name.equalsIgnoreCase("sorttitle")) {
         movieInfo.setSortTitle(buffer.toString());
-      } else if (name.equalsIgnoreCase("set")) {
-        movieInfo.addSet(buffer.toString());
+//      } else if (name.equalsIgnoreCase("set")) {
+//        movieInfo.addSet(buffer.toString());
       } else if (name.equalsIgnoreCase("role")) {
         try {
           currentActor.addRole(buffer.toString());

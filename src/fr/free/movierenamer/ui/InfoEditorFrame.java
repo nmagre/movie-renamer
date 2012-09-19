@@ -134,7 +134,7 @@ public class InfoEditorFrame extends JDialog {
     movietitleField.setText(movieInfo.getTitle());
  //   imdbidCField.setInitValue(movieInfo.getImdbId());
     mpaaCField.setInitValue(movieInfo.getMpaa());
-    originalTitleCField.setInitValue(movieInfo.getOrigTitle());
+    originalTitleCField.setInitValue(movieInfo.getOriginalTitle());
     ratingCField.setInitValue("" + movieInfo.getRating());
     runtimeCField.setInitValue("" + movieInfo.getRuntime());
     sortTitleCField.setInitValue(movieInfo.getTitle());
@@ -997,7 +997,7 @@ public class InfoEditorFrame extends JDialog {
 // TODO A refaire , ajouter les API ID
 //      movieInfo.setImdbId(imdbidField.getText());
       movieInfo.setMpaa(mpaaField.getText());
-      movieInfo.setOrigTitle(originalTitleField.getText());
+      movieInfo.setOriginalTitle(originalTitleField.getText());
       movieInfo.setRating(ratingField.getText());
       movieInfo.setRuntime(runtimeField.getText());
       movieInfo.setSortTitle(sortTitleField.getText());
@@ -1010,23 +1010,25 @@ public class InfoEditorFrame extends JDialog {
       movieInfo.setTop250(top250Field.getText());
       movieInfo.setWatched(watchedChk.isSelected());
       movieInfo.setStudios(Utils.stringToArray(studioField.getText(), " \\| "));
-      movieInfo.setGenre(Utils.stringToArray(genreField.getText(), " \\| "));
+      movieInfo.setGenres(Utils.stringToArray(genreField.getText(), " \\| "));
       movieInfo.setSet(Utils.stringToArray(setField.getText(), " \\| "));
       movieInfo.setCountries(Utils.stringToArray(countryField.getText(), " \\| "));
 
-      List<MediaPerson> person = new ArrayList<MediaPerson>();
+      List<MediaPerson> directors = new ArrayList<MediaPerson>();
       List<String> array = Utils.stringToArray(directorField.getText(), " \\| ");
       for (int i = 0; i < array.size(); i++) {
-        person.add(new MediaPerson(array.get(i), null, MediaPerson.DIRECTOR));
+//        movieInfo.addPerson(new MediaPerson(array.get(i), null, MediaPerson.DIRECTOR));
+        directors.add(new MediaPerson(array.get(i), null, MediaPerson.DIRECTOR));
       }
-      movieInfo.setDirectors(person);
+      movieInfo.setDirectors(directors);
 
-      person = new ArrayList<MediaPerson>();
+      List<MediaPerson> writers = new ArrayList<MediaPerson>();
       array = Utils.stringToArray(writerField.getText(), " \\| ");
       for (int i = 0; i < array.size(); i++) {
-        person.add(new MediaPerson(array.get(i), null, MediaPerson.WRITER));
+//        movieInfo.addPerson(new MediaPerson(array.get(i), null, MediaPerson.WRITER));
+        writers.add(new MediaPerson(array.get(i), null, MediaPerson.WRITER));
       }
-      movieInfo.setDirectors(person);
+      movieInfo.setWriters(writers);
 
       firePropertyChange("movieInfo", null, movieInfo);
       dispose();

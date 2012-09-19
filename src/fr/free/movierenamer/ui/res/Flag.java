@@ -123,7 +123,7 @@ public abstract class Flag {
     SWITZERLAND(Switzerland, "Suisse", "CH", "Schweiz", "Svizzera", "Suiza"),
     THAILAND(Thailand, "Thaïlande", "TH", "Thailand", "Thailandia", "Tailandia"),
     UNITED_KINGDOM(United_Kingdom, "Royaume-Uni", "England", "Angleterre", "UK", "Vereinigtes Königreich", "Regno Unito", "Reino Unido"),
-    UNITED_STATES(United_States, "United States of America", "USA", "États-Unis d'Amérique", "États-Unis", "US", "Vereinigte Staaten", "Stati Uniti", "Estados Unidos");
+    UNITED_STATES(United_States, "United States of America", "USA", "U.S.A.", "États-Unis d'Amérique", "États-Unis", "US", "Vereinigte Staaten", "Stati Uniti", "Estados Unidos");
     private List<String> identifier;
     public final ImageIcon flag;
 

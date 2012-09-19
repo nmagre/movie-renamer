@@ -19,7 +19,7 @@ package fr.free.movierenamer.utils;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
-import fr.free.movierenamer.media.mediainfo.MediaInfoLibrary;
+import fr.free.movierenamer.media.mediainfo.MILibrary;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -744,7 +744,7 @@ public abstract class Utils {
     }
     if ((linux && libzen) || !linux) {
       try {
-        MediaInfoLibrary.INSTANCE.New();
+        MILibrary.INSTANCE.New();
         mediainfo = "true";
       } catch (LinkageError e) {
         mediainfo = "false";

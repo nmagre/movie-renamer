@@ -25,7 +25,7 @@ import java.util.*;
  *
  * @author Nicolas Magré
  */
-public class MediaImage implements Serializable {
+public final class MediaImage implements Serializable {
   
   public enum MediaImageType {
     

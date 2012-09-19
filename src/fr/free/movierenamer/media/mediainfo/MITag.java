@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.media.mediainfo;
 
-import fr.free.movierenamer.media.mediainfo.MediaInfo.StreamKind;
+import fr.free.movierenamer.media.mediainfo.MI.StreamKind;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.util.ArrayList;
@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Class MediaTag
+ * Class MITag
  *
  * @author Nicolas Magré
  */
-public class MediaTag {
+public class MITag {
 
-  private MediaInfo mediaInfo;
+  private MI mI;
   private File mediaFile;
   private boolean libMediaInfo = Utils.libMediaInfo();
 
@@ -60,9 +60,9 @@ public class MediaTag {
     }
   }
 
-  public MediaTag(File mediaFile) {
+  public MITag(File mediaFile) {
     this.mediaFile = mediaFile;
-    mediaInfo = null;
+    mI = null;
   }
 
   public String getContainerFormat() {
@@ -237,17 +237,17 @@ public class MediaTag {
     return lang;
   }
 
-  private synchronized MediaInfo getMediaInfo() {
-    if (mediaInfo == null) {
-      MediaInfo newMediaInfo = new MediaInfo();
+  private synchronized MI getMediaInfo() {
+    if (mI == null) {
+      MI newMediaInfo = new MI();
       if (!newMediaInfo.open(mediaFile)) {
         throw new RuntimeException("Cannot open media file: " + mediaFile);
       }
 
-      mediaInfo = newMediaInfo;
+      mI = newMediaInfo;
     }
 
-    return mediaInfo;
+    return mI;
   }
 
   private String getMediaInfo(StreamKind streamKind, int streamNumber, String... keys) {
@@ -262,8 +262,8 @@ public class MediaTag {
     return null;
   }
 
-  public List<MediaAudio> getMediaAudios() {
-    List<MediaAudio> audios = new ArrayList<MediaAudio>();
+  public List<MIAudio> getMediaAudios() {
+    List<MIAudio> audios = new ArrayList<MIAudio>();
     if (!libMediaInfo) {
       return audios;
     }
@@ -274,7 +274,7 @@ public class MediaTag {
       if(title.equals(Utils.EMPTY) && lang.equals(Utils.EMPTY)){
         continue;
       }
-      MediaAudio audio = new MediaAudio(i + 1);
+      MIAudio audio = new MIAudio(i + 1);
       audio.setTitle(title);
       audio.setCodec(getAudioCodec(i));
       audio.setLanguage(lang);
@@ -285,8 +285,8 @@ public class MediaTag {
     return audios;
   }
   
-  public List<MediaSubTitle> getMediaSubTitles() {
-    List<MediaSubTitle> subTitles = new ArrayList<MediaSubTitle>();
+  public List<MISubTitle> getMediaSubTitles() {
+    List<MISubTitle> subTitles = new ArrayList<MISubTitle>();
     if (!libMediaInfo) {
       return subTitles;
     }
@@ -297,7 +297,7 @@ public class MediaTag {
       if(title.equals(Utils.EMPTY) && lang.equals(Utils.EMPTY)){
         continue;
       }
-      MediaSubTitle subTitle = new MediaSubTitle(i + 1);
+      MISubTitle subTitle = new MISubTitle(i + 1);
       subTitle.setTitle(title);
       subTitle.setLanguage(lang);
       subTitles.add(subTitle);
@@ -373,12 +373,12 @@ public class MediaTag {
     res += "  Video framerate : " + getVideoFrameRate() + " \n";
     res += "  Video resolution : " + getVideoResolution() + " \n";
     res += "  Container format : " + getContainerFormat() + " \n";
-    List<MediaAudio> audios = getMediaAudios();
-    for(MediaAudio audio : audios){
+    List<MIAudio> audios = getMediaAudios();
+    for(MIAudio audio : audios){
       res += audio.toString() + " \n";
     }
-    List<MediaSubTitle> subTitles = getMediaSubTitles();
-    for(MediaSubTitle subTitle : subTitles){
+    List<MISubTitle> subTitles = getMediaSubTitles();
+    for(MISubTitle subTitle : subTitles){
       res += subTitle.toString() + " \n";
     }
     return res;

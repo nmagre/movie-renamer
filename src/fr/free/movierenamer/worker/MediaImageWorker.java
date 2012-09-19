@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.IMediaImage;
+import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.parser.XMLParser;
@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  * @param <T>
  * @author Nicolas Magré
  */
-public abstract class MediaImageWorker<T extends IMediaImage> extends HttpWorker<T> {
+public abstract class MediaImageWorker<T extends MediaImages> extends HttpWorker<T> {
 
   protected final MediaID id;
 

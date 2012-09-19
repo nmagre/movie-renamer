@@ -18,7 +18,7 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.media.movie.MovieImage;
+import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.parser.TmdbImage;
 import fr.free.movierenamer.utils.ActionNotValidException;
@@ -32,7 +32,7 @@ import javax.xml.bind.DatatypeConverter;
  *
  * @author Nicolas Magré
  */
-public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
+public class TmdbImageWorker extends MediaImageWorker<MediaImages> {
 
   public TmdbImageWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
@@ -44,7 +44,7 @@ public class TmdbImageWorker extends MediaImageWorker<MovieImage> {
   }
 
   @Override
-  protected MrParser<MovieImage> getParser() throws Exception {
+  protected MrParser<MediaImages> getParser() throws Exception {
     return new TmdbImage();
   }
 }

@@ -152,7 +152,7 @@ public abstract class WorkerManager {
     return new ImageWorker(array, imgSize, cache, mediaPanel);
   }
 
-  public static ActorWorker getMovieActorWorker(List<MediaPerson> actors, MoviePanel moviePanel) {
-    return new ActorWorker(actors, moviePanel);
+  public static ActorWorker getMovieActorWorker(List<MediaPerson> actors, IMediaPanel mediaPanel) {
+    return new ActorWorker(actors, mediaPanel);
   }
 }

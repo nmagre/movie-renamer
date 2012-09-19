@@ -17,30 +17,22 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import fr.free.movierenamer.parser.AllocineTvShowEpisodeInfo;
-
-import fr.free.movierenamer.parser.AllocineTvShowSeasonInfo;
-
-import fr.free.movierenamer.worker.HttpWorker;
-
-import fr.free.movierenamer.worker.HttpWorker;
-
-import fr.free.movierenamer.media.tvshow.TvShowEpisode;
-
-import java.util.List;
-
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
-
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
+import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.media.tvshow.TvShowSeason;
+import fr.free.movierenamer.parser.AllocineTvShowEpisodeInfo;
 import fr.free.movierenamer.parser.AllocineTvShowInfo;
+import fr.free.movierenamer.parser.AllocineTvShowSeasonInfo;
 import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.List;
 
 /**
  * Class AllocineTvShowInfoWorker
@@ -178,7 +170,7 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
         TvShowSeason season = seasons.get(i);
         seasons.remove(i);
         for (int j = 0; j < season.getEpisodeCount(); j++) {
-          season.addEpisode(new TvShowEpisode(j + 1));
+          season.addEpisode(new TvShowEpisode(season, j + 1));
         }
         seasons.add(i, season);
       }

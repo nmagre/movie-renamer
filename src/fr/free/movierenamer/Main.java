@@ -81,12 +81,11 @@ public class Main {
       Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
     }
     
-    final Settings config = setting;
     java.awt.EventQueue.invokeLater(new Runnable() {
 
       @Override
       public void run() {
-        mvr = new MovieRenamer(config);
+        mvr = new MovieRenamer();
         mvr.setVisible(true);
       }
     });
