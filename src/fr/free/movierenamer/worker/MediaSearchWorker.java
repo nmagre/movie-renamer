@@ -18,7 +18,6 @@
 package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.parser.MrParser;
-import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.SearchResult;
 import fr.free.movierenamer.utils.Utils;
@@ -36,7 +35,7 @@ import javax.swing.ImageIcon;
  * @author Nicolas Magré
  */
 public abstract class MediaSearchWorker extends HttpWorker<List<SearchResult>> {
-  
+
   protected final String searchTitle;
 
   public MediaSearchWorker(PropertyChangeSupport errorSupport, String searchTitle) {
@@ -45,13 +44,8 @@ public abstract class MediaSearchWorker extends HttpWorker<List<SearchResult>> {
   }
 
   @Override
-  protected final List<SearchResult> processFile(File xmlFile) throws Exception {
-    List<SearchResult> results;
-    XMLParser<List<SearchResult>> xmp = new XMLParser<List<SearchResult>>(xmlFile.getAbsolutePath());
-    MrParser<List<SearchResult>> parser = getParser();
-    parser.setOriginalFile(xmlFile);
-    xmp.setParser(parser);
-    results = xmp.parseXml();
+  protected final List<SearchResult> fileAnalysis(File xmlFile) throws Exception {
+    List<SearchResult> results = Utils.parseFile(xmlFile, getParser());
 
     // search images
     int i = 0;
@@ -72,4 +66,7 @@ public abstract class MediaSearchWorker extends HttpWorker<List<SearchResult>> {
 
     return results;
   }
+
+  protected abstract MrParser<List<SearchResult>> getParser() throws Exception;
+
 }

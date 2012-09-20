@@ -20,13 +20,15 @@ package fr.free.movierenamer.worker;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.media.movie.MovieInfo;
+import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
+import fr.free.movierenamer.utils.Utils;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 
 /**
  * Class MovieInfoWorker
- *
+ * 
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
@@ -34,7 +36,7 @@ public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo> {
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param errorSupport Swing change support
    * @param id Movie API ID
    * @throws ActionNotValidException
@@ -42,19 +44,31 @@ public abstract class MovieInfoWorker extends MediaInfoWorker<MovieInfo> {
   public MovieInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
   }
-  
+
   @Override
-  protected final MovieInfo processFile(File xmlFile) throws Exception {
-    MovieInfo info = super.processFile(xmlFile);
+  protected final MovieInfo fileAnalysis(File xmlFile) throws Exception {
+    MovieInfo info = Utils.parseFile(xmlFile, getParser());
     MediaImages extraImages = loadExtraImages();
-    if(extraImages != null) {
+    if (extraImages != null) {
       info.addImages(extraImages);
     }
     return info;
   }
-  
+
+  protected abstract MrParser<MovieInfo> getParser() throws Exception;
+
+  // @Override
+  // protected final MovieInfo processFile(File xmlFile) throws Exception {
+  // MovieInfo info = super.processFile(xmlFile);
+  // MediaImages extraImages = loadExtraImages();
+  // if(extraImages != null) {
+  // info.addImages(extraImages);
+  // }
+  // return info;
+  // }
+
   protected MediaImages loadExtraImages() throws Exception {
     return null;
   }
-  
+
 }

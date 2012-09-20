@@ -25,9 +25,9 @@ import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.parser.AllocineTvShowEpisodeInfo;
 import fr.free.movierenamer.parser.AllocineTvShowInfo;
 import fr.free.movierenamer.parser.AllocineTvShowSeasonInfo;
-import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.worker.HttpWorker;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
@@ -36,17 +36,17 @@ import java.util.List;
 
 /**
  * Class AllocineTvShowInfoWorker
- *
+ * 
  * @author Nicolas Magré
  */
 public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
 
-  //The episode num to search
+  // The episode num to search
   private final SxE sxe;
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param errorSupport Swing change support
    * @param id Media id
    * @param sxe
@@ -66,17 +66,11 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
   }
 
   @Override
-  protected MrParser<TvShowInfo> getParser() throws Exception {
-    return new AllocineTvShowInfo();
-  }
-  
-  @Override
-  protected final TvShowInfo processFile(File xmlFile) throws Exception {
-    TvShowInfo info = super.processFile(xmlFile);
-
+  protected TvShowInfo fileAnalysis(File xmlFile) throws Exception {
+    TvShowInfo info = Utils.parseFile(xmlFile, new AllocineTvShowInfo());
     MediaID seasonId = null;
     List<TvShowSeason> seasons = info.getSeasons();
-  //Absolute number
+    // Absolute number
     if (sxe.getSeason() == 0 || sxe.getEpisode() == 0) {
       int absnum = 0;
       int num;
@@ -114,14 +108,14 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
         return Settings.allocineAPIInfo.replace("MEDIA", "season") + seasonIdF.getID();
       }
 
-      @Override
-      protected MrParser<List<TvShowEpisode>> getParser() throws Exception {
-        return new AllocineTvShowSeasonInfo();
-      }
-    
+      protected java.util.List<TvShowEpisode> fileAnalysis(File innerXmlfile) throws Exception {
+        java.util.List<TvShowEpisode> episodes = Utils.parseFile(innerXmlfile, new AllocineTvShowSeasonInfo());
+        return episodes;
+      };
+
     }.executeInBackground();
-    TvShowEpisode.sortEpisodes(episodes);       
-        
+    TvShowEpisode.sortEpisodes(episodes);
+
     // Episode number seems to be not right, get first episode
     if (sxe.getEpisode() <= 0) {
       sxe.setEpisode(1);
@@ -139,21 +133,21 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
     if (ep == -1) {
       ep = 1;
     }
-    
-    final MediaID epF =  episodes.get(ep).getIDs().get(0);
+
+    final MediaID epF = episodes.get(ep).getIDs().get(0);
 
     TvShowEpisode episode = new HttpWorker<TvShowEpisode>(errorSupport) {
 
       @Override
       protected String getUri() throws Exception {
-        return Settings.allocineAPIInfo.replace("MEDIA", "episode") +epF.getID();
+        return Settings.allocineAPIInfo.replace("MEDIA", "episode") + epF.getID();
       }
 
-      @Override
-      protected MrParser<TvShowEpisode> getParser() throws Exception {
-        return new AllocineTvShowEpisodeInfo();
-      }
-    
+      protected TvShowEpisode fileAnalysis(File innerXmlfile) throws Exception {
+        TvShowEpisode episode = Utils.parseFile(innerXmlfile, new AllocineTvShowEpisodeInfo());
+        return episode;
+      };
+
     }.executeInBackground();
     // Add episode info to episodes list
     episodes.remove(ep);
@@ -175,10 +169,10 @@ public class AllocineTvShowInfoWorker extends TvShowInfoWorker {// TODO A faire
         seasons.add(i, season);
       }
     }
-    
+
     info.setSxe(sxe);
-    
+
     return info;
   }
-  
+
 }

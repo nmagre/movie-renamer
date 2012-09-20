@@ -17,14 +17,9 @@
  */
 package fr.free.movierenamer.parser;
 
-import fr.free.movierenamer.utils.Utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -34,24 +29,21 @@ import org.xml.sax.SAXParseException;
 
 /**
  * XML parser
- *
+ * 
  * @param <T> XML object to parse
  * @author Nicolas Magré
  */
 public class XMLParser<T> {
 
-  private final String file;
-  private final String innerFile;
+  private final File file;
   private MrParser<T> itp = null;
 
-  public XMLParser(String XMLFile) {
-    this.file = XMLFile;
-    this.innerFile = null;
+  public XMLParser(String file) {
+    this(new File(file));
   }
 
-  public XMLParser(String ZIPFile, String XMLFile) {
-    this.file = ZIPFile;
-    this.innerFile = XMLFile;
+  public XMLParser(File file) {
+    this.file = file;
   }
 
   public void setParser(MrParser<T> itp) {
@@ -70,47 +62,14 @@ public class XMLParser<T> {
     SAXParserFactory sparser = SAXParserFactory.newInstance();
     parseur = sparser.newSAXParser();
 
-    ZipFile zf = null;
-    if (Utils.isUrl(file)) {
-      URL url = new URL(file);
-      in = new InputSource(url.openStream());
-    } else {
-      if (file != null && Utils.isZIPFile(file)) {
-
-        zf = new ZipFile(file);
-        ZipEntry zipEntry;
-        ZipInputStream zipIn;
-
-        zipIn = new ZipInputStream(new FileInputStream(file));
-
-        while ((zipEntry = zipIn.getNextEntry()) != null) {
-          if (zipEntry.getName().equals(innerFile)) {
-            in = new InputSource(zf.getInputStream(zipEntry));
-            break;
-          }
-          zipIn.closeEntry();
-        }
-        zipIn.close();
-
-        if (in == null) {
-          throw new IOException(innerFile + " not found in zipFile " + file);
-        }
-      } else {
-        File f = new File(file);
-        in = new InputSource(new FileInputStream(f));
-      }
-    }
+    in = new InputSource(new FileInputStream(file));
 
     try {
       parseur.parse(in, itp);
     } catch (NOSAXException mye) {
       // nothing to catch !!!
     } catch (ParserBugException ex) {
-      throw new NullPointerException("Parse  failed, bug in parserl");
-    }
-
-    if (zf != null) {
-      zf.close();
+      throw new NullPointerException("Parse failed, bug in parser");
     }
 
     if (itp == null) {

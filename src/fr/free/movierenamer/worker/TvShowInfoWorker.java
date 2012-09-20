@@ -30,7 +30,6 @@ import java.beans.PropertyChangeSupport;
  */
 public abstract class TvShowInfoWorker extends MediaInfoWorker<TvShowInfo> {
 
-//  protected HttpWorker<List<TvShowSeason>> movieInfoWorker;
   /**
    * Constructor arguments
    *
@@ -41,11 +40,5 @@ public abstract class TvShowInfoWorker extends MediaInfoWorker<TvShowInfo> {
   public TvShowInfoWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
   }
-  
-//  @Override
-//  protected final TvShowInfo processFile(File xmlFile) throws Exception {
-//    TvShowInfo info = super.processFile(xmlFile);
-//    //TODO : process extra season and episodes info
-//    return info;
-//  }
+
 }

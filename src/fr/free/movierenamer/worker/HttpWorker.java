@@ -17,18 +17,13 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.parser.MrParser;
-import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.HttpGet;
 import fr.free.movierenamer.utils.Settings;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 
 /**
  * Class HttpWorker
@@ -72,14 +67,7 @@ public abstract class HttpWorker<T> extends Worker<T> {
       }
     }
     
-//    Assert.assertNotNull("Retrieved fill should not be null", file);
-    T processedFile;
-    if(file != null) {
-      processedFile = processFile(file);
-    } else {
-      processedFile = null;
-    }
-    return processedFile;
+    return fileAnalysis(file);
   }
 
   protected Cache.CacheType getCacheType() {
@@ -93,58 +81,10 @@ public abstract class HttpWorker<T> extends Worker<T> {
     return realUrl;
   }
 
-  protected abstract String getUri() throws Exception;/* {
-    return uri;
-  }*/
-
-  protected abstract MrParser<T> getParser() throws Exception;/* {
-    return parser;
-  }*/
+  protected abstract String getUri() throws Exception;
   
-  protected T processFile(File xmlFile) throws Exception {
-    T object = null;
+  protected abstract T fileAnalysis(final File file) throws Exception;
 
-    if (xmlFile == null) {
-      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-      return null;
-    }
-    
-    try {
-      // Parse XML
-      MrParser<T> parser = getParser();
-      XMLParser<T> xmp = new XMLParser<T>(xmlFile.getAbsolutePath(), getInnerFileName());
-      parser.setOriginalFile(xmlFile);
-      xmp.setParser(parser);
-      object = xmp.parseXml();
-
-    } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (InterruptedException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (ParserConfigurationException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-
-    if (object == null) {
-      firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
-      return null;
-    }
-
-//    if (!((MediaInfo<U>) object).getTrailer().equals("")) {
-//      String trailer = YTdecodeUrl.getRealUrl(((MediaInfo<U>) object).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
-//      if (trailer != null) {
-//        ((MediaInfo<U>) object).setTrailer(trailer);
-//      }
-//    }
-
-    setProgress(100);
-    return object;
-  }
   
-  protected String getInnerFileName() {
-    return null;
-  }
   
 }

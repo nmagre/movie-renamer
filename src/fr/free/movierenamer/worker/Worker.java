@@ -35,6 +35,7 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
 
   protected final Settings config = Settings.getInstance();
   private final PropertyChangeSupport errorSupport;
+  private T workerResult;
 
   public Worker() {
     this.errorSupport = null;
@@ -46,7 +47,8 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
 
   @Override
   protected final T doInBackground() throws Exception {
-    return executeInBackground();
+    workerResult = executeInBackground();
+    return workerResult;
   }
 
   public abstract T executeInBackground() throws Exception;
@@ -65,5 +67,12 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
 
   public final PropertyChangeSupport getErrorSupport() {
     return errorSupport;
+  }
+  
+  /**
+   * @return the workerResult
+   */
+  public final T getWorkerResult() {
+    return workerResult;
   }
 }
