@@ -23,7 +23,7 @@ import fr.free.movierenamer.ui.TvShowPanel;
 
 import fr.free.movierenamer.media.movie.MovieInfo;
 
-import fr.free.movierenamer.media.mediainfo.MITag;
+import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.matcher.TvShowEpisodeMatcher;
 import fr.free.movierenamer.matcher.TvShowNameMatcher;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;

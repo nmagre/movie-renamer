@@ -17,14 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import java.util.concurrent.ExecutionException;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.beans.PropertyChangeSupport;

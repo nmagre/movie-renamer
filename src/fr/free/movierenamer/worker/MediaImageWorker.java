@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;

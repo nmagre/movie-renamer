@@ -19,11 +19,8 @@ package fr.free.movierenamer.worker;
 
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.media.tvshow.TvShowSeason;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.util.List;
 
 /**
  * Class TvShowInfoWorker

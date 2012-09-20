@@ -72,7 +72,13 @@ public abstract class HttpWorker<T> extends Worker<T> {
       }
     }
     
-    T processedFile = processFile(file);
+//    Assert.assertNotNull("Retrieved fill should not be null", file);
+    T processedFile;
+    if(file != null) {
+      processedFile = processFile(file);
+    } else {
+      processedFile = null;
+    }
     return processedFile;
   }
 
@@ -126,10 +132,10 @@ public abstract class HttpWorker<T> extends Worker<T> {
       return null;
     }
 
-//    if (!((MI<U>) object).getTrailer().equals("")) {
-//      String trailer = YTdecodeUrl.getRealUrl(((MI<U>) object).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
+//    if (!((MediaInfo<U>) object).getTrailer().equals("")) {
+//      String trailer = YTdecodeUrl.getRealUrl(((MediaInfo<U>) object).getTrailer(), YTdecodeUrl.HD);// FIXME Il n'y a pas que YT dans la vie ;)
 //      if (trailer != null) {
-//        ((MI<U>) object).setTrailer(trailer);
+//        ((MediaInfo<U>) object).setTrailer(trailer);
 //      }
 //    }
 
