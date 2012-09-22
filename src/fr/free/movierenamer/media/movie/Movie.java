@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 import fr.free.movierenamer.matcher.MovieNameMatcher;
 import fr.free.movierenamer.media.MediaImage.MediaImageType;
 import fr.free.movierenamer.media.*;
-import fr.free.movierenamer.media.mediainfo.MITag;
+import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Utils;
 import java.io.File;
@@ -57,7 +57,7 @@ public class Movie extends Media<MovieInfo>{
     setYear(nameMatcher.getYear());
   }
 
-  public MITag getMediaTag() {
+  public MediaTag getMediaTag() {
     return mtag;
   }
 
@@ -110,11 +110,11 @@ public class Movie extends Media<MovieInfo>{
       {"<mfr>", mtag.getVideoFrameRate()},
       {"<mr>", mtag.getVideoResolution()},
       {"<mcf>", mtag.getContainerFormat()},
-      {"<mach>", mtag.getTagString(MITag.TagList.AudioChannel, separator, limit)},
-      {"<mac>", mtag.getTagString(MITag.TagList.AudioCodec, separator, limit)},
-      {"<mal>", mtag.getTagString(MITag.TagList.AudioLanguage, separator, limit)},
-      {"<matt>", mtag.getTagString(MITag.TagList.AudioTitleString, separator, limit)},
-      {"<mtt>", mtag.getTagString(MITag.TagList.TextTitle, separator, limit)}
+      {"<mach>", mtag.getTagString(MediaTag.TagList.AudioChannel, separator, limit)},
+      {"<mac>", mtag.getTagString(MediaTag.TagList.AudioCodec, separator, limit)},
+      {"<mal>", mtag.getTagString(MediaTag.TagList.AudioLanguage, separator, limit)},
+      {"<matt>", mtag.getTagString(MediaTag.TagList.AudioTitleString, separator, limit)},
+      {"<mtt>", mtag.getTagString(MediaTag.TagList.TextTitle, separator, limit)}
     };
 
     //replace actors, directors, genres, coutries

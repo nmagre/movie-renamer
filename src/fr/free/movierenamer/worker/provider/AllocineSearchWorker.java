@@ -47,22 +47,4 @@ public class AllocineSearchWorker extends MovieSearchWorker {
     return new AllocineSearch();
   }
 
-  // @Override
-  // protected ArrayList<SearchResult> performSearch(ArrayList<SearchResult> allocineSearchResult) {
-  // for (SearchResult allores : allocineSearchResult) {
-  // String thumb = allores.getThumb();
-  // if (thumb != null) {
-  // Icon icon = Utils.getSearchThumb(thumb, new Dimension(45, 70));
-  // if (icon != null) {
-  // allores.setIcon(icon);
-  // }
-  // }
-  // if (allores.getIcon() == null) {
-  // allores.setIcon(new ImageIcon(Utils.getImageFromJAR("/image/nothumb.png", getClass())));
-  // }
-  // }
-  //
-  // return allocineSearchResult;
-  // }
-
 }

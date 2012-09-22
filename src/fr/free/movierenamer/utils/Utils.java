@@ -19,7 +19,9 @@ package fr.free.movierenamer.utils;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
-import fr.free.movierenamer.media.mediainfo.MILibrary;
+import fr.free.movierenamer.media.mediainfo.MediaInfoLibrary;
+import fr.free.movierenamer.parser.MrParser;
+import fr.free.movierenamer.parser.XMLParser;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -35,12 +37,17 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Class Utils
- *
+ * 
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
@@ -81,11 +88,11 @@ public abstract class Utils {
       return 1 << ordinal();
     }
   }
-  
+
   public static int langValue() {
     int res = 0;
-    for(Language lang : Language.values()){
-      res |=  lang.value();
+    for (Language lang : Language.values()) {
+      res |= lang.value();
     }
     return res;
   }
@@ -101,7 +108,7 @@ public abstract class Utils {
 
   /**
    * Get operating system name
-   *
+   * 
    * @return Operating system name
    */
   private static String getOsName() {
@@ -113,7 +120,7 @@ public abstract class Utils {
 
   /**
    * Check if operating system is windows
-   *
+   * 
    * @return True if OS is windows, false otherwhise
    */
   public static boolean isWindows() {
@@ -122,7 +129,7 @@ public abstract class Utils {
 
   /**
    * Check if file have a good extension
-   *
+   * 
    * @param fileName File to check extension
    * @param extensions Array of extensions
    * @return True if file extension is in array
@@ -148,7 +155,7 @@ public abstract class Utils {
 
   /**
    * Remove string from array at index
-   *
+   * 
    * @param array String array
    * @param index Index of string to remove
    * @return
@@ -170,7 +177,7 @@ public abstract class Utils {
 
   /**
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
-   *
+   * 
    * @param array Object array
    * @param separator Separator
    * @param limit Limit
@@ -199,7 +206,7 @@ public abstract class Utils {
 
   /**
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
-   *
+   * 
    * @param array ArrayList
    * @param separator Separator
    * @param limit Limit
@@ -216,7 +223,7 @@ public abstract class Utils {
 
   /**
    * Get an array from a string separated by movieFilenameSeparator
-   *
+   * 
    * @param str String
    * @param separator Separator
    * @return An array of strings
@@ -236,7 +243,7 @@ public abstract class Utils {
 
   /**
    * Get string md5
-   *
+   * 
    * @param str String
    * @return md5
    */
@@ -260,7 +267,7 @@ public abstract class Utils {
 
   /**
    * Get directory size
-   *
+   * 
    * @param dir Directory
    * @return Directory size or 0
    */
@@ -289,7 +296,7 @@ public abstract class Utils {
 
   /**
    * Get directry size in Megabytes
-   *
+   * 
    * @param dir Directory
    * @return Directory size or 0
    */
@@ -299,7 +306,7 @@ public abstract class Utils {
 
   /**
    * Check if string is a digit
-   *
+   * 
    * @param str String
    * @return True if str is a digit, false otherwise
    */
@@ -332,7 +339,7 @@ public abstract class Utils {
 
   /**
    * Create file path
-   *
+   * 
    * @param fileName File
    * @param dir File is a directory
    * @return True on success, false otherwise
@@ -353,7 +360,7 @@ public abstract class Utils {
 
   /**
    * Download file from http server
-   *
+   * 
    * @param url File url
    * @param fileName Download filename
    * @throws IOException
@@ -389,7 +396,7 @@ public abstract class Utils {
 
   /**
    * Get image from jar file
-   *
+   * 
    * @param <T>
    * @param fileName Image filename
    * @param cls Class
@@ -425,7 +432,7 @@ public abstract class Utils {
 
   /**
    * Delete all file in directory
-   *
+   * 
    * @param dir Directory
    * @return True on success, false otherwise
    */
@@ -450,7 +457,7 @@ public abstract class Utils {
 
   /**
    * Copy a file
-   *
+   * 
    * @param sourceFile Source file
    * @param destFile Destination file
    * @return True on susccess, false otherwise
@@ -485,7 +492,7 @@ public abstract class Utils {
 
   /**
    * Restart application
-   *
+   * 
    * @param jarFile Jar file to restart
    * @return True if success , false otherwise
    * @throws Exception
@@ -496,14 +503,14 @@ public abstract class Utils {
     if (!jarFile.getName().endsWith(".jar")) {
       return false;
     }
-    String toExec[] = new String[]{javaBin, "-jar", jarFile.getPath()};
+    String toExec[] = new String[] { javaBin, "-jar", jarFile.getPath() };
     Process p = Runtime.getRuntime().exec(toExec);
     return true;
   }
 
   /**
    * Rotate string by 13 places
-   *
+   * 
    * @param text String
    * @return String rotate
    */
@@ -523,7 +530,7 @@ public abstract class Utils {
 
   /**
    * Capitalized first letter for each words or only first one
-   *
+   * 
    * @param str String
    * @param onlyFirst Only first word letter capitalized
    * @return String capitalized
@@ -556,7 +563,7 @@ public abstract class Utils {
 
   /**
    * Escape XML special character
-   *
+   * 
    * @param str String to escape
    * @return String escaped
    */
@@ -581,7 +588,7 @@ public abstract class Utils {
 
   /**
    * Unescape XML special character
-   *
+   * 
    * @param str String
    * @param encode Encode type
    * @return Unescape string
@@ -603,7 +610,7 @@ public abstract class Utils {
 
   /**
    * Get stack trace message to string
-   *
+   * 
    * @param exception String
    * @param ste Stack trace
    * @return String with stack trace
@@ -618,13 +625,12 @@ public abstract class Utils {
 
   /**
    * Check if file is a zip file
-   *
-   * @param fileName File
+   * 
+   * @param file File
    * @return True if file is a zip file, false otherwise
    * @throws IOException
    */
-  public static boolean isZIPFile(String fileName) throws IOException {
-    File file = new File(fileName);
+  public static boolean isZIPFile(File file) throws IOException {
     if (file.isDirectory() || file.length() < 4) {
       return false;
     }
@@ -635,9 +641,88 @@ public abstract class Utils {
     return (magic == 0x504b0304);
   }
 
+  public static File getInnerZipFile(File zipfile, String innerFile) throws Exception {
+    ZipFile zf = null;
+    InputStream in = null;
+    File file = null;
+    if (zipfile != null && Utils.isZIPFile(zipfile)) {
+
+      zf = new ZipFile(zipfile);
+      ZipEntry zipEntry;
+      ZipInputStream zipIn;
+
+      zipIn = new ZipInputStream(new FileInputStream(zipfile));
+
+      while ((zipEntry = zipIn.getNextEntry()) != null) {
+        if (zipEntry.getName().equals(innerFile)) {
+          in = /* new InputSource( */zf.getInputStream(zipEntry)/* ) */;
+          file = new File(zipEntry.getName());
+          OutputStream out = new FileOutputStream(file);
+          copyInputStream(in, out);
+          break;
+        }
+        zipIn.closeEntry();
+      }
+      zipIn.close();
+
+      if (in == null || file == null) {
+        throw new IOException(innerFile + " not found in zipFile " + zipfile);
+      }
+    }
+
+    if (zf != null) {
+      zf.close();
+    }
+
+    return file;
+  }
+
+  public static final void copyInputStream(InputStream in, OutputStream out) throws IOException {
+    byte[] buffer = new byte[1024];
+    int len;
+
+    while ((len = in.read(buffer)) >= 0) {
+      out.write(buffer, 0, len);
+    }
+
+    in.close();
+    out.close();
+  }
+  
+  public static final <T> T parseFile(final File file, final MrParser<T> parser) throws Exception {
+    T object = null;
+    
+    if (file == null || parser == null) {
+      return null;
+    }
+    
+    try {
+      // Parse XML
+      XMLParser<T> xmp = new XMLParser<T>(file);
+      parser.setOriginalFile(file);
+      xmp.setParser(parser);
+      object = xmp.parseXml();
+
+    } catch (IOException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (InterruptedException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (ParserConfigurationException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    } catch (SAXException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    if (object == null) {
+      return null;
+    }
+
+    return object;
+  }
+
   /**
    * Check if string is an url
-   *
+   * 
    * @param str String
    * @return True if string is an url, false otherwise
    */
@@ -652,7 +737,7 @@ public abstract class Utils {
 
   /**
    * Check if dir is a root directory
-   *
+   * 
    * @param dir Directory
    * @return True if it is a directory
    */
@@ -672,7 +757,7 @@ public abstract class Utils {
 
   /**
    * Get thumbnail icon from web server or cache
-   *
+   * 
    * @param url Thumb url
    * @param cache Movie Renamer cache
    * @param dimension Thumb dimension
@@ -690,25 +775,25 @@ public abstract class Utils {
       }
       icon = new ImageIcon(image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_DEFAULT));
     } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] { ex.getMessage(), url });
     } catch (CMMException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] { ex.getMessage(), url });
     } catch (IllegalArgumentException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] { ex.getMessage(), url });
     } catch (NullPointerException ex) {
-      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), url});
+      Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] { ex.getMessage(), url });
     }
     return icon;
   }
 
   /**
    * Check if string is uppercase
-   *
+   * 
    * @param str
    * @return True if all letter are uppercase except I,II,III,..., false otherwise
    */
   public static boolean isUpperCase(String str) {
-    String[] romanNumber = new String[]{"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+    String[] romanNumber = new String[] { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" };
     for (String number : romanNumber) {
       if (str.equals(number)) {
         return false;
@@ -725,7 +810,7 @@ public abstract class Utils {
 
   /**
    * Check if lib media info is installed
-   *
+   * 
    * @return Tru if lib media info is installed, otherwhise false
    */
   public static boolean libMediaInfo() {
@@ -744,7 +829,7 @@ public abstract class Utils {
     }
     if ((linux && libzen) || !linux) {
       try {
-        MILibrary.INSTANCE.New();
+        MediaInfoLibrary.INSTANCE.New();
         mediainfo = "true";
       } catch (LinkageError e) {
         mediainfo = "false";
@@ -755,7 +840,7 @@ public abstract class Utils {
 
   /**
    * Get string in i18n files
-   *
+   * 
    * @param bundleKey Key to find
    * @return String depends on locale
    */
@@ -765,7 +850,7 @@ public abstract class Utils {
 
   /**
    * Get string in i18n files
-   *
+   * 
    * @param bundleKey Key to find
    * @param defaultValue Default value
    * @return String depends on locale or default value if key dos not exist
@@ -781,7 +866,7 @@ public abstract class Utils {
 
   /**
    * Get token from version.properties
-   *
+   * 
    * @param propToken Token property name
    * @return Token value or an empty string
    */
@@ -797,7 +882,7 @@ public abstract class Utils {
 
   /**
    * Get string from an input
-   *
+   * 
    * @param is Input to read
    * @param encode Charset
    * @return Input content to string
@@ -847,7 +932,7 @@ public abstract class Utils {
 
   /**
    * Serialize an object and write it in a file
-   *
+   * 
    * @param object Object to write
    * @param out
    */
@@ -870,7 +955,7 @@ public abstract class Utils {
 
   /**
    * Deserialize object from a file
-   *
+   * 
    * @param in
    * @return Object deserialized
    */

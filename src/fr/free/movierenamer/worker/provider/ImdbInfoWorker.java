@@ -95,32 +95,4 @@ public class ImdbInfoWorker extends MovieInfoWorker {
     return mediaImage;
   }
 
- /* @Override
-  protected final MovieInfo executeInBackground() throws Exception {
-    
-    MovieInfo movieInfo = movieInfoWorker.startAndGet(url + id.getID() + "/combined");// Wait for movie info
-    // Get entire synopsis
-    if(!movieInfo.getSynopsis().equals("")) {
-      HttpWorker<String> hsynopsis = new HttpWorker<String>(errorSupport, new ImdbSynopsis());
-      String synopsis = hsynopsis.startAndGet(url + id.getID() + "/plotsummary");// Wait for movie synopsis
-      if(synopsis != null && !synopsis.equals("")) {
-        movieInfo.setSynopsis(synopsis);
-      }
-    }
-
-    MovieImages mediaImage = null;
-    try {
-      TmdbImageWorker imgWorker = new TmdbImageWorker(errorSupport, id);
-      imgWorker.execute();
-      mediaImage = imgWorker.get();// Wait for movie images
-    } catch (ActionNotValidException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-
-    if (mediaImage != null) {
-      movieInfo.setImages(mediaImage);
-    }
-
-    return movieInfo;
-  }*/
 }

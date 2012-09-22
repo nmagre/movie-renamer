@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.media.movie;
 
-import fr.free.movierenamer.media.MediaInfo;
+import fr.free.movierenamer.media.MediaData;
 import fr.free.movierenamer.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.List;
  * 
  * @author Nicolas Magré
  */
-public class MovieInfo extends MediaInfo {
+public class MovieInfo extends MediaData {
 
   private String outline;
   private String tagline;

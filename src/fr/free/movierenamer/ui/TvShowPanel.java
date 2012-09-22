@@ -31,11 +31,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -47,7 +51,7 @@ import javax.swing.event.ListSelectionListener;
  * @author QUÉMÉNEUR Simon
  */
 public class TvShowPanel extends JPanel implements IMediaPanel {
-  
+
   private class ActorImage {
 
     private String name;
@@ -125,12 +129,24 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     thumbs = new ArrayList<MediaImage>();
     fanarts = new ArrayList<MediaImage>();
 
+    thumbnailsList.setModel(thumbnailModel);
+    fanartList.setModel(fanartModel);
     actorList.setModel(actorModel);
     countryList.setModel(countryModel);
 
     countryList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     countryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     countryList.setVisibleRowCount(-1);
+
+    thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    thumbnailsList.setVisibleRowCount(-1);
+    thumbnailsList.addListSelectionListener(createThumbnailsListListener());
+
+    fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    fanartList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    fanartList.setVisibleRowCount(-1);
+    fanartList.addListSelectionListener(createFanartListListener());
 
     seasonsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     seasonsList.setModel(seasonsModel);
@@ -165,6 +181,40 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         return label;
       }
     });
+  }
+
+  private ListSelectionListener createThumbnailsListListener() {
+    return new ListSelectionListener() {
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        try {
+          if (thumbnailsList.getSelectedIndex() == -1) {
+            return;
+          }
+          thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
+          Image img = cache.getImage(new URL(thumbs.get(thumbnailsList.getSelectedIndex()).getUrl(MediaImage.MediaImageSize.THUMB)), Cache.CacheType.THUMB);
+          if (img != null) {
+            thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+          }
+        } catch (IOException ex) {
+          Settings.LOGGER.log(Level.SEVERE, null, ex);
+        }
+      }
+    };
+  }
+
+  private ListSelectionListener createFanartListListener() {
+    return  new ListSelectionListener() {
+
+      @Override
+      public void valueChanged(ListSelectionEvent lse) {
+        if (fanartList.getSelectedIndex() == -1) {
+          return;
+        }
+        fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
+//        fanartBack = getImage(fanarts.get(fanartList.getSelectedIndex()).getUrl(MediaImage.MediaImageSize.THUMB), Cache.CacheType.FANART);
+      }
+    };
   }
 
   /**
@@ -220,15 +270,15 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
   public void addTvshowInfo(final TvShow tvshow) {// List<TvShowSeason> seasons, SxE sxe) {
     this.tvshow = tvshow;
     TvShowInfo tvshowInfo = tvshow.getInfo();
-    
-//    List<MISubTitle> subtitles = this.tvshow.getMediaTag().getMediaSubTitles();
-//    List<MIAudio> audios = this.tvshow.getMediaTag().getMediaAudios();
+
+//    List<MediaSubTitle> subtitles = this.tvshow.getMediaTag().getMediaSubTitles();
+//    List<MediaAudio> audios = this.tvshow.getMediaTag().getMediaAudios();
     List<String> countries = tvshowInfo.getCountries();
-//    for (MISubTitle sub : subtitles) {
+//    for (MediaSubTitle sub : subtitles) {
 //      System.out.println(sub.getTitle() + " : " + sub.getLanguage());
 //      subTitleModel.addElement(sub);
 //    }
-//    for (MIAudio audio : audios) {
+//    for (MediaAudio audio : audios) {
 //      audioModel.addElement(audio);
 //    }
     for (String country : countries) {
@@ -253,11 +303,12 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     if(tvshowInfo.getYear() != null && tvshowInfo.getYear().trim().length() > 0) {
       yearLbl.setText("(" + tvshowInfo.getYear() + ")");
     }
+    runtimeField.setText(tvshowInfo.getRuntime() + " min");
     genreField.setText(tvshowInfo.getGenresString(" | ", 0));
     directorField.setText(tvshowInfo.getDirectorsString(" | ", 0));
     synopsisArea.setText(tvshowInfo.getSynopsis());
     setRate(Float.parseFloat(tvshowInfo.getRating().replace(",", ".")));
-    
+
     origTitleField.setCaretPosition(0);
     synopsisArea.setCaretPosition(0);
     genreField.setCaretPosition(0);
@@ -345,7 +396,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     }
   }/**
    * Add thumb to thumb list
-   * 
+   *
    * @param thumb
    * @param mvImg
    * @param selectLast
@@ -353,66 +404,66 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
   private synchronized void addThumbToList(final Image thumb, final MediaImage mvImg, final boolean selectLast) {
     thumbs.add(mvImg);
 
-//    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
-//
-//      @Override
-//      protected Image doInBackground() throws Exception {
-//        Image image = null;
-//        if (thumbnailModel.isEmpty()) {
-//          image = cache.getImage(new URL(thumbs.get(0).getUrl(MediaImage.MediaImageSize.THUMB)), Cache.CacheType.THUMB);
-//        }
-//        return image;
-//      }
-//    };
-//
-//    worker.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//      @Override
-//      public void propertyChange(PropertyChangeEvent pce) {
-//        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
-//          try {
-//            Image img = worker.get();
-//            if (img != null) {
-//              thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
-//            }
-//            if (thumb != null) {
-//              thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
-//            }
-//            if (!thumbnailModel.isEmpty()) {
-//              thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
-//            }
-//          } catch (InterruptedException ex) {
-//            Settings.LOGGER.log(Level.SEVERE, ex.toString());
-//          } catch (ExecutionException ex) {
-//            Settings.LOGGER.log(Level.SEVERE, ex.toString());
-//          }
-//        }
-//      }
-//    });
-//
-//    worker.execute();
+    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
+
+      @Override
+      protected Image doInBackground() throws Exception {
+        Image image = null;
+        if (thumbnailModel.isEmpty()) {
+          image = cache.getImage(new URL(thumbs.get(0).getUrl(MediaImage.MediaImageSize.THUMB)), Cache.CacheType.THUMB);
+        }
+        return image;
+      }
+    };
+
+    worker.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+          try {
+            Image img = worker.get();
+            if (img != null) {
+              thumbLbl.setIcon(new ImageIcon(img.getScaledInstance(thumbDim.width, thumbDim.height, Image.SCALE_DEFAULT)));
+            }
+            if (thumb != null) {
+              thumbnailModel.addElement(new ImageIcon(thumb.getScaledInstance(thumbListDim.width, thumbListDim.height, Image.SCALE_DEFAULT)));
+            }
+            if (!thumbnailModel.isEmpty()) {
+              thumbnailsList.setSelectedIndex((selectLast ? (thumbnailModel.size() - 1) : 0));
+            }
+          } catch (InterruptedException ex) {
+            Settings.LOGGER.log(Level.SEVERE, ex.toString());
+          } catch (ExecutionException ex) {
+            Settings.LOGGER.log(Level.SEVERE, ex.toString());
+          }
+        }
+      }
+    });
+
+    worker.execute();
   }
 
   private synchronized void addFanartToList(final Image fanart, final MediaImage mvImg, final boolean selectLast) {
     fanarts.add(mvImg);
-//    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
-//
-//      @Override
-//      protected Image doInBackground() throws Exception {
-//        Image img = null;
-//        if (fanartModel.isEmpty()) {
-//          img = getImage(fanarts.get(0).getUrl(MediaImage.MediaImageSize.THUMB), Cache.CacheType.FANART);
-//        }
-//
-//        return img;
-//      }
-//    };
-//
-//    worker.addPropertyChangeListener(new PropertyChangeListener() {
-//
-//      @Override
-//      public void propertyChange(PropertyChangeEvent pce) {
-//        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
+    final SwingWorker<Image, Void> worker = new SwingWorker<Image, Void>() {
+
+      @Override
+      protected Image doInBackground() throws Exception {
+        Image img = null;
+        if (fanartModel.isEmpty()) {
+          img = getImage(fanarts.get(0).getUrl(MediaImage.MediaImageSize.THUMB), Cache.CacheType.FANART);
+        }
+
+        return img;
+      }
+    };
+
+    worker.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        if (pce.getNewValue().equals(SwingWorker.StateValue.DONE)) {
 //          try {
 //            fanartBack = worker.get();
 //            if (fanartBack != null) {
@@ -423,18 +474,33 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
 //          } catch (ExecutionException ex) {
 //            Settings.LOGGER.log(Level.SEVERE, null, ex);
 //          }
-//
-//          if (fanart != null) {
-//            fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
-//          }
-//          if (!fanartModel.isEmpty()) {
-//            fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
-//          }
-//        }
-//      }
-//    });
-//
-//    worker.execute();
+
+          if (fanart != null) {
+            fanartModel.addElement(new ImageIcon(fanart.getScaledInstance(fanartListDim.width, fanartListDim.height, Image.SCALE_DEFAULT)));
+          }
+          if (!fanartModel.isEmpty()) {
+            fanartList.setSelectedIndex((selectLast ? (fanartModel.size() - 1) : 0));
+          }
+        }
+      }
+    });
+
+    worker.execute();
+  }
+
+  private Image getImage(String strUrl, Cache.CacheType cache) {// FIXME rien a faire là, on ne fait pas de requete dans l'edt (même si ce n'est pas dans l'edt)
+    Image image = null;
+    try {
+      URL url = new URL(strUrl);
+      image = Cache.getInstance().getImage(url, cache);
+      if (image == null) {
+        Cache.getInstance().add(url, cache);
+        image = Cache.getInstance().getImage(url, cache);
+      }
+    } catch (IOException ex) {
+      Settings.LOGGER.log(Level.SEVERE, ex.toString());
+    }
+    return image;
   }
 
   @Override
@@ -506,6 +572,7 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         star2 = new javax.swing.JLabel();
         star1 = new javax.swing.JLabel();
         star = new javax.swing.JLabel();
+        countryLbl = new com.alee.laf.label.WebLabel();
         tvshowTb = new com.alee.laf.toolbar.WebToolBar();
         titleLbl = new com.alee.laf.label.WebLabel();
         yearLbl = new com.alee.laf.label.WebLabel();
@@ -547,6 +614,14 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         seasonLbl = new com.alee.laf.label.WebLabel();
         webToolBar7 = new com.alee.laf.toolbar.WebToolBar();
         episodeLbl = new com.alee.laf.label.WebLabel();
+        thumbnailTb = new com.alee.laf.toolbar.WebToolBar();
+        webLabel1 = new com.alee.laf.label.WebLabel();
+        fanartTb = new com.alee.laf.toolbar.WebToolBar();
+        webLabel2 = new com.alee.laf.label.WebLabel();
+        thumbsScrollPane = new javax.swing.JScrollPane();
+        thumbnailsList = new com.alee.laf.list.WebList();
+        fanartsScrollPane = new javax.swing.JScrollPane();
+        fanartList = new com.alee.laf.list.WebList();
 
         origTitleLbl.setText(Utils.i18n("origTitle")); // NOI18N
         origTitleLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
@@ -597,6 +672,9 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
             .addComponent(star4)
             .addComponent(star)
         );
+
+        countryLbl.setText(Utils.i18n("origTitle")); // NOI18N
+        countryLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
 
         tvshowTb.setFloatable(false);
         tvshowTb.setRollover(true);
@@ -682,6 +760,27 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
         episodeLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
         webToolBar7.add(episodeLbl);
 
+        thumbnailTb.setFloatable(false);
+        thumbnailTb.setRollover(true);
+
+        webLabel1.setText(Utils.i18n("thumbnails")); // NOI18N
+        webLabel1.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        thumbnailTb.add(webLabel1);
+
+        fanartTb.setFloatable(false);
+        fanartTb.setRollover(true);
+        fanartTb.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+
+        webLabel2.setText("Fanart");
+        webLabel2.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+        fanartTb.add(webLabel2);
+
+        thumbnailsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        thumbsScrollPane.setViewportView(thumbnailsList);
+
+        fanartList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        fanartsScrollPane.setViewportView(fanartList);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -700,10 +799,10 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
                             .addComponent(jScrollPane3)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(webToolBar5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(9, 9, 9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(runtimeField, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(episodeSynopsisPane)
                     .addComponent(webToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(synopsisPane, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
@@ -715,7 +814,15 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(webToolBar7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(episodesPane))))
+                            .addComponent(episodesPane)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(thumbsScrollPane, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(thumbnailTb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fanartsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+                            .addComponent(fanartTb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -756,11 +863,20 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
                 .addComponent(webToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(episodeSynopsisPane, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(655, 655, 655))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(thumbnailTb, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fanartTb, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(thumbsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
+                    .addComponent(fanartsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
+                .addGap(576, 576, 576))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.alee.laf.list.WebList actorList;
+    private com.alee.laf.label.WebLabel countryLbl;
     private com.alee.laf.list.WebList countryList;
     private com.alee.laf.text.WebTextField directorField;
     private com.alee.laf.label.WebLabel directorLbl;
@@ -769,6 +885,9 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     private javax.swing.JScrollPane episodeSynopsisPane;
     private javax.swing.JList episodesList;
     private javax.swing.JScrollPane episodesPane;
+    private com.alee.laf.list.WebList fanartList;
+    private com.alee.laf.toolbar.WebToolBar fanartTb;
+    private javax.swing.JScrollPane fanartsScrollPane;
     private com.alee.laf.text.WebTextField genreField;
     private com.alee.laf.label.WebLabel genreLbl;
     private javax.swing.JScrollPane jScrollPane1;
@@ -790,8 +909,13 @@ public class TvShowPanel extends JPanel implements IMediaPanel {
     private com.alee.laf.label.WebLabel synopsisLbl;
     private javax.swing.JScrollPane synopsisPane;
     private javax.swing.JLabel thumbLbl;
+    private com.alee.laf.toolbar.WebToolBar thumbnailTb;
+    private com.alee.laf.list.WebList thumbnailsList;
+    private javax.swing.JScrollPane thumbsScrollPane;
     private com.alee.laf.label.WebLabel titleLbl;
     private com.alee.laf.toolbar.WebToolBar tvshowTb;
+    private com.alee.laf.label.WebLabel webLabel1;
+    private com.alee.laf.label.WebLabel webLabel2;
     private com.alee.laf.label.WebLabel webLabel5;
     private com.alee.laf.label.WebLabel webLabel6;
     private com.alee.laf.toolbar.WebToolBar webToolBar3;

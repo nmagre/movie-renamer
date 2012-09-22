@@ -20,10 +20,10 @@ package fr.free.movierenamer.worker.provider;
 import fr.free.movierenamer.media.MediaID;
 import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
-import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 
 /**
  * Class TvRageInfoWorker
@@ -54,9 +54,9 @@ public class TvRageInfoWorker extends TvShowInfoWorker {// TODO A faire
   protected String getUri() throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-
+  
   @Override
-  protected MrParser<TvShowInfo> getParser() throws Exception {
+  protected TvShowInfo fileAnalysis(File zipFile) throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

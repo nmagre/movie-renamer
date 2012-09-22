@@ -17,14 +17,6 @@
  */
 package fr.free.movierenamer.worker;
 
-import java.util.concurrent.ExecutionException;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import fr.free.movierenamer.utils.Settings;
 import fr.free.movierenamer.utils.Utils;
 import java.beans.PropertyChangeSupport;
@@ -43,6 +35,7 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
 
   protected final Settings config = Settings.getInstance();
   private final PropertyChangeSupport errorSupport;
+  private T workerResult;
 
   public Worker() {
     this.errorSupport = null;
@@ -54,7 +47,8 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
 
   @Override
   protected final T doInBackground() throws Exception {
-    return executeInBackground();
+    workerResult = executeInBackground();
+    return workerResult;
   }
 
   public abstract T executeInBackground() throws Exception;
@@ -73,5 +67,12 @@ public abstract class Worker<T> extends SwingWorker<T, String> {
 
   public final PropertyChangeSupport getErrorSupport() {
     return errorSupport;
+  }
+  
+  /**
+   * @return the workerResult
+   */
+  public final T getWorkerResult() {
+    return workerResult;
   }
 }

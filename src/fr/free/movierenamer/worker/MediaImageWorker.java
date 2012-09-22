@@ -17,32 +17,27 @@
  */
 package fr.free.movierenamer.worker;
 
-import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.MediaImages;
 import fr.free.movierenamer.parser.MrParser;
-import fr.free.movierenamer.parser.XMLParser;
 import fr.free.movierenamer.utils.ActionNotValidException;
-import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 
 /**
  * Class MediaImageWorker
- *
+ * 
  * @param <T>
  * @author Nicolas Magré
  */
-public abstract class MediaImageWorker<T extends MediaImages> extends HttpWorker<T> {
+public abstract class MediaImageWorker extends HttpWorker<MediaImages> {
 
   protected final MediaID id;
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param errorSupport Swing change support
    * @param id
    * @throws ActionNotValidException
@@ -51,27 +46,10 @@ public abstract class MediaImageWorker<T extends MediaImages> extends HttpWorker
     super(errorSupport);
     this.id = id;
   }
-  
+
   @Override
-  protected final T processFile(File xmlFile) throws Exception {
-    T movieImage = null;
-
-    try {
-      XMLParser<T> xmmp = new XMLParser<T>(xmlFile.getAbsolutePath());
-      MrParser<T> imageParser = getParser();
-      imageParser.setOriginalFile(xmlFile);
-      xmmp.setParser(imageParser);
-      movieImage = xmmp.parseXml();
-
-    } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (InterruptedException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (ParserConfigurationException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
+  protected final MediaImages fileAnalysis(File xmlFile) throws Exception {
+    MediaImages movieImage = Utils.parseFile(xmlFile, getParser());
 
     if (movieImage == null) {
       firePropertyChange("closeLoadingDial", "scrapperInfoFailed");
@@ -85,6 +63,5 @@ public abstract class MediaImageWorker<T extends MediaImages> extends HttpWorker
   @Override
   protected abstract String getUri() throws Exception;
 
-  @Override
-  protected abstract MrParser<T> getParser() throws Exception;
+  protected abstract MrParser<MediaImages> getParser() throws Exception;
 }

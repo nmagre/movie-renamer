@@ -4,9 +4,9 @@ import com.sun.jna.*;
 import java.lang.reflect.Method;
 import static java.util.Collections.singletonMap;
 
-public interface MILibrary extends Library {
+public interface MediaInfoLibrary extends Library {
 
-  MILibrary INSTANCE = (MILibrary) Native.loadLibrary("mediainfo", MILibrary.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper() {
+  MediaInfoLibrary INSTANCE = (MediaInfoLibrary) Native.loadLibrary("mediainfo", MediaInfoLibrary.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper() {
 
     @Override
     public String getFunctionName(NativeLibrary lib, Method method) {
@@ -32,7 +32,7 @@ public interface MILibrary extends Library {
   int Open(Pointer handle, WString file);
 
   /**
-   * Configure or get information about MI.
+   * Configure or get information about MediaInfo.
    *
    * @param handle
    * @param option The name of option

@@ -17,6 +17,10 @@
  */
 package fr.free.movierenamer.parser;
 
+import java.util.Date;
+
+import fr.free.movierenamer.utils.Utils;
+
 import fr.free.movierenamer.media.tvshow.TvShowEpisode;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
 import fr.free.movierenamer.media.tvshow.TvShowSeason;
@@ -27,20 +31,22 @@ import org.xml.sax.SAXException;
 
 /**
  * Class TvdbInfo
+ * 
  * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class TvdbInfo extends MrParser<TvShowInfo> {
 
   private StringBuffer buffer;
   private final TvShowInfo tvshowInfo;
   private List<TvShowSeason> seasons;
-  private boolean data;
+  private boolean data, series, episode;
   private String title;
   private String plot;
   private String rating;
   private String votes;
-  private int season;
-  private int episode;
+  private int seasonNum;
+  private int episodeNum;
   private TvShowSeason currentSeason;
   private TvShowEpisode currentEpisode;
 
@@ -59,23 +65,19 @@ public class TvdbInfo extends MrParser<TvShowInfo> {
   }
 
   @Override
-  public void endDocument() throws SAXException {
-    super.endDocument();
-  }
-
-  @Override
   public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
     buffer = new StringBuffer();
     if (name.equalsIgnoreCase("Data")) {
       data = true;
     }
-    if (name.equalsIgnoreCase("Episode")) {
-      currentEpisode = new TvShowEpisode();
-      title = "";
-      plot = "";
-      rating = "";
-      votes = "";
-      episode = -1;
+    if (data) {
+      if (name.equalsIgnoreCase("Series")) {
+        series = true;
+      }
+      if (name.equalsIgnoreCase("Episode")) {
+        episode = true;
+        currentEpisode = new TvShowEpisode();
+      }
     }
   }
 
@@ -88,37 +90,82 @@ public class TvdbInfo extends MrParser<TvShowInfo> {
       }
     }
     if (data) {
+      if (name.equalsIgnoreCase("Series")) {
+        series = false;
+      }
       if (name.equalsIgnoreCase("Episode")) {
-        currentEpisode.setNum(episode);
-        currentEpisode.setTitle(title);
-        currentEpisode.setSynopsis(plot);
-        currentEpisode.setRating(rating);
-        currentEpisode.setVotes(votes);
+        episode = false;
         if (currentSeason == null) {
-          currentSeason = new TvShowSeason(season);
-        } else if (currentSeason.getNum() != season) {
+          currentSeason = new TvShowSeason(seasonNum);
+        } else if (currentSeason.getNum() != seasonNum) {
           seasons.add(currentSeason);
-          currentSeason = new TvShowSeason(season);
+          currentSeason = new TvShowSeason(seasonNum);
         }
         currentSeason.addEpisode(currentEpisode);
+        currentEpisode = null;
       }
-      if (name.equalsIgnoreCase("EpisodeName")) {
-        title = buffer.toString();
+      if (series) {
+        if (name.equalsIgnoreCase("SeriesName")) {
+          tvshowInfo.setTitle(buffer.toString());
+          tvshowInfo.setOriginalTitle(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("FirstAired")) {
+//          tvshowInfo.setYear(""+new Date(buffer.toString()).getYear()); //deprecated, just to test !!!
+        }
+        if (name.equalsIgnoreCase("Genre")) {
+          for(String genre : buffer.toString().split("\\|")) {
+            if(genre!=null && genre.length()>0) {
+              tvshowInfo.addGenre(genre);
+            }
+          }
+        }
+        if (name.equalsIgnoreCase("Actors")) {
+          System.out.println(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("Overview")) {
+          tvshowInfo.setSynopsis(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("Rating")) {
+          tvshowInfo.setRating(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("RatingCount")) {
+//          System.out.println(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("Runtime")) {
+          if (Utils.isDigit(buffer.toString())) {
+            int runtime = Integer.parseInt(buffer.toString());// Get runtime in minutes
+            tvshowInfo.setRuntime("" + runtime);
+          }
+        }
+        if (name.equalsIgnoreCase("banner")) {
+          System.out.println(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("fanart")) {
+          System.out.println(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("poster")) {
+          System.out.println(buffer.toString());
+        }
       }
-      if (name.equalsIgnoreCase("SeasonNumber")) {
-        season = Integer.parseInt(buffer.toString());
-      }
-      if (name.equalsIgnoreCase("EpisodeNumber")) {
-        episode = Integer.parseInt(buffer.toString());
-      }
-      if (name.equalsIgnoreCase("Overview")) {
-        plot = buffer.toString();
-      }
-      if (name.equalsIgnoreCase("Rating")) {
-        rating = buffer.toString();
-      }
-      if (name.equalsIgnoreCase("RatingCount")) {
-        votes = buffer.toString();
+      if (episode) {
+        if (name.equalsIgnoreCase("EpisodeName")) {
+          currentEpisode.setTitle(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("SeasonNumber")) {
+          seasonNum = Integer.parseInt(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("EpisodeNumber")) {
+          currentEpisode.setNum(Integer.parseInt(buffer.toString()));
+        }
+        if (name.equalsIgnoreCase("Overview")) {
+          currentEpisode.setSynopsis(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("Rating")) {
+          currentEpisode.setRating(buffer.toString());
+        }
+        if (name.equalsIgnoreCase("RatingCount")) {
+          currentEpisode.setVotes(buffer.toString());
+        }
       }
     }
     buffer = null;
@@ -134,7 +181,7 @@ public class TvdbInfo extends MrParser<TvShowInfo> {
 
   @Override
   public TvShowInfo getObject() {
-    TvShowSeason.sortSeasons(seasons);//Sort season by season number
+    TvShowSeason.sortSeasons(seasons);// Sort season by season number
     tvshowInfo.setSeasons(seasons);
     return tvshowInfo;
   }

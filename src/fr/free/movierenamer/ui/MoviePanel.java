@@ -23,8 +23,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import fr.free.movierenamer.media.MediaImage;
-import fr.free.movierenamer.media.mediainfo.MIAudio;
-import fr.free.movierenamer.media.mediainfo.MISubTitle;
+import fr.free.movierenamer.media.mediainfo.MediaAudio;
+import fr.free.movierenamer.media.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.media.movie.Movie;
 import fr.free.movierenamer.media.movie.MovieInfo;
 import fr.free.movierenamer.ui.res.DropImage;
@@ -60,6 +60,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private WebList actorList;
+  private WebLabel countryLbl;
   private WebList countryList;
   private WebTextField directorField;
   private WebLabel directorLbl;
@@ -231,7 +232,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   }
 
   private ListSelectionListener createFanartListListener() {
-    return  new ListSelectionListener() {
+    return new ListSelectionListener() {
 
       @Override
       public void valueChanged(ListSelectionEvent lse) {
@@ -450,15 +451,15 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
       @Override
       public void run() {
         MovieInfo movieInfo = movie.getInfo();
-        
-        List<MISubTitle> subtitles = movie.getMediaTag().getMediaSubTitles();
-        List<MIAudio> audios = movie.getMediaTag().getMediaAudios();
+
+        List<MediaSubTitle> subtitles = movie.getMediaTag().getMediaSubTitles();
+        List<MediaAudio> audios = movie.getMediaTag().getMediaAudios();
         List<String> countries = movieInfo.getCountries();
-        for (MISubTitle sub : subtitles) {
+        for (MediaSubTitle sub : subtitles) {
           System.out.println(sub.getTitle() + " : " + sub.getLanguage());
           subTitleModel.addElement(sub);
         }
-        for (MIAudio audio : audios) {
+        for (MediaAudio audio : audios) {
           audioModel.addElement(audio);
         }
         for (String country : countries) {
@@ -471,7 +472,9 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
         titleLbl.setText(movieInfo.getTitle());
         origTitleField.setText(movieInfo.getOriginalTitle());
-        yearLbl.setText("(" + movieInfo.getYear() + ")");
+        if (movieInfo.getYear() != null && movieInfo.getYear().trim().length() > 0) {
+          yearLbl.setText("(" + movieInfo.getYear() + ")");
+        }
         runtimeField.setText(movieInfo.getRuntime() + " min");
         synopsisArea.setText(movieInfo.getSynopsis());
         genreField.setText(movieInfo.getGenresString(" | ", 0));
@@ -624,6 +627,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     star2 = new JLabel();
     star1 = new JLabel();
     star = new JLabel();
+    countryLbl = new WebLabel();
     movieTb = new WebToolBar();
     titleLbl = new WebLabel();
     yearLbl = new WebLabel();
@@ -684,6 +688,8 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
             .addPreferredGap(ComponentPlacement.RELATED).addComponent(star4).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
     starPanelLayout.setVerticalGroup(starPanelLayout.createParallelGroup(Alignment.LEADING).addComponent(star1).addComponent(star2).addComponent(star3).addComponent(star4).addComponent(star));
 
+    countryLbl.setText(Utils.i18n("origTitle"));
+    countryLbl.setFont(new Font("Ubuntu", 1, 13));
     setMargin(new Insets(10, 10, 10, 10));
     setMinimumSize(new Dimension(10, 380));
     setPreferredSize(new Dimension(562, 400));

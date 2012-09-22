@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.media;
 
-import fr.free.movierenamer.media.mediainfo.MITag;
+import fr.free.movierenamer.media.mediainfo.MediaTag;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
 import java.io.File;
@@ -30,12 +30,12 @@ import javax.swing.JTextField;
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-public abstract class Media<T extends MediaInfo> {
+public abstract class Media<T extends MediaData> {
 
   public final Settings conf = Settings.getInstance();
   private final MediaFile mediaFile;
   protected MediaID mediaId;
-  protected final MITag mtag;
+  protected final MediaTag mtag;
   protected T mediaInfo;
   private final JTextField renameField;
   private String firstSearch;
@@ -58,7 +58,7 @@ public abstract class Media<T extends MediaInfo> {
     this.mediaFile = mediaFile;
     this.mediaInfo = mediaInfo;
     this.renameField = renameField;
-    this.mtag = new MITag(mediaFile.getFile());
+    this.mtag = new MediaTag(mediaFile.getFile());
     System.out.println(this.mtag);
   }
 

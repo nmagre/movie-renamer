@@ -19,7 +19,7 @@ package fr.free.movierenamer.media.tvshow;
 
 import fr.free.movierenamer.utils.Utils;
 
-import fr.free.movierenamer.media.MediaInfo;
+import fr.free.movierenamer.media.MediaData;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  * @author QUÉMÉNEUR Simon
  * @author Nicolas Magré
  */
-public class TvShowInfo extends MediaInfo {
+public class TvShowInfo extends MediaData {
 
   private final SxE sxe;
   private String poster;

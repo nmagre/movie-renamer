@@ -17,25 +17,16 @@
  */
 package fr.free.movierenamer.worker.provider;
 
-import java.io.File;
-
-import fr.free.movierenamer.parser.TvdbInfo;
-
-import fr.free.movierenamer.parser.AllocineTvShowInfo;
-
-import fr.free.movierenamer.media.tvshow.SxE;
-
-import fr.free.movierenamer.utils.Cache.CacheType;
-
-import fr.free.movierenamer.media.movie.MovieInfo;
-import fr.free.movierenamer.parser.MrParser;
-
 import fr.free.movierenamer.media.MediaID;
+import fr.free.movierenamer.media.tvshow.SxE;
 import fr.free.movierenamer.media.tvshow.TvShowInfo;
+import fr.free.movierenamer.parser.TvdbInfo;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.worker.TvShowInfoWorker;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -66,26 +57,17 @@ public class TvdbInfoWorker extends TvShowInfoWorker {// TODO A faire
     uri += ".zip";
     return uri;
   }
-
-  @Override
-  protected MrParser<TvShowInfo> getParser() throws Exception {
-    return new TvdbInfo();
-  }
   
   @Override
-  protected final TvShowInfo processFile(File xmlFile) throws Exception {
-    TvShowInfo info = super.processFile(xmlFile);
+  protected TvShowInfo fileAnalysis(File zipFile) throws Exception {
+    File tvshowFile = Utils.getInnerZipFile(zipFile, getLang() + ".xml");
+    File actorsFile = Utils.getInnerZipFile(zipFile, "actors.xml");
+    File bannersFile = Utils.getInnerZipFile(zipFile, "banners.xml");
+    TvShowInfo info = Utils.parseFile(tvshowFile, new TvdbInfo());
+    tvshowFile.delete();
+    actorsFile.delete();
+    bannersFile.delete();
     return info;
-  }
-
-  @Override
-  protected CacheType getCacheType() {
-    return CacheType.TVSHOWZIP;
-  }
-
-  @Override
-  protected String getInnerFileName() {
-    return getLang() + ".xml";
   }
 
   private String getLang() {

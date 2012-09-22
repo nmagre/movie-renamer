@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class MI
+ * Class MediaData
  * 
  * @author QUÉMÉNEUR Simon
  */
-public abstract class MediaInfo implements Serializable {
+public abstract class MediaData implements Serializable {
 
   private String title;
   private String originalTitle;
@@ -52,7 +52,7 @@ public abstract class MediaInfo implements Serializable {
   /**
    * 
    */
-  public MediaInfo() {
+  public MediaData() {
     this.mediaImages = new MediaImages();
     this.clear();
   }

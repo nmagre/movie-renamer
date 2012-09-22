@@ -22,23 +22,40 @@ import fr.free.movierenamer.ui.res.IIconList;
 import javax.swing.Icon;
 
 /**
- * Class MISubTitle
- *
+ * Class MediaAudio
  * @author Nicolas Magré
  */
-public class MISubTitle implements IIconList {
+public class MediaAudio implements IIconList{
 
   private int stream;
   private String title;
+  private String codec;
+  private String channel;
   private String language;
+  
+  public MediaAudio(int stream) {
+    this.stream = stream;
+    codec = channel = language = title = "?";
+  }
 
   public int getStream() {
     return stream;
   }
 
-  public MISubTitle(int stream) {
-    this.stream = stream;
-    title = language = "?";
+  public String getChannel() {
+    return channel;
+  }
+
+  public void setChannel(String channel) {
+    this.channel = channel;
+  }
+
+  public String getCodec() {
+    return codec;
+  }
+
+  public void setCodec(String codec) {
+    this.codec = codec;
   }
 
   public String getLanguage() {
@@ -56,14 +73,14 @@ public class MISubTitle implements IIconList {
   public void setTitle(String title) {
     this.title = title;
   }
-
+  
   @Override
   public Icon getIcon() {
     return Flag.getFlagByLang(language);
   }
-
+  
   @Override
-  public String toString() {
+  public String toString(){
     return title;
   }
 }

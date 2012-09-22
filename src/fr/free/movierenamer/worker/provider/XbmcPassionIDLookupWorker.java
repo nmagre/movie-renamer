@@ -18,16 +18,17 @@
 package fr.free.movierenamer.worker.provider;
 
 import fr.free.movierenamer.media.MediaID;
-import fr.free.movierenamer.parser.MrParser;
 import fr.free.movierenamer.parser.XbmcPassionIDLookup;
 import fr.free.movierenamer.utils.ActionNotValidException;
 import fr.free.movierenamer.utils.Settings;
+import fr.free.movierenamer.utils.Utils;
 import fr.free.movierenamer.worker.HttpWorker;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 
 /**
  * Class XbmcPassionIDLookupWorker
- *
+ * 
  * @author Nicolas Magré
  */
 public class XbmcPassionIDLookupWorker extends HttpWorker<MediaID> {
@@ -36,7 +37,7 @@ public class XbmcPassionIDLookupWorker extends HttpWorker<MediaID> {
 
   /**
    * Constructor arguments
-   *
+   * 
    * @param errorSupport
    * @param id
    * @throws ActionNotValidException
@@ -56,7 +57,9 @@ public class XbmcPassionIDLookupWorker extends HttpWorker<MediaID> {
   }
 
   @Override
-  protected MrParser<MediaID> getParser() throws Exception {
-    return new XbmcPassionIDLookup(mid);
+  protected MediaID fileAnalysis(File xmlFile) throws Exception {
+    MediaID id = Utils.parseFile(xmlFile, new XbmcPassionIDLookup(mid));
+    return id;
   }
+
 }

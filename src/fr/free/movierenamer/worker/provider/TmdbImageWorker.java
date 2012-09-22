@@ -32,7 +32,7 @@ import javax.xml.bind.DatatypeConverter;
  *
  * @author Nicolas Magré
  */
-public class TmdbImageWorker extends MediaImageWorker<MediaImages> {
+public class TmdbImageWorker extends MediaImageWorker {
 
   public TmdbImageWorker(PropertyChangeSupport errorSupport, MediaID id) throws ActionNotValidException {
     super(errorSupport, id);
