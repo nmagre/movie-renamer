@@ -1,5 +1,5 @@
 /*
- * Movie Renamer
+ * movie-renamer
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,179 +17,177 @@
  */
 package fr.free.movierenamer.utils;
 
-import java.awt.Image;
-import java.io.*;
-import java.net.URL;
-import java.util.Date;
-import javax.imageio.ImageIO;
+import fr.free.movierenamer.settings.Settings;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
+import java.nio.channels.FileLock;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 /**
- * Class Cache , Really simple cache
- *
+ * Class Cache
+ * 
  * @author Nicolas Magré
- * @author QUÉMÉNEUR Simon
+ * @author Simon QUÉMÉNEUR
  */
-public class Cache {
-
-  private static final int ONEWEEK = 604800;
-  private static final long TIMESTAMP = new Date().getTime() / 1000 - ONEWEEK;
-
-  // Type
-  public enum CacheType {
-
-    THUMB,
-    FANART,
-    ACTOR,
-    XML,
-    TVSHOWZIP;
-  }
-  private static Cache instance;// The only instance of Cache
-
-  /**
-   * Private build for singleton fix
-   *
-   * @return
-   */
-  private static synchronized Cache newInstance() {
-    if (instance == null) {
-      instance = new Cache();
+public final class Cache {
+  static {
+    Cache.initializeCache();
+    if (Settings.getInstance().clearCache) {
+      Cache.clearAllCache();
     }
-    return instance;
   }
 
-  /**
-   * Access to the Cache instance
-   *
-   * @return The only instance of Cache
-   */
-  public static synchronized Cache getInstance() {
-    if (instance == null) {
-      instance = newInstance();
+  @SuppressWarnings("resource")
+  public static void initializeCache() {
+    // prepare cache folder for this application instance
+    File cacheRoot = new File(Settings.appFolder, "cache");
+
+    try {
+      for (int i = 0; true; i++) {
+        File cache = new File(cacheRoot, String.format("%d", i));
+        if (!cache.isDirectory() && !cache.mkdirs()) {
+          throw new IOException("Failed to create cache dir: " + cache);
+        }
+
+        File lockFile = new File(cache, ".lock");
+        final RandomAccessFile handle = new RandomAccessFile(lockFile, "rw");
+        final FileLock lock = handle.getChannel().tryLock();
+        if (lock != null) {
+          // setup cache dir for ehcache
+          System.setProperty("ehcache.disk.store.dir", cache.getAbsolutePath());
+
+          // make sure to orderly shutdown cache
+          Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+              CacheManager.getInstance().shutdown();
+              try {
+                lock.release();
+              } catch (Exception e) {
+                Logger.getLogger(Settings.class.getName()).log(Level.WARNING, e.toString());
+              }
+              try {
+                handle.close();
+              } catch (Exception e) {
+                Logger.getLogger(Settings.class.getName()).log(Level.WARNING, e.toString());
+              }
+            }
+          });
+
+          // cache for this application instance is successfully set up and locked
+          // handle is close in previous kook !
+          return;
+        }
+
+        // try next lock file
+        handle.close();
+      }
+    } catch (Exception e) {
+      Logger.getLogger(Settings.class.getName()).log(Level.WARNING, e.toString(), e);
     }
-    return instance;
+
+    // use cache root itself as fail-safe fallback
+    System.setProperty("ehcache.disk.store.dir", new File(cacheRoot, "default").getAbsolutePath());
   }
 
-  private Cache() {
-    // no external access
+  public static Cache getCache(String name) {
+    return new Cache(CacheManager.getInstance().getCache(name));
   }
 
-  /**
-   * Add file to cache
-   *
-   * @param url File url
-   * @param type Cache type
-   * @return
-   * @throws IOException
-   */
-  public File add(URL url, Cache.CacheType type) throws IOException {
-    return add(url.openStream(), url.toString(), type);
+  public static void clearCache(String name) {
+    CacheManager.getInstance().getCache(name).removeAll();
   }
 
-  /**
-   * @param http
-   * @param cacheType
-   * @return
-   * @throws Exception
-   * @throws IOException
-   */
-  public File add(HttpGet http, CacheType cacheType) throws IOException, Exception {
-    return add(http.getInputStream(true, "ISO-8859-15"), http.getURL().toString(), cacheType);
-  }
-
-  private File add(InputStream is, String url, Cache.CacheType type) throws IOException {
-    OutputStream os;
-    File f = new File(getPath(type) + Utils.md5(url));
-    os = new FileOutputStream(f);
-    copyStream(is, os);
-    os.close();
-    is.close();
-    return get(url, type);
-  }
-
-  /**
-   * Get file from cache
-   *
-   * @param url File url
-   * @param type Cache type
-   * @return File
-   */
-  public File get(URL url, Cache.CacheType type) {
-    return get(url.toString(), type);
-  }
-
-  private File get(String url, Cache.CacheType type) {
-    String md5Name = Utils.md5(url);
-    File f = new File(getPath(type) + md5Name);
-    Long lastModified = f.lastModified();
-    if(lastModified < TIMESTAMP) {// File is too old, need update
-      return null;
+  public static void clearAllCache() {
+    for (String cacheName : CacheManager.getInstance().getCacheNames()) {
+      clearCache(cacheName);
     }
-    if (f.exists()) {
-      return f;
+  }
+
+  private final net.sf.ehcache.Cache cache;
+
+  protected Cache(net.sf.ehcache.Cache cache) {
+    this.cache = cache;
+  }
+
+  public void put(Object key, Object value) {
+    try {
+      cache.put(new Element(key, value));
+      Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Cache %s is now %s octets", cache.getName(), getSize()));
+    } catch (Throwable e) {
+      Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage());
+      remove(key); // fail-safe
     }
+  }
+
+  public Object get(Object key) {
+    return get(key, Object.class);
+  }
+
+  public <T> T get(Object key, Class<T> type) {
+    try {
+      Element element = cache.get(key);
+      if (element != null && key.equals(element.getKey())) {
+        return type.cast(element.getValue());
+      }
+    } catch (Exception e) {
+      Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage(), e);
+      remove(key); // fail-safe
+    }
+
     return null;
   }
 
-  /**
-   * Get image from cache
-   *
-   * @param image Image url
-   * @param type Cache type
-   * @return Image
-   * @throws IOException
-   */
-  public Image getImage(URL image, Cache.CacheType type) throws IOException {
-    String md5Name = Utils.md5(image.toString());
-    File f = new File(getPath(type) + md5Name);
-    if (f.exists()) {
-      return ImageIO.read(f);
+  public void remove(Object key) {
+    try {
+      cache.remove(key);
+    } catch (Exception e) {
+      Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage(), e);
     }
-    return null;
   }
 
-  /**
-   * Get cache path
-   *
-   * @param type cache type
-   * @return Cache path
-   */
-  private String getPath(Cache.CacheType type) {
-    String path = Settings.cacheDir;
-    switch (type) {
-      case THUMB:
-        path = Settings.thumbCacheDir;
-        break;
-      case FANART:
-        path = Settings.fanartCacheDir;
-        break;
-      case ACTOR:
-        path = Settings.actorCacheDir;
-        break;
-      case XML:
-        path = Settings.xmlCacheDir;
-        break;
-      case TVSHOWZIP:
-        path = Settings.tvshowZipCacheDir;
-        break;
-      default:
-        break;
-    }
-    return path;
+  public long getSize() {
+    long size = 0;
+    size = cache.getMemoryStoreSize();
+    size = cache.getDiskStoreSize();
+    size = cache.getSize();
+    size = cache.calculateInMemorySize();
+    return size;
   }
 
-  /**
-   * Copy stream from input source to output
-   *
-   * @param in Input
-   * @param out Output
-   * @throws IOException
-   */
-  private void copyStream(InputStream in, OutputStream out) throws IOException {
-    final int buffer_size = 1024;
-    byte[] bytes = new byte[buffer_size];
-    int p;
-    while ((p = in.read(bytes, 0, buffer_size)) != -1) {
-      out.write(bytes, 0, p);
+  public static class CacheKey implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    protected Object[] fields;
+
+    public CacheKey(Object... fields) {
+      this.fields = fields;
+    }
+
+    @Override
+    public int hashCode() {
+      return Arrays.hashCode(fields);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other instanceof CacheKey) {
+        return Arrays.equals(this.fields, ((CacheKey) other).fields);
+      }
+
+      return false;
+    }
+
+    @Override
+    public String toString() {
+      return Arrays.toString(fields);
     }
   }
 }

@@ -17,8 +17,9 @@
  */
 package fr.free.movierenamer.matcher;
 
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.NumberUtils;
+import fr.free.movierenamer.utils.StringUtils;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -27,20 +28,17 @@ import java.util.regex.Pattern;
 
 /**
  * Class MovieNameMatcher
- *
+ * 
  * @author Nicolas Magré
  */
-public class MovieNameMatcher {
+public class MovieNameMatcher extends MediaNameMatcher {
 
   private static final String MOVIENAMEBYYEAR = "\\D?(\\d{4})\\D";
-  private String filename;
-  private String movieYear;
-  private List<String> regexs;
 
-  public MovieNameMatcher(MediaFile mfile, List<String> regexs) {
-    filename = mfile.getFile().getName();
-    this.regexs = regexs;
-    movieYear = "";
+  private int movieYear;
+
+  public MovieNameMatcher(File file, List<String> regexs) {
+    super(file, regexs);
   }
 
   /**
@@ -48,7 +46,8 @@ public class MovieNameMatcher {
    *
    * @return Movie name
    */
-  public String getMovieName() {
+  @Override
+  public String getName() {
     //Get all matcher values
     List<NameMatcher> names = new ArrayList<NameMatcher>();
     getMatcherRes(names, getMovieNameByYear());
@@ -65,7 +64,8 @@ public class MovieNameMatcher {
    *
    * @return
    */
-  public String getYear() {
+  @Override
+  public int getYear() {
     return movieYear;
   }
 
@@ -97,7 +97,7 @@ public class MovieNameMatcher {
       if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {
         int index = filename.indexOf(matcher.group(0));
         name = filename.substring(0, index);
-        movieYear = syear;
+        movieYear = year;
       }
     }
 
@@ -121,7 +121,7 @@ public class MovieNameMatcher {
     String end = "";
     for (String word : words) {
       String mword = word.replace(":", "");
-      if (Utils.isUpperCase(mword) && !Utils.isDigit(mword) && mword.length() > 1) {
+      if (StringUtils.isUpperCase(mword) && !NumberUtils.isDigit(mword) && mword.length() > 1) {
         end = word;
         break;
       }
