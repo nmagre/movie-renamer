@@ -8,16 +8,17 @@
     commandLine=""
     description="Movie Renamer"
     iconFile="$INSTALL_PATH/icon-32.png"
-    workingDirectory=""
+    workingDirectory="$INSTALL_PATH"
     initialState="normal"
-    programGroup="yes"
+    programGroup="no"
     desktop="yes"
-    applications="yes"
+    applications="no"
     startMenu="yes"
     startup="no"
     type="Application"
     terminal="false"
-    encoding="UTF-8">
+    encoding="UTF-8"
+    categories="AudioVideo;Video;Renamer">
     <createForPack name="Movie Renamer"/>
   </shortcut>
 </shortcuts>

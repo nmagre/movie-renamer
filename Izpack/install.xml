@@ -4,7 +4,8 @@
     <appname>Movie Renamer</appname>
     <appversion>@VERSION@</appversion>
     <authors>
-      <author name="Magré Nicolas" email="movierenamer@free.fr"/>
+      <author name="Magré Nicolas" email="contact@movie-renamer.fr"/>
+      <author name="QUÉMÉNEUR Simon" email="contact@movie-renamer.fr"/>
     </authors>
     <url>http://movierenamer.free.fr/</url>
   </info>
@@ -17,9 +18,9 @@
   </locale>
   
   <resources>
-      <res id="shortcutSpec.xml" src="shortcutSpec-tmp.xml"/>
+    <res id="shortcutSpec.xml" src="Izpack/shortcutSpec-tmp.xml"/>
     <res id="InfoPanel.info" src="gpl-3.0.txt"/>
-    <res id="Unix_shortcutSpec.xml" src="Unix_shortcutSpec-tmp.xml"/>
+    <res id="Unix_shortcutSpec.xml" src="Izpack/Unix/Unix_shortcutSpec-tmp.xml"/>
   </resources>
 
   <panels>
@@ -28,20 +29,30 @@
       <panel classname="TargetPanel"/>
       <panel classname="PacksPanel"/>
       <panel classname="InstallPanel"/>
-      <panel classname="ShortcutPanel"/>
+      <panel classname="ShortcutPanel" os="unix|windows"/>
       <panel classname="FinishPanel"/>
   </panels>
-  <native type="izpack" name="ShellLink.dll"/>
+  
+  <native type="izpack" name="ShellLink.dll" os="windows"/>
+  <native type="izpack" name="ShellLink_x64.dll"/>
+  <variables>
+    <variable name="TargetPanel.dir" value="/Applications/Movie Renamer.app" os="mac"/>
+  </variables>
 
   <packs>
     <pack name="Movie Renamer" required="yes">
       <description>Movie Renamer @VERSION@</description>
-      <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH"/>
+      <file src="lib" targetdir="$INSTALL_PATH"/>
+      <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH" os="unix|windows"/>
       <file src="dist/@JARFILE@" targetdir="$INSTALL_PATH"/>
-      <file src="postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
-      <file src="postinst.bat" targetdir="$INSTALL_PATH" os="windows"/>
+      <file src="Izpack/Unix/postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
+      <file src="Izpack/Windows/postinst.bat" targetdir="$INSTALL_PATH" os="windows"/>
       <file src="src/image/icon.ico" targetdir="$INSTALL_PATH" os="windows"/>
       <file src="src/image/icon-32.png" targetdir="$INSTALL_PATH" os="unix"/>
+      
+      <file src="Izpack/MacOS/postinst.sh" targetdir="$INSTALL_PATH" os="mac"/>
+      <file src="Izpack/MacOS/Contents" targetdir="$INSTALL_PATH" os="mac"/>
+      <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH/Contents/Resources" os="mac"/>
 
       <executable targetfile="$INSTALL_PATH/postinst.sh" os="unix" stage="postinstall" failure="abort">
         <args>
@@ -53,9 +64,15 @@
 
       <executable targetfile="$INSTALL_PATH/postinst.bat" os="windows" stage="postinstall" failure="abort">
         <args>
-          <arg value="$INSTALL_PATH\" />
+          <arg value="$INSTALL_PATH/" />
           <arg value="@JARFILE@" />
           <arg value="Movie Renamer.jar" />
+        </args>
+      </executable>
+
+      <executable targetfile="$INSTALL_PATH/postinst.sh" stage="postinstall" failure="abort" os="mac">
+        <args>
+          <arg value="$INSTALL_PATH/Contents/MacOS/JavaApplicationStub" />
         </args>
       </executable>
     </pack>

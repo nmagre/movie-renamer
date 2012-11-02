@@ -6,7 +6,7 @@
               location="applications"/>
   <shortcut name="Movie Renamer"
     target="$INSTALL_PATH\Movie Renamer.jar"
-    description="Movie Renamer"
+    description="Movie Renamer Rename your Movies"
     workingDirectory="$INSTALL_PATH"
     iconFile="$INSTALL_PATH\icon.ico"
     initialState="normal"

@@ -83,7 +83,7 @@ public class MovieRenamer extends JFrame {
   private List<MediaRenamed> renamedMediaFile;
   // Current variables
   private MovieRenamerMode currentMode;
-  private Media currentMedia;
+  private Media<? extends MediaData> currentMedia;
   // Worker
   private MediaSearchWorker searchWorker;
   private MovieInfoWorker movieInfoWorker;
@@ -1531,6 +1531,7 @@ public class MovieRenamer extends JFrame {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void propertyChange(PropertyChangeEvent evt) {
 
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
@@ -1554,7 +1555,7 @@ public class MovieRenamer extends JFrame {
             }
           }
 
-          currentMedia.setInfo(movieInfo);
+          ((Media<MovieInfo>) currentMedia).setInfo(movieInfo);
           moviePnl.addMovieInfo((Movie) currentMedia);
 
           renameField.setText(currentMedia.getRenamedTitle(fileFormatField.getText()));
@@ -1590,6 +1591,7 @@ public class MovieRenamer extends JFrame {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void propertyChange(PropertyChangeEvent evt) {
       if (evt.getNewValue().equals(SwingWorker.StateValue.DONE)) {
         try {
@@ -1600,7 +1602,7 @@ public class MovieRenamer extends JFrame {
             return;
           }
 
-          currentMedia.setInfo(seasons);
+          ((Media<TvShowInfo>) currentMedia).setInfo(seasons);
           tvShowPanel.addTvshowInfo((TvShow) currentMedia);//seasons.getSeasons(), ((TvShow) currentMedia).getSearchSxe());
           
           renameField.setText(currentMedia.getRenamedTitle(fileFormatField.getText()));
