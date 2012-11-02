@@ -25,13 +25,12 @@ import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
-import fr.free.movierenamer.Main;
-import fr.free.movierenamer.media.movie.Movie;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.Settings;
-import fr.free.movierenamer.utils.Utils;
-import fr.free.movierenamer.utils.Utils.CaseConversionType;
-import fr.free.movierenamer.worker.WorkerManager;
+import fr.free.movierenamer.utils.ImageUtils;
+import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.StringUtils;
+import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -41,7 +40,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +57,7 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Nicolas Magré
  */
-public class Setting extends JDialog {
+public class Setting extends JDialog {// FIXME : I'm not working :(
 
   private Settings setting;
   private PropertyChangeSupport settingsChange;
@@ -99,7 +97,7 @@ public class Setting extends JDialog {
    */
   public Setting(Settings setting, PropertyChangeSupport settingsChange, Component parent) {
     this.settingsChange = settingsChange;
-    setIconImage(Utils.getImageFromJAR("/image/icon-32.png", getClass()));
+    setIconImage(ImageUtils.getImageFromJAR("/image/icon-32.png"));
     initComponents();
 
     rBtnThumbList = new JRadioButton[]{this.origThumbSizeRBtn, this.midThumbSizeRBtn, this.thumbThumbSizeRBtn};
@@ -169,7 +167,7 @@ public class Setting extends JDialog {
     englishRbtn.setSelected(!setting.locale.equals("fr"));
     frenchRbtn.setSelected(setting.locale.equals("fr"));
 
-    nfoGroup.setSelected(rBtnNFO[setting.nfoType.ordinal()].getModel(), true);
+//    nfoGroup.setSelected(rBtnNFO[setting.nfoType.ordinal()].getModel(), true);
 
     // Rename Setting
     formatField.setText(setting.movieFilenameFormat);
@@ -199,12 +197,12 @@ public class Setting extends JDialog {
     // Search
     displayAppResultCheckBox.setSelected(setting.displayApproximateResult);
 
-    rBtnScrapperLang[setting.movieScrapperLang.ordinal()].setSelected(true);
-    rBtnTvScrapperLang[setting.tvshowScrapperLang.ordinal()].setSelected(true);
+   // rBtnScrapperLang[setting.movieScrapperLang.ordinal()].setSelected(true);
+   // rBtnTvScrapperLang[setting.tvshowScrapperLang.ordinal()].setSelected(true);
 
     displayThumbResultChk.setSelected(setting.displayThumbResult);
-    scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper.ordinal()].getModel(), true);
-    scrapperTvGroup.setSelected(rBtnTvScrapper[setting.tvshowScrapper.ordinal()].getModel(), true);
+    //scrapperGroup.setSelected(rBtnScrapper[setting.movieScrapper.ordinal()].getModel(), true);
+    //scrapperTvGroup.setSelected(rBtnTvScrapper[setting.tvshowScrapper.ordinal()].getModel(), true);
     sortbySimiChk.setSelected(setting.sortBySimiYear);
     limitResultComboBox.setSelectedIndex(setting.nbResult);
 
@@ -214,37 +212,37 @@ public class Setting extends JDialog {
     thumbExtCbBox.setSelectedIndex(setting.thumbExt);
 
     //Cache
-    clearXmlCacheOnStartChk.setSelected(setting.clearXMLCache);
+    //clearXmlCacheOnStartChk.setSelected(setting.clearXMLCache);
 
     String ssize;
-    long size = Utils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir));
+    /*long size = FileUtils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(Settings.thumbCacheDir));
+      ssize = "0." + FileUtils.getDirSize(new File(Settings.thumbCacheDir));
     }
-    thumbCacheLbl.setText(ssize + Utils.i18n("useForThumb"));
+    thumbCacheLbl.setText(ssize + LocaleUtils.i18n("useForThumb"));
 
-    size = Utils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir));
+    size = FileUtils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(Settings.fanartCacheDir));
+      ssize = "0." + FileUtils.getDirSize(new File(Settings.fanartCacheDir));
     }
-    fanartCacheLbl.setText(ssize + Utils.i18n("useForFanart"));
+    fanartCacheLbl.setText(ssize + LocaleUtils.i18n("useForFanart"));
 
-    size = Utils.getDirSizeInMegabytes(new File(Settings.actorCacheDir));
+    size = FileUtils.getDirSizeInMegabytes(new File(Settings.actorCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(Settings.actorCacheDir));
+      ssize = "0." + FileUtils.getDirSize(new File(Settings.actorCacheDir));
     }
-    actorCacheLbl.setText(ssize + Utils.i18n("useForActor"));
+    actorCacheLbl.setText(ssize + LocaleUtils.i18n("useForActor"));
 
-    size = Utils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir));
+    size = FileUtils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir));
     ssize = "" + size;
     if (size == 0) {
-      ssize = "0." + Utils.getDirSize(new File(Settings.xmlCacheDir));
+      ssize = "0." + FileUtils.getDirSize(new File(Settings.xmlCacheDir));
     }
-    xmlLbl.setText(ssize + Utils.i18n("useForXml"));
-
+    xmlLbl.setText(ssize + LocaleUtils.i18n("useForXml"));
+*/
     // Proxy
     useProxyChk.setSelected(setting.useProxy);
     proxyUrlField.setText(setting.proxyUrl);
@@ -267,7 +265,7 @@ public class Setting extends JDialog {
     return setting;
   }
 
-  private String movieRenamerTest(String nameFormat, int limit, Utils.CaseConversionType casse, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
+  private String movieRenamerTest(String nameFormat, int limit/*, Utils.CaseConversionType casse*/, String separator, boolean trim, boolean rmDupSpc, boolean extension) {
     String ext = "avi";
 
     for (int i = 0; i < format.length; i++) {
@@ -297,7 +295,7 @@ public class Setting extends JDialog {
       nameFormat = nameFormat.trim();
     }
 
-    switch (casse) {
+   /* switch (casse) {
       case UPPER:
         nameFormat = nameFormat.toUpperCase() + (extension ? "." + ext.toUpperCase() : "");
         break;
@@ -313,7 +311,7 @@ public class Setting extends JDialog {
       default:
         nameFormat += (extension ? "." + ext.toLowerCase() : "");
         break;
-    }
+    }*/
 
     if (rmDupSpc) {
       nameFormat = nameFormat.replaceAll("\\s+", " ");
@@ -528,22 +526,22 @@ public class Setting extends JDialog {
         webToolBar1.setFloatable(false);
         webToolBar1.setRollover(true);
 
-        webLabel2.setText(Utils.i18n("interface"));         webLabel2.setFont(new Font("Ubuntu", 1, 13));         webToolBar1.add(webLabel2);
+        webLabel2.setText(LocaleUtils.i18n("interface"));         webLabel2.setFont(new Font("Ubuntu", 1, 13));         webToolBar1.add(webLabel2);
 
-        selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstMovieChk.setText(Utils.i18n("autoSelFrstMovie"));         selectFirstMovieChk.setToolTipText(Utils.i18n("autoSelFrstMovieTt")); 
-        scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));         scanSubfolderChk.setText(Utils.i18n("autoScanSubfolder"));         scanSubfolderChk.setToolTipText(Utils.i18n("autoScanSubfolderTt")); 
-        showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));         showNotaMovieWarnChk.setText(Utils.i18n("showNotMovieWarn"));         showNotaMovieWarnChk.setToolTipText(Utils.i18n("showNotMovieWarnTt")); 
-        movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12));         movieInfoPanelChk.setText(Utils.i18n("showMoviePanel"));         movieInfoPanelChk.addItemListener(new ItemListener() {
+        selectFirstMovieChk.setFont(new Font("Ubuntu", 0, 12));         selectFirstMovieChk.setText(LocaleUtils.i18n("autoSelFrstMovie"));         selectFirstMovieChk.setToolTipText(LocaleUtils.i18n("autoSelFrstMovieTt")); 
+        scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));         scanSubfolderChk.setText(LocaleUtils.i18n("autoScanSubfolder"));         scanSubfolderChk.setToolTipText(LocaleUtils.i18n("autoScanSubfolderTt")); 
+        showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));         showNotaMovieWarnChk.setText(LocaleUtils.i18n("showNotMovieWarn"));         showNotaMovieWarnChk.setToolTipText(LocaleUtils.i18n("showNotMovieWarnTt")); 
+        movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12));         movieInfoPanelChk.setText(LocaleUtils.i18n("showMoviePanel"));         movieInfoPanelChk.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent evt) {
                 movieInfoPanelChkItemStateChanged(evt);
             }
         });
 
-        actorImageChk.setFont(new Font("Ubuntu", 0, 12));         actorImageChk.setText(Utils.i18n("showActorImage"));         actorImageChk.setToolTipText(Utils.i18n("showActorImageTt"));         actorImageChk.setEnabled(false);
+        actorImageChk.setFont(new Font("Ubuntu", 0, 12));         actorImageChk.setText(LocaleUtils.i18n("showActorImage"));         actorImageChk.setToolTipText(LocaleUtils.i18n("showActorImageTt"));         actorImageChk.setEnabled(false);
 
-        thumbsChk.setFont(new Font("Ubuntu", 0, 12));         thumbsChk.setText(Utils.i18n("showThumbs"));         thumbsChk.setToolTipText(Utils.i18n("showThumbsTt"));         thumbsChk.setEnabled(false);
+        thumbsChk.setFont(new Font("Ubuntu", 0, 12));         thumbsChk.setText(LocaleUtils.i18n("showThumbs"));         thumbsChk.setToolTipText(LocaleUtils.i18n("showThumbsTt"));         thumbsChk.setEnabled(false);
 
-        fanartsChk.setFont(new Font("Ubuntu", 0, 12));         fanartsChk.setText(Utils.i18n("showFanarts"));         fanartsChk.setToolTipText(Utils.i18n("showFanartsTt"));         fanartsChk.setEnabled(false);
+        fanartsChk.setFont(new Font("Ubuntu", 0, 12));         fanartsChk.setText(LocaleUtils.i18n("showFanarts"));         fanartsChk.setToolTipText(LocaleUtils.i18n("showFanartsTt"));         fanartsChk.setEnabled(false);
 
         webToolBar2.setFloatable(false);
         webToolBar2.setRollover(true);
@@ -563,21 +561,21 @@ public class Setting extends JDialog {
         webToolBar3.setFloatable(false);
         webToolBar3.setRollover(true);
 
-        webLabel4.setText(Utils.i18n("update"));         webLabel4.setFont(new Font("Ubuntu", 1, 13));         webToolBar3.add(webLabel4);
+        webLabel4.setText(LocaleUtils.i18n("update"));         webLabel4.setFont(new Font("Ubuntu", 1, 13));         webToolBar3.add(webLabel4);
 
-        checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));         checkUpdateChk.setText(Utils.i18n("chkUpdateOnStart"));         checkUpdateChk.setToolTipText(bundle.getString("chkUpdateOnStartTt")); // NOI18N
+        checkUpdateChk.setFont(new Font("Ubuntu", 0, 12));         checkUpdateChk.setText(LocaleUtils.i18n("chkUpdateOnStart"));         checkUpdateChk.setToolTipText(bundle.getString("chkUpdateOnStartTt")); // NOI18N
 
         webToolBar4.setFloatable(false);
         webToolBar4.setRollover(true);
 
-        webLabel5.setText(Utils.i18n("language"));         webLabel5.setFont(new Font("Ubuntu", 1, 13));         webToolBar4.add(webLabel5);
+        webLabel5.setText(LocaleUtils.i18n("language"));         webLabel5.setFont(new Font("Ubuntu", 1, 13));         webToolBar4.add(webLabel5);
 
         languageGroup.add(frenchRbtn);
-        frenchRbtn.setFont(new Font("Ubuntu", 0, 12));         frenchRbtn.setText(Utils.i18n("french")); 
+        frenchRbtn.setFont(new Font("Ubuntu", 0, 12));         frenchRbtn.setText(LocaleUtils.i18n("french")); 
         languageGroup.add(englishRbtn);
         englishRbtn.setFont(new Font("Ubuntu", 0, 12));         englishRbtn.setSelected(true);
-        englishRbtn.setText(Utils.i18n("english")); 
-        lwarningLbl.setFont(new Font("Ubuntu", 1, 12));         lwarningLbl.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png")));         lwarningLbl.setText(Utils.i18n("needRestart")); 
+        englishRbtn.setText(LocaleUtils.i18n("english")); 
+        lwarningLbl.setFont(new Font("Ubuntu", 1, 12));         lwarningLbl.setIcon(new ImageIcon(getClass().getResource("/image/dialog-warning.png")));         lwarningLbl.setText(LocaleUtils.i18n("needRestart")); 
         GroupLayout generalPnlLayout = new GroupLayout(generalPnl);
         generalPnl.setLayout(generalPnlLayout);
         generalPnlLayout.setHorizontalGroup(
@@ -660,7 +658,7 @@ public class Setting extends JDialog {
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        webTabbedPane1.addTab(Utils.i18n("general"), generalPnl); 
+        webTabbedPane1.addTab(LocaleUtils.i18n("general"), generalPnl); 
         renamePnl.setFont(new Font("Ubuntu", 1, 14)); 
         defaultFormatLbl.setFont(new Font("Ubuntu", 1, 12));         defaultFormatLbl.setText(bundle.getString("defaultFormat")); // NOI18N
 
@@ -1116,15 +1114,15 @@ public class Setting extends JDialog {
 
         jPanel2.setBorder(BorderFactory.createTitledBorder(null, bundle.getString("language"), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 13))); 
         scrapperLangGroup.add(scrapperItRbtn);
-        scrapperItRbtn.setText(Utils.i18n("italian")); 
+        scrapperItRbtn.setText(LocaleUtils.i18n("italian")); 
         scrapperLangGroup.add(scrapperEsRbtn);
-        scrapperEsRbtn.setText(Utils.i18n("spanish")); 
+        scrapperEsRbtn.setText(LocaleUtils.i18n("spanish")); 
         scrapperLangGroup.add(scrapperDeRbtn);
-        scrapperDeRbtn.setText(Utils.i18n("german")); 
+        scrapperDeRbtn.setText(LocaleUtils.i18n("german")); 
         scrapperLangGroup.add(scrapperFrRbtn);
-        scrapperFrRbtn.setText(Utils.i18n("french")); 
+        scrapperFrRbtn.setText(LocaleUtils.i18n("french")); 
         scrapperLangGroup.add(scrapperEnRbtn);
-        scrapperEnRbtn.setText(Utils.i18n("english")); 
+        scrapperEnRbtn.setText(LocaleUtils.i18n("english")); 
         GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -1924,10 +1922,10 @@ public class Setting extends JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
   private void addFilterActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addFilterActionPerformed
-    String s = (String) JOptionPane.showInputDialog(this, Utils.i18n("filter"), Utils.i18n("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
+    String s = (String) JOptionPane.showInputDialog(this, LocaleUtils.i18n("filter"), LocaleUtils.i18n("addFilter"), JOptionPane.PLAIN_MESSAGE, null, null, null);
     int index = currentFilterIndex;
     if (filters.contains(s)) {
-      JOptionPane.showMessageDialog(null, s + " " + Utils.i18n("alreadyInList"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, s + " " + LocaleUtils.i18n("alreadyInList"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
     if ((s != null) && (s.length() > 0)) {
@@ -1939,7 +1937,7 @@ public class Setting extends JDialog {
 }//GEN-LAST:event_addFilterActionPerformed
 
   private void addExtensionBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_addExtensionBtnActionPerformed
-    String s = (String) JOptionPane.showInputDialog(this, "Extension", Utils.i18n("addExt"), JOptionPane.PLAIN_MESSAGE, null, null, null);
+    String s = (String) JOptionPane.showInputDialog(this, "Extension", LocaleUtils.i18n("addExt"), JOptionPane.PLAIN_MESSAGE, null, null, null);
 
     if ((s != null) && (s.length() > 0)) {
       extensions = Arrays.copyOf(extensions, extensions.length + 1);
@@ -1951,7 +1949,7 @@ public class Setting extends JDialog {
 }//GEN-LAST:event_addExtensionBtnActionPerformed
 
   private void helpBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtnActionPerformed
-    JOptionPane.showMessageDialog(this, Utils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), Utils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, LocaleUtils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), LocaleUtils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
 }//GEN-LAST:event_helpBtnActionPerformed
 
   private void movieInfoPanelChkItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_movieInfoPanelChkItemStateChanged
@@ -1966,30 +1964,30 @@ public class Setting extends JDialog {
 
   private void filenameTestBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_filenameTestBtnActionPerformed
     int limit;
-    Utils.CaseConversionType casse = CaseConversionType.FIRSTLO;
+    //Utils.CaseConversionType casse = CaseConversionType.FIRSTLO;
     try {
       limit = Integer.parseInt(limitField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, Utils.i18n("nanLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, LocaleUtils.i18n("nanLimit"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     for (int i = 0; i < rBtnCase.length; i++) {
       if (rBtnCase[i].isSelected()) {
-        casse = Utils.CaseConversionType.values()[i];
+        //casse = Utils.CaseConversionType.values()[i];
       }
     }
 
-    String res = movieRenamerTest(formatField.getText(), limit, casse, separatorField.getText(), rmSpcCharChk.isSelected(), rmDupSpaceChk.isSelected(), true);
-    filenameTestField.setText(res);
+/*    String res = movieRenamerTest(formatField.getText(), limit, casse, separatorField.getText(), rmSpcCharChk.isSelected(), rmDupSpaceChk.isSelected(), true);
+    filenameTestField.setText(res);*/
   }//GEN-LAST:event_filenameTestBtnActionPerformed
 
   private void extensionHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_extensionHelpActionPerformed
-    JOptionPane.showMessageDialog(this, Utils.i18n("extensionsHelp"), "Extension", JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, LocaleUtils.i18n("extensionsHelp"), "Extension", JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_extensionHelpActionPerformed
 
   private void filenameFilterHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_filenameFilterHelpActionPerformed
-    JOptionPane.showMessageDialog(this, Utils.i18n("movieFileFilterHelp"), Utils.i18n("movieFileNameFilter"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, LocaleUtils.i18n("movieFileFilterHelp"), LocaleUtils.i18n("movieFileNameFilter"), JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_filenameFilterHelpActionPerformed
 
   private void moveRightActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moveRightActionPerformed
@@ -2016,7 +2014,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_removeFilterBtnActionPerformed
 
   private void removeExtensuionBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_removeExtensuionBtnActionPerformed
-    String[] newArray = Utils.removeFromArray(extensions, currentExtensionIndex);
+    /*String[] newArray = Utils.removeFromArray(extensions, currentExtensionIndex);
     if (newArray != null) {
       extensions = newArray;
       loadList(extentionJlist, extensions);
@@ -2027,6 +2025,7 @@ public class Setting extends JDialog {
       extentionJlist.setSelectedIndex(pos);
       currentExtensionIndex = pos;
     }
+    */
   }//GEN-LAST:event_removeExtensuionBtnActionPerformed
 
   private void saveBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
@@ -2042,27 +2041,27 @@ public class Setting extends JDialog {
     try {
       setting.movieFilenameLimit = Integer.parseInt(limitField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, Utils.i18n("nanFileLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, LocaleUtils.i18n("nanFileLimit"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     try {
       setting.movieFolderLimit = Integer.parseInt(limitFolderField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, Utils.i18n("nanFolderLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, LocaleUtils.i18n("nanFolderLimit"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     try {
       setting.proxyPort = Integer.parseInt(proxyPortField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, Utils.i18n("nanProxyPort"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, LocaleUtils.i18n("nanProxyPort"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
 
     if (!formatField.getText().contains("<t>") && !formatField.getText().contains("<ot>") && !formatField.getText().contains("<st>")) {
-      JOptionPane.showMessageDialog(this, Utils.i18n("noTitle"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, LocaleUtils.i18n("noTitle"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
@@ -2094,8 +2093,8 @@ public class Setting extends JDialog {
 
     boolean langFr = setting.locale.equals("fr");
     if (langFr != frenchRbtn.isSelected()) {
-      setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
-      int n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + Utils.SPACE + Utils.i18n("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
+      //setting.locale = (frenchRbtn.isSelected() ? "fr" : "en");
+      int n = JOptionPane.showConfirmDialog(this, Settings.APPNAME + StringUtils.SPACE + LocaleUtils.i18n("wantRestart"), "Question", JOptionPane.YES_NO_OPTION);
       if (n == JOptionPane.YES_OPTION) {
         restartApp = true;
       }
@@ -2104,7 +2103,7 @@ public class Setting extends JDialog {
     // Rename Setting
     for (int i = 0; i < rBtnCase.length; i++) {
       if (rBtnCase[i].isSelected()) {
-        setting.movieFilenameCase = Utils.CaseConversionType.values()[i];
+      //  setting.movieFilenameCase = Utils.CaseConversionType.values()[i];
       }
     }
 
@@ -2128,31 +2127,31 @@ public class Setting extends JDialog {
 
     for (int i = 0; i < rBtnScrapper.length; i++) {
       if (rBtnScrapper[i].isSelected()) {
-        setting.movieScrapper = WorkerManager.MovieScrapper.values()[i];
+      //  setting.movieScrapper = WorkerManager.MovieScrapper.values()[i];
       }
     }
 
     for (int i = 0; i < rBtnTvScrapper.length; i++) {
       if (rBtnTvScrapper[i].isSelected()) {
-        setting.tvshowScrapper = WorkerManager.TVShowScrapper.values()[i];
+       // setting.tvshowScrapper = WorkerManager.TVShowScrapper.values()[i];
       }
     }
 
     for (int i = 0; i < rBtnNFO.length; i++) {
       if (rBtnNFO[i].isSelected()) {
-        setting.nfoType = Movie.NFO.values()[i];
+     //   setting.nfoType = Movie.NFO.values()[i];
       }
     }
 
     for (int i = 0; i < rBtnScrapperLang.length; i++) {
       if (rBtnScrapperLang[i].isSelected()) {
-        setting.movieScrapperLang = Utils.Language.values()[i];
+      //  setting.movieScrapperLang = Utils.Language.values()[i];
       }
     }
 
     for (int i = 0; i < rBtnTvScrapperLang.length; i++) {
       if (rBtnTvScrapperLang[i].isSelected()) {
-        setting.tvshowScrapperLang = Utils.Language.values()[i];
+        //setting.tvshowScrapperLang = Utils.Language.values()[i];
       }
     }
 
@@ -2187,25 +2186,25 @@ public class Setting extends JDialog {
     setting.mediaNameFilters = filters;
 
     //Cache
-    setting.clearXMLCache = clearXmlCacheOnStartChk.isSelected();
+  //  setting.clearXMLCache = clearXmlCacheOnStartChk.isSelected();
 
     // Proxy
     setting.useProxy = useProxyChk.isSelected();
     setting.proxyUrl = proxyUrlField.getText();
 
     settingsChange.firePropertyChange("settingChange", oldSetting, setting);
-    setting.saveSetting();
+    //setting.saveSetting();
 
     if (restartApp) {
       try {
-        if (!Utils.restartApplication(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()))) {
-          JOptionPane.showMessageDialog(this, Utils.i18n("cantRestart"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      /*  if (!Utils.restartApplication(new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()))) {
+          JOptionPane.showMessageDialog(this, LocaleUtils.i18n("cantRestart"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
         } else {
           dispose();
           System.exit(0);
-        }
+        }*/
       } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, Utils.i18n("cantRestart") + Utils.ENDLINE + ex.getMessage(), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+       // JOptionPane.showMessageDialog(this, LocaleUtils.i18n("cantRestart") + Utils.ENDLINE + ex.getMessage(), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       }
     }
 
@@ -2217,23 +2216,23 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_CancelBtnActionPerformed
 
   private void clearXmlBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearXmlBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
-    xmlLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir)) + Utils.i18n("useForXml"));
+   // Utils.deleteFileInDirectory(new File(Settings.xmlCacheDir));
+    //xmlLbl.setText(FileUtils.getDirSizeInMegabytes(new File(Settings.xmlCacheDir)) + LocaleUtils.i18n("useForXml"));
   }//GEN-LAST:event_clearXmlBtnActionPerformed
 
   private void clearActorBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearActorBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(Settings.actorCacheDir));
-    actorCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.actorCacheDir)) + Utils.i18n("useForActor"));
+    //Utils.deleteFileInDirectory(new File(Settings.actorCacheDir));
+    //actorCacheLbl.setText(FileUtils.getDirSizeInMegabytes(new File(Settings.actorCacheDir)) + LocaleUtils.i18n("useForActor"));
   }//GEN-LAST:event_clearActorBtnActionPerformed
 
   private void clearFanartBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearFanartBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(Settings.fanartCacheDir));
-    fanartCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir)) + Utils.i18n("useForFanart"));
+   // Utils.deleteFileInDirectory(new File(Settings.fanartCacheDir));
+    //fanartCacheLbl.setText(FileUtils.getDirSizeInMegabytes(new File(Settings.fanartCacheDir)) + LocaleUtils.i18n("useForFanart"));
   }//GEN-LAST:event_clearFanartBtnActionPerformed
 
   private void clearThumbBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_clearThumbBtnActionPerformed
-    Utils.deleteFileInDirectory(new File(Settings.thumbCacheDir));
-    thumbCacheLbl.setText(Utils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir)) + Utils.i18n("useForThumb"));
+    //Utils.deleteFileInDirectory(new File(Settings.thumbCacheDir));
+  //  thumbCacheLbl.setText(FileUtils.getDirSizeInMegabytes(new File(Settings.thumbCacheDir)) + LocaleUtils.i18n("useForThumb"));
   }//GEN-LAST:event_clearThumbBtnActionPerformed
 
   private void allocineRbtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_allocineRbtnItemStateChanged
@@ -2242,7 +2241,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_allocineRbtnItemStateChanged
 
   private void resultHelpActionPerformed(ActionEvent evt) {//GEN-FIRST:event_resultHelpActionPerformed
-    JOptionPane.showMessageDialog(this, Utils.i18n("resultHelp"), Utils.i18n("result"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, LocaleUtils.i18n("resultHelp"), LocaleUtils.i18n("result"), JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_resultHelpActionPerformed
 
   private void imdbRBtnItemStateChanged(ItemEvent evt) {//GEN-FIRST:event_imdbRBtnItemStateChanged
@@ -2263,7 +2262,7 @@ public class Setting extends JDialog {
   }//GEN-LAST:event_allocineTVRbtnItemStateChanged
 
   private void helpBtn1ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtn1ActionPerformed
-    JOptionPane.showMessageDialog(this, Utils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), Utils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(this, LocaleUtils.i18n("movieFormatHelp").replace("|", separatorField.getText()).replace("\"limit\"", limitField.getText()), LocaleUtils.i18n("movieFileName"), JOptionPane.INFORMATION_MESSAGE);
   }//GEN-LAST:event_helpBtn1ActionPerformed
 
   private void folderTestBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_folderTestBtnActionPerformed
@@ -2272,7 +2271,7 @@ public class Setting extends JDialog {
     try {
       limit = Integer.parseInt(limitFolderField.getText());
     } catch (NumberFormatException e) {
-      JOptionPane.showMessageDialog(this, Utils.i18n("nanLimit"), Utils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, LocaleUtils.i18n("nanLimit"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
@@ -2282,8 +2281,8 @@ public class Setting extends JDialog {
       }
     }
 
-    String res = movieRenamerTest(formatFolderField.getText(), limit, casse, separatorFolderField.getText(), rmSpcCharFolderChk.isSelected(), rmDupSpaceFolderChk.isSelected(), false);
-    folderTestField.setText(res);
+    //String res = movieRenamerTest(formatFolderField.getText(), limit, casse, separatorFolderField.getText(), rmSpcCharFolderChk.isSelected(), rmDupSpaceFolderChk.isSelected(), false);
+    //folderTestField.setText(res);
   }//GEN-LAST:event_folderTestBtnActionPerformed
 
   private void helpBtn2ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_helpBtn2ActionPerformed

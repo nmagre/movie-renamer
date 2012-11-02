@@ -184,7 +184,7 @@
                                               </Group>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="180" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -232,7 +232,7 @@
                           <Component id="frenchRbtn" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lwarningLbl" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="18" max="32767" attributes="0"/>
+                      <EmptySpace pref="22" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2474,7 +2474,7 @@
                       <Component id="imagePnl" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="xmlFilePnl" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="174" max="32767" attributes="0"/>
+                      <EmptySpace pref="214" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2631,7 +2631,7 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="clearXmlCacheOnStartChk" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="187" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="183" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>

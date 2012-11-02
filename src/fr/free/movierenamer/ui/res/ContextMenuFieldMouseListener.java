@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -29,7 +30,6 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.text.JTextComponent;
 
-import fr.free.movierenamer.utils.Utils;
 
 /**
  * Class ContextMenuFieldMouseListener
@@ -52,7 +52,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   public ContextMenuFieldMouseListener() {
 
-    cut = new AbstractAction(Utils.i18n("cut")) {
+    cut = new AbstractAction(LocaleUtils.i18n("cut")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -62,7 +62,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    copy = new AbstractAction(Utils.i18n("copy")) {
+    copy = new AbstractAction(LocaleUtils.i18n("copy")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -72,7 +72,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    paste = new AbstractAction(Utils.i18n("paste")) {
+    paste = new AbstractAction(LocaleUtils.i18n("paste")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -82,7 +82,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    selectAll = new AbstractAction(Utils.i18n("selectAll")) {
+    selectAll = new AbstractAction(LocaleUtils.i18n("selectAll")) {
 
       private static final long serialVersionUID = 1L;
 

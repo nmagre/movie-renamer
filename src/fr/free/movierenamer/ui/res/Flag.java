@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.ImageUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,60 +25,61 @@ import javax.swing.ImageIcon;
 
 /**
  * Class Flag
+ * 
  * @author Nicolas Magré
  */
 public abstract class Flag {
 
-  private static final ImageIcon Algeria = new ImageIcon(Utils.getImageFromJAR("/image/country/Algeria.png", Utils.class));
-  private static final ImageIcon Argentina = new ImageIcon(Utils.getImageFromJAR("/image/country/Argentina.png", Utils.class));
-  private static final ImageIcon Australia = new ImageIcon(Utils.getImageFromJAR("/image/country/Australia.png", Utils.class));
-  private static final ImageIcon Austria = new ImageIcon(Utils.getImageFromJAR("/image/country/Austria.png", Utils.class));
-  private static final ImageIcon Belgium = new ImageIcon(Utils.getImageFromJAR("/image/country/Belgium.png", Utils.class));
-  private static final ImageIcon Brazil = new ImageIcon(Utils.getImageFromJAR("/image/country/Brazil.png", Utils.class));
-  private static final ImageIcon Bulgaria = new ImageIcon(Utils.getImageFromJAR("/image/country/Bulgaria.png", Utils.class));
-  private static final ImageIcon Canada = new ImageIcon(Utils.getImageFromJAR("/image/country/Canada.png", Utils.class));
-  private static final ImageIcon China = new ImageIcon(Utils.getImageFromJAR("/image/country/China.png", Utils.class));
-  private static final ImageIcon Colombia = new ImageIcon(Utils.getImageFromJAR("/image/country/Colombia.png", Utils.class));
-  private static final ImageIcon Costa_Rica = new ImageIcon(Utils.getImageFromJAR("/image/country/Costa_Rica.png", Utils.class));
-  private static final ImageIcon Croatia = new ImageIcon(Utils.getImageFromJAR("/image/country/Croatia.png", Utils.class));
-  private static final ImageIcon Czech_Republic = new ImageIcon(Utils.getImageFromJAR("/image/country/Czech_Republic.png", Utils.class));
-  private static final ImageIcon Denmark = new ImageIcon(Utils.getImageFromJAR("/image/country/Denmark.png", Utils.class));
-  private static final ImageIcon Finland = new ImageIcon(Utils.getImageFromJAR("/image/country/Finland.png", Utils.class));
-  private static final ImageIcon France = new ImageIcon(Utils.getImageFromJAR("/image/country/France.png", Utils.class));
-  private static final ImageIcon Germany = new ImageIcon(Utils.getImageFromJAR("/image/country/Germany.png", Utils.class));
-  private static final ImageIcon Greece = new ImageIcon(Utils.getImageFromJAR("/image/country/Greece.png", Utils.class));
-  private static final ImageIcon Hong_Kong = new ImageIcon(Utils.getImageFromJAR("/image/country/Hong_Kong.png", Utils.class));
-  private static final ImageIcon Hungary = new ImageIcon(Utils.getImageFromJAR("/image/country/Hungary.png", Utils.class));
-  private static final ImageIcon Iceland = new ImageIcon(Utils.getImageFromJAR("/image/country/Iceland.png", Utils.class));
-  private static final ImageIcon India = new ImageIcon(Utils.getImageFromJAR("/image/country/India.png", Utils.class));
-  private static final ImageIcon Iran = new ImageIcon(Utils.getImageFromJAR("/image/country/Iran.png", Utils.class));
-  private static final ImageIcon Ireland = new ImageIcon(Utils.getImageFromJAR("/image/country/Ireland.png", Utils.class));
-  private static final ImageIcon Italy = new ImageIcon(Utils.getImageFromJAR("/image/country/Italy.png", Utils.class));
-  private static final ImageIcon Israel = new ImageIcon(Utils.getImageFromJAR("/image/country/Israel.png", Utils.class));
-  private static final ImageIcon Japan = new ImageIcon(Utils.getImageFromJAR("/image/country/Japan.png", Utils.class));
-  private static final ImageIcon Malaysia = new ImageIcon(Utils.getImageFromJAR("/image/country/Malaysia.png", Utils.class));
-  private static final ImageIcon Mexico = new ImageIcon(Utils.getImageFromJAR("/image/country/Mexico.png", Utils.class));
-  private static final ImageIcon Netherlands = new ImageIcon(Utils.getImageFromJAR("/image/country/Netherlands.png", Utils.class));
-  private static final ImageIcon New_Zealand = new ImageIcon(Utils.getImageFromJAR("/image/country/New_Zealand.png", Utils.class));
-  private static final ImageIcon Norway = new ImageIcon(Utils.getImageFromJAR("/image/country/Norway.png", Utils.class));
-  private static final ImageIcon Pakistan = new ImageIcon(Utils.getImageFromJAR("/image/country/Pakistan.png", Utils.class));
-  private static final ImageIcon Poland = new ImageIcon(Utils.getImageFromJAR("/image/country/Poland.png", Utils.class));
-  private static final ImageIcon Portugal = new ImageIcon(Utils.getImageFromJAR("/image/country/Portugal.png", Utils.class));
-  private static final ImageIcon Romania = new ImageIcon(Utils.getImageFromJAR("/image/country/Romania.png", Utils.class));
-  private static final ImageIcon Russian_Federation = new ImageIcon(Utils.getImageFromJAR("/image/country/Russian_Federation.png", Utils.class));
-  private static final ImageIcon Singapore = new ImageIcon(Utils.getImageFromJAR("/image/country/Singapore.png", Utils.class));
-  private static final ImageIcon South_Africa = new ImageIcon(Utils.getImageFromJAR("/image/country/South_Africa.png", Utils.class));
-  private static final ImageIcon South_Korea = new ImageIcon(Utils.getImageFromJAR("/image/country/South_Korea.png", Utils.class));
-  private static final ImageIcon Spain = new ImageIcon(Utils.getImageFromJAR("/image/country/Spain.png", Utils.class));
-  private static final ImageIcon Sweden = new ImageIcon(Utils.getImageFromJAR("/image/country/Sweden.png", Utils.class));
-  private static final ImageIcon Switzerland = new ImageIcon(Utils.getImageFromJAR("/image/country/Switzerland.png", Utils.class));
-  private static final ImageIcon Thailand = new ImageIcon(Utils.getImageFromJAR("/image/country/Thailand.png", Utils.class));
-  private static final ImageIcon Turkey = new ImageIcon(Utils.getImageFromJAR("/image/country/Turkey.png", Utils.class));
-  private static final ImageIcon Ukraine = new ImageIcon(Utils.getImageFromJAR("/image/country/Ukraine.png", Utils.class));
-  private static final ImageIcon United_Kingdom = new ImageIcon(Utils.getImageFromJAR("/image/country/United_Kingdom.png", Utils.class));
-  private static final ImageIcon United_States = new ImageIcon(Utils.getImageFromJAR("/image/country/United_States_of_America.png", Utils.class));
+  private static final ImageIcon Algeria = new ImageIcon(ImageUtils.getImageFromJAR("country/Algeria.png"));
+  private static final ImageIcon Argentina = new ImageIcon(ImageUtils.getImageFromJAR("country/Argentina.png"));
+  private static final ImageIcon Australia = new ImageIcon(ImageUtils.getImageFromJAR("country/Australia.png"));
+  private static final ImageIcon Austria = new ImageIcon(ImageUtils.getImageFromJAR("country/Austria.png"));
+  private static final ImageIcon Belgium = new ImageIcon(ImageUtils.getImageFromJAR("country/Belgium.png"));
+  private static final ImageIcon Brazil = new ImageIcon(ImageUtils.getImageFromJAR("country/Brazil.png"));
+  private static final ImageIcon Bulgaria = new ImageIcon(ImageUtils.getImageFromJAR("country/Bulgaria.png"));
+  private static final ImageIcon Canada = new ImageIcon(ImageUtils.getImageFromJAR("country/Canada.png"));
+  private static final ImageIcon China = new ImageIcon(ImageUtils.getImageFromJAR("country/China.png"));
+  private static final ImageIcon Colombia = new ImageIcon(ImageUtils.getImageFromJAR("country/Colombia.png"));
+  private static final ImageIcon Costa_Rica = new ImageIcon(ImageUtils.getImageFromJAR("country/Costa_Rica.png"));
+  private static final ImageIcon Croatia = new ImageIcon(ImageUtils.getImageFromJAR("country/Croatia.png"));
+  private static final ImageIcon Czech_Republic = new ImageIcon(ImageUtils.getImageFromJAR("country/Czech_Republic.png"));
+  private static final ImageIcon Denmark = new ImageIcon(ImageUtils.getImageFromJAR("country/Denmark.png"));
+  private static final ImageIcon Finland = new ImageIcon(ImageUtils.getImageFromJAR("country/Finland.png"));
+  private static final ImageIcon France = new ImageIcon(ImageUtils.getImageFromJAR("country/France.png"));
+  private static final ImageIcon Germany = new ImageIcon(ImageUtils.getImageFromJAR("country/Germany.png"));
+  private static final ImageIcon Greece = new ImageIcon(ImageUtils.getImageFromJAR("country/Greece.png"));
+  private static final ImageIcon Hong_Kong = new ImageIcon(ImageUtils.getImageFromJAR("country/Hong_Kong.png"));
+  private static final ImageIcon Hungary = new ImageIcon(ImageUtils.getImageFromJAR("country/Hungary.png"));
+  private static final ImageIcon Iceland = new ImageIcon(ImageUtils.getImageFromJAR("country/Iceland.png"));
+  private static final ImageIcon India = new ImageIcon(ImageUtils.getImageFromJAR("country/India.png"));
+  private static final ImageIcon Iran = new ImageIcon(ImageUtils.getImageFromJAR("country/Iran.png"));
+  private static final ImageIcon Ireland = new ImageIcon(ImageUtils.getImageFromJAR("country/Ireland.png"));
+  private static final ImageIcon Italy = new ImageIcon(ImageUtils.getImageFromJAR("country/Italy.png"));
+  private static final ImageIcon Israel = new ImageIcon(ImageUtils.getImageFromJAR("country/Israel.png"));
+  private static final ImageIcon Japan = new ImageIcon(ImageUtils.getImageFromJAR("country/Japan.png"));
+  private static final ImageIcon Malaysia = new ImageIcon(ImageUtils.getImageFromJAR("country/Malaysia.png"));
+  private static final ImageIcon Mexico = new ImageIcon(ImageUtils.getImageFromJAR("country/Mexico.png"));
+  private static final ImageIcon Netherlands = new ImageIcon(ImageUtils.getImageFromJAR("country/Netherlands.png"));
+  private static final ImageIcon New_Zealand = new ImageIcon(ImageUtils.getImageFromJAR("country/New_Zealand.png"));
+  private static final ImageIcon Norway = new ImageIcon(ImageUtils.getImageFromJAR("country/Norway.png"));
+  private static final ImageIcon Pakistan = new ImageIcon(ImageUtils.getImageFromJAR("country/Pakistan.png"));
+  private static final ImageIcon Poland = new ImageIcon(ImageUtils.getImageFromJAR("country/Poland.png"));
+  private static final ImageIcon Portugal = new ImageIcon(ImageUtils.getImageFromJAR("country/Portugal.png"));
+  private static final ImageIcon Romania = new ImageIcon(ImageUtils.getImageFromJAR("country/Romania.png"));
+  private static final ImageIcon Russian_Federation = new ImageIcon(ImageUtils.getImageFromJAR("country/Russian_Federation.png"));
+  private static final ImageIcon Singapore = new ImageIcon(ImageUtils.getImageFromJAR("country/Singapore.png"));
+  private static final ImageIcon South_Africa = new ImageIcon(ImageUtils.getImageFromJAR("country/South_Africa.png"));
+  private static final ImageIcon South_Korea = new ImageIcon(ImageUtils.getImageFromJAR("country/South_Korea.png"));
+  private static final ImageIcon Spain = new ImageIcon(ImageUtils.getImageFromJAR("country/Spain.png"));
+  private static final ImageIcon Sweden = new ImageIcon(ImageUtils.getImageFromJAR("country/Sweden.png"));
+  private static final ImageIcon Switzerland = new ImageIcon(ImageUtils.getImageFromJAR("country/Switzerland.png"));
+  private static final ImageIcon Thailand = new ImageIcon(ImageUtils.getImageFromJAR("country/Thailand.png"));
+  private static final ImageIcon Turkey = new ImageIcon(ImageUtils.getImageFromJAR("country/Turkey.png"));
+  private static final ImageIcon Ukraine = new ImageIcon(ImageUtils.getImageFromJAR("country/Ukraine.png"));
+  private static final ImageIcon United_Kingdom = new ImageIcon(ImageUtils.getImageFromJAR("country/United_Kingdom.png"));
+  private static final ImageIcon United_States = new ImageIcon(ImageUtils.getImageFromJAR("country/United_States_of_America.png"));
   //Unknown flag
-  private static final ImageIcon Unknown = new ImageIcon(Utils.getImageFromJAR("/image/country/Unknown.png", Utils.class));
+  private static final ImageIcon Unknown = new ImageIcon(ImageUtils.getImageFromJAR("country/Unknown.png"));
 
   // Only most common country for video media
   private enum Countries {

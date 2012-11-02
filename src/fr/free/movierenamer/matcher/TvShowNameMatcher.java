@@ -17,8 +17,7 @@
  */
 package fr.free.movierenamer.matcher;
 
-import fr.free.movierenamer.media.MediaFile;
-import fr.free.movierenamer.utils.Utils;
+import fr.free.movierenamer.utils.FileUtils;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -28,23 +27,37 @@ import java.util.regex.Pattern;
 
 /**
  * Class TvShowNameMatcher
- *
+ * 
  * @author Nicolas Magré
  */
-public class TvShowNameMatcher {
+public class TvShowNameMatcher extends MediaNameMatcher {
 
-  private MediaFile mfile;
-  private String filename;
   private static final String SEASONFOLDERPATTERN = "(?i:season)|(?i:saison)|(?i:s).*\\d+";
   private static final String TVSHOWFOLDERPATTERN = ".*(?i:tvshwow)|(?i:tv)|(?i:serie)|(?i:série).*";
   private static final String TVSHOWNAMEBYEPISODE = "(([sS]\\d++\\?\\d++)|(\\d++x\\d++.?\\d++x\\d++)|(\\d++[eE]\\d\\d)|([sS]\\d++.[eE]\\d++)|(\\d++x\\d++)|(\\d++x\\d++.?\\d++\\?\\d++)|(.\\d{3}.))";
-  private List<String> regexs;
+
+  public static enum TvShowPattern {
+    SxEPattern("([0-9]{1,2})x([0-9]{1,2})(?:\\D|$)"),
+    SxEPattern2("s([0-9]{1,2}).?[eé]([0-9]{1,2})"),
+    SxEPattern3("(?:^|[\\W} ])([0-9]{1,2})([0-9][0-9])[\\._ \\-]"),
+    SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
+    SxEPattern5("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
+    SxEPattern6("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
+    SxEPattern7("([0-9]{2}) ([0-9]{2})(?:\\D|$)");
+    private Pattern pattern;
+
+    private TvShowPattern(String pattern) {
+      this.pattern = Pattern.compile(pattern);
+    }
+
+    public Pattern getPattern() {
+      return pattern;
+    }
+  }
   private final boolean DEBUG = true;
 
-  public TvShowNameMatcher(MediaFile mfile, List<String> regexs) {
-    this.mfile = mfile;
-    filename = mfile.getFile().getName();
-    this.regexs = regexs;
+  public TvShowNameMatcher(File file, List<String> regexs) {
+    super(file, regexs);
   }
 
   /**
@@ -52,9 +65,10 @@ public class TvShowNameMatcher {
    *
    * @return TvShow name or empty string if no name found
    */
-  public String getTvShowName() {
+  @Override
+  public String getName() {
     if (DEBUG) {
-      System.out.println("File : " + mfile.getFile().getName());
+      System.out.println("File : " + file.getName());
     }
     if (DEBUG) {
       System.out.println("  Match :");
@@ -67,9 +81,14 @@ public class TvShowNameMatcher {
     getMatcherRes(names, matchByCommonSeqFileName());
     getMatcherRes(names, matchByRegEx());
     if (names.isEmpty()) {
-      return CommonWords.normalize(filename.substring(0, filename.lastIndexOf(".")));
+      return CommonWords.normalize(file.getName().substring(0, file.getName().lastIndexOf(".")));
     }
     return CommonWords.matchAll(names, true);
+  }
+
+  @Override
+  public int getYear() {
+    return -1;
   }
 
   /**
@@ -95,7 +114,7 @@ public class TvShowNameMatcher {
   private NameMatcher matchByFolderName() {
     NameMatcher folderNameMatcher = new NameMatcher("Folder Name Macther", NameMatcher.HIGH);
     String res = "";
-    final File mediafile = mfile.getFile();
+    final File mediafile = file;
     if (mediafile.getParent() != null) {
       Pattern pattern = Pattern.compile(SEASONFOLDERPATTERN);
       Matcher matcher = pattern.matcher(mediafile.getParent().substring(mediafile.getParent().lastIndexOf(File.separator) + 1));
@@ -119,7 +138,7 @@ public class TvShowNameMatcher {
   private NameMatcher matchByEpisode() {
 
     NameMatcher episodeMatcher = new NameMatcher("Episode Matcher", NameMatcher.MEDIUM);
-    String name = mfile.getFile().getName();
+    String name = file.getName();
     Pattern pattern = Pattern.compile(TVSHOWNAMEBYEPISODE);
     Matcher matcher = pattern.matcher(name);
     
@@ -145,15 +164,15 @@ public class TvShowNameMatcher {
   private NameMatcher matchByCommonSeqFileName() {
 
     NameMatcher commonMatcher = new NameMatcher("Common sequence in files matcher", NameMatcher.LOW);
-    File file = mfile.getFile().getParentFile();
-    File[] files = file.listFiles(new FileFilter() {//Retreive all file that seems to be a tvShow in parent folder
+    File fil = file.getParentFile();
+    File[] files = fil.listFiles(new FileFilter() {// Retreive all file that seems to be a tvShow in parent folder
 
       @Override
       public boolean accept(File file) {
         if (!file.getName().contains(".")) {
           return false;
         }
-        if (mfile.getFile().equals(file)) {
+            if (file.equals(file)) {
           return false;
         }
         String name = file.getName();
@@ -206,7 +225,7 @@ public class TvShowNameMatcher {
    */
   private NameMatcher matchByRegEx() {
     NameMatcher tvshowMatcher = new NameMatcher("Regex Matcher", NameMatcher.MEDIUM);
-    String name = filename.substring(0, filename.lastIndexOf("."));
+    String name = file.getName().substring(0, file.getName().lastIndexOf("."));
     name = CommonWords.getFilteredName(name, regexs);
     tvshowMatcher.setMatch(CommonWords.normalize(name));
     return tvshowMatcher;
@@ -220,7 +239,7 @@ public class TvShowNameMatcher {
    */
   private String getTvShowFolderName(File parentFile) {
     String res = "";
-    if (!Utils.isRootDir(parentFile)) {
+    if (!FileUtils.isRootDir(parentFile)) {
       String parent = parentFile.getName().substring(parentFile.getName().lastIndexOf(File.separator) + 1);
       Pattern pattern = Pattern.compile(TVSHOWFOLDERPATTERN);
       Matcher matcher = pattern.matcher(parent);
