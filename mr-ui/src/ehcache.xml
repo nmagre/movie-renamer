@@ -1,0 +1,64 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false">
+
+	<!--
+	Persistent disk store location (see Cache.java !)
+	-->
+	<diskStore path="${ehcache.disk.store.dir}" />
+	
+	<!--
+	Mandatory Default Cache configuration. These settings will be applied to caches
+	created pragmatically using CacheManager.add(String cacheName).
+	-->
+	<defaultCache
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="120"
+		timeToLiveSeconds="120"
+		overflowToDisk="false"
+		diskPersistent="false"
+		memoryStoreEvictionPolicy="LRU"
+	/>
+	
+	<!--
+	Short-lived (48 hours).
+	-->
+	<cache name="short"
+		maxElementsInMemory="120"
+		maxElementsOnDisk="1200"
+		eternal="false"
+		timeToIdleSeconds="172800"
+		timeToLiveSeconds="172800"
+		overflowToDisk="true"
+		diskPersistent="true"
+		memoryStoreEvictionPolicy="LRU"
+	/>
+	
+	<!--
+	medium-lived (1 week)
+	-->
+	<cache name="medium"
+		maxElementsInMemory="50"
+		maxElementsOnDisk="5000"
+		eternal="false"
+		timeToIdleSeconds="604800"
+		timeToLiveSeconds="604800"
+		overflowToDisk="true"
+		diskPersistent="true"
+		memoryStoreEvictionPolicy="LRU"
+	/>
+	
+	<!--
+	Very long-lived cache (one month)
+	-->
+	<cache name="long"
+		maxElementsInMemory="40"
+		maxElementsOnDisk="240"
+		eternal="false"
+		timeToIdleSeconds="2628000"
+		timeToLiveSeconds="2628000"
+		overflowToDisk="true"
+		diskPersistent="true"
+		memoryStoreEvictionPolicy="LRU"
+	/>
+	
+</ehcache>
