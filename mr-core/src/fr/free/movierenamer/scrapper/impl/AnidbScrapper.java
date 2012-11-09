@@ -57,7 +57,7 @@ public class AnidbScrapper extends MovieScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/anidb.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/anidb.png", getClass()));
   }
 
   @Override

@@ -105,7 +105,7 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/imdb.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/imdb.png", getClass()));
   }
 
   public enum ImdbSearchPattern {

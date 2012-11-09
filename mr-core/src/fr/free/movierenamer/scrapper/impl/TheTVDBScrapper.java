@@ -97,7 +97,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/thetvdb.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/thetvdb.png", getClass()));
   }
 
   @Override

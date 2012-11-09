@@ -57,7 +57,7 @@ public class SerienjunkiesScrapper extends TvShowScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/serienjunkies.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/serienjunkies.png", getClass()));
   }
 
   @Override

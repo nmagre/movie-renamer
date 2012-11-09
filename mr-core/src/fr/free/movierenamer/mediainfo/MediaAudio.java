@@ -79,7 +79,7 @@ public class MediaAudio implements IIconList{
   
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR(String.format("country/%s.png", (language == null) ? "unknown" : language.toLowerCase())));
+    return new ImageIcon(ImageUtils.getImageFromJAR(String.format("country/%s.png", (language == null) ? "unknown" : language.toLowerCase()), getClass()));
   }
   
   @Override

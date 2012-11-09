@@ -84,7 +84,7 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/themoviedb.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/themoviedb.png", getClass()));
   }
 
   @Override

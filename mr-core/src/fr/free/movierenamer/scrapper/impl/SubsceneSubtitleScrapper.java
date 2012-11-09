@@ -68,7 +68,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/subscene.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/subscene.png", getClass()));
   }
 
   @Override

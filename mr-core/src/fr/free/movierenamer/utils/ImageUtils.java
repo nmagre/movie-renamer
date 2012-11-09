@@ -24,6 +24,8 @@ import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -37,23 +39,33 @@ import javax.swing.ImageIcon;
  */
 public final class ImageUtils {
 
+//  static Image getImageFromJAR(String fileName) {
+//    return getImageFromJAR(fileName, ImageUtils.class);
+//  }
+
   /**
-   * Get image from jar file
+   * Get image from jar file (from 'image' folder)
    * 
    * @param <T>
-   * @param fileName Image filename
-   * @param cls Class
+   * @param fileName
+   *          Image filename
+   * @param cls
+   *          Class
    * @return Image file or null
    */
-  public static Image getImageFromJAR(String fileName) {
+  public static Image getImageFromJAR(String fileName, Class<?> clazz) {
     if (fileName == null) {
+      return null;
+    }
+
+    if (clazz == null) {
       return null;
     }
 
     Image image = null;
     byte[] thanksToNetscape;
     Toolkit toolkit = Toolkit.getDefaultToolkit();
-    InputStream in = ImageUtils.class.getResourceAsStream(String.format("/fr/free/movierenamer/ui/image/%s", fileName));
+    InputStream in = clazz.getClass().getResourceAsStream(String.format("/image/%s", fileName));
 
     try {
       int length = in.available();
@@ -75,13 +87,22 @@ public final class ImageUtils {
     return image;
   }
 
+  public static Icon getIcon(URL imagePth, Dimension dim, String defaultImage) {
+    URI uri;
+    try {
+      uri = imagePth.toURI();
+    } catch (URISyntaxException ex) {
+      uri = null;
+    }
+    return getIcon(uri, dim, defaultImage);
+  }
 
   public static Icon getIcon(URI imagePth, Dimension dim, String defaultImage) {
     Cache cache = Cache.getCache("long");
     java.awt.Image img;
     if (imagePth != null) {
-      if(cache !=null){
-        ImageIcon stored =cache.get(imagePth, ImageIcon.class);
+      if (cache != null) {
+        ImageIcon stored = cache.get(imagePth, ImageIcon.class);
         if (stored != null) {
           img = stored.getImage();
         } else {
@@ -99,15 +120,17 @@ public final class ImageUtils {
           }
         } catch (IOException ex) {
           img = null;
-          Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] { ex.getMessage(), imagePth });
+          Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] {
+              ex.getMessage(), imagePth
+          });
         }
       }
     } else {
       img = null;
     }
     if (img == null && defaultImage != null) {
-      //load default image id necessary
-      img = ImageUtils.getImageFromJAR(defaultImage);
+      // load default image id necessary
+      img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);
     }
     if (dim != null) {
       // let's resize
@@ -121,9 +144,9 @@ public final class ImageUtils {
     }
     return icon;
   }
-  
+
   private ImageUtils() {
-	    throw new UnsupportedOperationException();
-	  }
+    throw new UnsupportedOperationException();
+  }
 
 }

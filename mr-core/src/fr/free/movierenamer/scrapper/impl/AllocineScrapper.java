@@ -82,7 +82,7 @@ public class AllocineScrapper extends MovieScrapper {
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/allocine.png"));
+    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/allocine.png", getClass()));
   }
   
   @Override
