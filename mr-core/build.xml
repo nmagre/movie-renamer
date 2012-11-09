@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<project name="Movie_Renamer-core" basedir=".." default="jar-core">
+  <description>Build Movie Renamer core</description>
+
+  <!-- set global properties for this build -->
+  <property name="dir-core" location="mr-core"/>
+  <property name="src-core" location="${dir-core}/src" relative="yes"/>
+  <property name="build-core" location="${dir-core}/build" relative="yes"/>
+  <property name="lib-core"  location="${dir-core}/lib" relative="yes"/>
+  <property name="jarfile-core"  location="${lib-core}/Mr-core.jar" relative="yes"/>
+  
+  <path id="classpath">
+    <fileset dir="${lib-core}">
+      <include name="*.jar"/>
+      <exclude name="Mr-core.jar"/>
+    </fileset>
+    <fileset dir="${lib-core}/test">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init-core">
+    <mkdir dir="${build-core}"/>
+  </target>
+
+  <target name="clean-core">
+    <delete dir="${build-core}"/>
+    <delete file="${jarfile-core}"/>
+  </target>
+
+  <target name="compile-core" depends="init-core" description="compile the source">
+    <javac destdir="${build-core}" includeantruntime="false">
+      <src path="${src-core}"/>
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="jar-core" depends="compile-core">
+    <delete file="${jarfile-core}"/>
+    <jar jarfile="${jarfile-core}" basedir="${build-core}"/>
+  </target>
+
+</project>

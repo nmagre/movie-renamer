@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Movie_Renamer_app" default="mr" basedir=".">
+  <description>Build the project Movie Renamer</description>
+
+  <import file="mr-core/build.xml"/>
+
+  <target name="mr" depends="jar-core">
+    <subant target="jar">
+      <fileset dir="mr-ui" includes="build.xml"/>
+    </subant>
+  </target>
+
+  <target name="core" depends="jar-core">
+    <subant target="jar">
+      <fileset dir="mr-ui" includes="build.xml"/>
+    </subant>
+  </target>
+
+  <target name="cleanall" depends="clean-core">
+    <subant target="clean">
+      <fileset dir="mr-ui" includes="build.xml"/>
+    </subant>
+  </target>
+
+  <target name="installer">
+    <subant target="installer">
+      <fileset dir="mr-ui" includes="build.xml"/>
+    </subant>
+  </target>
+
+</project>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Movie_Renamer" default="default" basedir=".">
-  <description>Builds, tests, and runs the project Movie Renamer.</description>
+<project name="Movie_Renamer" default="jar" basedir=".">
+  <description>Build Movie Renamer</description>
     
   <target name="-pre-init">
     <property file="src/fr/free/movierenamer/version.properties"/>
     <property name="dist.jar" value="dist/${apps}-${apps.version}.jar" />
   </target>
-    
+
   <import file="nbproject/build-impl.xml"/>
-   
+
   <!-- Unix/Windows installer -->
   <target name="mrInstaller" depends="init,compile,jar">
   <!-- check for java version and fail build if not the correct version -->
