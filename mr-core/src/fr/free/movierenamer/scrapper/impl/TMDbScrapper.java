@@ -45,7 +45,7 @@ import fr.free.movierenamer.utils.WebRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
- * Class TMDbScrapper : search movie on TMDB
+ * Class TMDbScrapper : search movie on TMDb
  * 
  * @see http://help.themoviedb.org/kb/api/
  * @author Nicolas Magré
@@ -54,7 +54,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 public class TMDbScrapper extends MovieScrapper {
 
   private static final String host = "api.themoviedb.org";
-  private static final String name = "TheMovieDatabase";
+  private static final String name = "TheMovieDb";
   private static final String version = "2.1"; // TODO change to v3 !!!!
 
   private final String apikey;
