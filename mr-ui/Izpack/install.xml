@@ -48,8 +48,8 @@
       <file src="dist/@JARFILE@" targetdir="$INSTALL_PATH"/>
       <file src="Izpack/Unix/postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
       <file src="Izpack/Windows/postinst.bat" targetdir="$INSTALL_PATH" os="windows"/>
-      <file src="src/fr/free/movierenamer/ui/image/icon.ico" targetdir="$INSTALL_PATH" os="windows"/>
-      <file src="src/fr/free/movierenamer/ui/image/icon-32.png" targetdir="$INSTALL_PATH" os="unix"/>
+      <file src="src/image/ui/icon.ico" targetdir="$INSTALL_PATH" os="windows"/>
+      <file src="src/image/ui/icon-32.png" targetdir="$INSTALL_PATH" os="unix"/>
       
       <file src="Izpack/MacOS/postinst.sh" targetdir="$INSTALL_PATH" os="mac"/>
       <file src="Izpack/MacOS/Contents" targetdir="$INSTALL_PATH" os="mac"/>

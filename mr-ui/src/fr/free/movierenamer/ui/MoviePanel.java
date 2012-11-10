@@ -29,10 +29,10 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.res.UIMediaImage;
 import fr.free.movierenamer.ui.res.UIPersonImage;
 import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.SearchPersonWorker;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -66,9 +66,9 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   private final DefaultListModel subTitleModel = new DefaultListModel();
   private final DefaultListModel audioModel = new DefaultListModel();
   private final DefaultListModel countryModel = new DefaultListModel();
-  private final Icon STAR = new ImageIcon(ImageUtils.getImageFromJAR("star.png"));
-  private final Icon STAR_HALF = new ImageIcon(ImageUtils.getImageFromJAR("star-half.png"));
-  private final Icon STAR_EMPTY = new ImageIcon(ImageUtils.getImageFromJAR("star-empty.png"));
+  private final Icon STAR = new ImageIcon(ImageUtils.getImageFromJAR("ui/star.png"));
+  private final Icon STAR_HALF = new ImageIcon(ImageUtils.getImageFromJAR("ui/star-half.png"));
+  private final Icon STAR_EMPTY = new ImageIcon(ImageUtils.getImageFromJAR("ui/star-empty.png"));
 
   /**
    * Creates new form MoviePanel
@@ -103,7 +103,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         thumbnailsList.ensureIndexIsVisible(thumbnailsList.getSelectedIndex());
         UIMediaImage mediaImage = (UIMediaImage) thumbnailsList.getSelectedValue();
         if (mediaImage != null) {
-          Icon thumbIcon = ImageUtils.getIcon(mediaImage.getInfo().getURI(), thumbDim, "nothumb.png");
+          Icon thumbIcon = ImageUtils.getIcon(mediaImage.getInfo().getHref(), thumbDim, "nothumb.png");
           thumbLbl.setIcon(thumbIcon);
         }
       }
@@ -121,7 +121,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         fanartList.ensureIndexIsVisible(fanartList.getSelectedIndex());
         UIMediaImage mediaImage = (UIMediaImage) fanartList.getSelectedValue();
         if (mediaImage != null) {
-          Icon thumbIcon = ImageUtils.getIcon(mediaImage.getInfo().getURI(), thumbDim, "nothumb.png");
+          Icon thumbIcon = ImageUtils.getIcon(mediaImage.getInfo().getHref(), thumbDim, "nothumb.png");
           thumbLbl.setIcon(thumbIcon);
         }
       }
@@ -185,7 +185,15 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
       countryModel.clear();
       for (Locale country : movieInfo.getCountries()) {
-        ImageIcon icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("country/%s.png", (country == null) ? "unknown" : country.getCountry().toLowerCase())));
+        ImageIcon icon;
+        try{
+          icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("country/%s.png", country.getCountry().toLowerCase())));
+        } catch (Exception e) {
+          icon = null;
+        }
+        if(icon == null) {
+          icon = new ImageIcon(ImageUtils.getImageFromJAR("country/unknown.png"));
+        }
         if (country != null) {
           icon.setDescription(country.getDisplayCountry());
         }
@@ -193,7 +201,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
       }
       countryList.setModel(countryModel);
 
-      Icon thumbIcon = ImageUtils.getIcon(movieInfo.getPosterPath(), thumbDim, "nothumb.png");
+      Icon thumbIcon = ImageUtils.getIcon(movieInfo.getPosterPath(), thumbDim, "ui/nothumb.png");
       thumbLbl.setIcon(thumbIcon);
       // dropFanartTarget.setActive(true);
       // dropThumbTarget.setActive(true);
@@ -400,11 +408,11 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     genreLbl.setFont(new Font("Ubuntu", 1, 13));
     starPanel.setAlignmentY(0.0F);
 
-    star5.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png")));
-    star4.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png")));
-    star3.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png")));
-    star2.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png")));
-    star1.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png")));
+    star5.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png")));
+    star4.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png")));
+    star3.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png")));
+    star2.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png")));
+    star1.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png")));
     GroupLayout starPanelLayout = new GroupLayout(starPanel);
     starPanel.setLayout(starPanelLayout);
     starPanelLayout.setHorizontalGroup(starPanelLayout.createParallelGroup(Alignment.LEADING).addGroup(

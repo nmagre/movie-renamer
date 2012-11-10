@@ -1,5 +1,5 @@
 /*
- * Movie Renamer
+ * mr-ui
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,42 +17,46 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.scrapper.MediaScrapper;
+import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
- * Class ActorImage
- * 
- * @author Nicolas Magré
+ * Class UIScrapper
  * @author Simon QUÉMÉNEUR
  */
-public class UIPersonImage implements IIconList {
-  private final Dimension actorListDim = new Dimension(30, 53);
-  private final CastingInfo person;
-  private final Icon icon;
+public class UIScrapper implements IIconList {
+  
+  private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
 
-  public UIPersonImage(CastingInfo person) {
-    this.person = person;
-    this.icon = ImageUtils.getIcon(this.person.getPicturePath(), actorListDim, "ui/unknown.png");
+  public UIScrapper(MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
+    this.scrapper = scrapper;
   }
 
   @Override
   public Icon getIcon() {
-    return icon;
+    return new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scrapper.getName().toLowerCase())));
   }
-
-  public String getName() {
-    return person.getName();
+  
+  public MediaScrapper<? extends Media, ? extends MediaInfo> getScrapper() {
+    return scrapper;
   }
-
-  public CastingInfo getInfo() {
-    return person;
+  
+  @Override
+  public boolean equals(Object obj) {
+    if(obj ==null || !(obj instanceof UIScrapper)) {
+      return false;
+    }
+    UIScrapper other = (UIScrapper) obj;
+    return scrapper.getName().equals(other.scrapper.getName());
   }
-
+  
   @Override
   public String toString() {
-    return (person != null) ? person.getName() : null;
+    return scrapper.getName();
   }
+
 }

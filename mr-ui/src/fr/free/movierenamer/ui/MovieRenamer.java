@@ -29,10 +29,11 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.scrapper.impl.ScrapperManager;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.res.UIScrapper;
 import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.ui.utils.FileFilter;
 import fr.free.movierenamer.ui.utils.Loading;
 import fr.free.movierenamer.ui.utils.MediaRenamed;
@@ -84,7 +85,7 @@ public class MovieRenamer extends javax.swing.JFrame {
   private MovieInfoWorker movieInfoWorker;
   private TvShowInfoWorker tvShowInfoWorker;*/
   // Property change
-  private PropertyChangeSupport errorSupport;
+  private final PropertyChangeSupport errorSupport;
   private PropertyChangeSupport settingsChange;
   // Media Panel
   //private MoviePanel moviePnl;
@@ -445,7 +446,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         searchResultList = new com.alee.laf.list.WebList();
         renameTb = new com.alee.laf.toolbar.WebToolBar();
 
-        updateBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/system-software-update-5.png"))); // NOI18N
+        updateBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/system-software-update-5.png"))); // NOI18N
         updateBtn.setFocusable(false);
         updateBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         updateBtn.setRolloverDarkBorderOnly(true);
@@ -458,7 +459,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             }
         });
 
-        settingBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/system-settings.png"))); // NOI18N
+        settingBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/system-settings.png"))); // NOI18N
         settingBtn.setFocusable(false);
         settingBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         settingBtn.setRolloverDarkBorderOnly(true);
@@ -471,7 +472,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             }
         });
 
-        helpBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/system-help-3.png"))); // NOI18N
+        helpBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/system-help-3.png"))); // NOI18N
         helpBtn.setFocusable(false);
         helpBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         helpBtn.setRolloverDarkBorderOnly(true);
@@ -484,7 +485,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             }
         });
 
-        exitBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/application-exit.png"))); // NOI18N
+        exitBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/application-exit.png"))); // NOI18N
         exitBtn.setFocusable(false);
         exitBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         exitBtn.setRolloverDarkBorderOnly(true);
@@ -537,7 +538,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         menuTb.setRollover(true);
         menuTb.setRound(10);
 
-        openBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/folder-video.png"))); // NOI18N
+        openBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/folder-video.png"))); // NOI18N
         openBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         openBtn.setRolloverDarkBorderOnly(true);
         openBtn.setRolloverDecoratedOnly(true);
@@ -552,7 +553,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         menuTb.add(openBtn);
         menuTb.add(separator1);
 
-        movieModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/movie.png"))); // NOI18N
+        movieModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/movie.png"))); // NOI18N
         movieModeBtn.setFocusable(false);
         movieModeBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         movieModeBtn.setRolloverDarkBorderOnly(true);
@@ -566,7 +567,7 @@ public class MovieRenamer extends javax.swing.JFrame {
         });
         menuTb.add(movieModeBtn);
 
-        tvShowModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/tv.png"))); // NOI18N
+        tvShowModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/tv.png"))); // NOI18N
         tvShowModeBtn.setFocusable(false);
         tvShowModeBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         tvShowModeBtn.setRolloverDarkBorderOnly(true);
@@ -645,7 +646,7 @@ public class MovieRenamer extends javax.swing.JFrame {
             }
         });
 
-        searchBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/search.png"))); // NOI18N
+        searchBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/search.png"))); // NOI18N
         searchBtn.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -686,7 +687,7 @@ public class MovieRenamer extends javax.swing.JFrame {
                 .addComponent(searchScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
         );
 
-        searchField.setLeadingComponent(new JLabel(new javax.swing.ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/search.png"))));
+        searchField.setLeadingComponent(new JLabel(new javax.swing.ImageIcon(getClass().getResource("/image/ui/search.png"))));
 
         searchSp.setLeftComponent(searchPnl);
 
@@ -733,11 +734,11 @@ public class MovieRenamer extends javax.swing.JFrame {
     
     DefaultComboBoxModel scrapperNameModel = new DefaultComboBoxModel();
     for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
-      scrapperNameModel.addElement(scrapper);
+      scrapperNameModel.addElement(new UIScrapper(scrapper)); 
     }
-    scrapperCb.setRenderer(new IconListRenderer<MovieScrapper>());
+    scrapperCb.setRenderer(new IconListRenderer<UIScrapper>());
     scrapperCb.setModel(scrapperNameModel);
-    scrapperCb.setSelectedItem(ScrapperManager.getScrapper(Settings.getInstance().movieScrapper));
+    scrapperCb.setSelectedItem(new UIScrapper(ScrapperManager.getScrapper(Settings.getInstance().movieScrapper)));
     
     clearInterface(false, true);
     
@@ -750,11 +751,11 @@ public class MovieRenamer extends javax.swing.JFrame {
     tvShowModeBtn.setEnabled(false);
     DefaultComboBoxModel scrapperNameModel = new DefaultComboBoxModel();
     for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
-      scrapperNameModel.addElement(scrapper);
+      scrapperNameModel.addElement(new UIScrapper(scrapper));
     }
-    scrapperCb.setRenderer(new IconListRenderer<TvShowScrapper>());
+    scrapperCb.setRenderer(new IconListRenderer<UIScrapper>());
     scrapperCb.setModel(scrapperNameModel);
-    scrapperCb.setSelectedItem(ScrapperManager.getScrapper(Settings.getInstance().tvshowScrapper));
+    scrapperCb.setSelectedItem(new UIScrapper(ScrapperManager.getScrapper(Settings.getInstance().tvshowScrapper)));
     clearInterface(false, true);
     fileFormatField.setText(Settings.getInstance().tvShowFilenameFormat);
   }// GEN-LAST:event_tvShowModeBtnActionPerformed
@@ -855,7 +856,7 @@ public class MovieRenamer extends javax.swing.JFrame {
     }
   }// GEN-LAST:event_openBtnActionPerformed
 
-//<<<<<<< HEAD
+//<<<<<<< HEAD //TODO ??? what is that ????
 //    @Override
 //    @SuppressWarnings("unchecked")
 //    public void propertyChange(PropertyChangeEvent evt) {
@@ -960,7 +961,7 @@ public class MovieRenamer extends javax.swing.JFrame {
     loadDial(true, true, false, false);
 
     @SuppressWarnings("unchecked")
-    MediaScrapper<? extends Media, ? extends MediaInfo> mediaScrapper = (MediaScrapper<? extends Media, ? extends MediaInfo>) scrapperCb.getSelectedItem();
+    MediaScrapper<? extends Media, ? extends MediaInfo> mediaScrapper = ((UIScrapper)scrapperCb.getSelectedItem()).getScrapper();
     SearchMediaWorker searchWorker = new SearchMediaWorker(errorSupport, this, currentMedia, searchResultList, mediaScrapper);
     // SearchMediaWorkerListener listener = new SearchMediaWorkerListener(this, searchResultList, searchWorker);
     // searchWorker.addPropertyChangeListener(listener);

@@ -25,9 +25,9 @@ import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.res.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.utils.ImageUtils;
+import fr.free.movierenamer.ui.settings.Settings;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
@@ -45,9 +45,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -59,22 +59,22 @@ import javax.swing.event.ListSelectionListener;
  */
 public class Setting extends JDialog {// FIXME : I'm not working :(
 
-  private Settings setting;
-  private PropertyChangeSupport settingsChange;
+  private final Settings setting;
+  private final PropertyChangeSupport settingsChange;
   private String[] extensions;
-  private List<String> filters;
+  private final List<String> filters;
   private int currentExtensionIndex;
   private int currentFilterIndex;
-  private JRadioButton[] rBtnThumbList;
-  private JRadioButton[] rBtnFanartList;
-  private JRadioButton[] rBtnCase;
-  private JRadioButton[] rBtnFolderCase;
-  private JRadioButton[] rBtnScrapper;
-  private JRadioButton[] rBtnScrapperLang;
-  private JRadioButton[] rBtnTvScrapper;
-  private JRadioButton[] rBtnTvScrapperLang;
-  private JRadioButton[] rBtnNFO;
-  private String[][] format = {
+  private final JRadioButton[] rBtnThumbList;
+  private final JRadioButton[] rBtnFanartList;
+  private final JRadioButton[] rBtnCase;
+  private final JRadioButton[] rBtnFolderCase;
+  private final JRadioButton[] rBtnScrapper;
+  private final JRadioButton[] rBtnScrapperLang;
+  private final JRadioButton[] rBtnTvScrapper;
+  private final JRadioButton[] rBtnTvScrapperLang;
+  private final JRadioButton[] rBtnNFO;
+  private final String[][] format = {
     {"<t>", "Matrix"}, {"<ot>", "The Matrix"}, {"<y>", "1999"}, {"<tt>", "tt0133093"},
     {"<a>", "Keanu Reeves | Laurence Fishburne | Carrie-Anne Moss | Hugo Weaving | Gloria Foster"},
     {"<a1>", "Keanu Reeves"}, {"<a2>", "Laurence Fishburne"}, {"<a3>", "Carrie-Anne Moss"}, {"<a4>", "Hugo Weaving"}, {"<a5>", "Gloria Foster"},
@@ -507,6 +507,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         saveBtn.setToolTipText(bundle.getString("save")); // NOI18N
         saveBtn.setMargin(new Insets(2, 2, 2, 2));
         saveBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 saveBtnActionPerformed(evt);
             }
@@ -516,6 +517,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         CancelBtn.setToolTipText(bundle.getString("cancel")); // NOI18N
         CancelBtn.setMargin(new Insets(2, 2, 2, 2));
         CancelBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 CancelBtnActionPerformed(evt);
             }
@@ -532,6 +534,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         scanSubfolderChk.setFont(new Font("Ubuntu", 0, 12));         scanSubfolderChk.setText(LocaleUtils.i18n("autoScanSubfolder"));         scanSubfolderChk.setToolTipText(LocaleUtils.i18n("autoScanSubfolderTt")); 
         showNotaMovieWarnChk.setFont(new Font("Ubuntu", 0, 12));         showNotaMovieWarnChk.setText(LocaleUtils.i18n("showNotMovieWarn"));         showNotaMovieWarnChk.setToolTipText(LocaleUtils.i18n("showNotMovieWarnTt")); 
         movieInfoPanelChk.setFont(new Font("Ubuntu", 0, 12));         movieInfoPanelChk.setText(LocaleUtils.i18n("showMoviePanel"));         movieInfoPanelChk.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent evt) {
                 movieInfoPanelChkItemStateChanged(evt);
             }
@@ -664,6 +667,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         filenameTestBtn.setFont(new Font("Ubuntu", 1, 12));         filenameTestBtn.setText("test");
         filenameTestBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 filenameTestBtnActionPerformed(evt);
             }
@@ -681,6 +685,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         helpBtn.setMinimumSize(new Dimension(26, 26));
         helpBtn.setPreferredSize(new Dimension(26, 26));
         helpBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 helpBtnActionPerformed(evt);
             }
@@ -826,6 +831,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         helpBtn1.setMinimumSize(new Dimension(26, 26));
         helpBtn1.setPreferredSize(new Dimension(26, 26));
         helpBtn1.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 helpBtn1ActionPerformed(evt);
             }
@@ -854,6 +860,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         folderTestBtn.setFont(new Font("Ubuntu", 1, 12));         folderTestBtn.setText("test");
         folderTestBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 folderTestBtnActionPerformed(evt);
             }
@@ -1014,6 +1021,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         resultHelp.setMinimumSize(new Dimension(26, 26));
         resultHelp.setPreferredSize(new Dimension(26, 26));
         resultHelp.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 resultHelpActionPerformed(evt);
             }
@@ -1072,6 +1080,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         scrapperGroup.add(imdbRBtn);
         imdbRBtn.setText("Imdb");
         imdbRBtn.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent evt) {
                 imdbRBtnItemStateChanged(evt);
             }
@@ -1083,6 +1092,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         scrapperGroup.add(allocineRbtn);
         allocineRbtn.setText("Allocine");
         allocineRbtn.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent evt) {
                 allocineRbtnItemStateChanged(evt);
             }
@@ -1184,6 +1194,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         tvdbRBtn.setSelected(true);
         tvdbRBtn.setText("Tvdb");
         tvdbRBtn.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent evt) {
                 tvdbRBtnItemStateChanged(evt);
             }
@@ -1196,6 +1207,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         scrapperTvGroup.add(allocineTVRbtn);
         allocineTVRbtn.setText("Allocine");
         allocineTVRbtn.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(ItemEvent evt) {
                 allocineTVRbtnItemStateChanged(evt);
             }
@@ -1414,6 +1426,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         extensionPnl.setBorder(BorderFactory.createTitledBorder(null, "Extension", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Ubuntu", 1, 14))); 
         removeExtensuionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeExtensuionBtn.setToolTipText(bundle.getString("removeExt")); // NOI18N
         removeExtensuionBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 removeExtensuionBtnActionPerformed(evt);
             }
@@ -1421,6 +1434,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         addExtensionBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png")));         addExtensionBtn.setToolTipText(bundle.getString("addExt")); // NOI18N
         addExtensionBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 addExtensionBtnActionPerformed(evt);
             }
@@ -1434,6 +1448,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         extensionHelp.setMinimumSize(new Dimension(26, 26));
         extensionHelp.setPreferredSize(new Dimension(26, 26));
         extensionHelp.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 extensionHelpActionPerformed(evt);
             }
@@ -1479,6 +1494,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         moveLeft.setIcon(new ImageIcon(getClass().getResource("/image/go-previous-3.png")));         moveLeft.setToolTipText(bundle.getString("moveLeft")); // NOI18N
         moveLeft.setEnabled(false);
         moveLeft.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 moveLeftActionPerformed(evt);
             }
@@ -1487,6 +1503,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         moveRight.setIcon(new ImageIcon(getClass().getResource("/image/go-next-3.png")));         moveRight.setToolTipText(bundle.getString("moveRight")); // NOI18N
         moveRight.setEnabled(false);
         moveRight.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 moveRightActionPerformed(evt);
             }
@@ -1494,6 +1511,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         addFilter.setIcon(new ImageIcon(getClass().getResource("/image/list-add-5.png")));         addFilter.setToolTipText(bundle.getString("addFilter")); // NOI18N
         addFilter.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 addFilterActionPerformed(evt);
             }
@@ -1501,6 +1519,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         removeFilterBtn.setIcon(new ImageIcon(getClass().getResource("/image/list-remove-4.png")));         removeFilterBtn.setToolTipText(bundle.getString("removeFilter")); // NOI18N
         removeFilterBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 removeFilterBtnActionPerformed(evt);
             }
@@ -1514,6 +1533,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         filenameFilterHelp.setMinimumSize(new Dimension(26, 26));
         filenameFilterHelp.setPreferredSize(new Dimension(26, 26));
         filenameFilterHelp.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 filenameFilterHelpActionPerformed(evt);
             }
@@ -1522,6 +1542,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         resetNameFilter.setIcon(new ImageIcon(getClass().getResource("/image/dialog-cancel-2-16.png")));         resetNameFilter.setToolTipText(bundle.getString("resetFilterList")); // NOI18N
         resetNameFilter.setMargin(new Insets(2, 2, 2, 2));
         resetNameFilter.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 resetNameFilterActionPerformed(evt);
             }
@@ -1603,6 +1624,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         clearThumbBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearThumbBtn.setToolTipText(bundle.getString("clearThumbCache")); // NOI18N
         clearThumbBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 clearThumbBtnActionPerformed(evt);
             }
@@ -1610,6 +1632,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         clearFanartBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearFanartBtn.setToolTipText(bundle.getString("clearFanartCache")); // NOI18N
         clearFanartBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 clearFanartBtnActionPerformed(evt);
             }
@@ -1617,6 +1640,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         clearActorBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearActorBtn.setToolTipText(bundle.getString("clearActorCache")); // NOI18N
         clearActorBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 clearActorBtnActionPerformed(evt);
             }
@@ -1662,6 +1686,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
 
         clearXmlBtn.setIcon(new ImageIcon(getClass().getResource("/image/user-trash-full.png")));         clearXmlBtn.setToolTipText(bundle.getString("clearXmlCache")); // NOI18N
         clearXmlBtn.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 clearXmlBtnActionPerformed(evt);
             }
@@ -1781,7 +1806,9 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         webPanel2.setBorder(BorderFactory.createTitledBorder(null, "Run script after rename process", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 14))); 
         webList1.setModel(new AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            @Override
             public int getSize() { return strings.length; }
+            @Override
             public Object getElementAt(int i) { return strings[i]; }
         });
         jScrollPane1.setViewportView(webList1);
@@ -1805,6 +1832,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
         helpBtn2.setMinimumSize(new Dimension(26, 26));
         helpBtn2.setPreferredSize(new Dimension(26, 26));
         helpBtn2.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 helpBtn2ActionPerformed(evt);
             }

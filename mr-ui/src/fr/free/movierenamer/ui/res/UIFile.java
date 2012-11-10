@@ -17,11 +17,11 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.matcher.MediaNameMatcher;
-import fr.free.movierenamer.matcher.MovieNameMatcher;
-import fr.free.movierenamer.matcher.TvShowNameMatcher;
 import fr.free.movierenamer.mediainfo.MediaTag;
-import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.namematcher.MediaNameMatcher;
+import fr.free.movierenamer.namematcher.MovieNameMatcher;
+import fr.free.movierenamer.namematcher.TvShowNameMatcher;
+import fr.free.movierenamer.ui.settings.Settings;
 import java.io.File;
 import javax.swing.Icon;
 

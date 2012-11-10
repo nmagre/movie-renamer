@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -83,7 +83,6 @@ public abstract class Flag {
 
   // Only most common country for video media
   private enum Countries {
-
     ARGENTINA(Argentina, "Argentine", "AR","Argentinien"),
     AUSTRALIA(Australia, "Australie", "AU","Australien"),
     AUSTRIA(Austria, "Autriche", "AT", "Österreich"),
@@ -125,7 +124,7 @@ public abstract class Flag {
     THAILAND(Thailand, "Thaïlande", "TH", "Thailand", "Thailandia", "Tailandia"),
     UNITED_KINGDOM(United_Kingdom, "Royaume-Uni", "England", "Angleterre", "Grande-Bretagne", "UK", "Vereinigtes Königreich", "Regno Unito", "Reino Unido"),
     UNITED_STATES(United_States, "United States of America", "USA", "U.S.A.", "États-Unis d'Amérique", "États-Unis", "US", "Vereinigte Staaten", "Stati Uniti", "Estados Unidos");
-    private List<String> identifier;
+    private final List<String> identifier;
     public final ImageIcon flag;
 
     Countries(ImageIcon flag, String... countries) {
@@ -141,7 +140,6 @@ public abstract class Flag {
 
   // Only most common languages for video media
   private enum Lang {
-
     Arabic(Algeria, "Arabe", "Arabisch", "Arabo", "árabe"),
     Bulgarian(Bulgaria, "Bulgare", "Bulgarisch", "Bulgarian", "Búlgaro"),
     Chinese(China, "Chinois", "Cinese", "Chino"),
@@ -170,7 +168,7 @@ public abstract class Flag {
     Swedish(Sweden, "Suédois", "Schwedisch", "Svedese", "Sueco"),
     Turkish(Turkey, "Turc", "Türkisch", "Turco"),
     Ukrainian(Ukraine, "Ukrainien", "Ukrainisch", "Ucraino", "Ucranio");
-    private List<String> identifier;
+    private final List<String> identifier;
     public final ImageIcon flag;
 
     Lang(ImageIcon flag, String... langs) {

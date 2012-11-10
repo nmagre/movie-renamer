@@ -20,7 +20,7 @@ package fr.free.movierenamer.ui.res;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Dimension;
 import javax.swing.Icon;
 
@@ -42,7 +42,7 @@ public class UISearchResult implements IIconList {
   public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
     this.searchResult = searchResult;
     this.scrapper = scrapper;
-    this.icon = ImageUtils.getIcon(this.searchResult.getURI(), searchListDim, "nothumb.png");
+    this.icon = ImageUtils.getIcon(this.searchResult.getURL(), searchListDim, "ui/nothumb.png");
   }
 
   @Override

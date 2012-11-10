@@ -5,7 +5,7 @@
     <Component class="com.alee.laf.button.WebButton" name="updateBtn">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/fr/free/movierenamer/ui/image/system-software-update-5.png"/>
+          <Image iconType="3" name="/image/ui/system-software-update-5.png"/>
         </Property>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -20,7 +20,7 @@
     <Component class="com.alee.laf.button.WebButton" name="settingBtn">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/fr/free/movierenamer/ui/image/system-settings.png"/>
+          <Image iconType="3" name="/image/ui/system-settings.png"/>
         </Property>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -35,7 +35,7 @@
     <Component class="com.alee.laf.button.WebButton" name="helpBtn">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/fr/free/movierenamer/ui/image/system-help-3.png"/>
+          <Image iconType="3" name="/image/ui/system-help-3.png"/>
         </Property>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -50,7 +50,7 @@
     <Component class="com.alee.laf.button.WebButton" name="exitBtn">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/fr/free/movierenamer/ui/image/application-exit.png"/>
+          <Image iconType="3" name="/image/ui/application-exit.png"/>
         </Property>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -160,7 +160,7 @@
         <Component class="com.alee.laf.button.WebButton" name="openBtn">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/fr/free/movierenamer/ui/image/folder-video.png"/>
+              <Image iconType="3" name="/image/ui/folder-video.png"/>
             </Property>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
@@ -177,7 +177,7 @@
         <Component class="com.alee.laf.button.WebButton" name="movieModeBtn">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/fr/free/movierenamer/ui/image/movie.png"/>
+              <Image iconType="3" name="/image/ui/movie.png"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -192,7 +192,7 @@
         <Component class="com.alee.laf.button.WebButton" name="tvShowModeBtn">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/fr/free/movierenamer/ui/image/tv.png"/>
+              <Image iconType="3" name="/image/ui/tv.png"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -399,7 +399,7 @@
                         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="searchFieldKeyReleased"/>
                       </Events>
                       <AuxValues>
-                        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="searchField.setLeadingComponent(new JLabel(new javax.swing.ImageIcon(getClass().getResource(&quot;/fr/free/movierenamer/ui/image/search.png&quot;))));"/>
+                        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="searchField.setLeadingComponent(new JLabel(new javax.swing.ImageIcon(getClass().getResource(&quot;/image/ui/search.png&quot;))));"/>
                       </AuxValues>
                     </Component>
                     <Component class="com.alee.laf.combobox.WebComboBox" name="scrapperCb">
@@ -412,7 +412,7 @@
                     <Component class="com.alee.laf.button.WebButton" name="searchBtn">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/fr/free/movierenamer/ui/image/search.png"/>
+                          <Image iconType="3" name="/image/ui/search.png"/>
                         </Property>
                       </Properties>
                       <Events>

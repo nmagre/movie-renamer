@@ -15,41 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.utils;
-
-import fr.free.movierenamer.ui.settings.Settings;
-
-import com.alee.extended.filefilter.DefaultFileFilter;
-import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
-import java.io.File;
+package fr.free.movierenamer.ui.exception;
 
 /**
- * Class MovieFileFilter
- * 
+ * Class ActionNotValidException, Exception on non valid action
  * @author Nicolas Magré
  */
-public class FileFilter extends DefaultFileFilter {
+public class ActionNotValidException extends Exception {
 
-  public FileFilter() {
-    super();
-  }
+	public ActionNotValidException() {}
 
-  @Override
-  public boolean accept(File file) {
-    if (!Settings.getInstance().useExtensionFilter) {
-      return true;
-    }
+	public ActionNotValidException(String message) {
+		super(message);
+	}
 
-    if (file.isDirectory()) {
-      return true;
-    }
+	public ActionNotValidException(Throwable cause) {
+		super(cause);
+	}
 
-    return FileUtils.hasExtension(file, Settings.getInstance().extensions);
-  }
-
-  @Override
-  public String getDescription() {
-    return LocaleUtils.i18n("media");
-  }
+	public ActionNotValidException(String message, Throwable cause) {
+		super(message, cause);
+	} 
 }

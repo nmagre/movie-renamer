@@ -15,41 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
-import javax.swing.Icon;
+import fr.free.movierenamer.ui.settings.Settings;
+
+import com.alee.laf.WebLookAndFeel;
+import fr.free.movierenamer.utils.Cache;
 
 /**
- * Class MediaImage
+ * Class Main
  * 
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIMediaImage implements IIconList {
-  private final Dimension searchListDim = new Dimension(45, 65);
-  private final ImageInfo info;
-  private final Icon icon;
+public class Main {
+  private static MovieRenamer mvr;
 
-  public UIMediaImage(ImageInfo info) {
-    this.info = info;
-    this.icon = ImageUtils.getIcon(this.info.getHref(), searchListDim, "nothumb.png");
+  public static void main(String args[]) {
+
+    Settings setting = Settings.getInstance();
+
+    // Install look and feel
+    WebLookAndFeel.install();
+
+    // Clear cache
+    if (setting.clearCache) {
+      Cache.clearAllCache();
+    }
+
+    java.awt.EventQueue.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+        mvr = new MovieRenamer();
+        mvr.setVisible(true);
+      }
+    });
   }
-
-  @Override
-  public Icon getIcon() {
-    return icon;
-  }
-
-  public ImageInfo getInfo() {
-    return info;
-  }
-
-  @Override
-  public String toString() {
-    return (info != null) ? info.getDescription() : null;
-  }
-
 }

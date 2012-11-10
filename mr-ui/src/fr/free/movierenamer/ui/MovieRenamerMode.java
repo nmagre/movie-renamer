@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import javax.swing.ImageIcon;
 
@@ -30,8 +30,8 @@ import javax.swing.ImageIcon;
  */
 public enum MovieRenamerMode {
 
-  MOVIEMODE(LocaleUtils.i18n("movie"), LocaleUtils.i18n("movieMode"), UIFile.MediaType.MOVIE, "movie.png"),
-  TVSHOWMODE(LocaleUtils.i18n("tvshow"), LocaleUtils.i18n("tvshowMode"), UIFile.MediaType.TVSHOW, "tv.png");
+  MOVIEMODE(LocaleUtils.i18n("movie"), LocaleUtils.i18n("movieMode"), UIFile.MediaType.MOVIE, "ui/movie.png"),
+  TVSHOWMODE(LocaleUtils.i18n("tvshow"), LocaleUtils.i18n("tvshowMode"), UIFile.MediaType.TVSHOW, "ui/tv.png");
 
   private UIFile.MediaType mediaType;
   private String title;

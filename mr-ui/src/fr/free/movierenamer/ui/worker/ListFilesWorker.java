@@ -18,12 +18,12 @@
 package fr.free.movierenamer.ui.worker;
 
 import com.alee.laf.list.WebList;
-import fr.free.movierenamer.matcher.TvShowNameMatcher;
-import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.ui.utils.MediaRenamed;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;

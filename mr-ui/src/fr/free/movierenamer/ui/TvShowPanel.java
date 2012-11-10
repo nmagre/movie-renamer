@@ -26,9 +26,9 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -317,11 +317,11 @@ public class TvShowPanel extends WebPanel implements IMediaPanel {
         genreLbl.setText(LocaleUtils.i18n("genre"));         genreLbl.setFont(new Font("Ubuntu", 1, 13)); 
         starPanel.setAlignmentY(0.0F);
 
-        star5.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png"))); 
-        star4.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png"))); 
-        star3.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png"))); 
-        star2.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png"))); 
-        star1.setIcon(new ImageIcon(getClass().getResource("/fr/free/movierenamer/ui/image/star-empty.png"))); 
+        star5.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); 
+        star4.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); 
+        star3.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); 
+        star2.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); 
+        star1.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); 
         GroupLayout starPanelLayout = new GroupLayout(starPanel);
         starPanel.setLayout(starPanelLayout);
         starPanelLayout.setHorizontalGroup(

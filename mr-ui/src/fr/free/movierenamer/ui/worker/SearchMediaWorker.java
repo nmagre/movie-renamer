@@ -17,11 +17,12 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import fr.free.movierenamer.ui.settings.Settings;
+
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.IconListRenderer;
