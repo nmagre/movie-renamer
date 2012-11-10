@@ -22,7 +22,6 @@ import java.util.Locale;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
-import fr.free.movierenamer.utils.IIconList;
 
 /**
  * Class Scrapper
@@ -30,7 +29,7 @@ import fr.free.movierenamer.utils.IIconList;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class Scrapper implements IIconList {
+public abstract class Scrapper {
 
   private Locale defaultLocale;
   private Locale locale;

@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -40,7 +37,6 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.EpisodeUtils;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.WebRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -67,11 +63,6 @@ public class TvRageScrapper extends TvShowScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/tvrage.png", getClass()));
   }
 
   @Override

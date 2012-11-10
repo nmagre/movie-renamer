@@ -28,9 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -38,7 +35,6 @@ import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.info.SubtitleInfo.SubtitleProperty;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.WebRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -64,11 +60,6 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/subscene.png", getClass()));
   }
 
   @Override

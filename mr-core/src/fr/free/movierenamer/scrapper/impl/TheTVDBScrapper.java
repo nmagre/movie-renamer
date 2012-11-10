@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
@@ -49,7 +47,6 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.EpisodeUtils;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.WebRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -93,11 +90,6 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/thetvdb.png", getClass()));
   }
 
   @Override

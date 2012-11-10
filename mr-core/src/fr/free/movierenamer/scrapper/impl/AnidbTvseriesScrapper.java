@@ -20,16 +20,12 @@ package fr.free.movierenamer.scrapper.impl;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
-import fr.free.movierenamer.utils.ImageUtils;
 
 /**
  * Class AnidbScrapper : search tvshow on anidb (Anime DataBase)
@@ -54,11 +50,6 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/anidb.png", getClass()));
   }
 
   @Override

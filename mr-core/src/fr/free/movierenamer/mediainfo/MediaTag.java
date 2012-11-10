@@ -19,11 +19,13 @@ package fr.free.movierenamer.mediainfo;
 
 import fr.free.movierenamer.mediainfo.MediaInfo.StreamKind;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -272,8 +274,8 @@ public class MediaTag {
 
     for (int i = 0; i < getAudioStreamCount(); i++) {
       String title = getAudioTitle(i).trim();
-      String lang = getAudioLanguage(i).trim();
-      if (title.equals(StringUtils.EMPTY) && lang.equals(StringUtils.EMPTY)) {
+      Locale lang = LocaleUtils.getLocale(getAudioLanguage(i).trim());
+      if (title.equals(StringUtils.EMPTY) && lang.equals(Locale.ROOT)) {
         continue;
       }
       MediaAudio audio = new MediaAudio(i + 1);
@@ -295,8 +297,8 @@ public class MediaTag {
 
     for (int i = 0; i < getTextStreamCount(); i++) {
       String title = getTextTitle(i).trim();
-      String lang = getTextLanguage(i).trim();
-      if (title.equals(StringUtils.EMPTY) && lang.equals(StringUtils.EMPTY)) {
+      Locale lang = LocaleUtils.getLocale(getTextLanguage(i).trim());
+      if (title.equals(StringUtils.EMPTY) && lang.equals(Locale.ROOT)) {
         continue;
       }
       MediaSubTitle subTitle = new MediaSubTitle(i + 1);

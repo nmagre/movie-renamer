@@ -20,8 +20,6 @@ package fr.free.movierenamer.scrapper.impl;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.Icon;
-
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.ImageScrapper;
 import fr.free.movierenamer.searchinfo.Media;
@@ -45,13 +43,6 @@ public class FanartTV extends ImageScrapper {
 
   @Override
   protected String getHost() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    // return null;
-  }
-
-  @Override
-  public Icon getIcon() {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

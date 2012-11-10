@@ -25,9 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.json.simple.JSONObject;
 
 import fr.free.movierenamer.info.CastingInfo;
@@ -40,7 +37,6 @@ import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.WebRequest;
@@ -78,11 +74,6 @@ public class AllocineScrapper extends MovieScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/allocine.png", getClass()));
   }
   
   @Override

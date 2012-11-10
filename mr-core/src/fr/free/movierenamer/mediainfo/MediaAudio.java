@@ -17,28 +17,25 @@
  */
 package fr.free.movierenamer.mediainfo;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
-import fr.free.movierenamer.utils.IIconList;
-import fr.free.movierenamer.utils.ImageUtils;
+import java.util.Locale;
 
 /**
  * Class MediaAudio
  * 
  * @author Nicolas Magré
  */
-public class MediaAudio implements IIconList{
+public class MediaAudio {
 
   private final int stream;
   private String title;
   private String codec;
   private String channel;
-  private String language;
+  private Locale language;
   
   public MediaAudio(int stream) {
     this.stream = stream;
-    codec = channel = language = title = "?";
+    codec = channel = title = "?";
+    language = Locale.ROOT;
   }
 
   public int getStream() {
@@ -61,11 +58,11 @@ public class MediaAudio implements IIconList{
     this.codec = codec;
   }
 
-  public String getLanguage() {
+  public Locale getLanguage() {
     return language;
   }
 
-  public void setLanguage(String language) {
+  public void setLanguage(Locale language) {
     this.language = language;
   }
 
@@ -75,11 +72,6 @@ public class MediaAudio implements IIconList{
 
   public void setTitle(String title) {
     this.title = title;
-  }
-  
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR(String.format("country/%s.png", (language == null) ? "unknown" : language.toLowerCase()), getClass()));
   }
   
   @Override

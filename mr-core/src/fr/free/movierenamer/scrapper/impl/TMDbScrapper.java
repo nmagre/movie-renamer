@@ -27,9 +27,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -44,7 +41,6 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.WebRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -80,11 +76,6 @@ public class TMDbScrapper extends MovieScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/themoviedb.png", getClass()));
   }
 
   @Override

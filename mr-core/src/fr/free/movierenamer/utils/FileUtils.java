@@ -42,7 +42,7 @@ public final class FileUtils {
   /**
    * Pattern used for matching file extensions.
    */
-  public static final Pattern EXTENSION = Pattern.compile("(?<=.[.])\\p{Alnum}+$");
+  private static final Pattern EXTENSION = Pattern.compile("(?<=.[.])\\p{Alnum}+$");
 
   public static String getExtension(File file) {
     if (file.isDirectory())

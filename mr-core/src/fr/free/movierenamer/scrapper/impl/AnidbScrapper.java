@@ -20,15 +20,11 @@ package fr.free.movierenamer.scrapper.impl;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.utils.ImageUtils;
 
 /**
  * Class AnidbScrapper : search movie on anidb (Anime DataBase)
@@ -53,11 +49,6 @@ public class AnidbScrapper extends MovieScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/anidb.png", getClass()));
   }
 
   @Override

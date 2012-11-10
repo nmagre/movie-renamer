@@ -20,7 +20,6 @@ package fr.free.movierenamer.scrapper.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.Assert;
 

@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.swing.Icon;
+
 import fr.free.movierenamer.utils.Date;
 
 /**

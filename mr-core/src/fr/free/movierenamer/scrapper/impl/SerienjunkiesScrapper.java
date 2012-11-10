@@ -20,16 +20,12 @@ package fr.free.movierenamer.scrapper.impl;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
-import fr.free.movierenamer.utils.ImageUtils;
 
 /**
  * Class SerienjunkiesScrapper : search tvshow on Serienjunkies
@@ -53,11 +49,6 @@ public class SerienjunkiesScrapper extends TvShowScrapper {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/serienjunkies.png", getClass()));
   }
 
   @Override

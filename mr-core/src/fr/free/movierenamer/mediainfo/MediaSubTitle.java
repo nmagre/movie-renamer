@@ -17,22 +17,18 @@
  */
 package fr.free.movierenamer.mediainfo;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
-import fr.free.movierenamer.utils.IIconList;
-import fr.free.movierenamer.utils.ImageUtils;
+import java.util.Locale;
 
 /**
  * Class MediaSubTitle
  * 
  * @author Nicolas Magré
  */
-public class MediaSubTitle implements IIconList {
+public class MediaSubTitle {
 
   private final int stream;
   private String title;
-  private String language;
+  private Locale language;
 
   public int getStream() {
     return stream;
@@ -40,14 +36,15 @@ public class MediaSubTitle implements IIconList {
 
   public MediaSubTitle(int stream) {
     this.stream = stream;
-    title = language = "?";
+    title = "?";
+    language = Locale.ROOT;
   }
 
-  public String getLanguage() {
+  public Locale getLanguage() {
     return language;
   }
 
-  public void setLanguage(String language) {
+  public void setLanguage(Locale language) {
     this.language = language;
   }
 
@@ -57,11 +54,6 @@ public class MediaSubTitle implements IIconList {
 
   public void setTitle(String title) {
     this.title = title;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR(String.format("country/%s.png", (language == null) ? "unknown" : language.toLowerCase()), getClass()));
   }
 
   @Override

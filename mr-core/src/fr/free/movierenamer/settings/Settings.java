@@ -139,14 +139,16 @@ public final class Settings {
   public boolean sortBySimiYear = true;
   public int nbResult = 2;
   public boolean displayApproximateResult = false;
-  public String customUserAgent = "";
   
   // Proxy
-  public boolean useProxy = false;
-  public String proxyUrl = "";
-  public int proxyPort = 0;
+  public boolean useProxy = true;
+  public String proxyUrl = "10.2.1.10";
+  public int proxyPort = 3128;
+  
+  //http param
   public int requestTimeOut = 30;
-
+  public String customUserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2";
+  
   /**
    * Private build for singleton fix
    * 

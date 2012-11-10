@@ -20,9 +20,6 @@ package fr.free.movierenamer.scrapper.impl;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.ImageInfo;
@@ -30,7 +27,6 @@ import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.ImageUtils;
 
 /**
  * Class AllocineTvseriesScrapper
@@ -63,11 +59,6 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   @Override
   protected String getHost() {
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/allocine.png", getClass()));
   }
 
   @Override

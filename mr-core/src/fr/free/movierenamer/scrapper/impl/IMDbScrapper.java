@@ -29,9 +29,6 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -47,7 +44,6 @@ import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.ClassUtils;
-import fr.free.movierenamer.utils.ImageUtils;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.WebRequest;
@@ -101,11 +97,6 @@ public class IMDbScrapper extends MovieScrapper {
       }
     }
     return host;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/imdb.png", getClass()));
   }
 
   public enum ImdbSearchPattern {

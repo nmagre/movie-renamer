@@ -20,13 +20,9 @@ package fr.free.movierenamer.scrapper.impl;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.utils.ImageUtils;
 
 /**
  * Class OpenSubtitlesScrapper : search subtitles on OpenSubtitles
@@ -52,11 +48,6 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR("scrapper/opensubtitles.png", getClass()));
   }
 
   @Override
