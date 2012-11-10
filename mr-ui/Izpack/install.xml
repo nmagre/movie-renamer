@@ -19,7 +19,7 @@
   
   <resources>
     <res id="shortcutSpec.xml" src="Izpack/shortcutSpec-tmp.xml"/>
-    <res id="InfoPanel.info" src="gpl-3.0.txt"/>
+    <res id="InfoPanel.info" src="../gpl-3.0.txt"/>
     <res id="Unix_shortcutSpec.xml" src="Izpack/Unix/Unix_shortcutSpec-tmp.xml"/>
   </resources>
 
@@ -43,16 +43,17 @@
     <pack name="Movie Renamer" required="yes">
       <description>Movie Renamer @VERSION@</description>
       <file src="lib" targetdir="$INSTALL_PATH"/>
-      <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH" os="unix|windows"/>
+      <file src="../mr-core/lib" targetdir="$INSTALL_PATH"/>
+      <file src="../gpl-3.0.txt" targetdir="$INSTALL_PATH" os="unix|windows"/>
       <file src="dist/@JARFILE@" targetdir="$INSTALL_PATH"/>
       <file src="Izpack/Unix/postinst.sh" targetdir="$INSTALL_PATH" os="unix"/>
       <file src="Izpack/Windows/postinst.bat" targetdir="$INSTALL_PATH" os="windows"/>
-      <file src="src/image/icon.ico" targetdir="$INSTALL_PATH" os="windows"/>
-      <file src="src/image/icon-32.png" targetdir="$INSTALL_PATH" os="unix"/>
+      <file src="src/fr/free/movierenamer/ui/image/icon.ico" targetdir="$INSTALL_PATH" os="windows"/>
+      <file src="src/fr/free/movierenamer/ui/image/icon-32.png" targetdir="$INSTALL_PATH" os="unix"/>
       
       <file src="Izpack/MacOS/postinst.sh" targetdir="$INSTALL_PATH" os="mac"/>
       <file src="Izpack/MacOS/Contents" targetdir="$INSTALL_PATH" os="mac"/>
-      <file src="gpl-3.0.txt" targetdir="$INSTALL_PATH/Contents/Resources" os="mac"/>
+      <file src="../gpl-3.0.txt" targetdir="$INSTALL_PATH/Contents/Resources" os="mac"/>
 
       <executable targetfile="$INSTALL_PATH/postinst.sh" os="unix" stage="postinstall" failure="abort">
         <args>
@@ -78,7 +79,8 @@
     </pack>
     <pack name="Sources" required="no" preselected="no">
       <description>Movie Renamer @VERSION@ sources</description>
-      <file src="src" targetdir="$INSTALL_PATH"/>
+      <file src="src" targetdir="$INSTALL_PATH/mr-ui"/>
+      <file src="../mr-core/src" targetdir="$INSTALL_PATH/mr-core"/>
     </pack>
   </packs>
 </installation>
