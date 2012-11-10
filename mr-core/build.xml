@@ -6,9 +6,9 @@
 	<property name="dir-core" location="mr-core" />
 	<property name="src-core" location="${dir-core}/src" relative="yes" />
 	<property name="lib-core" location="${dir-core}/lib" relative="yes" />
-	<property name="dist-core" location="${dir-core}/dist" relative="yes" />
-	<property name="build-core" location="${dist-core}/build" relative="yes" />
-	<property name="jarfile-core" location="${dist-core}/mr-core.jar" relative="yes" />
+	<property name="dist-core" location="${dir-core}/lib" relative="yes" />
+	<property name="build-core" location="${dir-core}/build" relative="yes" />
+	<property name="jarfile-core" location="${dist-core}/Mr-core.jar" relative="yes" />
 
 	<path id="classpath">
 		<fileset dir="${lib-core}">
