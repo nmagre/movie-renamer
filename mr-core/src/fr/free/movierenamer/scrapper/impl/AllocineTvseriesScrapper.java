@@ -37,7 +37,7 @@ import fr.free.movierenamer.settings.Settings;
 public class AllocineTvseriesScrapper extends TvShowScrapper {
 
   private static final String host = "api.allocine.fr";
-  private static final String name = "Allocine TvSeries";
+  private static final String name = "Allocine";
   private static final String version = "3";
 
   private final String apikey;

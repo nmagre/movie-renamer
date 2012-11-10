@@ -34,8 +34,8 @@ import fr.free.movierenamer.searchinfo.Movie;
  */
 public class AnidbScrapper extends MovieScrapper {
 
-  private final String host = "anidb.net";
-  private final String name = "AniDB";
+  private static final String host = "anidb.net";
+  private static final String name = "AniDB";
 
   public AnidbScrapper() {
     super(Locale.ENGLISH);

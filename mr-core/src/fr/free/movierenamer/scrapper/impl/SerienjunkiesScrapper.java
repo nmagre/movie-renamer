@@ -35,20 +35,21 @@ import fr.free.movierenamer.searchinfo.TvShow;
  */
 public class SerienjunkiesScrapper extends TvShowScrapper {
 
+  private static final String host = "???";
+  private static final String name = "Serienjunkies";
+
   public SerienjunkiesScrapper() {
     super(Locale.ENGLISH);
   }
 
   @Override
   public String getName() {
-    return "Serienjunkies";
+    return name;
   }
 
   @Override
   protected String getHost() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    //return null;
+    return host;
   }
 
   @Override

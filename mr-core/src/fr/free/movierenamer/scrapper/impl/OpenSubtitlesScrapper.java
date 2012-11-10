@@ -32,22 +32,21 @@ import fr.free.movierenamer.searchinfo.Subtitle;
  */
 public class OpenSubtitlesScrapper extends SubtitleScrapper {
 
+  private static final String host = "???";
+  private static final String name = "OpenSubtitles";
+
   public OpenSubtitlesScrapper() {
     super(Locale.ENGLISH);
   }
   
   @Override
   public String getName() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    //return null;
+    return name;
   }
 
   @Override
   protected String getHost() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    //return null;
+    return host;
   }
 
   @Override

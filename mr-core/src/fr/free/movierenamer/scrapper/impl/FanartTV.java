@@ -30,22 +30,21 @@ import fr.free.movierenamer.searchinfo.Media;
  */
 public class FanartTV extends ImageScrapper {
 
+  private static final String host = "???";
+  private static final String name = "FanartTV";
+
   public FanartTV() {
     super(Locale.ENGLISH);
   }
 
   @Override
   public String getName() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    // return null;
+    return host;
   }
 
   @Override
   protected String getHost() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    // return null;
+    return name;
   }
 
   @Override

@@ -36,7 +36,7 @@ import fr.free.movierenamer.searchinfo.TvShow;
 public class AnidbTvseriesScrapper extends TvShowScrapper {
 
   private final String host = "anidb.net";
-  private final String name = "AniDB TvSeries";
+  private final String name = "AniDB";
 
   public AnidbTvseriesScrapper() {
     super(Locale.ENGLISH);

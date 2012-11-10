@@ -58,7 +58,7 @@ import fr.free.movierenamer.utils.XPathUtils;
  */
 public final class TheTVDBScrapper extends TvShowScrapper {
   private static final String host = "www.thetvdb.com";
-  private static final String name = "The TVDB";
+  private static final String name = "TheTVDB";
 
   /**
    * @see http://thetvdb.com/?tab=apiregister
