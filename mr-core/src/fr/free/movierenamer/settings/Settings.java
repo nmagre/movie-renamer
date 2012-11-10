@@ -87,8 +87,8 @@ public final class Settings {
   private static final String sZero = "0";
 
   // files
-  private static final String configFile = appName_nospace + "_core.conf";
-  private static final String logFile = appName_nospace + "_core.log";
+  private static final String configFile = appName_nospace + ".conf";
+  private static final String logFile = appName_nospace + ".log";
 
   // Misc
   private static boolean xmlError = false;
