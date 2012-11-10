@@ -27,10 +27,9 @@ import org.junit.Assert;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
+import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapperTest;
-import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.searchinfo.TvShow;
 
 /**
@@ -81,7 +80,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
     }
     
     Assert.fail();
-  };
+  }
 
   @Override
   public void getImages() throws Exception {
