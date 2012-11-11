@@ -69,7 +69,7 @@ public abstract class Scrapper {
   }
 
   public boolean hasLocaleSupport() {
-    return true;
+    return false;
   }
 
   public final void setLocale(Locale locale) {
