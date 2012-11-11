@@ -17,9 +17,9 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
+
+import org.junit.Assert;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
@@ -49,21 +49,21 @@ public final class TvRageScrapperTest extends TvShowScrapperTest {
 
     TvShow tvShow = results.get(0);
 
-    assertEquals("Buffy the Vampire Slayer", tvShow.getName());
-    assertEquals("http://images.tvrage.com/shows/2930.jpg", tvShow.getURL());
-    assertEquals(1997, tvShow.getYear());
-    assertEquals(2930, tvShow.getMediaId());
+    Assert.assertEquals("Buffy the Vampire Slayer", tvShow.getName());
+    Assert.assertEquals("http://images.tvrage.com/shows/3/2930.jpg", tvShow.getURL().toExternalForm());
+    Assert.assertEquals(1997, tvShow.getYear());
+    Assert.assertEquals(2930, tvShow.getMediaId());
   }
 
   @Override
   public void getTvShowInfo() throws Exception {
     TvShowInfo tvShow = tvrage.getInfo(new TvShow(27811, null, null, -1));
 
-    assertEquals("Homeland", tvShow.getName());
-    assertEquals("2011-02-10", tvShow.getFirstAired().toString());
-    assertEquals("Returning Series", tvShow.getStatus());
-    assertEquals("Action|Crime|Current Events|Drama|Family|Military/War|Politics|Religion|Romance/Dating|Thriller", tvShow.getGenres());
-    assertEquals("http://images.tvrage.com/shows/27811.jpg", tvShow.getPosterPath());
+    Assert.assertEquals("Homeland", tvShow.getName());
+    Assert.assertEquals("2011-10-02", tvShow.getFirstAired().toString());
+    Assert.assertEquals("Returning Series", tvShow.getStatus());
+    Assert.assertEquals("[Action, Crime, Current Events, Drama, Family, Military/War, Politics, Religion, Romance/Dating, Thriller]", tvShow.getGenres().toString());
+    Assert.assertEquals("http://images.tvrage.com/shows/28/27811.jpg", tvShow.getPosterPath().toString());
   }
 
   @Override
@@ -75,26 +75,26 @@ public final class TvRageScrapperTest extends TvShowScrapperTest {
 
     List<EpisodeInfo> s03 = EpisodeUtils.filterBySeason(episodes, 3);
 
-    assertEquals(13, s03.size());
+    Assert.assertEquals(13, s03.size());
 
     EpisodeInfo s03e13 = s03.get(12);
 
-    assertEquals("Breaking Bad", s03e13.getTvShowName());
-    assertEquals("Full Measure", s03e13.getName());
-    assertEquals("13", s03e13.getEpisode().toString());
-    assertEquals("3", s03e13.getSeason().toString());
-    assertEquals("2010-06-13", s03e13.getAirdate().toString());
+    Assert.assertEquals("Breaking Bad", s03e13.getTvShowName());
+    Assert.assertEquals("Full Measure", s03e13.getName());
+    Assert.assertEquals("13", s03e13.getEpisode().toString());
+    Assert.assertEquals("3", s03e13.getSeason().toString());
+    Assert.assertEquals("2010-06-13", s03e13.getAirdate().toString());
   }
 
   @Override
   public void getCasting() throws Exception {
     List<CastingInfo> cast = tvrage.getCasting(new TvShow(2930, null, null, -1));
-    assertEquals(null, cast);
+    Assert.assertEquals(null, cast);
   };
 
   @Override
   public void getImages() throws Exception {
     List<ImageInfo> images = tvrage.getImages(new TvShow(1858, null, null, -1));
-    assertEquals(null, images);
+    Assert.assertEquals(null, images);
   }
 }

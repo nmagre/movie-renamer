@@ -17,15 +17,9 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
 
-import java.util.List;
-import java.util.Locale;
-
-import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
-import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class AnidbScrapperTest
@@ -42,33 +36,37 @@ public class AnidbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    List<Movie> list = anidb.search("princesse mononoke");
-    
-    Movie anime = list.get(0);
-    assertEquals("Princesse Mononoke", anime.getName());
-    assertEquals("http://img7.anidb.net/pics/anime/13197.jpg", anime.getURL().toExternalForm());
-    assertEquals(1997, anime.getYear());
-    assertEquals(-1, anime.getImdbId());
-    assertEquals(7, anime.getMediaId());
+    Assert.fail();
+//    List<Movie> list = anidb.search("princesse mononoke");
+//    
+//    Movie anime = list.get(0);
+//    Assert.assertEquals("Princesse Mononoke", anime.getName());
+//    Assert.assertEquals("http://img7.anidb.net/pics/anime/13197.jpg", anime.getURL().toExternalForm());
+//    Assert.assertEquals(1997, anime.getYear());
+//    Assert.assertEquals(-1, anime.getImdbId());
+//    Assert.assertEquals(7, anime.getMediaId());
   }
 
   @Override
   public void getMovieInfo() throws Exception {
-    anidb.setLocale(Locale.GERMAN);
-    MovieInfo anime = anidb.getInfo(new Movie(7, null, null, -1, -1));
-
-    assertEquals("I?????", anime.getTitle());
+    Assert.fail();
+//    anidb.setLocale(Locale.GERMAN);
+//    MovieInfo anime = anidb.getInfo(new Movie(7, null, null, -1, -1));
+//
+//    Assert.assertEquals("?????", anime.getTitle());
   }
 
   @Override
   public void getCasting() throws Exception {
-    MovieInfo anime = anidb.getInfo(new Movie(7, null, null, -1, -1));
-    assertEquals("??????", anime.getDirectors().get(0));
-  };
+    Assert.fail();
+//    MovieInfo anime = anidb.getInfo(new Movie(7, null, null, -1, -1));
+//    Assert.assertEquals("??????", anime.getDirectors().get(0));
+  }
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = anidb.getImages(new Movie(7, null, null, -1, -1));
-    assertEquals("?????", images.get(0).getCategory());
+    Assert.fail();
+//    List<ImageInfo> images = anidb.getImages(new Movie(7, null, null, -1, -1));
+//    Assert.assertEquals("?????", images.get(0).getCategory());
   }
 }

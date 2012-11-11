@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -51,11 +49,11 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
     Movie movie = results.get(0);
 
-    assertEquals("低俗小说", movie.getName());
-    assertEquals("http://cf2.imgobject.com/t/p/original/2ak8InN93TQDKrE9UkIgUvy9rER.jpg", movie.getURL().toExternalForm());
-    assertEquals(1994, movie.getYear());
-    assertEquals(110912, movie.getImdbId());
-    assertEquals(680, movie.getMediaId());
+    Assert.assertEquals("低俗小说", movie.getName());
+    Assert.assertNotNull(movie.getURL());
+    Assert.assertEquals(1994, movie.getYear());
+    Assert.assertEquals(110912, movie.getImdbId());
+    Assert.assertEquals(680, movie.getMediaId());
   }
 
   @Override
@@ -63,11 +61,11 @@ public class TMDbScrapperTest extends MovieScrapperTest {
     tmdb.setLocale(Locale.GERMAN);
     MovieInfo movie = tmdb.getInfo(new Movie(1858, null, null, -1, -1));
 
-    assertEquals(Integer.valueOf(1858), movie.getId());
-    assertEquals(Integer.valueOf(418279), movie.getImdbId());
-    assertEquals("Transformers", movie.getTitle());
-    assertEquals("2007-07-03", movie.getReleasedDate().toString());
-    assertEquals("[Abenteuer, Action, Thriller, Science Fiction]", movie.getGenres().toString());
+    Assert.assertEquals(Integer.valueOf(1858), movie.getId());
+    Assert.assertEquals(Integer.valueOf(418279), movie.getImdbId());
+    Assert.assertEquals("Transformers", movie.getTitle());
+    Assert.assertEquals("2007-07-03", movie.getReleasedDate().toString());
+    Assert.assertEquals("[Abenteuer, Action, Thriller, Science Fiction]", movie.getGenres().toString());
 
   }
 
@@ -77,11 +75,11 @@ public class TMDbScrapperTest extends MovieScrapperTest {
     boolean dir = false, actor = false;
     for(CastingInfo info : cast) {
       if(!dir && info.isDirector()) {
-        assertEquals("Michael Bay", info.getName());
+        Assert.assertEquals("Michael Bay", info.getName());
         dir = true;
       }
       if(!actor&&info.isActor()) {
-        assertEquals("Shia LaBeouf", info.getName());
+        Assert.assertEquals("Shia LaBeouf", info.getName());
         actor = true;
       }
     }
@@ -95,8 +93,8 @@ public class TMDbScrapperTest extends MovieScrapperTest {
   public void getImages() throws Exception {
     List<ImageInfo> images = tmdb.getImages(new Movie(1858, null, null, -1, -1));
     
-    assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
-    assertEquals("http://cf2.imgobject.com/t/p/original/p4OHBbXfxToWF4e36uEhQMSidWu.jpg", images.get(0).getHref().toExternalForm());
+    Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
+    Assert.assertEquals("http://cf2.imgobject.com/t/p/original/p4OHBbXfxToWF4e36uEhQMSidWu.jpg", images.get(0).getHref().toExternalForm());
   }
 
 }

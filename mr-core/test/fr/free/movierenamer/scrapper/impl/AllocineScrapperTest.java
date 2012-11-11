@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 
 import org.junit.Assert;
@@ -48,20 +46,20 @@ public class AllocineScrapperTest extends MovieScrapperTest {
     List<Movie> results = allocine.search("avatar");
 
     Movie movie = results.get(0);
-    assertEquals("Avatar", movie.getName());
-    assertEquals("http://images.allocine.fr/medias/nmedia/18/78/95/70/19485155.jpg", movie.getURL().toExternalForm());
-    assertEquals(2009, movie.getYear());
-    assertEquals(-1, movie.getImdbId());
-    assertEquals(61282, movie.getMediaId());
+    Assert.assertEquals("Avatar", movie.getName());
+    Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/78/95/70/19485155.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals(2009, movie.getYear());
+    Assert.assertEquals(-1, movie.getImdbId());
+    Assert.assertEquals(61282, movie.getMediaId());
   }
 
   @Override
   public void getMovieInfo() throws Exception {
     MovieInfo movie = allocine.getInfo(new Movie(40191, null, null, -1, -1));
 
-    assertEquals("Eternal Sunshine of the Spotless Mind", movie.getTitle());
-    assertEquals("2004-10-06", movie.getReleasedDate().toString());
-    assertEquals("[Comédie dramatique, Science fiction]", movie.getGenres().toString());
+    Assert.assertEquals("Eternal Sunshine of the Spotless Mind", movie.getTitle());
+    Assert.assertEquals("2004-10-06", movie.getReleasedDate().toString());
+    Assert.assertEquals("[Comédie dramatique, Science fiction]", movie.getGenres().toString());
 
   }
 
@@ -71,11 +69,11 @@ public class AllocineScrapperTest extends MovieScrapperTest {
     boolean dir = false, actor = false;
     for(CastingInfo info : cast) {
       if(!dir && info.isDirector()) {
-        assertEquals("Michel Gondry", info.getName());
+        Assert.assertEquals("Michel Gondry", info.getName());
         dir = true;
       }
       if(!actor&&info.isActor()) {
-        assertEquals("Jim Carrey", info.getName());
+        Assert.assertEquals("Jim Carrey", info.getName());
         actor = true;
       }
     }
@@ -88,7 +86,7 @@ public class AllocineScrapperTest extends MovieScrapperTest {
   @Override
   public void getImages() throws Exception {
     List<ImageInfo> images = allocine.getImages(new Movie(61282, null, null, -1, -1));
-    assertEquals(ImageCategoryProperty.thumb, images.get(0).getCategory());
-    assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref().toExternalForm());
+    Assert.assertEquals(ImageCategoryProperty.thumb, images.get(0).getCategory());
+    Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref().toExternalForm());
   }
 }

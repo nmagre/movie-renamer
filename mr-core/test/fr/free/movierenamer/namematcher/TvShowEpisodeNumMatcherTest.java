@@ -17,12 +17,11 @@
  */
 package fr.free.movierenamer.namematcher;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -83,7 +82,7 @@ public class TvShowEpisodeNumMatcherTest {
     for(SxE key : epMatches.keySet())
     {
       SxE found = new TvShowEpisodeNumMatcher(new File(epMatches.get(key))).matchEpisode();
-      assertEquals(key.toString(), found.toString());
+      Assert.assertEquals(key.toString(), found.toString());
     }
   }
 

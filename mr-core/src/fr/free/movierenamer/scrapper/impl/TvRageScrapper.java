@@ -17,15 +17,21 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
@@ -81,7 +87,7 @@ public class TvRageScrapper extends TvShowScrapper {
     for (Node node : nodes) {
       int showid = Integer.parseInt(XPathUtils.getTextContent("showid", node));
       String name = XPathUtils.getTextContent("name", node);
-      URL url = new URL("http", "images.tvrage.com", "/shows/" + showid + ".jpg");
+      URL url = getPosterURL(XPathUtils.getTextContent("link", node));
       int year = XPathUtils.getIntegerContent("started", node);
 
       searchResults.add(new TvShow(showid, name, url, year));
@@ -102,7 +108,7 @@ public class TvRageScrapper extends TvShowScrapper {
     fields.put(TvShowProperty.name, XPathUtils.getTextContent("showname", node));
     fields.put(TvShowProperty.firstAired, Date.parse(XPathUtils.getTextContent("startdate", node), "MMM/dd/yyyy", Locale.ENGLISH).toString());
     fields.put(TvShowProperty.status, XPathUtils.getTextContent("status", node));
-    fields.put(TvShowProperty.posterPath, new URL("http", "www.tvrage.com", "/shows/" + XPathUtils.getTextContent("showid", node) + ".jpg").toExternalForm());
+    fields.put(TvShowProperty.posterPath, getPosterURL(XPathUtils.getTextContent("showlink", node)).toExternalForm());
     String genres = null;
     for (Node genre : XPathUtils.selectNodes("genres/genre", node)) {
       String toAdd = XPathUtils.getTextContent(genre);
@@ -177,6 +183,34 @@ public class TvRageScrapper extends TvShowScrapper {
   @Override
   protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale locale) throws Exception {
     return null;
+  }
+  
+  private URL getPosterURL(String showlink) {
+    URL posterURL;
+    if(showlink != null) {
+      try {
+        URL showURL = new URL(showlink);
+        String tvshowPage = WebRequest.getDocumentContent(showURL.toURI());
+        Matcher searchMatcher = Pattern.compile("src='(http://images.tvrage.com/shows/.*)'").matcher(tvshowPage);
+        if (searchMatcher.find()) {
+          String tvrageThumb = searchMatcher.group(1);
+          posterURL = new URL(tvrageThumb);
+        } else {
+          posterURL = null;
+        }
+      } catch (MalformedURLException ex) {
+        posterURL = null;
+      } catch (SAXException ex) {
+        posterURL = null;
+      } catch (IOException ex) {
+        posterURL = null;
+      } catch (URISyntaxException ex) {
+        posterURL = null;
+      }
+    } else {
+      posterURL = null;
+    }
+    return posterURL;
   }
 
 }

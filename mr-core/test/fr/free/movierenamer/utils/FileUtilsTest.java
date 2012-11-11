@@ -17,10 +17,10 @@
  */
 package fr.free.movierenamer.utils;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -38,25 +38,25 @@ public class FileUtilsTest {
 
   @Test
   public void getExtension() {
-    assertEquals("txt", FileUtils.getExtension("abc.txt"));
-    assertEquals("out", FileUtils.getExtension("a.out"));
-    assertEquals(null, FileUtils.getExtension(".hidden"));
-    assertEquals(null, FileUtils.getExtension("a."));
+    Assert.assertEquals("txt", FileUtils.getExtension("abc.txt"));
+    Assert.assertEquals("out", FileUtils.getExtension("a.out"));
+    Assert.assertEquals(null, FileUtils.getExtension(".hidden"));
+    Assert.assertEquals(null, FileUtils.getExtension("a."));
 
-    assertEquals("r00", FileUtils.getExtension("archive.r00"));
-    assertEquals(null, FileUtils.getExtension("archive.r??"));
-    assertEquals(null, FileUtils.getExtension("archive.invalid extension"));
+    Assert.assertEquals("r00", FileUtils.getExtension("archive.r00"));
+    Assert.assertEquals(null, FileUtils.getExtension("archive.r??"));
+    Assert.assertEquals(null, FileUtils.getExtension("archive.invalid extension"));
   }
 
   @Test
   public void getNameWithoutExtension() {
-    assertEquals("abc", FileUtils.getNameWithoutExtension("abc.txt"));
-    assertEquals("a", FileUtils.getNameWithoutExtension("a.out"));
-    assertEquals(".hidden", FileUtils.getNameWithoutExtension(".hidden"));
-    assertEquals("a.", FileUtils.getNameWithoutExtension("a."));
+    Assert.assertEquals("abc", FileUtils.getNameWithoutExtension("abc.txt"));
+    Assert.assertEquals("a", FileUtils.getNameWithoutExtension("a.out"));
+    Assert.assertEquals(".hidden", FileUtils.getNameWithoutExtension(".hidden"));
+    Assert.assertEquals("a.", FileUtils.getNameWithoutExtension("a."));
 
-    assertEquals("archive", FileUtils.getNameWithoutExtension("archive.r00"));
-    assertEquals("archive.r??", FileUtils.getNameWithoutExtension("archive.r??"));
-    assertEquals("archive.invalid extension", FileUtils.getNameWithoutExtension("archive.invalid extension"));
+    Assert.assertEquals("archive", FileUtils.getNameWithoutExtension("archive.r00"));
+    Assert.assertEquals("archive.r??", FileUtils.getNameWithoutExtension("archive.r??"));
+    Assert.assertEquals("archive.invalid extension", FileUtils.getNameWithoutExtension("archive.invalid extension"));
   }
 }

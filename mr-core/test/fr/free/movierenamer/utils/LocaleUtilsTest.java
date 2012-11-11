@@ -17,8 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -30,15 +29,15 @@ public class LocaleUtilsTest {
 
   @Test
   public void getLocaleCountry() {
-    assertEquals("US", LocaleUtils.getLocale("u.s.a.").getCountry());
-    assertEquals("FR", LocaleUtils.getLocale("france").getCountry());
-    assertEquals("AR", LocaleUtils.getLocale("Argentine").getCountry());
-    assertEquals("GB", LocaleUtils.getLocale("Royaume-Uni").getCountry());
+    Assert.assertEquals("US", LocaleUtils.getLocale("u.s.a.").getCountry());
+    Assert.assertEquals("FR", LocaleUtils.getLocale("france").getCountry());
+    Assert.assertEquals("AR", LocaleUtils.getLocale("Argentine").getCountry());
+    Assert.assertEquals("GB", LocaleUtils.getLocale("Royaume-Uni").getCountry());
   }
 
   @Test
   public void getLocaleLanguage() {
-    assertEquals("sv", LocaleUtils.getLocale("Sueco").getLanguage());
+    Assert.assertEquals("sv", LocaleUtils.getLocale("Sueco").getLanguage());
   }
 
 }

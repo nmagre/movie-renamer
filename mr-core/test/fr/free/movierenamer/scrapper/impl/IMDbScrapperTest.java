@@ -17,8 +17,6 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -52,11 +50,11 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
     Movie movie = results.get(0);
 
-    assertEquals("Il était une fois dans l'ouest", movie.getName());
-    assertEquals("http://ia.media-imdb.com/images/M/MV5BOTMxMTUyMDI2Ml5BMl5BanBnXkFtZTcwMjkxNDAwMQ@@._V1._SY70_SX100_.jpg", movie.getURL().toExternalForm());
-    assertEquals(1968, movie.getYear());
-    assertEquals(64116, movie.getImdbId());
-    assertEquals(64116, movie.getMediaId());
+    Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BOTMxMTUyMDI2Ml5BMl5BanBnXkFtZTcwMjkxNDAwMQ@@._V1._SY70_SX100_.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals(1968, movie.getYear());
+    Assert.assertEquals(64116, movie.getImdbId());
+    Assert.assertEquals(64116, movie.getMediaId());
   }
   
   @Test
@@ -66,11 +64,11 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
     Movie movie = results.get(0);
 
-    assertEquals("Rendez-vous", movie.getName());
-    assertEquals("http://ia.media-imdb.com/images/M/MV5BMTI4ODEwMDgyMV5BMl5BanBnXkFtZTcwMjIzMTUxMQ@@._V1._SY70_SX100_.jpg", movie.getURL().toExternalForm());
-    assertEquals(1940, movie.getYear());
-    assertEquals(33045, movie.getImdbId());
-    assertEquals(33045, movie.getMediaId());
+    Assert.assertEquals("Rendez-vous", movie.getName());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTI4ODEwMDgyMV5BMl5BanBnXkFtZTcwMjIzMTUxMQ@@._V1._SY70_SX100_.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals(1940, movie.getYear());
+    Assert.assertEquals(33045, movie.getImdbId());
+    Assert.assertEquals(33045, movie.getMediaId());
     
   }
 
@@ -79,8 +77,8 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     imdb.setLocale(Locale.ITALIAN);
     MovieInfo movie = imdb.getInfo(new Movie(64116, null, null, -1, -1));
 
-    assertEquals("C'era una volta il West", movie.getTitle());
-    assertEquals(Integer.valueOf(175), Integer.valueOf(movie.getRuntime()));
+    Assert.assertEquals("C'era una volta il West", movie.getTitle());
+    Assert.assertEquals(Integer.valueOf(175), Integer.valueOf(movie.getRuntime()));
   }
 
   @Override
@@ -88,7 +86,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     List<CastingInfo> cast = imdb.getCasting(new Movie(64116, null, null, -1, -1));
     for(CastingInfo info : cast) {
       if(info.isDirector()) {
-        assertEquals("Sergio Leone", info.getName());
+        Assert.assertEquals("Sergio Leone", info.getName());
         return;
       }
     }
@@ -100,7 +98,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
   public void getImages() throws Exception {
     List<ImageInfo> images = imdb.getImages(new Movie(64116, null, null, -1, -1));
     
-    assertEquals(ImageCategoryProperty.unknown, images.get(0).getCategory());
-    assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref().toExternalForm());
+    Assert.assertEquals(ImageCategoryProperty.unknown, images.get(0).getCategory());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref().toExternalForm());
   }
 }
