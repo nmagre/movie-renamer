@@ -36,6 +36,7 @@ public class AnidbScrapper extends MovieScrapper {
 
   private static final String host = "anidb.net";
   private static final String name = "AniDB";
+  private static final String version = "2";
 
   public AnidbScrapper() {
     super(Locale.ENGLISH);
@@ -50,7 +51,12 @@ public class AnidbScrapper extends MovieScrapper {
   protected String getHost() {
     return host;
   }
-
+  
+  @Override
+  public boolean hasLocaleSupport() {
+     return true;
+  }
+  
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
     // TODO Auto-generated method stub

@@ -61,6 +61,11 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   protected String getHost() {
     return host;
   }
+  
+  @Override
+  public boolean hasLocaleSupport() {
+    return true;
+  }
 
   @Override
   protected List<Subtitle> searchSubtitles(String query, Locale locale) throws Exception {
@@ -99,11 +104,12 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
       try {
         List<Node> fields = XPathUtils.selectNodes(".//SPAN", row);
         String language = XPathUtils.getTextContent(fields.get(0));
-        if (locale == null || language.equalsIgnoreCase(locale.getDisplayLanguage())) {
+        if (locale == null || language.equalsIgnoreCase(locale.getDisplayLanguage(Locale.ENGLISH))) {
           String href = XPathUtils.selectString(".//A/@href", row);
           Map<SubtitleProperty, String> subtitleFields = new EnumMap<SubtitleProperty, String>(SubtitleProperty.class);
           subtitleFields.put(SubtitleProperty.name, XPathUtils.getTextContent(fields.get(1)));
           subtitleFields.put(SubtitleProperty.href, new URL(subtitle.getURL().getProtocol(), subtitle.getURL().getHost(), href).toExternalForm());
+          subtitleFields.put(SubtitleProperty.language, language);
           subtitles.add(new SubtitleInfo(subtitleFields));
         }
       } catch (Exception e) {

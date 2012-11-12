@@ -77,6 +77,11 @@ public class TMDbScrapper extends MovieScrapper {
   protected String getHost() {
     return host;
   }
+  
+  @Override
+  public boolean hasLocaleSupport() {
+    return true;
+  }
 
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {

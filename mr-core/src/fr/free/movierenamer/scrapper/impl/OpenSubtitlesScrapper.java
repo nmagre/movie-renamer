@@ -48,6 +48,11 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
   protected String getHost() {
     return host;
   }
+  
+  @Override
+  public boolean hasLocaleSupport() {
+     return true;
+  }
 
   @Override
   protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale locale) throws Exception {

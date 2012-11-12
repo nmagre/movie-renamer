@@ -91,6 +91,11 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   protected String getHost() {
     return host;
   }
+  
+  @Override
+  public boolean hasLocaleSupport() {
+    return true;
+  }
 
   @Override
   protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {

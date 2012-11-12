@@ -76,6 +76,11 @@ public class IMDbScrapper extends MovieScrapper {
   protected String getHost() {
     return getHost(getLocale());
   }
+  
+  @Override
+  public boolean hasLocaleSupport() {
+    return true;
+  }
 
   protected final String getHost(Locale locale) {
     if (host == null) {

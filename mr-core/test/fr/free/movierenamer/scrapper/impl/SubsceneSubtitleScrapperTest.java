@@ -44,7 +44,7 @@ public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
   @Override
   public void search() throws Exception {
     List<Subtitle> subtitles = subscene.search("Avatar");
-    Assert.assertEquals(17, subtitles.size());
+    Assert.assertTrue(subtitles.size() > 15);
 
     Subtitle subtitle = subtitles.get(0);
     Assert.assertEquals("Avatar (2009)", subtitle.getName());
@@ -53,11 +53,12 @@ public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
   @Override
   public void getSubtitleInfo() throws Exception {
     subscene.setLocale(Locale.FRENCH);
-    List<SubtitleInfo> subtitles = subscene.getSubtitles(new Subtitle("", "", new URL("http://subscene.com/subtitles/avatar")));
+    List<SubtitleInfo> subtitles = subscene.getSubtitles(new Subtitle(null, null, new URL("http://subscene.com/subtitles/avatar")));
     Assert.assertTrue(subtitles.size() > 15);
 
     SubtitleInfo subtitle = subtitles.get(0);
-    Assert.assertEquals("Avatar (2009)", subtitle.toString());
+    Assert.assertTrue(subtitle.getName().contains("Avatar"));
+    Assert.assertEquals(Locale.FRENCH.getDisplayLanguage(Locale.ENGLISH), subtitle.getLanguage());
   }
   
 }
