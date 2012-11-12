@@ -117,7 +117,7 @@ public class MovieRenamer extends JFrame {
 
     loadInterface();
 
-    setIconImage(ImageUtils.getImageFromJAR("icon-32.png"));
+    setIconImage(ImageUtils.getImageFromJAR("ui/icon-32.png"));
     setLocationRelativeTo(null);
 
     setVisible(true);
