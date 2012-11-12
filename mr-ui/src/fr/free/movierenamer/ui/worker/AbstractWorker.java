@@ -38,14 +38,14 @@ public abstract class AbstractWorker extends SwingWorker<Void, String> {
 
   protected final PropertyChangeSupport errorSupport;
   protected final MovieRenamer parent;
-  protected final LoadingDialog loading;
+  //protected final LoadingDialog loading;
 
   // private T result;
 
   protected AbstractWorker(PropertyChangeSupport errorSupport, MovieRenamer parent) {
     this.errorSupport = errorSupport;
     this.parent = parent;
-    this.loading = (parent != null) ? parent.getLoading() : null;
+//    this.loading = (parent != null) ? parent.getLoading() : null;
     updateLoadingValue(0);
   }
 
@@ -89,8 +89,8 @@ public abstract class AbstractWorker extends SwingWorker<Void, String> {
   protected abstract LoadingDialogPos getLoadingDialogPos();
 
   protected final void updateLoadingValue(int value) {
-    if (loading != null) {
+   /* if (loading != null) {
       loading.setValue(value, getLoadingDialogPos());
-    }
+    }*/
   }
 }

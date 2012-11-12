@@ -51,9 +51,11 @@ public class SearchMediaWorker extends AbstractWorker {
   /**
    * Constructor arguments
    * 
+   * @param errorSupport 
    * @param parent
    * @param media
    * @param searchResultList
+   * @param scrapper  
    */
   public SearchMediaWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, UIFile media, JList searchResultList, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
     super(errorSupport, parent);

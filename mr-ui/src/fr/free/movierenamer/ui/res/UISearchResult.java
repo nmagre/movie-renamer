@@ -38,6 +38,7 @@ public class UISearchResult implements IIconList {
 
   /**
    * @param searchResult
+   * @param scrapper  
    */
   public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
     this.searchResult = searchResult;

@@ -17,9 +17,8 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.ui.settings.Settings;
-
 import com.alee.laf.WebLookAndFeel;
+import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 
 /**

@@ -138,12 +138,12 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
           return;
         }
 
-        mr.loadDial(false, false, true, false);
+       // mr.loadDial(false, false, true, false);
 
         UIPersonImage cast = (UIPersonImage) castingList.getSelectedValue();
 
-        SearchPersonWorker worker = new SearchPersonWorker(mr.getErrorSupport(), mr, actorsPane, cast.getInfo());
-        worker.execute();
+      //  SearchPersonWorker worker = new SearchPersonWorker(mr.getErrorSupport(), mr, actorsPane, cast.getInfo());
+     //   worker.execute();
       }
     });
   }
@@ -231,21 +231,21 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
       // audioModel.addElement(audio);
       // }
 
-      final UISearchResult searchResult = mr.getSelectedSearchResult();
+ //     final UISearchResult searchResult = mr.getSelectedSearchResult();
 
       thumbnailsList.removeAll();
       fanartList.removeAll();
       {
         // load images
-        SearchMediaImagesWorker worker = new SearchMediaImagesWorker(mr.getErrorSupport(), mr, thumbnailsList, fanartList, searchResult);
-        worker.execute();
+     //   SearchMediaImagesWorker worker = new SearchMediaImagesWorker(mr.getErrorSupport(), mr, thumbnailsList, fanartList, searchResult);
+      //  worker.execute();
       }
 
       castingList.removeAll();
       {
         // load casting
-        SearchMediaCastingWorker worker = new SearchMediaCastingWorker(mr.getErrorSupport(), mr, castingList, searchResult);
-        worker.execute();
+      //  SearchMediaCastingWorker worker = new SearchMediaCastingWorker(mr.getErrorSupport(), mr, castingList, searchResult);
+      //  worker.execute();
       }
 
     }

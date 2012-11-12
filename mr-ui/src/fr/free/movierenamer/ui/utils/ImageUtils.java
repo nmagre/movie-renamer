@@ -86,6 +86,10 @@ public final class ImageUtils {
     }
     return image;
   }
+  
+  public static Icon getIconFromJar(String fileName) {
+    return new ImageIcon(getImageFromJAR(fileName));
+  }
 
   public static Icon getIcon(URL imagePth, Dimension dim, String defaultImage) {
     URI uri;

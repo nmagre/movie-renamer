@@ -141,22 +141,22 @@ public class TvShowPanel extends WebPanel implements IMediaPanel {
       //
       // countryList.setModel(countryModel);
 
-      UISearchResult searchResult = mr.getSelectedSearchResult();
-      {
-        // load images
-        SearchMediaImagesWorker worker = new SearchMediaImagesWorker(mr.getErrorSupport(), mr, thumbnailsList, fanartList, searchResult);
-        // SearchMediaImagesWorkerListener listener = new SearchMediaImagesWorkerListener(mr, thumbnailsList, fanartList, worker);
-        // worker.addPropertyChangeListener(listener);
-        worker.execute();
-      }
-
-      {
-        // load casting
-        SearchMediaCastingWorker worker = new SearchMediaCastingWorker(mr.getErrorSupport(), mr, actorList, searchResult);
-        // SearchMediaCastingWorkerListener listener = new SearchMediaCastingWorkerListener(mr, actorList, worker);
-        // worker.addPropertyChangeListener(listener);
-        worker.execute();
-      }
+//      UISearchResult searchResult = mr.getSelectedSearchResult();
+//      {
+//        // load images
+//        SearchMediaImagesWorker worker = new SearchMediaImagesWorker(mr.getErrorSupport(), mr, thumbnailsList, fanartList, searchResult);
+//        // SearchMediaImagesWorkerListener listener = new SearchMediaImagesWorkerListener(mr, thumbnailsList, fanartList, worker);
+//        // worker.addPropertyChangeListener(listener);
+//        worker.execute();
+//      }
+//
+//      {
+//        // load casting
+//        SearchMediaCastingWorker worker = new SearchMediaCastingWorker(mr.getErrorSupport(), mr, actorList, searchResult);
+//        // SearchMediaCastingWorkerListener listener = new SearchMediaCastingWorkerListener(mr, actorList, worker);
+//        // worker.addPropertyChangeListener(listener);
+//        worker.execute();
+//      }
 
     }
   }
