@@ -3,7 +3,9 @@ package fr.free.movierenamer.scrapper;
 import org.junit.Test;
 
 public abstract class TvShowScrapperTest extends ScrapperTest {
-
+  
+  @Test
+  public abstract void search() throws Exception;
 
   @Test
   public abstract void getTvShowInfo() throws Exception;

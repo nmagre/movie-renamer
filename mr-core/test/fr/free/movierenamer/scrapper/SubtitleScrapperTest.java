@@ -24,6 +24,9 @@ import org.junit.Test;
  * @author Simon QUÉMÉNEUR
  */
 public abstract class SubtitleScrapperTest extends ScrapperTest {
+  
+  @Test
+  public abstract void search() throws Exception;
 
   @Test
   public abstract void getSubtitleInfo() throws Exception;

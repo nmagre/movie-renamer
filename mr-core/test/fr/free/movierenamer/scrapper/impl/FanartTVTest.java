@@ -1,5 +1,5 @@
 /*
- * movie-renamer-core
+ * mr-core
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,28 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.scrapper;
+package fr.free.movierenamer.scrapper.impl;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Assert;
 
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.scrapper.ImageScrapperTest;
 
 /**
- * Class ScrapperTest
- * 
+ * Class FanartTVTest
  * @author Simon QUÉMÉNEUR
  */
-public abstract class ScrapperTest {
+public class FanartTVTest extends ImageScrapperTest {
+  private FanartTV fanarttv = null;
 
-  @Before
-  public void initSettings() throws Exception
-  {
-    Settings.getInstance();
-    Cache.clearAllCache();
+  @Override
+  public void init() {
+    fanarttv = new FanartTV();
   }
-  
-  @Before
-  public abstract void init() throws Exception ;
+
+  @Override
+  public void getImages() throws Exception {
+    Assert.fail();
+  }
+
 }

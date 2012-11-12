@@ -1,5 +1,5 @@
 /*
- * movie-renamer-core
+ * mr-core
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,26 +17,15 @@
  */
 package fr.free.movierenamer.scrapper;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.Cache;
-
 /**
- * Class ScrapperTest
- * 
+ * Class ImageScrapperTest
  * @author Simon QUÉMÉNEUR
  */
-public abstract class ScrapperTest {
-
-  @Before
-  public void initSettings() throws Exception
-  {
-    Settings.getInstance();
-    Cache.clearAllCache();
-  }
+public abstract class ImageScrapperTest extends ScrapperTest {
   
-  @Before
-  public abstract void init() throws Exception ;
+  @Test
+  public abstract void getImages() throws Exception;
+
 }
