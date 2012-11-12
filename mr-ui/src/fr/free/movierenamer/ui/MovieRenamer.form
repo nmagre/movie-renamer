@@ -145,9 +145,6 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/image/ui/folder-video.png"/>
             </Property>
-            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="openFolderBtn" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
-            </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
@@ -166,9 +163,6 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/image/ui/movie.png"/>
             </Property>
-            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="movieMode" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
-            </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
@@ -183,9 +177,6 @@
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/image/ui/tv.png"/>
-            </Property>
-            <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="tvshowMode" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
             </Property>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>

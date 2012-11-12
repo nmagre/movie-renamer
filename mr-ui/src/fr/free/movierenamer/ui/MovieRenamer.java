@@ -315,7 +315,7 @@ public class MovieRenamer extends JFrame {
         mainTb.setRollover(true);
         mainTb.setRound(10);
 
-        openBtn.setIcon(new ImageIcon(getClass().getResource("/image/ui/folder-video.png")));         openBtn.setToolTipText(LocaleUtils.i18n("openFolderBtn"));         openBtn.setFocusable(false);
+        openBtn.setIcon(new ImageIcon(getClass().getResource("/image/ui/folder-video.png")));         openBtn.setFocusable(false);
         openBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         openBtn.setRolloverDarkBorderOnly(true);
         openBtn.setRolloverDecoratedOnly(true);
@@ -329,7 +329,7 @@ public class MovieRenamer extends JFrame {
         mainTb.add(openBtn);
         mainTb.add(openSep);
 
-        movieModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/ui/movie.png")));         movieModeBtn.setToolTipText(LocaleUtils.i18n("movieMode"));         movieModeBtn.setFocusable(false);
+        movieModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/ui/movie.png")));         movieModeBtn.setFocusable(false);
         movieModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         movieModeBtn.setRolloverDarkBorderOnly(true);
         movieModeBtn.setRolloverDecoratedOnly(true);
@@ -341,7 +341,7 @@ public class MovieRenamer extends JFrame {
         });
         mainTb.add(movieModeBtn);
 
-        tvShowModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/ui/tv.png")));         tvShowModeBtn.setToolTipText(LocaleUtils.i18n("tvshowMode"));         tvShowModeBtn.setFocusable(false);
+        tvShowModeBtn.setIcon(new ImageIcon(getClass().getResource("/image/ui/tv.png")));         tvShowModeBtn.setFocusable(false);
         tvShowModeBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         tvShowModeBtn.setRolloverDarkBorderOnly(true);
         tvShowModeBtn.setRolloverDecoratedOnly(true);
