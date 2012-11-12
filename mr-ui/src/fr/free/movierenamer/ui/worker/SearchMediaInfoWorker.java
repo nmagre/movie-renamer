@@ -70,7 +70,7 @@ public class SearchMediaInfoWorker extends AbstractWorker {
       info.setMediaTag(file.getMediaTag());
     }
     mediaPanel.setMediaInfo(info);
-    parent.updateRenamedTitle();
+    //parent.updateRenamedTitle();
   }
 
 }

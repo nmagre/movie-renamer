@@ -204,7 +204,7 @@
                   <Component id="thumbLbl" min="-2" pref="200" max="-2" attributes="1"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="infosTabbedPane" max="32767" attributes="0"/>
+              <Component id="infosTabbedPane" pref="138" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -333,7 +333,7 @@
         <Container class="javax.swing.JPanel" name="thumbnailsPane">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Thumbnails">
+              <JTabbedPaneConstraints tabName="&lt;thumbnails&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="thumbnails" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
                 </Property>
@@ -346,7 +346,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="thumbsScrollPane" pref="523" max="32767" attributes="0"/>
+                      <Component id="thumbsScrollPane" pref="539" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -355,7 +355,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="thumbsScrollPane" pref="90" max="32767" attributes="0"/>
+                      <Component id="thumbsScrollPane" pref="85" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -384,7 +384,7 @@
         <Container class="javax.swing.JPanel" name="fanartsPane">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Fanarts">
+              <JTabbedPaneConstraints tabName="&lt;fanarts&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="fanarts" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
                 </Property>
@@ -397,7 +397,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="fanartsScrollPane" pref="523" max="32767" attributes="0"/>
+                      <Component id="fanartsScrollPane" pref="539" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -406,7 +406,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="fanartsScrollPane" pref="90" max="32767" attributes="0"/>
+                      <Component id="fanartsScrollPane" pref="85" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -435,7 +435,7 @@
         <Container class="javax.swing.JPanel" name="actorsPane">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Actors">
+              <JTabbedPaneConstraints tabName="&lt;actors&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="actors" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
                 </Property>
@@ -452,7 +452,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="actorNameField" max="32767" attributes="0"/>
-                          <Component id="ameField" alignment="1" pref="297" max="32767" attributes="0"/>
+                          <Component id="ameField" alignment="1" pref="313" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -467,7 +467,7 @@
                               <Component id="actorNameField" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="ameField" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="25" max="32767" attributes="0"/>
                           </Group>
                           <Component id="infosTabPane" pref="90" max="32767" attributes="0"/>
                       </Group>
@@ -509,7 +509,7 @@
         <Container class="javax.swing.JPanel" name="subtitlesPane">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Subtitles">
+              <JTabbedPaneConstraints tabName="&lt;subtitles&gt;">
                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="fr/free/movierenamer/i18n/Bundle.properties" key="subtitles" replaceFormat="LocaleUtils.i18n(&quot;{key}&quot;)"/>
                 </Property>
@@ -522,7 +522,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="subtitlesScrollPane" pref="523" max="32767" attributes="0"/>
+                      <Component id="subtitlesScrollPane" pref="539" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -531,7 +531,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="subtitlesScrollPane" pref="90" max="32767" attributes="0"/>
+                      <Component id="subtitlesScrollPane" pref="85" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>

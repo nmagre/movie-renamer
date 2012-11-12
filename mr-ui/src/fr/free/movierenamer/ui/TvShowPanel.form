@@ -241,7 +241,7 @@
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="thumbsScrollPane" pref="42" max="32767" attributes="0"/>
+                  <Component id="thumbsScrollPane" pref="37" max="32767" attributes="0"/>
                   <Component id="fanartsScrollPane" pref="0" max="32767" attributes="0"/>
                   <Component id="subtitlesScrollPane" alignment="0" pref="42" max="32767" attributes="0"/>
               </Group>

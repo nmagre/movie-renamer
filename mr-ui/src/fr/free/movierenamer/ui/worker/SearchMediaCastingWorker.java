@@ -45,9 +45,10 @@ public class SearchMediaCastingWorker extends AbstractWorker {
   /**
    * Constructor arguments
    * 
+   * @param errorSupport 
    * @param parent
    * @param castingList
-   * @param media
+   * @param searchResult  
    */
   public SearchMediaCastingWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, WebList castingList, UISearchResult searchResult) {
     super(errorSupport, parent);

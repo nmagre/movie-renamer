@@ -53,6 +53,13 @@ public class UIScrapper implements IIconList {
     UIScrapper other = (UIScrapper) obj;
     return scrapper.getName().equals(other.scrapper.getName());
   }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 29 * hash + (this.scrapper != null ? this.scrapper.hashCode() : 0);
+    return hash;
+  }
   
   @Override
   public String toString() {
