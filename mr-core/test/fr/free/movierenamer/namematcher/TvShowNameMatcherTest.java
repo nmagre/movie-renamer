@@ -15,28 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.scrapper.impl;
-
-import org.junit.Assert;
-
-import fr.free.movierenamer.scrapper.ImageScrapperTest;
+package fr.free.movierenamer.namematcher;
 
 /**
- * Class FanartTVTest
- * 
+ * Class TvShowNameMatcherTest
  * @author Simon QUÉMÉNEUR
  */
-public class FanartTVTest extends ImageScrapperTest {
-  private FanartTV fanarttv = null;
-
-  @Override
-  public void init() {
-    fanarttv = new FanartTV();
-  }
-
-  @Override
-  public void getImages() throws Exception {
-    Assert.fail();
-  }
+public class TvShowNameMatcherTest {
 
 }

@@ -37,7 +37,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
   private static final String TVSHOWNAMEBYEPISODE = "(([sS]\\d++\\?\\d++)|(\\d++x\\d++.?\\d++x\\d++)|(\\d++[eE]\\d\\d)|([sS]\\d++.[eE]\\d++)|(\\d++x\\d++)|(\\d++x\\d++.?\\d++\\?\\d++)|(.\\d{3}.))";
 
   public static enum TvShowPattern {
-    SxEPattern("([0-9]{1,2})x([0-9]{1,2})(?:\\D|$)"),
+    SxEPattern1("([0-9]{1,2})x([0-9]{1,2})(?:\\D|$)"),
     SxEPattern2("s([0-9]{1,2}).?[eé]([0-9]{1,2})"),
     SxEPattern3("(?:^|[\\W} ])([0-9]{1,2})([0-9][0-9])[\\._ \\-]"),
     SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),

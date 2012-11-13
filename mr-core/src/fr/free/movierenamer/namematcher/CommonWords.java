@@ -142,7 +142,7 @@ abstract class CommonWords {
   public static String normalize(String str) {
     str = str.replace(".", " ").replace("_", " ").replace("-", " ").trim();
     str = str.replaceAll("[,;!]", "");//Remove ponctuation
-    str = str.replaceAll("\\[.*\\]", "").replaceAll("\\(.*\\)", "");//Remoave all [...] and (...)
+    str = str.replaceAll("\\[.*\\]", "").replaceAll("\\(.*\\)", "");//Remove all [...] and (...)
     str = str.replaceAll("\\s+", " ");//Remove duplicate space character
     return str.trim();
   }

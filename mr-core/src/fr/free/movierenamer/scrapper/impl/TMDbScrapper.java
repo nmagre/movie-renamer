@@ -62,7 +62,7 @@ public class TMDbScrapper extends MovieScrapper {
   public TMDbScrapper() {
     super(Locale.ENGLISH);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
-    if (key == null) {
+    if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
     }
     this.apikey = key;

@@ -69,7 +69,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   public TheTVDBScrapper() {
     super(Locale.ENGLISH);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("thetvdb.apkapikey"));
-    if (key == null) {
+    if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
     }
     this.apikey = key;

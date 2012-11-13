@@ -26,6 +26,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
+import fr.free.movierenamer.settings.Settings;
 
 /**
  * Class SerienjunkiesScrapper : search tvshow on Serienjunkies
@@ -35,11 +36,18 @@ import fr.free.movierenamer.searchinfo.TvShow;
  */
 public class SerienjunkiesScrapper extends TvShowScrapper {
 
-  private static final String host = "???";
+  private static final String host = "api.serienjunkies.de";
   private static final String name = "Serienjunkies";
+  
+  private final String apikey;
 
   public SerienjunkiesScrapper() {
-    super(Locale.ENGLISH);
+    super(Locale.GERMAN);
+    String key = Settings.getApplicationProperty("serienjunkies.apikey");
+    if (key == null || key.trim().length() == 0) {
+      throw new NullPointerException("apikey must not be null");
+    }
+    this.apikey = key;
   }
 
   @Override
