@@ -1,25 +1,23 @@
 package fr.free.movierenamer.utils;
 
-import static java.util.regex.Pattern.*;
-
 import java.util.regex.Pattern;
 
 public class Normalization {
 
-  private static final Pattern apostrophe = compile("['`´‘’ʻ]+");
-  private static final Pattern punctuation = compile("[\\p{Punct}\\p{Space}]+");
+  private static final Pattern apostrophe = Pattern.compile("['`´‘’ʻ]");
+  private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:]]");
 
   private static final Pattern[] brackets = new Pattern[] {
-      compile("\\([^\\(]*\\)"), compile("\\[[^\\[]*\\]"), compile("\\{[^\\{]*\\}")
+    Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
   };
   
-  private static final Pattern trailingParentheses = compile("[(]([^)]*)[)]$");
+  private static final Pattern trailingParentheses = Pattern.compile("[(]([^)]*)[)]$");
 
-  private static final Pattern checksum = compile("[\\(\\[]\\p{XDigit}{8}[\\]\\)]");
+  private static final Pattern checksum = Pattern.compile("[\\(\\[]\\p{XDigit}{8}[\\]\\)]");
 
   public static String normalizePunctuation(String name) {
     // remove/normalize special characters
-    name = apostrophe.matcher(name).replaceAll("");
+    name = apostrophe.matcher(name).replaceAll(" ");
     name = punctuation.matcher(name).replaceAll(" ");
     name = name.replaceAll("\\s+", " ");// Remove duplicate space
     return name.trim();

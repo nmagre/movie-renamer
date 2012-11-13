@@ -17,15 +17,22 @@
  */
 package fr.free.movierenamer.namematcher;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static java.util.regex.Pattern.UNICODE_CASE;
+import static java.util.regex.Pattern.compile;
+
 import java.text.Collator;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -43,6 +50,8 @@ import fr.free.movierenamer.utils.StringUtils;
  * @author Simon QUÉMÉNEUR
  */
 public class NameCleaner {
+
+  private static final Pattern yearPattern = Pattern.compile("\\D?(\\d{4})\\D");
 
   // cached patterns
   private final Map<Boolean, Pattern[]> stopwords = new HashMap<Boolean, Pattern[]>(2);
@@ -80,7 +89,7 @@ public class NameCleaner {
             videoSource, videoFormat, resolution, extensions
         };
         removelist = new Pattern[] {
-            extensions, bracket, releaseGroup, languageTag, queryBlacklist
+            extensions, languageTag, bracket, releaseGroup, queryBlacklist
         };
 
         // cache Pattern.compiled patterns for common usage
@@ -90,19 +99,37 @@ public class NameCleaner {
     }
 
     String output = item;
+    int year = extractYear(item);
+    if (year > 0) {
+      output = output.replaceAll(Integer.toString(year), "");
+    }
     output = strict ? clean(output, stopwords) : substringBefore(output, stopwords);
     output = clean(output, removelist);
 
     return output;
   }
 
+  public int extractYear(String item) {
+    Matcher matcher = yearPattern.matcher(item);
+    int year = -1;
+    while (matcher.find()) {
+      String syear = matcher.group(1);
+      int found = Integer.parseInt(syear);
+      if (found >= 1900 && found <= Calendar.getInstance().get(Calendar.YEAR)) {
+        year = found;
+      }
+    }
+    return year;
+  }
+
   private Map<String, Locale> getLanguageMap(Locale... supportedDisplayLocale) {
-    // use maximum strength collator by default
     Collator collator = Collator.getInstance(Locale.ROOT);
     collator.setDecomposition(Collator.FULL_DECOMPOSITION);
     collator.setStrength(Collator.PRIMARY);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     Comparator<String> order = (Comparator) collator;
     Map<String, Locale> languageMap = new TreeMap<String, Locale>(order);
 
@@ -142,7 +169,7 @@ public class NameCleaner {
 
   private Pattern getLanguagePattern(Collection<String> languages) {
     // [en]
-    return Pattern.compile("(?<=[\\p{Punct}\\p{Space}])(" + StringUtils.join(quote(languages), "|") + ")(?=[\\p{Punct}\\p{Space}])", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    return compile("(?<=[-\\[{(\\.])(" + StringUtils.join(quote(languages), "|") + ")(?=\\p{Punct})", CASE_INSENSITIVE | UNICODE_CASE);
   }
 
   private Pattern getVideoSourcePattern() {
@@ -175,12 +202,11 @@ public class NameCleaner {
   }
 
   private Collection<String> quote(Collection<String> strings) {
-    return strings;
-    // List<String> patterns = new ArrayList<String>(strings.size());
-    // for (String it : strings) {
-    // patterns.add(Pattern.quote(it));
-    // }
-    // return patterns;
+    List<String> patterns = new ArrayList<String>(strings.size());
+    for (String it : strings) {
+      patterns.add(Pattern.quote(it));
+    }
+    return patterns;
   }
 
   private String substringBefore(String item, Pattern... stopwords) {
@@ -195,7 +221,7 @@ public class NameCleaner {
     }
     return item;
   }
-  
+
   private static String getCleanerProperty(String key) {
     return ResourceBundle.getBundle(NameCleaner.class.getName(), Locale.ROOT).getString(key);
   }
