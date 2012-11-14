@@ -274,8 +274,9 @@ public class MediaTag {
 
     for (int i = 0; i < getAudioStreamCount(); i++) {
       String title = getAudioTitle(i).trim();
-      Locale lang = LocaleUtils.getLocale(getAudioLanguage(i).trim());
-      if (title.equals(StringUtils.EMPTY) && lang.equals(Locale.ROOT)) {
+      String toFind = getAudioLanguage(i).trim();
+      Locale lang = LocaleUtils.getLanguageMap().get(toFind);
+      if (title.equals(StringUtils.EMPTY) || lang == null || lang.equals(Locale.ROOT)) {
         continue;
       }
       MediaAudio audio = new MediaAudio(i + 1);
@@ -297,8 +298,9 @@ public class MediaTag {
 
     for (int i = 0; i < getTextStreamCount(); i++) {
       String title = getTextTitle(i).trim();
-      Locale lang = LocaleUtils.getLocale(getTextLanguage(i).trim());
-      if (title.equals(StringUtils.EMPTY) && lang.equals(Locale.ROOT)) {
+      String toFind = getAudioLanguage(i).trim();
+      Locale lang = LocaleUtils.getLanguageMap().get(toFind);
+      if (title.equals(StringUtils.EMPTY) || lang == null || lang.equals(Locale.ROOT)) {
         continue;
       }
       MediaSubTitle subTitle = new MediaSubTitle(i + 1);

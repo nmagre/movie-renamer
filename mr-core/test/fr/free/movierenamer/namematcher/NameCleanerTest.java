@@ -37,9 +37,10 @@ public class NameCleanerTest {
 
   @Test
   public void extractYear() {
-    Assert.assertEquals(2009, cleaner.extractYear("2012 (2009).avi"));
-    Assert.assertEquals(2009, cleaner.extractYear("12 Rounds 2009.avi"));
-    Assert.assertEquals(2009, cleaner.extractYear("12 Rounds (2009).avi"));
+    Assert.assertEquals(null, cleaner.extractYear("2012.avi"));
+    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("2012 (2009).avi"));
+    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds 2009.avi"));
+    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds (2009).avi"));
   }
   
   @Test
@@ -63,5 +64,13 @@ public class NameCleanerTest {
     Assert.assertEquals("After Life", cleaner.extractName("After.Life (2009).avi", false));
     Assert.assertEquals("Age Of The Dragons", cleaner.extractName("Age.Of.The.Dragons.2011.TRUEFRENCH.DVDRiP.XViD-Julien333.avi", false));
     Assert.assertEquals("Agora", cleaner.extractName("Agora (2009).avi", false));
+    Assert.assertEquals("Tout Est Illuminé 2005", cleaner.extractName("Tout Est Illuminé 2005 (2005).avi", false));
+  }
+  
+  @Test
+  public void extractNameStrict() {
+    Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", true));
+    Assert.assertEquals("17 Again", cleaner.extractName("17.Again.FRENCH.DVDRiP.XViD.avi", true));
+    Assert.assertEquals("17 again", cleaner.extractName("17.again.FRENCH.DVDScr.XviD.avi", true));
   }
 }

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import fr.free.movierenamer.settings.Settings;
 
@@ -48,6 +49,17 @@ public final class StringUtils {
   public static final String ENDLINE = System.getProperty("line.separator");
   public static final String EMPTY = "";
   public static final String DOT = ".";
+  
+  private static final Pattern apostrophe = Pattern.compile("['`´‘’ʻ]");
+  private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:]]");
+
+  private static final Pattern[] brackets = new Pattern[] {
+    Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
+  };
+  
+  private static final Pattern trailingParentheses = Pattern.compile("[(]([^)]*)[)]$");
+
+  private static final Pattern checksum = Pattern.compile("[\\(\\[]\\p{XDigit}{8}[\\]\\)]");
 
   public static boolean isEmptyValue(Object object) {
     return object == null || object.toString().length() == 0;
@@ -264,6 +276,36 @@ public final class StringUtils {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
     return str;
+  }
+  
+  public static String replaceLast(String text, String regex, String replacement) {
+    return text.replaceFirst("(?s)"+regex+"(?!.*?"+regex+")", replacement);
+}
+
+  public static String removePunctuation(String name) {
+    // remove/normalize special characters
+    name = apostrophe.matcher(name).replaceAll(" ");
+    name = punctuation.matcher(name).replaceAll(" ");
+    name = name.replaceAll("\\p{Space}+", " ");// Remove duplicate space
+    return name.trim();
+  }
+
+  public static String removeBrackets(String name) {
+    // remove group names and checksums, any [...] or (...)
+    for (Pattern it : brackets) {
+      name = it.matcher(name).replaceAll(" ");
+    }
+    return name;
+  }
+
+  public static String removeEmbeddedChecksum(String string) {
+    // match embedded checksum and surrounding brackets
+    return checksum.matcher(string).replaceAll("");
+  }
+
+  public static String removeTrailingBrackets(String name) {
+    // remove trailing braces, e.g. Doctor Who (2005) -> Doctor Who
+    return trailingParentheses.matcher(name).replaceAll("").trim();
   }
 
   private StringUtils() {

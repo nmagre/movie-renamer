@@ -21,27 +21,19 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.UNICODE_CASE;
 import static java.util.regex.Pattern.compile;
 
-import java.text.Collator;
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.free.movierenamer.utils.Normalization;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils;
 
 /**
@@ -52,67 +44,69 @@ import fr.free.movierenamer.utils.StringUtils;
 public class NameCleaner {
 
   private static final Pattern yearPattern = Pattern.compile("\\D?(\\d{4})\\D");
+  private final Map<Boolean, Pattern[]> stoplist = new HashMap<Boolean, Pattern[]>(2);
+  private final Map<Boolean, Pattern[]> cleanlist = new HashMap<Boolean, Pattern[]>(2);
 
-  // cached patterns
-  private final Map<Boolean, Pattern[]> stopwords = new HashMap<Boolean, Pattern[]>(2);
-  private final Map<Boolean, Pattern[]> removelist = new HashMap<Boolean, Pattern[]>(2);
-
-  public String clean(String item, Pattern... blacklisted) {
-    for (Pattern it : blacklisted) {
+  public String clean(String item, Pattern... cleanPattern) {
+    for (Pattern it : cleanPattern) {
       item = it.matcher(item).replaceAll("");
     }
 
-    return Normalization.normalizePunctuation(item);
+    return StringUtils.removePunctuation(item);
   }
 
   public String extractName(String item, boolean strict) {
-    Pattern[] stopwords;
-    Pattern[] removelist;
+    Pattern[] stoplist;
+    Pattern[] cleanlist;
 
-    // initialize cached patterns
-    synchronized (this.stopwords) {
-      stopwords = this.stopwords.get(strict);
-      removelist = this.removelist.get(strict);
+    synchronized (this.stoplist) {
+      stoplist = this.stoplist.get(strict);
+      cleanlist = this.cleanlist.get(strict);
 
-      if (stopwords == null || removelist == null) {
-        Set<String> languages = getLanguageMap(Locale.ENGLISH, Locale.getDefault()).keySet();
+      //use cache for speed
+      if (stoplist == null || cleanlist == null) {
+        Set<String> languages = LocaleUtils.getLanguageMap(LocaleUtils.getSupportedDisplayLocales()).keySet();
         Pattern bracket = getBracketPattern(strict);
         Pattern releaseGroup = getReleaseGroupPattern(strict);
-        Pattern languageTag = getLanguagePattern(languages);
+        Pattern languageSuffix = getLanguageSuffixPattern(languages);
+        Pattern languageTag = getLanguageTagPattern(languages);
         Pattern videoSource = getVideoSourcePattern();
         Pattern videoFormat = getVideoFormatPattern();
         Pattern resolution = getResolutionPattern();
         Pattern queryBlacklist = getBlacklistPattern();
         Pattern extensions = getExtensionPattern();
 
-        stopwords = new Pattern[] {
-            videoSource, videoFormat, resolution, extensions
+        stoplist = new Pattern[] {
+            languageTag, videoSource, videoFormat, resolution, languageSuffix, extensions
         };
-        removelist = new Pattern[] {
-            extensions, languageTag, bracket, releaseGroup, queryBlacklist
+        cleanlist = new Pattern[] {
+            extensions, bracket, releaseGroup, languageTag, videoSource, videoFormat, resolution, languageSuffix, queryBlacklist
         };
-
-        // cache Pattern.compiled patterns for common usage
-        this.stopwords.put(strict, stopwords);
-        this.removelist.put(strict, removelist);
+        this.stoplist.put(strict, stoplist);
+        this.cleanlist.put(strict, cleanlist);
       }
     }
 
     String output = item;
-    int year = extractYear(item);
-    if (year > 0) {
-      output = output.replaceAll(Integer.toString(year), "");
+    // remove year
+    Integer year = extractYear(item);
+    if (year != null && output.length() > 5 && year > 0) {
+      // ensure the output contains something else ;)
+      output = StringUtils.replaceLast(output, Integer.toString(year), "");
     }
-    output = strict ? clean(output, stopwords) : substringBefore(output, stopwords);
-    output = clean(output, removelist);
+    //
+    output = strict ? clean(output, stoplist) : substringBefore(output, stoplist);
+    // let's clean it
+    output = clean(output, cleanlist);
 
     return output;
   }
 
-  public int extractYear(String item) {
+  public Integer extractYear(String item) {
     Matcher matcher = yearPattern.matcher(item);
-    int year = -1;
+    Integer year = null;
     while (matcher.find()) {
+      // assuming year is the last ;)
       String syear = matcher.group(1);
       int found = Integer.parseInt(syear);
       if (found >= 1900 && found <= Calendar.getInstance().get(Calendar.YEAR)) {
@@ -120,39 +114,6 @@ public class NameCleaner {
       }
     }
     return year;
-  }
-
-  private Map<String, Locale> getLanguageMap(Locale... supportedDisplayLocale) {
-    Collator collator = Collator.getInstance(Locale.ROOT);
-    collator.setDecomposition(Collator.FULL_DECOMPOSITION);
-    collator.setStrength(Collator.PRIMARY);
-
-    @SuppressWarnings({
-        "unchecked", "rawtypes"
-    })
-    Comparator<String> order = (Comparator) collator;
-    Map<String, Locale> languageMap = new TreeMap<String, Locale>(order);
-
-    for (String code : Locale.getISOLanguages()) {
-      Locale locale = new Locale(code);
-      languageMap.put(locale.getLanguage(), locale);
-      languageMap.put(locale.getISO3Language(), locale);
-
-      // map display language names for given locales
-      for (Locale language : new HashSet<Locale>(Arrays.asList(supportedDisplayLocale))) {
-        // make sure language name is properly normalized so accents and whatever don't break the regex pattern syntax
-        String languageName = Normalizer.normalize(locale.getDisplayLanguage(language), Form.NFKD);
-        languageMap.put(languageName, locale);
-      }
-    }
-
-    // remove illegal tokens
-    languageMap.remove("");
-    languageMap.remove("II");
-    languageMap.remove("III");
-
-    Map<String, Locale> result = Collections.unmodifiableMap(languageMap);
-    return result;
   }
 
   private Pattern getBracketPattern(boolean strict) {
@@ -167,9 +128,14 @@ public class NameCleaner {
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", strict ? 0 : Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
-  private Pattern getLanguagePattern(Collection<String> languages) {
+  public Pattern getLanguageTagPattern(Collection<String> languages) {
     // [en]
-    return compile("(?<=[-\\[{(\\.])(" + StringUtils.join(quote(languages), "|") + ")(?=\\p{Punct})", CASE_INSENSITIVE | UNICODE_CASE);
+    return compile("(?<=[-\\[{(])(" + StringUtils.join(quote(languages), "|") + ")(?=\\p{Punct})", CASE_INSENSITIVE | UNICODE_CASE);
+  }
+
+  public Pattern getLanguageSuffixPattern(Collection<String> languages) {
+    // .en.srt
+    return compile("(?<=[\\p{Punct}\\p{Space}])(" + StringUtils.join(quote(languages), "|") + ")(?=[._ ]*$)", CASE_INSENSITIVE | UNICODE_CASE);
   }
 
   private Pattern getVideoSourcePattern() {
@@ -214,7 +180,7 @@ public class NameCleaner {
       Matcher matcher = it.matcher(item);
       if (matcher.find()) {
         String substring = item.substring(0, matcher.start()); // use substring before the matched stopword
-        if (Normalization.normalizePunctuation(substring).length() >= 3) {
+        if (StringUtils.removePunctuation(substring).length() >= 3) {
           item = substring; // make sure that the substring has enough data
         }
       }

@@ -137,7 +137,7 @@ public class AllocineScrapper extends MovieScrapper {
 
     List<Locale> countries = new ArrayList<Locale>();
     for (JSONObject country : JSONUtils.selectList("nationality", movieObject)) {
-      countries.add(LocaleUtils.getLocale(JSONUtils.selectString("$", country), locale));
+      countries.add(LocaleUtils.findCountry(JSONUtils.selectString("$", country), locale));
     }
 
     MovieInfo movieInfo = new MovieInfo(fields, genres, countries);
