@@ -20,20 +20,25 @@ package fr.free.movierenamer.ui;
 import com.alee.laf.WebLookAndFeel;
 import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.LocaleUtils;
+import java.util.ResourceBundle;
 
 /**
  * Class Main
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public class Main {
+
   private static MovieRenamer mvr;
 
   public static void main(String args[]) {
 
     Settings setting = Settings.getInstance();
-
+    // Set UI locale file
+    LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
+    
     // Install look and feel
     WebLookAndFeel.install();
 

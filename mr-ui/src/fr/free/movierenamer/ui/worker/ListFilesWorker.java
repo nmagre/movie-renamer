@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.worker;
 
 import com.alee.laf.list.WebList;
+import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -40,7 +41,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Class listFilesWorker ,get List of media files in files list
- * 
+ *
  * @author Magré Nicolas
  */
 public class ListFilesWorker extends AbstractWorker {
@@ -50,10 +51,9 @@ public class ListFilesWorker extends AbstractWorker {
   private String currentParent;
   private boolean subFolder;
   private int count;
-  private int nbFiles;
   private final WebList mediaList;
-
   private final FilenameFilter folderFilter = new FilenameFilter() {
+
     @Override
     public boolean accept(File dir, String name) {
       return new File(dir.getAbsolutePath() + File.separator + name).isDirectory();
@@ -62,8 +62,12 @@ public class ListFilesWorker extends AbstractWorker {
 
   /**
    * Constructor arguments
-   * 
+   *
+   * @param errorSupport
+   * @param parent
+   * @param files
    * @param mediaList
+   * @param renamed
    */
   public ListFilesWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, List<File> files, WebList mediaList, List<MediaRenamed> renamed) {
     super(errorSupport, parent);
@@ -80,84 +84,89 @@ public class ListFilesWorker extends AbstractWorker {
 
   /**
    * Retreive all media files in a folder and subfolder
-   * 
-   * @return ArrayList of movies file
+   *
    */
   @Override
   public void executeInBackground() {
     DefaultListModel mediaFileNameModel = new DefaultListModel();
-    if (files != null) {
-      // TODO reprocess this !!!
 
-      List<UIFile> medias = new ArrayList<UIFile>();
-      nbFiles = 0;
-      count = 0;
-      currentParent = "";
+    if (files == null || files.isEmpty()) {
+      return;
+    }
 
-      // let's parse the selected folder
-      if (!subFolder) {
-        for (File file : files) {
-          if (isCancelled()) {
-            return;
-          }
-          if (file.isDirectory()) {
-            File[] subDir = file.listFiles(folderFilter);
-            if (subDir != null) {
-              nbFiles += subDir.length;
-              if (subDir.length > 0) {
-                if (!subFolder) {
-                  parent.setCursor(MovieRenamer.normalCursor);
-                  int n = JOptionPane.showConfirmDialog(parent, LocaleUtils.i18n("scanSubFolder"), LocaleUtils.i18n("question"), JOptionPane.YES_NO_OPTION);
-                  if (n == JOptionPane.NO_OPTION) {
-                    break;
-                  }
-                  subFolder = true;
-                }
-              }
-            }
-          }
-        }
+    List<UIFile> medias = new ArrayList<UIFile>();
+    count = 0;
+    currentParent = "";
+
+    if (!subFolder && asSubFolder(files)) {
+      int n = JOptionPane.showConfirmDialog(parent, LocaleUtils.i18n("scanSubFolder"), LocaleUtils.i18n("question"), JOptionPane.YES_NO_OPTION);
+      if (n != JOptionPane.NO_OPTION) {
+        subFolder = true;
+      }
+    }
+
+    parent.setCursor(MovieRenamer.hourglassCursor);
+
+    for (int i = 0; i < files.size(); i++) {
+      if (isCancelled()) {// User cancel
+        parent.setCursor(MovieRenamer.normalCursor);
+        return;
       }
 
-      for (File file : files) {
-        if (isCancelled()) {
-          return;
+      if (files.get(i).isDirectory()) {
+        addFiles(medias, files.get(i));
+      } else {
+        boolean addfiletoUI = !Settings.getInstance().useExtensionFilter || FileUtils.checkFileExt(files.get(i).getName(), Settings.getInstance().extensions);
+        if (addfiletoUI) {
+          addUIFiles(medias, files.get(i));
         }
-
-        if (file.isDirectory()) {
-          currentParent = file.getName();
-          getFiles(medias, file);
-        } else if (!Settings.getInstance().useExtensionFilter || FileUtils.checkFileExt(file.getName(), Settings.getInstance().extensions)) {
-          addUIFiles(medias, file);
-        }
+        setProgress((i * 100) / files.size());
       }
-      // Collections.sort(medias, new UIFilesNameComparator());
+    }
 
-      // let's process the UI
-      for (int i = 0; i < medias.size(); i++) {
-        mediaFileNameModel.addElement(medias.get(i));
-      }
-
-      // mediaLbl.setText(LocaleUtils.i18n("media") + " : " + mediaFileNameModel.size());//FIXME ???
+    // let's process the UI
+    for (UIFile media : medias) {
+      mediaFileNameModel.addElement(media);
     }
 
     mediaList.setCellRenderer(new IconListRenderer<UIFile>());
     mediaList.setModel(mediaFileNameModel);
 
+    parent.setCursor(MovieRenamer.normalCursor);
+
     if (mediaFileNameModel.isEmpty()) {
-      JOptionPane.showMessageDialog(parent, LocaleUtils.i18n("noMovieFound"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME change movie by media
+      WebOptionPane.showMessageDialog(parent, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("error"), WebOptionPane.ERROR_MESSAGE );
     } else if (Settings.getInstance().selectFrstMedia) {
       mediaList.setSelectedIndex(0);
     }
   }
 
   /**
+   * Check if one of directory contain a subdirectory
+   *
+   * @param files
+   * @return true if there is at least one subdirectory, otherwise false
+   */
+  private boolean asSubFolder(List<File> files) {
+    for (File file : files) {
+      if (file.isDirectory()) {
+        File[] subDir = file.listFiles(folderFilter);
+        if (subDir != null && subDir.length > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * Scan recursively folders and add media to a list
-   * 
+   *
    * @param medias List of movies
    * @param file File to add or directory to scan
    */
-  private void getFiles(List<UIFile> medias, File file) {
+  private void addFiles(List<UIFile> medias, File file) {
+
     if (isCancelled()) {
       return;
     }
@@ -170,11 +179,7 @@ public class ListFilesWorker extends AbstractWorker {
 
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolder) {
-        getFiles(medias, listFiles[i]);
-        if (listFiles[i].getParentFile().getName().equals(currentParent) && count < nbFiles) {
-          count++;
-          setProgress(((count * 100) / nbFiles));
-        }
+        addFiles(medias, listFiles[i]);
       } else if (!Settings.getInstance().useExtensionFilter || FileUtils.checkFileExt(listFiles[i].getName(), Settings.getInstance().extensions)) {
         addUIFiles(medias, listFiles[i]);
       }
@@ -183,7 +188,7 @@ public class ListFilesWorker extends AbstractWorker {
 
   /**
    * Add file to media files list
-   * 
+   *
    * @param medias Media file list
    * @param file File to add
    */
@@ -195,7 +200,7 @@ public class ListFilesWorker extends AbstractWorker {
 
   /**
    * Check if Movie Renamer has already renamed this file
-   * 
+   *
    * @param file File to check
    * @return True if file was renamed by Movie Renamer, False otherwise
    */
@@ -212,11 +217,11 @@ public class ListFilesWorker extends AbstractWorker {
 
   /**
    * Check if file is a movie
-   * 
+   *
    * @param file File to check
    * @return True if file is a movie, false otherwise
    */
-  public static boolean isMovie(File file) {// TODO A refaire , améliorer la detection !!!
+  private static boolean isMovie(File file) {// TODO A refaire , améliorer la detection !!!
     String filename = file.getName();
 
     for (TvShowNameMatcher.TvShowPattern patternToTest : TvShowNameMatcher.TvShowPattern.values()) {
@@ -232,7 +237,7 @@ public class ListFilesWorker extends AbstractWorker {
 
   /**
    * Search pattern in string
-   * 
+   *
    * @param text String to search in
    * @param pattern Pattern to match
    * @return True if pattern is find in string , False otherwise
@@ -244,17 +249,4 @@ public class ListFilesWorker extends AbstractWorker {
     }
     return false;
   }
-
-  // /**
-  // * class UIFilesNameComparator , compare two filename
-  // */
-  // private static class UIFilesNameComparator implements Comparator<UIFile>, Serializable {
-  //
-  // private static final long serialVersionUID = 1L;
-  //
-  // @Override
-  // public int compare(UIFile s1, UIFile s2) {
-  // return s1.getFile().getName().compareTo(s2.getFile().getName());
-  // }
-  // }
 }

@@ -28,32 +28,26 @@ import javax.swing.SwingWorker;
 
 /**
  * Class Worker
- * 
- * @param <T>
+ *
  * @author Magré Nicolas
  * @author QUÉMÉNEUR Simon
- * 
+ *
  */
 public abstract class AbstractWorker extends SwingWorker<Void, String> {
 
   protected final PropertyChangeSupport errorSupport;
   protected final MovieRenamer parent;
-  //protected final LoadingDialog loading;
-
-  // private T result;
+  protected final LoadingDialog loading;
 
   protected AbstractWorker(PropertyChangeSupport errorSupport, MovieRenamer parent) {
     this.errorSupport = errorSupport;
     this.parent = parent;
-//    this.loading = (parent != null) ? parent.getLoading() : null;
+    this.loading = (parent != null) ? parent.getLoading() : null;
     updateLoadingValue(0);
   }
 
   @Override
   protected final Void doInBackground() throws Exception {
-    // SwingUtilities.invokeLater(new Runnable() {
-    // @Override
-    // public void run() {
     try {
       executeInBackground();
     } catch (Exception e) {
@@ -62,10 +56,7 @@ public abstract class AbstractWorker extends SwingWorker<Void, String> {
     } finally {
       updateLoadingValue(100);
     }
-    // }
-    // });
     return null;
-
   }
 
   public abstract void executeInBackground() throws Exception;
@@ -89,8 +80,8 @@ public abstract class AbstractWorker extends SwingWorker<Void, String> {
   protected abstract LoadingDialogPos getLoadingDialogPos();
 
   protected final void updateLoadingValue(int value) {
-   /* if (loading != null) {
+    if (loading != null) {
       loading.setValue(value, getLoadingDialogPos());
-    }*/
+    }
   }
 }

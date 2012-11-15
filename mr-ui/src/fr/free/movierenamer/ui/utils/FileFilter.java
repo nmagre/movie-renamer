@@ -17,12 +17,12 @@
  */
 package fr.free.movierenamer.ui.utils;
 
-import fr.free.movierenamer.ui.settings.Settings;
-
 import com.alee.extended.filefilter.DefaultFileFilter;
+import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
+import javax.swing.ImageIcon;
 
 /**
  * Class MovieFileFilter
@@ -51,5 +51,10 @@ public class FileFilter extends DefaultFileFilter {
   @Override
   public String getDescription() {
     return LocaleUtils.i18n("media");
+  }
+
+  @Override
+  public ImageIcon getIcon() {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }
