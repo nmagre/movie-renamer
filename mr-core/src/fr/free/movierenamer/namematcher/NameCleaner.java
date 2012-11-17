@@ -89,15 +89,17 @@ public class NameCleaner {
     }
 
     String output = item;
-    // remove year
-    Integer year = extractYear(item);
-    if (year != null && output.length() > 5 && year > 0) {
-      // ensure the output contains something else ;)
-      output = StringUtils.replaceLast(output, Integer.toString(year), "");
-    }
     //
     output = strict ? clean(output, stoplist) : substringBefore(output, stoplist);
     // let's clean it
+    output = clean(output, cleanlist);
+    // remove year
+    Integer year = extractYear(item);
+    if (year != null && output.length() > 7 && year > 0) {
+      // ensure the output contains something else ;)
+      output = StringUtils.replaceLast(output, Integer.toString(year), "");
+    }
+    //reclean to be sure ;)
     output = clean(output, cleanlist);
 
     return output;
@@ -129,12 +131,12 @@ public class NameCleaner {
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", strict ? 0 : Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
-  public Pattern getLanguageTagPattern(Collection<String> languages) {
+  private Pattern getLanguageTagPattern(Collection<String> languages) {
     // [en]
     return compile("(?<=[-\\[{(])(" + StringUtils.join(quote(languages), "|") + ")(?=\\p{Punct})", CASE_INSENSITIVE | UNICODE_CASE);
   }
 
-  public Pattern getLanguageSuffixPattern(Collection<String> languages) {
+  private Pattern getLanguageSuffixPattern(Collection<String> languages) {
     // .en.srt
     return compile("(?<=[\\p{Punct}\\p{Space}])(" + StringUtils.join(quote(languages), "|") + ")(?=[._ ]*$)", CASE_INSENSITIVE | UNICODE_CASE);
   }
@@ -172,7 +174,7 @@ public class NameCleaner {
   private Pattern getExtensionPattern() {
     // pattern matching any blacklist word enclosed in separators
     String pattern = getCleanerProperty("file.extension");
-    return Pattern.compile("(?<!\\p{Alnum})(\\.(" + pattern + "))(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    return Pattern.compile("(\\.(" + pattern + "))$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
   private Collection<String> quote(Collection<String> strings) {
@@ -189,7 +191,7 @@ public class NameCleaner {
       if (matcher.find()) {
         String substring = item.substring(0, matcher.start()); // use substring before the matched stopword
         if (StringUtils.removePunctuation(substring).length() >= 3) {
-          item = substring; // make sure that the substring has enough data
+          item = substring;
         }
       }
     }

@@ -37,7 +37,7 @@ public class NameCleanerTest {
 
   @Test
   public void extractYear() {
-    Assert.assertEquals(null, cleaner.extractYear("2012.avi"));
+    Assert.assertEquals(Integer.valueOf(2012), cleaner.extractYear("2012.avi"));
     Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("2012 (2009).avi"));
     Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds 2009.avi"));
     Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds (2009).avi"));
@@ -45,6 +45,7 @@ public class NameCleanerTest {
   
   @Test
   public void extractNameNotStrict() {
+    Assert.assertEquals("2012", cleaner.extractName("2012.avi", false));
     Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", false));
     Assert.assertEquals("13 jeux de mort", cleaner.extractName("13 jeux de mort (2006).avi", false));
     Assert.assertEquals("16 Wishes", cleaner.extractName("16 Wishes (2010).avi", false));
