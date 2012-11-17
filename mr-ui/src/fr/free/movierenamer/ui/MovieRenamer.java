@@ -33,6 +33,7 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.ui.res.DragAndDrop;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.settings.Settings;
@@ -41,8 +42,10 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.Loading;
 import fr.free.movierenamer.ui.utils.MediaRenamed;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
+import fr.free.movierenamer.ui.worker.listener.FileWorkerListener;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -109,10 +112,16 @@ public class MovieRenamer extends JFrame {
     fileChooser.setChooseFilter(ff);
 
 
-//    //Add drag and drop listener on mediaList
-//    dropFile = new DropFile(setting, renamedMediaFile, new FileWorkerListener(), MovieRenamer.this);
-//    DropTarget dt = new DropTarget(mediaList, dropFile);
-//    dt.setActive(true);
+    //Add drag and drop listener on mediaList
+    DragAndDrop dropFile = new DragAndDrop(this, mediaList) {
+
+      @Override
+      public void getFiles(List<File> files) {
+        loadFiles(files);
+      }
+    };
+    DropTarget dt = new DropTarget(mediaList, dropFile);
+    dt.setActive(true);
 
     // Set Movie Renamer mode
     currentMode = MovieRenamerMode.MOVIEMODE;
@@ -207,6 +216,16 @@ public class MovieRenamer extends JFrame {
         loading.setVisible(true);
       }
     });
+  }
+
+  private void loadFiles(List<File> files) {
+    clearInterface(true, true);
+    loadFilesDial();
+
+    ListFilesWorker lfw = new ListFilesWorker(errorSupport, files, null);
+    FileWorkerListener listener = new FileWorkerListener(lfw, this, mediaList);
+    lfw.addPropertyChangeListener(listener);
+    lfw.execute();
   }
 
   public UIFile getSelectedMediaFile() {
@@ -592,7 +611,6 @@ public class MovieRenamer extends JFrame {
     fileChooser.setCurrentDirectory(new File(settings.fileChooserPath));
     int r = fileChooser.showDialog();
     if (r == 0) {
-      clearInterface(true, true);
       List<File> files = fileChooser.getSelectedFiles();
       if (!files.isEmpty()) {// Remember path
         settings.fileChooserPath = files.get(0).getParent();
@@ -603,12 +621,7 @@ public class MovieRenamer extends JFrame {
         }
       }
 
-      loadFilesDial();
-
-      ListFilesWorker lfw = new ListFilesWorker(errorSupport, this, files, mediaList, null);
-      // FileWorkerListener listener = new FileWorkerListener(this, mediaList, lfw);
-      // lfw.addPropertyChangeListener(listener);
-      lfw.execute();
+      loadFiles(files);
     }
 
   }//GEN-LAST:event_openBtnActionPerformed

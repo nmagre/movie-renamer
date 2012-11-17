@@ -17,82 +17,57 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.res.IconListRenderer;
-import fr.free.movierenamer.ui.res.UIMediaImage;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListModel;
 
 /**
  * Class SearchMediaImagesWorker
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaImagesWorker extends AbstractWorker {
+public class SearchMediaImagesWorker extends AbstractWorker<List<ImageInfo>> {
+
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
-  private final WebList thumbnailsList;
-  private final WebList fanartsList;
 
   /**
    * Constructor arguments
-   * 
-   * @param parent
-   * @param fanartList
-   * @param thumbnailsList
-   * @param media
+   *
+   * @param errorSupport
+   * @param searchResult
    */
-  public SearchMediaImagesWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, WebList thumbnailsList, WebList fanartsList, UISearchResult searchResult) {
-    super(errorSupport, parent);
+  public SearchMediaImagesWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult) {
+    super(errorSupport);
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
-    this.thumbnailsList = thumbnailsList;
-    this.fanartsList = fanartsList;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.images;
-  }
+  public List<ImageInfo> executeInBackground() throws Exception {
 
-  @Override
-  public void executeInBackground() throws Exception {
-    DefaultListModel thumbnailsListModel = new DefaultListModel();
-    DefaultListModel fanartsListModel = new DefaultListModel();
+    List<ImageInfo> infos = new ArrayList<ImageInfo>();
+
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
-      List<ImageInfo> infos = scrapper.getImages(media);
+      infos = scrapper.getImages(media);
       int count = infos.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return;
+          return infos;
         }
-        ImageInfo info = infos.get(i);
-        switch (info.getCategory()) {
-        case thumb:
-          thumbnailsListModel.addElement(new UIMediaImage(info));
-          break;
-        case fanart:
-          fanartsListModel.addElement(new UIMediaImage(info));
-          break;
-        }
+
         double progress = (i + 1) / (double) count;
-        updateLoadingValue((int) (progress * 100));
+        setProgress((int) (progress * 100));
       }
     }
 
-    thumbnailsList.setCellRenderer(new IconListRenderer<UISearchResult>());
-    thumbnailsList.setModel(thumbnailsListModel);
-    fanartsList.setCellRenderer(new IconListRenderer<UISearchResult>());
-    fanartsList.setModel(fanartsListModel);
+    return infos;
   }
 }

@@ -17,70 +17,54 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.laf.list.WebList;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.UIFile;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
 
 /**
  * Class SearchMediaImagesWorker
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaSubtitlesWorker extends AbstractWorker {
+public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
+
   private final UIFile media;
   private final SubtitleScrapper scrapper;
-  private final JList subtitlesList;
 
   /**
    * Constructor arguments
-   * 
+   *
    * @param errorSupport
-   * @param parent
    * @param media
-   * @param subtitlesList
    * @param scrapper
    */
-  public SearchMediaSubtitlesWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, UIFile media, WebList subtitlesList, SubtitleScrapper scrapper) {
-    super(errorSupport, parent);
+  public SearchMediaSubtitlesWorker(PropertyChangeSupport errorSupport, UIFile media, SubtitleScrapper scrapper) {
+    super(errorSupport);
     this.media = media;
-    this.subtitlesList = subtitlesList;
     this.scrapper = scrapper;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.subtitles;
-  }
+  public List<Subtitle> executeInBackground() throws Exception {// FIXME swing in EDT
+    List<Subtitle> results = new ArrayList<Subtitle>();
 
-  @Override
-  public void executeInBackground() throws Exception {
-    DefaultListModel subtitlesListModel = new DefaultListModel();
     if (media != null && scrapper != null) {
       String search = media.getSearch();
-      List<Subtitle> results = scrapper.search(search);
+      results = scrapper.search(search);
       int count = results.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return;
+          return results;
         }
-        subtitlesListModel.addElement(results.get(i));
         double progress = (i + 1) / (double) count;
-        updateLoadingValue((int) (progress * 100));
+        setProgress((int) (progress * 100));
       }
-
-      // subtitlesList.setCellRenderer(new IconListRenderer<UISearchResult>());
-      subtitlesList.setCellRenderer(new DefaultListCellRenderer());
-      subtitlesList.setModel(subtitlesListModel);
     }
-  }
 
+    return results;
+  }
 }

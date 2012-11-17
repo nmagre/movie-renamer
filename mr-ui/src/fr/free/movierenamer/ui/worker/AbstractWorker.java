@@ -18,8 +18,6 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.ui.LoadingDialog;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
@@ -29,37 +27,31 @@ import javax.swing.SwingWorker;
 /**
  * Class Worker
  *
+ * @param <T> 
  * @author Magré Nicolas
  * @author QUÉMÉNEUR Simon
- *
  */
-public abstract class AbstractWorker extends SwingWorker<Void, String> {
+public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
 
   protected final PropertyChangeSupport errorSupport;
-  protected final MovieRenamer parent;
-  protected final LoadingDialog loading;
-
-  protected AbstractWorker(PropertyChangeSupport errorSupport, MovieRenamer parent) {
+  
+  protected AbstractWorker(PropertyChangeSupport errorSupport) {
     this.errorSupport = errorSupport;
-    this.parent = parent;
-    this.loading = (parent != null) ? parent.getLoading() : null;
-    updateLoadingValue(0);
   }
 
   @Override
-  protected final Void doInBackground() throws Exception {
+  protected final T doInBackground() {
+    T result = null;
     try {
-      executeInBackground();
-    } catch (Exception e) {
-      firePropertyChange(LoadingDialog.closeEvent, String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
-      throw e;
-    } finally {
-      updateLoadingValue(100);
+      result = executeInBackground();
     }
-    return null;
+    catch(Exception e) {
+      firePropertyChange(LoadingDialog.closeEvent, String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
+    }
+    return result;
   }
 
-  public abstract void executeInBackground() throws Exception;
+  protected abstract T executeInBackground() throws Exception;
 
   protected final void firePropertyChange(String propertyName, String... chunks) {
     if (errorSupport != null) {
@@ -75,13 +67,5 @@ public abstract class AbstractWorker extends SwingWorker<Void, String> {
 
   public final PropertyChangeSupport getErrorSupport() {
     return errorSupport;
-  }
-
-  protected abstract LoadingDialogPos getLoadingDialogPos();
-
-  protected final void updateLoadingValue(int value) {
-    if (loading != null) {
-      loading.setValue(value, getLoadingDialogPos());
-    }
   }
 }

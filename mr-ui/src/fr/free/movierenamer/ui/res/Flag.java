@@ -94,7 +94,7 @@ public abstract class Flag {
     Locale local = LocaleUtils.getLocale(code);
     if(local != null) {
       for (localeFlag lFlag : localeFlag.values()) {
-        if (local.getDisplayCountry(Locale.ENGLISH).equalsIgnoreCase(lFlag.name())) {
+        if (local.getDisplayCountry(Locale.ENGLISH).equalsIgnoreCase(lFlag.name().replace("_", " "))) {
           return lFlag.flag;
         }
       }

@@ -39,7 +39,7 @@ import javax.swing.JList;
  *
  * @author Nicolas Magré
  */
-public class DragAndDrop implements DropTargetListener {
+public abstract class DragAndDrop implements DropTargetListener {
 
   private final MovieRenamer mr;
   private List<File> files;
@@ -66,6 +66,7 @@ public class DragAndDrop implements DropTargetListener {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void drop(DropTargetDropEvent evt) {
 
     // We block the UI thread (EDT) during file process to avoid any other operation
@@ -84,7 +85,7 @@ public class DragAndDrop implements DropTargetListener {
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
 
-        for (int i = 0; i < res.length; i++) {
+        for (int i = 0; i < res.length; i++) {// TODO add remote file
           if (res[i].startsWith("file://")) {// Local file
             String file = URLDecoder.decode(res[i].replace("file://", "").replace("\n", ""), "UTF-8");
             file = file.substring(0, file.length() - 1);
@@ -95,6 +96,8 @@ public class DragAndDrop implements DropTargetListener {
         files.addAll((List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
       }
       
+      getFiles(files);
+      
     } catch (UnsupportedFlavorException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
@@ -104,4 +107,6 @@ public class DragAndDrop implements DropTargetListener {
       mr.setCursor(MovieRenamer.normalCursor);
     }
   }
+  
+  public abstract void getFiles(List<File> files);
 }
