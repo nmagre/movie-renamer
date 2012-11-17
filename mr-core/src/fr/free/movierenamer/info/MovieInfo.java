@@ -166,10 +166,10 @@ public class MovieInfo extends MediaInfo {
   @Override
   public String getRenamedTitle(String format) {
     Settings settings = Settings.getInstance();
-    String separator = settings.movieFilenameSeparator;
-    int limit = settings.movieFilenameLimit;
-    StringUtils.CaseConversionType renameCase = settings.movieFilenameCase;
-    boolean trim = settings.movieFilenameTrim;
+    String separator = settings.getMovieFilenameSeparator();
+    int limit = settings.getMovieFilenameLimit();
+    StringUtils.CaseConversionType renameCase = settings.getMovieFilenameCase();
+    boolean trim = settings.getMovieFilenameTrim();
 
     String titlePrefix = "";
     String shortTitle = this.getTitle();
@@ -308,7 +308,7 @@ public class MovieInfo extends MediaInfo {
     // res = res.replaceAll(":", "").replaceAll("/", "");
     // }
 
-    if (settings.movieFilenameRmDupSpace) {
+    if (settings.getMovieFilenameRmDupSpace()) {
       res = res.replaceAll("\\s+", " ");
     }
     return res;
