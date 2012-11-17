@@ -34,6 +34,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
@@ -85,52 +86,56 @@ public final class Settings {
   // Settings instance
   private static Settings instance;
 
-  public static enum SettingsProperty {
-    // app lang
-    appLanguage, //(Locale.ENGLISH.toString()),
-    // movie filename
-    movieFilenameFormat, //("<t> (<y>)"),
-    movieFilenameSeparator, //(", "),
-    movieFilenameLimit, //(Integer.decode("3").toString()),
-    movieFilenameCase, //(StringUtils.CaseConversionType.FIRSTLA.name()),
-    movieFilenameTrim, //(Boolean.TRUE.toString()),
-    movieFilenameRmDupSpace, //(Boolean.TRUE.toString()),
-    movieFilenameCreateDirectory, //(Boolean.FALSE.toString()),
-    // movie folder
-    movieFolderFormat, //("<t> (<y>)"),
-    movieFolderSeparator, //(", "),
-    movieFolderLimit, //(Integer.decode("3").toString()),
-    movieFolderCase, //(""),
-    movieFolderTrim, //(Boolean.TRUE.toString()),
-    movieFolderRmDupSpace, //(Boolean.TRUE.toString()),
-    // tvShow
-    tvShowFilenameFormat, //("<st> S<s>E<e> <et>"),
-    tvShowFilenameSeparator, //(", "),
-    tvShowFilenameLimit, //(Integer.decode("3").toString()),
-    tvShowFilenameCase, //(""),
-    tvShowFilenameTrim, //(Boolean.TRUE.toString()),
-    tvShowFilenameRmDupSpace, //(Boolean.TRUE.toString()),
-    // Cache
-    cacheClear, //(Boolean.FALSE.toString()),
-    // Search
-    searchMovieScrapper, //(IMDbScrapper.class.toString()),
-    searchTvshowScrapper, //(TheTVDBScrapper.class.toString()),
-    searchSubtitleScrapper, //(IMDbScrapper.class.toString()),
-    searchScrapperLang, //(Locale.ENGLISH.toString()),
-    searchSortBySimiYear, //(Boolean.TRUE.toString()),
-    searchNbResult, //(Integer.decode("2").toString()),
-    searchDisplayApproximateResult, //(Boolean.FALSE.toString()),
-    // Proxy
-    proxyIsOn, //(Boolean.FALSE.toString()),
-    proxyUrl, //(""), // "10.2.1.10"
-    proxyPort, //(Integer.decode("0").toString()), // 3128
-    // http param
-    httpRequestTimeOut, //(Integer.decode("30").toString()),
-    httpCustomUserAgent; // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
-  }
-
   // Settings xml conf instance
   private final Document settingsDocument;
+  private final Node settingsNode;
+
+  private static final String appSettingsNodeName = appName_nospace + "_" + appModule_nospace;
+  private static final String settingNodeName = "settings";
+
+  public static enum SettingsProperty {
+    // app lang
+    appLanguage, // (Locale.ENGLISH.toString()),
+    // movie filename
+    movieFilenameFormat, // ("<t> (<y>)"),
+    movieFilenameSeparator, // (", "),
+    movieFilenameLimit, // (Integer.decode("3").toString()),
+    movieFilenameCase, // (StringUtils.CaseConversionType.FIRSTLA.name()),
+    movieFilenameTrim, // (Boolean.TRUE.toString()),
+    movieFilenameRmDupSpace, // (Boolean.TRUE.toString()),
+    movieFilenameCreateDirectory, // (Boolean.FALSE.toString()),
+    // movie folder
+    movieFolderFormat, // ("<t> (<y>)"),
+    movieFolderSeparator, // (", "),
+    movieFolderLimit, // (Integer.decode("3").toString()),
+    movieFolderCase, // (""),
+    movieFolderTrim, // (Boolean.TRUE.toString()),
+    movieFolderRmDupSpace, // (Boolean.TRUE.toString()),
+    // tvShow
+    tvShowFilenameFormat, // ("<st> S<s>E<e> <et>"),
+    tvShowFilenameSeparator, // (", "),
+    tvShowFilenameLimit, // (Integer.decode("3").toString()),
+    tvShowFilenameCase, // (""),
+    tvShowFilenameTrim, // (Boolean.TRUE.toString()),
+    tvShowFilenameRmDupSpace, // (Boolean.TRUE.toString()),
+    // Cache
+    cacheClear, // (Boolean.FALSE.toString()),
+    // Search
+    searchMovieScrapper, // (IMDbScrapper.class.toString()),
+    searchTvshowScrapper, // (TheTVDBScrapper.class.toString()),
+    searchSubtitleScrapper, // (IMDbScrapper.class.toString()),
+    searchScrapperLang, // (Locale.ENGLISH.toString()),
+    searchSortBySimiYear, // (Boolean.TRUE.toString()),
+    searchNbResult, // (Integer.decode("2").toString()),
+    searchDisplayApproximateResult, // (Boolean.FALSE.toString()),
+    // Proxy
+    proxyIsOn, // (Boolean.FALSE.toString()),
+    proxyUrl, // (""), // "10.2.1.10"
+    proxyPort, // (Integer.decode("0").toString()), // 3128
+    // http param
+    httpRequestTimeOut, // (Integer.decode("30").toString()),
+    httpCustomUserAgent; // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+  }
 
   /**
    * Private build for singleton fix
@@ -175,12 +180,17 @@ public final class Settings {
     }
 
     // settingsDocument init
-    Document doc;
+    Document settingsDocument;
+    Node settingsNode;
     try {
       File confRoot = new File(Settings.appFolder, "conf");
       File file = new File(confRoot, configFile);
-      doc = WebRequest.getXmlDocument(file.toURI());
-      // TODO check doc format ?
+      settingsDocument = WebRequest.getXmlDocument(file.toURI());
+      Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
+      if(!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
+        throw new NullPointerException("App version is different");
+      }
+      settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
       // TODO convert if version are diff !
     } catch (Exception ex) {
       try {
@@ -189,56 +199,66 @@ public final class Settings {
         docBuilder = docFactory.newDocumentBuilder();
 
         // root elements
-        doc = docBuilder.newDocument();
-        Element rootElement = doc.createElement(appName_nospace);
-        doc.appendChild(rootElement);
+        settingsDocument = docBuilder.newDocument();
+        Element rootElement = settingsDocument.createElement(appSettingsNodeName);
+        settingsDocument.appendChild(rootElement);
 
-        Attr version = doc.createAttribute("Version");
+        Attr version = settingsDocument.createAttribute("Version");
         version.setValue(VERSION);
         rootElement.setAttributeNode(version);
 
         // setting elements
-        Element setting = doc.createElement("setting");
-        rootElement.appendChild(setting);
+        settingsNode = settingsDocument.createElement(settingNodeName);
+        rootElement.appendChild(settingsNode);
 
       } catch (ParserConfigurationException ex1) {
-        doc = null;
+        settingsDocument = null;
+        settingsNode = null;
       }
     }
-    settingsDocument = doc;
+    this.settingsDocument = settingsDocument;
+    this.settingsNode = settingsNode;
+    saveSetting();
   }
 
   private String get(SettingsProperty key) {
+    String value;
     if (key != null) {
-      Node setting = XPathUtils.selectNode(appName_nospace + "/setting", settingsDocument);
-      Node found = XPathUtils.selectNode(key.name(), setting);
-      String value = XPathUtils.getTextContent(found);
-      return value;
+      Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
+      if (found != null) {
+        value = XPathUtils.getTextContent(found);
+      } else {
+        value = null;
+      }
     } else {
-      return null;
+      value = null;
     }
+    if (value == null) {
+      throw new NullPointerException("Setting property is null");
+    }
+    return value;
   }
 
   public void set(SettingsProperty key, Object value) {
     if (value != null && key != null) {
-      Node setting = XPathUtils.selectNode(appName_nospace + "/setting", settingsDocument);
-      Node found = XPathUtils.selectNode(key.name(), setting);
+      Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
       if (found == null) {
         found = settingsDocument.createElement(key.name());
         // param.appendChild(settingsDocument.createTextNode(value.toString()));
-        setting.appendChild(found);
+        this.settingsNode.appendChild(found);
       }
       found.setTextContent(value.toString());
-      try {
         saveSetting();
-      } catch (IOException ex) {
-        LOGGER.log(Level.SEVERE, ex.getMessage());
-      }
     }
   }
 
   public void clear() {
-
+    Logger.getLogger(Settings.class.getName()).log(Level.INFO, String.format("Clear Settings"));
+    NodeList list = this.settingsNode.getChildNodes();
+    for (int i = 0; i < list.getLength(); i++) {
+      this.settingsNode.removeChild(list.item(i));
+    }
+    saveSetting();
   }
 
   public Locale getAppLanguage() {
@@ -251,7 +271,7 @@ public final class Settings {
 
   public String getMovieFilenameFormat() {
     try {
-    return get(SettingsProperty.movieFilenameFormat);
+      return get(SettingsProperty.movieFilenameFormat);
     } catch (Exception ex) {
       return "<t> (<y>)";
     }
@@ -259,7 +279,7 @@ public final class Settings {
 
   public String getMovieFilenameSeparator() {
     try {
-    return get(SettingsProperty.movieFilenameSeparator);
+      return get(SettingsProperty.movieFilenameSeparator);
     } catch (Exception ex) {
       return ", ";
     }
@@ -283,7 +303,7 @@ public final class Settings {
 
   public boolean getMovieFilenameTrim() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameTrim));
+      return Boolean.parseBoolean(get(SettingsProperty.movieFilenameTrim));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -291,7 +311,7 @@ public final class Settings {
 
   public boolean getMovieFilenameRmDupSpace() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRmDupSpace));
+      return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRmDupSpace));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -299,7 +319,7 @@ public final class Settings {
 
   public boolean getMovieFilenameCreateDirectory() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameCreateDirectory));
+      return Boolean.parseBoolean(get(SettingsProperty.movieFilenameCreateDirectory));
     } catch (Exception ex) {
       return Boolean.FALSE;
     }
@@ -307,7 +327,7 @@ public final class Settings {
 
   public String getMovieFolderFormat() {
     try {
-    return get(SettingsProperty.movieFolderFormat);
+      return get(SettingsProperty.movieFolderFormat);
     } catch (Exception ex) {
       return "<t> (<y>)";
     }
@@ -315,7 +335,7 @@ public final class Settings {
 
   public String getMovieFolderSeparator() {
     try {
-    return get(SettingsProperty.movieFolderSeparator);
+      return get(SettingsProperty.movieFolderSeparator);
     } catch (Exception ex) {
       return ", ";
     }
@@ -323,7 +343,7 @@ public final class Settings {
 
   public int getMovieFolderLimit() {
     try {
-    return Integer.parseInt(get(SettingsProperty.movieFolderLimit));
+      return Integer.parseInt(get(SettingsProperty.movieFolderLimit));
     } catch (Exception ex) {
       return 3;
     }
@@ -331,7 +351,7 @@ public final class Settings {
 
   public String getMovieFolderCase() {
     try {
-    return get(SettingsProperty.movieFolderCase);
+      return get(SettingsProperty.movieFolderCase);
     } catch (Exception ex) {
       return "";
     }
@@ -339,7 +359,7 @@ public final class Settings {
 
   public boolean getMovieFolderTrim() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFolderTrim));
+      return Boolean.parseBoolean(get(SettingsProperty.movieFolderTrim));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -347,7 +367,7 @@ public final class Settings {
 
   public boolean getMovieFolderRmDupSpace() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFolderRmDupSpace));
+      return Boolean.parseBoolean(get(SettingsProperty.movieFolderRmDupSpace));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -355,7 +375,7 @@ public final class Settings {
 
   public String getTvShowFilenameFormat() {
     try {
-    return get(SettingsProperty.tvShowFilenameFormat);
+      return get(SettingsProperty.tvShowFilenameFormat);
     } catch (Exception ex) {
       return "<st> S<s>E<e> <et>";
     }
@@ -363,7 +383,7 @@ public final class Settings {
 
   public String getTvShowFilenameSeparator() {
     try {
-    return get(SettingsProperty.tvShowFilenameSeparator);
+      return get(SettingsProperty.tvShowFilenameSeparator);
     } catch (Exception ex) {
       return ", ";
     }
@@ -371,7 +391,7 @@ public final class Settings {
 
   public int getTvShowFilenameLimit() {
     try {
-    return Integer.parseInt(get(SettingsProperty.tvShowFilenameLimit));
+      return Integer.parseInt(get(SettingsProperty.tvShowFilenameLimit));
     } catch (Exception ex) {
       return 3;
     }
@@ -379,7 +399,7 @@ public final class Settings {
 
   public String getTvShowFilenameCase() {
     try {
-    return get(SettingsProperty.tvShowFilenameCase);
+      return get(SettingsProperty.tvShowFilenameCase);
     } catch (Exception ex) {
       return "";
     }
@@ -387,7 +407,7 @@ public final class Settings {
 
   public boolean getTvShowFilenameTrim() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameTrim));
+      return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameTrim));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -395,7 +415,7 @@ public final class Settings {
 
   public boolean getTvShowFilenameRmDupSpace() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
+      return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -403,7 +423,7 @@ public final class Settings {
 
   public boolean getCacheClear() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.cacheClear));
+      return Boolean.parseBoolean(get(SettingsProperty.cacheClear));
     } catch (Exception ex) {
       return Boolean.FALSE;
     }
@@ -438,7 +458,7 @@ public final class Settings {
 
   public Locale getSearchScrapperLang() {
     try {
-    return new Locale(get(SettingsProperty.searchScrapperLang));
+      return new Locale(get(SettingsProperty.searchScrapperLang));
     } catch (Exception ex) {
       return Locale.ENGLISH;
     }
@@ -446,7 +466,7 @@ public final class Settings {
 
   public boolean getSearchSortBySimiYear() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.searchSortBySimiYear));
+      return Boolean.parseBoolean(get(SettingsProperty.searchSortBySimiYear));
     } catch (Exception ex) {
       return Boolean.TRUE;
     }
@@ -454,7 +474,7 @@ public final class Settings {
 
   public int getSearchNbResult() {
     try {
-    return Integer.parseInt(get(SettingsProperty.searchNbResult));
+      return Integer.parseInt(get(SettingsProperty.searchNbResult));
     } catch (Exception ex) {
       return 2;
     }
@@ -462,7 +482,7 @@ public final class Settings {
 
   public boolean getSearchDisplayApproximateResult() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.searchDisplayApproximateResult));
+      return Boolean.parseBoolean(get(SettingsProperty.searchDisplayApproximateResult));
     } catch (Exception ex) {
       return Boolean.FALSE;
     }
@@ -470,7 +490,7 @@ public final class Settings {
 
   public boolean getProxyIsOn() {
     try {
-    return Boolean.parseBoolean(get(SettingsProperty.proxyIsOn));
+      return Boolean.parseBoolean(get(SettingsProperty.proxyIsOn));
     } catch (Exception ex) {
       return Boolean.FALSE;
     }
@@ -478,23 +498,23 @@ public final class Settings {
 
   public String getProxyUrl() {
     try {
-    return get(SettingsProperty.proxyUrl);
+      return get(SettingsProperty.proxyUrl);
     } catch (Exception ex) {
-      return ""; //ex. "10.2.1.10"
+      return ""; // ex. "10.2.1.10"
     }
   }
 
   public int getProxyPort() {
     try {
-    return Integer.parseInt(get(SettingsProperty.proxyPort));
+      return Integer.parseInt(get(SettingsProperty.proxyPort));
     } catch (Exception ex) {
-      return 0; //ex. 3128
+      return 0; // ex. 3128
     }
   }
 
   public int getHttpRequestTimeOut() {
     try {
-    return Integer.parseInt(get(SettingsProperty.httpRequestTimeOut));
+      return Integer.parseInt(get(SettingsProperty.httpRequestTimeOut));
     } catch (Exception ex) {
       return 30;
     }
@@ -502,7 +522,7 @@ public final class Settings {
 
   public String getHttpCustomUserAgent() {
     try {
-    return get(SettingsProperty.httpCustomUserAgent);
+      return get(SettingsProperty.httpCustomUserAgent);
     } catch (Exception ex) {
       return "";// ex. // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
     }
@@ -589,23 +609,29 @@ public final class Settings {
    * Save setting
    * 
    * @return True if setting was saved, False otherwise
-   * @throws IOException
    */
-  public boolean saveSetting() throws IOException {
-    LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
-    File confRoot = new File(Settings.appFolder, "conf");
-    if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
-      throw new IOException("Failed to create conf dir: " + confRoot);
-    }
+  public boolean saveSetting() {
+    boolean saveSuccess;
     try {
-      // write it to file
-      File confFile = new File(confRoot, configFile);
-      FileUtils.writeXmlFile(settingsDocument, confFile);
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
-      return false;
+      LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
+      File confRoot = new File(Settings.appFolder, "conf");
+      if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
+        throw new IOException("Failed to create conf dir: " + confRoot);
+      }
+      try {
+        // write it to file
+        File confFile = new File(confRoot, configFile);
+        FileUtils.writeXmlFile(settingsDocument, confFile);
+        saveSuccess = true;
+      } catch (Exception e) {
+        LOGGER.log(Level.SEVERE, e.getMessage());
+        saveSuccess = false;
+      }
+    } catch (IOException ex) {
+      LOGGER.log(Level.SEVERE, ex.getMessage());
+      saveSuccess = false;
     }
-    return true;
+    return saveSuccess;
   }
 
   // /**
