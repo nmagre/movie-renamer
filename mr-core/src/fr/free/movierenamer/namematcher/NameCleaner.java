@@ -73,14 +73,15 @@ public class NameCleaner {
         Pattern videoSource = getVideoSourcePattern();
         Pattern videoFormat = getVideoFormatPattern();
         Pattern resolution = getResolutionPattern();
-        Pattern queryBlacklist = getBlacklistPattern();
+        Pattern blacklist = getBlacklistPattern();
+        Pattern customBlacklist = getCustomBlacklistPattern();
         Pattern extensions = getExtensionPattern();
 
         stoplist = new Pattern[] {
             languageTag, videoSource, videoFormat, resolution, languageSuffix, extensions
         };
         cleanlist = new Pattern[] {
-            extensions, bracket, releaseGroup, languageTag, videoSource, videoFormat, resolution, languageSuffix, queryBlacklist
+            extensions, bracket, releaseGroup, languageTag, videoSource, videoFormat, resolution, languageSuffix, blacklist, customBlacklist
         };
         this.stoplist.put(strict, stoplist);
         this.cleanlist.put(strict, cleanlist);
@@ -158,6 +159,13 @@ public class NameCleaner {
   private Pattern getBlacklistPattern() {
     // pattern matching any blacklist word enclosed in separators
     String pattern = getCleanerProperty("blacklist");
+    return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+  }
+
+  private Pattern getCustomBlacklistPattern() {
+    // pattern matching any 'custom' blacklist word enclosed in separators
+    // TODO parse custom file for blacklist word
+    String pattern = "";
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
