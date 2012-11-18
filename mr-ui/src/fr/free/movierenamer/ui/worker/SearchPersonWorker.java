@@ -18,18 +18,17 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
 import java.beans.PropertyChangeSupport;
 import javax.swing.JPanel;
 
 /**
  * Class SearchPersonWorker
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchPersonWorker extends AbstractWorker {
+public class SearchPersonWorker extends AbstractWorker<Void> {
 
   /**
    * @param errorSupport
@@ -38,18 +37,12 @@ public class SearchPersonWorker extends AbstractWorker {
    * @param castingInfo
    */
   public SearchPersonWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, JPanel actorsPane, CastingInfo castingInfo) {
-    super(errorSupport, parent);
+    super(errorSupport);
     // TODO Auto-generated constructor stub
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.person;
-  }
-
-  @Override
-  public void executeInBackground() throws Exception {
+  public Void executeInBackground() throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-
 }

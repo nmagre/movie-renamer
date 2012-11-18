@@ -15,46 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.utils;
+package fr.free.movierenamer.ui.worker.listener;
 
-import com.alee.extended.filefilter.DefaultFileFilter;
-import fr.free.movierenamer.ui.settings.Settings;
-import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
-import java.io.File;
-import javax.swing.ImageIcon;
+import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.worker.SearchPersonWorker;
 
 /**
- * Class MovieFileFilter
- * 
+ * Class PersonListener
  * @author Nicolas Magré
  */
-public class FileFilter extends DefaultFileFilter {
+public class PersonListener extends WorkerListener<Void> {
 
-  public FileFilter() {
-    super();
+  public PersonListener(SearchPersonWorker worker, MovieRenamer mr) {
+    super(mr, worker);
   }
 
   @Override
-  public boolean accept(File file) {
-    if (!Settings.getInstance().useExtensionFilter) {
-      return true;
-    }
-
-    if (file.isDirectory()) {
-      return true;
-    }
-
-    return FileUtils.hasExtension(file, Settings.getInstance().extensions);
+  protected LoadingDialogPos getLoadingDialogPos() {
+    return LoadingDialogPos.person;
   }
 
   @Override
-  public String getDescription() {
-    return LocaleUtils.i18n("media");
-  }
-
-  @Override
-  public ImageIcon getIcon() {
+  protected void done() throws Exception {
+    // TODO
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

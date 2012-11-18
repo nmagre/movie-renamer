@@ -34,10 +34,8 @@ public class Loading {
   /**
    * Constructor arguments
    * 
-   * @param title Loading title
+   * @param workerKey 
    * @param indeterminate Loading indeterminate
-   * @param max Loading max value
-   * @param key Loading worker ID
    */
   public Loading(LoadingDialog.LoadingDialogPos workerKey, boolean indeterminate) {
     this.workerKey = workerKey;

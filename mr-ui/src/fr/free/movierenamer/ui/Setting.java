@@ -45,9 +45,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
-import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -97,7 +97,7 @@ public class Setting extends JDialog {// FIXME : I'm not working :(
    */
   public Setting(Settings setting, PropertyChangeSupport settingsChange, Component parent) {
     this.settingsChange = settingsChange;
-    setIconImage(ImageUtils.getImageFromJAR("/image/icon-32.png"));
+    setIconImage(ImageUtils.getImageFromJAR("ui/icon-32.png"));
     initComponents();
 
     rBtnThumbList = new JRadioButton[]{this.origThumbSizeRBtn, this.midThumbSizeRBtn, this.thumbThumbSizeRBtn};

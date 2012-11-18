@@ -150,6 +150,7 @@ public final class LocaleUtils {
   }
 
   private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
+  public static ResourceBundle localBundleExt = null;
 
   public static Locale[] getSupportedDisplayLocales() {
     return new Locale[] {
@@ -321,7 +322,15 @@ public final class LocaleUtils {
    * @return String depends on locale
    */
   public static String i18n(String bundleKey) {
-    return i18n(bundleKey, bundleKey);
+    return i18n(bundleKey, bundleKey, localBundle);
+  }
+
+  public static String i18nExt(String bundleKey) {
+    return i18n(bundleKey, bundleKey, localBundleExt);
+  }
+
+  public static String i18n(String bundleKey, ResourceBundle lBundle) {
+    return i18n(bundleKey, bundleKey, lBundle);
   }
 
   /**
@@ -333,9 +342,9 @@ public final class LocaleUtils {
    *          Default value
    * @return String depends on locale or default value if key dos not exist
    */
-  public static String i18n(String bundleKey, String defaultValue) {
-    if (localBundle.containsKey(bundleKey)) {
-      return localBundle.getString(bundleKey);
+  public static String i18n(String bundleKey, String defaultValue, ResourceBundle lBundle) {
+    if (lBundle != null && lBundle.containsKey(bundleKey)) {
+      return lBundle.getString(bundleKey);
     } else {
       Settings.LOGGER.log(Level.CONFIG, "No internationlization found for {0}, use default value", bundleKey);
       return defaultValue;

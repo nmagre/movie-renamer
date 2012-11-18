@@ -11,9 +11,6 @@
   </target>
 
   <target name="core" depends="jar-core">
-    <subant target="jar">
-      <fileset dir="mr-ui" includes="build.xml"/>
-    </subant>
   </target>
 
   <target name="cleanall" depends="clean-core">

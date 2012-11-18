@@ -20,9 +20,6 @@ package fr.free.movierenamer.ui.worker;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.ui.IMediaPanel;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import java.beans.PropertyChangeSupport;
@@ -33,44 +30,34 @@ import java.beans.PropertyChangeSupport;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaInfoWorker extends AbstractWorker {
+public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
 
   private final MediaScrapper<Media, MediaInfo> scrapper;
   private final UIFile file;
   private final UISearchResult searchResult;
-  private final IMediaPanel mediaPanel;
 
   /**
    * Constructor arguments
    * 
-   * @param parent
-   * @param mediaPanel
-   * @param file 
-   * @param media
+   * @param errorSupport 
+   * @param file
+   * @param searchResult  
    */
-  public SearchMediaInfoWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, IMediaPanel mediaPanel, UIFile file, UISearchResult searchResult) {
-    super(errorSupport, parent);
-    this.mediaPanel = mediaPanel;
+  public SearchMediaInfoWorker(PropertyChangeSupport errorSupport, UIFile file, UISearchResult searchResult) {
+    super(errorSupport);
     this.file = file;
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.inf;
-  }
-
-  @Override
-  public void executeInBackground() throws Exception {
+  public MediaInfo executeInBackground() throws Exception {// FIXME swing in EDT
     MediaInfo info = null;
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
       info = scrapper.getInfo(media);
       info.setMediaTag(file.getMediaTag());
     }
-    mediaPanel.setMediaInfo(info);
-    //parent.updateRenamedTitle();
+    return info;
   }
-
 }

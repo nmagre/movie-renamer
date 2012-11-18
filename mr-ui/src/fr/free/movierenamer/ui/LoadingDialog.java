@@ -22,7 +22,7 @@ import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JDialog;
@@ -64,7 +64,7 @@ public class LoadingDialog extends JDialog {
   }
 
   private static final long serialVersionUID = 1L;
-  private final Map<LoadingDialog.LoadingDialogPos, JProgressBar> progress = new HashMap<LoadingDialog.LoadingDialogPos, JProgressBar>();
+  private final Map<LoadingDialog.LoadingDialogPos, JProgressBar> progress = new EnumMap<LoadingDialog.LoadingDialogPos, JProgressBar>(LoadingDialog.LoadingDialogPos.class);
   private final List<LoadingDialog.LoadingDialogPos> initKeys;
   private final MovieRenamer mr;
 

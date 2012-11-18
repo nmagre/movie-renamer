@@ -17,24 +17,14 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import fr.free.movierenamer.ui.settings.Settings;
-
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.res.UISearchResult;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
 
 /**
  * Class SearchMediaWorker
@@ -42,68 +32,41 @@ import javax.swing.JOptionPane;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaWorker extends AbstractWorker {
+public class SearchMediaWorker extends AbstractWorker<List<Media>> {
 
   private final UIFile media;
   private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
-  private final JList searchResultList;
 
   /**
    * Constructor arguments
    * 
    * @param errorSupport 
-   * @param parent
    * @param media
-   * @param searchResultList
    * @param scrapper  
    */
-  public SearchMediaWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, UIFile media, JList searchResultList, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
-    super(errorSupport, parent);
+  public SearchMediaWorker(PropertyChangeSupport errorSupport, UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
+    super(errorSupport);
     this.media = media;
     this.scrapper = scrapper;
-    this.searchResultList = searchResultList;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.search;
-  }
-
-  @Override
-  public void executeInBackground() throws Exception {
-    DefaultListModel searchResModel = new DefaultListModel();
+  public List<Media> executeInBackground() throws Exception {// FIXME swing in EDT
+    List<Media> results = new ArrayList<Media>();
+    
     if (media != null && scrapper != null) {
       String search = media.getSearch();
-      List<Media> results = (List<Media>) scrapper.search(search);
+      results = (List<Media>) scrapper.search(search);
       int count = results.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return;
+          return results;
         }
-        searchResModel.addElement(new UISearchResult(results.get(i), scrapper));
         double progress = (i + 1) / (double) count;
-        updateLoadingValue((int) (progress * 100));
+        setProgress((int) (progress * 100));
       }
-
-      // // Sort result by similarity and year //FIXME Sort result by similarity and year
-      // if (count.size() > 1 && setting.sortBySimiYear) {
-      // Levenshtein.sortByLevenshteinDistanceYear(currentMedia.getSearch(), currentMedia.getYear(), results);
-      // }
-
-      // searchLbl.setText(LocaleUtils.i18n("search") + " : " + count);//FIXME update labels
     }
 
-    if (Settings.getInstance().displayThumbResult) {
-      searchResultList.setCellRenderer(new IconListRenderer<UISearchResult>());
-    } else {
-      searchResultList.setCellRenderer(new DefaultListCellRenderer());
-    }
-    searchResultList.setModel(searchResModel);
-
-    if (searchResModel.isEmpty()) {
-      JOptionPane.showMessageDialog(parent, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-    } else if (Settings.getInstance().selectFrstRes) {
-      searchResultList.setSelectedIndex(0);
-    }
+    return results;
   }
 }

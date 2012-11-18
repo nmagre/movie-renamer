@@ -3,7 +3,7 @@
   <description>Build Movie Renamer</description>
     
   <target name="-pre-init">
-    <property file="src/fr/free/movierenamer/settings/Settings.properties"/>
+    <property file="src/fr/free/movierenamer/ui/settings/Settings.properties"/>
     <property name="dist.jar" value="dist/${application.name}-${application.version}.jar" />
   </target>
 

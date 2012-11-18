@@ -17,69 +17,55 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.res.IconListRenderer;
-import fr.free.movierenamer.ui.res.UIPersonImage;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListModel;
 
 /**
  * Class SearchMediaImagesWorker
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaCastingWorker extends AbstractWorker {
+public class SearchMediaCastingWorker extends AbstractWorker<List<CastingInfo>> {
+
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
-  private final WebList castingList;
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport 
-   * @param parent
-   * @param castingList
-   * @param searchResult  
+   *
+   * @param errorSupport
+   * @param searchResult
    */
-  public SearchMediaCastingWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, WebList castingList, UISearchResult searchResult) {
-    super(errorSupport, parent);
+  public SearchMediaCastingWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult) {
+    super(errorSupport);
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
-    this.castingList = castingList;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.casting;
-  }
+  public List<CastingInfo> executeInBackground() throws Exception {
 
-  @Override
-  public void executeInBackground() throws Exception {
-    DefaultListModel personsListModel = new DefaultListModel();
+    List<CastingInfo> infos = new ArrayList<CastingInfo>();
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
-      List<CastingInfo> infos = scrapper.getCasting(media);
+      infos = scrapper.getCasting(media);
       int count = infos.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return;
+          return infos;
         }
-        personsListModel.addElement(new UIPersonImage(infos.get(i)));
         double progress = (i + 1) / (double) count;
-        updateLoadingValue((int) (progress * 100));
+        setProgress((int) (progress * 100));
       }
     }
-
-    castingList.setCellRenderer(new IconListRenderer<UIPersonImage>());
-    castingList.setModel(personsListModel);
+    
+    return infos;
   }
 }
