@@ -38,7 +38,7 @@ import net.sf.ehcache.Element;
 public final class Cache {
   static {
     Cache.initializeCache();
-    if (Settings.getInstance().getCacheClear()) {
+    if (Settings.getInstance().isCacheClear()) {
       Cache.clearAllCache();
     }
   }

@@ -18,12 +18,14 @@
 package fr.free.movierenamer.info;
 
 import java.io.File;
-import java.util.List;
+import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.free.movierenamer.namematcher.NameCleaner;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
+import fr.free.movierenamer.renamer.NameCleaner;
+import fr.free.movierenamer.renamer.Renamer;
+import fr.free.movierenamer.utils.FileUtils;
 
 /**
  * Class FileInfo
@@ -72,22 +74,18 @@ public class FileInfo {
     return false;
   }
 
-  private final File originalFile;
+  private File originalFile;
   private final MediaType type;
-  private boolean renamed;
   private String firstSearch;
   private String search;
   private Integer year;
-  private final List<String> renamedFiles;
 
   public FileInfo(File file) {
     this.originalFile = file;
     this.type = isMovie(file) ? MediaType.MOVIE : MediaType.TVSHOW;
-    this.renamedFiles = null;
-    this.renamed = wasRenamed(file.getAbsolutePath());
     NameCleaner nc = new NameCleaner();
     setSearch(nc.extractName(file.getName(), false));
-    setYear(nc.extractYear(file.getName()));
+    this.year = nc.extractYear(file.getName());
   }
 
   public String getSearch() {
@@ -98,45 +96,33 @@ public class FileInfo {
     return year;
   }
 
-  public boolean isRenamed() {
-    return renamed;
+  public boolean wasRenamed() {
+    return Renamer.getInstance().wasRenamed(this);
   }
 
   public MediaType getType() {
     return type;
   }
 
-  public final void setSearch(String search) {
+  private void setSearch(String search) {
     if (firstSearch == null) {
       firstSearch = search;
     }
     this.search = search;
   }
-
-  public final void setYear(Integer year) {
-    this.year = year;
-  }
-
-  public void setRenamed(boolean renamed) {
-    this.renamed = renamed;
+  
+  public boolean renamed(String newName) {
+    File newFile = FileUtils.move(this.originalFile, newName);
+    boolean success = Renamer.getInstance().addRenamed(this, this.originalFile.toURI(), newFile.toURI());
+    this.originalFile = newFile;
+    return success;
   }
 
   /**
-   * Check if we have already renamed this file
-   * 
-   * @param file
-   *          File to check
-   * @return True if file was renamed, False otherwise
+   * @return
    */
-  private boolean wasRenamed(String file) {
-    if (renamedFiles != null) {
-      for (int i = 0; i < renamedFiles.size(); i++) {
-        if (renamedFiles.get(i).equals(file)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  public URI getURI() {
+    return this.originalFile.toURI();
   }
 
 }

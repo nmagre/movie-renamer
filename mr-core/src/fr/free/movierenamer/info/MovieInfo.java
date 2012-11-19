@@ -169,7 +169,7 @@ public class MovieInfo extends MediaInfo {
     String separator = settings.getMovieFilenameSeparator();
     int limit = settings.getMovieFilenameLimit();
     StringUtils.CaseConversionType renameCase = settings.getMovieFilenameCase();
-    boolean trim = settings.getMovieFilenameTrim();
+    boolean trim = settings.isMovieFilenameTrim();
 
     String titlePrefix = "";
     String shortTitle = this.getTitle();
@@ -308,7 +308,7 @@ public class MovieInfo extends MediaInfo {
     // res = res.replaceAll(":", "").replaceAll("/", "");
     // }
 
-    if (settings.getMovieFilenameRmDupSpace()) {
+    if (settings.isMovieFilenameRmDupSpace()) {
       res = res.replaceAll("\\s+", " ");
     }
     return res;

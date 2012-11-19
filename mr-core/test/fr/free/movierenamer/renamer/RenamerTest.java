@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.info;
+package fr.free.movierenamer.renamer;
 
 import java.io.File;
 
@@ -23,21 +23,20 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import fr.free.movierenamer.info.FileInfo.MediaType;
+import fr.free.movierenamer.info.FileInfo;
 
 /**
- * Class FileInfoTest
+ * Class RenamerTest
  * 
  * @author Simon QUÉMÉNEUR
  */
-public class FileInfoTest {
+public class RenamerTest {
 
   @Test
   public void test() {
-    FileInfo fi = new FileInfo(new File("In_Bruges.avi"));
-    Assert.assertEquals(MediaType.MOVIE, fi.getType());
-    Assert.assertEquals("In Bruges", fi.getSearch());
-    Assert.assertEquals(null, fi.getYear());
-    Assert.assertEquals(Boolean.FALSE.booleanValue(), fi.wasRenamed());
+    FileInfo fi = new FileInfo(new File("D:\\Service\\Profiles\\squemeneur\\coucou.avi"));
+//    Assert.assertEquals(true,  fi.renamed("coucou.avi"));
+    Assert.assertEquals(true, fi.wasRenamed());
+    
   }
 }

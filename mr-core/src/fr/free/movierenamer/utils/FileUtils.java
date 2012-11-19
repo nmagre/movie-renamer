@@ -19,9 +19,11 @@ package fr.free.movierenamer.utils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.net.URI;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -30,6 +32,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 
 /**
@@ -112,8 +115,10 @@ public final class FileUtils {
   /**
    * Check if file have a good extension
    * 
-   * @param fileName File to check extension
-   * @param extensions Array of extensions
+   * @param fileName
+   *          File to check extension
+   * @param extensions
+   *          Array of extensions
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(String fileName, String[] extensions) {
@@ -138,7 +143,8 @@ public final class FileUtils {
   /**
    * Check if dir is a root directory
    * 
-   * @param dir Directory
+   * @param dir
+   *          Directory
    * @return True if it is a directory
    */
   public static boolean isRootDir(File dir) {
@@ -171,6 +177,23 @@ public final class FileUtils {
       xformer.transform(source, result);
     } catch (TransformerConfigurationException e) {
     } catch (TransformerException e) {
+    }
+  }
+
+  public static File move(File currentFile, String dest) {
+    try {
+      File destFile = new File(currentFile.getParentFile(), dest);
+      if (destFile.toURI().getScheme().equals("file")) {
+        if (currentFile.renameTo(destFile)) {
+          return destFile;
+        } else {
+          return currentFile;
+        }
+      } else {
+        return currentFile;
+      }
+    } catch (Exception ex) {
+      return currentFile;
     }
   }
 

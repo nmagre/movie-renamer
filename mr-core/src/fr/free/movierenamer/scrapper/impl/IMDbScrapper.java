@@ -227,7 +227,7 @@ public class IMDbScrapper extends MovieScrapper {
       results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.POPULARPATTERN.getPattern(), SearchResult.SearchResultType.POPULAR));
       results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.EXACTPATTERN.getPattern(), SearchResult.SearchResultType.EXACT));
       results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.PARTIALPATTERN.getPattern(), SearchResult.SearchResultType.PARTIAL));
-      if (results.isEmpty() || Settings.getInstance().getSearchDisplayApproximateResult()) {
+      if (results.isEmpty() || Settings.getInstance().isSearchDisplayApproximateResult()) {
         results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.APPROXIMATEPATTERN.getPattern(), SearchResult.SearchResultType.APPROXIMATE));
       }
 

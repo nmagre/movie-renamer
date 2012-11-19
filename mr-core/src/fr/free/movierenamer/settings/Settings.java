@@ -77,8 +77,8 @@ public final class Settings {
   private static final String appModule_nospace;
 
   // files
-  private static final String configFile = appModule_nospace + ".conf";
-  private static final String logFile = appModule_nospace + ".log";
+  private static final String configFileName = appModule_nospace + ".conf";
+  private static final String logFileName = appModule_nospace + ".log";
 
   // Logger
   public static final Logger LOGGER = Logger.getLogger(appModule_nospace + " Logger");
@@ -171,7 +171,7 @@ public final class Settings {
       if (!logsRoot.isDirectory() && !logsRoot.mkdirs()) {
         throw new IOException("Failed to create logs dir: " + logsRoot);
       }
-      FileHandler fh = new FileHandler(logsRoot.getAbsolutePath() + File.separator + logFile);
+      FileHandler fh = new FileHandler(logsRoot.getAbsolutePath() + File.separator + logFileName);
       LOGGER.addHandler(fh);
     } catch (SecurityException e) {
       LOGGER.log(Level.SEVERE, e.getMessage());
@@ -184,10 +184,10 @@ public final class Settings {
     Node settingsNode;
     try {
       File confRoot = new File(Settings.appFolder, "conf");
-      File file = new File(confRoot, configFile);
+      File file = new File(confRoot, configFileName);
       settingsDocument = WebRequest.getXmlDocument(file.toURI());
       Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
-      if(!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
+      if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
         throw new NullPointerException("App version is different");
       }
       settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
@@ -248,7 +248,7 @@ public final class Settings {
         this.settingsNode.appendChild(found);
       }
       found.setTextContent(value.toString());
-        saveSetting();
+      saveSetting();
     }
   }
 
@@ -301,7 +301,7 @@ public final class Settings {
     }
   }
 
-  public boolean getMovieFilenameTrim() {
+  public boolean isMovieFilenameTrim() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.movieFilenameTrim));
     } catch (Exception ex) {
@@ -309,7 +309,7 @@ public final class Settings {
     }
   }
 
-  public boolean getMovieFilenameRmDupSpace() {
+  public boolean isMovieFilenameRmDupSpace() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRmDupSpace));
     } catch (Exception ex) {
@@ -317,7 +317,7 @@ public final class Settings {
     }
   }
 
-  public boolean getMovieFilenameCreateDirectory() {
+  public boolean isMovieFilenameCreateDirectory() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.movieFilenameCreateDirectory));
     } catch (Exception ex) {
@@ -357,7 +357,7 @@ public final class Settings {
     }
   }
 
-  public boolean getMovieFolderTrim() {
+  public boolean isMovieFolderTrim() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.movieFolderTrim));
     } catch (Exception ex) {
@@ -365,7 +365,7 @@ public final class Settings {
     }
   }
 
-  public boolean getMovieFolderRmDupSpace() {
+  public boolean isMovieFolderRmDupSpace() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.movieFolderRmDupSpace));
     } catch (Exception ex) {
@@ -405,7 +405,7 @@ public final class Settings {
     }
   }
 
-  public boolean getTvShowFilenameTrim() {
+  public boolean isTvShowFilenameTrim() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameTrim));
     } catch (Exception ex) {
@@ -413,7 +413,7 @@ public final class Settings {
     }
   }
 
-  public boolean getTvShowFilenameRmDupSpace() {
+  public boolean isTvShowFilenameRmDupSpace() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
     } catch (Exception ex) {
@@ -421,7 +421,7 @@ public final class Settings {
     }
   }
 
-  public boolean getCacheClear() {
+  public boolean isCacheClear() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.cacheClear));
     } catch (Exception ex) {
@@ -464,7 +464,7 @@ public final class Settings {
     }
   }
 
-  public boolean getSearchSortBySimiYear() {
+  public boolean isSearchSortBySimiYear() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.searchSortBySimiYear));
     } catch (Exception ex) {
@@ -480,7 +480,7 @@ public final class Settings {
     }
   }
 
-  public boolean getSearchDisplayApproximateResult() {
+  public boolean isSearchDisplayApproximateResult() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.searchDisplayApproximateResult));
     } catch (Exception ex) {
@@ -488,7 +488,7 @@ public final class Settings {
     }
   }
 
-  public boolean getProxyIsOn() {
+  public boolean isProxyIsOn() {
     try {
       return Boolean.parseBoolean(get(SettingsProperty.proxyIsOn));
     } catch (Exception ex) {
@@ -528,99 +528,22 @@ public final class Settings {
     }
   }
 
-  // /**
-  // * Load Movie Renamer settings
-  // *
-  // * @return Movie Renamer settings
-  // */
-  // private Settings loadSetting() throws SettingsSaveFailedException {
-  // LOGGER.log(Level.INFO, "Load configuration from {0}", configFile);
-  // boolean saved;
-  // Settings config = new Settings();
-  // File confRoot = new File(Settings.appFolder, "conf");
-  // File file = new File(confRoot, configFile);
-  //
-  // if (!file.exists()) {
-  // try {
-  // saved = config.saveSetting();
-  // } catch (IOException e) {
-  // saved = false;
-  // }
-  // if (!saved) {
-  // // Set locale
-  // Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));
-  // throw new SettingsSaveFailedException(config, LocaleUtils.i18n("settingsSaveFailed") + " " + appFolder.getAbsolutePath());
-  // }
-  // return loadSetting();
-  // }
-  //
-  // saved = false;
-  // try {
-  // // Parse Movie Renamer Settings
-  // Document xml = WebRequest.getXmlDocument(file.toURI());
-  // List<Node> nodes = XPathUtils.selectChildren(appName_nospace + "/setting", xml);
-  // for (Node node : nodes) {
-  // setValue(node.getNodeName(), XPathUtils.getTextContent(node));
-  // }
-  //
-  // // Define locale on first run
-  // if (config.locale.equals("")) {
-  // if (!Locale.getDefault().equals(Locale.FRENCH)) {
-  // config.locale = Locale.ENGLISH;
-  // } else {
-  // config.locale = Locale.FRENCH;
-  // }
-  // xmlVersion = VERSION;// Ensures that the settings file is
-  // // written once only
-  // }
-  //
-  // // Set locale
-  // Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));
-  // if (VERSION.equals(xmlVersion) && !xmlError) {
-  // saved = true;
-  // }
-  //
-  // } catch (SAXException ex) {
-  // LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("SAXException", ex.getStackTrace()));
-  // } catch (IOException ex) {
-  // LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
-  // } finally {
-  // if (!saved) {
-  // // FIXME No swing in settings (for cli)
-  // // JOptionPane.showMessageDialog(null,
-  // // Utils.i18n("lostSettings"), Utils.i18n("Information"),
-  // // JOptionPane.INFORMATION_MESSAGE);
-  // try {
-  // saved = config.saveSetting();
-  // } catch (IOException e) {
-  // saved = false;
-  // }
-  // }
-  // }
-  //
-  // if (!saved) {
-  // throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
-  // }
-  //
-  // return config;
-  // }
-
   /**
    * Save setting
    * 
    * @return True if setting was saved, False otherwise
    */
-  public boolean saveSetting() {
+  private boolean saveSetting() {
     boolean saveSuccess;
     try {
-      LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
+      LOGGER.log(Level.INFO, "Save configuration to {0}", configFileName);
       File confRoot = new File(Settings.appFolder, "conf");
       if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
         throw new IOException("Failed to create conf dir: " + confRoot);
       }
       try {
         // write it to file
-        File confFile = new File(confRoot, configFile);
+        File confFile = new File(confRoot, configFileName);
         FileUtils.writeXmlFile(settingsDocument, confFile);
         saveSuccess = true;
       } catch (Exception e) {
@@ -634,155 +557,9 @@ public final class Settings {
     return saveSuccess;
   }
 
-  // /**
-  // * Get the user settings fields
-  // *
-  // * @return
-  // */
-  // private Collection<Field> getSettingsFields() {
-  // Collection<Field> results = new ArrayList<Field>();
-  // for (Field field : this.getClass().getDeclaredFields()) {
-  // int mod = field.getModifiers();
-  // if (Modifier.isPublic(mod) && !Modifier.isStatic(mod)) {
-  // results.add(field);
-  // }
-  // }
-  // return results;
-  // }
-
-  // /**
-  // * Set a value using field name
-  // *
-  // * @param fieldName
-  // * @param configValue
-  // */
-  // public void setValue(String fieldName, String configValue) {
-  // try {
-  // Field field = this.getClass().getField(fieldName);
-  // Object value = null;
-  // if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
-  // // Boolean field
-  // value = sZero.equals(configValue);
-  // } else if (field.getType().isArray()) {
-  // // Array field
-  // value = configValue.split(arrayEscapeChar);
-  // } else if (Collection.class.isAssignableFrom(field.getType())) {
-  // // Collection field
-  // value = StringUtils.stringToArray(configValue, arrayEscapeChar);
-  // } else if (field.getType().isEnum()) {
-  // // Enum field
-  // try {
-  // @SuppressWarnings("unchecked")
-  // Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
-  // value = en;
-  // } catch (IllegalArgumentException ex) {// Wrong xml setting
-  // LOGGER.log(Level.SEVERE, " No enum const named {0}", configValue);
-  // xmlError = true;
-  // }
-  // } else if (NumberUtils.isNumeric(field.getType())) {
-  // @SuppressWarnings("unchecked")
-  // Class<Number> type = (Class<Number>) field.getType();
-  // value = NumberUtils.convertToNumber(type, configValue);// Integer.valueOf(configValue);
-  // } else if (field.getType() == Locale.class) {
-  // value = new Locale(configValue);
-  // } else if (field.getType() == Class.class) {
-  // value = Class.forName(configValue);
-  // } else {
-  // // other parsing
-  // value = StringUtils.unEscapeXML(configValue, "UTF-8");
-  // }
-  // if (value != null) {
-  // field.set(this, value);
-  // }
-  // } catch (SecurityException e) {
-  // LOGGER.log(Level.WARNING, e.getMessage());
-  // } catch (NoSuchFieldException e) {
-  // LOGGER.log(Level.CONFIG, "Configuration field no longer exists", e);
-  // } catch (IllegalArgumentException e) {
-  // LOGGER.log(Level.WARNING, "Configuration value is not in the good format !", e);
-  // } catch (IllegalAccessException e) {
-  // LOGGER.log(Level.WARNING, e.getMessage());
-  // } catch (ClassNotFoundException e) {
-  // LOGGER.log(Level.WARNING, "Configuration value is not in the good format !", e);
-  // }
-  // }
-
   public String getVersion() {
     return VERSION;
   }
-
-  // @Override
-  // public boolean equals(Object obj) {
-  // if (obj == null) {
-  // return false;
-  // }
-  //
-  // if (!(obj instanceof Settings)) {
-  // return false;
-  // }
-  //
-  // Settings older = (Settings) obj;
-  // Collection<Field> olderFields = older.getSettingsFields();
-  // Collection<Field> currentFields = this.getSettingsFields();
-  // if (currentFields.size() != olderFields.size()) {
-  // return false;
-  // }
-  //
-  // Iterator<Field> targetIt = currentFields.iterator();
-  // for (Field field : olderFields) {
-  // try {
-  // if (!field.get(older).equals(targetIt.next().get(this))) {
-  // return false;
-  // }
-  // } catch (IllegalArgumentException ex) {
-  // LOGGER.log(Level.SEVERE, null, ex);
-  // } catch (IllegalAccessException ex) {
-  // LOGGER.log(Level.SEVERE, null, ex);
-  // }
-  // }
-  //
-  // return true;
-  // }
-  //
-  // @Override
-  // public int hashCode() {
-  // int hash = 7;
-  // Collection<Field> fields = this.getSettingsFields();
-  // for (Field field : fields) {
-  // try {
-  // if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
-  // // Boolean field
-  // hash = 29 * hash + (((Boolean) field.get(this)) ? 1 : 0);
-  // } else if (field.getType().isArray()) {
-  // // Array field
-  // hash = 29 * hash + Arrays.deepHashCode((Object[]) field.get(this));
-  // } else if (Collection.class.isAssignableFrom(field.getType())) {
-  // // Collection field
-  // hash = 29 * hash + ((Collection<?>) field.get(this)).hashCode();
-  // } else if (field.getType().isEnum()) {
-  // // Enum field
-  // hash = 29 * hash + ((Enum<?>) field.get(this)).hashCode();
-  // } else if (NumberUtils.isNumeric(field.getType())) {
-  // @SuppressWarnings("unchecked")
-  // Class<Number> type = (Class<Number>) field.getType();
-  // hash = 29 * hash + NumberUtils.convertToNumber(type, (String) field.get(this)).hashCode();
-  // }
-  // } catch (SecurityException e) {
-  // LOGGER.log(Level.WARNING, e.getMessage());
-  // } catch (IllegalArgumentException e) {
-  // LOGGER.log(Level.WARNING, "Configuration value is not in the goot format !", e);
-  // } catch (IllegalAccessException e) {
-  // LOGGER.log(Level.WARNING, e.getMessage());
-  // }
-  // }
-  //
-  // return hash;
-  // }
-  //
-  // @Override
-  // public Settings clone() throws CloneNotSupportedException {
-  // return (Settings) super.clone();
-  // }
 
   public static String decodeApkKey(String apkkey) {
     return new String(DatatypeConverter.parseBase64Binary(StringUtils.rot13(apkkey)));

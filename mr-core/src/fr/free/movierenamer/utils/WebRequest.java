@@ -139,7 +139,7 @@ public final class WebRequest {
   private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
     boolean isHttpRequest = "http".equals(uri.getScheme());
     URLConnection connection;
-    if (isHttpRequest && Settings.getInstance().getProxyIsOn()) {
+    if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
       Settings settings = Settings.getInstance();
       Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
       connection = uri.toURL().openConnection(proxy);
