@@ -74,14 +74,14 @@ public class FileInfo {
     return false;
   }
 
-  private File originalFile;
+  private File file;
   private final MediaType type;
   private String firstSearch;
   private String search;
   private Integer year;
 
   public FileInfo(File file) {
-    this.originalFile = file;
+    this.file = file;
     this.type = isMovie(file) ? MediaType.MOVIE : MediaType.TVSHOW;
     NameCleaner nc = new NameCleaner();
     setSearch(nc.extractName(file.getName(), false));
@@ -112,17 +112,18 @@ public class FileInfo {
   }
   
   public boolean renamed(String newName) {
-    File newFile = FileUtils.move(this.originalFile, newName);
-    boolean success = Renamer.getInstance().addRenamed(this, this.originalFile.toURI(), newFile.toURI());
-    this.originalFile = newFile;
+    File newFile = FileUtils.move(this.file, newName);
+    boolean success = Renamer.getInstance().addRenamed(this, this.file.toURI(), newFile.toURI());
+    this.file = newFile;
     return success;
   }
 
-  /**
-   * @return
-   */
   public URI getURI() {
-    return this.originalFile.toURI();
+    return this.file.toURI();
+  }
+  
+  public File getFile() {
+    return file;
   }
 
 }

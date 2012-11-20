@@ -122,8 +122,12 @@ public class Renamer {
   }
 
   public boolean wasRenamed(FileInfo fileInfo) {
-//    return XPathUtils.selectNode("renamed/renamedMedia[@type='"+fileInfo.getType().name()+"']/media[@to='"+fileInfo.getURI().toString()+"']", this.renamedDocument) != null;
-    return XPathUtils.selectNode("//media[@to='"+fileInfo.getURI().toString()+"']", this.renamedDocument) != null;
+    // return XPathUtils.selectNode("renamed/renamedMedia[@type='"+fileInfo.getType().name()+"']/media[@to='"+fileInfo.getURI().toString()+"']", this.renamedDocument) != null;
+    return getRenamedMediaNode(FileUtils.getFileChecksum(new File(fileInfo.getURI()))) != null;
+  }
+
+  private Node getRenamedMediaNode(String fileKey) {
+    return XPathUtils.selectNode("//renamedMedia[@checksum='" + fileKey + "']", this.renamedDocument);
   }
 
   /**
@@ -134,19 +138,30 @@ public class Renamer {
   public boolean addRenamed(FileInfo fileInfo, URI fromURI, URI toURI) {
     boolean saved;
     if (fileInfo != null) {
+      String fileKey = FileUtils.getFileChecksum(new File(toURI));
       Node root = XPathUtils.selectNode(renamedNodeName, this.renamedDocument);
+      
+      Node renamedMedia = getRenamedMediaNode(fileKey);
 
-      Element renamedMedia = renamedDocument.createElement("renamedMedia");
-      renamedMedia.setAttribute("type", fileInfo.getType().name());
+      if(renamedMedia == null) {
+        Element renamedMediaElement = renamedDocument.createElement("renamedMedia");
+        // renamedMedia.setAttribute("type", fileInfo.getType().name());
+        renamedMediaElement.setAttribute("checksum", fileKey);
+        renamedMedia = renamedMediaElement;
+      }
 
-      Element media = renamedDocument.createElement("media");
-      media.setAttribute("from", fromURI.toString());
-      media.setAttribute("to", toURI.toString());
-      renamedMedia.appendChild(media);
-
+      Element move = renamedDocument.createElement("historic");
+      Element from = renamedDocument.createElement("from");
+      from.setTextContent(fromURI.toString());
+      move.appendChild(from);
+      Element to = renamedDocument.createElement("to");
+      to.setTextContent(toURI.toString());
+      move.appendChild(to);
       Element date = renamedDocument.createElement("date");
       date.setTextContent(Calendar.getInstance().getTime().toString());
-      renamedMedia.appendChild(date);
+      move.appendChild(date);
+
+      renamedMedia.appendChild(move);
 
       // add it
       root.appendChild(renamedMedia);

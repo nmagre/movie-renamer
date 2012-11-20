@@ -34,8 +34,9 @@ public class RenamerTest {
 
   @Test
   public void test() {
-    FileInfo fi = new FileInfo(new File("D:\\Service\\Profiles\\squemeneur\\coucou.avi"));
-//    Assert.assertEquals(true,  fi.renamed("coucou.avi"));
+    FileInfo fi = new FileInfo(new File("coucou2.avi"));
+    Assert.assertEquals(true,  fi.renamed("coucou3.avi"));
+    Assert.assertEquals(true,  fi.renamed("coucou4.avi"));
     Assert.assertEquals(true, fi.wasRenamed());
     
   }
