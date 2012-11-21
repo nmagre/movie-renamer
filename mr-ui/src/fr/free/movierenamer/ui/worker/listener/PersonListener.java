@@ -25,7 +25,7 @@ import fr.free.movierenamer.ui.worker.SearchPersonWorker;
  * Class PersonListener
  * @author Nicolas Magré
  */
-public class PersonListener extends WorkerListener<Void> {
+public class PersonListener extends AbstractListener<Void> {
 
   public PersonListener(SearchPersonWorker worker, MovieRenamer mr) {
     super(mr, worker);

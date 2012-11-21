@@ -42,7 +42,7 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.Loading;
 import fr.free.movierenamer.ui.utils.MediaRenamed;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
-import fr.free.movierenamer.ui.worker.listener.FileWorkerListener;
+import fr.free.movierenamer.ui.worker.listener.ListFileListener;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
@@ -223,7 +223,7 @@ public class MovieRenamer extends JFrame {
     loadFilesDial();
 
     ListFilesWorker lfw = new ListFilesWorker(errorSupport, files, null);
-    FileWorkerListener listener = new FileWorkerListener(lfw, this, mediaList);
+    ListFileListener listener = new ListFileListener(lfw, this, mediaList);
     lfw.addPropertyChangeListener(listener);
     lfw.execute();
   }

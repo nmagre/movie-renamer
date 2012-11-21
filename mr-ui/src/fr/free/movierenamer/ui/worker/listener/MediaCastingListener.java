@@ -33,7 +33,7 @@ import javax.swing.DefaultListModel;
  *
  * @author Nicolas Magré
  */
-public class MediaCastingListener extends WorkerListener<List<CastingInfo>> {
+public class MediaCastingListener extends AbstractListener<List<CastingInfo>> {
 
   private final WebList castingList;
 

@@ -212,6 +212,14 @@ public final class Settings {
     File file = new File(confRoot, configFile);
 
     if (!file.exists()) {
+
+      // Define locale on first run
+      if (!Locale.getDefault().equals(Locale.FRENCH)) {
+        config.locale = Locale.ENGLISH;
+      } else {
+        config.locale = Locale.FRENCH;
+      }
+
       try {
         saved = config.saveSetting();
       } catch (IOException e) {
@@ -234,16 +242,8 @@ public final class Settings {
         setValue(node.getNodeName(), XPathUtils.getTextContent(node));
       }
 
-      // Define locale on first run
-      if (config.locale.equals("")) {
-        if (!Locale.getDefault().equals(Locale.FRENCH)) {
-          config.locale = Locale.ENGLISH;
-        } else {
-          config.locale = Locale.FRENCH;
-        }
-        xmlVersion = VERSION;// Ensures that the settings file is
-        // written once only
-      }
+      // Get xml version
+      xmlVersion = XPathUtils.selectNode(appName_nospace, xml).getAttributes().getNamedItem("Version").getNodeValue();
 
       // Set locale
       Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));

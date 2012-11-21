@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
  *
  * @author Nicolas Magré
  */
-public class MediaListener extends WorkerListener<List<Media>> {
+public class MediaListener extends AbstractListener<List<Media>> {
 
   private final WebList searchResultList;
   private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;

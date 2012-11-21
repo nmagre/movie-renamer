@@ -33,7 +33,7 @@ import javax.swing.DefaultListModel;
  *
  * @author Nicolas Magré
  */
-public class MediaImagesListener extends WorkerListener<List<ImageInfo>> {
+public class MediaImagesListener extends AbstractListener<List<ImageInfo>> {
 
   private final WebList thumbnailsList;
   private final WebList fanartsList;

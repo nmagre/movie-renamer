@@ -31,15 +31,15 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Class FileWorkerListener
+ * Class ListFileListener
  *
  * @author Nicolas Magré
  */
-public class FileWorkerListener extends WorkerListener<List<UIFile>> {
+public class ListFileListener extends AbstractListener<List<UIFile>> {
 
   private final WebList mediaList;
 
-  public FileWorkerListener(ListFilesWorker worker, MovieRenamer mr, WebList mediaList) {
+  public ListFileListener(ListFilesWorker worker, MovieRenamer mr, WebList mediaList) {
     super(mr, worker);
     this.mediaList = mediaList;
   }

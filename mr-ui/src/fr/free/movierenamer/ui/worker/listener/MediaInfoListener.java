@@ -28,7 +28,7 @@ import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
  *
  * @author Nicolas Magré
  */
-public class MediaInfoListener extends WorkerListener<MediaInfo> {
+public class MediaInfoListener extends AbstractListener<MediaInfo> {
 
   private final IMediaPanel mediaPanel;
 

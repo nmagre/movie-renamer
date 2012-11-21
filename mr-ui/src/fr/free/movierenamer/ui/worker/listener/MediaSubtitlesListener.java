@@ -31,7 +31,7 @@ import javax.swing.DefaultListModel;
  *
  * @author Nicolas Magré
  */
-public class MediaSubtitlesListener extends WorkerListener<List<Subtitle>> {
+public class MediaSubtitlesListener extends AbstractListener<List<Subtitle>> {
 
   private final WebList subtitlesList;
 

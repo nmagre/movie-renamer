@@ -79,14 +79,15 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       return medias;
     }
 
-    if (!subFolder && asSubFolder(files)) {// FIXME hide loading dialog et re-show after
+    if (!subFolder && subFolder(files)) {// FIXME hide loading dialog et re-show after
 //      int n = JOptionPane.showConfirmDialog(parent, LocaleUtils.i18n("scanSubFolder"), LocaleUtils.i18n("question"), JOptionPane.YES_NO_OPTION);// FIXME use weblookandfeel dialog
 //      if (n != JOptionPane.NO_OPTION) {
 //        subFolder = true;
 //      }
     }
 
-    for (int i = 0; i < files.size(); i++) {
+    int count = files.size();
+    for (int i = 0; i < count; i++) {
       if (isCancelled()) {// User cancel
         return medias;
       }
@@ -98,7 +99,6 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
         if (addfiletoUI) {
           addUIFiles(medias, files.get(i));
         }
-        setProgress((i * 100) / files.size());
       }
     }
 
@@ -111,7 +111,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    * @param files
    * @return true if there is at least one subdirectory, otherwise false
    */
-  private boolean asSubFolder(List<File> files) {
+  private boolean subFolder(List<File> files) {
     for (File file : files) {
       if (file.isDirectory()) {
         File[] subDir = file.listFiles(folderFilter);

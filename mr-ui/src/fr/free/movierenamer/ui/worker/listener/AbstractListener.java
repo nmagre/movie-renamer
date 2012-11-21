@@ -27,18 +27,18 @@ import java.util.logging.Level;
 import javax.swing.SwingWorker;
 
 /**
- * Class WorkerListener
+ * Class AbstractListener
  *
  * @param <T>
  * @author Nicolas Magré
  */
-public abstract class WorkerListener<T> implements PropertyChangeListener {
+public abstract class AbstractListener<T> implements PropertyChangeListener {
 
   protected final LoadingDialog loading;
   protected final MovieRenamer mr;
   protected final SwingWorker<T, String> worker;
 
-  public WorkerListener(MovieRenamer mr, SwingWorker<T, String> worker) {
+  public AbstractListener(MovieRenamer mr, SwingWorker<T, String> worker) {
     this.mr = mr;
     this.loading = (mr != null) ? mr.getLoading() : null;
     this.worker = worker;
@@ -56,12 +56,14 @@ public abstract class WorkerListener<T> implements PropertyChangeListener {
   public void propertyChange(PropertyChangeEvent evt) {
 
     if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
+      updateLoadingValue(worker.getProgress());
       return;
     }
 
     switch ((SwingWorker.StateValue) evt.getNewValue()) {
       case STARTED:
         started();
+        mr.getLoading().setCursor(MovieRenamer.hourglassCursor);
         mr.setCursor(MovieRenamer.hourglassCursor);
         break;
       case PENDING:
@@ -73,9 +75,11 @@ public abstract class WorkerListener<T> implements PropertyChangeListener {
         } catch (Exception ex) {
           Settings.LOGGER.log(Level.SEVERE, null, ex);
         }
+        mr.getLoading().setCursor(MovieRenamer.normalCursor);
         mr.setCursor(MovieRenamer.normalCursor);
         break;
       default:
+        updateLoadingValue(worker.getProgress());
         break;
     }
   }

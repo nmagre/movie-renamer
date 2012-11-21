@@ -47,9 +47,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * Class Settings , Movie Renamer settings <br>
- * Only public and non static attributes are written in conf file !
- * 
+ * Class Settings , Movie Renamer settings <br> Only public and non static attributes are written in conf file !
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -61,47 +60,39 @@ public final class Settings {
     appName_nospace = getApplicationProperty("application.name").replace(' ', '_');
     appFolder = getApplicationFolder();
   }
-
   public static final String APPNAME;
   public static final String VERSION;
   public static final File appFolder;
   private static final String appName_nospace;
-
   // XML
   public static final String arrayEscapeChar = "/_";
   public static final String sZero = "0";
-
   // files
   public static final String configFile = "movie_renamer.conf";
   public static final String renamedFile = "renamed.xml";
   private static final String logFile = "movie_renamer.log";
-
   // images
   public static final Icon MEDIARENAMEDICON = new ImageIcon(ImageUtils.getImageFromJAR("ui/icon-32.png"));
   public static final Icon MEDIAWASRENAMEDICON = new ImageIcon(ImageUtils.getImageFromJAR("ui/icon-22.png"));
   public static final Icon MEDIAICON = new ImageIcon(ImageUtils.getImageFromJAR("ui/film.png"));
   public static final Icon MEDIAWARNINGICON = new ImageIcon(ImageUtils.getImageFromJAR("ui/film-error.png"));
-
   // List
-  public static int[] nbResultList = { -1, 5, 10, 15, 20, 30 };
-  public static String[] thumbExtList = { ".jpg", ".tbn", "-thumb.jpg" };
-  public static String[] fanartExtList = { ".jpg", "-fanart.jpg" };
-
+  public static int[] nbResultList = {-1, 5, 10, 15, 20, 30};
+  public static String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
+  public static String[] fanartExtList = {".jpg", "-fanart.jpg"};
   // Misc
   public static boolean xmlError = false;
   public static String xmlVersion = "";
   public static boolean interfaceChanged = false;
-
   // Logger
   public static final Logger LOGGER = Logger.getLogger(appName_nospace + " Logger");
-
   // Settings instance
   private static Settings instance;
 
   public static enum SettingsProperty {
+
     selectFrstMedia(false),
     scanSubfolder(false);
-
     private String lib;
     private Object defaultValue;
 
@@ -119,7 +110,6 @@ public final class Settings {
       return lib;
     }
   }
-
   /**
    * Saved settings
    */
@@ -163,11 +153,11 @@ public final class Settings {
   public int fanartSize = 0;
   public int thumbExt = 0;
   // Filter
-  public String[] extensions = { "mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf" };
-  public static String[] nameFilters = { "notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
-      "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
-      "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
-      " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md" };
+  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
+  public static String[] nameFilters = {"notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
+    "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
+    "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
+    " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"};
   public List<String> mediaNameFilters;
   public boolean useExtensionFilter = true;
   // Cache
@@ -194,7 +184,7 @@ public final class Settings {
 
   /**
    * Private build for singleton fix
-   * 
+   *
    * @return
    */
   private static synchronized Settings newInstance() {
@@ -213,7 +203,7 @@ public final class Settings {
 
   /**
    * Access to the Settings instance
-   * 
+   *
    * @return The only instance of MR Settings
    */
   public static synchronized Settings getInstance() {
@@ -244,7 +234,7 @@ public final class Settings {
 
   /**
    * Load Movie Renamer settings
-   * 
+   *
    * @return Movie Renamer settings
    */
   private Settings loadSetting() throws SettingsSaveFailedException {
@@ -255,11 +245,21 @@ public final class Settings {
     File file = new File(confRoot, configFile);
 
     if (!file.exists()) {
+      // Define locale on first run
+      if (!Locale.getDefault().equals(Locale.FRENCH)) {
+        config.locale = Locale.ENGLISH;
+      } else {
+        config.locale = Locale.FRENCH;
+        config.movieScrapperLang = Locale.FRENCH;
+        config.tvshowScrapperLang = Locale.FRENCH;
+      }
+      
       try {
         saved = config.saveSetting();
       } catch (IOException e) {
         saved = false;
       }
+      
       if (!saved) {
         // Set locale
         Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));
@@ -277,21 +277,11 @@ public final class Settings {
         setValue(node.getNodeName(), XPathUtils.getTextContent(node));
       }
 
-      // Define locale on first run
-      if (config.locale.equals("")) {
-        if (!Locale.getDefault().equals(Locale.FRENCH)) {
-          config.locale = Locale.ENGLISH;
-        } else {
-          config.locale = Locale.FRENCH;
-          config.movieScrapperLang = Locale.FRENCH;
-          config.tvshowScrapperLang = Locale.FRENCH;
-        }
-        xmlVersion = VERSION;// Ensures that the settings file is
-        // written once only
-      }
-
+      // Get xml version
+      xmlVersion = XPathUtils.selectNode(appName_nospace, xml).getAttributes().getNamedItem("Version").getNodeValue();
+      
       // Set locale
-      Locale.setDefault((config.locale.equals("fr") ? new Locale("fr", "FR") : Locale.ENGLISH));
+      Locale.setDefault((config.locale.equals(Locale.FRENCH) ? new Locale("fr", "FR") : Locale.ENGLISH));
       if (VERSION.equals(xmlVersion) && !xmlError) {
         saved = true;
       }
@@ -323,7 +313,7 @@ public final class Settings {
 
   /**
    * Save setting
-   * 
+   *
    * @return True if setting was saved, False otherwise
    * @throws IOException
    */
@@ -336,12 +326,12 @@ public final class Settings {
     try {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-      
+
       // root elements
       Document doc = docBuilder.newDocument();
       Element rootElement = doc.createElement(appName_nospace);
       doc.appendChild(rootElement);
-      
+
       Attr version = doc.createAttribute("Version");
       version.setValue(VERSION);
       rootElement.setAttributeNode(version);
@@ -349,28 +339,28 @@ public final class Settings {
       // setting elements
       Element setting = doc.createElement("setting");
       rootElement.appendChild(setting);
-      
+
       // Variables
       for (Field field : getSettingsFields()) {
-          Object value = field.get(this);
-          if (value == null) {
-            // set blank value if null
-            value = "";
-          } else {
-            if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
-              // to string for boolean field
+        Object value = field.get(this);
+        if (value == null) {
+          // set blank value if null
+          value = "";
+        } else {
+          if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
+            // to string for boolean field
             value = ((Boolean) value) ? sZero : "1";
-            } else if (field.getType().isArray()) {
-              // to string for array fields
-              value = StringUtils.arrayToString((Object[]) value, arrayEscapeChar, 0);
-            } else if (Collection.class.isAssignableFrom(field.getType())) {
-              // to string for Collection fields
-              value = StringUtils.arrayToString((List<?>) value, arrayEscapeChar, 0);
-            } else if (Class.class.isAssignableFrom(field.getType())) {
-              // to string for Class fields
-              value = ((Class<?>) value).getName();
-            }
+          } else if (field.getType().isArray()) {
+            // to string for array fields
+            value = StringUtils.arrayToString((Object[]) value, arrayEscapeChar, 0);
+          } else if (Collection.class.isAssignableFrom(field.getType())) {
+            // to string for Collection fields
+            value = StringUtils.arrayToString((List<?>) value, arrayEscapeChar, 0);
+          } else if (Class.class.isAssignableFrom(field.getType())) {
+            // to string for Class fields
+            value = ((Class<?>) value).getName();
           }
+        }
         // param elements
         Element param = doc.createElement(field.getName());
         param.appendChild(doc.createTextNode(value.toString()));
@@ -390,7 +380,7 @@ public final class Settings {
 
   /**
    * Get the user settings fields
-   * 
+   *
    * @return
    */
   private Collection<Field> getSettingsFields() {
@@ -406,7 +396,7 @@ public final class Settings {
 
   /**
    * Set a value using field name
-   * 
+   *
    * @param fieldName
    * @param configValue
    */
@@ -570,5 +560,4 @@ public final class Settings {
 
     return applicationFolder;
   }
-
 }
