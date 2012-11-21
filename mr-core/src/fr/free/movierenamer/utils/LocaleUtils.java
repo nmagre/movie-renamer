@@ -17,11 +17,19 @@
  */
 package fr.free.movierenamer.utils;
 
+import java.text.Collator;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 import fr.free.movierenamer.settings.Settings;
@@ -144,99 +152,166 @@ public final class LocaleUtils {
   private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   public static ResourceBundle localBundleExt = null;
 
-  public static Locale[] getAvailableLanguages() {
+  public static Locale[] getSupportedDisplayLocales() {
     return new Locale[] {
         Locale.ENGLISH, Locale.FRENCH
     };
   }
 
-  public static Locale getLocale(String code) {
-    return getLocale(code, Locale.ROOT);
+  public static Locale findLanguage(String languageName, Locale... supportedDisplayLocales) {
+    Locale lang = null;
+
+    for (CustomLocaleLang cll : CustomLocaleLang.values()) {
+      if (languageName.equalsIgnoreCase(cll.name().replace("_", " "))) {
+        // check enum name
+        lang = cll.getLocale();
+      } else if (languageName.equalsIgnoreCase(cll.getLocale().getLanguage())) {
+        // check enum locale language code
+        lang = cll.getLocale();
+      } else {
+        // check enum locale display language
+        for (Locale supportedLocale : supportedDisplayLocales) {
+          if (languageName.equalsIgnoreCase(cll.getLocale().getDisplayLanguage(supportedLocale))) {
+            lang = cll.getLocale();
+            break;
+          }
+        }
+      }
+      if (lang == null) {
+        // check enum identifier
+        for (String ident : cll.getIdentifier()) {
+          if (languageName.equalsIgnoreCase(ident)) {
+            lang = cll.getLocale();
+            break;
+          }
+        }
+      }
+      if (lang != null) {
+        break;
+      }
+    }
+
+    // if not found, search on map
+    if (lang == null) {
+      lang = getLanguageMap(supportedDisplayLocales).get(languageName);
+    }
+
+    // finally set to ROOT
+    if (lang == null) {
+      lang = Locale.ROOT;
+    }
+
+    return lang;
   }
 
-  public static Locale getLocale(String code, Locale currentLocale) {
-    Locale found = null;
-    if (code != null) {
-      // first search most common
-      //1° country
-      for (CustomLocaleCountry clc : CustomLocaleCountry.values()) {
-        if (code.equalsIgnoreCase(clc.name().replace("_", " "))) {
-          found = clc.getLocale();
-          break;
-        }
-        if (code.equalsIgnoreCase(clc.getLocale().getCountry())) {
-          found = clc.getLocale();
-          break;
-        }
-        for (String ident : clc.getIdentifier()) {
-          if (code.equalsIgnoreCase(ident)) {
-            found = clc.getLocale();
-            break;
-          }
-        }
-        if (found != null) {
-          break;
-        }
+  public static Map<String, Locale> getLanguageMap(Locale... supportedDisplayLocales) {
+    Collator collator = Collator.getInstance(Locale.ROOT);
+    collator.setDecomposition(Collator.FULL_DECOMPOSITION);
+    collator.setStrength(Collator.PRIMARY);
+
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
+    Comparator<String> order = (Comparator) collator;
+    Map<String, Locale> languageMap = new TreeMap<String, Locale>(order);
+
+    for (String code : Locale.getISOLanguages()) {
+      Locale locale = new Locale(code);
+      languageMap.put(locale.getLanguage(), locale);
+      languageMap.put(locale.getISO3Language(), locale);
+
+      // map display language names for given locales
+      for (Locale language : new HashSet<Locale>(Arrays.asList(supportedDisplayLocales))) {
+        // make sure language name is properly normalized so accents and whatever don't break the regex pattern syntax
+        String languageName = Normalizer.normalize(locale.getDisplayLanguage(language), Form.NFKD);
+        languageMap.put(languageName, locale);
       }
-      //2° lang
-      if (found == null) {
-        for (CustomLocaleLang cll : CustomLocaleLang.values()) {
-          if (code.equalsIgnoreCase(cll.name().replace("_", " "))) {
-            found = cll.getLocale();
-            break;
-          }
-          if (code.equalsIgnoreCase(cll.getLocale().getLanguage())) {
-            found = cll.getLocale();
-            break;
-          }
-          for (String ident : cll.getIdentifier()) {
-            if (code.equalsIgnoreCase(ident)) {
-              found = cll.getLocale();
-              break;
-            }
-          }
-          if (found != null) {
-            break;
-          }
-        }
-      }
-      // if not found, search the available locales
-      if (found == null) {
-        Locale[] locales = Locale.getAvailableLocales();
-        for (Locale l : locales) {
-          if (l.getDisplayName().equalsIgnoreCase(code)) {
-            found = l;
-          } else {
-            // country
-            if (l.getCountry().equalsIgnoreCase(code)) {
-              found = l;
-            } else {
-              if (((currentLocale == null) ? l.getDisplayCountry() : l.getDisplayCountry(currentLocale)).equalsIgnoreCase(code)) {
-                found = l;
-              } else {
-                // language
-                if (l.getLanguage().equalsIgnoreCase(code)) {
-                  found = l;
-                } else {
-                  if (((currentLocale == null) ? l.getDisplayLanguage() : l.getDisplayLanguage(currentLocale)).equalsIgnoreCase(code)) {
-                    found = l;
-                  }
-                }
-              }
-            }
-          }
-          if (found != null) {
-            break;
-          }
-        }
-      }
-    }
-    
-    if (found == null) {
-      found = Locale.ROOT;
     }
 
-    return found;
+    // remove illegal tokens
+    languageMap.remove("");
+    languageMap.remove("II");
+    languageMap.remove("III");
+
+    Map<String, Locale> result = Collections.unmodifiableMap(languageMap);
+    return result;
+  }
+
+  public static Locale findCountry(String countryName, Locale... supportedDisplayLocales) {
+    Locale country = null;
+
+    for (CustomLocaleCountry clc : CustomLocaleCountry.values()) {
+      if (countryName.equalsIgnoreCase(clc.name().replace("_", " "))) {
+        // check enum name
+        country = clc.getLocale();
+      } else if (countryName.equalsIgnoreCase(clc.getLocale().getCountry())) {
+        // check enum locale country code
+        country = clc.getLocale();
+      } else {
+        // check enum locale display country
+        for (Locale supportedLocale : supportedDisplayLocales) {
+          if (countryName.equalsIgnoreCase(clc.getLocale().getDisplayCountry(supportedLocale))) {
+            country = clc.getLocale();
+            break;
+          }
+        }
+      }
+      if (country == null) {
+        // check enum identifier
+        for (String ident : clc.getIdentifier()) {
+          if (countryName.equalsIgnoreCase(ident)) {
+            country = clc.getLocale();
+            break;
+          }
+        }
+      }
+      if (country != null) {
+        break;
+      }
+    }
+
+    // if not found, search on map
+    if (country == null) {
+      country = getCountryMap(supportedDisplayLocales).get(countryName);
+    }
+
+    // finally set to ROOT
+    if (country == null) {
+      country = Locale.ROOT;
+    }
+
+    return country;
+  }
+
+  public static Map<String, Locale> getCountryMap(Locale... supportedDisplayLocales) {
+    Collator collator = Collator.getInstance(Locale.ROOT);
+    collator.setDecomposition(Collator.FULL_DECOMPOSITION);
+    collator.setStrength(Collator.PRIMARY);
+
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
+    Comparator<String> order = (Comparator) collator;
+    Map<String, Locale> countryMap = new TreeMap<String, Locale>(order);
+
+    for (String code : Locale.getISOCountries()) {
+      Locale locale = new Locale(code);
+      countryMap.put(locale.getCountry(), locale);
+      countryMap.put(locale.getISO3Country(), locale);
+
+      // map display country names for given locales
+      for (Locale country : new HashSet<Locale>(Arrays.asList(supportedDisplayLocales))) {
+        // make sure country name is properly normalized so accents and whatever don't break the regex pattern syntax
+        String countryName = Normalizer.normalize(locale.getDisplayCountry(country), Form.NFKD);
+        countryMap.put(countryName, locale);
+      }
+    }
+
+    // remove illegal tokens
+    countryMap.remove("");
+
+    Map<String, Locale> result = Collections.unmodifiableMap(countryMap);
+    return result;
   }
 
   /**

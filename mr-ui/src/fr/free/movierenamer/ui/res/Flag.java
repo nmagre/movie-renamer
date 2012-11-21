@@ -91,7 +91,7 @@ public abstract class Flag {
   }
 
   public static Icon getFlag(String code) {
-    Locale local = LocaleUtils.getLocale(code);
+    Locale local = LocaleUtils.findCountry(code);
     if(local != null) {
       for (localeFlag lFlag : localeFlag.values()) {
         if (local.getDisplayCountry(Locale.ENGLISH).equalsIgnoreCase(lFlag.name().replace("_", " "))) {

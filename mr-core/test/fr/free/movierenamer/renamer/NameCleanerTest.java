@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.namematcher;
+package fr.free.movierenamer.renamer;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import fr.free.movierenamer.renamer.NameCleaner;
 
 /**
  * Class NameCleanerTest
@@ -37,13 +39,15 @@ public class NameCleanerTest {
 
   @Test
   public void extractYear() {
-    Assert.assertEquals(2009, cleaner.extractYear("2012 (2009).avi"));
-    Assert.assertEquals(2009, cleaner.extractYear("12 Rounds 2009.avi"));
-    Assert.assertEquals(2009, cleaner.extractYear("12 Rounds (2009).avi"));
+    Assert.assertEquals(Integer.valueOf(2012), cleaner.extractYear("2012.avi"));
+    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("2012 (2009).avi"));
+    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds 2009.avi"));
+    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds (2009).avi"));
   }
   
   @Test
   public void extractNameNotStrict() {
+    Assert.assertEquals("2012", cleaner.extractName("2012.avi", false));
     Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", false));
     Assert.assertEquals("13 jeux de mort", cleaner.extractName("13 jeux de mort (2006).avi", false));
     Assert.assertEquals("16 Wishes", cleaner.extractName("16 Wishes (2010).avi", false));
@@ -63,5 +67,13 @@ public class NameCleanerTest {
     Assert.assertEquals("After Life", cleaner.extractName("After.Life (2009).avi", false));
     Assert.assertEquals("Age Of The Dragons", cleaner.extractName("Age.Of.The.Dragons.2011.TRUEFRENCH.DVDRiP.XViD-Julien333.avi", false));
     Assert.assertEquals("Agora", cleaner.extractName("Agora (2009).avi", false));
+    Assert.assertEquals("Tout Est Illuminé 2005", cleaner.extractName("Tout Est Illuminé 2005 (2005).avi", false));
+  }
+  
+  @Test
+  public void extractNameStrict() {
+    Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", true));
+    Assert.assertEquals("17 Again", cleaner.extractName("17.Again.FRENCH.DVDRiP.XViD.avi", true));
+    Assert.assertEquals("17 again", cleaner.extractName("17.again.FRENCH.DVDScr.XviD.avi", true));
   }
 }

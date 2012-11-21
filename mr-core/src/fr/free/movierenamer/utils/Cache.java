@@ -38,12 +38,11 @@ import net.sf.ehcache.Element;
 public final class Cache {
   static {
     Cache.initializeCache();
-    if (Settings.getInstance().clearCache) {
+    if (Settings.getInstance().isCacheClear()) {
       Cache.clearAllCache();
     }
   }
 
-  @SuppressWarnings("resource")
   public static void initializeCache() {
     // prepare cache folder for this application instance
     File cacheRoot = new File(Settings.appFolder, "cache");

@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.utils;
 
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,15 +31,19 @@ public class LocaleUtilsTest {
 
   @Test
   public void getLocaleCountry() {
-    Assert.assertEquals("US", LocaleUtils.getLocale("u.s.a.").getCountry());
-    Assert.assertEquals("FR", LocaleUtils.getLocale("france").getCountry());
-    Assert.assertEquals("AR", LocaleUtils.getLocale("Argentine").getCountry());
-    Assert.assertEquals("GB", LocaleUtils.getLocale("Royaume-Uni").getCountry());
+    Assert.assertEquals("US", LocaleUtils.findCountry("United States").getCountry());
+    Assert.assertEquals("US", LocaleUtils.findCountry("US").getCountry());
+    Assert.assertEquals("US", LocaleUtils.findCountry("Etats-Unis", Locale.FRANCE, Locale.US).getCountry());
+    Assert.assertEquals("US", LocaleUtils.findCountry("u.s.a.").getCountry());
+    Assert.assertEquals("blabla", LocaleUtils.findCountry("blabla").getCountry());
+    Assert.assertEquals("FR", LocaleUtils.findCountry("france").getCountry());
+    Assert.assertEquals("AR", LocaleUtils.findCountry("Argentine", Locale.ITALY).getCountry());
+    Assert.assertEquals("GB", LocaleUtils.findCountry("Royaume-Uni").getCountry());
   }
 
   @Test
   public void getLocaleLanguage() {
-    Assert.assertEquals("sv", LocaleUtils.getLocale("Sueco").getLanguage());
+    Assert.assertEquals("sv", LocaleUtils.findLanguage("Sueco").getLanguage());
   }
 
 }

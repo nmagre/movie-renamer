@@ -227,7 +227,7 @@ public class IMDbScrapper extends MovieScrapper {
       results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.POPULARPATTERN.getPattern(), SearchResult.SearchResultType.POPULAR));
       results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.EXACTPATTERN.getPattern(), SearchResult.SearchResultType.EXACT));
       results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.PARTIALPATTERN.getPattern(), SearchResult.SearchResultType.PARTIAL));
-      if (results.isEmpty() || Settings.getInstance().displayApproximateResult) {
+      if (results.isEmpty() || Settings.getInstance().isSearchDisplayApproximateResult()) {
         results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.APPROXIMATEPATTERN.getPattern(), SearchResult.SearchResultType.APPROXIMATE));
       }
 
@@ -463,7 +463,7 @@ public class IMDbScrapper extends MovieScrapper {
       String[] foundGenres = searchMatcher.group(1).split("\\|");
       for (int i = 0; i < foundGenres.length; i++) {
         String genre;
-        if (Settings.getInstance().scrapperLang.getLanguage().equals(Locale.ENGLISH)) {
+        if (Settings.getInstance().getSearchScrapperLang().getLanguage().equals(Locale.ENGLISH)) {
           genre = foundGenres[i].substring(foundGenres[i].indexOf(">") + 1, foundGenres[i].indexOf("</a>")).trim();
           if (genre.equals("See more")) {
             genre = "";

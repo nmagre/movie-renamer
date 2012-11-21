@@ -27,6 +27,8 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.Settings.SettingsProperty;
 
 /**
  * Class AllocineScrapperTest

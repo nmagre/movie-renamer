@@ -60,7 +60,7 @@ import fr.free.movierenamer.settings.Settings;
  * @author Simon QUÉMÉNEUR
  */
 public final class WebRequest {
-  
+
   public static final String UTF = "UTF-8";
   public static final String ISO = "ISO-8859-1";
 
@@ -137,34 +137,30 @@ public final class WebRequest {
   }
 
   private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
-    Settings settings = Settings.getInstance();
-    boolean fakeUserAgent = true;
     boolean isHttpRequest = "http".equals(uri.getScheme());
     URLConnection connection;
-    if (isHttpRequest && settings.useProxy) {
-      Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.proxyUrl, settings.proxyPort));
+    if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
+      Settings settings = Settings.getInstance();
+      Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
       connection = uri.toURL().openConnection(proxy);
+      connection.setReadTimeout(settings.getHttpRequestTimeOut() * 1000); // in ms
+      System.setProperty("http.agent", StringUtils.EMPTY);
+      connection.addRequestProperty("User-Agent", "Mozilla");
+      if (settings.getHttpCustomUserAgent() != null && settings.getHttpCustomUserAgent().length() > 0) {
+        connection.addRequestProperty("User-Agent", settings.getHttpCustomUserAgent());
+      }
     } else {
       connection = uri.toURL().openConnection();
     }
 
     connection.addRequestProperty("Accept-Encoding", "gzip,deflate");
-    connection.addRequestProperty("Accept-Charset", UTF+","+ISO); // important for accents !
+    connection.addRequestProperty("Accept-Charset", UTF + "," + ISO); // important for accents !
 
-    if (isHttpRequest && fakeUserAgent) {
-      System.setProperty("http.agent", StringUtils.EMPTY);
-      connection.addRequestProperty("User-Agent", "Mozilla");
-      if (settings.customUserAgent != null && settings.customUserAgent.length() > 0) {
-        connection.addRequestProperty("User-Agent", settings.customUserAgent);
-      }
-    }
     if (properties != null) {
       for (RequestProperty property : properties) {
         connection.addRequestProperty(property.getKey(), property.getValue());
       }
     }
-
-    connection.setReadTimeout(settings.requestTimeOut * 1000); // in ms
 
     return connection;
   }

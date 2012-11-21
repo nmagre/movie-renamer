@@ -19,9 +19,11 @@ package fr.free.movierenamer.utils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -30,7 +32,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
+
+import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
 
 /**
  * Class FileUtils
@@ -112,8 +117,10 @@ public final class FileUtils {
   /**
    * Check if file have a good extension
    * 
-   * @param fileName File to check extension
-   * @param extensions Array of extensions
+   * @param fileName
+   *          File to check extension
+   * @param extensions
+   *          Array of extensions
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(String fileName, String[] extensions) {
@@ -138,7 +145,8 @@ public final class FileUtils {
   /**
    * Check if dir is a root directory
    * 
-   * @param dir Directory
+   * @param dir
+   *          Directory
    * @return True if it is a directory
    */
   public static boolean isRootDir(File dir) {
@@ -172,6 +180,59 @@ public final class FileUtils {
     } catch (TransformerConfigurationException e) {
     } catch (TransformerException e) {
     }
+  }
+
+  public static File move(File currentFile, String dest) {
+    try {
+      File destFile = new File(currentFile.getParentFile(), dest);
+      if (destFile.toURI().getScheme().equals("file")) {
+        if (currentFile.renameTo(destFile)) {
+          return destFile;
+        } else {
+          return currentFile;
+        }
+      } else {
+        return currentFile;
+      }
+    } catch (Exception ex) {
+      return currentFile;
+    }
+  }
+
+  public static String getFileChecksum(File file) {
+//    String result = "";
+//    try {
+//      InputStream fis = new FileInputStream(file);
+//
+//      byte[] buffer = new byte[1024];
+//      MessageDigest complete = MessageDigest.getInstance("MD5");
+//      int numRead;
+//
+//      do {
+//        numRead = fis.read(buffer);
+//        if (numRead > 0) {
+//          complete.update(buffer, 0, numRead);
+//        }
+//      } while (numRead != -1);
+//
+//      fis.close();
+//
+//      byte[] b = complete.digest();
+//
+//      for (int i = 0; i < b.length; i++) {
+//        result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+//      }
+//
+//    } catch (Exception ex) {
+//      ex.printStackTrace();
+//    }
+    String result2 = "";
+    try {
+      result2 = OpenSubtitlesHasher.computeHash(file);
+    } catch (IOException ex) {
+      result2 = "no_hash";
+    }
+    return result2;
   }
 
   public static class ExtensionFileFilter implements FileFilter {
