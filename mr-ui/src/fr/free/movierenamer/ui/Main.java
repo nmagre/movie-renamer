@@ -22,6 +22,7 @@ import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.ResourceBundle;
+import javax.swing.SwingUtilities;
 
 /**
  * Class Main
@@ -31,34 +32,34 @@ import java.util.ResourceBundle;
  */
 public class Main {
 
-    private static MovieRenamer mvr;
+  private static MovieRenamer mvr;
 
-    public static void main(String args[]) {
+  public static void main(String args[]) {
 
-        // Fixe JNA crash under 64 bit unix system
-        if (System.getProperty("jna.nosys") == null) {
-            System.setProperty("jna.nosys", "true");
-        }
-
-        Settings setting = Settings.getInstance();
-        // Set UI locale file
-        LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
-
-        // Install look and feel
-        WebLookAndFeel.install();
-
-        // Clear cache
-        if (setting.clearCache) {
-            Cache.clearAllCache();
-        }
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                mvr = new MovieRenamer();
-                mvr.setVisible(true);
-            }
-        });
+    // Fixe JNA crash under 64 bit unix system
+    if (System.getProperty("jna.nosys") == null) {
+      System.setProperty("jna.nosys", "true");
     }
+
+    Settings setting = Settings.getInstance();
+    // Set UI locale file
+    LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
+
+    // Install look and feel
+    WebLookAndFeel.install();
+
+    // Clear cache
+    if (setting.clearCache) {
+      Cache.clearAllCache();
+    }
+
+    SwingUtilities.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+        mvr = new MovieRenamer();
+        mvr.setVisible(true);
+      }
+    });
+  }
 }
