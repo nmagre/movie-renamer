@@ -28,23 +28,23 @@ import fr.free.movierenamer.renamer.NameCleaner;
  * @author Simon QUÉMÉNEUR
  */
 public class NameCleanerTest {
-  
+
   private NameCleaner cleaner;
 
   @Before
   public void init() {
     cleaner = new NameCleaner();
   }
-  
+
 
   @Test
   public void extractYear() {
-    Assert.assertEquals(Integer.valueOf(2012), cleaner.extractYear("2012.avi"));
+    Assert.assertEquals(Integer.valueOf(2012), cleaner.extractYear("2012.avi"));// It should return "null", because there is no year
     Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("2012 (2009).avi"));
     Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds 2009.avi"));
     Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds (2009).avi"));
   }
-  
+
   @Test
   public void extractNameNotStrict() {
     Assert.assertEquals("2012", cleaner.extractName("2012.avi", false));
@@ -68,8 +68,12 @@ public class NameCleanerTest {
     Assert.assertEquals("Age Of The Dragons", cleaner.extractName("Age.Of.The.Dragons.2011.TRUEFRENCH.DVDRiP.XViD-Julien333.avi", false));
     Assert.assertEquals("Agora", cleaner.extractName("Agora (2009).avi", false));
     Assert.assertEquals("Tout Est Illuminé 2005", cleaner.extractName("Tout Est Illuminé 2005 (2005).avi", false));
+    Assert.assertEquals("King Kong", cleaner.extractName("King-Kong-FRENCH.DVDRiP.XviD-HARIJO.avi", false));
+    Assert.assertEquals("Animal 2", cleaner.extractName("Animal.2.FRENCH.DVDRiP.XViD-THEWARRIOR777.avi", false));
+    Assert.assertEquals("Sammy s Adventures 2 3D", cleaner.extractName("Sammy.s.Adventures.2.3D.2012.FRENCH.1080p.Bluray.DTS.X264-JASS", false));
+    Assert.assertEquals("ParaNorman", cleaner.extractName("ParaNorman2012TRUEFRENCHDVDRipXvid-FUZION", false));
   }
-  
+
   @Test
   public void extractNameStrict() {
     Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", true));

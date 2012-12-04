@@ -23,7 +23,7 @@ import java.util.Comparator;
  * Class StringLengthComparable, compare two string length
  * @author Nicolas Magré
  */
-class StringLengthComparable implements Comparator<String> {
+class StringLengthComparable implements Comparator<String> {// FIXME DEAD CODE
 
   @Override
   public int compare(String s1, String s2) {

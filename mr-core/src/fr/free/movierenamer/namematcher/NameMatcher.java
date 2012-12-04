@@ -21,7 +21,7 @@ package fr.free.movierenamer.namematcher;
  * Class NameMatcher
  * @author Nicolas Magré
  */
-class NameMatcher {
+class NameMatcher {// FIXME DEAD CODE
 
   public static final int HIGH = 3;
   public static final int MEDIUM = 1;

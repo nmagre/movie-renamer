@@ -32,7 +32,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class IMDbScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class IMDbScrapperTest extends MovieScrapperTest {
@@ -51,12 +51,12 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Movie movie = results.get(0);
 
     Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BOTMxMTUyMDI2Ml5BMl5BanBnXkFtZTcwMjkxNDAwMQ@@._V1._SY70_SX100_.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1_SX32_CR0,0,32,44_.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1968, movie.getYear());
     Assert.assertEquals(64116, movie.getImdbId());
     Assert.assertEquals(64116, movie.getMediaId());
   }
-  
+
   @Test
   public void searchRedirect() throws Exception {
     imdb.setLocale(Locale.FRENCH);
@@ -65,11 +65,11 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Movie movie = results.get(0);
 
     Assert.assertEquals("Rendez-vous", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTI4ODEwMDgyMV5BMl5BanBnXkFtZTcwMjIzMTUxMQ@@._V1._SY70_SX100_.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTI4ODEwMDgyMV5BMl5BanBnXkFtZTcwMjIzMTUxMQ@@._V1_SX32_CR0,0,32,44_.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1940, movie.getYear());
     Assert.assertEquals(33045, movie.getImdbId());
     Assert.assertEquals(33045, movie.getMediaId());
-    
+
   }
 
   @Override
@@ -90,14 +90,14 @@ public class IMDbScrapperTest extends MovieScrapperTest {
         return;
       }
     }
-    
+
     Assert.fail();
   };
 
   @Override
   public void getImages() throws Exception {
     List<ImageInfo> images = imdb.getImages(new Movie(64116, null, null, -1, -1));
-    
+
     Assert.assertEquals(ImageCategoryProperty.unknown, images.get(0).getCategory());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref().toExternalForm());
   }

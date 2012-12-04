@@ -22,11 +22,11 @@ import java.util.List;
 
 /**
  * Class MediaNameMatcher
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class MediaNameMatcher {
+public abstract class MediaNameMatcher {// FIXME DEAD CODE
 
   protected final File file;
   protected final String filename;

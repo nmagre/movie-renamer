@@ -23,7 +23,6 @@ import java.util.Arrays;
 /**
  * Class Hyperlink
  * 
- * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public abstract class Hyperlink extends SearchResult {

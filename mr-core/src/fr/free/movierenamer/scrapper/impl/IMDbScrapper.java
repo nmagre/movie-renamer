@@ -51,7 +51,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class IMDbScrapper : search movie on IMDB
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -60,7 +60,6 @@ public class IMDbScrapper extends MovieScrapper {
   private static final String defaultHost = "www.imdb.com";
   private static final String name = "IMDb";
   private static final String CHARSET = "ISO-8859-1";
-
   private String host;
 
   public IMDbScrapper() {
@@ -76,7 +75,7 @@ public class IMDbScrapper extends MovieScrapper {
   protected String getHost() {
     return getHost(getLocale());
   }
-  
+
   @Override
   public boolean hasLocaleSupport() {
     return true;
@@ -105,12 +104,9 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   public enum ImdbSearchPattern {
-    IMDBURL("http://www.imdb.com/title/tt\\d+/"),
-    POPULARPATTERN(".*?Popular Titles.*?Displaying (\\d+)(.*?)</table>"),
-    EXACTPATTERN("Titles \\(Exact Matches.*?Displaying (\\d+)(.*?)</table>"),
-    PARTIALPATTERN("Titles \\(Partial.*?Displaying (\\d+)(.*?)</table>"),
-    APPROXIMATEPATTERN("Titles \\(Approx.*?Displaying (\\d+)(.*?)</table>"),
-    MOVIEIMDBPATTERN("(?:<img src=.(http://ia.media-imdb.com/images.*?\\.jpg).*?)?>\\d+.<\\/td>.*?a href=.\\/title\\/(tt\\d+)\\/.[^>]*>([^<]*).*?\\((\\d+)?.*?\\).?(\\(.*?\\) )?"),
+
+    SEARCHIMDBPATTERN("<tr class=.findResult\\b[^>]*>.*?tt(\\d+).*?\\w\\w_\\d+. >(.*?)</td> </tr>"),
+    MOVIEIMDBPATTERN("(http://.*?\\.(?:png|jpg)).*?<a[^>]+>(.*?)</a>(.*)"),
     IMDBMOVIETITLE("<meta property=.og:title. content=.(.*?) \\(.*?(\\d\\d\\d\\d).*\\)?."),
     IMDBMOVIEID("tt(\\d+{7})"),
     IMDBMOVIETHUMB("<meta property=.og:image. content=.(http://.*.jpg).");
@@ -129,7 +125,15 @@ public class IMDbScrapper extends MovieScrapper {
     }
   }
 
+  private enum DoNotKeep {
+    TV_Series,
+    Video_Game,
+    TV_Episode,
+    TV_Mini_DASH_Series;
+  }
+
   public enum ImdbInfoPattern {
+
     TITLE("<title>(.* \\(.*\\d+.*\\).*)</title>"),
     THUMB("src=\"(http://ia.media-imdb.com/images/.*)\""),
     ORIGTITLE("info-content.>\\s+\"(.*)\"&nbsp.*?[Oo]riginal"),
@@ -163,8 +167,8 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
-    // http://www.imdb.com/find?s=tt&q=
-    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&q=" + WebRequest.encode(query));
+    // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
+    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&ref_=fn_tt&q=" + WebRequest.encode(query));
     boolean mode = true;
 
     if (mode) {
@@ -183,9 +187,10 @@ public class IMDbScrapper extends MovieScrapper {
           String year = node.getNextSibling().getTextContent().replaceAll("[\\p{Punct}\\p{Space}]+", ""); // remove non-number characters
           String href = XPathUtils.getAttribute("href", node);
           int imdbid = findImdbId(href);
+
           URL thumb;
           try {
-            String imgPath = XPathUtils.getAttribute("src", node.getParentNode().getPreviousSibling().getPreviousSibling().getFirstChild().getFirstChild());
+            String imgPath = XPathUtils.getAttribute("src", node.getParentNode().getPreviousSibling().getPreviousSibling().getChildNodes().item(1).getFirstChild());
             thumb = new URL(imgPath.replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
           } catch (Exception ex) {
             thumb = null;
@@ -198,12 +203,12 @@ public class IMDbScrapper extends MovieScrapper {
       }
 
       // we might have been redirected to the movie page
-      if (results.isEmpty()) {
+      if (results.isEmpty()) {// Maybe check if it's a URL forwarding is better ^^
         try {
           int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
           MovieInfo info = fetchMediaInfo(new Movie(imdbid, null, null, -1, imdbid), locale);
           URL thumb;
-          try{
+          try {
             String imgPath = info.getPosterPath().toURL().toExternalForm();
             thumb = new URL(imgPath.replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
           } catch (Exception ex) {
@@ -220,16 +225,11 @@ public class IMDbScrapper extends MovieScrapper {
 
       return results;
     } else {
+      // FIXME Imdb search page changed, now it's in UTF-8 and all regex are deprecated
       String moviePage = WebRequest.getDocumentContent(searchUrl.toURI());
 
       List<Movie> results = new ArrayList<Movie>();
-
-      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.POPULARPATTERN.getPattern(), SearchResult.SearchResultType.POPULAR));
-      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.EXACTPATTERN.getPattern(), SearchResult.SearchResultType.EXACT));
-      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.PARTIALPATTERN.getPattern(), SearchResult.SearchResultType.PARTIAL));
-      if (results.isEmpty() || Settings.getInstance().isSearchDisplayApproximateResult()) {
-        results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.APPROXIMATEPATTERN.getPattern(), SearchResult.SearchResultType.APPROXIMATE));
-      }
+      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.SEARCHIMDBPATTERN.getPattern(), 30));// FIxME get limit from settings
 
       // are we redirected to the movie page ?
       if (results.isEmpty()) {
@@ -242,55 +242,51 @@ public class IMDbScrapper extends MovieScrapper {
 
   /**
    * Get movies title by result type in Imdb search page
-   * 
-   * @param htmlSearchRes
-   *          Imdb search page
-   * @param searchPattern
-   *          Pattern of result to retreive
-   * @param movieFilenameLimit
-   *          Limitation of returned result
-   * @param french
-   *          Is imdb french page
-   * @param type
-   *          Type of result search
+   *
+   * @param htmlSearchRes Imdb search page
+   * @param searchPattern Pattern of result to retreive
+   * @param limit Limitation of returned result
    * @return Array of ImdbSearchResult
    */
-  private List<Movie> findSearchMovies(String htmlSearchRes, Pattern searchPattern, SearchResult.SearchResultType type) {
+  private List<Movie> findSearchMovies(String htmlSearchRes, Pattern searchPattern, int limit) {
     List<Movie> found = new ArrayList<Movie>();
     Matcher searchResult = searchPattern.matcher(htmlSearchRes);
 
     try {
-      if (searchResult.find()) {
-        searchResult = ImdbSearchPattern.MOVIEIMDBPATTERN.getPattern().matcher(searchResult.group(2));
-        while (searchResult.find()) {
-          if (searchResult.group(5) != null) {// We do not keep results that are
-                                              // not a movie
-            if (!searchResult.group(5).equals("TV")) {
-              continue;
+      int count = 0;
+      while (searchResult.find()) {
+        htmlSearchRes = searchResult.group(2);
+        int imdbID = Integer.parseInt(searchResult.group(1));
+        Matcher movieMatcher = ImdbSearchPattern.MOVIEIMDBPATTERN.getPattern().matcher(htmlSearchRes);
+
+        if (movieMatcher.find()) {
+          URL thumb;
+          String title;
+          int year;
+
+          try {
+            thumb = new URL(movieMatcher.group(1).replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
+          } catch (MalformedURLException e) {
+            thumb = null;
+          }
+
+          title = movieMatcher.group(2).trim();
+          year = Integer.parseInt(movieMatcher.group(3).replaceAll(".*\\((\\d\\d\\d\\d)\\).*", "$1"));
+
+          boolean valid = true;
+          for (int i = 0; i < DoNotKeep.values().length; i++) {
+            if (title.contains(DoNotKeep.values()[i].name().replace("_DASH_", "-").replace("_", " "))) {
+              valid = false;
+              break;
             }
           }
 
-          String movieTitle = searchResult.group(3);
-          if (movieTitle != null) {
-            URL thumb = null;
-            int year = -1;
-            movieTitle = StringUtils.unEscapeXML(movieTitle, CHARSET);
-
-            if (searchResult.group(1) != null) {// Thumb found
-              try {
-                thumb = new URL(searchResult.group(1).replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
-              } catch (MalformedURLException e) {
-                thumb = null;
-              }
-            }
-
-            if (searchResult.group(4) != null) {// Year found
-              year = Integer.parseInt(searchResult.group(4));
-            }
-
-            int imdbid = findImdbId(searchResult.group(2));
-
-            found.add(new Movie(imdbid, movieTitle, thumb, year, imdbid));// , type, , ));
+          if (valid) {
+            found.add(new Movie(imdbID, title, thumb, year, imdbID));
+            count++;
+          }
+          if (limit != -1 && limit <= count) {
+            break;
           }
         }
       }
@@ -302,9 +298,8 @@ public class IMDbScrapper extends MovieScrapper {
 
   /**
    * Get movie title in imdb movie page
-   * 
-   * @param moviePage
-   *          Imdb movie page
+   *
+   * @param moviePage Imdb movie page
    * @return The result
    */
   private Movie getSearchMovie(String moviePage) {
@@ -610,5 +605,4 @@ public class IMDbScrapper extends MovieScrapper {
 
     return casting;
   }
-
 }

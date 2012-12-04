@@ -24,13 +24,13 @@ import java.util.*;
  *
  * @author Nicolas Magré
  */
-abstract class CommonWords {
+abstract class CommonWords {// FIXME DEAD CODE
 
   /**
    * Match all result from all matcher
    *
    * @param names Matchers results
-   * @param priority 
+   * @param priority
    * @return Most probable result
    */
   public static String matchAll(List<NameMatcher> names, boolean priority) {
@@ -38,7 +38,7 @@ abstract class CommonWords {
     if (names.size() == 1) {
       return normalize(names.get(0).getMatch());
     }
-    
+
     if(priority){
       for(NameMatcher name : names) {
         if(name.getPriority() == NameMatcher.HIGH){

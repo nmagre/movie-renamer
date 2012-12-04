@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class MovieNameMatcher
- * 
+ *
  * @author Nicolas Magré
  */
 public class MovieNameMatcher extends MediaNameMatcher {

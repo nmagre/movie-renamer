@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.settings.Settings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +41,8 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.cyberneko.html.parsers.DOMParser;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -51,11 +50,9 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import fr.free.movierenamer.settings.Settings;
-
 /**
  * Class WebRequest
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -151,6 +148,8 @@ public final class WebRequest {
       }
     } else {
       connection = uri.toURL().openConnection();
+      System.setProperty("http.agent", StringUtils.EMPTY);
+      connection.addRequestProperty("User-Agent", "Mozilla");
     }
 
     connection.addRequestProperty("Accept-Encoding", "gzip,deflate");
@@ -178,9 +177,9 @@ public final class WebRequest {
       throw ioe;
     }
 
-    if ("gzip".equalsIgnoreCase(encoding))
+    if ("gzip".equalsIgnoreCase(encoding)) {
       inputStream = new GZIPInputStream(inputStream);
-    else if ("deflate".equalsIgnoreCase(encoding)) {
+    } else if ("deflate".equalsIgnoreCase(encoding)) {
       inputStream = new InflaterInputStream(inputStream, new Inflater(true));
     }
 
@@ -254,6 +253,7 @@ public final class WebRequest {
   }
 
   public static class RequestProperty {
+
     private final String key;
     private final String value;
 
@@ -269,7 +269,5 @@ public final class WebRequest {
     public String getValue() {
       return value;
     }
-
   }
-
 }
