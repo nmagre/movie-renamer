@@ -90,6 +90,8 @@ public final class Settings {
   private final Document settingsDocument;
   private final Node settingsNode;
 
+  private boolean autosave = true;
+
   private static final String appSettingsNodeName = appName_nospace + "_" + appModule_nospace;
   private static final String settingNodeName = "settings";
 
@@ -526,6 +528,14 @@ public final class Settings {
     } catch (Exception ex) {
       return "";// ex. // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
     }
+  }
+
+  public boolean isAutosave() {
+    return autosave;
+  }
+
+  public void setAutosave(boolean autosave) {
+    this.autosave = autosave;
   }
 
   /**
