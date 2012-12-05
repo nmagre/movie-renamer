@@ -134,22 +134,28 @@ public final class WebRequest {
   }
 
   private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
-    boolean isHttpRequest = "http".equals(uri.getScheme());
+    boolean isHttpRequest = Proxy.Type.HTTP.name().equalsIgnoreCase(uri.getScheme());
     URLConnection connection;
     if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
       Settings settings = Settings.getInstance();
       Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
       connection = uri.toURL().openConnection(proxy);
-      connection.setReadTimeout(settings.getHttpRequestTimeOut() * 1000); // in ms
-      System.setProperty("http.agent", StringUtils.EMPTY);
-      connection.addRequestProperty("User-Agent", "Mozilla");
-      if (settings.getHttpCustomUserAgent() != null && settings.getHttpCustomUserAgent().length() > 0) {
-        connection.addRequestProperty("User-Agent", settings.getHttpCustomUserAgent());
-      }
+      
     } else {
       connection = uri.toURL().openConnection();
-      System.setProperty("http.agent", StringUtils.EMPTY);
-      connection.addRequestProperty("User-Agent", "Mozilla");
+    }
+    
+    if (isHttpRequest) {
+      Settings settings = Settings.getInstance();
+      connection.setReadTimeout(settings.getHttpRequestTimeOut() * 1000); // in ms
+      //fake user agent ;)
+      connection.addRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
+      connection.addRequestProperty("From", "googlebot(at)googlebot.com");
+      connection.addRequestProperty("Accept", "*/*");
+      String customUserAgent = settings.getHttpCustomUserAgent();
+      if (customUserAgent != null && customUserAgent.length() > 0) {
+        connection.addRequestProperty("User-Agent", customUserAgent);
+      }
     }
 
     connection.addRequestProperty("Accept-Encoding", "gzip,deflate");
