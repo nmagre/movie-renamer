@@ -32,7 +32,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class IMDbScrapperTest
- *
+ * 
  * @author Simon QUÉMÉNEUR
  */
 public class IMDbScrapperTest extends MovieScrapperTest {
@@ -51,25 +51,25 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Movie movie = results.get(0);
 
     Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1_SX32_CR0,0,32,44_.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1968, movie.getYear());
     Assert.assertEquals(64116, movie.getImdbId());
     Assert.assertEquals(64116, movie.getMediaId());
   }
-
+  
   @Test
   public void searchRedirect() throws Exception {
     imdb.setLocale(Locale.FRENCH);
-    List<Movie> results = imdb.search("the shop around the corner");
+    List<Movie> results = imdb.search("le pont de la rivière kwai");
 
     Movie movie = results.get(0);
 
-    Assert.assertEquals("Rendez-vous", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTI4ODEwMDgyMV5BMl5BanBnXkFtZTcwMjIzMTUxMQ@@._V1_SX32_CR0,0,32,44_.jpg", movie.getURL().toExternalForm());
-    Assert.assertEquals(1940, movie.getYear());
-    Assert.assertEquals(33045, movie.getImdbId());
-    Assert.assertEquals(33045, movie.getMediaId());
-
+    Assert.assertEquals("Le pont de la rivière Kwai", movie.getName());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@._V1._SY70_SX100.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals(1957, movie.getYear());
+    Assert.assertEquals(50212, movie.getImdbId());
+    Assert.assertEquals(50212, movie.getMediaId());
+    
   }
 
   @Override
@@ -87,17 +87,17 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     for(CastingInfo info : cast) {
       if(info.isDirector()) {
         Assert.assertEquals("Sergio Leone", info.getName());
-        return;
+        break;
       }
     }
-
+    
     Assert.fail();
   };
 
   @Override
   public void getImages() throws Exception {
     List<ImageInfo> images = imdb.getImages(new Movie(64116, null, null, -1, -1));
-
+    
     Assert.assertEquals(ImageCategoryProperty.unknown, images.get(0).getCategory());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref().toExternalForm());
   }

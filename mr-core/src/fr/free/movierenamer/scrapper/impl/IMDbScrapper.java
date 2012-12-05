@@ -51,7 +51,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class IMDbScrapper : search movie on IMDB
- *
+ * 
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -60,6 +60,7 @@ public class IMDbScrapper extends MovieScrapper {
   private static final String defaultHost = "www.imdb.com";
   private static final String name = "IMDb";
   private static final String CHARSET = "ISO-8859-1";
+
   private String host;
 
   public IMDbScrapper() {
@@ -104,9 +105,12 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   public enum ImdbSearchPattern {
-
-    SEARCHIMDBPATTERN("<tr class=.findResult\\b[^>]*>.*?tt(\\d+).*?\\w\\w_\\d+. >(.*?)</td> </tr>"),
-    MOVIEIMDBPATTERN("(http://.*?\\.(?:png|jpg)).*?<a[^>]+>(.*?)</a>(.*)"),
+    IMDBURL("http://www.imdb.com/title/tt\\d+/"),
+    POPULARPATTERN(".*?Popular Titles.*?Displaying (\\d+)(.*?)</table>"),
+    EXACTPATTERN("Titles \\(Exact Matches.*?Displaying (\\d+)(.*?)</table>"),
+    PARTIALPATTERN("Titles \\(Partial.*?Displaying (\\d+)(.*?)</table>"),
+    APPROXIMATEPATTERN("Titles \\(Approx.*?Displaying (\\d+)(.*?)</table>"),
+    MOVIEIMDBPATTERN("(?:<img src=.(http://ia.media-imdb.com/images.*?\\.jpg).*?)?>\\d+.<\\/td>.*?a href=.\\/title\\/(tt\\d+)\\/.[^>]*>([^<]*).*?\\((\\d+)?.*?\\).?(\\(.*?\\) )?"),
     IMDBMOVIETITLE("<meta property=.og:title. content=.(.*?) \\(.*?(\\d\\d\\d\\d).*\\)?."),
     IMDBMOVIEID("tt(\\d+{7})"),
     IMDBMOVIETHUMB("<meta property=.og:image. content=.(http://.*.jpg).");
@@ -125,15 +129,7 @@ public class IMDbScrapper extends MovieScrapper {
     }
   }
 
-  private enum DoNotKeep {
-    TV_Series,
-    Video_Game,
-    TV_Episode,
-    TV_Mini_DASH_Series;
-  }
-
   public enum ImdbInfoPattern {
-
     TITLE("<title>(.* \\(.*\\d+.*\\).*)</title>"),
     THUMB("src=\"(http://ia.media-imdb.com/images/.*)\""),
     ORIGTITLE("info-content.>\\s+\"(.*)\"&nbsp.*?[Oo]riginal"),
@@ -143,7 +139,7 @@ public class IMDbScrapper extends MovieScrapper {
     DIRECTOR("src=./rg/directorlist/position-\\d+/images/b.gif.link=name/nm(\\d+)/.;\">(.*)</a>"),
     WRITER("src=./rg/writerlist/position-\\d/images/b.gif.link=name/nm(\\d+)/.;\">(.*)</a>"),
     GENRE("<h5>G(?:e|&#xE9;)n...?:</h5>\n.*info-content.*\n(.*)"),
-    TAGLINE("<div class=\"info-content\">\n(.*)<a class=\".*\" href=\"/title/tt\\d+/taglines\""), // Only on .com  site (english)
+    TAGLINE("<div class=\"info-content\">\n(.*)<a class=\".*\" href=\"/title/tt\\d+/taglines\""), // Only on .com site (english)
     PLOT("<div class=.info-content.>\n(.*)(?:\n?)<a class=..*. href=./title/tt\\d+/plotsummary."),
     CAST("<h3>((Cast)|(Ensemble)|(Besetzung)|(Reparto))</h3>.*"),
     ACTOR("\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>"),
@@ -164,34 +160,35 @@ public class IMDbScrapper extends MovieScrapper {
       return pattern.toString();
     }
   }
+  
+  private String createImgPath(String imgPath) {
+    return imgPath.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY70_SX100.jpg");
+  }
 
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
-    // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
-    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&ref_=fn_tt&q=" + WebRequest.encode(query));
+    // http://www.imdb.com/find?s=tt&q=
+    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&q=" + WebRequest.encode(query));
     boolean mode = true;
 
     if (mode) {
       Document dom = WebRequest.getHtmlDocument(searchUrl.toURI());
 
-      // select movie links followed by year in parenthesis
-      List<Node> nodes = XPathUtils.selectNodes("//TABLE//A[substring-after(substring-before(following::text(),')'),'(')]", dom);
+      // select movie results
+      List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='findList']//TR", dom);
       List<Movie> results = new ArrayList<Movie>(nodes.size());
 
       for (Node node : nodes) {
         try {
-          String name = node.getTextContent().trim();
-          if (name.startsWith("\"")) {
-            continue;
-          }
-          String year = node.getNextSibling().getTextContent().replaceAll("[\\p{Punct}\\p{Space}]+", ""); // remove non-number characters
-          String href = XPathUtils.getAttribute("href", node);
+          Node retNode = XPathUtils.selectNode("//TD[@class='result_text']", node);
+          String name = XPathUtils.selectNode("A", retNode).getTextContent().trim();
+          String year = retNode.getTextContent().replaceAll(name, "").replaceAll("[\\p{Punct}\\p{Space}]+", ""); // remove non-number characters
+          String href = XPathUtils.getAttribute("href", XPathUtils.selectNode("A", retNode));
           int imdbid = findImdbId(href);
-
           URL thumb;
           try {
-            String imgPath = XPathUtils.getAttribute("src", node.getParentNode().getPreviousSibling().getPreviousSibling().getChildNodes().item(1).getFirstChild());
-            thumb = new URL(imgPath.replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
+            String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("//TD[@class='primary_photo']/A/IMG", node));
+            thumb = new URL(createImgPath(imgPath));
           } catch (Exception ex) {
             thumb = null;
           }
@@ -203,18 +200,18 @@ public class IMDbScrapper extends MovieScrapper {
       }
 
       // we might have been redirected to the movie page
-      if (results.isEmpty()) {// Maybe check if it's a URL forwarding is better ^^
+      if (results.isEmpty()) {
         try {
           int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
           MovieInfo info = fetchMediaInfo(new Movie(imdbid, null, null, -1, imdbid), locale);
           URL thumb;
           try {
             String imgPath = info.getPosterPath().toURL().toExternalForm();
-            thumb = new URL(imgPath.replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
+            thumb = new URL(createImgPath(imgPath));
           } catch (Exception ex) {
             thumb = null;
           }
-          Movie movie = new Movie(imdbid, info.getTitle(), thumb, info.getYear(), imdbid);// FIXME !!!! getMovieDescriptor(imdbid, locale);
+          Movie movie = new Movie(imdbid, info.getTitle(), thumb, info.getYear(), imdbid);
           if (movie != null) {
             results.add(movie);
           }
@@ -225,11 +222,16 @@ public class IMDbScrapper extends MovieScrapper {
 
       return results;
     } else {
-      // FIXME Imdb search page changed, now it's in UTF-8 and all regex are deprecated
       String moviePage = WebRequest.getDocumentContent(searchUrl.toURI());
 
       List<Movie> results = new ArrayList<Movie>();
-      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.SEARCHIMDBPATTERN.getPattern(), 30));// FIxME get limit from settings
+
+      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.POPULARPATTERN.getPattern(), SearchResult.SearchResultType.POPULAR));
+      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.EXACTPATTERN.getPattern(), SearchResult.SearchResultType.EXACT));
+      results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.PARTIALPATTERN.getPattern(), SearchResult.SearchResultType.PARTIAL));
+      if (results.isEmpty() || Settings.getInstance().isSearchDisplayApproximateResult()) {
+        results.addAll(findSearchMovies(moviePage, ImdbSearchPattern.APPROXIMATEPATTERN.getPattern(), SearchResult.SearchResultType.APPROXIMATE));
+      }
 
       // are we redirected to the movie page ?
       if (results.isEmpty()) {
@@ -242,51 +244,55 @@ public class IMDbScrapper extends MovieScrapper {
 
   /**
    * Get movies title by result type in Imdb search page
-   *
-   * @param htmlSearchRes Imdb search page
-   * @param searchPattern Pattern of result to retreive
-   * @param limit Limitation of returned result
+   * 
+   * @param htmlSearchRes
+   *          Imdb search page
+   * @param searchPattern
+   *          Pattern of result to retreive
+   * @param movieFilenameLimit
+   *          Limitation of returned result
+   * @param french
+   *          Is imdb french page
+   * @param type
+   *          Type of result search
    * @return Array of ImdbSearchResult
    */
-  private List<Movie> findSearchMovies(String htmlSearchRes, Pattern searchPattern, int limit) {
+  private List<Movie> findSearchMovies(String htmlSearchRes, Pattern searchPattern, SearchResult.SearchResultType type) {
     List<Movie> found = new ArrayList<Movie>();
     Matcher searchResult = searchPattern.matcher(htmlSearchRes);
 
     try {
-      int count = 0;
-      while (searchResult.find()) {
-        htmlSearchRes = searchResult.group(2);
-        int imdbID = Integer.parseInt(searchResult.group(1));
-        Matcher movieMatcher = ImdbSearchPattern.MOVIEIMDBPATTERN.getPattern().matcher(htmlSearchRes);
-
-        if (movieMatcher.find()) {
-          URL thumb;
-          String title;
-          int year;
-
-          try {
-            thumb = new URL(movieMatcher.group(1).replaceAll("S[XY]\\d+_S[XY]\\d+", "SY70_SX100"));
-          } catch (MalformedURLException e) {
-            thumb = null;
-          }
-
-          title = movieMatcher.group(2).trim();
-          year = Integer.parseInt(movieMatcher.group(3).replaceAll(".*\\((\\d\\d\\d\\d)\\).*", "$1"));
-
-          boolean valid = true;
-          for (int i = 0; i < DoNotKeep.values().length; i++) {
-            if (title.contains(DoNotKeep.values()[i].name().replace("_DASH_", "-").replace("_", " "))) {
-              valid = false;
-              break;
+      if (searchResult.find()) {
+        searchResult = ImdbSearchPattern.MOVIEIMDBPATTERN.getPattern().matcher(searchResult.group(2));
+        while (searchResult.find()) {
+          if (searchResult.group(5) != null) {// We do not keep results that are
+                                              // not a movie
+            if (!searchResult.group(5).equals("TV")) {
+              continue;
             }
           }
 
-          if (valid) {
-            found.add(new Movie(imdbID, title, thumb, year, imdbID));
-            count++;
-          }
-          if (limit != -1 && limit <= count) {
-            break;
+          String movieTitle = searchResult.group(3);
+          if (movieTitle != null) {
+            URL thumb = null;
+            int year = -1;
+            movieTitle = StringUtils.unEscapeXML(movieTitle, CHARSET);
+
+            if (searchResult.group(1) != null) {// Thumb found
+              try {
+                thumb = new URL(createImgPath(searchResult.group(1)));
+              } catch (MalformedURLException e) {
+                thumb = null;
+              }
+            }
+
+            if (searchResult.group(4) != null) {// Year found
+              year = Integer.parseInt(searchResult.group(4));
+            }
+
+            int imdbid = findImdbId(searchResult.group(2));
+
+            found.add(new Movie(imdbid, movieTitle, thumb, year, imdbid));// , type, , ));
           }
         }
       }
@@ -298,8 +304,9 @@ public class IMDbScrapper extends MovieScrapper {
 
   /**
    * Get movie title in imdb movie page
-   *
-   * @param moviePage Imdb movie page
+   * 
+   * @param moviePage
+   *          Imdb movie page
    * @return The result
    */
   private Movie getSearchMovie(String moviePage) {
@@ -501,7 +508,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   protected int findImdbId(String source) {
-    Matcher matcher = ImdbSearchPattern.IMDBMOVIEID.pattern.matcher(source);
+    Matcher matcher = Pattern.compile("tt(\\d+{7})").matcher(source);
 
     if (matcher.find()) {
       return Integer.parseInt(matcher.group(1));
@@ -518,7 +525,7 @@ public class IMDbScrapper extends MovieScrapper {
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
 
-    Matcher searchMatcher = ImdbInfoPattern.THUMB.getPattern().matcher(imagesPage);
+    Matcher searchMatcher = Pattern.compile("src=\"(http://ia.media-imdb.com/images/.*)\"").matcher(imagesPage);
     while (searchMatcher.find()) {
       String url = searchMatcher.group(1);
       Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
@@ -530,79 +537,54 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/combined", movie.getMediaId()));
-    String moviePage = WebRequest.getDocumentContent(searchUrl.toURI());
+    URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/fullcredits", movie.getMediaId()));
+    Document dom = WebRequest.getHtmlDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
-    // Directors
-    Matcher searchMatcher = ImdbInfoPattern.DIRECTOR.getPattern().matcher(moviePage);
-    while (searchMatcher.find()) {
-      String director = searchMatcher.group(2);
-      String imdbId = searchMatcher.group(1);
-      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-      personFields.put(PersonProperty.id, imdbId);
-      personFields.put(PersonProperty.name, StringUtils.unEscapeXML(director, CHARSET));
-      personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
-      casting.add(new CastingInfo(personFields));
-    }
-
-    // Writers
-    searchMatcher = ImdbInfoPattern.WRITER.getPattern().matcher(moviePage);
-    while (searchMatcher.find()) {
-      String writer = searchMatcher.group(2);
-      String imdbId = searchMatcher.group(1);
-      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-      personFields.put(PersonProperty.id, imdbId);
-      personFields.put(PersonProperty.name, StringUtils.unEscapeXML(writer, CHARSET));
-      personFields.put(PersonProperty.job, CastingInfo.WRITER);
-      casting.add(new CastingInfo(personFields));
-    }
-
-    // Actors
-    // TODO code not rewrite, i think we can do something much better ^^
-    searchMatcher = ImdbInfoPattern.CAST.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String[] actors = searchMatcher.group().split("</tr>");
-      for (int i = 0; i < actors.length; i++) {
-        Matcher matcher2 = ImdbInfoPattern.ACTOR.getPattern().matcher(actors[i]);
-        boolean thumb = !actors[i].contains("no_photo");
-        if (matcher2.find()) {
-          String thumbactor = "";
-          if (thumb) {
-            String actorThumb = matcher2.group().substring(matcher2.group().indexOf("src=") + 5, matcher2.group().indexOf("width") - 2);
-            thumbactor = actorThumb.replaceAll("S[XY]\\d+_S[XY]\\d+", "SY214_SX314");
-          }
-
-          String name = matcher2.group().substring(matcher2.group().indexOf("onclick="), matcher2.group().indexOf("</a></td><td"));
-          name = name.substring(name.indexOf(">") + 1);
-          if (thumbactor.equals("http://i.media-imdb.com/images/b.gif")) {
-            thumbactor = "";
-          }
-
-          String imdbId = "";
-          if (matcher2.group().contains("link=/name/nm")) {
-            int pos = matcher2.group().indexOf("link=/name/nm") + 11;
-            imdbId = matcher2.group().substring(pos + 2, pos + 9);
-          }
-
-          String role = matcher2.group().substring(matcher2.group().indexOf("class=\"char\""));
-          role = role.substring(role.indexOf(">") + 1, role.indexOf("</td>"));
-          if (role.contains("href=")) {
-            role = role.substring(role.indexOf(">") + 1);
-            role = role.substring(0, role.indexOf("<"));
-          }
-
-          Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-          personFields.put(PersonProperty.id, imdbId);
-          personFields.put(PersonProperty.name, StringUtils.unEscapeXML(name, CHARSET));
-          personFields.put(PersonProperty.job, CastingInfo.ACTOR);
-          personFields.put(PersonProperty.character, role);
-          personFields.put(PersonProperty.picturePath, thumbactor);
-          casting.add(new CastingInfo(personFields));
+    
+    List<Node> castNodes = XPathUtils.selectNodes("//TABLE[@class='cast']//TR", dom);
+    for (Node node : castNodes) {
+      Node actorNode = XPathUtils.selectNode("TD[@class='nm']", node);
+      if(actorNode != null) {
+        Node pictureNode = XPathUtils.selectNode("TD[@class='hs']//IMG", node);
+        Node characterNode = XPathUtils.selectNode("TD[@class='char']", node);
+        String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("src", pictureNode)) : "";
+        if(!picture.contains("no_photo")) {
+          picture = "";
         }
+        Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
+        personFields.put(PersonProperty.id, "");
+        personFields.put(PersonProperty.name, StringUtils.unEscapeXML(actorNode.getTextContent().trim(), CHARSET));
+        personFields.put(PersonProperty.job, CastingInfo.ACTOR);
+        personFields.put(PersonProperty.character, (characterNode != null) ? characterNode.getTextContent().trim() : "");
+        personFields.put(PersonProperty.picturePath, picture);
+        casting.add(new CastingInfo(personFields));
       }
     }
-
+    
+    List<Node> directorNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='directors']]//TR", dom);
+    for (Node node : directorNodes) {
+      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
+      personFields.put(PersonProperty.id, "");
+      personFields.put(PersonProperty.name, StringUtils.unEscapeXML(node.getTextContent().trim(), CHARSET));
+      personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
+      personFields.put(PersonProperty.character, "");
+      personFields.put(PersonProperty.picturePath, "");
+      casting.add(new CastingInfo(personFields));
+    }
+    
+    List<Node> writerNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='writers']]//TR", dom);
+    for (Node node : writerNodes) {
+      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
+      personFields.put(PersonProperty.id, "");
+      personFields.put(PersonProperty.name, StringUtils.unEscapeXML(node.getTextContent().trim(), CHARSET));
+      personFields.put(PersonProperty.job, CastingInfo.WRITER);
+      personFields.put(PersonProperty.character, "");
+      personFields.put(PersonProperty.picturePath, "");
+      casting.add(new CastingInfo(personFields));
+    }
+    
     return casting;
   }
+
 }
