@@ -41,7 +41,7 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -85,12 +85,12 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + locale.getLanguage() + "/xml/" + apikey + "/" + WebRequest.encode(query));
+    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + locale.getLanguage() + "/xml/" + apikey + "/" + URIRequest.encode(query));
     // FIXME has to be v3 !!!!
     // URL searchUrl = new URL("http", host, "/" + version + "/search/movie" +
     // "?api_key=" + apikey + "&language=" + locale.getLanguage() + "&query=" +
-    // WebRequest.encode(query));
-    Document dom = WebRequest.getXmlDocument(searchUrl.toURI());
+    // URIRequest.encode(query));
+    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>(nodes.size());
@@ -130,7 +130,7 @@ public class TMDbScrapper extends MovieScrapper {
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
     URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + locale.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
-    Document dom = WebRequest.getXmlDocument(searchUrl.toURI());
+    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
 
@@ -167,7 +167,7 @@ public class TMDbScrapper extends MovieScrapper {
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
     URL searchUrl = new URL("http", host, "/" + version + "/Movie.getImages/" + locale.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
-    Document dom = WebRequest.getXmlDocument(searchUrl.toURI());
+    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     for (String section : new String[] {
@@ -197,7 +197,7 @@ public class TMDbScrapper extends MovieScrapper {
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
     URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + locale.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
-    Document dom = WebRequest.getXmlDocument(searchUrl.toURI());
+    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
 

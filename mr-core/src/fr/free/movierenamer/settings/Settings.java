@@ -48,7 +48,7 @@ import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.TheTVDBScrapper;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.StringUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -187,7 +187,7 @@ public final class Settings {
     try {
       File confRoot = new File(Settings.appFolder, "conf");
       File file = new File(confRoot, configFileName);
-      settingsDocument = WebRequest.getXmlDocument(file.toURI());
+      settingsDocument = URIRequest.getXmlDocument(file.toURI());
       Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
       if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
         throw new NullPointerException("App version is different");

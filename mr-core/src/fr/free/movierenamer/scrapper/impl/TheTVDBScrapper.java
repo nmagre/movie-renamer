@@ -47,7 +47,7 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.EpisodeUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -99,8 +99,8 @@ public final class TheTVDBScrapper extends TvShowScrapper {
 
   @Override
   protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + WebRequest.encode(query) + "&language=" + locale.getLanguage());
-    Document dom = WebRequest.getXmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + locale.getLanguage());
+    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Data/Series", dom);
     Map<Integer, TvShow> resultSet = new LinkedHashMap<Integer, TvShow>(nodes.size());
@@ -123,7 +123,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale locale) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + locale.getLanguage() + ".xml");
-    Document dom = WebRequest.getXmlDocument(url.toURI());
+    Document dom = URIRequest.getXmlDocument(url.toURI());
 
     Node node = XPathUtils.selectNode("//Series", dom);
     Map<TvShowProperty, String> fields = new EnumMap<TvShowProperty, String>(TvShowProperty.class);
@@ -210,7 +210,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale locale) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/banners.xml");
-    Document dom = WebRequest.getXmlDocument(url.toURI());
+    Document dom = URIRequest.getXmlDocument(url.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
 
@@ -235,7 +235,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale locale) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/actors.xml");
-    Document dom = WebRequest.getXmlDocument(url.toURI());
+    Document dom = URIRequest.getXmlDocument(url.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
 

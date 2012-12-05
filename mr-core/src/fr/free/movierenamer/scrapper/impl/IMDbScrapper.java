@@ -46,7 +46,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -88,7 +88,7 @@ public class IMDbScrapper extends MovieScrapper {
       if (locale != null && !locale.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
         try {
           URL url = new URL("http", defaultHost.replace("com", locale.getLanguage()), "");
-          int responseCode = WebRequest.getResponseCode(url);
+          int responseCode = URIRequest.getResponseCode(url);
           if (responseCode == 200) {
             host = url.getHost();
           } else {
@@ -168,11 +168,11 @@ public class IMDbScrapper extends MovieScrapper {
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
     // http://www.imdb.com/find?s=tt&q=
-    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&q=" + WebRequest.encode(query));
+    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&q=" + URIRequest.encode(query));
     boolean mode = true;
 
     if (mode) {
-      Document dom = WebRequest.getHtmlDocument(searchUrl.toURI());
+      Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
       // select movie results
       List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='findList']//TR", dom);
@@ -222,7 +222,7 @@ public class IMDbScrapper extends MovieScrapper {
 
       return results;
     } else {
-      String moviePage = WebRequest.getDocumentContent(searchUrl.toURI());
+      String moviePage = URIRequest.getDocumentContent(searchUrl.toURI());
 
       List<Movie> results = new ArrayList<Movie>();
 
@@ -354,7 +354,7 @@ public class IMDbScrapper extends MovieScrapper {
     // new URL("http", "www.imdb.com", String.format("/title/tt%07d/combined",
     // movie.getMovieId())
     URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/combined", movie.getMediaId()));
-    String moviePage = WebRequest.getDocumentContent(searchUrl.toURI());
+    String moviePage = URIRequest.getDocumentContent(searchUrl.toURI());
 
     Pattern pattern;
 
@@ -521,7 +521,7 @@ public class IMDbScrapper extends MovieScrapper {
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
     URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/mediaindex", movie.getMediaId()));
-    String imagesPage = WebRequest.getDocumentContent(searchUrl.toURI());
+    String imagesPage = URIRequest.getDocumentContent(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
 
@@ -538,7 +538,7 @@ public class IMDbScrapper extends MovieScrapper {
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
     URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/fullcredits", movie.getMediaId()));
-    Document dom = WebRequest.getHtmlDocument(searchUrl.toURI());
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
     

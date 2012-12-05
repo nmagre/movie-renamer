@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.settings.Settings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,8 +31,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -41,8 +38,10 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.cyberneko.html.parsers.DOMParser;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -50,13 +49,15 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import fr.free.movierenamer.settings.Settings;
+
 /**
- * Class WebRequest
+ * Class URIRequest
  *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public final class WebRequest {
+public final class URIRequest {
 
   public static final String UTF = "UTF-8";
   public static final String ISO = "ISO-8859-1";
@@ -207,7 +208,7 @@ public final class WebRequest {
         try {
           return Charset.forName(matcher.group(1));
         } catch (IllegalArgumentException e) {
-          Logger.getLogger(WebRequest.class.getName()).log(Level.WARNING, e.getMessage());
+          Logger.getLogger(URIRequest.class.getName()).log(Level.WARNING, e.getMessage());
         }
       }
 
@@ -231,31 +232,13 @@ public final class WebRequest {
       return 0;
     }
   }
-
+  
   public static String encode(String string) {
     try {
       return URLEncoder.encode(string, UTF);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  public static String encodeParameters(Map<String, ?> parameters) {
-    StringBuilder sb = new StringBuilder();
-
-    for (Entry<String, ?> entry : parameters.entrySet()) {
-      if (sb.length() > 0) {
-        sb.append("&");
-      }
-
-      sb.append(entry.getKey());
-      if (entry.getValue() != null) {
-        sb.append("=");
-        sb.append(encode(entry.getValue().toString()));
-      }
-    }
-
-    return sb.toString();
   }
 
   public static class RequestProperty {

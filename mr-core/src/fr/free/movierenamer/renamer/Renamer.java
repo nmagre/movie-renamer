@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -82,7 +82,7 @@ public class Renamer {
     Document renamedDocument;
     try {
       File file = new File(Settings.appFolder, renamedFileName);
-      renamedDocument = WebRequest.getXmlDocument(file.toURI());
+      renamedDocument = URIRequest.getXmlDocument(file.toURI());
     } catch (Exception ex) {
       try {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
