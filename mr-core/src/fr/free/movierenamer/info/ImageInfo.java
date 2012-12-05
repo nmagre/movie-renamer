@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * Class ImageInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -43,6 +43,10 @@ public class ImageInfo extends Info {
     actor,
     thumb,
     fanart,
+    logo,
+    banner,
+    cdart,
+    clearart,
     unknown
   }
 

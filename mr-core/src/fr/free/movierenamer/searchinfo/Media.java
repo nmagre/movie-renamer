@@ -21,7 +21,7 @@ import java.net.URL;
 
 /**
  * Class Media
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -29,7 +29,7 @@ public abstract class Media extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
   protected int year;
-  protected int mediaId;
+  protected int mediaId; // TODO Change MediaId from int to an object because many API doesn't work with all ID type
 
   protected Media() {
     // used by serializer

@@ -34,7 +34,7 @@ import javax.swing.Icon;
 
 /**
  * Class MovieInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -70,7 +70,7 @@ public class MovieInfo extends MediaInfo {
   }
 
   public MovieInfo(Map<MovieProperty, String> fields, List<String> genres, List<Locale> countries) {
-    this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new HashMap<MovieInfo.MovieProperty, String>();
+    this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
     this.genres = (genres != null) ? genres.toArray(new String[0]) : new String[0];
     this.countries = (countries != null) ? countries.toArray(new Locale[0]) : new Locale[0];
   }
@@ -165,6 +165,11 @@ public class MovieInfo extends MediaInfo {
 
   @Override
   public String getRenamedTitle(String format) {
+    // TODO Apply case by tag to avoid this : <ot> IMDBID <tt> -> <ot> Imdbid <tt> (don't change user input)
+    // Add more "sub-tag" like ":i" to ignore case : <ot:i>
+    // or "~X" to remove caratere : <tt~2> (remove the first two caratere)
+    // or "~w" to keep only number
+    // ...
     Settings settings = Settings.getInstance();
     String separator = settings.getMovieFilenameSeparator();
     int limit = settings.getMovieFilenameLimit();
@@ -173,9 +178,9 @@ public class MovieInfo extends MediaInfo {
 
     String titlePrefix = "";
     String shortTitle = this.getTitle();
-    
-    Pattern pattern = null;
-    Matcher matcher = null;
+
+    Pattern pattern;
+    Matcher matcher;
 
     if (shortTitle != null) {
       pattern = Pattern.compile("^((le|la|les|the)\\s|(l\\'))(.*)", Pattern.CASE_INSENSITIVE);
@@ -270,7 +275,7 @@ public class MovieInfo extends MediaInfo {
     }
 
     // Case conversion
-    String res = "";
+    String res;
     switch (renameCase) {
     case UPPER:
       res = format.toUpperCase();
