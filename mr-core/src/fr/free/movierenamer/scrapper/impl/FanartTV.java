@@ -23,6 +23,7 @@ import java.util.Locale;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.ImageScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.settings.Settings;
 
 /**
  * Class FanartTV
@@ -33,10 +34,17 @@ public class FanartTV extends ImageScrapper {
   private static final String host = "???";
   private static final String name = "FanartTV";
 
+  private final String apikey;
+
   public FanartTV() {
     super(Locale.ENGLISH);
+    String key = Settings.getApplicationProperty("fanarttv.apikey");
+    if (key == null || key.trim().length() == 0) {
+      throw new NullPointerException("apikey must not be null");
+    }
+    this.apikey = key;
   }
-
+    
   @Override
   public String getName() {
     return host;
