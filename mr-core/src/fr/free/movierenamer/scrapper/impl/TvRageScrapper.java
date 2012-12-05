@@ -43,7 +43,7 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.EpisodeUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -78,8 +78,8 @@ public class TvRageScrapper extends TvShowScrapper {
 
   @Override
   protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/feeds/search.php?show=" + WebRequest.encode(query));
-    Document dom = WebRequest.getXmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/feeds/search.php?show=" + URIRequest.encode(query));
+    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Results/show", dom);
     List<TvShow> searchResults = new ArrayList<TvShow>(nodes.size());
@@ -99,7 +99,7 @@ public class TvRageScrapper extends TvShowScrapper {
   @Override
   protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale locale) throws Exception {
     URL episodeListUrl = new URL("http", host, "/feeds/showinfo.php?sid=" + tvShow.getMediaId());
-    Document dom = WebRequest.getXmlDocument(episodeListUrl.toURI());
+    Document dom = URIRequest.getXmlDocument(episodeListUrl.toURI());
 
     Map<TvShowProperty, String> fields = new EnumMap<TvShowProperty, String>(TvShowProperty.class);
 
@@ -134,7 +134,7 @@ public class TvRageScrapper extends TvShowScrapper {
   @Override
   protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception {
     URL episodeListUrl = new URL("http", host, "/feeds/episode_list.php?sid=" + tvShow.getMediaId());
-    Document dom = WebRequest.getXmlDocument(episodeListUrl.toURI());
+    Document dom = URIRequest.getXmlDocument(episodeListUrl.toURI());
 
     List<EpisodeInfo> episodes = new ArrayList<EpisodeInfo>(25);
     List<EpisodeInfo> specials = new ArrayList<EpisodeInfo>(5);
@@ -190,7 +190,7 @@ public class TvRageScrapper extends TvShowScrapper {
     if(showlink != null) {
       try {
         URL showURL = new URL(showlink);
-        String tvshowPage = WebRequest.getDocumentContent(showURL.toURI());
+        String tvshowPage = URIRequest.getDocumentContent(showURL.toURI());
         Matcher searchMatcher = Pattern.compile("src='(http://images.tvrage.com/shows/.*)'").matcher(tvshowPage);
         if (searchMatcher.find()) {
           String tvrageThumb = searchMatcher.group(1);

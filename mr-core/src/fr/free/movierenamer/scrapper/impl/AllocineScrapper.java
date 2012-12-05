@@ -39,7 +39,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 
 /**
  * Class AllocineScrapper : search movie on allocine
@@ -83,8 +83,8 @@ public class AllocineScrapper extends MovieScrapper {
 
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/rest/v" + version + "/search?partner=" + apikey + "&filter=movie&striptags=synopsis,synopsisshort&format=json&q=" + WebRequest.encode(query));
-    JSONObject json = WebRequest.getJsonDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/rest/v" + version + "/search?partner=" + apikey + "&filter=movie&striptags=synopsis,synopsisshort&format=json&q=" + URIRequest.encode(query));
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
 
     for (JSONObject movie : JSONUtils.selectList("feed/movie", json)) {
@@ -112,7 +112,7 @@ public class AllocineScrapper extends MovieScrapper {
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
-    JSONObject json = WebRequest.getJsonDocument(searchUrl.toURI());
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     JSONObject movieObject = JSONUtils.selectObject("movie", json);
     JSONObject statistics = JSONUtils.selectObject("statistics", movieObject);
@@ -147,7 +147,7 @@ public class AllocineScrapper extends MovieScrapper {
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
 	  URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
-    JSONObject json = WebRequest.getJsonDocument(searchUrl.toURI());
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     JSONObject movieObject = JSONUtils.selectObject("movie", json);
     List<JSONObject> medias = JSONUtils.selectList("media", movieObject);
@@ -181,7 +181,7 @@ public class AllocineScrapper extends MovieScrapper {
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
 	  URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
-    JSONObject json = WebRequest.getJsonDocument(searchUrl.toURI());
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     JSONObject movieObject = JSONUtils.selectObject("movie", json);
     List<JSONObject> castMembers = JSONUtils.selectList("castMember", movieObject);

@@ -35,7 +35,7 @@ import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.info.SubtitleInfo.SubtitleProperty;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -69,8 +69,8 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
 
   @Override
   protected List<Subtitle> searchSubtitles(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/subtitles/title.aspx?q=" + WebRequest.encode(query));
-    Document dom = WebRequest.getHtmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/subtitles/title.aspx?q=" + URIRequest.encode(query));
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("//H2//following::DIV[@class='title']//A", dom);
     List<Subtitle> subtitles = new ArrayList<Subtitle>(nodes.size());
@@ -96,7 +96,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
 
   @Override
   protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale locale) throws Exception {
-    Document dom = WebRequest.getHtmlDocument(subtitle.getURL().toURI(), new WebRequest.RequestProperty("Cookie", "Filter=" + locale.getDisplayLanguage()));
+    Document dom = URIRequest.getHtmlDocument(subtitle.getURL().toURI(), new URIRequest.RequestProperty("Cookie", "Filter=" + locale.getDisplayLanguage()));
 
     List<Node> rows = XPathUtils.selectNodes("//TD[@class='a1']", dom);
     List<SubtitleInfo> subtitles = new ArrayList<SubtitleInfo>();

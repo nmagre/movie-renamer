@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
@@ -31,17 +32,23 @@ import fr.free.movierenamer.settings.Settings.SettingsProperty;
  * @author Simon QUÉMÉNEUR
  */
 public class SettingsTest {
+  
+  private Settings instance;
 
+  @Before 
+  public void init() {
+    Settings instance = Settings.getInstance();
+    instance.setAutosave(false);
+  }
+  
   @Test
   public void get() {
-    Settings instance = Settings.getInstance();
     instance.clear();
     Assert.assertEquals(Locale.ENGLISH, instance.getAppLanguage());
   }
 
   @Test
   public void set() {
-    Settings instance = Settings.getInstance();
     instance.set(SettingsProperty.appLanguage, Locale.FRENCH);
     Assert.assertEquals(Locale.FRENCH, instance.getAppLanguage());
     instance.set(SettingsProperty.appLanguage, Locale.GERMAN);

@@ -22,7 +22,7 @@ import fr.free.movierenamer.scrapper.ImageScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.json.simple.JSONObject;
+
 
 /**
  * Class FanartTV
@@ -77,7 +78,7 @@ public class FanartTV extends ImageScrapper { // TODO Get images for Tv show
   @Override
   protected List<ImageInfo> fetchImagesInfo(Media media, Locale locale) throws Exception {
     URL searchUrl = new URL("http", host, "/movie/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
-    JSONObject json = WebRequest.getJsonDocument(searchUrl.toURI());
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     JSONObject movie = JSONUtils.selectFirstObject(json);
 
     List<ImageInfo> imagesInfos = new ArrayList<ImageInfo>();

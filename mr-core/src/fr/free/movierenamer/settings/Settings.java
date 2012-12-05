@@ -48,7 +48,7 @@ import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.TheTVDBScrapper;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.StringUtils;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
@@ -89,6 +89,8 @@ public final class Settings {
   // Settings xml conf instance
   private final Document settingsDocument;
   private final Node settingsNode;
+
+  private boolean autosave = true;
 
   private static final String appSettingsNodeName = appName_nospace + "_" + appModule_nospace;
   private static final String settingNodeName = "settings";
@@ -185,7 +187,7 @@ public final class Settings {
     try {
       File confRoot = new File(Settings.appFolder, "conf");
       File file = new File(confRoot, configFileName);
-      settingsDocument = WebRequest.getXmlDocument(file.toURI());
+      settingsDocument = URIRequest.getXmlDocument(file.toURI());
       Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
       if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
         throw new NullPointerException("App version is different");
@@ -526,6 +528,14 @@ public final class Settings {
     } catch (Exception ex) {
       return "";// ex. // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
     }
+  }
+
+  public boolean isAutosave() {
+    return autosave;
+  }
+
+  public void setAutosave(boolean autosave) {
+    this.autosave = autosave;
   }
 
   /**
