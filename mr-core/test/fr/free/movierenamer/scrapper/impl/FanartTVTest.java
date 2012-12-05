@@ -17,14 +17,18 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.info.ImageInfo;
 import org.junit.Assert;
 
 import fr.free.movierenamer.scrapper.ImageScrapperTest;
+import fr.free.movierenamer.searchinfo.Movie;
+import java.util.List;
 
 /**
  * Class FanartTVTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
+ * @author Nicolas Magré
  */
 public class FanartTVTest extends ImageScrapperTest {
   private FanartTV fanarttv = null;
@@ -36,7 +40,8 @@ public class FanartTVTest extends ImageScrapperTest {
 
   @Override
   public void getImages() throws Exception {
-    Assert.fail();
+    List<ImageInfo> images = fanarttv.getImages(new Movie(19995, null, null, -1, -1));
+    Assert.assertEquals(ImageInfo.ImageCategoryProperty.logo, images.get(0).getCategory());
+    Assert.assertEquals("http://assets.fanart.tv/fanart/movies/19995/hdmovielogo/avatar-509cc262042a4.png", images.get(1).getHref().toExternalForm());
   }
-
 }

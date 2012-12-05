@@ -24,7 +24,7 @@ import org.json.simple.JSONObject;
 
 /**
  * Class JSONUtils
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -38,6 +38,15 @@ public final class JSONUtils {
         toSearch = (JSONObject) toSearch.get(node);
       }
       return toSearch;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static JSONObject selectFirstObject(final JSONObject rootObject) {
+    try {
+      JSONObject toSearch = rootObject;
+      return (JSONObject) toSearch.get(toSearch.keySet().iterator().next());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -87,11 +96,13 @@ public final class JSONUtils {
 
       @Override
       public JSONObject get(int index) {
+        if(array == null) return null;
         return (JSONObject) ((JSONArray) array).get(index);
       }
 
       @Override
       public int size() {
+        if(array == null) return 0;
         return ((JSONArray) array).size();
       }
     };
