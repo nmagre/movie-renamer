@@ -160,7 +160,7 @@ public class IMDbScrapper extends MovieScrapper {
       return pattern.toString();
     }
   }
-  
+
   private String createImgPath(String imgPath) {
     return imgPath.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY70_SX100.jpg");
   }
@@ -515,7 +515,20 @@ public class IMDbScrapper extends MovieScrapper {
     }
 
     // not found
-    throw new IllegalArgumentException(String.format("Cannot find imdb id: %s", source));
+    // throw new IllegalArgumentException(String.format("Cannot find imdb id: %s", source));
+    return 0;
+  }
+
+  protected int findCastImdbId(String source) {
+    Matcher matcher = Pattern.compile("nm(\\d+{7})").matcher(source);
+
+    if (matcher.find()) {
+      return Integer.parseInt(matcher.group(1));
+    }
+
+    // not found
+    // throw new IllegalArgumentException(String.format("Cannot find cast imdb id: %s", source));
+    return 0;
   }
 
   @Override
@@ -541,50 +554,67 @@ public class IMDbScrapper extends MovieScrapper {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
-    
+
     List<Node> castNodes = XPathUtils.selectNodes("//TABLE[@class='cast']//TR", dom);
     for (Node node : castNodes) {
       Node actorNode = XPathUtils.selectNode("TD[@class='nm']", node);
-      if(actorNode != null) {
+      if (actorNode != null) {
         Node pictureNode = XPathUtils.selectNode("TD[@class='hs']//IMG", node);
         Node characterNode = XPathUtils.selectNode("TD[@class='char']", node);
-        String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("src", pictureNode)) : "";
-        if(!picture.contains("no_photo")) {
-          picture = "";
+
+        Map<PersonProperty, String> personFields = fetchPersonIdAndName(actorNode);
+        if (personFields != null) {
+          String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("src", pictureNode)) : "";
+          if (picture.contains("no_photo")) {
+            picture = "";
+          }
+          personFields.put(PersonProperty.job, CastingInfo.ACTOR);
+          personFields.put(PersonProperty.character, (characterNode != null) ? StringUtils.unEscapeXML(characterNode.getTextContent().trim(), CHARSET) : "");
+          personFields.put(PersonProperty.picturePath, picture);
+          casting.add(new CastingInfo(personFields));
         }
-        Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-        personFields.put(PersonProperty.id, "");
-        personFields.put(PersonProperty.name, StringUtils.unEscapeXML(actorNode.getTextContent().trim(), CHARSET));
-        personFields.put(PersonProperty.job, CastingInfo.ACTOR);
-        personFields.put(PersonProperty.character, (characterNode != null) ? characterNode.getTextContent().trim() : "");
-        personFields.put(PersonProperty.picturePath, picture);
+      }
+    }
+
+    List<Node> directorNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='directors']]//TR", dom);
+    for (Node node : directorNodes) {
+      Map<PersonProperty, String> personFields = fetchPersonIdAndName(node);
+      if (personFields != null) {
+        personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
         casting.add(new CastingInfo(personFields));
       }
     }
-    
-    List<Node> directorNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='directors']]//TR", dom);
-    for (Node node : directorNodes) {
-      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-      personFields.put(PersonProperty.id, "");
-      personFields.put(PersonProperty.name, StringUtils.unEscapeXML(node.getTextContent().trim(), CHARSET));
-      personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
-      personFields.put(PersonProperty.character, "");
-      personFields.put(PersonProperty.picturePath, "");
-      casting.add(new CastingInfo(personFields));
-    }
-    
+
     List<Node> writerNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='writers']]//TR", dom);
     for (Node node : writerNodes) {
-      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-      personFields.put(PersonProperty.id, "");
-      personFields.put(PersonProperty.name, StringUtils.unEscapeXML(node.getTextContent().trim(), CHARSET));
-      personFields.put(PersonProperty.job, CastingInfo.WRITER);
-      personFields.put(PersonProperty.character, "");
-      personFields.put(PersonProperty.picturePath, "");
-      casting.add(new CastingInfo(personFields));
+      Map<PersonProperty, String> personFields = fetchPersonIdAndName(node);
+      if (personFields != null) {
+        personFields.put(PersonProperty.job, CastingInfo.WRITER);
+        casting.add(new CastingInfo(personFields));
+      }
     }
-    
+
     return casting;
+  }
+
+  private Map<PersonProperty, String> fetchPersonIdAndName(Node node) {
+    if (node != null) {
+      Node link = XPathUtils.selectNode(".//A", node);
+      if (link != null) {
+        String name = StringUtils.unEscapeXML(link.getTextContent().trim(), CHARSET);
+        if (name.length() > 1) {
+          int imdbId = findCastImdbId(XPathUtils.getAttribute("href", link));
+          if (imdbId != 0) {
+            Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
+            personFields.put(PersonProperty.id, Integer.toString(imdbId));
+            personFields.put(PersonProperty.name, name);
+
+            return personFields;
+          }
+        }
+      }
+    }
+    return null;
   }
 
 }
