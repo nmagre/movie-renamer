@@ -31,7 +31,7 @@ import net.sf.ehcache.Element;
 
 /**
  * Class Cache
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -100,7 +100,7 @@ public final class Cache {
     return new Cache(CacheManager.getInstance().getCache(name));
   }
 
-public static void clearCache(String name) {
+public synchronized static void clearCache(String name) {
 	net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
 	if (cache != null) {
 		cache.removeAll();
@@ -109,7 +109,7 @@ public static void clearCache(String name) {
 
 }
 
-  public static void clearAllCache() {
+  public synchronized static void clearAllCache() {
     for (String cacheName : CacheManager.getInstance().getCacheNames()) {
       clearCache(cacheName);
     }
@@ -121,7 +121,7 @@ public static void clearCache(String name) {
     this.cache = cache;
   }
 
-  public void put(Object key, Object value) {
+  public synchronized void put(Object key, Object value) {
     try {
       cache.put(new Element(key, value));
       Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Cache %s is now %s octets", cache.getName(), getSize()));

@@ -27,10 +27,10 @@ import fr.free.movierenamer.settings.Settings;
 
 /**
  * Class OpenSubtitlesScrapper : search subtitles on OpenSubtitles
- * 
+ *
  * @see http://api.opensubtitles.org/xml-rpc
  * @see http://trac.opensubtitles.org/projects/opensubtitles/wiki/XMLRPC
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -38,15 +38,15 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
 
   private static final String host = "???";
   private static final String name = "OpenSubtitles";
-  
+
 //  private final OpenSubtitlesXmlRpc xmlrpc;
 
   public OpenSubtitlesScrapper() {
     super(Locale.ENGLISH);
-    String useragent = Settings.getApplicationProperty("opensubtitles.useragent");
-    if (useragent == null || useragent.trim().length() == 0) {
-      throw new NullPointerException("OpenSubtitles useragent must not be null");
-    }
+//    String useragent = Settings.getApplicationProperty("opensubtitles.useragent");
+//    if (useragent == null || useragent.trim().length() == 0) {
+//      throw new NullPointerException("OpenSubtitles useragent must not be null");
+//    }
 //    this.xmlrpc = new OpenSubtitlesXmlRpc(useragent);
   }
 

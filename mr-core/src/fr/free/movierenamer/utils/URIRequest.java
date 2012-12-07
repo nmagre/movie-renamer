@@ -134,18 +134,18 @@ public final class URIRequest {
     return (JSONObject) JSONValue.parse(reader);
   }
 
-  private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
+  private synchronized static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
     boolean isHttpRequest = Proxy.Type.HTTP.name().equalsIgnoreCase(uri.getScheme());
     URLConnection connection;
     if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
       Settings settings = Settings.getInstance();
       Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
       connection = uri.toURL().openConnection(proxy);
-      
+
     } else {
       connection = uri.toURL().openConnection();
     }
-    
+
     if (isHttpRequest) {
       Settings settings = Settings.getInstance();
       connection.setReadTimeout(settings.getHttpRequestTimeOut() * 1000); // in ms
@@ -232,7 +232,7 @@ public final class URIRequest {
       return 0;
     }
   }
-  
+
   public static String encode(String string) {
     try {
       return URLEncoder.encode(string, UTF);

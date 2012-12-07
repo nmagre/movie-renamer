@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 /**
  * Class CacheObject
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -43,7 +43,7 @@ public class CacheObject {
     return query == null ? null : query.trim().toLowerCase();
   }
 
-  public <T> List<T> putList(Object key, Locale locale, Class<T> type, List<T> object) {
+  public synchronized <T> List<T> putList(Object key, Locale locale, Class<T> type, List<T> object) {
     try {
       cache.put(new CacheKey(id, key, type, locale), object);
     } catch (Exception e) {
@@ -52,7 +52,7 @@ public class CacheObject {
     return object;
   }
 
-  public <T> T putData(Object key, Locale locale, T object) {
+  public synchronized <T> T putData(Object key, Locale locale, T object) {
     try {
       cache.put(new CacheKey(id, key, locale), object);
     } catch (Exception e) {
