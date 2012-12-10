@@ -43,7 +43,7 @@ public final class Cache {
     }
   }
 
-  public static void initializeCache() {
+  private static void initializeCache() {
     // prepare cache folder for this application instance
     File cacheRoot = new File(Settings.appFolder, "cache");
 
@@ -81,7 +81,7 @@ public final class Cache {
           });
 
           // cache for this application instance is successfully set up and locked
-          // handle is close in previous kook !
+          // handle is close in previous hook !
           return;
         }
 
@@ -96,20 +96,20 @@ public final class Cache {
     System.setProperty("ehcache.disk.store.dir", new File(cacheRoot, "default").getAbsolutePath());
   }
 
-  public static Cache getCache(String name) {
+  public synchronized static Cache getCache(String name) {
     return new Cache(CacheManager.getInstance().getCache(name));
   }
 
-public static void clearCache(String name) {
-	net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
-	if (cache != null) {
-		cache.removeAll();
-		Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Clear cache %s", cache.getName()));
-	}
+  public synchronized static void clearCache(String name) {
+    net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
+    if (cache != null) {
+      cache.removeAll();
+      Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Clear cache %s", cache.getName()));
+    }
 
-}
+  }
 
-  public static void clearAllCache() {
+  public synchronized static void clearAllCache() {
     for (String cacheName : CacheManager.getInstance().getCacheNames()) {
       clearCache(cacheName);
     }
@@ -121,7 +121,7 @@ public static void clearCache(String name) {
     this.cache = cache;
   }
 
-  public void put(Object key, Object value) {
+  public synchronized void put(Object key, Object value) {
     try {
       cache.put(new Element(key, value));
       Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Cache %s is now %s octets", cache.getName(), getSize()));
@@ -149,7 +149,7 @@ public static void clearCache(String name) {
     return null;
   }
 
-  public void remove(Object key) {
+  public synchronized void remove(Object key) {
     try {
       cache.remove(key);
     } catch (Exception e) {
