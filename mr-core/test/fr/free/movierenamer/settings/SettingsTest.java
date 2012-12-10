@@ -28,19 +28,19 @@ import fr.free.movierenamer.settings.Settings.SettingsProperty;
 
 /**
  * Class SettingsTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class SettingsTest {
-  
+
   private Settings instance;
 
-  @Before 
+  @Before
   public void init() {
-    Settings instance = Settings.getInstance();
+    instance = Settings.getInstance();
     instance.setAutosave(false);
   }
-  
+
   @Test
   public void get() {
     instance.clear();
