@@ -32,7 +32,7 @@ import fr.free.movierenamer.settings.Settings;
 
 /**
  * Class ScrapperManager
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -49,7 +49,6 @@ public class ScrapperManager {
     getScrapper(IMDbScrapper.class);
     getScrapper(TMDbScrapper.class);
     // tvshow
-    getScrapper(SerienjunkiesScrapper.class);
     getScrapper(TheTVDBScrapper.class);
     getScrapper(TvRageScrapper.class);
     // anime
