@@ -54,7 +54,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 /**
  * Class Settings , Movie Renamer settings <br>
  * Only public and non static attributes are written in conf file !
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -141,7 +141,7 @@ public final class Settings {
 
   /**
    * Private build for singleton fix
-   * 
+   *
    * @return
    */
   private static synchronized Settings newInstance() {
@@ -153,7 +153,7 @@ public final class Settings {
 
   /**
    * Access to the Settings instance
-   * 
+   *
    * @return The only instance of MR Settings
    */
   public static synchronized Settings getInstance() {
@@ -540,7 +540,7 @@ public final class Settings {
 
   /**
    * Save setting
-   * 
+   *
    * @return True if setting was saved, False otherwise
    */
   private boolean saveSetting() {
@@ -609,7 +609,7 @@ public final class Settings {
 
   /**
    * Check if lib media info is installed
-   * 
+   *
    * @return True if lib media info is installed, otherwhise false
    */
   public static boolean libMediaInfo() {
@@ -634,6 +634,7 @@ public final class Settings {
         mediainfo = Boolean.FALSE;
       }
     }
+    if(mediainfo == null) mediainfo = Boolean.FALSE;
     return mediainfo.equals(Boolean.TRUE);
   }
 
