@@ -106,7 +106,6 @@ public final class Cache {
       cache.removeAll();
       Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Clear cache %s", cache.getName()));
     }
-
   }
 
   public synchronized static void clearAllCache() {
