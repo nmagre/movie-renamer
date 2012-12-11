@@ -26,6 +26,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.BeforeClass;
@@ -53,9 +55,9 @@ public class JSONUtilsTest {
   public void selectObject() {
     List<JSONObject> objects = JSONUtils.selectList("feed/movie", json);
     for (JSONObject object : objects) {
-      // System.out.println(JSONUtils.selectString("title", object));
+      Assert.assertEquals("Avatar", JSONUtils.selectString("title", object));
+      break;
     }
-    // System.out.println(objects);
   }
 
 }

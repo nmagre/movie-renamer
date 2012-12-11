@@ -17,25 +17,17 @@
  */
 package fr.free.movierenamer.utils;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Class CacheTest
+ * Class URIRequestTest
+ * 
  * @author Simon QUÉMÉNEUR
  */
-public class CacheTest {
-  @Test
-  public void testMultiThread() throws InterruptedException {
-    //TODO test the concurrent access
-    Thread t = new Thread() {
-      @Override
-      public void run() {
-        Cache.clearAllCache();
-      }
-    };
-    t.start();
-    while(t.isAlive()) {
-      Thread.sleep(2000);
-    }
-  }
+public class URIRequestTest {
+
 }

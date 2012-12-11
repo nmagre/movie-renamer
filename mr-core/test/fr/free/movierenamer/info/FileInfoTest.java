@@ -24,6 +24,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import fr.free.movierenamer.info.FileInfo.MediaType;
+import fr.free.movierenamer.utils.StringUtils;
 
 /**
  * Class FileInfoTest
@@ -34,9 +35,10 @@ public class FileInfoTest {
 
   @Test
   public void test() {
-    FileInfo fi = new FileInfo(new File("In_Bruges.avi"));
+    String randomName = StringUtils.generateRandomString(10);
+    FileInfo fi = new FileInfo(new File(randomName + ".avi"));
     Assert.assertEquals(MediaType.MOVIE, fi.getType());
-    Assert.assertEquals("In Bruges", fi.getSearch());
+    Assert.assertEquals(randomName, fi.getSearch());
     Assert.assertEquals(null, fi.getYear());
     Assert.assertEquals(Boolean.FALSE.booleanValue(), fi.wasRenamed());
   }
