@@ -103,12 +103,12 @@ public final class Cache {
   public synchronized static void clearCache(String name) {
     net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
     if (cache != null) {
+      Logger.getLogger(Cache.class.getName()).log(Level.FINER, String.format("Clear cache %s", cache.getName()));
       cache.removeAll();
-      Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Clear cache %s", cache.getName()));
     }
   }
 
-  public synchronized static void clearAllCache() {
+  public static void clearAllCache() {
     for (String cacheName : CacheManager.getInstance().getCacheNames()) {
       clearCache(cacheName);
     }
@@ -122,8 +122,9 @@ public final class Cache {
 
   public synchronized void put(Object key, Object value) {
     try {
+      Logger.getLogger(Cache.class.getName()).log(Level.FINER, String.format("Add object to cache %s", cache.getName()));
       cache.put(new Element(key, value));
-      Logger.getLogger(Cache.class.getName()).log(Level.INFO, String.format("Cache %s is now %s octets", cache.getName(), getSize()));
+      Logger.getLogger(Cache.class.getName()).log(Level.FINEST, String.format("Cache %s is now %s octets", cache.getName(), getSize()));
     } catch (Throwable e) {
       Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage());
       remove(key); // fail-safe

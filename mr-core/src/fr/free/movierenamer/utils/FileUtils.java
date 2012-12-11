@@ -230,7 +230,7 @@ public final class FileUtils {
     try {
       result2 = OpenSubtitlesHasher.computeHash(file);
     } catch (IOException ex) {
-      result2 = "no_hash";
+      result2 = "";
     }
     return result2;
   }
