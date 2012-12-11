@@ -31,7 +31,7 @@ import net.sf.ehcache.Element;
 
 /**
  * Class Cache
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -101,14 +101,14 @@ public final class Cache {
   }
 
   public synchronized static void clearCache(String name) {
-    net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
-    if (cache != null) {
+  	net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
+  	if (cache != null) {
       Logger.getLogger(Cache.class.getName()).log(Level.FINER, String.format("Clear cache %s", cache.getName()));
-      cache.removeAll();
-    }
+  		cache.removeAll();
+  	}
   }
 
-  public static void clearAllCache() {
+  public synchronized static void clearAllCache() {
     for (String cacheName : CacheManager.getInstance().getCacheNames()) {
       clearCache(cacheName);
     }
