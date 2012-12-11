@@ -19,8 +19,11 @@ package fr.free.movierenamer.scrapper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.free.movierenamer.searchinfo.SearchResult;
+import fr.free.movierenamer.utils.Cache;
 
 /**
  * Class SearchScrapper

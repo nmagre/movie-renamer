@@ -65,7 +65,7 @@ public abstract class SearchResult implements Serializable {
 
   @Override
   public String toString() {
-    if (type == SearchResultType.NONE) {
+    if (type == null || type == SearchResultType.NONE) {
       return name;
     }
 

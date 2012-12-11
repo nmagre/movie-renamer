@@ -19,6 +19,8 @@ package fr.free.movierenamer.scrapper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.searchinfo.Subtitle;
@@ -41,6 +43,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
   }
 
   protected final List<SubtitleInfo> getSubtitles(Subtitle subtitle, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get subtitle info list for '%s' in '%s'", getName() , subtitle, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<SubtitleInfo> subtitleList = (cache != null) ? cache.getList(subtitle, locale, SubtitleInfo.class) : null;
     if (subtitleList != null) {
@@ -58,6 +61,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
 
   @Override
   public final List<Subtitle> search(String query, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to search subtitles for '%s' in '%s'", getName() , query, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<Subtitle> results = (cache != null) ? cache.getList(query, locale, Subtitle.class) : null;
     if (results != null) {

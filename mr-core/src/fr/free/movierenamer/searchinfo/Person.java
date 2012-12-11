@@ -64,6 +64,6 @@ public class Person extends SearchResult {
 
   @Override
   public String toString() {
-    return name;
+    return String.format("%s (id:%d))", name, personId);
   }
 }

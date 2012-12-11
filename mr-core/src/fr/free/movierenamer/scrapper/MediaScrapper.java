@@ -20,6 +20,8 @@ package fr.free.movierenamer.scrapper;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
@@ -41,6 +43,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
 
   @Override
   protected final List<T> search(String query, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to search media for '%s' in '%s'", getName(), query, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     @SuppressWarnings("unchecked")
     Class<T> genericClazz = (Class<T>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0]; // TODO put it in Utils !
@@ -58,24 +61,25 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
 
   protected abstract List<T> searchMedia(String query, Locale locale) throws Exception;
 
-  public final I getInfo(T searchResult) throws Exception {
-    return getInfo(searchResult, getLocale());
+  public final I getInfo(T search) throws Exception {
+    return getInfo(search, getLocale());
   }
 
-  protected final I getInfo(T searchResult, Locale locale) throws Exception {
+  protected final I getInfo(T search, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get media info for '%s' in '%s'", getName(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     @SuppressWarnings("unchecked")
     Class<I> genericClazz = (Class<I>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[1]; // TODO put it in Utils !
-    I info = (cache != null) ? cache.getData(searchResult, locale, genericClazz) : null;
+    I info = (cache != null) ? cache.getData(search, locale, genericClazz) : null;
     if (info != null) {
       return info;
     }
 
     // perform actual search
-    info = fetchMediaInfo(searchResult, locale);
+    info = fetchMediaInfo(search, locale);
     List<CastingInfo> casting;
     try {
-      casting = getCasting(searchResult, locale);
+      casting = getCasting(search, locale);
     } catch (Exception ex) {
       casting = null;
     }
@@ -83,7 +87,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
     // info.setImages(getImages(searchResult, locale));
 
     // cache results and return
-    return (cache != null) ? cache.putData(searchResult, locale, info) : info;
+    return (cache != null) ? cache.putData(search, locale, info) : info;
   }
 
   protected abstract I fetchMediaInfo(T searchResult, Locale locale) throws Exception;
@@ -93,6 +97,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
   }
 
   protected final List<ImageInfo> getImages(T search, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<ImageInfo> imagesInfo = (cache != null) ? cache.getList(search, locale, ImageInfo.class) : null;
     if (imagesInfo != null) {
@@ -113,6 +118,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
   }
 
   protected final List<CastingInfo> getCasting(T search, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get casting info list for '%s' in '%s'", getName(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<CastingInfo> personsInfo = (cache != null) ? cache.getList(search, locale, CastingInfo.class) : null;
     if (personsInfo != null) {

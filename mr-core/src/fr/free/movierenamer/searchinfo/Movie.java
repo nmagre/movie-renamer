@@ -73,9 +73,4 @@ public class Movie extends Media {
   public int hashCode() {
     return Arrays.hashCode(new Object[] { name.toLowerCase(), year });
   }
-
-  @Override
-  public String toString() {
-    return String.format("%s (%04d)", name, year < 0 ? 0 : year);
-  }
 }

@@ -59,7 +59,7 @@ public class IMDbScrapper extends MovieScrapper {
 
   private static final String defaultHost = "www.imdb.com";
   private static final String name = "IMDb";
-  private static final String CHARSET = "ISO-8859-1";
+  private static final String CHARSET = URIRequest.ISO;
 
   private String host;
 

@@ -21,7 +21,7 @@ import java.net.URL;
 
 /**
  * Class Media
- *
+ * 
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -57,6 +57,11 @@ public abstract class Media extends Hyperlink {
   @Override
   public int hashCode() {
     return super.hashCode();
+  }
+
+  @Override
+  public final String toString() {
+    return String.format("%s (%04d) (id:%d)", name, year < 0 ? 0 : year, mediaId < 0 ? 0 : mediaId);
   }
 
 }
