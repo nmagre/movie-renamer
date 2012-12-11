@@ -46,6 +46,10 @@ public class Subtitle extends Hyperlink {
 
   @Override
   public String toString() {
-    return super.getName();
+    if (shortName == null) {
+      return super.toString();
+    }
+
+    return String.format("%s", shortName);
   }
 }
