@@ -49,14 +49,14 @@ public final class StringUtils {
   public static final String ENDLINE = System.getProperty("line.separator");
   public static final String EMPTY = "";
   public static final String DOT = ".";
-  
+
   private static final Pattern apostrophe = Pattern.compile("['`´‘’ʻ]");
   private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:]]");
 
   private static final Pattern[] brackets = new Pattern[] {
-    Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
+      Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
   };
-  
+
   private static final Pattern trailingParentheses = Pattern.compile("[(]([^)]*)[)]$");
 
   private static final Pattern checksum = Pattern.compile("[\\(\\[]\\p{XDigit}{8}[\\]\\)]");
@@ -93,7 +93,8 @@ public final class StringUtils {
   /**
    * Rotate string by 13 places
    * 
-   * @param text String
+   * @param text
+   *          String
    * @return String rotate
    */
   public static String rot13(String text) {
@@ -113,8 +114,10 @@ public final class StringUtils {
   /**
    * Capitalized first letter for each words or only first one
    * 
-   * @param str String
-   * @param onlyFirst Only first word letter capitalized
+   * @param str
+   *          String
+   * @param onlyFirst
+   *          Only first word letter capitalized
    * @return String capitalized
    */
   public static String capitalizedLetter(String str, boolean onlyFirst) {
@@ -150,7 +153,9 @@ public final class StringUtils {
    * @return True if all letter are uppercase except I,II,III,..., false otherwise
    */
   public static boolean isUpperCase(String str) {
-    String[] romanNumber = new String[] { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" };
+    String[] romanNumber = new String[] {
+        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"
+    };
     for (String number : romanNumber) {
       if (str.equals(number)) {
         return false;
@@ -168,8 +173,10 @@ public final class StringUtils {
   /**
    * Get an array from a string separated by movieFilenameSeparator
    * 
-   * @param str String
-   * @param separator Separator
+   * @param str
+   *          String
+   * @param separator
+   *          Separator
    * @return An array of strings
    */
   public static List<String> stringToArray(String str, String separator) {
@@ -188,9 +195,12 @@ public final class StringUtils {
   /**
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
    * 
-   * @param array Object array
-   * @param separator Separator
-   * @param limit Limit
+   * @param array
+   *          Object array
+   * @param separator
+   *          Separator
+   * @param limit
+   *          Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(Object[] array, String separator, int limit) {
@@ -217,9 +227,12 @@ public final class StringUtils {
   /**
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
    * 
-   * @param array ArrayList
-   * @param separator Separator
-   * @param limit Limit
+   * @param array
+   *          ArrayList
+   * @param separator
+   *          Separator
+   * @param limit
+   *          Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(List<?> array, String separator, int limit) {
@@ -234,7 +247,8 @@ public final class StringUtils {
   /**
    * Escape XML special character
    * 
-   * @param str String to escape
+   * @param str
+   *          String to escape
    * @return String escaped
    */
   public static String escapeXML(String str) {
@@ -259,8 +273,10 @@ public final class StringUtils {
   /**
    * Unescape XML special character
    * 
-   * @param str String
-   * @param encode Encode type
+   * @param str
+   *          String
+   * @param encode
+   *          Encode type
    * @return Unescape string
    */
   public static String unEscapeXML(String str, String encode) {
@@ -277,10 +293,10 @@ public final class StringUtils {
     }
     return str;
   }
-  
+
   public static String replaceLast(String text, String regex, String replacement) {
-    return text.replaceFirst("(?s)"+regex+"(?!.*?"+regex+")", replacement);
-}
+    return text.replaceFirst("(?s)" + regex + "(?!.*?" + regex + ")", replacement);
+  }
 
   public static String removePunctuation(String name) {
     // remove/normalize special characters
@@ -306,6 +322,17 @@ public final class StringUtils {
   public static String removeTrailingBrackets(String name) {
     // remove trailing braces, e.g. Doctor Who (2005) -> Doctor Who
     return trailingParentheses.matcher(name).replaceAll("").trim();
+  }
+
+  public static String generateRandomString(int length) {
+    String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int charLength = chars.length();
+    StringBuilder pass = new StringBuilder(charLength);
+    for (int x = 0; x < length; x++) {
+      int i = (int) (Math.random() * charLength);
+      pass.append(chars.charAt(i));
+    }
+    return pass.toString();
   }
 
   private StringUtils() {

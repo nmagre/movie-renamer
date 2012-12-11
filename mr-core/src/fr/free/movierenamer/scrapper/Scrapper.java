@@ -35,7 +35,7 @@ public abstract class Scrapper {
   private Locale locale;
 
   protected Scrapper(Locale defaultLocale) {
-    if (defaultLocale != null) {
+    if (defaultLocale != null && defaultLocale != Locale.ROOT) {
       this.defaultLocale = defaultLocale;
     } else {
       this.defaultLocale = Locale.ENGLISH;

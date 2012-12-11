@@ -18,9 +18,9 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.panel.IMediaPanel;
 import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 
 /**

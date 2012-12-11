@@ -42,13 +42,13 @@ public abstract class Hyperlink extends SearchResult {
     return url;
   }
 
-//  public URI getURI() {
-//    try {
-//      return (url == null) ? null : url.toURI();
-//    } catch (URISyntaxException e) {
-//      throw new RuntimeException(e);
-//    }
-//  }
+  // public URI getURI() {
+  // try {
+  // return (url == null) ? null : url.toURI();
+  // } catch (URISyntaxException e) {
+  // throw new RuntimeException(e);
+  // }
+  // }
 
   @Override
   public boolean equals(Object object) {
@@ -62,11 +62,22 @@ public abstract class Hyperlink extends SearchResult {
 
   @Override
   public int hashCode() {
-    return Arrays.hashCode(new Object[] { name, (url == null) ? null : url.toString() });
+    return Arrays.hashCode(new Object[] {
+        name, (url == null) ? null : url.toString()
+    });
   }
 
-//  @Override
-//  public Hyperlink clone() {
-//    return new Hyperlink(this);
-//  }
+  // @Override
+  // public Hyperlink clone() {
+  // return new Hyperlink(this);
+  // }
+
+  @Override
+  public String toString() {
+    if (url == null) {
+      return super.toString();
+    }
+
+    return String.format("%s (url:%s)", name, url.toExternalForm());
+  }
 }

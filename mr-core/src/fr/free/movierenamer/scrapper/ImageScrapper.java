@@ -19,6 +19,8 @@ package fr.free.movierenamer.scrapper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.searchinfo.Image;
@@ -42,6 +44,7 @@ public abstract class ImageScrapper extends Scrapper {
   }
 
   protected final List<ImageInfo> getImages(Media media, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName() , media, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<ImageInfo> imageList = (cache != null) ? cache.getList(media, locale, ImageInfo.class) : null;
     if (imageList != null) {
@@ -57,4 +60,8 @@ public abstract class ImageScrapper extends Scrapper {
 
   protected abstract List<ImageInfo> fetchImagesInfo(Media media, Locale locale) throws Exception;
 
+  @Override
+  protected final String getCacheName() {
+    return "medium";
+  }
 }

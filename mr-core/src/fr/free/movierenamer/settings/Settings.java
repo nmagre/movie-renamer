@@ -52,8 +52,7 @@ import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
- * Class Settings , Movie Renamer settings <br>
- * Only public and non static attributes are written in conf file !
+ * Class Settings , Movie Renamer settings
  *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
@@ -61,12 +60,20 @@ import fr.free.movierenamer.utils.XPathUtils;
 public final class Settings {
 
   static {
-    APPNAME = getApplicationProperty("application.name");
-    APPMODULE = getApplicationProperty("application.module.name");
+    String appName = getApplicationProperty("application.name");
+    String appNameNospace = appName.replace(' ', '_');
+    String appModule = getApplicationProperty("application.module.name");
+    String appModuleNospace = appModule.replace(' ', '_');
+    APPNAME = appName;
+    APPMODULE = appModule;
     VERSION = getApplicationProperty("application.module.version");
-    appName_nospace = getApplicationProperty("application.name").replace(' ', '_');
-    appModule_nospace = getApplicationProperty("application.module.name").replace(' ', '_');
+    appName_nospace = appNameNospace;
     appFolder = getApplicationFolder();
+    configFileName = appNameNospace + "_" + appModuleNospace + ".conf";
+    logFileName = appNameNospace + "_" + appModuleNospace + ".log";
+    LOGGER = Logger.getLogger(appName + " Logger");
+    appSettingsNodeName = appNameNospace + "_" + appModuleNospace;
+    settingNodeName = "settings";
   }
 
   public static final String APPNAME;
@@ -74,26 +81,25 @@ public final class Settings {
   public static final String VERSION;
   public static final File appFolder;
   private static final String appName_nospace;
-  private static final String appModule_nospace;
 
   // files
-  private static final String configFileName = appModule_nospace + ".conf";
-  private static final String logFileName = appModule_nospace + ".log";
+  private static final String configFileName;
+  private static final String logFileName;
 
   // Logger
-  public static final Logger LOGGER = Logger.getLogger(appModule_nospace + " Logger");
+  public static final Logger LOGGER;
+
+  private static final String appSettingsNodeName;
+  private static final String settingNodeName;
 
   // Settings instance
-  private static Settings instance;
+  private static final Settings instance = new Settings();
 
   // Settings xml conf instance
   private final Document settingsDocument;
   private final Node settingsNode;
 
   private boolean autosave = true;
-
-  private static final String appSettingsNodeName = appName_nospace + "_" + appModule_nospace;
-  private static final String settingNodeName = "settings";
 
   public static enum SettingsProperty {
     // app lang
@@ -140,26 +146,11 @@ public final class Settings {
   }
 
   /**
-   * Private build for singleton fix
-   *
-   * @return
-   */
-  private static synchronized Settings newInstance() {
-    if (instance == null) {
-      instance = new Settings();
-    }
-    return instance;
-  }
-
-  /**
    * Access to the Settings instance
    *
    * @return The only instance of MR Settings
    */
-  public static synchronized Settings getInstance() {
-    if (instance == null) {
-      instance = newInstance();
-    }
+  public static Settings getInstance() {
     return instance;
   }
 
@@ -223,7 +214,7 @@ public final class Settings {
     saveSetting();
   }
 
-  private String get(SettingsProperty key) {
+  private synchronized String get(SettingsProperty key) {
     String value;
     if (key != null) {
       Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
@@ -241,7 +232,7 @@ public final class Settings {
     return value;
   }
 
-  public void set(SettingsProperty key, Object value) {
+  public synchronized void set(SettingsProperty key, Object value) {
     if (value != null && key != null) {
       Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
       if (found == null) {
@@ -254,7 +245,7 @@ public final class Settings {
     }
   }
 
-  public void clear() {
+  public synchronized void clear() {
     Logger.getLogger(Settings.class.getName()).log(Level.INFO, String.format("Clear Settings"));
     NodeList list = this.settingsNode.getChildNodes();
     for (int i = 0; i < list.getLength(); i++) {
@@ -543,7 +534,7 @@ public final class Settings {
    *
    * @return True if setting was saved, False otherwise
    */
-  private boolean saveSetting() {
+  private synchronized boolean saveSetting() {
     boolean saveSuccess;
     try {
       LOGGER.log(Level.INFO, "Save configuration to {0}", configFileName);

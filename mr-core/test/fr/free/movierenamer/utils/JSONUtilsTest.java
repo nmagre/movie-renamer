@@ -17,10 +17,16 @@
  */
 package fr.free.movierenamer.utils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+
+import junit.framework.Assert;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -38,18 +44,20 @@ public class JSONUtilsTest {
   private static JSONObject json;
 
   @BeforeClass
-  public static void init() throws FileNotFoundException {
+  public static void init() throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
     URL url = JSONUtilsTest.class.getResource("json.txt");
-    json = (JSONObject) JSONValue.parse(new FileReader(url.getFile()));
+    File file = new File(url.toURI());
+    Reader reader = new FileReader(file);
+    json = (JSONObject) JSONValue.parse(reader);
   }
 
   @Test
   public void selectObject() {
     List<JSONObject> objects = JSONUtils.selectList("feed/movie", json);
     for (JSONObject object : objects) {
-      // System.out.println(JSONUtils.selectString("title", object));
+      Assert.assertEquals("Avatar", JSONUtils.selectString("title", object));
+      break;
     }
-    // System.out.println(objects);
   }
 
 }

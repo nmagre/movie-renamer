@@ -15,31 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.info;
-
-import java.io.File;
-
-import junit.framework.Assert;
+package fr.free.movierenamer.utils;
 
 import org.junit.Test;
 
-import fr.free.movierenamer.info.FileInfo.MediaType;
-import fr.free.movierenamer.utils.StringUtils;
-
 /**
- * Class FileInfoTest
- * 
+ * Class CacheTest
  * @author Simon QUÉMÉNEUR
  */
-public class FileInfoTest {
-
+public class CacheTest {
   @Test
-  public void test() {
-    String randomName = StringUtils.generateRandomString(10);
-    FileInfo fi = new FileInfo(new File(randomName + ".avi"));
-    Assert.assertEquals(MediaType.MOVIE, fi.getType());
-    Assert.assertEquals(randomName, fi.getSearch());
-    Assert.assertEquals(null, fi.getYear());
-    Assert.assertEquals(Boolean.FALSE.booleanValue(), fi.wasRenamed());
+  public void testMultiThread() throws InterruptedException {
+    //TODO test the concurrent access
+    Thread t = new Thread() {
+      @Override
+      public void run() {
+        Cache.clearAllCache();
+      }
+    };
+    t.start();
+    while(t.isAlive()) {
+      Thread.sleep(2000);
+    }
   }
 }

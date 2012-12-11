@@ -45,7 +45,7 @@ public class Renamer {
   private static final String renamedFileName = "renamed" + ".xml";
 
   // Settings instance
-  private static Renamer instance;
+  private static final Renamer instance = new Renamer();
 
   private static final String renamedNodeName = "renamed";
 
@@ -53,26 +53,11 @@ public class Renamer {
   private final Document renamedDocument;
 
   /**
-   * Private build for singleton fix
-   * 
-   * @return
-   */
-  private static synchronized Renamer newInstance() {
-    if (instance == null) {
-      instance = new Renamer();
-    }
-    return instance;
-  }
-
-  /**
    * Access to the Settings instance
    * 
    * @return The only instance of MR Settings
    */
-  public static synchronized Renamer getInstance() {
-    if (instance == null) {
-      instance = newInstance();
-    }
+  public static Renamer getInstance() {
     return instance;
   }
 
@@ -123,7 +108,9 @@ public class Renamer {
 
   public boolean wasRenamed(FileInfo fileInfo) {
     // return XPathUtils.selectNode("renamed/renamedMedia[@type='"+fileInfo.getType().name()+"']/media[@to='"+fileInfo.getURI().toString()+"']", this.renamedDocument) != null;
-    return getRenamedMediaNode(FileUtils.getFileChecksum(new File(fileInfo.getURI()))) != null;
+    String checksum = FileUtils.getFileChecksum(new File(fileInfo.getURI()));
+    Node node = getRenamedMediaNode(checksum);
+    return !checksum.isEmpty() && node != null;
   }
 
   private Node getRenamedMediaNode(String fileKey) {
@@ -138,45 +125,41 @@ public class Renamer {
   public boolean addRenamed(FileInfo fileInfo, URI fromURI, URI toURI) {
     boolean saved;
     if (fileInfo != null) {
-      String fileKey = FileUtils.getFileChecksum(new File(toURI));
-      Node root = XPathUtils.selectNode(renamedNodeName, this.renamedDocument);
-      
-      Node renamedMedia = getRenamedMediaNode(fileKey);
+      String checksum = FileUtils.getFileChecksum(new File(toURI));
+      if (checksum.isEmpty()) {
+        saved = false;
+      } else {
+        Node root = XPathUtils.selectNode(renamedNodeName, this.renamedDocument);
 
-      if(renamedMedia == null) {
-        Element renamedMediaElement = renamedDocument.createElement("renamedMedia");
-        // renamedMedia.setAttribute("type", fileInfo.getType().name());
-        renamedMediaElement.setAttribute("checksum", fileKey);
-        renamedMedia = renamedMediaElement;
+        Node renamedMedia = getRenamedMediaNode(checksum);
+
+        if (renamedMedia == null) {
+          Element renamedMediaElement = renamedDocument.createElement("renamedMedia");
+          // renamedMedia.setAttribute("type", fileInfo.getType().name());
+          renamedMediaElement.setAttribute("checksum", checksum);
+          renamedMedia = renamedMediaElement;
+        }
+
+        Element move = renamedDocument.createElement("historic");
+        Element from = renamedDocument.createElement("from");
+        from.setTextContent(fromURI.toString());
+        move.appendChild(from);
+        Element to = renamedDocument.createElement("to");
+        to.setTextContent(toURI.toString());
+        move.appendChild(to);
+        Element date = renamedDocument.createElement("date");
+        date.setTextContent(Calendar.getInstance().getTime().toString());
+        move.appendChild(date);
+
+        renamedMedia.appendChild(move);
+
+        // add it
+        root.appendChild(renamedMedia);
+        saved = saveRenamed();
       }
-
-      Element move = renamedDocument.createElement("historic");
-      Element from = renamedDocument.createElement("from");
-      from.setTextContent(fromURI.toString());
-      move.appendChild(from);
-      Element to = renamedDocument.createElement("to");
-      to.setTextContent(toURI.toString());
-      move.appendChild(to);
-      Element date = renamedDocument.createElement("date");
-      date.setTextContent(Calendar.getInstance().getTime().toString());
-      move.appendChild(date);
-
-      renamedMedia.appendChild(move);
-
-      // add it
-      root.appendChild(renamedMedia);
-      saved = saveRenamed();
-
     } else {
       saved = false;
     }
-    // res += "<renamedMovie title=\"" + title.replace("\"", "") + "\">";
-    // res += "  <tmdbId>" + tmdbId + "</tmdbId>";
-    // res += "  <movie src=\"" + movieFileSrc.replace("\"", "") + "\" dest=\"" + movieFileDest.replace("\"", "") + "\" />";
-    // res += "  <thumb>" + thumb + "</thumb>";
-    // res += "  <date>" + date + "</date>";
-    // res += "  <failed>" + (renameFailed ? "1":"0") + "</failed>";
-    // res += "</renamedMovie>";
     return saved;
   }
 

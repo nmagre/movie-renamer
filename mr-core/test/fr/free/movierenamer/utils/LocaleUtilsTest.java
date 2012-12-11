@@ -31,14 +31,14 @@ public class LocaleUtilsTest {
 
   @Test
   public void getLocaleCountry() {
-    Assert.assertEquals("US", LocaleUtils.findCountry("United States").getCountry());
-    Assert.assertEquals("US", LocaleUtils.findCountry("US").getCountry());
-    Assert.assertEquals("US", LocaleUtils.findCountry("Etats-Unis", Locale.FRANCE, Locale.US).getCountry());
-    Assert.assertEquals("US", LocaleUtils.findCountry("u.s.a.").getCountry());
-    Assert.assertEquals("blabla", LocaleUtils.findCountry("blabla").getCountry());
-    Assert.assertEquals("FR", LocaleUtils.findCountry("france").getCountry());
+    Assert.assertEquals(Locale.US.getCountry(), LocaleUtils.findCountry("United States").getCountry());
+    Assert.assertEquals(Locale.US.getCountry(), LocaleUtils.findCountry("US").getCountry());
+    Assert.assertEquals(Locale.US.getCountry(), LocaleUtils.findCountry("Etats-Unis", Locale.FRANCE, Locale.US).getCountry());
+    Assert.assertEquals(Locale.US.getCountry(), LocaleUtils.findCountry("u.s.a.").getCountry());
+    Assert.assertEquals(Locale.ROOT.getCountry(), LocaleUtils.findCountry("blabla").getCountry());
+    Assert.assertEquals(Locale.FRANCE.getCountry(), LocaleUtils.findCountry("france").getCountry());
     Assert.assertEquals("AR", LocaleUtils.findCountry("Argentine", Locale.ITALY).getCountry());
-    Assert.assertEquals("GB", LocaleUtils.findCountry("Royaume-Uni").getCountry());
+    Assert.assertEquals(Locale.UK.getCountry(), LocaleUtils.findCountry("Royaume-Uni").getCountry());
   }
 
   @Test

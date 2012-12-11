@@ -19,9 +19,12 @@ package fr.free.movierenamer.scrapper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.PersonInfo;
 import fr.free.movierenamer.searchinfo.SearchResult;
+import fr.free.movierenamer.utils.CacheObject;
 
 /**
  * Class PersonScrapper
@@ -39,7 +42,22 @@ public abstract class PersonScrapper<T extends SearchResult> extends Scrapper {
     return getPersons(search, getLocale());
   }
 
-  public abstract List<PersonInfo> getPersons(T search, Locale locale) throws Exception;
+  protected final List<PersonInfo> getPersons(T search, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get person info list for '%s' in '%s'", getName() , search, locale.getDisplayLanguage(Locale.ENGLISH)));
+    CacheObject cache = getCache();
+    List<PersonInfo> personList = (cache != null) ? cache.getList(search, locale, PersonInfo.class) : null;
+    if (personList != null) {
+      return personList;
+    }
+
+    // perform actual search
+    personList = fetchPersonsInfo(search, locale);
+
+    // cache results and return
+    return (cache != null) ? cache.putList(search, locale, PersonInfo.class, personList) : personList;
+  }
+
+  protected abstract List<PersonInfo> fetchPersonsInfo(T search, Locale locale) throws Exception;
 
   @Override
   protected final String getCacheName() {

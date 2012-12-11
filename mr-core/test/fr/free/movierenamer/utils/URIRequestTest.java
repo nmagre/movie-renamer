@@ -15,31 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.info;
+package fr.free.movierenamer.utils;
 
-import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
-import fr.free.movierenamer.info.FileInfo.MediaType;
-import fr.free.movierenamer.utils.StringUtils;
-
 /**
- * Class FileInfoTest
+ * Class URIRequestTest
  * 
  * @author Simon QUÉMÉNEUR
  */
-public class FileInfoTest {
+public class URIRequestTest {
 
-  @Test
-  public void test() {
-    String randomName = StringUtils.generateRandomString(10);
-    FileInfo fi = new FileInfo(new File(randomName + ".avi"));
-    Assert.assertEquals(MediaType.MOVIE, fi.getType());
-    Assert.assertEquals(randomName, fi.getSearch());
-    Assert.assertEquals(null, fi.getYear());
-    Assert.assertEquals(Boolean.FALSE.booleanValue(), fi.wasRenamed());
-  }
 }

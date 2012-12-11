@@ -18,9 +18,8 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.list.WebList;
-import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIPersonImage;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
