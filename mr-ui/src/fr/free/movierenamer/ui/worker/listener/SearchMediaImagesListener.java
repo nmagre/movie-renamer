@@ -18,12 +18,10 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.list.WebList;
-import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIMediaImage;
-import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -33,12 +31,12 @@ import javax.swing.DefaultListModel;
  *
  * @author Nicolas Magré
  */
-public class MediaImagesListener extends AbstractListener<List<ImageInfo>> {
+public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImage>> {
 
   private final WebList thumbnailsList;
   private final WebList fanartsList;
 
-  public MediaImagesListener(SearchMediaImagesWorker worker, MovieRenamer mr, WebList thumbnailsList, WebList fanartsList) {
+  public SearchMediaImagesListener(SearchMediaImagesWorker worker, MovieRenamer mr, WebList thumbnailsList, WebList fanartsList) {
     super(mr, worker);
     this.thumbnailsList = thumbnailsList;
     this.fanartsList = fanartsList;
@@ -54,21 +52,34 @@ public class MediaImagesListener extends AbstractListener<List<ImageInfo>> {
     DefaultListModel thumbnailsListModel = new DefaultListModel();
     DefaultListModel fanartsListModel = new DefaultListModel();
 
-    List<ImageInfo> infos = worker.get();
-    for (ImageInfo info : infos) {
-      switch (info.getCategory()) {
+    List<UIMediaImage> images = worker.get();
+    for (UIMediaImage image : images) {
+      switch (image.getType()) {
         case thumb:
-          thumbnailsListModel.addElement(new UIMediaImage(info));
+          thumbnailsListModel.addElement(image);
           break;
         case fanart:
-          fanartsListModel.addElement(new UIMediaImage(info));
+          fanartsListModel.addElement(image);
+          break;
+        case banner:
+          // TODO
+          break;
+        case cdart:
+          // TODO
+          break;
+        case logo:
+          // TODO
+          break;
+        case clearart:
+          // TODO
           break;
       }
     }
 
-    thumbnailsList.setCellRenderer(new IconListRenderer<UISearchResult>());
+    thumbnailsList.setCellRenderer(new IconListRenderer<UIMediaImage>());
+    fanartsList.setCellRenderer(new IconListRenderer<UIMediaImage>());
+
     thumbnailsList.setModel(thumbnailsListModel);
-    fanartsList.setCellRenderer(new IconListRenderer<UISearchResult>());
     fanartsList.setModel(fanartsListModel);
   }
 }

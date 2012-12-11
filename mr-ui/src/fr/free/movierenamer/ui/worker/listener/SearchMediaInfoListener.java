@@ -18,8 +18,8 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.ui.IMediaPanel;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
+import fr.free.movierenamer.ui.panel.IMediaPanel;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 
@@ -28,11 +28,11 @@ import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
  *
  * @author Nicolas Magré
  */
-public class MediaInfoListener extends AbstractListener<MediaInfo> {
+public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
 
   private final IMediaPanel mediaPanel;
 
-  public MediaInfoListener(SearchMediaInfoWorker worker, MovieRenamer mr, IMediaPanel mediaPanel) {
+  public SearchMediaInfoListener(SearchMediaInfoWorker worker, MovieRenamer mr, IMediaPanel mediaPanel) {
     super(mr, worker);
     this.mediaPanel = mediaPanel;
   }

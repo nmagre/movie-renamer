@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIPersonImage;
@@ -33,7 +33,7 @@ import javax.swing.DefaultListModel;
  *
  * @author Nicolas Magré
  */
-public class SearchMediaCastingListener extends AbstractListener<List<CastingInfo>> {
+public class SearchMediaCastingListener extends AbstractListener<List<UIPersonImage>> {
 
   private final WebList castingList;
 
@@ -50,10 +50,11 @@ public class SearchMediaCastingListener extends AbstractListener<List<CastingInf
   @Override
   protected void done() throws InterruptedException, ExecutionException {
     DefaultListModel personsListModel = new DefaultListModel();
-    List<CastingInfo> infos = worker.get();
+    List<UIPersonImage> infos = worker.get();
 
-    for (CastingInfo info : infos) {
-      personsListModel.addElement(new UIPersonImage(info));
+    for (UIPersonImage info : infos) {
+
+      personsListModel.addElement(info);
     }
 
     castingList.setCellRenderer(new IconListRenderer<UIPersonImage>());
