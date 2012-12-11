@@ -52,8 +52,7 @@ import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
 /**
- * Class Settings , Movie Renamer settings <br>
- * Only public and non static attributes are written in conf file !
+ * Class Settings , Movie Renamer settings
  *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
