@@ -18,9 +18,11 @@
 package fr.free.movierenamer.ui;
 
 import com.alee.laf.WebLookAndFeel;
-import fr.free.movierenamer.ui.settings.Settings;
+import com.alee.managers.language.LanguageManager;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.LocaleUtils;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 
@@ -41,12 +43,24 @@ public class Main {
       System.setProperty("jna.nosys", "true");
     }
 
-    Settings setting = Settings.getInstance();
+    UISettings setting = UISettings.getInstance();
     // Set UI locale file
     LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
 
     // Install look and feel
     WebLookAndFeel.install();
+    // Set look and feel locale
+    List<String> languages = LanguageManager.getSupportedLanguages();
+    String lcode = "en";
+    for(String language : languages) {
+      if(language.equals(setting.locale.getLanguage())){
+        lcode = language;
+        break;
+      }
+    }
+
+    LanguageManager.setLanguage(lcode);
+    System.out.println();
 
     // Clear cache
     if (setting.clearCache) {
@@ -54,7 +68,6 @@ public class Main {
     }
 
     SwingUtilities.invokeLater(new Runnable() {
-
       @Override
       public void run() {
         mvr = new MovieRenamer();

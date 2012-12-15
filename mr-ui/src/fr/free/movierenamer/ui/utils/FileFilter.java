@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.utils;
 
 import com.alee.extended.filefilter.DefaultFileFilter;
-import fr.free.movierenamer.ui.settings.Settings;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
@@ -26,7 +26,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Class MovieFileFilter
- * 
+ *
  * @author Nicolas Magré
  */
 public class FileFilter extends DefaultFileFilter {
@@ -37,7 +37,7 @@ public class FileFilter extends DefaultFileFilter {
 
   @Override
   public boolean accept(File file) {
-    if (!Settings.getInstance().useExtensionFilter) {
+    if (!UISettings.getInstance().useExtensionFilter) {
       return true;
     }
 
@@ -45,7 +45,7 @@ public class FileFilter extends DefaultFileFilter {
       return true;
     }
 
-    return FileUtils.hasExtension(file, Settings.getInstance().extensions);
+    return FileUtils.hasExtension(file, UISettings.getInstance().extensions);
   }
 
   @Override

@@ -17,11 +17,11 @@
  */
 package fr.free.movierenamer.ui.utils;
 
-import fr.free.movierenamer.ui.LoadingDialog;
+import fr.free.movierenamer.ui.panel.LoadingDialog;
 
 /**
  * Class Loading , Loading info
- * 
+ *
  * @author Nicolas Magré
  */
 public class Loading {
@@ -33,8 +33,8 @@ public class Loading {
 
   /**
    * Constructor arguments
-   * 
-   * @param workerKey 
+   *
+   * @param workerKey
    * @param indeterminate Loading indeterminate
    */
   public Loading(LoadingDialog.LoadingDialogPos workerKey, boolean indeterminate) {
@@ -70,7 +70,7 @@ public class Loading {
 
   /**
    * Get worker
-   * 
+   *
    * @return Worker
    */
   public LoadingDialog.LoadingDialogPos getKey() {

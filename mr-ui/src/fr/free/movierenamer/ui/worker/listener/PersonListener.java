@@ -17,13 +17,15 @@
  */
 package fr.free.movierenamer.ui.worker.listener;
 
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.worker.SearchPersonWorker;
 
 /**
  * Class PersonListener
+ *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class PersonListener extends AbstractListener<Void> {
 

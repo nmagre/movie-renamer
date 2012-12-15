@@ -21,10 +21,14 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.ui.res.UIPersonImage;
 import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.awt.Dimension;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Icon;
 
 /**
  * Class SearchMediaImagesWorker
@@ -32,10 +36,11 @@ import java.util.List;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaCastingWorker extends AbstractWorker<List<CastingInfo>> {
+public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>> {
 
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
+  private final Dimension actorListDim = new Dimension(30, 53);
 
   /**
    * Constructor arguments
@@ -43,6 +48,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<CastingInfo>> 
    * @param errorSupport
    * @param searchResult
    */
+  @SuppressWarnings("unchecked")
   public SearchMediaCastingWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult) {
     super(errorSupport);
     this.searchResult = searchResult;
@@ -50,22 +56,25 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<CastingInfo>> 
   }
 
   @Override
-  public List<CastingInfo> executeInBackground() throws Exception {
+  public List<UIPersonImage> executeInBackground() throws Exception {
+    List<CastingInfo> infos;
+    List<UIPersonImage> persons = new ArrayList<UIPersonImage>();
 
-    List<CastingInfo> infos = new ArrayList<CastingInfo>();
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
       infos = scrapper.getCasting(media);
       int count = infos.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return infos;
+          return new ArrayList<UIPersonImage>();
         }
-        double progress = (i + 1) / (double) count;
+        Icon icon = ImageUtils.getIcon(infos.get(i).getPicturePath(), actorListDim, "ui/unknown.png");
+        persons.add(new UIPersonImage(infos.get(i), icon));
+        int progress = (i + 1) / (int) count;
         setProgress((int) (progress * 100));
       }
     }
-    
-    return infos;
+
+    return persons;
   }
 }

@@ -17,10 +17,11 @@
  */
 package fr.free.movierenamer.ui.worker.listener;
 
-import fr.free.movierenamer.ui.LoadingDialog;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.settings.Settings;
+import fr.free.movierenamer.ui.panel.LoadingDialog;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
+import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.utils.ClassUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
@@ -29,8 +30,8 @@ import javax.swing.SwingWorker;
 /**
  * Class AbstractListener
  *
- * @param <T>
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public abstract class AbstractListener<T> implements PropertyChangeListener {
 
@@ -73,7 +74,7 @@ public abstract class AbstractListener<T> implements PropertyChangeListener {
         try {
           done();
         } catch (Exception ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+          UISettings.LOGGER.log(Level.SEVERE,ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
         }
         mr.getLoading().setCursor(MovieRenamer.normalCursor);
         mr.setCursor(MovieRenamer.normalCursor);

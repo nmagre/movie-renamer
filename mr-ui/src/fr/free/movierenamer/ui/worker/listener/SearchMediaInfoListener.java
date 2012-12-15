@@ -24,9 +24,10 @@ import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 
 /**
- * Class MediaInfoListener
+ * Class SearchMediaInfoListener
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
 

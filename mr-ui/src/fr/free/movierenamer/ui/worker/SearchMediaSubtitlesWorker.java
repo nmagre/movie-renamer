@@ -49,7 +49,7 @@ public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
   }
 
   @Override
-  public List<Subtitle> executeInBackground() throws Exception {// FIXME swing in EDT
+  public List<Subtitle> executeInBackground() throws Exception {
     List<Subtitle> results = new ArrayList<Subtitle>();
 
     if (media != null && scrapper != null) {

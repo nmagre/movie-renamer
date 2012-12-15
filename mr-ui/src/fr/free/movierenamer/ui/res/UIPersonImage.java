@@ -18,24 +18,21 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
 import javax.swing.Icon;
 
 /**
  * Class ActorImage
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public class UIPersonImage implements IIconList {
-  private final Dimension actorListDim = new Dimension(30, 53);
   private final CastingInfo person;
   private final Icon icon;
 
-  public UIPersonImage(CastingInfo person) {
+  public UIPersonImage(CastingInfo person, Icon icon) {
     this.person = person;
-    this.icon = ImageUtils.getIcon(this.person.getPicturePath(), actorListDim, "ui/unknown.png");
+    this.icon = icon;
   }
 
   @Override

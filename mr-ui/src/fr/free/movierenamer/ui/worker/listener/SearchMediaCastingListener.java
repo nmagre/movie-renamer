@@ -28,9 +28,10 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultListModel;
 
 /**
- * Class MediaCastingListener
+ * Class SearchMediaCastingListener
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class SearchMediaCastingListener extends AbstractListener<List<UIPersonImage>> {
 

@@ -38,9 +38,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 /**
- * Class MediaListener
+ * Class SearchMediaListener
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class SearchMediaListener extends AbstractListener<List<? extends SearchResult>> {
 

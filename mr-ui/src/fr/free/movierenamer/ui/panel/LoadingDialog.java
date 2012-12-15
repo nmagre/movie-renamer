@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui;
+package fr.free.movierenamer.ui.panel;
 
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.utils.Loading;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils;
@@ -31,7 +32,7 @@ import javax.swing.SwingUtilities;
 
 /**
  * Class LoadingDialog
- * 
+ *
  * @author Nicolas Magré
  */
 public class LoadingDialog extends JDialog {
@@ -70,7 +71,7 @@ public class LoadingDialog extends JDialog {
 
   /**
    * Creates new form LoadingDialog
-   * 
+   *
    * @param loadingWorker
    * @param parent
    */

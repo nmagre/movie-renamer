@@ -19,19 +19,19 @@ package fr.free.movierenamer.ui.exception;
 
 /**
  * Class SettingsSaveFailedException
- * 
+ *
  * @author Nicolas Magré
  */
 public class SettingsSaveFailedException extends Exception {
 
-  private final fr.free.movierenamer.ui.settings.Settings defaultSettings;
+  private final fr.free.movierenamer.ui.settings.UISettings defaultSettings;
 
-  public SettingsSaveFailedException(fr.free.movierenamer.ui.settings.Settings config, String message) {
+  public SettingsSaveFailedException(fr.free.movierenamer.ui.settings.UISettings config, String message) {
     super(message);
     this.defaultSettings = config;
   }
-  
-  public fr.free.movierenamer.ui.settings.Settings getDefaultSettings() {
+
+  public fr.free.movierenamer.ui.settings.UISettings getDefaultSettings() {
     return defaultSettings;
   }
 }

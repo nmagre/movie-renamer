@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.utils;
 
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
-import fr.free.movierenamer.utils.WebRequest;
+import fr.free.movierenamer.utils.URIRequest;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -35,7 +35,7 @@ import javax.swing.ImageIcon;
 
 /**
  * Class ImageUtils
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -47,7 +47,7 @@ public final class ImageUtils {
 
   /**
    * Get image from jar file (from 'image' folder)
-   * 
+   *
    * @param <T>
    * @param fileName Image filename
    * @param cls Class
@@ -86,7 +86,7 @@ public final class ImageUtils {
     }
     return image;
   }
-  
+
   public static Icon getIconFromJar(String fileName) {
     return new ImageIcon(getImageFromJAR(fileName));
   }
@@ -117,7 +117,7 @@ public final class ImageUtils {
       }
       if (img == null) {
         try {
-          InputStream is = WebRequest.getInputStream(imagePth);
+          InputStream is = URIRequest.getInputStream(imagePth);
           img = ImageIO.read(is);
           if (cache != null) {
             cache.put(imagePth, new ImageIcon(img));

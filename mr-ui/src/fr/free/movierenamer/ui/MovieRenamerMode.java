@@ -24,14 +24,14 @@ import javax.swing.ImageIcon;
 
 /**
  * Enum MovieRenamerMode
- * 
+ *
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
 public enum MovieRenamerMode {
 
-  MOVIEMODE(LocaleUtils.i18n("movie"), LocaleUtils.i18n("movieMode"), UIFile.MediaType.MOVIE, "ui/movie.png"),
-  TVSHOWMODE(LocaleUtils.i18n("tvshow"), LocaleUtils.i18n("tvshowMode"), UIFile.MediaType.TVSHOW, "ui/tv.png");
+  MOVIEMODE(LocaleUtils.i18nExt("movie"), LocaleUtils.i18nExt("movieMode"), UIFile.MediaType.MOVIE, "ui/movie.png"),
+  TVSHOWMODE(LocaleUtils.i18nExt("tvshow"), LocaleUtils.i18nExt("tvshowMode"), UIFile.MediaType.TVSHOW, "ui/tv.png");
 
   private UIFile.MediaType mediaType;
   private String title;
@@ -48,7 +48,7 @@ public enum MovieRenamerMode {
   public String getTitle() {
     return title;
   }
-  
+
   public String getTitleMode(){
     return titleMode;
   }

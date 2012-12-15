@@ -18,24 +18,24 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
 import javax.swing.Icon;
 
 /**
  * Class MediaImage
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public class UIMediaImage implements IIconList {
-  private final Dimension searchListDim = new Dimension(45, 65);
+
   private final ImageInfo info;
   private final Icon icon;
+  private final ImageInfo.ImageCategoryProperty type;
 
-  public UIMediaImage(ImageInfo info) {
+  public UIMediaImage(ImageInfo info, Icon icon) {
     this.info = info;
-    this.icon = ImageUtils.getIcon(this.info.getHref(), searchListDim, "nothumb.png");
+    this.type = info.getCategory();
+    this.icon = icon;
   }
 
   @Override
@@ -47,9 +47,12 @@ public class UIMediaImage implements IIconList {
     return info;
   }
 
+  public ImageInfo.ImageCategoryProperty getType() {
+    return type;
+  }
+
   @Override
   public String toString() {
     return (info != null) ? info.getDescription() : null;
   }
-
 }

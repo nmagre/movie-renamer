@@ -26,7 +26,7 @@ import javax.swing.Icon;
 
 /**
  * Class UISearchResult
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -38,7 +38,7 @@ public class UISearchResult implements IIconList {
 
   /**
    * @param searchResult
-   * @param scrapper  
+   * @param scrapper
    */
   public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
     this.searchResult = searchResult;
@@ -50,7 +50,7 @@ public class UISearchResult implements IIconList {
   public Icon getIcon() {
     return icon;
   }
-  
+
   public MediaScrapper<? extends Media, ? extends MediaInfo> getScrapper() {
     return scrapper;
   }
@@ -58,7 +58,7 @@ public class UISearchResult implements IIconList {
   public Media getSearchResult() {
     return searchResult;
   }
-  
+
   @Override
   public String toString() {
     return (searchResult != null) ? searchResult.toString() : null;

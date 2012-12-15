@@ -21,13 +21,14 @@ import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.namematcher.MediaNameMatcher;
 import fr.free.movierenamer.namematcher.MovieNameMatcher;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
-import fr.free.movierenamer.ui.settings.Settings;
+import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
 import javax.swing.Icon;
 
 /**
  * Class UIFile
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -51,7 +52,7 @@ public class UIFile implements IIconList {
 
   /**
    * Constructor arguments
-   * 
+   *
    * @param file A media file
    * @param type Media type
    * @param wasRenamed Media was renamed
@@ -67,10 +68,10 @@ public class UIFile implements IIconList {
     if (type != null) {
       switch (type) {
       case MOVIE:
-        matcher = new MovieNameMatcher(file, Settings.getInstance().mediaNameFilters);
+        matcher = new MovieNameMatcher(file, UISettings.getInstance().mediaNameFilters);
         break;
       case TVSHOW:
-        matcher = new TvShowNameMatcher(file, Settings.getInstance().mediaNameFilters);
+        matcher = new TvShowNameMatcher(file, UISettings.getInstance().mediaNameFilters);
         break;
       }
     }
@@ -83,13 +84,13 @@ public class UIFile implements IIconList {
 
   /**
    * Get file
-   * 
+   *
    * @return File
    */
   public File getFile() {
     return file;
   }
-  
+
   /**
    * @return the mtag
    */
@@ -99,7 +100,7 @@ public class UIFile implements IIconList {
 
   /**
    * Set media renamed
-   * 
+   *
    * @param renamed Renamed
    */
   public void setRenamed(boolean renamed) {
@@ -108,7 +109,7 @@ public class UIFile implements IIconList {
 
   /**
    * Media is renamed
-   * 
+   *
    * @return True if media is renamed, false otherwise
    */
   public boolean isRenamed() {
@@ -117,7 +118,7 @@ public class UIFile implements IIconList {
 
   /**
    * Media has been renamed
-   * 
+   *
    * @return True is media was renamed, false otherwise
    */
   public boolean wasRenamed() {
@@ -126,7 +127,7 @@ public class UIFile implements IIconList {
 
   /**
    * Get file type
-   * 
+   *
    * @return Media type
    */
   public UIFile.MediaType getType() {
@@ -146,24 +147,24 @@ public class UIFile implements IIconList {
 
   /**
    * Get media icon to display in list
-   * 
+   *
    * @return Icon
    */
   @Override
   public Icon getIcon() {
     if (renamed) {
-      return Settings.MEDIARENAMEDICON;
+      return UIUtils.MEDIARENAMEDICON;
     }
 
     if (wasRenamed) {
-      return Settings.MEDIAWASRENAMEDICON;
+      return UIUtils.MEDIAWASRENAMEDICON;
     }
-    return Settings.MEDIAICON;
+    return UIUtils.MEDIAICON;
   }
 
   @Override
   public String toString() {
-    return file.toString();
+    return file.getName();
   }
 
   public final String getSearch() {

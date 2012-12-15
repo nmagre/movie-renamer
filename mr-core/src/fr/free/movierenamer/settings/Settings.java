@@ -38,6 +38,7 @@ import org.w3c.dom.NodeList;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
+import fr.free.movierenamer.info.NfoInfo;
 
 import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
 import fr.free.movierenamer.scrapper.MovieScrapper;
@@ -119,6 +120,8 @@ public final class Settings {
     movieFolderCase, // (""),
     movieFolderTrim, // (Boolean.TRUE.toString()),
     movieFolderRmDupSpace, // (Boolean.TRUE.toString()),
+    // movie NFO
+    movieNfoType,
     // tvShow
     tvShowFilenameFormat, // ("<st> S<s>E<e> <et>"),
     tvShowFilenameSeparator, // (", "),
@@ -366,6 +369,14 @@ public final class Settings {
     }
   }
 
+  public NfoInfo.NFOtype getMovieNfoType() {
+    try {
+      return NfoInfo.NFOtype.valueOf(get(SettingsProperty.movieNfoType));
+    } catch (Exception ex) {
+      return NfoInfo.NFOtype.XBMC;
+    }
+  }
+
   public String getTvShowFilenameFormat() {
     try {
       return get(SettingsProperty.tvShowFilenameFormat);
@@ -570,7 +581,7 @@ public final class Settings {
     return ResourceBundle.getBundle(Settings.class.getName(), Locale.ROOT).getString(key);
   }
 
-  private static File getApplicationFolder() {
+  public static File getApplicationFolder() {
     String applicationDirPath = System.getProperty("application.dir");
     String userHome = System.getProperty("user.home");
     String userDir = System.getProperty("user.dir");

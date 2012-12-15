@@ -17,24 +17,27 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import fr.free.movierenamer.ui.LoadingDialog;
+import fr.free.movierenamer.ui.panel.LoadingDialog;
+import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 /**
  * Class Worker
  *
- * @param <T> 
+ * @param <T>
  * @author Magré Nicolas
  * @author QUÉMÉNEUR Simon
  */
 public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
 
   protected final PropertyChangeSupport errorSupport;
-  
+
   protected AbstractWorker(PropertyChangeSupport errorSupport) {
     this.errorSupport = errorSupport;
   }
@@ -45,7 +48,8 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
     try {
       result = executeInBackground();
     }
-    catch(Exception e) {
+    catch(Exception ex) {
+      UISettings.LOGGER.log(Level.SEVERE,ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
       firePropertyChange(LoadingDialog.closeEvent, String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     }
     return result;

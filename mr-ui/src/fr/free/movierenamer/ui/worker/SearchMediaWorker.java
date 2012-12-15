@@ -22,27 +22,30 @@ import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.settings.UISettings;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Class SearchMediaWorker
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaWorker extends AbstractWorker<List<Media>> {
+public class SearchMediaWorker extends AbstractWorker<List<? extends SearchResult>> {
 
   private final UIFile media;
   private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport 
+   *
+   * @param errorSupport
    * @param media
-   * @param scrapper  
+   * @param scrapper
    */
   public SearchMediaWorker(PropertyChangeSupport errorSupport, UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
     super(errorSupport);
@@ -51,16 +54,17 @@ public class SearchMediaWorker extends AbstractWorker<List<Media>> {
   }
 
   @Override
-  public List<Media> executeInBackground() throws Exception {// FIXME swing in EDT
-    List<Media> results = new ArrayList<Media>();
-    
+  public List<? extends SearchResult> executeInBackground() throws Exception {
+    List<? extends SearchResult> results = new ArrayList<Media>();
+
     if (media != null && scrapper != null) {
       String search = media.getSearch();
-      results = (List<Media>) scrapper.search(search);
+      results = (List<? extends SearchResult>) scrapper.search(search);
       int count = results.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return results;
+          UISettings.LOGGER.log(Level.INFO, "SearchMediaWorker Cancelled");
+          return new ArrayList<Media>();
         }
         double progress = (i + 1) / (double) count;
         setProgress((int) (progress * 100));

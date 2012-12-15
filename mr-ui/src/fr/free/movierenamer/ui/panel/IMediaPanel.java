@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui;
+package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.MediaInfo;
 
 /**
  * Interface IMediaPanel
- * 
+ *
  * @author Nicolas Magré
  */
 public interface IMediaPanel {
@@ -44,10 +44,10 @@ public interface IMediaPanel {
 //   * @param desc Actor description (html -> name + image + roles)
 //   */
 //  void addActorToList(String actor, ActorImage actorImg, String desc);
-  
+
 //  /**
 //   * Add subtitle to media panel
-//   * 
+//   *
 //   * @param subtitle
 //   */
 //  void addSubtitleToList(Subtitle subtitle);
@@ -65,5 +65,5 @@ public interface IMediaPanel {
   WebList getThumbnailsList();
   WebList getFanartsList();
   WebList getSubtitlesList();
-  
+
 }

@@ -27,9 +27,10 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 
 /**
- * Class MediaImagesListener
+ * Class SearchMediaImagesListener
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImage>> {
 

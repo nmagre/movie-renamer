@@ -170,6 +170,7 @@ public class MovieInfo extends MediaInfo {
     // or "~X" to remove caratere : <tt~2> (remove the first two caratere)
     // or "~w" to keep only number
     // ...
+    // TODO Remove caracter which are not supported by all OS (need to add an option in settings for that)
     Settings settings = Settings.getInstance();
     String separator = settings.getMovieFilenameSeparator();
     int limit = settings.getMovieFilenameLimit();

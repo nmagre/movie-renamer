@@ -20,11 +20,10 @@ package fr.free.movierenamer.ui.worker.listener;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.settings.Settings;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.List;
@@ -34,6 +33,7 @@ import java.util.concurrent.ExecutionException;
  * Class ListFileListener
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class ListFileListener extends AbstractListener<List<UIFile>> {
 
@@ -66,8 +66,8 @@ public class ListFileListener extends AbstractListener<List<UIFile>> {
 
     if (mediaFileNameModel.isEmpty()) {
       WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("error"), WebOptionPane.ERROR_MESSAGE);
-    } else if (Settings.getInstance().selectFrstMedia) {
+    }/* else if (UISettings.getInstance().selectFrstMedia) { // FIXME
       mediaList.setSelectedIndex(0);
-    }
+    }*/
   }
 }

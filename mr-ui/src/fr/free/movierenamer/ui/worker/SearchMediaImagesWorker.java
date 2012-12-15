@@ -21,10 +21,15 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.SearchResult;
+import fr.free.movierenamer.ui.res.UIMediaImage;
 import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.awt.Dimension;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Icon;
 
 /**
  * Class SearchMediaImagesWorker
@@ -32,10 +37,11 @@ import java.util.List;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaImagesWorker extends AbstractWorker<List<ImageInfo>> {
+public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> {
 
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
+  private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
    * Constructor arguments
@@ -43,31 +49,36 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<ImageInfo>> {
    * @param errorSupport
    * @param searchResult
    */
-  public SearchMediaImagesWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult) {
+  @SuppressWarnings("unchecked")
+  public SearchMediaImagesWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
     super(errorSupport);
     this.searchResult = searchResult;
-    this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
+    this.scrapper = (MediaScrapper<Media, MediaInfo>) scrapper;
   }
 
   @Override
-  public List<ImageInfo> executeInBackground() throws Exception {
-
-    List<ImageInfo> infos = new ArrayList<ImageInfo>();
+  public List<UIMediaImage> executeInBackground() throws Exception {
+    List<ImageInfo> infos;
+    List<UIMediaImage> mediaImages = new ArrayList<UIMediaImage>();
 
     if (searchResult != null && scrapper != null) {
+      System.out.println("Launch images search");
       Media media = searchResult.getSearchResult();
       infos = scrapper.getImages(media);
       int count = infos.size();
+      System.out.println("Images size : " + count);
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return infos;
+          return new ArrayList<UIMediaImage>();
         }
-
-        double progress = (i + 1) / (double) count;
+        Icon icon = ImageUtils.getIcon(infos.get(i).getHref(), searchListDim, "nothumb.png");
+        mediaImages.add(new UIMediaImage(infos.get(i), icon));
+        System.out.println("Add " + infos.get(i).getCategory().name() + " : " + infos.get(i).getHref());
+        int progress = (i + 1) / (int) count;
         setProgress((int) (progress * 100));
       }
     }
 
-    return infos;
+    return mediaImages;
   }
 }

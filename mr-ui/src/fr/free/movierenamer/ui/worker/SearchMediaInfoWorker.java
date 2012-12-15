@@ -26,7 +26,7 @@ import java.beans.PropertyChangeSupport;
 
 /**
  * Class SearchMediaInfosWorker
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -38,11 +38,12 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
 
   /**
    * Constructor arguments
-   * 
-   * @param errorSupport 
+   *
+   * @param errorSupport
    * @param file
-   * @param searchResult  
+   * @param searchResult
    */
+  @SuppressWarnings("unchecked")
   public SearchMediaInfoWorker(PropertyChangeSupport errorSupport, UIFile file, UISearchResult searchResult) {
     super(errorSupport);
     this.file = file;
@@ -51,7 +52,7 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
   }
 
   @Override
-  public MediaInfo executeInBackground() throws Exception {// FIXME swing in EDT
+  public MediaInfo executeInBackground() throws Exception {
     MediaInfo info = null;
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();

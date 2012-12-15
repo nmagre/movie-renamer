@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.settings.Settings;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.MediaRenamed;
 import fr.free.movierenamer.utils.FileUtils;
 import java.beans.PropertyChangeSupport;
@@ -41,7 +41,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
   private final List<File> files;
   private final List<MediaRenamed> renamed;
   private boolean subFolder;
-  private final Settings setting;
+  private final UISettings setting;
   private final FilenameFilter folderFilter = new FilenameFilter() {
 
     @Override
@@ -61,8 +61,8 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     super(errorSupport);
     this.renamed = renamed;
     this.files = files;
-    setting = Settings.getInstance();
-    subFolder = setting.scanSubfolder;
+    setting = UISettings.getInstance();
+    //subFolder = setting.scanSubfolder;// FIXME
   }
 
   /**
@@ -89,6 +89,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     int count = files.size();
     for (int i = 0; i < count; i++) {
       if (isCancelled()) {// User cancel
+        UISettings.LOGGER.log(Level.INFO, "ListFilesWorker Cancelled");
         return medias;
       }
 
@@ -132,7 +133,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
   private void addFiles(List<UIFile> medias, File file) {
     File[] listFiles = file.listFiles();
     if (listFiles == null) {
-      Settings.LOGGER.log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());
+      UISettings.LOGGER.log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());
       return;
     }
 

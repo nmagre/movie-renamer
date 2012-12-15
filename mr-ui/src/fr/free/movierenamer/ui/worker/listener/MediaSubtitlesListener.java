@@ -19,8 +19,8 @@ package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.ui.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.worker.SearchMediaSubtitlesWorker;
 import java.util.List;
 import javax.swing.DefaultListCellRenderer;
@@ -30,6 +30,7 @@ import javax.swing.DefaultListModel;
  * Class MediaSubtitlesListener
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class MediaSubtitlesListener extends AbstractListener<List<Subtitle>> {
 
