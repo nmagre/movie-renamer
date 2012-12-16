@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import fr.free.movierenamer.namematcher.TvShowNameMatcher;
+import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.MediaRenamed;
@@ -28,22 +28,19 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Class listFilesWorker ,get List of media files in files list
  *
  * @author Magré Nicolas
  */
-public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
+public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need to be checked
 
   private final List<File> files;
   private final List<MediaRenamed> renamed;
   private boolean subFolder;
   private final UISettings setting;
   private final FilenameFilter folderFilter = new FilenameFilter() {
-
     @Override
     public boolean accept(File dir, String name) {
       return new File(dir.getAbsolutePath() + File.separator + name).isDirectory();
@@ -96,9 +93,9 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       if (files.get(i).isDirectory()) {
         addFiles(medias, files.get(i));
       } else {
-        boolean addfiletoUI = !setting.useExtensionFilter || FileUtils.checkFileExt(files.get(i).getName(), setting.extensions);
+        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName(), setting.getExtensionsList());// Really useful ?
         if (addfiletoUI) {
-          addUIFiles(medias, files.get(i));
+          addUIFiles(medias, new FileInfo(files.get(i)));
         }
       }
     }
@@ -140,8 +137,8 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolder) {
         addFiles(medias, listFiles[i]);
-      } else if (!setting.useExtensionFilter || FileUtils.checkFileExt(listFiles[i].getName(), setting.extensions)) {
-        addUIFiles(medias, listFiles[i]);
+      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName(), setting.getExtensionsList())) {// Really useful ?
+        addUIFiles(medias, new FileInfo(listFiles[i]));
       }
     }
   }
@@ -152,61 +149,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    * @param medias Media file list
    * @param file File to add
    */
-  private void addUIFiles(List<UIFile> medias, File file) {
-    boolean wasrenamed = wasRenamed(file.getAbsolutePath());
-    UIFile.MediaType type = isMovie(file) ? UIFile.MediaType.MOVIE : UIFile.MediaType.TVSHOW;
-    medias.add(new UIFile(file, type, wasrenamed));
-  }
-
-  /**
-   * Check if Movie Renamer has already renamed this file
-   *
-   * @param file File to check
-   * @return True if file was renamed by Movie Renamer, False otherwise
-   */
-  private boolean wasRenamed(String file) {
-    if (renamed != null) {
-      for (int i = 0; i < renamed.size(); i++) {
-        if (renamed.get(i).getMovieFileDest().equals(file)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Check if file is a movie
-   *
-   * @param file File to check
-   * @return True if file is a movie, false otherwise
-   */
-  private static boolean isMovie(File file) {// TODO A refaire , améliorer la detection !!!
-    String filename = file.getName();
-
-    for (TvShowNameMatcher.TvShowPattern patternToTest : TvShowNameMatcher.TvShowPattern.values()) {
-      if (searchPattern(filename, patternToTest.getPattern())) {
-        return false;
-      }
-    }
-    if (file.getParent().matches(".*((?i:season)|(?i:saison)).*")) {
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Search pattern in string
-   *
-   * @param text String to search in
-   * @param pattern Pattern to match
-   * @return True if pattern is find in string , False otherwise
-   */
-  private static boolean searchPattern(String text, Pattern pattern) {
-    Matcher searchMatcher = pattern.matcher(text);
-    if (searchMatcher.find()) {
-      return true;
-    }
-    return false;
+  private void addUIFiles(List<UIFile> medias, FileInfo file) {
+    medias.add(new UIFile(file));
   }
 }

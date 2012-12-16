@@ -102,50 +102,65 @@ public final class Settings {
 
   private boolean autosave = true;
 
-  public static enum SettingsProperty {
+  public static interface iProperty{
+    public Class<?> getVclass();
+  }
+
+  public static enum SettingsProperty implements iProperty {
     // app lang
-    appLanguage, // (Locale.ENGLISH.toString()),
+    appLanguage(Locale.class), // (Locale.ENGLISH.toString()),
     // movie filename
-    movieFilenameFormat, // ("<t> (<y>)"),
-    movieFilenameSeparator, // (", "),
-    movieFilenameLimit, // (Integer.decode("3").toString()),
-    movieFilenameCase, // (StringUtils.CaseConversionType.FIRSTLA.name()),
-    movieFilenameTrim, // (Boolean.TRUE.toString()),
-    movieFilenameRmDupSpace, // (Boolean.TRUE.toString()),
-    movieFilenameCreateDirectory, // (Boolean.FALSE.toString()),
+    movieFilenameFormat(String.class), // ("<t> (<y>)"),
+    movieFilenameSeparator(String.class), // (", "),
+    movieFilenameLimit(Integer.class), // (Integer.decode("3").toString()),
+    movieFilenameCase(StringUtils.CaseConversionType.class), // (StringUtils.CaseConversionType.FIRSTLA.name()),
+    movieFilenameTrim(Boolean.class), // (Boolean.TRUE.toString()),
+    movieFilenameRmDupSpace(Boolean.class), // (Boolean.TRUE.toString()),
+    movieFilenameCreateDirectory(Boolean.class), // (Boolean.FALSE.toString()),
     // movie folder
-    movieFolderFormat, // ("<t> (<y>)"),
-    movieFolderSeparator, // (", "),
-    movieFolderLimit, // (Integer.decode("3").toString()),
-    movieFolderCase, // (""),
-    movieFolderTrim, // (Boolean.TRUE.toString()),
-    movieFolderRmDupSpace, // (Boolean.TRUE.toString()),
+    movieFolderFormat(String.class), // ("<t> (<y>)"),
+    movieFolderSeparator(String.class), // (", "),
+    movieFolderLimit(Integer.class), // (Integer.decode("3").toString()),
+    movieFolderCase(String.class), // (""),
+    movieFolderTrim(Boolean.class), // (Boolean.TRUE.toString()),
+    movieFolderRmDupSpace(Boolean.class), // (Boolean.TRUE.toString()),
     // movie NFO
-    movieNfoType,
+    movieNfoType(NfoInfo.NFOtype.class), // (NfoInfo.NFOtype.XBMC)
     // tvShow
-    tvShowFilenameFormat, // ("<st> S<s>E<e> <et>"),
-    tvShowFilenameSeparator, // (", "),
-    tvShowFilenameLimit, // (Integer.decode("3").toString()),
-    tvShowFilenameCase, // (""),
-    tvShowFilenameTrim, // (Boolean.TRUE.toString()),
-    tvShowFilenameRmDupSpace, // (Boolean.TRUE.toString()),
+    tvShowFilenameFormat(String.class), // ("<st> S<s>E<e> <et>"),
+    tvShowFilenameSeparator(String.class), // (", "),
+    tvShowFilenameLimit(Integer.class), // (Integer.decode("3").toString()),
+    tvShowFilenameCase(String.class), // (""),
+    tvShowFilenameTrim(Boolean.class), // (Boolean.TRUE.toString()),
+    tvShowFilenameRmDupSpace(Boolean.class), // (Boolean.TRUE.toString()),
     // Cache
-    cacheClear, // (Boolean.FALSE.toString()),
+    cacheClear(Boolean.class), // (Boolean.FALSE.toString()),
     // Search
-    searchMovieScrapper, // (IMDbScrapper.class.toString()),
-    searchTvshowScrapper, // (TheTVDBScrapper.class.toString()),
-    searchSubtitleScrapper, // (IMDbScrapper.class.toString()),
-    searchScrapperLang, // (Locale.ENGLISH.toString()),
-    searchSortBySimiYear, // (Boolean.TRUE.toString()),
-    searchNbResult, // (Integer.decode("2").toString()),
-    searchDisplayApproximateResult, // (Boolean.FALSE.toString()),
+    searchMovieScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),
+    searchTvshowScrapper(TheTVDBScrapper.class), // (TheTVDBScrapper.class.toString()),
+    searchSubtitleScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),// FIXME
+    searchScrapperLang(Locale.class), // (Locale.ENGLISH.toString()),
+    searchSortBySimiYear(Boolean.class), // (Boolean.TRUE.toString()),
+    searchNbResult(Integer.class), // (Integer.decode("2").toString()),
+    searchDisplayApproximateResult(Boolean.class), // (Boolean.FALSE.toString()),
     // Proxy
-    proxyIsOn, // (Boolean.FALSE.toString()),
-    proxyUrl, // (""), // "10.2.1.10"
-    proxyPort, // (Integer.decode("0").toString()), // 3128
+    proxyIsOn(Boolean.class), // (Boolean.FALSE.toString()),
+    proxyUrl(String.class), // (""), // "10.2.1.10"
+    proxyPort(Integer.class), // (Integer.decode("0").toString()), // 3128
     // http param
-    httpRequestTimeOut, // (Integer.decode("30").toString()),
-    httpCustomUserAgent; // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+    httpRequestTimeOut(Integer.class), // (Integer.decode("30").toString()),
+    httpCustomUserAgent(String.class); // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+
+    private Class<?> vclass;
+
+    private SettingsProperty(Class<?> vclass) {
+      this.vclass = vclass;
+    }
+
+    @Override
+    public Class<?> getVclass() {
+      return vclass;
+    }
   }
 
   /**
@@ -217,7 +232,7 @@ public final class Settings {
     saveSetting();
   }
 
-  private synchronized String get(SettingsProperty key) {
+  public synchronized String get(SettingsProperty key) { // FIXME value need to be initialised for UI settings panel generator (only boolean value are required)
     String value;
     if (key != null) {
       Node found = XPathUtils.selectNode(key.name(), this.settingsNode);

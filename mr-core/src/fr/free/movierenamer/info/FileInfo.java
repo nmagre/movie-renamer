@@ -29,7 +29,7 @@ import fr.free.movierenamer.utils.FileUtils;
 
 /**
  * Class FileInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -59,7 +59,7 @@ public class FileInfo {
 
   /**
    * Search pattern in string
-   * 
+   *
    * @param text
    *          String to search in
    * @param pattern
@@ -104,13 +104,13 @@ public class FileInfo {
     return type;
   }
 
-  private void setSearch(String search) {
+  public void setSearch(String search) {
     if (firstSearch == null) {
       firstSearch = search;
     }
     this.search = search;
   }
-  
+
   public boolean renamed(String newName) {
     File newFile = FileUtils.move(this.file, newName);
     boolean success = Renamer.getInstance().addRenamed(this, this.file.toURI(), newFile.toURI());
@@ -121,7 +121,7 @@ public class FileInfo {
   public URI getURI() {
     return this.file.toURI();
   }
-  
+
   public File getFile() {
     return file;
   }

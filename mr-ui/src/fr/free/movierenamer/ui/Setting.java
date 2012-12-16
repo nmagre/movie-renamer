@@ -16,28 +16,27 @@
  */
 package fr.free.movierenamer.ui;
 
+import com.alee.laf.radiobutton.WebRadioButton;
+import fr.free.movierenamer.info.NfoInfo;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.panel.PanelGenerator;
 import fr.free.movierenamer.ui.panel.PanelGenerator.Component;
-import fr.free.movierenamer.ui.panel.setting.AbstractSetting;
-import fr.free.movierenamer.ui.panel.setting.GeneralPanel;
-import fr.free.movierenamer.ui.panel.setting.ImagePanel;
-import fr.free.movierenamer.ui.panel.setting.MediaInfoPanel;
-import fr.free.movierenamer.ui.panel.setting.NetworkPanel;
-import fr.free.movierenamer.ui.panel.setting.RenamePanel;
-import fr.free.movierenamer.ui.panel.setting.SearchPanel;
+import fr.free.movierenamer.ui.panel.setting.SettingPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.SettingsProperty;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 
 /**
+ * Class Setting dialog
  *
- * @author duffy
+ * @author Nicolas Magré
+ * @author QUÉMÉNEUR Simon
  */
 public class Setting extends JDialog {
 
@@ -47,19 +46,19 @@ public class Setting extends JDialog {
   // Panel
   public enum SettingCategory {
 
-    GENERAL(new GeneralPanel()),
-    SEARCH(new SearchPanel()),
-    RENAME(new RenamePanel()),
-    MEDIAINFO(new MediaInfoPanel()),
-    IMAGE(new ImagePanel()),
-    NETWORK(new NetworkPanel());
-    private AbstractSetting panel;
+    GENERAL(new SettingPanel()),
+    SEARCH(new SettingPanel()),
+    RENAME(new SettingPanel()),
+    MEDIAINFO(new SettingPanel()),
+    IMAGE(new SettingPanel()),
+    NETWORK(new SettingPanel());
+    private SettingPanel panel;
 
-    private SettingCategory(AbstractSetting panel) {
+    private SettingCategory(SettingPanel panel) {
       this.panel = panel;
     }
 
-    public AbstractSetting getPanel() {
+    public SettingPanel getPanel() {
       return panel;
     }
 
@@ -84,16 +83,18 @@ public class Setting extends JDialog {
 
   // i18n key
   public enum SettingsDefinition {
-    // GENERAL
 
-    selectFrstMedia(SettingsProperty.selectFrstMedia, SettingCategory.GENERAL, SettingGroup.INTERFACE, null),
+    // GENERAL
+    selectFirstMedia(SettingsProperty.selectFirstMedia, SettingCategory.GENERAL, SettingGroup.INTERFACE, null),
     scanSubfolder(SettingsProperty.scanSubfolder, SettingCategory.GENERAL, SettingGroup.INTERFACE, null),
-    //movieNfoType(SettingsProperty.movieNfoType, SettingCategory.GENERAL, SettingGroup.NFO, null,),
+    movieNfoType(SettingsProperty.movieNfoType, SettingCategory.GENERAL, SettingGroup.NFO, nfoRBtns, true),
+    checkUpdate(SettingsProperty.checkUpdate, SettingCategory.GENERAL, SettingGroup.UPDATE, null),
+    appLanguage(SettingsProperty.appLanguage, SettingCategory.GENERAL, SettingGroup.LANGUAGE, null),
     // MEDIAINFO
-    showMediaPanel(SettingsProperty.showMediaPanel, SettingCategory.MEDIAINFO, SettingGroup.UPDATE, null),
+    showMediaPanel(SettingsProperty.showMediaPanel, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
     showActorImage(SettingsProperty.showActorImage, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
     //
-    movieFilenameLimit(SettingsProperty.movieFilenameLimit, SettingCategory.GENERAL, SettingGroup.UPDATE, null, SUBLEVEL),
+    movieFilenameLimit(SettingsProperty.movieFilenameLimit, SettingCategory.RENAME, SettingGroup.INFORMATION, null, SUBLEVEL),
     showThumb(SettingsProperty.showThumb, SettingCategory.RENAME, SettingGroup.INFORMATION, null),
     showFanart(SettingsProperty.showFanart, SettingCategory.SEARCH, SettingGroup.INFORMATION, null),
     showSubtitle(SettingsProperty.showSubtitle, SettingCategory.IMAGE, SettingGroup.INFORMATION, null),
@@ -191,7 +192,7 @@ public class Setting extends JDialog {
     /**
      * @return the key
      */
-    public Settings.SettingsProperty getKey() {
+    public Settings.iProperty getKey() {
       return property.getKey();
     }
 
@@ -203,7 +204,7 @@ public class Setting extends JDialog {
     }
 
     /**
-     * @return the component list
+     * @return the array of jcomponents
      */
     public List<JComponent> getJComponents() {
       return Collections.unmodifiableList(jcomponents);
@@ -222,19 +223,50 @@ public class Setting extends JDialog {
     public SettingGroup getGroup() {
       return group;
     }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+      return name().toLowerCase();
+    }
   }
+  // Button group
+  private static ButtonGroup nfoGroup;
+  private static ButtonGroup languageGroup;
+  // List component
+  private static List<JComponent> nfoRBtns;
+  private static List<JComponent> languageRBtns;
 
   /**
    * Creates new form Setting
    */
   public Setting() {
     initComponents();
+    nfoGroup = new ButtonGroup();
+    languageGroup = new ButtonGroup();
+    nfoRBtns = createList(NfoInfo.NFOtype.class, nfoGroup);
+    //languageRBtns = createList(, nfoGroup);
+
+    nfoGroup.setSelected(((WebRadioButton) nfoRBtns.get(Settings.getInstance().getMovieNfoType().ordinal())).getModel(), true);
+
     for (SettingCategory settingcat : SettingCategory.values()) {
-      AbstractSetting panel = settingcat.getPanel();
+      SettingPanel panel = settingcat.getPanel();
       panel.addSettings(getSettingsDefinition(settingcat));
       webTabbedPane1.add(LocaleUtils.i18nExt(settingcat.getName()), panel);
     }
     pack();
+  }
+
+  private <T extends Enum<T>> List<JComponent> createList(Class<T> clazz, ButtonGroup group) {
+    List<JComponent> components = new ArrayList<JComponent>();
+    for (T e : clazz.getEnumConstants()) {
+      WebRadioButton rbtn = new WebRadioButton(LocaleUtils.i18nExt(e.name()));
+      rbtn.setToolTipText(LocaleUtils.i18nExt(e.name() + "tt"));
+      group.add(rbtn);
+      components.add(rbtn);
+    }
+    return components;
   }
 
   private List<List<SettingsDefinition>> getSettingsDefinition(SettingCategory catkey) {

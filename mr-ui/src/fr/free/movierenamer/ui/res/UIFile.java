@@ -17,11 +17,8 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.mediainfo.MediaTag;
-import fr.free.movierenamer.namematcher.MediaNameMatcher;
-import fr.free.movierenamer.namematcher.MovieNameMatcher;
-import fr.free.movierenamer.namematcher.TvShowNameMatcher;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
 import javax.swing.Icon;
@@ -34,52 +31,18 @@ import javax.swing.Icon;
  */
 public class UIFile implements IIconList {
 
-  public enum MediaType {
-    MOVIE,
-    TVSHOW
-  }
-
-  private final File file;
-  private boolean renamed;
-  private final boolean wasRenamed;
-  private String firstSearch;
-  private String search;
-  private int year;
-  private final UIFile.MediaType type;
+  private final FileInfo file;
   private final MediaTag mtag;
 
   // private final MediaTag mtag;
-
   /**
    * Constructor arguments
    *
-   * @param file A media file
-   * @param type Media type
-   * @param wasRenamed Media was renamed
+   * @param file A mediaInfo file
    */
-  public UIFile(File file, UIFile.MediaType type, boolean wasRenamed) {
+  public UIFile(FileInfo file) {
     this.file = file;
-    this.type = type;
-    this.wasRenamed = wasRenamed;
-    this.mtag = (file != null) ? new MediaTag(file) : null;
-    renamed = false;
-    // this.mtag = new MediaTag(mediaFile.getFile());
-    MediaNameMatcher matcher = null;
-    if (type != null) {
-      switch (type) {
-      case MOVIE:
-        matcher = new MovieNameMatcher(file, UISettings.getInstance().mediaNameFilters);
-        break;
-      case TVSHOW:
-        matcher = new TvShowNameMatcher(file, UISettings.getInstance().mediaNameFilters);
-        break;
-      }
-    }
-
-    if (matcher != null) {
-      setSearch(matcher.getName());
-      setYear(matcher.getYear());
-    }
+    this.mtag = (file != null) ? new MediaTag(file.getFile()) : null;
   }
 
   /**
@@ -88,7 +51,7 @@ public class UIFile implements IIconList {
    * @return File
    */
   public File getFile() {
-    return file;
+    return file.getFile();
   }
 
   /**
@@ -99,30 +62,12 @@ public class UIFile implements IIconList {
   }
 
   /**
-   * Set media renamed
-   *
-   * @param renamed Renamed
-   */
-  public void setRenamed(boolean renamed) {
-    this.renamed = renamed;
-  }
-
-  /**
-   * Media is renamed
-   *
-   * @return True if media is renamed, false otherwise
-   */
-  public boolean isRenamed() {
-    return renamed;
-  }
-
-  /**
    * Media has been renamed
    *
    * @return True is media was renamed, false otherwise
    */
   public boolean wasRenamed() {
-    return wasRenamed;
+    return file.wasRenamed();
   }
 
   /**
@@ -130,19 +75,12 @@ public class UIFile implements IIconList {
    *
    * @return Media type
    */
-  public UIFile.MediaType getType() {
-    return type;
+  public FileInfo.MediaType getType() {
+    return file.getType();
   }
 
   public final void setSearch(String search) {
-    if (firstSearch == null) {
-      firstSearch = search;
-    }
-    this.search = search;
-  }
-
-  public final void setYear(int year) {
-    this.year = year;
+    file.setSearch(search);
   }
 
   /**
@@ -151,12 +89,12 @@ public class UIFile implements IIconList {
    * @return Icon
    */
   @Override
-  public Icon getIcon() {
-    if (renamed) {
-      return UIUtils.MEDIARENAMEDICON;
-    }
+  public Icon getIcon() {// TODO
+//    if (renamed) {
+//      return UIUtils.MEDIARENAMEDICON;
+//    }
 
-    if (wasRenamed) {
+    if (wasRenamed()) {
       return UIUtils.MEDIAWASRENAMEDICON;
     }
     return UIUtils.MEDIAICON;
@@ -164,10 +102,10 @@ public class UIFile implements IIconList {
 
   @Override
   public String toString() {
-    return file.getName();
+    return file.getFile().getName();
   }
 
   public final String getSearch() {
-    return search;
+    return file.getSearch();
   }
 }

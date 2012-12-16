@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import javax.swing.ImageIcon;
@@ -30,15 +30,15 @@ import javax.swing.ImageIcon;
  */
 public enum MovieRenamerMode {
 
-  MOVIEMODE(LocaleUtils.i18nExt("movie"), LocaleUtils.i18nExt("movieMode"), UIFile.MediaType.MOVIE, "ui/movie.png"),
-  TVSHOWMODE(LocaleUtils.i18nExt("tvshow"), LocaleUtils.i18nExt("tvshowMode"), UIFile.MediaType.TVSHOW, "ui/tv.png");
+  MOVIEMODE(LocaleUtils.i18nExt("movie"), LocaleUtils.i18nExt("movieMode"), FileInfo.MediaType.MOVIE, "ui/movie.png"),
+  TVSHOWMODE(LocaleUtils.i18nExt("tvshow"), LocaleUtils.i18nExt("tvshowMode"), FileInfo.MediaType.TVSHOW, "ui/tv.png");
 
-  private UIFile.MediaType mediaType;
+  private FileInfo.MediaType mediaType;
   private String title;
   private String titleMode;
   private ImageIcon icon;
 
-  private MovieRenamerMode(String title, String titleMode, UIFile.MediaType mediaType, String imgName) {
+  private MovieRenamerMode(String title, String titleMode, FileInfo.MediaType mediaType, String imgName) {
     this.title = title;
     this.titleMode = titleMode;
     this.mediaType = mediaType;
@@ -53,7 +53,7 @@ public enum MovieRenamerMode {
     return titleMode;
   }
 
-  public UIFile.MediaType getMediaType() {
+  public FileInfo.MediaType getMediaType() {
     return mediaType;
   }
 

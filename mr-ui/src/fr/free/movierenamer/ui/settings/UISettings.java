@@ -17,31 +17,22 @@
  */
 package fr.free.movierenamer.ui.settings;
 
-import fr.free.movierenamer.info.NfoInfo;
-import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.SubtitleScrapper;
-import fr.free.movierenamer.scrapper.TvShowScrapper;
-import fr.free.movierenamer.scrapper.impl.IMDbScrapper;
-import fr.free.movierenamer.scrapper.impl.OpenSubtitlesScrapper;
-import fr.free.movierenamer.scrapper.impl.TheTVDBScrapper;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.exception.SettingsSaveFailedException;
 import fr.free.movierenamer.utils.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import org.w3c.dom.NodeList;
 
 /**
  * Class Settings , Movie Renamer settings Only public and non static attributes
@@ -50,48 +41,45 @@ import org.xml.sax.SAXException;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public final class UISettings implements Cloneable {
+public final class UISettings {
 
   static {
-    APPNAME = getApplicationProperty("application.name");
+    String appName = getApplicationProperty("application.name");
+    String appNameNospace = appName.replace(' ', '_');
+    APPNAME = appName;
     VERSION = getApplicationProperty("application.version");
     CORE_VERSION = Settings.VERSION;
-    appName_nospace = getApplicationProperty("application.name").replace(' ', '_');
+    userFolder = System.getProperty("user.home");
     appFolder = Settings.getApplicationFolder();
+    configFile = appNameNospace + ".conf";
+    renamedFile = "renamed.xml";
+    logFile = appNameNospace + ".log";
+    LOGGER = Logger.getLogger(appNameNospace + " Logger");
+    appSettingsNodeName = appNameNospace;
+    settingNodeName = "settings";
   }
   public static final String APPNAME;
   public static final String VERSION;
   public static final String CORE_VERSION;
   public static final File appFolder;
-  private static final String appName_nospace;
-  // XML
-  public static final String arrayEscapeChar = "/_";
-  public static final String sZero = "0";
+  private static final String userFolder;
   // files
-  public static final String configFile = "movie_renamer.conf";
-  public static final String renamedFile = "renamed.xml";
-  private static final String logFile = "movie_renamer.log";
-  // List
-//  public static int[] nbResultList = {-1, 5, 10, 15, 20, 30};
-//  public static String[] thumbExtList = {".jpg", ".tbn", "-thumb.jpg"};
-//  public static String[] fanartExtList = {".jpg", "-fanart.jpg"};
-  // Misc
-  private static boolean xmlError = false;
-  private static String xmlVersion = "";
-//  public static boolean interfaceChanged = false;
+  public static final String configFile;
+  public static final String renamedFile;
+  private static final String logFile;
   // Logger
-  public static final Logger LOGGER = Logger.getLogger(appName_nospace + " Logger");
+  public static final Logger LOGGER;
+  // Misc
+//  private static boolean xmlError = false;
+//  private static String xmlVersion = "";
   // Settings instance
-  private static UISettings instance;
-
-  public static enum SettingCategory {
-
-    GENERAL,
-    RENAME,
-    NETWORK,
-    IMAGE,
-    SEARCH;
-  }
+  private static final UISettings instance = new UISettings();
+  public final Settings coreInstance = Settings.getInstance();
+  // Settings xml conf instance
+  private final Document settingsDocument;
+  private final Node settingsNode;
+  private static final String appSettingsNodeName;
+  private static final String settingNodeName;
 
   public static enum SettingLevel {
 
@@ -105,95 +93,124 @@ public final class UISettings implements Cloneable {
     UI;
   }
 
+  public static enum UISettingsProperty implements Settings.iProperty {
+
+    selectFirstMedia(Boolean.class),
+    selectFirstResult(Boolean.class),
+    scanSubfolder(Boolean.class),
+    checkUpdate(Boolean.class),
+    showMediaPanel(Boolean.class),
+    showActorImage(Boolean.class),
+    showThumb(Boolean.class),
+    showFanart(Boolean.class),
+    showSubtitle(Boolean.class),
+    showCdart(Boolean.class),
+    showClearart(Boolean.class),
+    showLogo(Boolean.class),
+    showBanner(Boolean.class),
+    generateThumb(Boolean.class),
+    generateFanart(Boolean.class),
+    generateSubtitles(Boolean.class),
+    useExtensionFilter(Boolean.class),
+    fileChooserPath(String.class),
+    extensionsList(List.class);
+    private Class<?> vclass;
+
+    private UISettingsProperty(Class<?> vclass) {
+      this.vclass = vclass;
+    }
+
+    @Override
+    public Class<?> getVclass() {
+      return vclass;
+    }
+  }
+
   public static enum SettingsProperty {
 
     // UI
-    selectFrstMedia(false, SettingProvider.UI),
-    scanSubfolder(false, SettingProvider.UI),
-    showMediaPanel(true, SettingProvider.UI),
-    showActorImage(true, SettingProvider.UI),
-    showThumb(true, SettingProvider.UI),
-    showFanart(true, SettingProvider.UI),
-    showSubtitle(true, SettingProvider.UI),
-    showCdart(true, SettingProvider.UI),
-    showClearart(true, SettingProvider.UI),
-    showLogo(true, SettingProvider.UI),
-    showBanner(true, SettingProvider.UI),
-    thumb(true, SettingProvider.UI),
-    fanart(true, SettingProvider.UI),
-    subtitles(false, SettingProvider.UI),
+    selectFirstMedia(UISettingsProperty.selectFirstMedia, SettingProvider.UI),
+    selectFirstResult(UISettingsProperty.selectFirstResult, SettingProvider.UI),
+    scanSubfolder(UISettingsProperty.scanSubfolder, SettingProvider.UI),
+    checkUpdate(UISettingsProperty.checkUpdate, SettingProvider.UI),
+    showMediaPanel(UISettingsProperty.showMediaPanel, SettingProvider.UI),
+    showActorImage(UISettingsProperty.showActorImage, SettingProvider.UI),
+    showThumb(UISettingsProperty.showThumb, SettingProvider.UI),
+    showFanart(UISettingsProperty.showFanart, SettingProvider.UI),
+    showSubtitle(UISettingsProperty.showSubtitle, SettingProvider.UI),
+    showCdart(UISettingsProperty.showCdart, SettingProvider.UI),
+    showClearart(UISettingsProperty.showClearart, SettingProvider.UI),
+    showLogo(UISettingsProperty.showLogo, SettingProvider.UI),
+    showBanner(UISettingsProperty.showBanner, SettingProvider.UI),
+    thumb(UISettingsProperty.generateThumb, SettingProvider.UI),
+    fanart(UISettingsProperty.generateFanart, SettingProvider.UI),
+    subtitles(UISettingsProperty.generateSubtitles, SettingProvider.UI),
+    useExtensionFilter(UISettingsProperty.useExtensionFilter, SettingProvider.UI),
+    //fileChooserPath(UISettingsProperty.fileChooserPath, SettingProvider.UI), // We don't want to add this option on interface
+    extensionsList(UISettingsProperty.extensionsList, SettingProvider.UI),
     // CORE
-    appLanguage(Locale.ENGLISH, Settings.SettingsProperty.appLanguage),
+    appLanguage(Settings.SettingsProperty.appLanguage),
     // movie filename
-    movieFilenameFormat("<t> (<y>)", Settings.SettingsProperty.movieFilenameFormat),
-    movieFilenameSeparator(", ", Settings.SettingsProperty.movieFilenameSeparator),
-    movieFilenameLimit(3, Settings.SettingsProperty.movieFilenameLimit),
-    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLA, Settings.SettingsProperty.movieFilenameCase),
-    movieFilenameTrim(true, Settings.SettingsProperty.movieFilenameTrim),
-    movieFilenameRmDupSpace(true, Settings.SettingsProperty.movieFilenameRmDupSpace),
-    movieFilenameCreateDirectory(false, Settings.SettingsProperty.movieFilenameCreateDirectory),
+    movieFilenameFormat(Settings.SettingsProperty.movieFilenameFormat),
+    movieFilenameSeparator(Settings.SettingsProperty.movieFilenameSeparator),
+    movieFilenameLimit(Settings.SettingsProperty.movieFilenameLimit),
+    movieFilenameCase(Settings.SettingsProperty.movieFilenameCase),
+    movieFilenameTrim(Settings.SettingsProperty.movieFilenameTrim),
+    movieFilenameRmDupSpace(Settings.SettingsProperty.movieFilenameRmDupSpace),
+    movieFilenameCreateDirectory(Settings.SettingsProperty.movieFilenameCreateDirectory),
     // movie folder
-    movieFolderFormat("<t> (<y>)", Settings.SettingsProperty.movieFolderFormat),
-    movieFolderSeparator(", ", Settings.SettingsProperty.movieFolderSeparator),
-    movieFolderLimit(3, Settings.SettingsProperty.movieFolderLimit),
-    movieFolderCase(StringUtils.CaseConversionType.FIRSTLA, Settings.SettingsProperty.movieFolderCase),
-    movieFolderTrim(true, Settings.SettingsProperty.movieFolderTrim),
-    movieFolderRmDupSpace(true, Settings.SettingsProperty.movieFolderRmDupSpace),
+    movieFolderFormat(Settings.SettingsProperty.movieFolderFormat),
+    movieFolderSeparator(Settings.SettingsProperty.movieFolderSeparator),
+    movieFolderLimit(Settings.SettingsProperty.movieFolderLimit),
+    movieFolderCase(Settings.SettingsProperty.movieFolderCase),
+    movieFolderTrim(Settings.SettingsProperty.movieFolderTrim),
+    movieFolderRmDupSpace(Settings.SettingsProperty.movieFolderRmDupSpace),
     // movie NFO
-    movieNfoType(NfoInfo.NFOtype.XBMC, Settings.SettingsProperty.movieNfoType),
+    movieNfoType(Settings.SettingsProperty.movieNfoType),
     // tvShow
-    tvShowFilenameFormat("<st> S<s>E<e> <et>", Settings.SettingsProperty.tvShowFilenameFormat),
-    tvShowFilenameSeparator(", ", Settings.SettingsProperty.tvShowFilenameSeparator),
-    tvShowFilenameLimit(3, Settings.SettingsProperty.tvShowFilenameLimit),
-    tvShowFilenameCase(StringUtils.CaseConversionType.FIRSTLA, Settings.SettingsProperty.tvShowFilenameCase),
-    tvShowFilenameTrim(true, Settings.SettingsProperty.tvShowFilenameTrim),
-    tvShowFilenameRmDupSpace(true, Settings.SettingsProperty.tvShowFilenameRmDupSpace),
+    tvShowFilenameFormat(Settings.SettingsProperty.tvShowFilenameFormat),
+    tvShowFilenameSeparator(Settings.SettingsProperty.tvShowFilenameSeparator),
+    tvShowFilenameLimit(Settings.SettingsProperty.tvShowFilenameLimit),
+    tvShowFilenameCase(Settings.SettingsProperty.tvShowFilenameCase),
+    tvShowFilenameTrim(Settings.SettingsProperty.tvShowFilenameTrim),
+    tvShowFilenameRmDupSpace(Settings.SettingsProperty.tvShowFilenameRmDupSpace),
     // Cache
-    cacheClear(false, Settings.SettingsProperty.cacheClear),
+    cacheClear(Settings.SettingsProperty.cacheClear),
     // Search
-    searchMovieScrapper(IMDbScrapper.class, Settings.SettingsProperty.searchMovieScrapper),
-    searchTvshowScrapper(TheTVDBScrapper.class, Settings.SettingsProperty.searchTvshowScrapper),
-    searchSubtitleScrapper(IMDbScrapper.class, Settings.SettingsProperty.searchSubtitleScrapper),// FIXME replace by subtitle scrapper class
-    searchScrapperLang(Locale.ENGLISH, Settings.SettingsProperty.searchScrapperLang),
-    searchSortBySimiYear(true, Settings.SettingsProperty.searchSortBySimiYear),
-    searchNbResult(2, Settings.SettingsProperty.searchNbResult),
-    searchDisplayApproximateResult(false, Settings.SettingsProperty.searchDisplayApproximateResult),
+    searchMovieScrapper(Settings.SettingsProperty.searchMovieScrapper),
+    searchTvshowScrapper(Settings.SettingsProperty.searchTvshowScrapper),
+    searchSubtitleScrapper(Settings.SettingsProperty.searchSubtitleScrapper),// FIXME replace by subtitle scrapper class
+    searchScrapperLang(Settings.SettingsProperty.searchScrapperLang),
+    searchSortBySimiYear(Settings.SettingsProperty.searchSortBySimiYear),
+    searchNbResult(Settings.SettingsProperty.searchNbResult),
+    searchDisplayApproximateResult(Settings.SettingsProperty.searchDisplayApproximateResult),
     // Proxy
-    proxyIsOn(false, Settings.SettingsProperty.proxyIsOn),
-    proxyUrl("", Settings.SettingsProperty.proxyUrl),
-    proxyPort(0, Settings.SettingsProperty.proxyPort),
+    proxyIsOn(Settings.SettingsProperty.proxyIsOn),
+    proxyUrl(Settings.SettingsProperty.proxyUrl),
+    proxyPort(Settings.SettingsProperty.proxyPort),
     // http param
-    httpRequestTimeOut(30, Settings.SettingsProperty.httpRequestTimeOut, SettingLevel.ADVANCED),
-    httpCustomUserAgent("Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2", Settings.SettingsProperty.httpCustomUserAgent, SettingLevel.ADVANCED);
+    httpRequestTimeOut(Settings.SettingsProperty.httpRequestTimeOut, SettingLevel.ADVANCED),
+    httpCustomUserAgent(Settings.SettingsProperty.httpCustomUserAgent, SettingLevel.ADVANCED);
     private String lib;
-    private Object defaultValue;
     private SettingProvider provider = SettingProvider.CORE;
     private Class<?> vclass;
     private SettingLevel level = SettingLevel.NORMAL;
-    private Settings.SettingsProperty key = null;
+    private Settings.iProperty key;
 
-    private SettingsProperty(Object defaultValue, Settings.SettingsProperty key) {// Only for CORE
+    private SettingsProperty(Settings.iProperty key) {// Only for CORE
+      this.key = key;
       this.lib = name();
-      this.defaultValue = defaultValue;
-      this.vclass = defaultValue.getClass();
+      this.vclass = key.getVclass();
     }
 
-    private SettingsProperty(Object defaultValue, Settings.SettingsProperty key, SettingLevel level) {// Only for CORE
-      this.lib = name();
-      this.defaultValue = defaultValue;
-      this.vclass = defaultValue.getClass();
+    private SettingsProperty(Settings.iProperty key, SettingLevel level) {// Only for CORE
+      this(key);
       this.level = level;
     }
 
-    private SettingsProperty(Object defaultValue, SettingProvider provider) {// Only for UI
-      this.lib = name();
-      this.defaultValue = defaultValue;
+    private SettingsProperty(Settings.iProperty key, SettingProvider provider) {// Only for UI
+      this(key);
       this.provider = provider;
-      this.vclass = defaultValue.getClass();
-    }
-
-    public Object getDefaultValue() {
-      return defaultValue;
     }
 
     public Class<?> getVClass() {
@@ -208,7 +225,7 @@ public final class UISettings implements Cloneable {
       return level;
     }
 
-    public Settings.SettingsProperty getKey() {
+    public Settings.iProperty getKey() {
       return key;
     }
 
@@ -222,11 +239,11 @@ public final class UISettings implements Cloneable {
    * UI Saved settings
    */
   // public Movie.NFO nfoType = Movie.NFO.XBMC;
-  public boolean checkUpdate = false;
-  public String fileChooserPath = System.getProperty("user.home");
-  public Locale locale = Locale.getDefault();
+//  public boolean checkUpdate = false;
+//  public String fileChooserPath = System.getProperty("user.home");
+//  public Locale locale = Locale.getDefault();
   // Rename movie filename
-  public String movieFilenameFormat = "";
+//  public String movieFilenameFormat = "";
 //  public String movieFilenameSeparator = ", ";
 //  public int movieFilenameLimit = 3;
 //  public StringUtils.CaseConversionType movieFilenameCase = StringUtils.CaseConversionType.FIRSTLA;
@@ -241,7 +258,7 @@ public final class UISettings implements Cloneable {
 //  public boolean movieFolderTrim = true;
 //  public boolean movieFolderRmDupSpace = true;
   // Rename Tv show filename
-  public String tvShowFilenameFormat = "<st> S<s>E<e> <et>";
+//  public String tvShowFilenameFormat = "<st> S<s>E<e> <et>";
 //  public String tvShowFilenameSeparator = ", ";
 //  public int tvShowFilenameLimit = 3;
 //  public int tvShowFilenameCase = 1;
@@ -252,25 +269,25 @@ public final class UISettings implements Cloneable {
 //  public int fanartSize = 0;
 //  public int thumbExt = 0;
   // Filter
-  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
+//  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
 //  public static String[] nameFilters = {"notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
 //    "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
 //    "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
 //    " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"};
-  public List<String> mediaNameFilters;
-  public boolean useExtensionFilter = true;
+//  public List<String> mediaNameFilters;
+//  public boolean useExtensionFilter = true;
   // Cache
-  public boolean clearCache = false;
+//  public boolean clearCache = false;
   // Search
-  public Class<? extends MovieScrapper> movieScrapper = IMDbScrapper.class;
-  public Class<? extends TvShowScrapper> tvshowScrapper = TheTVDBScrapper.class;
-  public Class<? extends SubtitleScrapper> subtitleScrapper = OpenSubtitlesScrapper.class;
-  public Locale movieScrapperLang = Locale.ENGLISH;
-  public Locale tvshowScrapperLang = Locale.ENGLISH;
+//  public Class<? extends MovieScrapper> movieScrapper = IMDbScrapper.class;
+//  public Class<? extends TvShowScrapper> tvshowScrapper = TheTVDBScrapper.class;
+//  public Class<? extends SubtitleScrapper> subtitleScrapper = OpenSubtitlesScrapper.class;
+//  public Locale movieScrapperLang = Locale.ENGLISH;
+//  public Locale tvshowScrapperLang = Locale.ENGLISH;
 //  public Locale subtitleScrapperLang = Locale.ENGLISH;
-  public boolean displayThumbResult = true;
+//  public boolean displayThumbResult = true;
 //  public boolean autoSearchMedia = true;
-  public boolean selectFrstRes = true;
+//  public boolean selectFrstRes = true;
 //  public boolean sortBySimiYear = true;
 //  public int nbResult = 2;
 //  public boolean displayApproximateResult = false;
@@ -280,35 +297,12 @@ public final class UISettings implements Cloneable {
 //  public String proxyUrl = "10.2.1.10";
 //  public int proxyPort = 3128;
 //  public int requestTimeOut = 30;
-
-  /**
-   * Private build for singleton fix
-   *
-   * @return
-   */
-  private static synchronized UISettings newInstance() {
-    if (instance == null) {
-      instance = new UISettings();
-      // if new, just load values
-      try {
-        instance.loadSetting();
-      } catch (SettingsSaveFailedException e) {
-        LOGGER.log(Level.WARNING, e.toString(), e);
-        instance = e.getDefaultSettings();
-      }
-    }
-    return instance;
-  }
-
   /**
    * Access to the Settings instance
    *
    * @return The only instance of MR Settings
    */
   public static synchronized UISettings getInstance() {
-    if (instance == null) {
-      instance = newInstance();
-    }
     return instance;
   }
 
@@ -329,298 +323,351 @@ public final class UISettings implements Cloneable {
     } catch (IOException e) {
       LOGGER.log(Level.SEVERE, e.getMessage());
     }
-  }
 
-  /**
-   * Load Movie Renamer settings
-   *
-   * @return Movie Renamer settings
-   */
-  private UISettings loadSetting() throws SettingsSaveFailedException {
-    LOGGER.log(Level.INFO, "Load configuration from {0}", configFile);
-    boolean saved;
-    UISettings config = new UISettings();
-    File confRoot = new File(UISettings.appFolder, "conf");
-    File file = new File(confRoot, configFile);
-
-    if (!file.exists()) {
-      // Define locale on first run
-      if (!Locale.getDefault().equals(Locale.FRENCH)) {
-        config.locale = Locale.ENGLISH;
-      } else {
-        config.locale = Locale.FRENCH;
-        config.movieScrapperLang = Locale.FRENCH;
-        config.tvshowScrapperLang = Locale.FRENCH;
-      }
-
-      try {
-        saved = config.saveSetting();
-      } catch (IOException e) {
-        saved = false;
-      }
-
-      if (!saved) {
-        // Set locale
-        Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));// FIXME jre local =fr -> fr else english
-        throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
-      }
-      return loadSetting();
-    }
-
-    saved = false;
+    // settingsDocument init
+    Document settingsDocument;
+    Node settingsNode;
     try {
-      // Parse Movie Renamer Settings
-      Document xml = URIRequest.getXmlDocument(file.toURI());
-      List<Node> nodes = XPathUtils.selectChildren(appName_nospace + "/setting", xml);
-      for (Node node : nodes) {
-        setValue(node.getNodeName(), XPathUtils.getTextContent(node));
+      File confRoot = new File(UISettings.appFolder, "conf");
+      File file = new File(confRoot, configFile);
+      settingsDocument = URIRequest.getXmlDocument(file.toURI());
+      Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
+      if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
+        throw new NullPointerException("App version is different");
       }
+      settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
+      // TODO convert if version are diff !
+    } catch (Exception ex) {
+      try {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder;
+        docBuilder = docFactory.newDocumentBuilder();
 
-      // Get xml version
-      xmlVersion = XPathUtils.selectNode(appName_nospace, xml).getAttributes().getNamedItem("Version").getNodeValue();
+        // root elements
+        settingsDocument = docBuilder.newDocument();
+        Element rootElement = settingsDocument.createElement(appSettingsNodeName);
+        settingsDocument.appendChild(rootElement);
 
-      // Set locale
-      Locale.setDefault(config.locale);
-      if (VERSION.equals(xmlVersion) && !xmlError) {
-        saved = true;
-      }
+        Attr version = settingsDocument.createAttribute("Version");
+        version.setValue(VERSION);
+        rootElement.setAttributeNode(version);
 
-    } catch (SAXException ex) {
-      LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("SAXException", ex.getStackTrace()));
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
-    } finally {
-      if (!saved) {
-        try {
-          saved = config.saveSetting();
-        } catch (IOException e) {
-          saved = false;
-        }
+        // setting elements
+        settingsNode = settingsDocument.createElement(settingNodeName);
+        rootElement.appendChild(settingsNode);
+
+      } catch (ParserConfigurationException ex1) {
+        settingsDocument = null;
+        settingsNode = null;
       }
     }
-
-    if (!saved) {
-      throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
+    this.settingsDocument = settingsDocument;
+    this.settingsNode = settingsNode;
+    try {
+     saveSetting();
+    } catch(IOException e) {
+      LOGGER.log(Level.SEVERE, e.getMessage());
     }
-
-    return config;
   }
 
+  public synchronized String get(UISettings.UISettingsProperty key) {// FIXME value need to be initialised for UI settings panel generator (only boolean value are required)
+    String value;
+    if (key != null) {
+      Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
+      if (found != null) {
+        value = XPathUtils.getTextContent(found);
+      } else {
+        value = null;
+      }
+    } else {
+      value = null;
+    }
+    if (value == null) {
+      throw new NullPointerException("Setting property is null for key : " + key.name());
+    }
+    return value;
+  }
+
+  public synchronized void set(UISettings.UISettingsProperty key, Object value) throws IOException {
+    if (value != null && key != null) {
+      Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
+      if (found == null) {
+        found = settingsDocument.createElement(key.name());
+        // param.appendChild(settingsDocument.createTextNode(value.toString()));
+        this.settingsNode.appendChild(found);
+      }
+      found.setTextContent(value.toString());
+      saveSetting();
+    }
+  }
+
+  public synchronized void clear() throws IOException {
+    Logger.getLogger(Settings.class.getName()).log(Level.INFO, String.format("Clear UISettings"));
+    NodeList list = this.settingsNode.getChildNodes();
+    for (int i = 0; i < list.getLength(); i++) {
+      this.settingsNode.removeChild(list.item(i));
+    }
+    saveSetting();
+  }
+
+//  /**
+//   * Load Movie Renamer settings
+//   *
+//   * @return Movie Renamer settings
+//   */
+//  private UISettings loadSetting() throws SettingsSaveFailedException {
+//    LOGGER.log(Level.INFO, "Load configuration from {0}", configFile);
+//    boolean saved;
+//    UISettings config = new UISettings();
+//    File confRoot = new File(UISettings.appFolder, "conf");
+//    File file = new File(confRoot, configFile);
+//
+//    if (!file.exists()) {
+//      // Define locale on first run
+//      if (!Locale.getDefault().equals(Locale.FRENCH)) {
+//        config.locale = Locale.ENGLISH;
+//      } else {
+//        config.locale = Locale.FRENCH;
+//        config.movieScrapperLang = Locale.FRENCH;
+//        config.tvshowScrapperLang = Locale.FRENCH;
+//      }
+//
+//      try {
+//        saved = config.saveSetting();
+//      } catch (IOException e) {
+//        saved = false;
+//      }
+//
+//      if (!saved) {
+//        // Set locale
+//        Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));// FIXME jre local =fr -> fr else english
+//        throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
+//      }
+//      return loadSetting();
+//    }
+//
+//    saved = false;
+//    try {
+//      // Parse Movie Renamer Settings
+//      Document xml = URIRequest.getXmlDocument(file.toURI());
+//      List<Node> nodes = XPathUtils.selectChildren(appName_nospace + "/setting", xml);
+//      for (Node node : nodes) {
+//        setValue(node.getNodeName(), XPathUtils.getTextContent(node));
+//      }
+//
+//      // Get xml version
+//      xmlVersion = XPathUtils.selectNode(appName_nospace, xml).getAttributes().getNamedItem("Version").getNodeValue();
+//
+//      // Set locale
+//      Locale.setDefault(config.locale);
+//      if (VERSION.equals(xmlVersion) && !xmlError) {
+//        saved = true;
+//      }
+//
+//    } catch (SAXException ex) {
+//      LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("SAXException", ex.getStackTrace()));
+//    } catch (IOException ex) {
+//      LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
+//    } finally {
+//      if (!saved) {
+//        try {
+//          saved = config.saveSetting();
+//        } catch (IOException e) {
+//          saved = false;
+//        }
+//      }
+//    }
+//
+//    if (!saved) {
+//      throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
+//    }
+//
+//    return config;
+//  }
   /**
    * Save setting
    *
    * @return True if setting was saved, False otherwise
-   * @throws IOException
    */
-  public boolean saveSetting() throws IOException {
-    LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
-    File confRoot = new File(UISettings.appFolder, "conf");
-    if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
-      throw new IOException("Failed to create conf dir: " + confRoot);
-    }
+  private synchronized boolean saveSetting() throws IOException{
+    boolean saveSuccess;
     try {
-      DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-      // root elements
-      Document doc = docBuilder.newDocument();
-      Element rootElement = doc.createElement(appName_nospace);
-      doc.appendChild(rootElement);
-
-      Attr version = doc.createAttribute("Version");
-      version.setValue(VERSION);
-      rootElement.setAttributeNode(version);
-
-      // setting elements
-      Element setting = doc.createElement("setting");
-      rootElement.appendChild(setting);
-
-      // Variables
-      for (Field field : getSettingsFields()) {
-        Object value = field.get(this);
-        if (value == null) {
-          // set blank value if null
-          value = "";
-        } else {
-          if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
-            // to string for boolean field
-            value = ((Boolean) value) ? sZero : "1";
-          } else if (field.getType().isArray()) {
-            // to string for array fields
-            value = StringUtils.arrayToString((Object[]) value, arrayEscapeChar, 0);
-          } else if (Collection.class.isAssignableFrom(field.getType())) {
-            // to string for Collection fields
-            value = StringUtils.arrayToString((List<?>) value, arrayEscapeChar, 0);
-          } else if (Class.class.isAssignableFrom(field.getType())) {
-            // to string for Class fields
-            value = ((Class<?>) value).getName();
-          }
-        }
-        // param elements
-        Element param = doc.createElement(field.getName());
-        param.appendChild(doc.createTextNode(value.toString()));
-        setting.appendChild(param);
+      LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
+      File confRoot = new File(Settings.appFolder, "conf");
+      if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
+        throw new IOException("Failed to create conf dir: " + confRoot);
       }
-
-      // write it to file
-      File confFile = new File(confRoot, configFile);
-      FileUtils.writeXmlFile(doc, confFile);
-
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
-      return false;
+      try {
+        // write it to file
+        File confFile = new File(confRoot, configFile);
+        FileUtils.writeXmlFile(settingsDocument, confFile);
+        saveSuccess = true;
+      } catch (Exception e) {
+        LOGGER.log(Level.SEVERE, e.getMessage());
+        saveSuccess = false;
+      }
+    } catch (IOException ex) {
+      LOGGER.log(Level.SEVERE, ex.getMessage());
+      saveSuccess = false;
     }
-    return true;
+    return saveSuccess;
   }
 
-  /**
-   * Get the user settings fields
-   *
-   * @return
-   */
-  private Collection<Field> getSettingsFields() {
-    Collection<Field> results = new ArrayList<Field>();
-    for (Field field : this.getClass().getDeclaredFields()) {
-      int mod = field.getModifiers();
-      if (Modifier.isPublic(mod) && !Modifier.isStatic(mod)) {
-        results.add(field);
-      }
+  public boolean isSelectFirstMedia() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstMedia));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
     }
-    return results;
   }
 
-  /**
-   * Set a value using field name
-   *
-   * @param fieldName
-   * @param configValue
-   */
-  private void setValue(String fieldName, String configValue) {
+  public boolean isSelectFirstResult() {
     try {
-      Field field = this.getClass().getField(fieldName);
-      Object value = null;
-      if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
-        // Boolean field
-        value = sZero.equals(configValue);
-      } else if (field.getType().isArray()) {
-        // Array field
-        value = configValue.split(arrayEscapeChar);
-      } else if (Collection.class.isAssignableFrom(field.getType())) {
-        // Collection field
-        value = StringUtils.stringToArray(configValue, arrayEscapeChar);
-      } else if (field.getType().isEnum()) {
-        // Enum field
-        try {
-          @SuppressWarnings("unchecked")
-          Enum<?> en = Enum.valueOf(field.getType().asSubclass(Enum.class), configValue);
-          value = en;
-        } catch (IllegalArgumentException ex) {// Wrong xml setting
-          LOGGER.log(Level.SEVERE, " No enum const named {0}", configValue);
-          xmlError = true;
-        }
-      } else if (NumberUtils.isNumeric(field.getType())) {
-        @SuppressWarnings("unchecked")
-        Class<Number> type = (Class<Number>) field.getType();
-        value = NumberUtils.convertToNumber(type, configValue);// Integer.valueOf(configValue);
-      } else if (field.getType() == Locale.class) {
-        value = new Locale(configValue);
-      } else if (field.getType() == Class.class) {
-        value = Class.forName(configValue);
-      } else {
-        // other parsing
-        value = StringUtils.unEscapeXML(configValue, "UTF-8");
-      }
-      if (value != null) {
-        field.set(this, value);
-      }
-    } catch (SecurityException e) {
-      LOGGER.log(Level.WARNING, e.getMessage());
-    } catch (NoSuchFieldException e) {
-      LOGGER.log(Level.CONFIG, "Configuration field no longer exists", e);
-    } catch (IllegalArgumentException e) {
-      LOGGER.log(Level.WARNING, "Configuration value is not in the good format !", e);
-    } catch (IllegalAccessException e) {
-      LOGGER.log(Level.WARNING, e.getMessage());
-    } catch (ClassNotFoundException e) {
-      LOGGER.log(Level.WARNING, "Configuration value is not in the good format !", e);
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstResult));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isScanSubfolder() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.scanSubfolder));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isCheckUpdate() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.checkUpdate));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowActorImage() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showActorImage));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowThumb() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showThumb));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowMediaPanel() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showMediaPanel));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowFanart() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showFanart));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowSubtitle() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showSubtitle));
+    } catch (Exception ex) {
+      return Boolean.FALSE;
+    }
+  }
+
+  public boolean isShowCdart() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showCdart));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowClearart() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showClearart));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowLogo() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showLogo));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isShowBanner() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showBanner));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isGenerateThumb() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateThumb));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isGenerateFanart() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateFanart));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isGenerateSubtitles() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateSubtitles));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public boolean isUseExtensionFilter() {
+    try {
+      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.useExtensionFilter));
+    } catch (Exception ex) {
+      return Boolean.TRUE;
+    }
+  }
+
+  public String getFileChooserPath () {
+    try {
+      return get(UISettings.UISettingsProperty.fileChooserPath);
+    } catch (Exception ex) {
+      return userFolder;
+    }
+  }
+
+  public String[] getExtensionsList() {
+  try {
+      String res = get(UISettings.UISettingsProperty.extensionsList);
+      return res.split(", ");
+    } catch (Exception ex) {
+      return new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
     }
   }
 
   public String getVersion() {
     return VERSION;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-
-    if (!(obj instanceof UISettings)) {
-      return false;
-    }
-
-    UISettings older = (UISettings) obj;
-    Collection<Field> olderFields = older.getSettingsFields();
-    Collection<Field> currentFields = this.getSettingsFields();
-    if (currentFields.size() != olderFields.size()) {
-      return false;
-    }
-
-    Iterator<Field> targetIt = currentFields.iterator();
-    for (Field field : olderFields) {
-      try {
-        if (!field.get(older).equals(targetIt.next().get(this))) {
-          return false;
-        }
-      } catch (IllegalArgumentException ex) {
-        LOGGER.log(Level.SEVERE, null, ex);
-      } catch (IllegalAccessException ex) {
-        LOGGER.log(Level.SEVERE, null, ex);
-      }
-    }
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 7;
-    Collection<Field> fields = this.getSettingsFields();
-    for (Field field : fields) {
-      try {
-        if (field.getType().getName().equalsIgnoreCase(Boolean.class.getSimpleName())) {
-          // Boolean field
-          hash = 29 * hash + (((Boolean) field.get(this)) ? 1 : 0);
-        } else if (field.getType().isArray()) {
-          // Array field
-          hash = 29 * hash + Arrays.deepHashCode((Object[]) field.get(this));
-        } else if (Collection.class.isAssignableFrom(field.getType())) {
-          // Collection field
-          hash = 29 * hash + ((Collection<?>) field.get(this)).hashCode();
-        } else if (field.getType().isEnum()) {
-          // Enum field
-          hash = 29 * hash + ((Enum<?>) field.get(this)).hashCode();
-        } else if (NumberUtils.isNumeric(field.getType())) {
-          @SuppressWarnings("unchecked")
-          Class<Number> type = (Class<Number>) field.getType();
-          hash = 29 * hash + NumberUtils.convertToNumber(type, (String) field.get(this)).hashCode();
-        }
-      } catch (SecurityException e) {
-        LOGGER.log(Level.WARNING, e.getMessage());
-      } catch (IllegalArgumentException e) {
-        LOGGER.log(Level.WARNING, "Configuration value is not in the goot format !", e);
-      } catch (IllegalAccessException e) {
-        LOGGER.log(Level.WARNING, e.getMessage());
-      }
-    }
-
-    return hash;
-  }
-
-  @Override
-  public UISettings clone() throws CloneNotSupportedException {
-    return (UISettings) super.clone();
   }
 
   private static String getApplicationProperty(String key) {

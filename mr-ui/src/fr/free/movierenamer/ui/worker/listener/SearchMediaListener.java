@@ -80,7 +80,7 @@ public class SearchMediaListener extends AbstractListener<List<? extends SearchR
         searchResModel.addElement(new UISearchResult((Media) result, scrapper));
       }
 
-      if (UISettings.getInstance().displayThumbResult) {
+      if (UISettings.getInstance().isShowThumb()) {
         searchResultList.setCellRenderer(new IconListRenderer<UISearchResult>());
       } else {
         searchResultList.setCellRenderer(new DefaultListCellRenderer());
@@ -89,7 +89,7 @@ public class SearchMediaListener extends AbstractListener<List<? extends SearchR
 
       if (searchResModel.isEmpty()) {
         JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-      } else if (UISettings.getInstance().selectFrstRes) {
+      } else if (UISettings.getInstance().isSelectFirstResult()) {
         searchResultList.setSelectedIndex(0);
       }
       searchBtn.setEnabled(true);

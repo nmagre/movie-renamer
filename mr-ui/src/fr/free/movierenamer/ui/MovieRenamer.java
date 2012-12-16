@@ -125,8 +125,8 @@ public class MovieRenamer extends JFrame {
   private final DefaultComboBoxModel movieScrapperModel;
   private final DefaultComboBoxModel tvshowScrapperModel;
   // UI scrapper
-  private UIScrapper UIMovieScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.movieScrapper));
-  private UIScrapper UITvShowScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.tvshowScrapper));
+  private UIScrapper UIMovieScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchMovieScrapper()));
+  private UIScrapper UITvShowScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchTvshowScrapper()));
   // Worker
   private SearchMediaWorker searchWorker;
   private SearchMediaInfoWorker infoWorker;
@@ -181,7 +181,7 @@ public class MovieRenamer extends JFrame {
     setVisible(true);
 
     // Check for Movie Renamer update
-    if (setting.checkUpdate) {
+    if (setting.isCheckUpdate()) {
       checkUpdate(false);
     }
   }
@@ -209,7 +209,7 @@ public class MovieRenamer extends JFrame {
 
     // Add media panel container to media split pane
     mediaSp.setBottomComponent(containerTransitionMediaPanel);
-    fileFormatField.setText(setting.movieFilenameFormat);
+    fileFormatField.setText(setting.coreInstance.getMovieFilenameFormat());
 
     // Set blue border
     mainTb.setPainter(blueBorder);
@@ -459,14 +459,14 @@ public class MovieRenamer extends JFrame {
           tvShowModeBtn.setEnabled(true);
           scrapperCb.setModel(movieScrapperModel);
           scrapperCb.setSelectedItem(UIMovieScrapper);
-          fileFormatField.setText(setting.movieFilenameFormat);
+          fileFormatField.setText(setting.coreInstance.getMovieFilenameFormat());
           break;
         case TVSHOWMODE:
           containerTransitionMediaPanel.performTransition(tvShowPanel);
           movieModeBtn.setEnabled(true);
           scrapperCb.setModel(tvshowScrapperModel);
           scrapperCb.setSelectedItem(UITvShowScrapper);
-          fileFormatField.setText(setting.tvShowFilenameFormat);
+          fileFormatField.setText(setting.coreInstance.getTvShowFilenameFormat());
           break;
       }
     }
@@ -848,22 +848,20 @@ public class MovieRenamer extends JFrame {
   }// </editor-fold>//GEN-END:initComponents
 
   private void openBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_openBtnActionPerformed
-    fileChooser.setCurrentDirectory(new File(setting.fileChooserPath));
+    fileChooser.setCurrentDirectory(new File(setting.getFileChooserPath()));
     int r = fileChooser.showDialog();
     if (r == 0) {
       List<File> files = fileChooser.getSelectedFiles();
       if (!files.isEmpty()) {// Remember path
-        setting.fileChooserPath = files.get(0).getParent();
         try {
-          setting.saveSetting();
+          setting.set(UISettings.UISettingsProperty.fileChooserPath, files.get(0).getParent());
         } catch (IOException e) {
-          UISettings.LOGGER.log(Level.SEVERE, "Failed to save current folder path");
+          UISettings.LOGGER.log(Level.SEVERE, "Failed to save current folder path");// FIXME i18n
         }
       }
 
       loadFiles(files);
     }
-
   }//GEN-LAST:event_openBtnActionPerformed
 
   private void movieModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_movieModeBtnActionPerformed

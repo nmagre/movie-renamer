@@ -50,22 +50,18 @@ public class Main {
     // Install look and feel
     WebLookAndFeel.install();
     // Set look and feel locale
-    List<String> languages = LanguageManager.getSupportedLanguages();
-    String lcode = "en";
-    for(String language : languages) {
-      if(language.equals(setting.locale.getLanguage())){
-        lcode = language;
-        break;
-      }
-    }
+//    List<String> languages = LanguageManager.getSupportedLanguages();
+//    String lcode = "en";
+//    for(String language : languages) {
+//      if(language.equals(setting.locale.getLanguage())){
+//        lcode = language;
+//        break;
+//      }
+//    }
+//
+//    LanguageManager.setLanguage(lcode);
+//    System.out.println();
 
-    LanguageManager.setLanguage(lcode);
-    System.out.println();
-
-    // Clear cache
-    if (setting.clearCache) {
-      Cache.clearAllCache();
-    }
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

@@ -37,7 +37,7 @@ public class FileFilter extends DefaultFileFilter {
 
   @Override
   public boolean accept(File file) {
-    if (!UISettings.getInstance().useExtensionFilter) {
+    if (!UISettings.getInstance().isUseExtensionFilter()) {
       return true;
     }
 
@@ -45,7 +45,7 @@ public class FileFilter extends DefaultFileFilter {
       return true;
     }
 
-    return FileUtils.hasExtension(file, UISettings.getInstance().extensions);
+    return FileUtils.hasExtension(file, UISettings.getInstance().getExtensionsList());
   }
 
   @Override
