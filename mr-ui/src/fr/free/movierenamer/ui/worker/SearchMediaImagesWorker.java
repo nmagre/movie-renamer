@@ -48,6 +48,7 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
    *
    * @param errorSupport
    * @param searchResult
+   * @param scrapper
    */
   @SuppressWarnings("unchecked")
   public SearchMediaImagesWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
@@ -74,7 +75,7 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
         Icon icon = ImageUtils.getIcon(infos.get(i).getHref(), searchListDim, "nothumb.png");
         mediaImages.add(new UIMediaImage(infos.get(i), icon));
         System.out.println("Add " + infos.get(i).getCategory().name() + " : " + infos.get(i).getHref());
-        int progress = (i + 1) / (int) count;
+        double progress = (i + 1) / (double) count;
         setProgress((int) (progress * 100));
       }
     }

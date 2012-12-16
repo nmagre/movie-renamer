@@ -70,7 +70,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
         }
         Icon icon = ImageUtils.getIcon(infos.get(i).getPicturePath(), actorListDim, "ui/unknown.png");
         persons.add(new UIPersonImage(infos.get(i), icon));
-        int progress = (i + 1) / (int) count;
+        double progress = (i + 1) / (double) count;
         setProgress((int) (progress * 100));
       }
     }

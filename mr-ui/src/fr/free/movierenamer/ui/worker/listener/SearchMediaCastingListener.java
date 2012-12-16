@@ -53,7 +53,6 @@ public class SearchMediaCastingListener extends AbstractListener<List<UIPersonIm
     List<UIPersonImage> infos = worker.get();
 
     for (UIPersonImage info : infos) {
-
       personsListModel.addElement(info);
     }
 

@@ -18,8 +18,8 @@ package fr.free.movierenamer.ui.panel.setting;
 
 import com.alee.laf.checkbox.WebCheckBox;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.Setting.SettingsDefinition;
 import fr.free.movierenamer.ui.panel.PanelGenerator;
+import fr.free.movierenamer.ui.panel.SettingPanel.SettingsDefinition;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.GridBagLayout;
 import java.util.List;
@@ -33,11 +33,11 @@ import javax.swing.JPanel;
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-public class SettingPanel extends PanelGenerator {
+public class SettingPanelGen extends PanelGenerator {
 
   private static final long serialVersionUID = 1L;
 
-  public SettingPanel() {
+  public SettingPanelGen() {
     super();
     setLayout(new GridBagLayout());
   }

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.ui.panel.SettingPanel;
 import com.alee.extended.background.BorderPainter;
 import com.alee.extended.filechooser.FilesToChoose;
 import com.alee.extended.filechooser.SelectionMode;
@@ -330,7 +331,7 @@ public class MovieRenamer extends JFrame {
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
     loadFilesDial();
 
-    ListFilesWorker lfw = new ListFilesWorker(errorSupport, files, null);// TODO add renamed media
+    ListFilesWorker lfw = new ListFilesWorker(errorSupport, files);
     ListFileListener listener = new ListFileListener(lfw, this, mediaFileList);
     lfw.addPropertyChangeListener(listener);
     lfw.execute();
@@ -883,7 +884,7 @@ public class MovieRenamer extends JFrame {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        Setting pnl = new Setting();
+        SettingPanel pnl = new SettingPanel();
         pnl.pack();
         pnl.setVisible(true);
       }

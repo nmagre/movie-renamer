@@ -25,7 +25,6 @@ import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 

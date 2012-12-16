@@ -69,22 +69,18 @@ public class SearchMediaListener extends AbstractListener<List<? extends SearchR
     try {
       List<? extends SearchResult> results = worker.get();
 
-        // // Sort result by similarity and year //FIXME Sort result by similarity and year
-        // if (count.size() > 1 && setting.sortBySimiYear) {
-        // Levenshtein.sortByLevenshteinDistanceYear(currentMedia.getSearch(), currentMedia.getYear(), results);
-        // }
+      // // Sort result by similarity and year //FIXME Sort result by similarity and year
+      // if (count.size() > 1 && setting.sortBySimiYear) {
+      // Levenshtein.sortByLevenshteinDistanceYear(currentMedia.getSearch(), currentMedia.getYear(), results);
+      // }
 
-        // searchLbl.setText(LocaleUtils.i18n("search") + " : " + count);//FIXME update labels
+      // searchLbl.setText(LocaleUtils.i18n("search") + " : " + count);//FIXME update labels
 
-      for(SearchResult result : results) {
+      for (SearchResult result : results) {
         searchResModel.addElement(new UISearchResult((Media) result, scrapper));
       }
 
-      if (UISettings.getInstance().isShowThumb()) {
-        searchResultList.setCellRenderer(new IconListRenderer<UISearchResult>());
-      } else {
-        searchResultList.setCellRenderer(new DefaultListCellRenderer());
-      }
+      searchResultList.setCellRenderer(UISettings.getInstance().isShowThumb() ? new IconListRenderer<UISearchResult>() : new DefaultListCellRenderer());
       searchResultList.setModel(searchResModel);
 
       if (searchResModel.isEmpty()) {
@@ -94,8 +90,7 @@ public class SearchMediaListener extends AbstractListener<List<? extends SearchR
       }
       searchBtn.setEnabled(true);
       searchField.setEnabled(true);
-    }
-    catch(CancellationException e) {
+    } catch (CancellationException e) {
       // Worker canceled
     }
   }

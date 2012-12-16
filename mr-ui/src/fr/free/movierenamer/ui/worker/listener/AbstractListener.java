@@ -30,6 +30,7 @@ import javax.swing.SwingWorker;
 /**
  * Class AbstractListener
  *
+ * @param <T>
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -74,7 +75,7 @@ public abstract class AbstractListener<T> implements PropertyChangeListener {
         try {
           done();
         } catch (Exception ex) {
-          UISettings.LOGGER.log(Level.SEVERE,ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
+          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
         }
         mr.getLoading().setCursor(MovieRenamer.normalCursor);
         mr.setCursor(MovieRenamer.normalCursor);

@@ -20,7 +20,6 @@ package fr.free.movierenamer.ui.worker;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.MediaRenamed;
 import fr.free.movierenamer.utils.FileUtils;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -37,7 +36,6 @@ import java.util.logging.Level;
 public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need to be checked
 
   private final List<File> files;
-  private final List<MediaRenamed> renamed;
   private boolean subFolder;
   private final UISettings setting;
   private final FilenameFilter folderFilter = new FilenameFilter() {
@@ -54,9 +52,8 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need 
    * @param files
    * @param renamed
    */
-  public ListFilesWorker(PropertyChangeSupport errorSupport, List<File> files, List<MediaRenamed> renamed) {
+  public ListFilesWorker(PropertyChangeSupport errorSupport, List<File> files) {
     super(errorSupport);
-    this.renamed = renamed;
     this.files = files;
     setting = UISettings.getInstance();
     //subFolder = setting.scanSubfolder;// FIXME

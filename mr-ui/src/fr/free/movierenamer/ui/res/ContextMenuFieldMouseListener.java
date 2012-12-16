@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPopupMenu;

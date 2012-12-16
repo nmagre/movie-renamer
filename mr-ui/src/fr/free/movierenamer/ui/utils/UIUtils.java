@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 /**
  * Class MediaRenamed, Renamed movie
@@ -39,26 +40,26 @@ public class UIUtils {
   public static final Icon STAR_EMPTY = ImageUtils.getIconFromJar("ui/star-empty.png");
   public static final Image LOGO_32 = ImageUtils.getImageFromJAR("ui/icon-32.png");
 
-  public static BorderPainter getBorder() {
-    BorderPainter border = new BorderPainter();
+  public static BorderPainter<? extends JComponent> getBorder() {
+    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
     return border;
   }
 
-  public static BorderPainter getBorder(int size) {
-    BorderPainter border = new BorderPainter();
+  public static BorderPainter<? extends JComponent> getBorder(int size) {
+    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
     border.setWidth(size);
     return border;
   }
 
-  public static BorderPainter getBorder(int size, int round) {
-    BorderPainter border = new BorderPainter();
+  public static BorderPainter<? extends JComponent> getBorder(int size, int round) {
+    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
     border.setWidth(size);
     border.setRound(round);
     return border;
   }
 
-  public static BorderPainter getBorder(int size, int round, Color color) {
-    BorderPainter border = new BorderPainter();
+  public static BorderPainter<? extends JComponent> getBorder(int size, int round, Color color) {
+    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
     border.setWidth(size);
     border.setRound(round);
     border.setColor(color);

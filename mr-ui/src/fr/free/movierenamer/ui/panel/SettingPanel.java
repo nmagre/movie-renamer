@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui;
+package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.radiobutton.WebRadioButton;
 import fr.free.movierenamer.info.NfoInfo;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.panel.PanelGenerator;
 import fr.free.movierenamer.ui.panel.PanelGenerator.Component;
-import fr.free.movierenamer.ui.panel.setting.SettingPanel;
+import fr.free.movierenamer.ui.panel.setting.SettingPanelGen;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.SettingsProperty;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -38,7 +37,7 @@ import javax.swing.JDialog;
  * @author Nicolas Magré
  * @author QUÉMÉNEUR Simon
  */
-public class Setting extends JDialog {
+public class SettingPanel extends JDialog {
 
   private static final int SUBLEVEL = 2;
   private static final long serialVersionUID = 1L;
@@ -46,19 +45,19 @@ public class Setting extends JDialog {
   // Panel
   public enum SettingCategory {
 
-    GENERAL(new SettingPanel()),
-    SEARCH(new SettingPanel()),
-    RENAME(new SettingPanel()),
-    MEDIAINFO(new SettingPanel()),
-    IMAGE(new SettingPanel()),
-    NETWORK(new SettingPanel());
-    private SettingPanel panel;
+    GENERAL(new SettingPanelGen()),
+    SEARCH(new SettingPanelGen()),
+    RENAME(new SettingPanelGen()),
+    MEDIAINFO(new SettingPanelGen()),
+    IMAGE(new SettingPanelGen()),
+    NETWORK(new SettingPanelGen());
+    private SettingPanelGen panel;
 
-    private SettingCategory(SettingPanel panel) {
+    private SettingCategory(SettingPanelGen panel) {
       this.panel = panel;
     }
 
-    public SettingPanel getPanel() {
+    public SettingPanelGen getPanel() {
       return panel;
     }
 
@@ -241,7 +240,7 @@ public class Setting extends JDialog {
   /**
    * Creates new form Setting
    */
-  public Setting() {
+  public SettingPanel() {
     initComponents();
     nfoGroup = new ButtonGroup();
     languageGroup = new ButtonGroup();
@@ -251,7 +250,7 @@ public class Setting extends JDialog {
     nfoGroup.setSelected(((WebRadioButton) nfoRBtns.get(Settings.getInstance().getMovieNfoType().ordinal())).getModel(), true);
 
     for (SettingCategory settingcat : SettingCategory.values()) {
-      SettingPanel panel = settingcat.getPanel();
+      SettingPanelGen panel = settingcat.getPanel();
       panel.addSettings(getSettingsDefinition(settingcat));
       webTabbedPane1.add(LocaleUtils.i18nExt(settingcat.getName()), panel);
     }

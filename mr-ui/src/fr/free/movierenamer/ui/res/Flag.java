@@ -88,6 +88,10 @@ public abstract class Flag {
     localeFlag(Icon flag) {
       this.flag = flag;
     }
+
+    public Icon getFlagIcon() {
+      return flag;
+    }
   }
 
   public static Icon getFlag(String code) {
@@ -95,7 +99,7 @@ public abstract class Flag {
     if(local != null) {
       for (localeFlag lFlag : localeFlag.values()) {
         if (local.getDisplayCountry(Locale.ENGLISH).equalsIgnoreCase(lFlag.name().replace("_", " "))) {
-          return lFlag.flag;
+          return lFlag.getFlagIcon();
         }
       }
     }
