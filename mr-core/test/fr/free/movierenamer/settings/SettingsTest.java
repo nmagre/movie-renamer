@@ -49,9 +49,12 @@ public class SettingsTest {
 
   @Test
   public void set() {
-    instance.set(SettingsProperty.appLanguage, Locale.FRENCH);
+    SettingsProperty.appLanguage.setValue(Locale.FRENCH);
     Assert.assertEquals(Locale.FRENCH, instance.getAppLanguage());
-    instance.set(SettingsProperty.appLanguage, Locale.GERMAN);
+    Assert.assertEquals(Locale.FRENCH, new Locale(SettingsProperty.appLanguage.getValue()));
+    
+    SettingsProperty.appLanguage.setValue(Locale.GERMAN);
     Assert.assertEquals(Locale.GERMAN, instance.getAppLanguage());
+    Assert.assertEquals(Locale.GERMAN, new Locale(SettingsProperty.appLanguage.getValue()));
   }
 }

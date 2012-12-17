@@ -60,7 +60,6 @@ public abstract class PanelGenerator extends JPanel {
   public enum Component {
 
     CHECKBOX,
-    RADIOBUTTON,
     FIELD,
     BUTTON,
     TOOLBAR,
@@ -289,9 +288,6 @@ public abstract class PanelGenerator extends JPanel {
         break;
       case FIELD:
         component = new WebTextField(LocaleUtils.i18nExt(title));
-        break;
-      case RADIOBUTTON:
-        component = new WebRadioButton(LocaleUtils.i18nExt(title));
         break;
       case TOOLBAR:
         component = new WebToolBar(LocaleUtils.i18nExt(title));

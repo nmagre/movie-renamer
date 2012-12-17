@@ -54,6 +54,7 @@ import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UIScrapper;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.utils.FileFilter;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.Loading;
@@ -855,7 +856,7 @@ public class MovieRenamer extends JFrame {
       List<File> files = fileChooser.getSelectedFiles();
       if (!files.isEmpty()) {// Remember path
         try {
-          setting.set(UISettings.UISettingsProperty.fileChooserPath, files.get(0).getParent());
+          UISettingsProperty.fileChooserPath.setValue(files.get(0).getParent());
         } catch (IOException e) {
           UISettings.LOGGER.log(Level.SEVERE, "Failed to save current folder path");// FIXME i18n
         }
@@ -884,7 +885,7 @@ public class MovieRenamer extends JFrame {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        SettingPanel pnl = new SettingPanel();
+        SettingPanel pnl = new SettingPanel(MovieRenamer.this);
         pnl.pack();
         pnl.setVisible(true);
       }

@@ -17,12 +17,15 @@
 package fr.free.movierenamer.ui.panel.setting;
 
 import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.panel.PanelGenerator;
 import fr.free.movierenamer.ui.panel.SettingPanel.SettingsDefinition;
-import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.GridBagLayout;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -36,31 +39,34 @@ import javax.swing.JPanel;
 public class SettingPanelGen extends PanelGenerator {
 
   private static final long serialVersionUID = 1L;
+  private Map<SettingsDefinition, JComponent> checkboxs;
+  private Map<SettingsDefinition, JComponent> fields;
 
   public SettingPanelGen() {
     super();
     setLayout(new GridBagLayout());
   }
 
-  public void addSettings(List<List<SettingsDefinition>> settings) {
-    for (List<SettingsDefinition> group : settings) {
+  public void addSettings(List<List<SettingsDefinition>> settingsDef) {
+    checkboxs = new EnumMap<SettingsDefinition, JComponent>(SettingsDefinition.class);
+    fields = new EnumMap<SettingsDefinition, JComponent>(SettingsDefinition.class);
+
+    for (List<SettingsDefinition> group : settingsDef) {
       add(createTitle(group.get(0).getGroup().name()), getTitleConstraint());
       for (SettingsDefinition definition : group) {
         switch (definition.getComponent()) {
-          case BUTTON:
+          //case BUTTON:
           case CHECKBOX:
           case FIELD:
-          case LABEL:
-          case RADIOBUTTON:
-          case TOOLBAR:
+            //case LABEL:
+            //case TOOLBAR:
             JComponent component = createComponent(definition.getComponent(), definition.getName());
             if (definition.getComponent() == Component.CHECKBOX && definition.getVclass().equals(Boolean.class)) {
-              if (definition.getProvider() == UISettings.SettingProvider.CORE) {
-                ((WebCheckBox) component).setSelected(Boolean.parseBoolean(Settings.getInstance().get((Settings.SettingsProperty) definition.getKey())));
-              }
-              else {
-                ((WebCheckBox) component).setSelected(Boolean.parseBoolean(UISettings.getInstance().get((UISettings.UISettingsProperty) definition.getKey())));
-              }
+              ((WebCheckBox) component).setSelected(Boolean.parseBoolean(definition.getKey().getValue()));
+              checkboxs.put(definition, component);
+            } else if (definition.getComponent() == Component.FIELD) {
+              ((WebTextField) component).setText(definition.getKey().getValue());
+              fields.put(definition, component);
             }
             add(component, getGroupConstraint(definition.getIndent()));
             break;
@@ -85,5 +91,13 @@ public class SettingPanelGen extends PanelGenerator {
 
     repaint();
     validate();
+  }
+
+  public Map<SettingsDefinition, JComponent> getCheckbox() {
+    return Collections.unmodifiableMap(checkboxs);
+  }
+
+  public Map<SettingsDefinition, JComponent> getField() {
+    return Collections.unmodifiableMap(fields);
   }
 }

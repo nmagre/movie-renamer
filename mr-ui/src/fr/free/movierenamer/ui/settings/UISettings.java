@@ -81,48 +81,66 @@ public final class UISettings {
   private static final String appSettingsNodeName;
   private static final String settingNodeName;
 
-  public static enum SettingLevel {
+  public enum SettingLevel {
 
     NORMAL,
     ADVANCED;
   }
 
-  public static enum SettingProvider {
+  public enum SettingProvider {
 
     CORE,
     UI;
   }
 
-  public static enum UISettingsProperty implements Settings.iProperty {
+  public enum UISettingsProperty implements Settings.IProperty {
 
-    selectFirstMedia(Boolean.class),
-    selectFirstResult(Boolean.class),
-    scanSubfolder(Boolean.class),
-    checkUpdate(Boolean.class),
-    showMediaPanel(Boolean.class),
-    showActorImage(Boolean.class),
-    showThumb(Boolean.class),
-    showFanart(Boolean.class),
-    showSubtitle(Boolean.class),
-    showCdart(Boolean.class),
-    showClearart(Boolean.class),
-    showLogo(Boolean.class),
-    showBanner(Boolean.class),
-    generateThumb(Boolean.class),
-    generateFanart(Boolean.class),
-    generateSubtitles(Boolean.class),
-    useExtensionFilter(Boolean.class),
-    fileChooserPath(String.class),
-    extensionsList(List.class);
+    selectFirstMedia(Boolean.TRUE),
+    selectFirstResult(Boolean.TRUE),
+    scanSubfolder(Boolean.TRUE),
+    checkUpdate(Boolean.TRUE),
+    showMediaPanel(Boolean.TRUE),
+    showActorImage(Boolean.TRUE),
+    showThumb(Boolean.TRUE),
+    showFanart(Boolean.TRUE),
+    showSubtitle(Boolean.FALSE),
+    showCdart(Boolean.TRUE),
+    showClearart(Boolean.TRUE),
+    showLogo(Boolean.TRUE),
+    showBanner(Boolean.TRUE),
+    generateThumb(Boolean.TRUE),
+    generateFanart(Boolean.TRUE),
+    generateSubtitles(Boolean.FALSE),
+    useExtensionFilter(Boolean.TRUE),
+    fileChooserPath(userFolder),
+    extensionsList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"}),
+    showAdvancedSettings(Boolean.FALSE);
     private Class<?> vclass;
+    private Object defaultValue;
 
-    private UISettingsProperty(Class<?> vclass) {
-      this.vclass = vclass;
+    private UISettingsProperty(Object defaultValue) {
+      this.vclass = defaultValue.getClass();
+      this.defaultValue = defaultValue;
     }
 
     @Override
     public Class<?> getVclass() {
       return vclass;
+    }
+
+    @Override
+    public Object getDefaultValue() {
+      return defaultValue;
+    }
+
+    @Override
+    public String getValue() {
+      return instance.get(this);
+    }
+
+    @Override
+    public void setValue(Object object) throws IOException {
+      instance.set(this, object);
     }
   }
 
@@ -146,7 +164,8 @@ public final class UISettings {
     fanart(UISettingsProperty.generateFanart, SettingProvider.UI),
     subtitles(UISettingsProperty.generateSubtitles, SettingProvider.UI),
     useExtensionFilter(UISettingsProperty.useExtensionFilter, SettingProvider.UI),
-    //fileChooserPath(UISettingsProperty.fileChooserPath, SettingProvider.UI), // We don't want to add this option on interface
+    showAdvancedSettings(UISettingsProperty.showAdvancedSettings, SettingProvider.UI),
+    fileChooserPath(UISettingsProperty.fileChooserPath, SettingProvider.UI),
     extensionsList(UISettingsProperty.extensionsList, SettingProvider.UI),
     // CORE
     appLanguage(Settings.SettingsProperty.appLanguage),
@@ -179,7 +198,7 @@ public final class UISettings {
     // Search
     searchMovieScrapper(Settings.SettingsProperty.searchMovieScrapper),
     searchTvshowScrapper(Settings.SettingsProperty.searchTvshowScrapper),
-    searchSubtitleScrapper(Settings.SettingsProperty.searchSubtitleScrapper),// FIXME replace by subtitle scrapper class
+    searchSubtitleScrapper(Settings.SettingsProperty.searchSubtitleScrapper),
     searchScrapperLang(Settings.SettingsProperty.searchScrapperLang),
     searchSortBySimiYear(Settings.SettingsProperty.searchSortBySimiYear),
     searchNbResult(Settings.SettingsProperty.searchNbResult),
@@ -195,20 +214,20 @@ public final class UISettings {
     private SettingProvider provider = SettingProvider.CORE;
     private Class<?> vclass;
     private SettingLevel level = SettingLevel.NORMAL;
-    private Settings.iProperty key;
+    private Settings.IProperty key;
 
-    private SettingsProperty(Settings.iProperty key) {// Only for CORE
+    private SettingsProperty(Settings.IProperty key) {// Only for CORE
       this.key = key;
       this.lib = name();
       this.vclass = key.getVclass();
     }
 
-    private SettingsProperty(Settings.iProperty key, SettingLevel level) {// Only for CORE
+    private SettingsProperty(Settings.IProperty key, SettingLevel level) {// Only for CORE
       this(key);
       this.level = level;
     }
 
-    private SettingsProperty(Settings.iProperty key, SettingProvider provider) {// Only for UI
+    private SettingsProperty(Settings.IProperty key, SettingProvider provider) {// Only for UI
       this(key);
       this.provider = provider;
     }
@@ -225,7 +244,7 @@ public final class UISettings {
       return level;
     }
 
-    public Settings.iProperty getKey() {
+    public Settings.IProperty getKey() {
       return key;
     }
 
@@ -235,68 +254,6 @@ public final class UISettings {
     }
   }
 
-  /**
-   * UI Saved settings
-   */
-  // public Movie.NFO nfoType = Movie.NFO.XBMC;
-//  public boolean checkUpdate = false;
-//  public String fileChooserPath = System.getProperty("user.home");
-//  public Locale locale = Locale.getDefault();
-  // Rename movie filename
-//  public String movieFilenameFormat = "";
-//  public String movieFilenameSeparator = ", ";
-//  public int movieFilenameLimit = 3;
-//  public StringUtils.CaseConversionType movieFilenameCase = StringUtils.CaseConversionType.FIRSTLA;
-//  public boolean movieFilenameTrim = true;
-//  public boolean movieFilenameRmDupSpace = true;
-//  public boolean movieFilenameCreateDirectory = false;
-  // Renamer movie folder
-//  public String movieFolderFormat = "<t> (<y>)";
-//  public String movieFolderSeparator = ", ";
-//  public int movieFolderLimit = 3;
-//  public int movieFolderCase = 1;
-//  public boolean movieFolderTrim = true;
-//  public boolean movieFolderRmDupSpace = true;
-  // Rename Tv show filename
-//  public String tvShowFilenameFormat = "<st> S<s>E<e> <et>";
-//  public String tvShowFilenameSeparator = ", ";
-//  public int tvShowFilenameLimit = 3;
-//  public int tvShowFilenameCase = 1;
-//  public boolean tvShowFilenameTrim = true;
-//  public boolean tvShowFilenameRmDupSpace = true;
-  // ImageInfo
-//  public int thumbSize = 0;
-//  public int fanartSize = 0;
-//  public int thumbExt = 0;
-  // Filter
-//  public String[] extensions = {"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
-//  public static String[] nameFilters = {"notv", "readnfo", "repack", "proper$", "nfo$", "extended.cut", "limitededition", "limited", "k-sual", "extended", "uncut", "n° [0-9][0-9][0-9]", "yestv", "stv", "remastered", "limited", "x264", "bluray",
-//    "bd5", "bd9", "hddvd", "hdz", "unrated", "dvdrip", "cinefile", "hdmi", "dvd5", "ac3", "culthd", "dvd9", "remux", "edition.platinum", "frenchhqc", "frenchedit", "h264", "bdrip", "brrip", "hdteam", "hddvdrip", "subhd", "xvid", "divx", "null$",
-//    "divx511", "vorbis", "=str=", "www", "ffm", "mp3", "divx5", "dvb", "mpa2", "blubyte", "brmp", "avs", "filmhd", "hd4u", "1080p", "1080i", "720p", "720i", "720", "truefrench", "dts", "french", "vostfr", "1cd", "2cd", "vff", " vo$", " vf ", "hd",
-//    " cam$ ", "telesync", " ts ", " tc ", "ntsc", " pal$ ", "dvd-r", "dvdscr", "scr$", "r1", "r2", "r3", "r4", "r5", "wp", "subforced", "dvd", "vcd", "avchd", " md"};
-//  public List<String> mediaNameFilters;
-//  public boolean useExtensionFilter = true;
-  // Cache
-//  public boolean clearCache = false;
-  // Search
-//  public Class<? extends MovieScrapper> movieScrapper = IMDbScrapper.class;
-//  public Class<? extends TvShowScrapper> tvshowScrapper = TheTVDBScrapper.class;
-//  public Class<? extends SubtitleScrapper> subtitleScrapper = OpenSubtitlesScrapper.class;
-//  public Locale movieScrapperLang = Locale.ENGLISH;
-//  public Locale tvshowScrapperLang = Locale.ENGLISH;
-//  public Locale subtitleScrapperLang = Locale.ENGLISH;
-//  public boolean displayThumbResult = true;
-//  public boolean autoSearchMedia = true;
-//  public boolean selectFrstRes = true;
-//  public boolean sortBySimiYear = true;
-//  public int nbResult = 2;
-//  public boolean displayApproximateResult = false;
-//  public String customUserAgent = "Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2";
-  // Proxy
-//  public boolean useProxy = true;
-//  public String proxyUrl = "10.2.1.10";
-//  public int proxyPort = 3128;
-//  public int requestTimeOut = 30;
   /**
    * Access to the Settings instance
    *
@@ -364,16 +321,16 @@ public final class UISettings {
     this.settingsDocument = settingsDocument;
     this.settingsNode = settingsNode;
     try {
-     saveSetting();
-    } catch(IOException e) {
+      saveSetting();
+    } catch (IOException e) {
       LOGGER.log(Level.SEVERE, e.getMessage());
     }
   }
 
-  public synchronized String get(UISettings.UISettingsProperty key) {// FIXME value need to be initialised for UI settings panel generator (only boolean value are required)
+  private synchronized String get(UISettingsProperty key) {
     String value;
     if (key != null) {
-      Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
+      Node found = XPathUtils.selectNode(key.name(), settingsNode);
       if (found != null) {
         value = XPathUtils.getTextContent(found);
       } else {
@@ -383,13 +340,19 @@ public final class UISettings {
       value = null;
     }
     if (value == null) {
-      throw new NullPointerException("Setting property is null for key : " + key.name());
+      value = key.getDefaultValue().toString();
     }
     return value;
   }
 
-  public synchronized void set(UISettings.UISettingsProperty key, Object value) throws IOException {
+  private synchronized void set(UISettingsProperty key, Object value) throws IOException {
     if (value != null && key != null) {
+      Object savedValue = key.getValue();
+
+      if (savedValue.toString().equals(value.toString())) {
+        return;
+      }
+
       Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
       if (found == null) {
         found = settingsDocument.createElement(key.name());
@@ -410,86 +373,12 @@ public final class UISettings {
     saveSetting();
   }
 
-//  /**
-//   * Load Movie Renamer settings
-//   *
-//   * @return Movie Renamer settings
-//   */
-//  private UISettings loadSetting() throws SettingsSaveFailedException {
-//    LOGGER.log(Level.INFO, "Load configuration from {0}", configFile);
-//    boolean saved;
-//    UISettings config = new UISettings();
-//    File confRoot = new File(UISettings.appFolder, "conf");
-//    File file = new File(confRoot, configFile);
-//
-//    if (!file.exists()) {
-//      // Define locale on first run
-//      if (!Locale.getDefault().equals(Locale.FRENCH)) {
-//        config.locale = Locale.ENGLISH;
-//      } else {
-//        config.locale = Locale.FRENCH;
-//        config.movieScrapperLang = Locale.FRENCH;
-//        config.tvshowScrapperLang = Locale.FRENCH;
-//      }
-//
-//      try {
-//        saved = config.saveSetting();
-//      } catch (IOException e) {
-//        saved = false;
-//      }
-//
-//      if (!saved) {
-//        // Set locale
-//        Locale.setDefault((config.locale.equals(Locale.FRENCH) ? Locale.FRENCH : Locale.ENGLISH));// FIXME jre local =fr -> fr else english
-//        throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
-//      }
-//      return loadSetting();
-//    }
-//
-//    saved = false;
-//    try {
-//      // Parse Movie Renamer Settings
-//      Document xml = URIRequest.getXmlDocument(file.toURI());
-//      List<Node> nodes = XPathUtils.selectChildren(appName_nospace + "/setting", xml);
-//      for (Node node : nodes) {
-//        setValue(node.getNodeName(), XPathUtils.getTextContent(node));
-//      }
-//
-//      // Get xml version
-//      xmlVersion = XPathUtils.selectNode(appName_nospace, xml).getAttributes().getNamedItem("Version").getNodeValue();
-//
-//      // Set locale
-//      Locale.setDefault(config.locale);
-//      if (VERSION.equals(xmlVersion) && !xmlError) {
-//        saved = true;
-//      }
-//
-//    } catch (SAXException ex) {
-//      LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("SAXException", ex.getStackTrace()));
-//    } catch (IOException ex) {
-//      LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("IOException : " + ex.getMessage(), ex.getStackTrace()));
-//    } finally {
-//      if (!saved) {
-//        try {
-//          saved = config.saveSetting();
-//        } catch (IOException e) {
-//          saved = false;
-//        }
-//      }
-//    }
-//
-//    if (!saved) {
-//      throw new SettingsSaveFailedException(config, LocaleUtils.i18n("saveSettingsFailed") + " " + appFolder.getAbsolutePath());
-//    }
-//
-//    return config;
-//  }
   /**
    * Save setting
    *
    * @return True if setting was saved, False otherwise
    */
-  private synchronized boolean saveSetting() throws IOException{
+  private synchronized boolean saveSetting() throws IOException {
     boolean saveSuccess;
     try {
       LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
@@ -514,156 +403,84 @@ public final class UISettings {
   }
 
   public boolean isSelectFirstMedia() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstMedia));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstMedia));
   }
 
   public boolean isSelectFirstResult() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstResult));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstResult));
   }
 
   public boolean isScanSubfolder() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.scanSubfolder));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.scanSubfolder));
   }
 
   public boolean isCheckUpdate() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.checkUpdate));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.checkUpdate));
   }
 
   public boolean isShowActorImage() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showActorImage));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showActorImage));
   }
 
   public boolean isShowThumb() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showThumb));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showThumb));
   }
 
   public boolean isShowMediaPanel() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showMediaPanel));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showMediaPanel));
   }
 
   public boolean isShowFanart() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showFanart));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showFanart));
   }
 
   public boolean isShowSubtitle() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showSubtitle));
-    } catch (Exception ex) {
-      return Boolean.FALSE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showSubtitle));
   }
 
   public boolean isShowCdart() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showCdart));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showCdart));
   }
 
   public boolean isShowClearart() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showClearart));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showClearart));
   }
 
   public boolean isShowLogo() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showLogo));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showLogo));
   }
 
   public boolean isShowBanner() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showBanner));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showBanner));
   }
 
   public boolean isGenerateThumb() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateThumb));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateThumb));
   }
 
   public boolean isGenerateFanart() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateFanart));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateFanart));
   }
 
   public boolean isGenerateSubtitles() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateSubtitles));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateSubtitles));
   }
 
   public boolean isUseExtensionFilter() {
-    try {
-      return Boolean.parseBoolean(get(UISettings.UISettingsProperty.useExtensionFilter));
-    } catch (Exception ex) {
-      return Boolean.TRUE;
-    }
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.useExtensionFilter));
   }
 
-  public String getFileChooserPath () {
-    try {
-      return get(UISettings.UISettingsProperty.fileChooserPath);
-    } catch (Exception ex) {
-      return userFolder;
-    }
+  public String getFileChooserPath() {
+    return get(UISettings.UISettingsProperty.fileChooserPath);
   }
 
   public String[] getExtensionsList() {
-  try {
-      String res = get(UISettings.UISettingsProperty.extensionsList);
-      return res.split(", ");
-    } catch (Exception ex) {
-      return new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"};
-    }
+    String res = get(UISettings.UISettingsProperty.extensionsList);
+    return res.split(", ");
+  }
+
+  public boolean isShowAdvancedSettings() {
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showAdvancedSettings));
   }
 
   public String getVersion() {
