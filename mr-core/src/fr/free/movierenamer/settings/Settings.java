@@ -266,7 +266,7 @@ public final class Settings {
     return value;
   }
 
-  private synchronized void set(SettingsProperty key, Object value) {
+  public synchronized void set(SettingsProperty key, Object value) {
     if (value != null && key != null) {
       Object savedValue = key.getValue();
 
