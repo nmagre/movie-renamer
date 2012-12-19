@@ -108,7 +108,10 @@ public class TvRageScrapper extends TvShowScrapper {
     fields.put(TvShowProperty.name, XPathUtils.getTextContent("showname", node));
     fields.put(TvShowProperty.firstAired, Date.parse(XPathUtils.getTextContent("startdate", node), "MMM/dd/yyyy", Locale.ENGLISH).toString());
     fields.put(TvShowProperty.status, XPathUtils.getTextContent("status", node));
-    fields.put(TvShowProperty.posterPath, getPosterURL(XPathUtils.getTextContent("showlink", node)).toExternalForm());
+    URL posterURL = getPosterURL(XPathUtils.getTextContent("showlink", node));
+    if (posterURL != null) {
+      fields.put(TvShowProperty.posterPath, posterURL.toExternalForm());
+    }
     String genres = null;
     for (Node genre : XPathUtils.selectNodes("genres/genre", node)) {
       String toAdd = XPathUtils.getTextContent(genre);
@@ -184,10 +187,10 @@ public class TvRageScrapper extends TvShowScrapper {
   protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale locale) throws Exception {
     return null;
   }
-  
+
   private URL getPosterURL(String showlink) {
     URL posterURL;
-    if(showlink != null) {
+    if (showlink != null) {
       try {
         URL showURL = new URL(showlink);
         String tvshowPage = URIRequest.getDocumentContent(showURL.toURI());
