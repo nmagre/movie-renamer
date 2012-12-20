@@ -48,6 +48,7 @@ public class SettingPanelGen extends PanelGenerator {
   }
 
   public void addSettings(List<List<SettingsDefinition>> settingsDef) {
+
     checkboxs = new EnumMap<SettingsDefinition, JComponent>(SettingsDefinition.class);
     fields = new EnumMap<SettingsDefinition, JComponent>(SettingsDefinition.class);
 

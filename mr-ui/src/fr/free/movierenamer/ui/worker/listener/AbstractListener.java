@@ -18,12 +18,11 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
 
@@ -36,37 +35,24 @@ import javax.swing.SwingWorker;
  */
 public abstract class AbstractListener<T> implements PropertyChangeListener {
 
-  protected final LoadingDialog loading;
   protected final MovieRenamer mr;
   protected final SwingWorker<T, String> worker;
 
   public AbstractListener(MovieRenamer mr, SwingWorker<T, String> worker) {
     this.mr = mr;
-    this.loading = (mr != null) ? mr.getLoading() : null;
     this.worker = worker;
-  }
-
-  protected abstract LoadingDialogPos getLoadingDialogPos();
-
-  protected final void updateLoadingValue(int value) {
-    if (loading != null) {
-      loading.setValue(value, getLoadingDialogPos());
-    }
   }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
 
     if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
-      updateLoadingValue(worker.getProgress());
       return;
     }
 
     switch ((SwingWorker.StateValue) evt.getNewValue()) {
       case STARTED:
         started();
-        mr.getLoading().setCursor(MovieRenamer.hourglassCursor);
-        mr.setCursor(MovieRenamer.hourglassCursor);
         break;
       case PENDING:
         pending();
@@ -74,24 +60,23 @@ public abstract class AbstractListener<T> implements PropertyChangeListener {
       case DONE:
         try {
           done();
+        }  catch(CancellationException e){
+          // Worker canceled
         } catch (Exception ex) {
-          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
+          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getMessage(), ex.getStackTrace()));
         }
-        mr.getLoading().setCursor(MovieRenamer.normalCursor);
-        mr.setCursor(MovieRenamer.normalCursor);
         break;
       default:
-        updateLoadingValue(worker.getProgress());
         break;
     }
   }
 
-  protected final void started() {
-    updateLoadingValue(0);
+  protected void started() {
+    // DO nothing
   }
 
   protected final void pending() {
-    updateLoadingValue(worker.getProgress());
+    // DO nothing
   }
 
   protected abstract void done() throws Exception;

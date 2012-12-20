@@ -20,7 +20,7 @@ package fr.free.movierenamer.ui.worker.listener;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.panel.IMediaPanel;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
+import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 
 /**
@@ -39,15 +39,14 @@ public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.inf;
-  }
-
-  @Override
   protected void done() throws Exception {
     MediaInfo info = worker.get();
     if (info != null) {
       mediaPanel.setMediaInfo(info);
+      SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(info, mediaPanel.getCastingList());
+      SearchMediaCastingListener castingListener = new SearchMediaCastingListener(castingWorker, mr, mediaPanel);
+      castingWorker.addPropertyChangeListener(castingListener);
+      castingWorker.execute();
       mr.updateRenamedTitle();
     }
   }

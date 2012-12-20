@@ -21,13 +21,14 @@ import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.res.sort.AlphabeticSort;
+import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Class ListFileListener
@@ -38,36 +39,30 @@ import java.util.concurrent.ExecutionException;
 public class ListFileListener extends AbstractListener<List<UIFile>> {
 
   private final WebList mediaList;
+  private final DefaultListModel mediaFileNameModel;
 
-  public ListFileListener(ListFilesWorker worker, MovieRenamer mr, WebList mediaList) {
+  public ListFileListener(ListFilesWorker worker, MovieRenamer mr, WebList mediaList, DefaultListModel mediaFileNameModel) {
     super(mr, worker);
     this.mediaList = mediaList;
+    this.mediaFileNameModel = mediaFileNameModel;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.files;
-  }
-
-  @Override
-  protected void done() throws InterruptedException, ExecutionException {
+  protected void done() throws Exception {
+    // Remove loader
+    mediaFileNameModel.removeAllElements();
 
     List<UIFile> medias = worker.get();
-    DefaultListModel mediaFileNameModel = new DefaultListModel();
 
-    updateLoadingValue(100);
+    Collections.sort(medias, new AlphabeticSort());
 
-    for (UIFile media : medias) {
-      mediaFileNameModel.addElement(media);
-    }
-
-    mediaList.setCellRenderer(new IconListRenderer<UIFile>());
-    mediaList.setModel(mediaFileNameModel);
+    mediaList.setCellRenderer(UIUtils.iconListRenderer);
+    mediaFileNameModel.addElements(medias);
 
     if (mediaFileNameModel.isEmpty()) {
       WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("error"), WebOptionPane.ERROR_MESSAGE);
-    }/* else if (UISettings.getInstance().selectFrstMedia) { // FIXME
+    } else if (UISettings.getInstance().isSelectFirstMedia()) {
       mediaList.setSelectedIndex(0);
-    }*/
+    }
   }
 }

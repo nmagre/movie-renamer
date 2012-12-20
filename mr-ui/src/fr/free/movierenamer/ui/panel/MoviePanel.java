@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
@@ -25,17 +26,13 @@ import com.alee.laf.toolbar.WebToolBar;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
-import java.awt.dnd.DropTarget;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -48,7 +45,7 @@ import javax.swing.event.ListSelectionListener;
 public class MoviePanel extends WebPanel implements IMediaPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private WebList actorList;
+  private WebList castingList;
   private WebList countryList;
   private WebTextField directorField;
   private WebList fanartList;
@@ -82,27 +79,17 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   private WebLabel yearLbl;
   // End of variables declaration//GEN-END:variables
   private static final long serialVersionUID = 1L;
-  private final DefaultListModel fanartModel = new DefaultListModel();
-  private final DefaultListModel thumbnailModel = new DefaultListModel();
-  private final DefaultListModel actorModel = new DefaultListModel();
+  private final DefaultListModel castingModel = new DefaultListModel();
+  private final DefaultListModel thumbnailsModel = new DefaultListModel();
+  private final DefaultListModel fanartsModel = new DefaultListModel();
   private final DefaultListModel subTitleModel = new DefaultListModel();
   private final DefaultListModel audioModel = new DefaultListModel();
   private final DefaultListModel countryModel = new DefaultListModel();
-  private Dimension thumbDim = new Dimension(160, 200);
-  public Dimension thumbListDim = new Dimension(60, 90);
-  public Dimension fanartListDim = new Dimension(200, 90);
-  public Dimension actorListDim = new Dimension(30, 53);
-  private final Icon actorDefault = ImageUtils.getIconFromJar("ui/unknown.png");
-  private Image fanartBack;
-  private DropTarget dropThumbTarget;
-  private DropTarget dropFanartTarget;
-  private List<actorImage> actors;
   private final UISettings setting;
 
   /**
    * Creates new form MoviePanel
    *
-   * @param setting
    */
   public MoviePanel() {
     this.setting = UISettings.getInstance();
@@ -118,12 +105,13 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     // Add component to toolbar
     movieTb.addToEnd(starPanel);
 
-    actors = new ArrayList<actorImage>();
-
-    thumbnailsList.setModel(thumbnailModel);
-    fanartList.setModel(fanartModel);
-    actorList.setModel(actorModel);
+    thumbnailsList.setModel(thumbnailsModel);
+    fanartList.setModel(fanartsModel);
+    castingList.setModel(castingModel);
     countryList.setModel(countryModel);
+    thumbnailsList.setCellRenderer(UIUtils.iconListRenderer);
+    fanartList.setCellRenderer(UIUtils.iconListRenderer);
+    castingList.setCellRenderer(UIUtils.iconListRenderer);
 
     countryList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     countryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -133,7 +121,6 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     thumbnailsList.setVisibleRowCount(-1);
     thumbnailsList.addListSelectionListener(new ListSelectionListener() {
-
       @Override
       public void valueChanged(ListSelectionEvent e) {
         // TODO
@@ -144,7 +131,6 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     fanartList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     fanartList.setVisibleRowCount(-1);
     fanartList.addListSelectionListener(new ListSelectionListener() {
-
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         // TODO
@@ -155,29 +141,9 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
     // TODO Add drag and drop image on fanart list
 
-    actorList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    actorList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    actorList.setVisibleRowCount(-1);
-    actorList.setCellRenderer(new DefaultListCellRenderer() {
-
-      @Override
-      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-        if (index >= actors.size()) {
-          return label;
-        }
-        Icon icon = actors.get(index).getImage();
-
-        if (icon != null) {
-          label.setIcon(icon);
-        } else {
-          //label.setIcon(actorDefault.getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT));
-        }
-        return label;
-      }
-    });
+    castingList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    castingList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+    castingList.setVisibleRowCount(-1);
 
     // Disable drag and drop on list until a movie is added
 //    dropFanartTarget.setActive(false);
@@ -187,22 +153,21 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 //    fanartTb.setVisible(setting.fanart);
 //    thumbsScrollPane.setVisible(setting.thumb);
 //    fanartsScrollPane.setVisible(setting.fanart);
-    fanartBack = null;
-  }
 
+  }
 
   @Override
   public void clear() {
     SwingUtilities.invokeLater(new Thread() {
-
       @Override
       public void run() {
 //        dropFanartTarget.setActive(false);
 //        dropThumbTarget.setActive(false);
-        fanartBack = null;
-        fanartModel.clear();
-        thumbnailModel.clear();
-        actorModel.clear();
+
+        castingModel.clear();
+        thumbnailsModel.clear();
+        fanartsModel.clear();
+
         subTitleModel.clear();
         audioModel.clear();
         countryModel.clear();
@@ -219,7 +184,6 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
         star2.setIcon(UIUtils.STAR_EMPTY);
         star3.setIcon(UIUtils.STAR_EMPTY);
         star4.setIcon(UIUtils.STAR_EMPTY);
-        actors.clear();
         validate();
         repaint();
       }
@@ -285,12 +249,12 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   @Override
   public void setMediaInfo(MediaInfo mediaInfo) {
     MovieInfo movieInfo = (MovieInfo) mediaInfo;
-     origTitleField.setText(movieInfo.getOriginalTitle());
-     for(String director : movieInfo.getDirectors()) {
-      directorField.setText(directorField.getText() + (directorField.getText().isEmpty() ? "":",") + director);
+    origTitleField.setText(movieInfo.getOriginalTitle());
+    for (String director : movieInfo.getDirectors()) {
+      directorField.setText(directorField.getText() + (directorField.getText().isEmpty() ? "" : ",") + director);
     }
-    for(String genre : movieInfo.getGenres()) {
-      genreField.setText(genreField.getText() + (genreField.getText().isEmpty() ? "":",") + genre);
+    for (String genre : movieInfo.getGenres()) {
+      genreField.setText(genreField.getText() + (genreField.getText().isEmpty() ? "" : ",") + genre);
     }
     runtimeField.setText("" + movieInfo.getRuntime());
     //synopsisArea.setText(movieInfo.get);
@@ -304,7 +268,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
   @Override
   public WebList getCastingList() {
-    return actorList;
+    return castingList;
   }
 
   @Override
@@ -320,35 +284,6 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
   @Override
   public WebList getSubtitlesList() {
     throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  private class actorImage {
-
-    private String name;
-    private String desc;
-    private ImageIcon img;
-
-    public actorImage(String name, String desc, ImageIcon img) {
-      this.name = name;
-      this.desc = desc;
-      if (img == null) {
-        //this.img = new ImageIcon(actorDefault.getImage().getScaledInstance(actorListDim.width, actorListDim.height, Image.SCALE_DEFAULT));
-      } else {
-        this.img = img;
-      }
-    }
-
-    public ImageIcon getImage() {
-      return img;
-    }
-
-    public String getDesc() {
-      return desc;
-    }
-
-    public String getName() {
-      return name;
-    }
   }
 
   /**
@@ -375,7 +310,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     webToolBar3 = new WebToolBar();
     webLabel5 = new WebLabel();
     jScrollPane3 = new JScrollPane();
-    actorList = new WebList();
+    castingList = new WebList();
     webToolBar4 = new WebToolBar();
     synopsisLbl = new WebLabel();
     synopsScroll = new JScrollPane();
@@ -467,8 +402,8 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     webLabel5.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
     webToolBar3.add(webLabel5);
 
-    actorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    jScrollPane3.setViewportView(actorList);
+    castingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    jScrollPane3.setViewportView(castingList);
 
     webToolBar4.setFloatable(false);
     webToolBar4.setRollover(true);
@@ -578,4 +513,24 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
           .addComponent(fanartsScrollPane, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
     );
   }// </editor-fold>//GEN-END:initComponents
+
+  @Override
+  public DefaultListModel getCastingModel() {
+    return castingModel;
+  }
+
+  @Override
+  public DefaultListModel getThumbnailsModel() {
+    return thumbnailsModel;
+  }
+
+  @Override
+  public DefaultListModel getFanartsModel() {
+    return fanartsModel;
+  }
+
+  @Override
+  public DefaultListModel getSubtitlesModel() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

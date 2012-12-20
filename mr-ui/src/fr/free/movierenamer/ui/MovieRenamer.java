@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.ui.panel.SettingPanel;
 import com.alee.extended.background.BorderPainter;
 import com.alee.extended.filechooser.FilesToChoose;
 import com.alee.extended.filechooser.SelectionMode;
@@ -28,6 +27,7 @@ import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.separator.WebSeparator;
@@ -45,19 +45,20 @@ import fr.free.movierenamer.scrapper.impl.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.panel.IMediaPanel;
-import fr.free.movierenamer.ui.panel.LoadingDialog;
 import fr.free.movierenamer.ui.panel.MoviePanel;
+import fr.free.movierenamer.ui.panel.SettingPanel;
 import fr.free.movierenamer.ui.panel.TvShowPanel;
 import fr.free.movierenamer.ui.res.DragAndDrop;
+import fr.free.movierenamer.ui.res.IIconList;
 import fr.free.movierenamer.ui.res.IconListRenderer;
 import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.res.UILoader;
 import fr.free.movierenamer.ui.res.UIScrapper;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.utils.FileFilter;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.ui.utils.Loading;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
@@ -66,7 +67,6 @@ import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaSubtitlesWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaWorker;
 import fr.free.movierenamer.ui.worker.listener.ListFileListener;
-import fr.free.movierenamer.ui.worker.listener.SearchMediaCastingListener;
 import fr.free.movierenamer.ui.worker.listener.SearchMediaImagesListener;
 import fr.free.movierenamer.ui.worker.listener.SearchMediaInfoListener;
 import fr.free.movierenamer.ui.worker.listener.SearchMediaListener;
@@ -78,12 +78,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.*;
@@ -97,17 +94,18 @@ import javax.swing.event.ListSelectionListener;
  * Class MovieRenamer
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
 public class MovieRenamer extends JFrame {
 
   private static final long serialVersionUID = 1L;
   private final UISettings setting = UISettings.getInstance();
-  private LoadingDialog loading;
   // Current variables
   private MovieRenamerMode currentMode;
   private UIFile currentMedia;
+  private UIScrapper UIMovieScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchMovieScrapper()));
+  private UIScrapper UITvShowScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchTvshowScrapper()));
   // Property change
-  private final PropertyChangeSupport errorSupport;
   private final PropertyChangeSupport settingsChange;
   // Media Panel
   private final MoviePanel moviePnl;
@@ -122,19 +120,21 @@ public class MovieRenamer extends JFrame {
   public static final boolean CLEAR_MEDIALIST = true;
   public static final boolean CLEAR_SEARCHRESULTLIST = true;
   // Border Blue
-  private final BorderPainter blueBorder;
+  private final BorderPainter<? extends JComponent> blueBorder;
   // Model
   private final DefaultComboBoxModel movieScrapperModel;
   private final DefaultComboBoxModel tvshowScrapperModel;
-  // UI scrapper
-  private UIScrapper UIMovieScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchMovieScrapper()));
-  private UIScrapper UITvShowScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchTvshowScrapper()));
   // Worker
+  private ListFilesWorker listFileWorker;
   private SearchMediaWorker searchWorker;
   private SearchMediaInfoWorker infoWorker;
-  private SearchMediaCastingWorker castingWorker;
   private SearchMediaImagesWorker imagesWorker;
   private SearchMediaSubtitlesWorker subtitleWorker;
+  // Model
+  private final DefaultListModel mediaFileNameModel = new DefaultListModel();
+  private final DefaultListModel searchResultModel = new DefaultListModel();
+  // Renderer
+  private final IconListRenderer<IIconList> loaderListRenderer = new IconListRenderer<IIconList>(true);
 
   public MovieRenamer() {
 
@@ -161,21 +161,6 @@ public class MovieRenamer extends JFrame {
     init();
 
     movieModeBtn.setEnabled(false);
-
-    // Create dummy property change support for close loading dialog on error
-    errorSupport = new PropertyChangeSupport(new Object());
-    errorSupport.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("closeLoadingDial")) {
-          if (loading != null && loading.isShowing()) {
-            loading.dispose();
-          }
-        }
-      }
-    });
-
-    loadInterface();
 
     setIconImage(UIUtils.LOGO_32);
     setLocationRelativeTo(null);
@@ -227,11 +212,11 @@ public class MovieRenamer extends JFrame {
       tvshowScrapperModel.addElement(new UIScrapper(scrapper));
     }
 
-    scrapperCb.setRenderer(new IconListRenderer<UIScrapper>());
+    scrapperCb.setRenderer(UIUtils.iconListRenderer);
     scrapperCb.setModel(movieScrapperModel);
     scrapperCb.setSelectedItem(UIMovieScrapper);
 
-    //Add drag and drop listener on mediaList
+    //Add drag and drop listener on mediaFileList
     DragAndDrop dropFile = new DragAndDrop(this, mediaFileList) {
       @Override
       public void getFiles(List<File> files) {
@@ -255,16 +240,17 @@ public class MovieRenamer extends JFrame {
         }
       }
     });
+    mediaFileList.setModel(mediaFileNameModel);
 
     searchResultList.addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         if (!lse.getValueIsAdjusting()) {
-          cancelWorker();
           searchMediaInfo();
         }
       }
     });
+    searchResultList.setModel(searchResultModel);
 
     // file chooser init
     fileChooser.setFilesToChoose(FilesToChoose.all);
@@ -275,74 +261,28 @@ public class MovieRenamer extends JFrame {
   }
 
   /**
-   * Display loading dialog
+   *
+   * @param files
    */
-  private void loadFilesDial() {
-    List<Loading> loadings = new ArrayList<Loading>();
-    loadings.add(new Loading(LoadingDialog.LoadingDialogPos.files, true));
-    loading = new LoadingDialog(this, loadings);
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        loading.setVisible(true);
-      }
-    });
-  }
-
-  public LoadingDialog getLoading() {
-    return loading;
-  }
-
-  private void loadDial(boolean withSearch, boolean withMedia, boolean withPerson, boolean withSubs) {// TODO
-//    List<Loading> loadings = new ArrayList<Loading>();
-//    if (withSearch) {
-//      loadings.add(new Loading(LoadingDialog.LoadingDialogPos.search, true));
-//    }
-//    if (withMedia) {
-//      if (setting.selectFrstRes) {
-//        loadings.add(new Loading(LoadingDialog.LoadingDialogPos.inf, true));
-//        if (setting.movieInfoPanel && setting.thumb) {
-//          loadings.add(new Loading(LoadingDialog.LoadingDialogPos.images, false));
-//        }
-//        if (setting.movieInfoPanel && setting.actorImage) {
-//          loadings.add(new Loading(LoadingDialog.LoadingDialogPos.casting, false));
-//        }
-//      }
-//    }
-//
-//    if (withPerson) {
-//      loadings.add(new Loading(LoadingDialog.LoadingDialogPos.person, true));
-//    }
-//
-//    if (withSubs) {
-//      if (setting.movieInfoPanel && setting.subtitles) {
-//        loadings.add(new Loading(LoadingDialog.LoadingDialogPos.subtitles, false));
-//      }
-//    }
-//    loading = new LoadingDialog(this, loadings);
-//    SwingUtilities.invokeLater(new Runnable() {
-//      @Override
-//      public void run() {
-//        loading.setVisible(true);
-//      }
-//    });
-  }
-
   private void loadFiles(List<File> files) {
+    cancelWorker();
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
-    loadFilesDial();
 
-    ListFilesWorker lfw = new ListFilesWorker(errorSupport, files);
-    ListFileListener listener = new ListFileListener(lfw, this, mediaFileList);
-    lfw.addPropertyChangeListener(listener);
-    lfw.execute();
+    // Add loader image
+    mediaFileNameModel.addElement(new UILoader(mediaFileList));
+    mediaFileList.setCellRenderer(loaderListRenderer);
+
+    listFileWorker = new ListFilesWorker(files);
+    ListFileListener listener = new ListFileListener(listFileWorker, this, mediaFileList, mediaFileNameModel);
+    listFileWorker.addPropertyChangeListener(listener);
+    listFileWorker.execute();
   }
 
   /**
    * Search media on web
    */
   private void searchMedia() {
-
+    cancelWorker();
     searchBtn.setEnabled(false);
     searchField.setEnabled(false);
 
@@ -352,27 +292,27 @@ public class MovieRenamer extends JFrame {
 
     String search = searchField.getText();
     if (search.length() == 0) {
-      JOptionPane.showMessageDialog(MovieRenamer.this, LocaleUtils.i18n("noTextToSearch"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(MovieRenamer.this, LocaleUtils.i18n("noTextToSearch"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME use laf dialog
       return;
     }
 
     clearInterface(!CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
-    if (!loading.isShown()) {
-      loadDial(true, true, false, false);
-    }
-
+    // Add loader image
+    searchResultModel.addElement(new UILoader(mediaFileList));
+    searchResultList.setCellRenderer(loaderListRenderer);
 
     currentMedia.setSearch(search);
 
     MediaScrapper<? extends Media, ? extends MediaInfo> mediaScrapper = ((UIScrapper) scrapperCb.getSelectedItem()).getScrapper();
-    searchWorker = new SearchMediaWorker(errorSupport, currentMedia, mediaScrapper);
-    SearchMediaListener listener = new SearchMediaListener(searchWorker, this, searchResultList, mediaScrapper, searchBtn, searchField);
+    searchWorker = new SearchMediaWorker(currentMedia, mediaScrapper);
+    SearchMediaListener listener = new SearchMediaListener(searchWorker, this, searchResultList, currentMedia, searchBtn, searchField, searchResultModel);
     searchWorker.addPropertyChangeListener(listener);
     searchWorker.execute();
   }
 
   private void searchMediaInfo() {
+    cancelWorker();
     UISearchResult searchResult = getSelectedSearchResult();
     if (searchResult == null) {
       return;
@@ -383,21 +323,17 @@ public class MovieRenamer extends JFrame {
       return;
     }
 
-    infoWorker = new SearchMediaInfoWorker(errorSupport, currentMedia, searchResult);
-    castingWorker = new SearchMediaCastingWorker(errorSupport, searchResult);
-    imagesWorker = new SearchMediaImagesWorker(errorSupport, searchResult, getImagesSCrapper());
-    //subtitleWorker = new SearchMediaSubtitlesWorker(errorSupport, currentMedia, null);
+    infoWorker = new SearchMediaInfoWorker(currentMedia, searchResult);
+    imagesWorker = new SearchMediaImagesWorker(searchResult, getImagesSCrapper());
+    //subtitleWorker = new SearchMediaSubtitlesWorker(currentMedia, null);
 
     SearchMediaInfoListener mediaListener = new SearchMediaInfoListener(infoWorker, this, ipanel);
-    SearchMediaCastingListener castingListener = new SearchMediaCastingListener(castingWorker, this, ipanel.getCastingList());
-    SearchMediaImagesListener imagesListener = new SearchMediaImagesListener(imagesWorker, this, ipanel.getThumbnailsList(), ipanel.getFanartsList());
+    SearchMediaImagesListener imagesListener = new SearchMediaImagesListener(imagesWorker, this, ipanel);
 
     infoWorker.addPropertyChangeListener(mediaListener);
-    castingWorker.addPropertyChangeListener(castingListener);
     imagesWorker.addPropertyChangeListener(imagesListener);
 
     infoWorker.execute();
-    castingWorker.execute();
     imagesWorker.execute();
   }
 
@@ -415,6 +351,9 @@ public class MovieRenamer extends JFrame {
   }
 
   private void cancelWorker() {
+    if (listFileWorker != null && !listFileWorker.isDone()) {
+      listFileWorker.cancel(true);
+    }
     if (searchWorker != null && !searchWorker.isDone()) {
       searchWorker.cancel(true);
     }
@@ -496,11 +435,6 @@ public class MovieRenamer extends JFrame {
 //    }
   }
 
-  private void loadInterface() {// TODO
-
-    setTitle(UISettings.APPNAME + "-" + setting.getVersion() + " " + currentMode.getTitleMode());
-  }
-
   /**
    * Clear Movie Renamer interface
    *
@@ -510,22 +444,18 @@ public class MovieRenamer extends JFrame {
   private void clearInterface(boolean clearMediaList, boolean clearSearchResultList) {
     if (clearMediaList) {
       searchField.setText(null);
+      mediaFileNameModel.removeAllElements();
       mediaFileList.removeAll();
     }
 
     if (clearSearchResultList) {
+      searchResultModel.removeAllElements();
       searchResultList.removeAll();
     }
 
-    IMediaPanel mediaPanel = getCurrentMediaPanel();
-    if (mediaPanel != null) {
-      mediaPanel.clear();
-    }
+    moviePnl.clear();
+    tvShowPanel.clear();
     updateRenamedTitle();
-  }
-
-  public PropertyChangeSupport getErrorSupport() {
-    return errorSupport;
   }
 
   /**
@@ -885,8 +815,8 @@ public class MovieRenamer extends JFrame {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        SettingPanel pnl = new SettingPanel(MovieRenamer.this);
-        pnl.pack();
+        SettingPanel pnl = SettingPanel.getInstance(MovieRenamer.this);
+        pnl.setLocationRelativeTo(MovieRenamer.this);
         pnl.setVisible(true);
       }
     });  }//GEN-LAST:event_settingBtnActionPerformed

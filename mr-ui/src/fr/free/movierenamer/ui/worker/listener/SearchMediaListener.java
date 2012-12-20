@@ -18,23 +18,19 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.button.WebButton;
+import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.text.WebTextField;
-import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
-import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.res.IconListRenderer;
+import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.SearchMediaWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 /**
@@ -43,55 +39,47 @@ import javax.swing.JOptionPane;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaListener extends AbstractListener<List<? extends SearchResult>> {
+public class SearchMediaListener extends AbstractListener<List<UISearchResult>> {
 
   private final WebList searchResultList;
-  private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
   private final WebButton searchBtn;
   private final WebTextField searchField;
+  private final UIFile media;
+  private final DefaultListModel searchResultModel;
 
-  public SearchMediaListener(SearchMediaWorker worker, MovieRenamer mr, WebList searchResultList, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper, WebButton searchBtn, WebTextField searchField) {
+  public SearchMediaListener(SearchMediaWorker worker, MovieRenamer mr, WebList searchResultList, UIFile media, WebButton searchBtn, WebTextField searchField, DefaultListModel searchResultModel) {
     super(mr, worker);
     this.searchResultList = searchResultList;
-    this.scrapper = scrapper;
+    this.media = media;
     this.searchBtn = searchBtn;
     this.searchField = searchField;
-  }
-
-  @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.search;
+    this.searchResultModel = searchResultModel;
   }
 
   @Override
   protected void done() throws Exception {
-    DefaultListModel searchResModel = new DefaultListModel();
+    // Remove loader
+    searchResultModel.removeAllElements();
     try {
-      List<? extends SearchResult> results = worker.get();
+      List<UISearchResult> results = worker.get();
 
-      // // Sort result by similarity and year //FIXME Sort result by similarity and year
-      // if (count.size() > 1 && setting.sortBySimiYear) {
-      // Levenshtein.sortByLevenshteinDistanceYear(currentMedia.getSearch(), currentMedia.getYear(), results);
-      // }
+//      LevenshteinSort.sort(results, media.getSearch()); // TODO add option
+//      results = YearSort.sort(results, media.getYear()); // TODO add option
+//      Collections.sort(results, new AlphabeticSort());// TODO add option
 
-      // searchLbl.setText(LocaleUtils.i18n("search") + " : " + count);//FIXME update labels
+      searchResultList.setCellRenderer(UISettings.getInstance().isShowThumb() ? UIUtils.iconListRenderer : new DefaultListCellRenderer());
+      searchResultModel.addElements(results);
 
-      for (SearchResult result : results) {
-        searchResModel.addElement(new UISearchResult((Media) result, scrapper));
-      }
-
-      searchResultList.setCellRenderer(UISettings.getInstance().isShowThumb() ? new IconListRenderer<UISearchResult>() : new DefaultListCellRenderer());
-      searchResultList.setModel(searchResModel);
-
-      if (searchResModel.isEmpty()) {
+      if (searchResultModel.isEmpty()) {
         JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       } else if (UISettings.getInstance().isSelectFirstResult()) {
         searchResultList.setSelectedIndex(0);
       }
-      searchBtn.setEnabled(true);
-      searchField.setEnabled(true);
     } catch (CancellationException e) {
       // Worker canceled
+    } finally {
+      searchBtn.setEnabled(true);
+      searchField.setEnabled(true);
     }
   }
 }

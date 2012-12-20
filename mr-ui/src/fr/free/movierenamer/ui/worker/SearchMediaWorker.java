@@ -22,11 +22,14 @@ import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import java.beans.PropertyChangeSupport;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.swing.Icon;
 
 /**
  * Class SearchMediaWorker
@@ -34,39 +37,41 @@ import java.util.logging.Level;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaWorker extends AbstractWorker<List<? extends SearchResult>> {
+public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
 
   private final UIFile media;
   private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
+  private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
    * Constructor arguments
    *
-   * @param errorSupport
    * @param media
    * @param scrapper
    */
-  public SearchMediaWorker(PropertyChangeSupport errorSupport, UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
-    super(errorSupport);
+  public SearchMediaWorker(UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
+    super();
     this.media = media;
     this.scrapper = scrapper;
   }
 
   @Override
-  public List<? extends SearchResult> executeInBackground() throws Exception {
-    List<? extends SearchResult> results = new ArrayList<Media>();
+  public List<UISearchResult> executeInBackground() throws Exception {
+    List<UISearchResult> results = new ArrayList<UISearchResult>();
+    List<? extends Media> res;
 
     if (media != null && scrapper != null) {
       String search = media.getSearch();
-      results = (List<? extends SearchResult>) scrapper.search(search);
-      int count = results.size();
+      res = (List<? extends Media>) scrapper.search(search);
+      int count = res.size();
+
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
           UISettings.LOGGER.log(Level.INFO, "SearchMediaWorker Cancelled");
-          return new ArrayList<Media>();
+          return new ArrayList<UISearchResult>();
         }
-        double progress = (i + 1) / (double) count;
-        setProgress((int) (progress * 100));
+        Icon icon = ImageUtils.getIcon(res.get(i).getURL(), searchListDim, "ui/nothumb.png");
+        results.add(new UISearchResult(res.get(i), scrapper, icon));
       }
     }
 

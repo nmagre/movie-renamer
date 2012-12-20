@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
-import java.beans.PropertyChangeSupport;
 import javax.swing.JPanel;
 
 /**
@@ -31,13 +30,12 @@ import javax.swing.JPanel;
 public class SearchPersonWorker extends AbstractWorker<Void> {
 
   /**
-   * @param errorSupport
    * @param parent
    * @param actorsPane
    * @param castingInfo
    */
-  public SearchPersonWorker(PropertyChangeSupport errorSupport, MovieRenamer parent, JPanel actorsPane, CastingInfo castingInfo) {
-    super(errorSupport);
+  public SearchPersonWorker(MovieRenamer parent, JPanel actorsPane, CastingInfo castingInfo) {
+    super();
     // TODO Auto-generated constructor stub
   }
 

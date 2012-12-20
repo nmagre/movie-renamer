@@ -29,7 +29,7 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIFile implements IIconList {
+public class UIFile implements ISort {
 
   private final FileInfo file;
   private final MediaTag mtag;
@@ -83,6 +83,10 @@ public class UIFile implements IIconList {
     file.setSearch(search);
   }
 
+  public int getYear() {
+     return file.getYear();
+  }
+
   /**
    * Get media icon to display in list
    *
@@ -107,5 +111,15 @@ public class UIFile implements IIconList {
 
   public final String getSearch() {
     return file.getSearch();
+  }
+
+  @Override
+  public void setIcon(Icon icon) {
+    // DO nothing
+  }
+
+  @Override
+  public String getName() {
+    return toString();
   }
 }

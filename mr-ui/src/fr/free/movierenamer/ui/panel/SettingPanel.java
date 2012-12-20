@@ -26,11 +26,14 @@ import fr.free.movierenamer.ui.panel.PanelGenerator.Component;
 import fr.free.movierenamer.ui.panel.setting.SettingPanelGen;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.SettingsProperty;
+import fr.free.movierenamer.ui.settings.UISettings.UISupportedLanguage;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.swing.ButtonGroup;
@@ -47,6 +50,7 @@ public class SettingPanel extends JDialog {
 
   private static final int SUBLEVEL = 2;
   private static final long serialVersionUID = 1L;
+  private static SettingPanel instance = null;
 
   // Panel
   public enum SettingCategory {
@@ -94,7 +98,7 @@ public class SettingPanel extends JDialog {
     scanSubfolder(SettingsProperty.scanSubfolder, SettingCategory.GENERAL, SettingGroup.INTERFACE, null),
     movieNfoType(SettingsProperty.movieNfoType, SettingCategory.GENERAL, SettingGroup.NFO, nfoRBtns, true),
     checkUpdate(SettingsProperty.checkUpdate, SettingCategory.GENERAL, SettingGroup.UPDATE, null),
-    appLanguage(SettingsProperty.appLanguage, SettingCategory.GENERAL, SettingGroup.LANGUAGE, null),
+    appLanguage(SettingsProperty.appLanguage, SettingCategory.GENERAL, SettingGroup.LANGUAGE, UIlanguageRBtns, true),
     // MEDIAINFO
     showMediaPanel(SettingsProperty.showMediaPanel, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
     showActorImage(SettingsProperty.showActorImage, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
@@ -185,13 +189,6 @@ public class SettingPanel extends JDialog {
     }
 
     /**
-     * @return the provider
-     */
-    public UISettings.SettingProvider getProvider() {
-      return property.getProvider();
-    }
-
-    /**
      * @return the key
      */
     public Settings.IProperty getKey() {
@@ -234,32 +231,40 @@ public class SettingPanel extends JDialog {
     }
   }
   // Button group
-  private static ButtonGroup nfoGroup;
-  private static ButtonGroup languageGroup;
+  private final ButtonGroup nfoGroup;
+  private final ButtonGroup UIlanguageGroup;
   // List component
   private static List<JComponent> nfoRBtns;
-  private static List<JComponent> languageRBtns;
+  private static List<JComponent> UIlanguageRBtns;
   private final UISettings settings = UISettings.getInstance();
   private final MovieRenamer mr;
+
+  public static SettingPanel getInstance(MovieRenamer mr) {
+    if (instance == null) {
+      instance = new SettingPanel(mr);
+    }
+    return instance;
+  }
 
   /**
    * Creates new form Setting
    *
    * @param mr Movie Renamer main interface
    */
-  public SettingPanel(MovieRenamer mr) {
+  private SettingPanel(MovieRenamer mr) {
     this.mr = mr;
     initComponents();
     nfoGroup = new ButtonGroup();
-    languageGroup = new ButtonGroup();
+    UIlanguageGroup = new ButtonGroup();
 
     // Normal/Advanced setting rbtn
     settingsGroup.setSelected(settings.isShowAdvancedSettings() ? advancedRbtn.getModel() : normalRbtn.getModel(), true);
 
     nfoRBtns = createRadioButtonList(NfoInfo.NFOtype.class, nfoGroup);
-    //languageRBtns = createList(, nfoGroup);
+    UIlanguageRBtns = createRadioButtonList(UISupportedLanguage.class, UIlanguageGroup);
 
     nfoGroup.setSelected(((WebRadioButton) nfoRBtns.get(settings.coreInstance.getMovieNfoType().ordinal())).getModel(), true);
+    UIlanguageGroup.setSelected(((WebRadioButton) UIlanguageRBtns.get(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()).ordinal())).getModel(), true);
 
     for (SettingCategory settingcat : SettingCategory.values()) {
       SettingPanelGen panel = settingcat.getPanel();
@@ -267,7 +272,8 @@ public class SettingPanel extends JDialog {
       webTabbedPane1.add(LocaleUtils.i18nExt(settingcat.getName()), panel);
     }
     pack();
-    setLocationRelativeTo(this.mr);
+    setTitle(LocaleUtils.i18nExt("settings"));
+    setIconImage(UIUtils.LOGO_32);
   }
 
   /**
@@ -424,7 +430,7 @@ public class SettingPanel extends JDialog {
   }// </editor-fold>//GEN-END:initComponents
 
   private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
-    setVisible(false);
+    dispose();
   }//GEN-LAST:event_cancelBtnActionPerformed
 
   private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
@@ -453,15 +459,24 @@ public class SettingPanel extends JDialog {
         }
       }
 
-      for(JComponent component : nfoRBtns) {
-        if(((WebRadioButton) component).isSelected()) {
+      for (JComponent component : nfoRBtns) {
+        if (((WebRadioButton) component).isSelected()) {
           Settings.SettingsProperty.movieNfoType.setValue(NfoInfo.NFOtype.valueOf(component.getName()));
+          break;
+        }
+      }
+
+      for (JComponent component : UIlanguageRBtns) {
+        if (((WebRadioButton) component).isSelected()) {
+          Settings.SettingsProperty.appLanguage.setValue(new Locale(UISupportedLanguage.valueOf(component.getName()).name()).getLanguage());
           break;
         }
       }
     }
 
     mr.updateRenamedTitle();
+    setVisible(false);
+    dispose();
   }//GEN-LAST:event_saveBtnActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.alee.laf.radiobutton.WebRadioButton advancedRbtn;

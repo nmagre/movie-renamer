@@ -17,10 +17,10 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
 import java.awt.Component;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JList;
 
 /**
@@ -32,17 +32,28 @@ import javax.swing.JList;
 public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
 
   private static final long serialVersionUID = 1L;
+  private boolean horizontalAlign = false;
+
+  public IconListRenderer(boolean horizontalAlign) {
+    this.horizontalAlign = horizontalAlign;
+  }
 
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-    JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+    WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     IIconList obj = (IIconList) value;
+
+    if(horizontalAlign){
+      label.setHorizontalAlignment(WebLabel.CENTER);
+    }
 
     Icon icon = obj.getIcon();
 
     if (icon != null) {
       label.setIcon(icon);
     }
+
+    label.setOpaque(true);
     return label;
   }
 }

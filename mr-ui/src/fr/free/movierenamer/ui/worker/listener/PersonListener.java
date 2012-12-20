@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.worker.SearchPersonWorker;
 
 /**
@@ -31,11 +30,6 @@ public class PersonListener extends AbstractListener<Void> {
 
   public PersonListener(SearchPersonWorker worker, MovieRenamer mr) {
     super(mr, worker);
-  }
-
-  @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.person;
   }
 
   @Override

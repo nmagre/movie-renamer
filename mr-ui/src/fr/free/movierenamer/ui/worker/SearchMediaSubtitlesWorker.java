@@ -20,7 +20,6 @@ package fr.free.movierenamer.ui.worker;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.res.UIFile;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +41,8 @@ public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
    * @param media
    * @param scrapper
    */
-  public SearchMediaSubtitlesWorker(PropertyChangeSupport errorSupport, UIFile media, SubtitleScrapper scrapper) {
-    super(errorSupport);
+  public SearchMediaSubtitlesWorker(UIFile media, SubtitleScrapper scrapper) {
+    super();
     this.media = media;
     this.scrapper = scrapper;
   }

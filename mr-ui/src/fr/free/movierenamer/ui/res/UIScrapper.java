@@ -29,7 +29,7 @@ import javax.swing.ImageIcon;
  * @author Simon QUÉMÉNEUR
  */
 public class UIScrapper implements IIconList {
-  
+
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
 
   public UIScrapper(MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
@@ -40,11 +40,11 @@ public class UIScrapper implements IIconList {
   public Icon getIcon() {
     return new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scrapper.getName().toLowerCase())));
   }
-  
+
   public MediaScrapper<? extends Media, ? extends MediaInfo> getScrapper() {
     return scrapper;
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if(obj ==null || !(obj instanceof UIScrapper)) {
@@ -60,10 +60,15 @@ public class UIScrapper implements IIconList {
     hash = 29 * hash + (this.scrapper != null ? this.scrapper.hashCode() : 0);
     return hash;
   }
-  
+
   @Override
   public String toString() {
     return scrapper.getName();
+  }
+
+  @Override
+  public void setIcon(Icon icon) {
+    // DO nothing
   }
 
 }

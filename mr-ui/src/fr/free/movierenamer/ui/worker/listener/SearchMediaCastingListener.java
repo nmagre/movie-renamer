@@ -17,15 +17,16 @@
  */
 package fr.free.movierenamer.ui.worker.listener;
 
-import com.alee.laf.list.WebList;
+import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.res.IconListRenderer;
+import fr.free.movierenamer.ui.panel.IMediaPanel;
 import fr.free.movierenamer.ui.res.UIPersonImage;
+import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
+import java.awt.Dimension;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import javax.swing.DefaultListModel;
 
 /**
  * Class SearchMediaCastingListener
@@ -35,28 +36,27 @@ import javax.swing.DefaultListModel;
  */
 public class SearchMediaCastingListener extends AbstractListener<List<UIPersonImage>> {
 
-  private final WebList castingList;
+  private final IMediaPanel ipanel;
+  private final Dimension actorListDim = new Dimension(30, 53);
 
-  public SearchMediaCastingListener(SearchMediaCastingWorker worker, MovieRenamer mr, WebList castingList) {
+  public SearchMediaCastingListener(SearchMediaCastingWorker worker, MovieRenamer mr, IMediaPanel ipanel) {
     super(mr, worker);
-    this.castingList = castingList;
+    this.ipanel = ipanel;
   }
 
   @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.casting;
-  }
-
-  @Override
-  protected void done() throws InterruptedException, ExecutionException {
-    DefaultListModel personsListModel = new DefaultListModel();
+  protected void done() throws Exception {
+    List<URI> imagesUri = new ArrayList<URI>();
     List<UIPersonImage> infos = worker.get();
+    final DefaultListModel castingModel = ipanel.getCastingModel();
 
-    for (UIPersonImage info : infos) {
-      personsListModel.addElement(info);
+    for(UIPersonImage info : infos){
+      imagesUri.add(info.getUri());
     }
+    
+    castingModel.addElements(infos);
 
-    castingList.setCellRenderer(new IconListRenderer<UIPersonImage>());
-    castingList.setModel(personsListModel);
+    ImageWorker<UIPersonImage> imagesWorker = new ImageWorker<UIPersonImage>(imagesUri, castingModel, actorListDim, "ui/unknown.png");
+    imagesWorker.execute();
   }
 }

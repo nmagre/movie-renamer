@@ -3,7 +3,7 @@
   <description>Build Movie Renamer</description>
     
   <target name="-pre-init">
-    <property file="src/fr/free/movierenamer/ui/settings/Settings.properties"/>
+    <property file="src/fr/free/movierenamer/ui/settings/UISettings.properties"/>
     <property name="dist.jar" value="dist/${application.name}-${application.version}.jar" />
   </target>
 
@@ -26,8 +26,8 @@
     <copy file="Izpack/install.xml" tofile="Izpack/install-tmp.xml" >
       <filterchain>
          <replacetokens>
-            <token key="JARFILE" value="${apps}-${apps.version}.jar"/>
-            <token key="VERSION" value="${apps.version}"/>
+            <token key="JARFILE" value="${application.name}-${application.version}.jar"/>
+            <token key="VERSION" value="${application.version}"/>
           </replacetokens>
       </filterchain>
     </copy>
