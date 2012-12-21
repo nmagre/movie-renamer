@@ -42,7 +42,7 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Magré Nicolas
  */
-public class MoviePanel extends WebPanel implements IMediaPanel {
+public class MoviePanel extends MediaPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private WebList castingList;
@@ -190,61 +190,7 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
     });
   }
 
-  /**
-   * Set star compared with rate
-   *
-   * @param rate
-   */
-  private void setRate(Float rate) {// TODO export this, (same code as tvshowpanel)
-    if (rate < 0.00) {
-      return;
-    }
-    rate /= 2;
-    int n = rate.intValue();
-    switch (n) {
-      case 0:
-        break;
-      case 1:
-        star.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star1.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 2:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star2.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 3:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        star2.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star3.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 4:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        star2.setIcon(UIUtils.STAR);
-        star3.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star4.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 5:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        star2.setIcon(UIUtils.STAR);
-        star3.setIcon(UIUtils.STAR);
-        star4.setIcon(UIUtils.STAR);
-        break;
-      default:
-        break;
-    }
-  }
+
 
   @Override
   public void setMediaInfo(MediaInfo mediaInfo) {
@@ -531,6 +477,46 @@ public class MoviePanel extends WebPanel implements IMediaPanel {
 
   @Override
   public DefaultListModel getSubtitlesModel() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return null;
+  }
+
+  @Override
+  public WebList getBannersList() {
+    return null;
+  }
+
+  @Override
+  public WebList getCdartsList() {
+    return null;
+  }
+
+  @Override
+  public WebList getLogosList() {
+    return null;
+  }
+
+  @Override
+  public WebList getClearartsList() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getBannersModel() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getCdartsModel() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getLogosModel() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getClearartsModel() {
+    return null;
   }
 }

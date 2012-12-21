@@ -45,7 +45,7 @@ import javax.swing.border.BevelBorder;
  *
  * @author Magré Nicolas
  */
-public class TvShowPanel extends WebPanel implements IMediaPanel {
+public class TvShowPanel extends MediaPanel {
 
   private static final long serialVersionUID = 1L;
   private MovieInfo tvShowInfo;
@@ -569,22 +569,62 @@ public class TvShowPanel extends WebPanel implements IMediaPanel {
   // End of variables declaration//GEN-END:variables
 
   @Override
-  public com.alee.laf.list.DefaultListModel getCastingModel() {
+  public DefaultListModel getCastingModel() {
     return castingModel;
   }
 
   @Override
-  public com.alee.laf.list.DefaultListModel getThumbnailsModel() {
+  public DefaultListModel getThumbnailsModel() {
     return thumbnailsModel;
   }
 
   @Override
-  public com.alee.laf.list.DefaultListModel getFanartsModel() {
+  public DefaultListModel getFanartsModel() {
     return fanartsModel;
   }
 
+ @Override
+  public DefaultListModel getSubtitlesModel() {
+    return null;
+  }
+
   @Override
-  public com.alee.laf.list.DefaultListModel getSubtitlesModel() {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public WebList getBannersList() {
+    return null;
+  }
+
+  @Override
+  public WebList getCdartsList() {
+    return null;
+  }
+
+  @Override
+  public WebList getLogosList() {
+    return null;
+  }
+
+  @Override
+  public WebList getClearartsList() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getBannersModel() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getCdartsModel() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getLogosModel() {
+    return null;
+  }
+
+  @Override
+  public DefaultListModel getClearartsModel() {
+    return null;
   }
 }

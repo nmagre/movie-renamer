@@ -18,17 +18,22 @@
 package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.list.DefaultListModel;
+import com.alee.laf.list.WebList;
+import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.IMediaPanel;
-import fr.free.movierenamer.ui.res.UILoader;
+import fr.free.movierenamer.ui.panel.MediaPanel;
 import fr.free.movierenamer.ui.res.UIMediaImage;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
 import java.awt.Dimension;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Class SearchMediaImagesListener
@@ -38,54 +43,96 @@ import java.util.List;
  */
 public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImage>> {
 
-  private final  IMediaPanel ipanel;
-  private final Dimension thumbDim = new Dimension(160, 200);
-  private final Dimension fanartDim = new Dimension(200, 160);
+  private static MediaPanel mediapanel;
+  private static final Dimension thumbDim = new Dimension(120, 200);
+  private static final Dimension fanartDim = new Dimension(200, 160);
 
-  public SearchMediaImagesListener(SearchMediaImagesWorker worker, MovieRenamer mr, IMediaPanel ipanel) {
+  public SearchMediaImagesListener(SearchMediaImagesWorker worker, MovieRenamer mr, final MediaPanel ipanel) {
     super(mr, worker);
-    this.ipanel = ipanel;
+    mediapanel = ipanel;
+  }
+
+  private enum UIImageCategoryProperty {
+
+    thumb(mediapanel.getThumbnailsList(), mediapanel.getThumbnailsModel(), ImageCategoryProperty.thumb),
+    fanart(mediapanel.getFanartsList(), mediapanel.getFanartsModel(), ImageCategoryProperty.fanart),
+    banner(mediapanel.getBannersList(), mediapanel.getBannersModel(), ImageCategoryProperty.banner),
+    cdart(mediapanel.getCdartsList(), mediapanel.getCdartsModel(), ImageCategoryProperty.cdart),
+    logo(mediapanel.getLogosList(), mediapanel.getLogosModel(), ImageCategoryProperty.logo),
+    clearart(mediapanel.getClearartsList(), mediapanel.getClearartsModel(), ImageCategoryProperty.clearart);
+    private final WebList list;
+    private final DefaultListModel model;
+    private Dimension dim;
+    private final ImageCategoryProperty imgProperty;
+    private List<URI> urls = new ArrayList<URI>();
+
+    private UIImageCategoryProperty(WebList list, DefaultListModel model, ImageCategoryProperty imgProperty) {
+      this.list = list;
+      this.model = model;
+      this.imgProperty = imgProperty;
+      this.dim = thumbDim;
+    }
+
+    private UIImageCategoryProperty(WebList list, DefaultListModel model, ImageCategoryProperty imgProperty, Dimension dim) {
+      this(list, model, imgProperty);
+      this.dim = dim;
+    }
+
+    public void addMediaImage(UIMediaImage image) {
+      try {
+        urls.add(image.getUrl().toURI());
+        image.setIcon(UIUtils.getAnimatedLoader(list));
+        model.addElement(image);
+      } catch (URISyntaxException ex) {
+        UISettings.LOGGER.log(Level.WARNING, ex.getMessage());
+      }
+    }
+
+    public List<URI> getUrls() {
+      return Collections.unmodifiableList(urls);
+    }
+
+    public DefaultListModel getModel() {
+      return model;
+    }
+
+    public ImageCategoryProperty getImageProperty() {
+      return imgProperty;
+    }
+
+    public Dimension getDimension() {
+      return dim;
+    }
   }
 
   @Override
   protected void done() throws Exception {
-    List<URI> fanartUrl = new ArrayList<URI>();
-    List<URI> thumbUrl = new ArrayList<URI>();
-    final DefaultListModel thumbnailsListModel = ipanel.getThumbnailsModel();
-    final DefaultListModel fanartsListModel = ipanel.getFanartsModel();
 
     List<UIMediaImage> images = worker.get();
     for (UIMediaImage image : images) {
-      switch (image.getType()) {
-        case thumb:
-          thumbUrl.add(image.getUrl().toURI());
-          image.setIcon(UIUtils.getAnimatedLoader(ipanel.getThumbnailsList()));
-          thumbnailsListModel.addElement(image);
-          break;
-        case fanart:
-          fanartUrl.add(image.getUrl().toURI());
-          image.setIcon(UIUtils.getAnimatedLoader(ipanel.getFanartsList()));
-          fanartsListModel.addElement(image);
-          break;
-        case banner:
-          // TODO
-          break;
-        case cdart:
-          // TODO
-          break;
-        case logo:
-          // TODO
-          break;
-        case clearart:
-          // TODO
-          break;
-      }
+      addMediaImage(image);
     }
 
-    ImageWorker<UIMediaImage> fanartWorker = new ImageWorker<UIMediaImage>(fanartUrl, fanartsListModel, fanartDim, null);
-    ImageWorker<UIMediaImage> thumbWorker = new ImageWorker<UIMediaImage>(thumbUrl, thumbnailsListModel, thumbDim, null);
+    for (UIImageCategoryProperty key : UIImageCategoryProperty.values()) {
+      ImageWorker<UIMediaImage> imageWorker = new ImageWorker<UIMediaImage>(key.getUrls(), key.getModel(), key.getDimension(), null);
+      imageWorker.execute();
+      mr.addImageWorker(imageWorker);
+    }
+  }
 
-    fanartWorker.execute();
-    thumbWorker.execute();
+  private void addMediaImage(UIMediaImage image) {
+    UIImageCategoryProperty property = getProperty(image.getType());
+    if (property != null && property.getModel() != null) {
+      property.addMediaImage(image);
+    }
+  }
+
+  private UIImageCategoryProperty getProperty(ImageCategoryProperty key) {
+    for (UIImageCategoryProperty property : UIImageCategoryProperty.values()) {
+      if (property.getImageProperty().equals(key)) {
+        return property;
+      }
+    }
+    return null;
   }
 }
