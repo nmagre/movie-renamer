@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.searchinfo;
 
-
+import fr.free.movierenamer.searchinfo.SearchResult.SearchResultType;
 
 /**
  * Class Person
@@ -64,6 +64,9 @@ public class Person extends SearchResult {
 
   @Override
   public String toString() {
-    return String.format("%s (id:%d))", name, personId);
+    if (personId > 0) {
+      return super.toString() + String.format(" (id:%d))", personId);
+    }
+    return super.toString();
   }
 }

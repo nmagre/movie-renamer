@@ -53,5 +53,10 @@ public class TvShow extends Media {
 
     return false;
   }
+  
+  @Override
+  public String toString() {
+     return super.toString();
+  }
 
 }

@@ -28,13 +28,18 @@ import java.net.URL;
 public class Image extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
-  
+
   protected Image() {
     // used by serializer
   }
 
   public Image(String name, URL image) {
     super(name, image, null);
+  }
+
+  @Override
+  public String toString() {
+    return super.toString();
   }
 
 }

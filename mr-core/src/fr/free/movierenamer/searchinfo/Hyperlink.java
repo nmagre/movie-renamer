@@ -74,10 +74,10 @@ public abstract class Hyperlink extends SearchResult {
 
   @Override
   public String toString() {
-    if (url == null) {
-      return super.toString();
+    if (url != null) {
+      return super.toString() + String.format(" (url:%s)", url.toExternalForm());
     }
 
-    return String.format("%s (url:%s)", name, url.toExternalForm());
+    return super.toString();
   }
 }

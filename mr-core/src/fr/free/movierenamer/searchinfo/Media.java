@@ -60,8 +60,20 @@ public abstract class Media extends Hyperlink {
   }
 
   @Override
-  public final String toString() {
-    return String.format("%s (%04d) (id:%d)", name, year < 0 ? 0 : year, mediaId < 0 ? 0 : mediaId);
+  public String toString() {
+    if(year > 0) {
+      if(mediaId > 0) {
+        return super.toString() + String.format(" (%04d) (id:%d)", year, mediaId);
+      } else {
+        return super.toString() + String.format(" (%04d)", year);
+      }
+    } else {
+      if(mediaId > 0) {
+        return super.toString() + String.format(" (id:%d)", mediaId);
+      } else {
+        return super.toString();
+      }
+    }
   }
 
 }
