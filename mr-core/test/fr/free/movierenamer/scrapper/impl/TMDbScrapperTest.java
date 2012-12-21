@@ -94,7 +94,8 @@ public class TMDbScrapperTest extends MovieScrapperTest {
     List<ImageInfo> images = tmdb.getImages(new Movie(1858, null, null, -1, -1));
     
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
-    Assert.assertEquals("http://cf2.imgobject.com/t/p/original/p4OHBbXfxToWF4e36uEhQMSidWu.jpg", images.get(0).getHref().toExternalForm());
+    Assert.assertEquals(Integer.valueOf(1920), images.get(0).getWidth());
+    Assert.assertEquals(Integer.valueOf(1080), images.get(0).getHeight());
   }
 
 }
