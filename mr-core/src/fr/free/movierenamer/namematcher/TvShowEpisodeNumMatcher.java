@@ -47,7 +47,7 @@ public class TvShowEpisodeNumMatcher {
     SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
     SxEPattern5("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
     SxEPattern6("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
-    SxEPattern7("([0-9]{2}) ([0-9]{2})(?:\\D|$)");
+    SxEPattern7("([0-9]{2}) ?([0-9]{2})(?:\\D|$)");
     private Pattern pattern;
 
     private TvShowNumPattern(String pattern) {
