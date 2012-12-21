@@ -21,12 +21,13 @@ import javax.swing.Icon;
 
 /**
  * Interface IIconList
- * 
+ *
  * @author Nicolas Magré
  */
 public interface IIconList {
-  Icon getIcon();
+  public Icon getIcon();
+  public void setIcon(Icon icon);
 
   @Override
-  String toString();
+  public String toString();
 }

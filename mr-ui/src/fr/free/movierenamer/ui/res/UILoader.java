@@ -1,6 +1,5 @@
 /*
- * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012 duffy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,36 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.panel;
+package fr.free.movierenamer.ui.res;
 
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
-import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.utils.UIUtils;
+import javax.swing.Icon;
 
 /**
- * Interface IMediaPanel
+ * Class UILoader
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
-public interface IMediaPanel {
+public class UILoader implements IIconList{
 
-  /**
-   * Clear media panel
-   */
-  public void clear();
+  private final WebList list;
+  public UILoader(WebList list){
+    this.list = list;
+  }
 
-  public void setMediaInfo(MediaInfo mediaInfo);
+  @Override
+  public Icon getIcon() {
+    return UIUtils.getAnimatedLoader(list);
+  }
 
-  public MediaInfo getMediaInfo();
+  @Override
+  public void setIcon(Icon icon) {
+    // DO nothing
+  }
 
-  public WebList getCastingList();
-  public WebList getThumbnailsList();
-  public WebList getFanartsList();
-  public WebList getSubtitlesList();
-
-  public DefaultListModel getCastingModel();
-  public DefaultListModel getThumbnailsModel();
-  public DefaultListModel getFanartsModel();
-  public DefaultListModel getSubtitlesModel();
+  @Override
+  public String toString() {
+    return "";
+  }
 
 }

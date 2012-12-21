@@ -24,12 +24,8 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.res.UIMediaImage;
 import fr.free.movierenamer.ui.res.UISearchResult;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Icon;
 
 /**
  * Class SearchMediaImagesWorker
@@ -41,18 +37,16 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
 
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
-  private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
    * Constructor arguments
    *
-   * @param errorSupport
    * @param searchResult
    * @param scrapper
    */
   @SuppressWarnings("unchecked")
-  public SearchMediaImagesWorker(PropertyChangeSupport errorSupport, UISearchResult searchResult, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
-    super(errorSupport);
+  public SearchMediaImagesWorker(UISearchResult searchResult, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
+    super();
     this.searchResult = searchResult;
     this.scrapper = (MediaScrapper<Media, MediaInfo>) scrapper;
   }
@@ -67,16 +61,12 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
       Media media = searchResult.getSearchResult();
       infos = scrapper.getImages(media);
       int count = infos.size();
-      System.out.println("Images size : " + count);
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
           return new ArrayList<UIMediaImage>();
         }
-        Icon icon = ImageUtils.getIcon(infos.get(i).getHref(), searchListDim, "nothumb.png");
-        mediaImages.add(new UIMediaImage(infos.get(i), icon));
-        System.out.println("Add " + infos.get(i).getCategory().name() + " : " + infos.get(i).getHref());
-        double progress = (i + 1) / (double) count;
-        setProgress((int) (progress * 100));
+
+        mediaImages.add(new UIMediaImage(infos.get(i), null));
       }
     }
 

@@ -22,7 +22,6 @@ import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UISearchResult;
-import java.beans.PropertyChangeSupport;
 
 /**
  * Class SearchMediaInfosWorker
@@ -39,13 +38,12 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
   /**
    * Constructor arguments
    *
-   * @param errorSupport
    * @param file
    * @param searchResult
    */
   @SuppressWarnings("unchecked")
-  public SearchMediaInfoWorker(PropertyChangeSupport errorSupport, UIFile file, UISearchResult searchResult) {
-    super(errorSupport);
+  public SearchMediaInfoWorker(UIFile file, UISearchResult searchResult) {
+    super();
     this.file = file;
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;

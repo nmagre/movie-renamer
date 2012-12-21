@@ -1,5 +1,4 @@
 /*
- * Movie Renamer
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,36 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.panel;
-
-import com.alee.laf.list.DefaultListModel;
-import com.alee.laf.list.WebList;
-import fr.free.movierenamer.info.MediaInfo;
+package fr.free.movierenamer.ui.res;
 
 /**
- * Interface IMediaPanel
+ * Interface ISort
  *
  * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
  */
-public interface IMediaPanel {
-
-  /**
-   * Clear media panel
-   */
-  public void clear();
-
-  public void setMediaInfo(MediaInfo mediaInfo);
-
-  public MediaInfo getMediaInfo();
-
-  public WebList getCastingList();
-  public WebList getThumbnailsList();
-  public WebList getFanartsList();
-  public WebList getSubtitlesList();
-
-  public DefaultListModel getCastingModel();
-  public DefaultListModel getThumbnailsModel();
-  public DefaultListModel getFanartsModel();
-  public DefaultListModel getSubtitlesModel();
-
+public interface ISort extends IIconList{
+  public String getName();
 }

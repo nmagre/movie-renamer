@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.info.CastingInfo;
+import java.net.URI;
 import javax.swing.Icon;
 
 /**
@@ -28,7 +29,7 @@ import javax.swing.Icon;
  */
 public class UIPersonImage implements IIconList {
   private final CastingInfo person;
-  private final Icon icon;
+  private Icon icon;
 
   public UIPersonImage(CastingInfo person, Icon icon) {
     this.person = person;
@@ -48,8 +49,17 @@ public class UIPersonImage implements IIconList {
     return person;
   }
 
+  public URI getUri() {
+    return person.getPicturePath();
+  }
+
   @Override
   public String toString() {
     return (person != null) ? person.getName() : null;
+  }
+
+  @Override
+  public void setIcon(Icon icon) {
+    this.icon = icon;
   }
 }

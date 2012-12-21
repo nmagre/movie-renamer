@@ -46,7 +46,6 @@ public abstract class DragAndDrop implements DropTargetListener {
 
   public DragAndDrop(MovieRenamer parent, JList list) {
     mr = parent;
-    files = new ArrayList<File>();
   }
 
   @Override
@@ -72,6 +71,8 @@ public abstract class DragAndDrop implements DropTargetListener {
     // We block the UI thread (EDT) during file process to avoid any other operation
     // This is the only case where it's acceptable to do that
 
+    files = new ArrayList<File>();
+
     try {
       mr.setCursor(MovieRenamer.hourglassCursor);
 
@@ -95,9 +96,9 @@ public abstract class DragAndDrop implements DropTargetListener {
       } else if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {// Windows
         files.addAll((List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
       }
-      
+
       getFiles(files);
-      
+
     } catch (UnsupportedFlavorException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
@@ -107,6 +108,6 @@ public abstract class DragAndDrop implements DropTargetListener {
       mr.setCursor(MovieRenamer.normalCursor);
     }
   }
-  
+
   public abstract void getFiles(List<File> files);
 }

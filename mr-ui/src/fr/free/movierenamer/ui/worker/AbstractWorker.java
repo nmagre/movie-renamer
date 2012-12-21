@@ -17,11 +17,9 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import fr.free.movierenamer.ui.panel.LoadingDialog;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
@@ -36,12 +34,6 @@ import javax.swing.SwingWorker;
  */
 public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
 
-  protected final PropertyChangeSupport errorSupport;
-
-  protected AbstractWorker(PropertyChangeSupport errorSupport) {
-    this.errorSupport = errorSupport;
-  }
-
   @Override
   protected final T doInBackground() {
     T result = null;
@@ -50,26 +42,15 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
     }
     catch(Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE,ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
-      firePropertyChange(LoadingDialog.closeEvent, String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
+      publish(String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     }
     return result;
   }
 
   protected abstract T executeInBackground() throws Exception;
 
-  protected final void firePropertyChange(String propertyName, String... chunks) {
-    if (errorSupport != null) {
-      errorSupport.firePropertyChange(propertyName, false, true);
-    }
-    publish(chunks);
-  }
-
   @Override
-  public final void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-  }
-
-  public final PropertyChangeSupport getErrorSupport() {
-    return errorSupport;
+  protected void process(List<String> v) {
+    JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME replace by look and feel dialog
   }
 }

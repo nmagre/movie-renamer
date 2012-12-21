@@ -7,7 +7,7 @@
       <author name="Magré Nicolas" email="contact@movie-renamer.fr"/>
       <author name="QUÉMÉNEUR Simon" email="contact@movie-renamer.fr"/>
     </authors>
-    <url>http://movierenamer.free.fr/</url>
+    <url>http://movie-renamer.fr/</url>
   </info>
 
   <guiprefs width="640" height="480" resizable="yes"/>
@@ -36,7 +36,7 @@
   <native type="izpack" name="ShellLink.dll" os="windows"/>
   <native type="izpack" name="ShellLink_x64.dll"/>
   <variables>
-    <variable name="TargetPanel.dir" value="/Applications/Movie Renamer.app" os="mac"/>
+    <variable name="TargetPanel.dir" value="/Applications/Movie Renamer.app" condition="macos"/>
   </variables>
 
   <packs>

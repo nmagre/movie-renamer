@@ -45,7 +45,7 @@ public class FileFilter extends DefaultFileFilter {
       return true;
     }
 
-    return FileUtils.hasExtension(file, UISettings.getInstance().getExtensionsList());
+    return FileUtils.hasExtension(file, UISettings.getInstance().getExtensionsList().toArray(new String[0]));
   }
 
   @Override

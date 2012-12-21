@@ -232,7 +232,7 @@ public abstract class PanelGenerator extends JPanel {
    * Create title toolbar
    *
    * @param title
-   * @return
+   * @return WebToolBar
    */
   protected WebToolBar createTitle(String title) {// TODO add help button
     WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);

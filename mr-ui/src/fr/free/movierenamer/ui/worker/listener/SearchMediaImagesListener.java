@@ -17,14 +17,18 @@
  */
 package fr.free.movierenamer.ui.worker.listener;
 
-import com.alee.laf.list.WebList;
+import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
-import fr.free.movierenamer.ui.res.IconListRenderer;
+import fr.free.movierenamer.ui.panel.IMediaPanel;
+import fr.free.movierenamer.ui.res.UILoader;
 import fr.free.movierenamer.ui.res.UIMediaImage;
+import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
+import java.awt.Dimension;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListModel;
 
 /**
  * Class SearchMediaImagesListener
@@ -34,32 +38,33 @@ import javax.swing.DefaultListModel;
  */
 public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImage>> {
 
-  private final WebList thumbnailsList;
-  private final WebList fanartsList;
+  private final  IMediaPanel ipanel;
+  private final Dimension thumbDim = new Dimension(160, 200);
+  private final Dimension fanartDim = new Dimension(200, 160);
 
-  public SearchMediaImagesListener(SearchMediaImagesWorker worker, MovieRenamer mr, WebList thumbnailsList, WebList fanartsList) {
+  public SearchMediaImagesListener(SearchMediaImagesWorker worker, MovieRenamer mr, IMediaPanel ipanel) {
     super(mr, worker);
-    this.thumbnailsList = thumbnailsList;
-    this.fanartsList = fanartsList;
-  }
-
-  @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.images;
+    this.ipanel = ipanel;
   }
 
   @Override
   protected void done() throws Exception {
-    DefaultListModel thumbnailsListModel = new DefaultListModel();
-    DefaultListModel fanartsListModel = new DefaultListModel();
+    List<URI> fanartUrl = new ArrayList<URI>();
+    List<URI> thumbUrl = new ArrayList<URI>();
+    final DefaultListModel thumbnailsListModel = ipanel.getThumbnailsModel();
+    final DefaultListModel fanartsListModel = ipanel.getFanartsModel();
 
     List<UIMediaImage> images = worker.get();
     for (UIMediaImage image : images) {
       switch (image.getType()) {
         case thumb:
+          thumbUrl.add(image.getUrl().toURI());
+          image.setIcon(UIUtils.getAnimatedLoader(ipanel.getThumbnailsList()));
           thumbnailsListModel.addElement(image);
           break;
         case fanart:
+          fanartUrl.add(image.getUrl().toURI());
+          image.setIcon(UIUtils.getAnimatedLoader(ipanel.getFanartsList()));
           fanartsListModel.addElement(image);
           break;
         case banner:
@@ -77,10 +82,10 @@ public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImag
       }
     }
 
-    thumbnailsList.setCellRenderer(new IconListRenderer<UIMediaImage>());
-    fanartsList.setCellRenderer(new IconListRenderer<UIMediaImage>());
+    ImageWorker<UIMediaImage> fanartWorker = new ImageWorker<UIMediaImage>(fanartUrl, fanartsListModel, fanartDim, null);
+    ImageWorker<UIMediaImage> thumbWorker = new ImageWorker<UIMediaImage>(thumbUrl, thumbnailsListModel, thumbDim, null);
 
-    thumbnailsList.setModel(thumbnailsListModel);
-    fanartsList.setModel(fanartsListModel);
+    fanartWorker.execute();
+    thumbWorker.execute();
   }
 }

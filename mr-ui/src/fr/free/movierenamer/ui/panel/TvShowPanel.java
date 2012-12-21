@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
@@ -26,12 +27,8 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.res.UISearchResult;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
-import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -54,12 +51,9 @@ public class TvShowPanel extends WebPanel implements IMediaPanel {
   private MovieInfo tvShowInfo;
   private final MovieRenamer mr;
   private final Dimension thumbDim = new Dimension(160, 200);
-  public Dimension thumbListDim = new Dimension(60, 90);
-  public Dimension fanartListDim = new Dimension(200, 90);
-  public Dimension actorListDim = new Dimension(30, 53);
-  private final DefaultListModel fanartModel = new DefaultListModel();
-  private final DefaultListModel thumbnailModel = new DefaultListModel();
-  private final DefaultListModel actorModel = new DefaultListModel();
+  private final DefaultListModel castingModel = new DefaultListModel();
+  private final DefaultListModel thumbnailsModel = new DefaultListModel();
+  private final DefaultListModel fanartsModel = new DefaultListModel();
   private final DefaultListModel subTitleModel = new DefaultListModel();
   private final DefaultListModel audioModel = new DefaultListModel();
   private final DefaultListModel countryModel = new DefaultListModel();
@@ -67,7 +61,7 @@ public class TvShowPanel extends WebPanel implements IMediaPanel {
   /**
    * Creates new form MoviePanel
    *
-   * @param setting
+   * @param parent
    */
   public TvShowPanel(MovieRenamer parent) {
     initComponents();
@@ -573,4 +567,24 @@ public class TvShowPanel extends WebPanel implements IMediaPanel {
   private WebToolBar webToolBar4;
   private WebLabel yearLbl;
   // End of variables declaration//GEN-END:variables
+
+  @Override
+  public com.alee.laf.list.DefaultListModel getCastingModel() {
+    return castingModel;
+  }
+
+  @Override
+  public com.alee.laf.list.DefaultListModel getThumbnailsModel() {
+    return thumbnailsModel;
+  }
+
+  @Override
+  public com.alee.laf.list.DefaultListModel getFanartsModel() {
+    return fanartsModel;
+  }
+
+  @Override
+  public com.alee.laf.list.DefaultListModel getSubtitlesModel() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

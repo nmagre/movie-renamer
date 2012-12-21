@@ -69,9 +69,6 @@ public final class UISettings {
   private static final String logFile;
   // Logger
   public static final Logger LOGGER;
-  // Misc
-//  private static boolean xmlError = false;
-//  private static String xmlVersion = "";
   // Settings instance
   private static final UISettings instance = new UISettings();
   public final Settings coreInstance = Settings.getInstance();
@@ -81,21 +78,20 @@ public final class UISettings {
   private static final String appSettingsNodeName;
   private static final String settingNodeName;
 
+  public enum UISupportedLanguage {
+    fr,
+    en;
+  }
+
   public enum SettingLevel {
 
     NORMAL,
     ADVANCED;
   }
 
-  public enum SettingProvider {
-
-    CORE,
-    UI;
-  }
-
   public enum UISettingsProperty implements Settings.IProperty {
 
-    selectFirstMedia(Boolean.TRUE),
+    selectFirstMedia(Boolean.FALSE),
     selectFirstResult(Boolean.TRUE),
     scanSubfolder(Boolean.TRUE),
     checkUpdate(Boolean.TRUE),
@@ -113,7 +109,7 @@ public final class UISettings {
     generateSubtitles(Boolean.FALSE),
     useExtensionFilter(Boolean.TRUE),
     fileChooserPath(userFolder),
-    extensionsList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"}),
+    extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
     showAdvancedSettings(Boolean.FALSE);
     private Class<?> vclass;
     private Object defaultValue;
@@ -147,26 +143,26 @@ public final class UISettings {
   public static enum SettingsProperty {
 
     // UI
-    selectFirstMedia(UISettingsProperty.selectFirstMedia, SettingProvider.UI),
-    selectFirstResult(UISettingsProperty.selectFirstResult, SettingProvider.UI),
-    scanSubfolder(UISettingsProperty.scanSubfolder, SettingProvider.UI),
-    checkUpdate(UISettingsProperty.checkUpdate, SettingProvider.UI),
-    showMediaPanel(UISettingsProperty.showMediaPanel, SettingProvider.UI),
-    showActorImage(UISettingsProperty.showActorImage, SettingProvider.UI),
-    showThumb(UISettingsProperty.showThumb, SettingProvider.UI),
-    showFanart(UISettingsProperty.showFanart, SettingProvider.UI),
-    showSubtitle(UISettingsProperty.showSubtitle, SettingProvider.UI),
-    showCdart(UISettingsProperty.showCdart, SettingProvider.UI),
-    showClearart(UISettingsProperty.showClearart, SettingProvider.UI),
-    showLogo(UISettingsProperty.showLogo, SettingProvider.UI),
-    showBanner(UISettingsProperty.showBanner, SettingProvider.UI),
-    thumb(UISettingsProperty.generateThumb, SettingProvider.UI),
-    fanart(UISettingsProperty.generateFanart, SettingProvider.UI),
-    subtitles(UISettingsProperty.generateSubtitles, SettingProvider.UI),
-    useExtensionFilter(UISettingsProperty.useExtensionFilter, SettingProvider.UI),
-    showAdvancedSettings(UISettingsProperty.showAdvancedSettings, SettingProvider.UI),
-    fileChooserPath(UISettingsProperty.fileChooserPath, SettingProvider.UI),
-    extensionsList(UISettingsProperty.extensionsList, SettingProvider.UI),
+    selectFirstMedia(UISettingsProperty.selectFirstMedia),
+    selectFirstResult(UISettingsProperty.selectFirstResult),
+    scanSubfolder(UISettingsProperty.scanSubfolder),
+    checkUpdate(UISettingsProperty.checkUpdate),
+    showMediaPanel(UISettingsProperty.showMediaPanel),
+    showActorImage(UISettingsProperty.showActorImage),
+    showThumb(UISettingsProperty.showThumb),
+    showFanart(UISettingsProperty.showFanart),
+    showSubtitle(UISettingsProperty.showSubtitle),
+    showCdart(UISettingsProperty.showCdart),
+    showClearart(UISettingsProperty.showClearart),
+    showLogo(UISettingsProperty.showLogo),
+    showBanner(UISettingsProperty.showBanner),
+    thumb(UISettingsProperty.generateThumb),
+    fanart(UISettingsProperty.generateFanart),
+    subtitles(UISettingsProperty.generateSubtitles),
+    useExtensionFilter(UISettingsProperty.useExtensionFilter),
+    showAdvancedSettings(UISettingsProperty.showAdvancedSettings),
+    fileChooserPath(UISettingsProperty.fileChooserPath),
+    extensionsList(UISettingsProperty.extensionsList),
     // CORE
     appLanguage(Settings.SettingsProperty.appLanguage),
     // movie filename
@@ -211,33 +207,23 @@ public final class UISettings {
     httpRequestTimeOut(Settings.SettingsProperty.httpRequestTimeOut, SettingLevel.ADVANCED),
     httpCustomUserAgent(Settings.SettingsProperty.httpCustomUserAgent, SettingLevel.ADVANCED);
     private String lib;
-    private SettingProvider provider = SettingProvider.CORE;
     private Class<?> vclass;
     private SettingLevel level = SettingLevel.NORMAL;
     private Settings.IProperty key;
 
-    private SettingsProperty(Settings.IProperty key) {// Only for CORE
+    private SettingsProperty(Settings.IProperty key) {
       this.key = key;
       this.lib = name();
       this.vclass = key.getVclass();
     }
 
-    private SettingsProperty(Settings.IProperty key, SettingLevel level) {// Only for CORE
+    private SettingsProperty(Settings.IProperty key, SettingLevel level) {
       this(key);
       this.level = level;
     }
 
-    private SettingsProperty(Settings.IProperty key, SettingProvider provider) {// Only for UI
-      this(key);
-      this.provider = provider;
-    }
-
     public Class<?> getVClass() {
       return vclass;
-    }
-
-    public SettingProvider getProvider() {
-      return provider;
     }
 
     public SettingLevel getLevel() {
@@ -474,9 +460,8 @@ public final class UISettings {
     return get(UISettings.UISettingsProperty.fileChooserPath);
   }
 
-  public String[] getExtensionsList() {
-    String res = get(UISettings.UISettingsProperty.extensionsList);
-    return res.split(", ");
+  public List<String> getExtensionsList() {
+    return Arrays.asList(get(UISettings.UISettingsProperty.extensionsList).replaceAll("\\[|\\]", "").split(", "));
   }
 
   public boolean isShowAdvancedSettings() {

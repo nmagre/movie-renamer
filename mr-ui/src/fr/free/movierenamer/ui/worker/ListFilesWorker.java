@@ -21,7 +21,7 @@ import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.FileUtils;
-import java.beans.PropertyChangeSupport;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import java.util.logging.Level;
  *
  * @author Magré Nicolas
  */
-public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need to be checked
+public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
 
   private final List<File> files;
   private boolean subFolder;
@@ -48,24 +48,22 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need 
   /**
    * Constructor arguments
    *
-   * @param errorSupport
    * @param files
-   * @param renamed
    */
-  public ListFilesWorker(PropertyChangeSupport errorSupport, List<File> files) {
-    super(errorSupport);
+  public ListFilesWorker(List<File> files) {
+    super();
     this.files = files;
     setting = UISettings.getInstance();
-    //subFolder = setting.scanSubfolder;// FIXME
+    subFolder = setting.isScanSubfolder();
   }
 
   /**
    * Retreive all media files in a folder and subfolder
    *
-   * @return
+   * @return List of UIfile
    */
   @Override
-  public List<UIFile> executeInBackground() {
+  public List<UIFile> executeInBackground() throws InterruptedException {
 
     List<UIFile> medias = new ArrayList<UIFile>();
 
@@ -73,31 +71,35 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need 
       return medias;
     }
 
-    if (!subFolder && subFolder(files)) {// FIXME hide loading dialog et re-show after
-//      int n = JOptionPane.showConfirmDialog(parent, LocaleUtils.i18n("scanSubFolder"), LocaleUtils.i18n("question"), JOptionPane.YES_NO_OPTION);// FIXME use weblookandfeel dialog
-//      if (n != JOptionPane.NO_OPTION) {
-//        subFolder = true;
-//      }
+    if (!subFolder && subFolder(files)) {
+      publish(LocaleUtils.i18n("scanSubFolder"));
+      wait();
     }
 
     int count = files.size();
     for (int i = 0; i < count; i++) {
-      if (isCancelled()) {// User cancel
+      if (isCancelled()) {
         UISettings.LOGGER.log(Level.INFO, "ListFilesWorker Cancelled");
-        return medias;
+        return new ArrayList<UIFile>();
       }
 
       if (files.get(i).isDirectory()) {
         addFiles(medias, files.get(i));
       } else {
-        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName(), setting.getExtensionsList());// Really useful ?
+        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName(), setting.getExtensionsList().toArray(new String[0]));// Really useful ?
         if (addfiletoUI) {
-          addUIFiles(medias, new FileInfo(files.get(i)));
+          medias.add(new UIFile(new FileInfo(files.get(i))));
         }
       }
     }
 
     return medias;
+  }
+
+    @Override
+  public final void process(List<String> v) {// TODO
+   // JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+    notify();
   }
 
   /**
@@ -134,19 +136,9 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {// TODO need 
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolder) {
         addFiles(medias, listFiles[i]);
-      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName(), setting.getExtensionsList())) {// Really useful ?
-        addUIFiles(medias, new FileInfo(listFiles[i]));
+      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName(), setting.getExtensionsList().toArray(new String[0]))) {// Really useful ?
+        medias.add(new UIFile(new FileInfo(listFiles[i])));
       }
     }
-  }
-
-  /**
-   * Add file to media files list
-   *
-   * @param medias Media file list
-   * @param file File to add
-   */
-  private void addUIFiles(List<UIFile> medias, FileInfo file) {
-    medias.add(new UIFile(file));
   }
 }

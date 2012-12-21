@@ -20,7 +20,6 @@ package fr.free.movierenamer.ui.worker.listener;
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.LoadingDialog.LoadingDialogPos;
 import fr.free.movierenamer.ui.worker.SearchMediaSubtitlesWorker;
 import java.util.List;
 import javax.swing.DefaultListCellRenderer;
@@ -39,11 +38,6 @@ public class MediaSubtitlesListener extends AbstractListener<List<Subtitle>> {
   public MediaSubtitlesListener(SearchMediaSubtitlesWorker worker, MovieRenamer mr, WebList subtitlesList) {
     super(mr, worker);
     this.subtitlesList = subtitlesList;
-  }
-
-  @Override
-  protected LoadingDialogPos getLoadingDialogPos() {
-    return LoadingDialogPos.subtitles;
   }
 
   @Override

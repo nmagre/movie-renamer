@@ -17,12 +17,14 @@
  */
 package fr.free.movierenamer.ui.utils;
 
+import com.alee.laf.list.WebList;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.URIRequest;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -124,7 +126,7 @@ public final class ImageUtils {
           }
         } catch (IOException ex) {
           img = null;
-          Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[] { ex.getMessage(), imagePth });
+          Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), imagePth});
         }
       }
     } else {
@@ -150,5 +152,4 @@ public final class ImageUtils {
   private ImageUtils() {
     throw new UnsupportedOperationException();
   }
-
 }

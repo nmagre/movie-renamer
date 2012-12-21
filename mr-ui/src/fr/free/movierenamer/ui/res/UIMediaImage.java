@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.res;
 
 import fr.free.movierenamer.info.ImageInfo;
+import java.net.URL;
 import javax.swing.Icon;
 
 /**
@@ -29,12 +30,12 @@ import javax.swing.Icon;
 public class UIMediaImage implements IIconList {
 
   private final ImageInfo info;
-  private final Icon icon;
+  private Icon icon;
   private final ImageInfo.ImageCategoryProperty type;
 
   public UIMediaImage(ImageInfo info, Icon icon) {
     this.info = info;
-    this.type = info.getCategory();
+    this.type = info == null ? null:info.getCategory();
     this.icon = icon;
   }
 
@@ -47,6 +48,10 @@ public class UIMediaImage implements IIconList {
     return info;
   }
 
+  public URL getUrl() {
+    return info.getHref();
+  }
+
   public ImageInfo.ImageCategoryProperty getType() {
     return type;
   }
@@ -54,5 +59,10 @@ public class UIMediaImage implements IIconList {
   @Override
   public String toString() {
     return (info != null) ? info.getDescription() : null;
+  }
+
+  @Override
+  public void setIcon(Icon icon) {
+    this.icon = icon;
   }
 }

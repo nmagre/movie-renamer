@@ -20,8 +20,6 @@ package fr.free.movierenamer.ui.res;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
 import javax.swing.Icon;
 
 /**
@@ -30,20 +28,19 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UISearchResult implements IIconList {
-  private final Dimension searchListDim = new Dimension(45, 65);
+public class UISearchResult implements ISort {
   private final Media searchResult;
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
-  private final Icon icon;
+  private Icon icon;
 
   /**
    * @param searchResult
    * @param scrapper
    */
-  public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
+  public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper, Icon icon) {
     this.searchResult = searchResult;
     this.scrapper = scrapper;
-    this.icon = ImageUtils.getIcon(this.searchResult.getURL(), searchListDim, "ui/nothumb.png");
+    this.icon = icon;
   }
 
   @Override
@@ -62,6 +59,16 @@ public class UISearchResult implements IIconList {
   @Override
   public String toString() {
     return (searchResult != null) ? searchResult.toString() : null;
+  }
+
+  @Override
+  public void setIcon(Icon icon) {
+    this.icon = icon;
+  }
+
+  @Override
+  public String getName() {
+    return searchResult.getName();
   }
 
 }

@@ -20,9 +20,10 @@ package fr.free.movierenamer.ui;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.LocaleUtils;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 
@@ -37,31 +38,33 @@ public class Main {
   private static MovieRenamer mvr;
 
   public static void main(String args[]) {
-
     // Fixe JNA crash under 64 bit unix system
     if (System.getProperty("jna.nosys") == null) {
       System.setProperty("jna.nosys", "true");
     }
 
     UISettings setting = UISettings.getInstance();
+        System.out.println(UISettings.getInstance().getExtensionsList());
+    // Set UI locale
+    Locale.setDefault(setting.coreInstance.getAppLanguage());
+
     // Set UI locale file
     LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
 
     // Install look and feel
     WebLookAndFeel.install();
-    // Set look and feel locale
-//    List<String> languages = LanguageManager.getSupportedLanguages();
-//    String lcode = "en";
-//    for(String language : languages) {
-//      if(language.equals(setting.locale.getLanguage())){
-//        lcode = language;
-//        break;
-//      }
-//    }
-//
-//    LanguageManager.setLanguage(lcode);
-//    System.out.println();
 
+    // Set look and feel locale
+    List<String> languages = LanguageManager.getSupportedLanguages();
+    String lcode = "en";
+    for (String language : languages) {
+      if (language.equals(setting.coreInstance.getAppLanguage().getLanguage())) {
+        lcode = language;
+        break;
+      }
+    }
+
+    LanguageManager.setLanguage(lcode);
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
