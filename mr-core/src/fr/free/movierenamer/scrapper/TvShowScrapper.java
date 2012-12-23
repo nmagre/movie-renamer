@@ -19,6 +19,8 @@ package fr.free.movierenamer.scrapper;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.TvShowInfo;
@@ -44,6 +46,7 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
   }
 
   protected final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, locale.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<EpisodeInfo> episodes = (cache != null) ? cache.getList(tvShow, locale, EpisodeInfo.class) : null;
     if (episodes != null) {
@@ -52,6 +55,7 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
 
     // perform actual search
     episodes = fetchEpisodesInfoList(tvShow, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(tvShow, locale, EpisodeInfo.class, episodes) : episodes;

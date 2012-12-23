@@ -54,7 +54,8 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
 
     // perform actual search
     results = searchMedia(query, locale);
-
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, locale.getDisplayLanguage(Locale.ENGLISH)));
+    
     // cache results and return
     return (cache != null) ? cache.putList(query, locale, genericClazz, results) : results;
   }
@@ -77,6 +78,9 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
 
     // perform actual search
     info = fetchMediaInfo(search, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns '%s' as info for '%s' in '%s'", getName(), info, search, locale.getDisplayLanguage(Locale.ENGLISH)));
+
+    //let's fetch casting
     List<CastingInfo> casting;
     try {
       casting = getCasting(search, locale);
@@ -106,6 +110,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
 
     // perform actual search
     imagesInfo = fetchImagesInfo(search, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d image(s) info for '%s' in '%s'", getName(), imagesInfo.size(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(search, locale, ImageInfo.class, imagesInfo) : imagesInfo;
@@ -127,6 +132,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
 
     // perform actual search
     personsInfo = fetchCastingInfo(search, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d casting info for '%s' in '%s'", getName(), personsInfo.size(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(search, locale, CastingInfo.class, personsInfo) : personsInfo;

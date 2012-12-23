@@ -23,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.searchinfo.Image;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.utils.CacheObject;
 
@@ -53,6 +52,7 @@ public abstract class ImageScrapper extends Scrapper {
 
     // perform actual search
     imageList = fetchImagesInfo(media, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d images for '%s' in '%s'", getName(), imageList.size(), media, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(media, locale, ImageInfo.class, imageList) : imageList;

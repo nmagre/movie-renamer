@@ -52,6 +52,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
 
     // perform actual search
     subtitleList = fetchSubtitlesInfo(subtitle, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d subtitle(s) info for '%s' in '%s'", getName(), subtitleList.size(), subtitle, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(subtitle, locale, SubtitleInfo.class, subtitleList) : subtitleList;
@@ -70,6 +71,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
 
     // perform actual search
     results = searchSubtitles(query, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d subtitle(s) for '%s' in '%s'", getName(), results.size(), query, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(query, locale, Subtitle.class, results) : results;

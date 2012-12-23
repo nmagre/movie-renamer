@@ -52,6 +52,7 @@ public abstract class PersonScrapper<T extends SearchResult> extends Scrapper {
 
     // perform actual search
     personList = fetchPersonsInfo(search, locale);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s' in '%s'", getName(), personList.size(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(search, locale, PersonInfo.class, personList) : personList;
