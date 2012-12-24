@@ -38,6 +38,5 @@ public class RenamerTest {
     Assert.assertEquals(true,  fi.renamed("coucou3.avi"));
     Assert.assertEquals(true,  fi.renamed("coucou4.avi"));
     Assert.assertEquals(true, fi.wasRenamed());
-    
   }
 }
