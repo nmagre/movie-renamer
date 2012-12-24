@@ -48,7 +48,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class IMDbScrapper : search movie on IMDB
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -164,8 +164,11 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
-    // http://www.imdb.com/find?s=tt&q=
-    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&q=" + URIRequest.encode(query));
+    // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
+    // Only title -> ref_=fn_tt
+    // Only movie -> ref_=fn_ft
+    // Add an option to select between both (default "title" because "movie" does not find video)
+    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     // select movie results
