@@ -51,21 +51,21 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Movie movie = results.get(0);
 
     Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1._SY70_SX100.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1968, movie.getYear());
     Assert.assertEquals(64116, movie.getImdbId());
     Assert.assertEquals(64116, movie.getMediaId());
   }
   
   @Test
-  public void searchRedirect() throws Exception {
+  public void searchOneResult() throws Exception {
     imdb.setLocale(Locale.FRENCH);
     List<Movie> results = imdb.search("le pont de la rivière kwai");
 
     Movie movie = results.get(0);
 
     Assert.assertEquals("Le pont de la rivière Kwai", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@._V1._SY70_SX100.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1957, movie.getYear());
     Assert.assertEquals(50212, movie.getImdbId());
     Assert.assertEquals(50212, movie.getMediaId());
