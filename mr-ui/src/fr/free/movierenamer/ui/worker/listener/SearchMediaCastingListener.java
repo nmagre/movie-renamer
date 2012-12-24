@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.listener;
 
 import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.IMediaPanel;
+import fr.free.movierenamer.ui.panel.MediaPanel;
 import fr.free.movierenamer.ui.res.UIPersonImage;
 import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
@@ -36,10 +36,10 @@ import java.util.List;
  */
 public class SearchMediaCastingListener extends AbstractListener<List<UIPersonImage>> {
 
-  private final IMediaPanel ipanel;
+  private final MediaPanel ipanel;
   private final Dimension actorListDim = new Dimension(30, 53);
 
-  public SearchMediaCastingListener(SearchMediaCastingWorker worker, MovieRenamer mr, IMediaPanel ipanel) {
+  public SearchMediaCastingListener(SearchMediaCastingWorker worker, MovieRenamer mr, MediaPanel ipanel) {
     super(mr, worker);
     this.ipanel = ipanel;
   }
@@ -53,10 +53,11 @@ public class SearchMediaCastingListener extends AbstractListener<List<UIPersonIm
     for(UIPersonImage info : infos){
       imagesUri.add(info.getUri());
     }
-    
+
     castingModel.addElements(infos);
 
     ImageWorker<UIPersonImage> imagesWorker = new ImageWorker<UIPersonImage>(imagesUri, castingModel, actorListDim, "ui/unknown.png");
     imagesWorker.execute();
+    mr.addImageWorker(imagesWorker);
   }
 }

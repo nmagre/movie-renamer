@@ -44,7 +44,7 @@ import fr.free.movierenamer.scrapper.impl.ScrapperManager;
 import fr.free.movierenamer.scrapper.impl.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
-import fr.free.movierenamer.ui.panel.IMediaPanel;
+import fr.free.movierenamer.ui.panel.MediaPanel;
 import fr.free.movierenamer.ui.panel.MoviePanel;
 import fr.free.movierenamer.ui.panel.SettingPanel;
 import fr.free.movierenamer.ui.panel.TvShowPanel;
@@ -60,8 +60,8 @@ import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.utils.FileFilter;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
-import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaSubtitlesWorker;
@@ -81,7 +81,9 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.logging.Level;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
@@ -105,6 +107,7 @@ public class MovieRenamer extends JFrame {
   private UIFile currentMedia;
   private UIScrapper UIMovieScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchMovieScrapper()));
   private UIScrapper UITvShowScrapper = new UIScrapper(ScrapperManager.getScrapper(setting.coreInstance.getSearchTvshowScrapper()));
+  private Queue<ImageWorker<? extends IIconList>> imageWorkerQueue = new LinkedList<ImageWorker<? extends IIconList>>();
   // Property change
   private final PropertyChangeSupport settingsChange;
   // Media Panel
@@ -164,7 +167,7 @@ public class MovieRenamer extends JFrame {
 
     setIconImage(UIUtils.LOGO_32);
     setLocationRelativeTo(null);
-
+    setTitle(UISettings.APPNAME + "-" + setting.getVersion() + " " + currentMode.getTitleMode());
     setVisible(true);
 
     // Check for Movie Renamer update
@@ -318,7 +321,7 @@ public class MovieRenamer extends JFrame {
       return;
     }
 
-    IMediaPanel ipanel = getCurrentMediaPanel();
+    MediaPanel ipanel = getCurrentMediaPanel();
     if (ipanel == null) {
       return;
     }
@@ -360,6 +363,15 @@ public class MovieRenamer extends JFrame {
     if (infoWorker != null && !infoWorker.isDone()) {
       infoWorker.cancel(true);
     }
+
+    ImageWorker<? extends IIconList> worker;
+    while((worker = imageWorkerQueue.poll()) != null) {
+      worker.cancel(true);
+    }
+  }
+
+  public synchronized void addImageWorker(ImageWorker<? extends IIconList> worker){
+    imageWorkerQueue.add(worker);
   }
 
   public UIFile getSelectedMediaFile() {
@@ -413,13 +425,13 @@ public class MovieRenamer extends JFrame {
     }
   }
 
-  private IMediaPanel getCurrentMediaPanel() {
-    IMediaPanel current = null;
+  private MediaPanel getCurrentMediaPanel() {
+    MediaPanel current = null;
     if (containerTransitionMediaPanel != null) {
       Component compo = containerTransitionMediaPanel.getContent();
       if (compo != null) {
-        if (compo instanceof IMediaPanel) {
-          current = (IMediaPanel) compo;
+        if (compo instanceof MediaPanel) {
+          current = (MediaPanel) compo;
         }
       }
     }

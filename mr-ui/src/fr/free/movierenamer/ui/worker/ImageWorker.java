@@ -25,6 +25,13 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
+/**
+ * Class ImageWorker
+ *
+ * @param <T>
+ * @author Nicolas Magré
+ * @author Simon QUÉMÉNEUR
+ */
 public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWorker<T>.ImageChunk> {
 
   private final List<URI> images;
@@ -42,11 +49,16 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
   @Override
   @SuppressWarnings("unchecked")
   protected Void doInBackground() {
-    for (int i = 0; i < images.size(); i++) {
-      Icon icon = ImageUtils.getIcon(images.get(i), imageSize, defaultImage);
-      publish(new ImageWorker<T>.ImageChunk(icon, i));
-    }
 
+    if(model != null) {
+      for (int i = 0; i < images.size(); i++) {
+        if(isCancelled()) {
+          break;
+        }
+        Icon icon = ImageUtils.getIcon(images.get(i), imageSize, defaultImage);
+        publish(new ImageWorker<T>.ImageChunk(icon, i));
+      }
+    }
     return null;
   }
 
@@ -55,6 +67,10 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
     Icon icon = chunk.get(0).getIcon();
     int index = chunk.get(0).getIndex();
 
+    if(index >= model.size()) {
+      return;
+    }
+
     @SuppressWarnings("unchecked")
     T obj = (T) model.get(index);
 
@@ -62,7 +78,7 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
       obj.setIcon(icon);
       model.setElementAt(obj, index);
     } else {
-      model.removeElementAt(index);
+      //model.removeElementAt(index); // FIXME
     }
   }
 

@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.listener;
 
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.IMediaPanel;
+import fr.free.movierenamer.ui.panel.MediaPanel;
 import fr.free.movierenamer.ui.worker.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 
@@ -31,9 +31,9 @@ import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
  */
 public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
 
-  private final IMediaPanel mediaPanel;
+  private final MediaPanel mediaPanel;
 
-  public SearchMediaInfoListener(SearchMediaInfoWorker worker, MovieRenamer mr, IMediaPanel mediaPanel) {
+  public SearchMediaInfoListener(SearchMediaInfoWorker worker, MovieRenamer mr, MediaPanel mediaPanel) {
     super(mr, worker);
     this.mediaPanel = mediaPanel;
   }
@@ -43,6 +43,7 @@ public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
     MediaInfo info = worker.get();
     if (info != null) {
       mediaPanel.setMediaInfo(info);
+      // FIXME Mr need to know about this worker
       SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(info, mediaPanel.getCastingList());
       SearchMediaCastingListener castingListener = new SearchMediaCastingListener(castingWorker, mr, mediaPanel);
       castingWorker.addPropertyChangeListener(castingListener);
