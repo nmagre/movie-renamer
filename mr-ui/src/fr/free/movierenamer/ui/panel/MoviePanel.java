@@ -86,6 +86,7 @@ public class MoviePanel extends MediaPanel {
   private final DefaultListModel audioModel = new DefaultListModel();
   private final DefaultListModel countryModel = new DefaultListModel();
   private final UISettings setting;
+  private MediaInfo mediaInfo;
 
   /**
    * Creates new form MoviePanel
@@ -96,6 +97,8 @@ public class MoviePanel extends MediaPanel {
 
     // Init
     initComponents();
+
+    mediaInfo = null;
 //
 //    origTitleField.setLeadingComponent(origTitleLbl);
 //    directorField.setLeadingComponent(directorLbl);
@@ -164,6 +167,7 @@ public class MoviePanel extends MediaPanel {
 //        dropFanartTarget.setActive(false);
 //        dropThumbTarget.setActive(false);
 
+        mediaInfo = null;
         castingModel.clear();
         thumbnailsModel.clear();
         fanartsModel.clear();
@@ -179,11 +183,7 @@ public class MoviePanel extends MediaPanel {
         directorField.setText("");
         titleLbl.setText("");
         thumbLbl.setIcon(null);
-        star.setIcon(UIUtils.STAR_EMPTY);
-        star1.setIcon(UIUtils.STAR_EMPTY);
-        star2.setIcon(UIUtils.STAR_EMPTY);
-        star3.setIcon(UIUtils.STAR_EMPTY);
-        star4.setIcon(UIUtils.STAR_EMPTY);
+        resetStar();
         validate();
         repaint();
       }
@@ -194,6 +194,7 @@ public class MoviePanel extends MediaPanel {
 
   @Override
   public void setMediaInfo(MediaInfo mediaInfo) {
+    this.mediaInfo = mediaInfo;
     MovieInfo movieInfo = (MovieInfo) mediaInfo;
     origTitleField.setText(movieInfo.getOriginalTitle());
     for (String director : movieInfo.getDirectors()) {
@@ -209,7 +210,7 @@ public class MoviePanel extends MediaPanel {
 
   @Override
   public MediaInfo getMediaInfo() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return mediaInfo;
   }
 
   @Override

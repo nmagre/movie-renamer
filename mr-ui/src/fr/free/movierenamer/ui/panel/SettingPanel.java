@@ -16,9 +16,11 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.info.NfoInfo;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -29,16 +31,22 @@ import fr.free.movierenamer.ui.settings.UISettings.SettingsProperty;
 import fr.free.movierenamer.ui.settings.UISettings.UISupportedLanguage;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.UIManager;
 
 /**
  * Class Setting dialog
@@ -262,6 +270,16 @@ public class SettingPanel extends JDialog {
 
     nfoRBtns = createRadioButtonList(NfoInfo.NFOtype.class, nfoGroup);
     UIlanguageRBtns = createRadioButtonList(UISupportedLanguage.class, UIlanguageGroup);
+    ((WebRadioButton)UIlanguageRBtns.get(0)).addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        Locale.setDefault(Locale.FRENCH);
+        UIManager.getDefaults().setDefaultLocale(Locale.FRENCH);
+        LanguageManager.setLanguage("fr");
+        WebLookAndFeel.updateAllComponentUIs();
+      }
+    });
 
     nfoGroup.setSelected(((WebRadioButton) nfoRBtns.get(settings.coreInstance.getMovieNfoType().ordinal())).getModel(), true);
     UIlanguageGroup.setSelected(((WebRadioButton) UIlanguageRBtns.get(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()).ordinal())).getModel(), true);

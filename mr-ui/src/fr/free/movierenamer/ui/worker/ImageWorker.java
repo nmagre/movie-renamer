@@ -50,35 +50,34 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
   @SuppressWarnings("unchecked")
   protected Void doInBackground() {
 
-    if(model != null) {
+    if (model != null) {
       for (int i = 0; i < images.size(); i++) {
-        if(isCancelled()) {
+        if (isCancelled()) {
           break;
         }
+
         Icon icon = ImageUtils.getIcon(images.get(i), imageSize, defaultImage);
-        publish(new ImageWorker<T>.ImageChunk(icon, i));
+        ImageWorker<T>.ImageChunk chunk = new ImageWorker<T>.ImageChunk(icon, i);
+        publish(chunk);
       }
     }
     return null;
   }
 
   @Override
-  public final void process(List<ImageWorker<T>.ImageChunk> chunk) {
-    Icon icon = chunk.get(0).getIcon();
-    int index = chunk.get(0).getIndex();
+  public final void process(List<ImageWorker<T>.ImageChunk> chunks) {
+    for (ImageWorker<T>.ImageChunk chunk : chunks) {
+      Icon icon = chunk.getIcon();
+      int index = chunk.getIndex();
+      if (index >= model.size()) {
+        return;
+      }
 
-    if(index >= model.size()) {
-      return;
-    }
+      @SuppressWarnings("unchecked")
+      T obj = (T) model.get(index);
 
-    @SuppressWarnings("unchecked")
-    T obj = (T) model.get(index);
-
-    if (icon != null) {
       obj.setIcon(icon);
       model.setElementAt(obj, index);
-    } else {
-      //model.removeElementAt(index); // FIXME
     }
   }
 

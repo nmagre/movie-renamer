@@ -75,6 +75,8 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
       }
     }
 
+    
+
     return results;
   }
 }

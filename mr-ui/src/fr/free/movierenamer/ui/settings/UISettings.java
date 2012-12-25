@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.settings;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.utils.*;
 import java.io.File;
 import java.io.IOException;
@@ -110,7 +111,8 @@ public final class UISettings {
     useExtensionFilter(Boolean.TRUE),
     fileChooserPath(userFolder),
     extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
-    showAdvancedSettings(Boolean.FALSE);
+    showAdvancedSettings(Boolean.FALSE),
+    searchSorter(Sorter.SorterType.LEVEN_YEAR);
     private Class<?> vclass;
     private Object defaultValue;
 
@@ -163,6 +165,7 @@ public final class UISettings {
     showAdvancedSettings(UISettingsProperty.showAdvancedSettings),
     fileChooserPath(UISettingsProperty.fileChooserPath),
     extensionsList(UISettingsProperty.extensionsList),
+    searchSorter(UISettingsProperty.searchSorter),
     // CORE
     appLanguage(Settings.SettingsProperty.appLanguage),
     // movie filename
@@ -466,6 +469,10 @@ public final class UISettings {
 
   public boolean isShowAdvancedSettings() {
     return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showAdvancedSettings));
+  }
+
+  public Sorter.SorterType getSearchSorter() {
+    return Sorter.SorterType.valueOf(get(UISettingsProperty.searchSorter));
   }
 
   public String getVersion() {

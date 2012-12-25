@@ -122,4 +122,9 @@ public class UIFile implements ISort {
   public String getName() {
     return toString();
   }
+
+  @Override
+  public long getLength() {
+    return getFile().length();
+  }
 }

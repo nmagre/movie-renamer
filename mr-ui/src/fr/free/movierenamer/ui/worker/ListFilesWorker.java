@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.FileUtils;
@@ -93,12 +94,13 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       }
     }
 
+    Sorter.sort(medias, Sorter.SorterType.ALPHABETIC);
     return medias;
   }
 
-    @Override
+  @Override
   public final void process(List<String> v) {// TODO
-   // JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+    // JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
     notify();
   }
 

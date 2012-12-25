@@ -24,4 +24,6 @@ package fr.free.movierenamer.ui.res;
  */
 public interface ISort extends IIconList{
   public String getName();
+  public int getYear();
+  public long getLength();
 }

@@ -93,7 +93,7 @@ public class FileInfo {
   }
 
   public Integer getYear() {
-    return year;
+    return year == null ? -1:year;
   }
 
   public boolean wasRenamed() {

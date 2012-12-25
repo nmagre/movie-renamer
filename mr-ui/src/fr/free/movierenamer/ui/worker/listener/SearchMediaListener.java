@@ -24,12 +24,15 @@ import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.res.Sorter;
+import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.SearchMediaWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.List;
 import java.util.concurrent.CancellationException;
+import java.util.logging.Level;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JOptionPane;
 
@@ -63,9 +66,26 @@ public class SearchMediaListener extends AbstractListener<List<UISearchResult>> 
     try {
       List<UISearchResult> results = worker.get();
 
-//      LevenshteinSort.sort(results, media.getSearch()); // TODO add option
-//      results = YearSort.sort(results, media.getYear()); // TODO add option
-//      Collections.sort(results, new AlphabeticSort());// TODO add option
+      // Sort search results
+      Sorter.SorterType type = UISettings.getInstance().getSearchSorter();
+      UISettings.LOGGER.log(Level.INFO, "Sort type {0} , year {1} , search {2}", new Object[]{type .name(), media.getYear(), media.getSearch()});
+      switch (type) {
+        case ALPHABETIC:
+        case LENGTH:
+        case YEAR:
+          Sorter.sort(results, type);
+          break;
+        case YEAR_ROUND:
+        case ALPHA_YEAR:
+          Sorter.sort(results, type, media.getYear());
+          break;
+        case LEVENSTHEIN:
+          Sorter.sort(results, media.getSearch());
+          break;
+        case LEVEN_YEAR:
+          Sorter.sort(results, media.getYear(), media.getSearch());
+          break;
+      }
 
       searchResultList.setCellRenderer(UISettings.getInstance().isShowThumb() ? UIUtils.iconListRenderer : new DefaultListCellRenderer());
       searchResultModel.addElements(results);

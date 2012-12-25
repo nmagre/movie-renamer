@@ -24,7 +24,6 @@ import fr.free.movierenamer.ui.res.UIPersonImage;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.Icon;
 
 /**
  * Class SearchMediaImagesWorker

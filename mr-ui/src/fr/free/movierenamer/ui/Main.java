@@ -21,7 +21,6 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -44,7 +43,7 @@ public class Main {
     }
 
     UISettings setting = UISettings.getInstance();
-        System.out.println(UISettings.getInstance().getExtensionsList());
+
     // Set UI locale
     Locale.setDefault(setting.coreInstance.getAppLanguage());
 
@@ -53,7 +52,7 @@ public class Main {
 
     // Install look and feel
     WebLookAndFeel.install();
-
+    
     // Set look and feel locale
     List<String> languages = LanguageManager.getSupportedLanguages();
     String lcode = "en";

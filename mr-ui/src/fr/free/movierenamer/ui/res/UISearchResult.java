@@ -57,8 +57,8 @@ public class UISearchResult implements ISort {
   }
 
   @Override
-  public String toString() {
-    return (searchResult != null) ? searchResult.toString() : null;
+  public int getYear() {
+    return searchResult.getYear();
   }
 
   @Override
@@ -69,6 +69,16 @@ public class UISearchResult implements ISort {
   @Override
   public String getName() {
     return searchResult.getName();
+  }
+
+  @Override
+  public long getLength() {
+    return getName().length();
+  }
+
+  @Override
+  public String toString() {
+    return getName() + " (" + searchResult.getYear() + ") (id:" + searchResult.getMediaId() + ")";
   }
 
 }

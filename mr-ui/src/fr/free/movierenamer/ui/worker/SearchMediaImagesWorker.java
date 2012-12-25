@@ -57,7 +57,6 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
     List<UIMediaImage> mediaImages = new ArrayList<UIMediaImage>();
 
     if (searchResult != null && scrapper != null) {
-      System.out.println("Launch images search");
       Media media = searchResult.getSearchResult();
       infos = scrapper.getImages(media);
       int count = infos.size();

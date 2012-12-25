@@ -21,13 +21,12 @@ import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.res.sort.AlphabeticSort;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.ListFilesWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,13 +53,11 @@ public class ListFileListener extends AbstractListener<List<UIFile>> {
 
     List<UIFile> medias = worker.get();
 
-    Collections.sort(medias, new AlphabeticSort());
-
     mediaList.setCellRenderer(UIUtils.iconListRenderer);
     mediaFileNameModel.addElements(medias);
 
     if (mediaFileNameModel.isEmpty()) {
-      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("error"), WebOptionPane.ERROR_MESSAGE);
+      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);
     } else if (UISettings.getInstance().isSelectFirstMedia()) {
       mediaList.setSelectedIndex(0);
     }

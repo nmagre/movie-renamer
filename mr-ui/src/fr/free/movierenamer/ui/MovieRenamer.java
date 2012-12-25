@@ -187,15 +187,15 @@ public class MovieRenamer extends JFrame {
 
     // Add tooltip
     TooltipManager.setTooltip(openBtn, openTooltipLbl, TooltipWay.down);
-    //TooltipManager.setTooltip(editBtn, new JLabel(LocaleUtils.i18nExt("edit"), new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(movieModeBtn, new JLabel(LocaleUtils.i18nExt("movieMode"), ImageUtils.getIconFromJar("ui/movie.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(tvShowModeBtn, new JLabel(LocaleUtils.i18nExt("tvshowMode"), ImageUtils.getIconFromJar("ui/tv.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(helpBtn, new JLabel(LocaleUtils.i18nExt("help"), ImageUtils.getIconFromJar("ui/system-help-3.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(updateBtn, new JLabel(LocaleUtils.i18nExt("updateBtn"), ImageUtils.getIconFromJar("ui/system-software-update-5.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(settingBtn, new JLabel(LocaleUtils.i18nExt("settingBtn"), ImageUtils.getIconFromJar("ui/system-settings.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(exitBtn, new JLabel(LocaleUtils.i18nExt("exitBtn"), ImageUtils.getIconFromJar("ui/application-exit.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(searchBtn, new JLabel(LocaleUtils.i18nExt("search"), ImageUtils.getIconFromJar("ui/search.png"), SwingConstants.TRAILING), TooltipWay.down);
-    TooltipManager.setTooltip(renameBtn, new JLabel(LocaleUtils.i18nExt("rename"), ImageUtils.getIconFromJar("ui/dialog-ok-2.png"), SwingConstants.TRAILING), TooltipWay.down);
+    //TooltipManager.setTooltip(editBtn, new WebLabel(LocaleUtils.i18nExt("edit"), new ImageIcon(getClass().getResource("/image/accessories-text-editor-6-24.png")), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(movieModeBtn, new WebLabel(LocaleUtils.i18nExt("movieMode"), ImageUtils.getIconFromJar("ui/movie.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(tvShowModeBtn, new WebLabel(LocaleUtils.i18nExt("tvshowMode"), ImageUtils.getIconFromJar("ui/tv.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(helpBtn, new WebLabel(LocaleUtils.i18nExt("help"), ImageUtils.getIconFromJar("ui/system-help-3.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(updateBtn, new WebLabel(LocaleUtils.i18nExt("updateBtn"), ImageUtils.getIconFromJar("ui/system-software-update-5.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(settingBtn, new WebLabel(LocaleUtils.i18nExt("settingBtn"), ImageUtils.getIconFromJar("ui/system-settings.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(exitBtn, new WebLabel(LocaleUtils.i18nExt("exitBtn"), ImageUtils.getIconFromJar("ui/application-exit.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(searchBtn, new WebLabel(LocaleUtils.i18nExt("search"), ImageUtils.getIconFromJar("ui/search.png"), SwingConstants.TRAILING), TooltipWay.down);
+    TooltipManager.setTooltip(renameBtn, new WebLabel(LocaleUtils.i18nExt("rename"), ImageUtils.getIconFromJar("ui/dialog-ok-2.png"), SwingConstants.TRAILING), TooltipWay.down);
 
     // Add media panel container to media split pane
     mediaSp.setBottomComponent(containerTransitionMediaPanel);
@@ -302,7 +302,7 @@ public class MovieRenamer extends JFrame {
     clearInterface(!CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
     // Add loader image
-    searchResultModel.addElement(new UILoader(mediaFileList));
+    searchResultModel.addElement(new UILoader(searchResultList));
     searchResultList.setCellRenderer(loaderListRenderer);
 
     currentMedia.setSearch(search);
@@ -439,12 +439,12 @@ public class MovieRenamer extends JFrame {
   }
 
   public void updateRenamedTitle() {
-//    MediaInfo currentMedia = getCurrentMediaPanel().getMediaInfo();
-//    if (currentMedia != null) {
-//      renameField.setText(currentMedia.getRenamedTitle(fileFormatField.getText()));
-//    } else {
-//      renameField.setText(null);
-//    }
+    MediaInfo mediaInfo = getCurrentMediaPanel().getMediaInfo();
+    if (mediaInfo != null) {
+      renameField.setText(mediaInfo.getRenamedTitle(fileFormatField.getText()));
+    } else {
+      renameField.setText(null);
+    }
   }
 
   /**
