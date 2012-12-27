@@ -81,7 +81,7 @@ public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImag
     public void addMediaImage(UIMediaImage image) {
       try {
         urls.add(image.getUrl().toURI());
-        image.setIcon(UIUtils.getAnimatedLoader(list));
+        image.setIcon(UIUtils.getAnimatedLoader(list, model.getSize()));
         model.addElement(image);
       } catch (URISyntaxException ex) {
         UISettings.LOGGER.log(Level.WARNING, ex.getMessage());

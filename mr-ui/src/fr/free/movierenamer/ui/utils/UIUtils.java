@@ -72,13 +72,13 @@ public class UIUtils {
     return border;
   }
 
-  public static Icon getAnimatedLoader(final WebList list) {
+  public static Icon getAnimatedLoader(final WebList list, final int row) {
     ImageIcon icon = (ImageIcon) loader;
     icon.setImageObserver(new ImageObserver() {
       @Override
       public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
         if ((infoflags & (FRAMEBITS | ALLBITS)) != 0 && list.isShowing()) {
-          list.repaint();
+          list.repaint(list.getCellBounds(row, row));
         }
         return (infoflags & (ALLBITS | ABORT)) == 0;
       }

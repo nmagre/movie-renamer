@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -51,6 +52,7 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
 
   @Override
   protected void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME replace by look and feel dialog
+    WebOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
   }
+
 }

@@ -62,7 +62,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
           return new ArrayList<UIPersonImage>();
         }
 
-        persons.add(new UIPersonImage(infos.get(i), UIUtils.getAnimatedLoader(castingList)));
+        persons.add(new UIPersonImage(infos.get(i), UIUtils.getAnimatedLoader(castingList, i)));
       }
     }
 

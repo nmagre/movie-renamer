@@ -24,12 +24,11 @@ import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.res.UISearchResult;
-import fr.free.movierenamer.ui.res.Sorter;
-import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.SearchMediaWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.Sorter;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
@@ -67,7 +66,7 @@ public class SearchMediaListener extends AbstractListener<List<UISearchResult>> 
       List<UISearchResult> results = worker.get();
 
       // Sort search results
-      Sorter.SorterType type = UISettings.getInstance().getSearchSorter();
+      Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
       UISettings.LOGGER.log(Level.INFO, "Sort type {0} , year {1} , search {2}", new Object[]{type .name(), media.getYear(), media.getSearch()});
       switch (type) {
         case ALPHABETIC:

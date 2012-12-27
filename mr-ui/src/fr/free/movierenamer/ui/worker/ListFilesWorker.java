@@ -18,11 +18,11 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.FileInfo;
-import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;

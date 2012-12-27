@@ -35,7 +35,7 @@ public class UIMediaImage implements IIconList {
 
   public UIMediaImage(ImageInfo info, Icon icon) {
     this.info = info;
-    this.type = info == null ? null:info.getCategory();
+    this.type = info == null ? null : info.getCategory();
     this.icon = icon;
   }
 
@@ -65,4 +65,5 @@ public class UIMediaImage implements IIconList {
   public void setIcon(Icon icon) {
     this.icon = icon;
   }
+
 }

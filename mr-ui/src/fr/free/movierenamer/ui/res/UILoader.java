@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 duffy
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,18 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UILoader implements IIconList{
+public class UILoader implements IIconList {
 
   private final WebList list;
-  public UILoader(WebList list){
+  private final int row;
+  public UILoader(WebList list, int row) {
     this.list = list;
+    this.row = row;
   }
 
   @Override
   public Icon getIcon() {
-    return UIUtils.getAnimatedLoader(list);
+    return UIUtils.getAnimatedLoader(list, row);
   }
 
   @Override

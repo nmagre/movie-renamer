@@ -29,6 +29,7 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
+import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.laf.splitpane.WebSplitPane;
@@ -272,7 +273,7 @@ public class MovieRenamer extends JFrame {
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
     // Add loader image
-    mediaFileNameModel.addElement(new UILoader(mediaFileList));
+    mediaFileNameModel.addElement(new UILoader(mediaFileList, 0));
     mediaFileList.setCellRenderer(loaderListRenderer);
 
     listFileWorker = new ListFilesWorker(files);
@@ -295,14 +296,14 @@ public class MovieRenamer extends JFrame {
 
     String search = searchField.getText();
     if (search.length() == 0) {
-      JOptionPane.showMessageDialog(MovieRenamer.this, LocaleUtils.i18n("noTextToSearch"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME use laf dialog
+      WebOptionPane.showMessageDialog(MovieRenamer.this, LocaleUtils.i18n("noTextToSearch"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
       return;
     }
 
     clearInterface(!CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
     // Add loader image
-    searchResultModel.addElement(new UILoader(searchResultList));
+    searchResultModel.addElement(new UILoader(searchResultList, 0));
     searchResultList.setCellRenderer(loaderListRenderer);
 
     currentMedia.setSearch(search);
@@ -365,8 +366,10 @@ public class MovieRenamer extends JFrame {
     }
 
     ImageWorker<? extends IIconList> worker;
-    while((worker = imageWorkerQueue.poll()) != null) {
+    worker = imageWorkerQueue.poll();
+    while(worker != null) {
       worker.cancel(true);
+      worker = imageWorkerQueue.poll();
     }
   }
 

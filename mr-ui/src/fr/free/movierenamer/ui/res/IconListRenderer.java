@@ -56,4 +56,5 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     label.setOpaque(true);
     return label;
   }
+  
 }

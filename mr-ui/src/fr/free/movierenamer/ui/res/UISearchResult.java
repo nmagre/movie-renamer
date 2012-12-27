@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.res;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.utils.Sorter;
 import javax.swing.Icon;
 
 /**
@@ -28,7 +29,7 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UISearchResult implements ISort {
+public class UISearchResult extends Sorter.ISort implements IIconList {
   private final Media searchResult;
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
   private Icon icon;
@@ -36,6 +37,7 @@ public class UISearchResult implements ISort {
   /**
    * @param searchResult
    * @param scrapper
+   * @param icon
    */
   public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper, Icon icon) {
     this.searchResult = searchResult;

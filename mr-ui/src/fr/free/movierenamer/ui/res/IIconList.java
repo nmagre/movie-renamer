@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.utils.Sorter;
 import javax.swing.Icon;
 
 /**
@@ -30,4 +31,5 @@ public interface IIconList {
 
   @Override
   public String toString();
+
 }

@@ -62,4 +62,5 @@ public class UIPersonImage implements IIconList {
   public void setIcon(Icon icon) {
     this.icon = icon;
   }
+  
 }

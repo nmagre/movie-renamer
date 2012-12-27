@@ -127,4 +127,5 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       popup.show(e.getComponent(), x, y);
     }
   }
+  
 }

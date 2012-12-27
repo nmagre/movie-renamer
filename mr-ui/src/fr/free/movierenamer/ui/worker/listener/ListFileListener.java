@@ -21,7 +21,6 @@ import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.ui.res.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;

@@ -16,37 +16,41 @@
  */
 package fr.free.movierenamer.ui.panel;
 
-import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.list.WebList;
+import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
-import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.info.NfoInfo;
+import fr.free.movierenamer.scrapper.MovieScrapper;
+import fr.free.movierenamer.scrapper.TvShowScrapper;
+import fr.free.movierenamer.scrapper.impl.ScrapperManager;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.panel.PanelGenerator.Component;
 import fr.free.movierenamer.ui.panel.setting.SettingPanelGen;
+import fr.free.movierenamer.ui.res.UIScrapper;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.settings.UISettings.SettingsProperty;
+import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.settings.UISettings.UISupportedLanguage;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import fr.free.movierenamer.utils.Sorter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Level;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.UIManager;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 
 /**
  * Class Setting dialog
@@ -85,12 +89,16 @@ public class SettingPanel extends JDialog {
   }
 
   // i18n key
-  public enum SettingGroup {
+  public enum SettingSubTitle {
 
-    INTERFACE,
+    GENERAL,
     NFO,
     UPDATE,
+    CACHE,
     LANGUAGE,
+    MOVIESCRAPPER,
+    TVSHOWSCRAPPER,
+    SORTRESULT,
     INFORMATION;
 
     public String getName() {
@@ -98,66 +106,126 @@ public class SettingPanel extends JDialog {
     }
   }
 
-  // i18n key
-  public enum SettingsDefinition {
+  public static enum SettingsDefinition {// TODO add more constructor see PanelGenerator, ...
 
     // GENERAL
-    selectFirstMedia(SettingsProperty.selectFirstMedia, SettingCategory.GENERAL, SettingGroup.INTERFACE, null),
-    scanSubfolder(SettingsProperty.scanSubfolder, SettingCategory.GENERAL, SettingGroup.INTERFACE, null),
-    movieNfoType(SettingsProperty.movieNfoType, SettingCategory.GENERAL, SettingGroup.NFO, nfoRBtns, true),
-    checkUpdate(SettingsProperty.checkUpdate, SettingCategory.GENERAL, SettingGroup.UPDATE, null),
-    appLanguage(SettingsProperty.appLanguage, SettingCategory.GENERAL, SettingGroup.LANGUAGE, UIlanguageRBtns, true),
+    selectFirstMedia(UISettingsProperty.selectFirstMedia, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    selectFirstResult(UISettingsProperty.selectFirstResult, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    scanSubfolder(UISettingsProperty.scanSubfolder, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    generateThumb(UISettingsProperty.generateThumb, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    generateFanart(UISettingsProperty.generateFanart, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    generateSubtitles(UISettingsProperty.generateSubtitles, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    useExtensionFilter(UISettingsProperty.useExtensionFilter, SettingCategory.GENERAL, SettingSubTitle.GENERAL),
+    //extensionsList(UISettingsProperty.extensionsList, SettingCategory.GENERAL, SettingSubTitle.GENERAL, extensionsLst), // FIXME create a panel instead
+    checkUpdate(UISettingsProperty.checkUpdate, SettingCategory.GENERAL, SettingSubTitle.UPDATE),
+    cacheClear(SettingsProperty.cacheClear, SettingCategory.GENERAL, SettingSubTitle.CACHE),
+    movieNfoType(SettingsProperty.movieNfoType, SettingCategory.GENERAL, SettingSubTitle.NFO, nfoRBtns, true),
+    appLanguage(SettingsProperty.appLanguage, SettingCategory.GENERAL, SettingSubTitle.LANGUAGE, UIlanguageRBtns, true),
     // MEDIAINFO
-    showMediaPanel(SettingsProperty.showMediaPanel, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
-    showActorImage(SettingsProperty.showActorImage, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
-    //
-    movieFilenameLimit(SettingsProperty.movieFilenameLimit, SettingCategory.RENAME, SettingGroup.INFORMATION, null, SUBLEVEL),
-    showThumb(SettingsProperty.showThumb, SettingCategory.RENAME, SettingGroup.INFORMATION, null),
-    showFanart(SettingsProperty.showFanart, SettingCategory.SEARCH, SettingGroup.INFORMATION, null),
-    showSubtitle(SettingsProperty.showSubtitle, SettingCategory.IMAGE, SettingGroup.INFORMATION, null),
-    showCdart(SettingsProperty.showCdart, SettingCategory.MEDIAINFO, SettingGroup.INFORMATION, null),
-    showClearart(SettingsProperty.showClearart, SettingCategory.NETWORK, SettingGroup.INFORMATION, null),
-    showLogo(SettingsProperty.showLogo, SettingCategory.RENAME, SettingGroup.INFORMATION, null),
-    showBanner(SettingsProperty.showBanner, SettingCategory.RENAME, SettingGroup.INFORMATION, null);
-    private UISettings.SettingsProperty property;
+    showMediaPanel(UISettingsProperty.showMediaPanel, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showActorImage(UISettingsProperty.showActorImage, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showThumb(UISettingsProperty.showThumb, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showFanart(UISettingsProperty.showFanart, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showSubtitle(UISettingsProperty.showSubtitle, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showCdart(UISettingsProperty.showCdart, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showClearart(UISettingsProperty.showClearart, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showLogo(UISettingsProperty.showLogo, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    showBanner(UISettingsProperty.showBanner, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
+    // SEARCH
+    searchMovieScrapper(SettingsProperty.searchMovieScrapper, SettingCategory.SEARCH, SettingSubTitle.MOVIESCRAPPER, movieScrapperCb),
+    searchTvshowScrapper(SettingsProperty.searchTvshowScrapper, SettingCategory.SEARCH, SettingSubTitle.TVSHOWSCRAPPER, tvshowScrapperCb),
+    searchSubtitleScrapper(SettingsProperty.searchSubtitleScrapper, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
+    searchScrapperLang(SettingsProperty.searchScrapperLang, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
+    searchSorter(SettingsProperty.searchSort, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
+    searchNbResult(SettingsProperty.searchNbResult, SettingCategory.SEARCH, SettingSubTitle.SORTRESULT, searchSorters, false),
+    searchDisplayApproximateResult(SettingsProperty.searchDisplayApproximateResult, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
+    // RENAME
+    reservedCharacter(SettingsProperty.reservedCharacter, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameFormat(SettingsProperty.movieFilenameFormat, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameSeparator(SettingsProperty.movieFilenameSeparator, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameLimit(SettingsProperty.movieFilenameLimit, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameCase(SettingsProperty.movieFilenameCase, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameTrim(SettingsProperty.movieFilenameTrim, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameRmDupSpace(SettingsProperty.movieFilenameRmDupSpace, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFilenameCreateDirectory(SettingsProperty.movieFilenameCreateDirectory, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    // IMAGE
+    imageThumbName(UISettingsProperty.imageThumbName, SettingCategory.IMAGE, SettingSubTitle.GENERAL, thumbNameCb),
+    imageThumbExt(UISettingsProperty.imageThumbExt, SettingCategory.IMAGE, SettingSubTitle.GENERAL, thumbExtCb),
+    imageThumbResize(UISettingsProperty.imageThumbResize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageThumbSize(UISettingsProperty.imageThumbSize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageThumbWidth(UISettingsProperty.imageThumbWidth, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageThumbResizeLarger(UISettingsProperty.imageThumbResizeLarger, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageFanartName(UISettingsProperty.imageFanartName, SettingCategory.IMAGE, SettingSubTitle.GENERAL, fanartNameCb),
+    imageFanartResize(UISettingsProperty.imageFanartResize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageFanartWidth(UISettingsProperty.imageFanartWidth, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageFanartResizeLarger(UISettingsProperty.imageFanartResizeLarger, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageFanartSize(UISettingsProperty.imageFanartSize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    // movie folder
+    movieFolderFormat(SettingsProperty.movieFolderFormat, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFolderSeparator(SettingsProperty.movieFolderSeparator, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFolderLimit(SettingsProperty.movieFolderLimit, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFolderCase(SettingsProperty.movieFolderCase, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFolderTrim(SettingsProperty.movieFolderTrim, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    movieFolderRmDupSpace(SettingsProperty.movieFolderRmDupSpace, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    // tvShow
+    tvShowFilenameFormat(SettingsProperty.tvShowFilenameFormat, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    tvShowFilenameSeparator(SettingsProperty.tvShowFilenameSeparator, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    tvShowFilenameLimit(SettingsProperty.tvShowFilenameLimit, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    tvShowFilenameCase(SettingsProperty.tvShowFilenameCase, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    tvShowFilenameTrim(SettingsProperty.tvShowFilenameTrim, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    tvShowFilenameRmDupSpace(SettingsProperty.tvShowFilenameRmDupSpace, SettingCategory.RENAME, SettingSubTitle.GENERAL),
+    // Proxy
+    proxyIsOn(SettingsProperty.proxyIsOn, SettingCategory.NETWORK, SettingSubTitle.GENERAL),
+    proxyUrl(SettingsProperty.proxyUrl, SettingCategory.NETWORK, SettingSubTitle.GENERAL),
+    proxyPort(SettingsProperty.proxyPort, SettingCategory.NETWORK, SettingSubTitle.GENERAL),
+    // http param
+    httpRequestTimeOut(SettingsProperty.httpRequestTimeOut, SettingCategory.NETWORK, SettingSubTitle.GENERAL),
+    httpCustomUserAgent(SettingsProperty.httpCustomUserAgent, SettingCategory.NETWORK, SettingSubTitle.GENERAL);
+    private Settings.IProperty property;
+    private String lib;
     private SettingCategory category;
     private PanelGenerator.Component component;
-    private SettingGroup group;
+    private SettingSubTitle group;
     private int indent = 1;
-    private String tooltip = null;
     private List<JComponent> jcomponents = null;
+    private JComponent jcomponent = null;
     private boolean horizontal = true;
 
-    private SettingsDefinition(UISettings.SettingsProperty property, SettingCategory category, SettingGroup group, String tooltip) {
+    private SettingsDefinition(Settings.IProperty property, SettingCategory category, SettingSubTitle group) {
       this.property = property;
       this.category = category;
       this.group = group;
-      this.tooltip = tooltip;
-      if (property.getVClass().equals(Boolean.class)) {
+      if (property.getVclass().equals(Boolean.class)) {
         this.component = PanelGenerator.Component.CHECKBOX;
-      } else if (property.getVClass().equals(String.class)) {
+      } else if (property.getVclass().equals(String.class)) {
         this.component = PanelGenerator.Component.FIELD;
-      } else if (property.getVClass().equals(Integer.class)) {
+      } else if (property.getVclass().equals(Integer.class)) {
         this.component = PanelGenerator.Component.FIELD;
       } else {
         this.component = PanelGenerator.Component.UNKNOWN;
       }
     }
 
-    private SettingsDefinition(SettingsProperty property, SettingCategory category, SettingGroup group, String tooltip, int indent) {
-      this(property, category, group, tooltip);
+    private SettingsDefinition(Settings.IProperty property, SettingCategory category, SettingSubTitle group, int indent) {
+      this(property, category, group);
       this.indent = indent;
     }
 
-    private SettingsDefinition(SettingsProperty property, SettingCategory category, SettingGroup group, String tooltip, Component component) {
-      this(property, category, group, tooltip);
+    private SettingsDefinition(Settings.IProperty property, SettingCategory category, SettingSubTitle group, Component component) {
+      this(property, category, group);
       this.component = component;
     }
 
-    private SettingsDefinition(SettingsProperty property, SettingCategory category, SettingGroup group, List<JComponent> jcomponents, boolean horizontal) {
-      this(property, category, group, null);
+    private SettingsDefinition(Settings.IProperty property, SettingCategory category, SettingSubTitle group, List<JComponent> jcomponents, boolean horizontal) {
+      this(property, category, group);
       this.jcomponents = jcomponents;
       this.horizontal = horizontal;
+      this.component = Component.CUSTOM_LIST;
+    }
+
+    private SettingsDefinition(Settings.IProperty property, SettingCategory category, SettingSubTitle group, JComponent jcomponent) {
+      this(property, category, group);
+      this.jcomponent = jcomponent;
       this.component = Component.CUSTOM;
     }
 
@@ -169,10 +237,46 @@ public class SettingPanel extends JDialog {
     }
 
     /**
-     * @return the vclass
+     * @return the group
      */
+    public SettingSubTitle getSubTitle() {
+      return group;
+    }
+
+    /**
+     * @return the component
+     */
+    public PanelGenerator.Component getComponent() {
+      return component;
+    }
+
     public Class<?> getVclass() {
-      return property.getVClass();
+      return property.getVclass();
+    }
+
+    public Settings.IProperty getKey() {
+      return property;
+    }
+
+    /**
+     * @return the orientation horizontal
+     */
+    public boolean isHorizontal() {
+      return horizontal;
+    }
+
+    /**
+     * @return the array of jcomponents
+     */
+    public List<JComponent> getJComponentsList() {
+      return Collections.unmodifiableList(jcomponents);
+    }
+
+    /**
+     * @return the jcomponent
+     */
+    public JComponent getJComponent() {
+      return jcomponent;
     }
 
     /**
@@ -183,67 +287,38 @@ public class SettingPanel extends JDialog {
     }
 
     /**
-     * @return the component
-     */
-    public PanelGenerator.Component getComponent() {
-      return component;
-    }
-
-    /**
-     * @return the tooltip
-     */
-    public String getTooltip() {
-      return tooltip;
-    }
-
-    /**
-     * @return the key
-     */
-    public Settings.IProperty getKey() {
-      return property.getKey();
-    }
-
-    /**
-     * @return the level
-     */
-    public UISettings.SettingLevel getLevel() {
-      return property.getLevel();
-    }
-
-    /**
-     * @return the array of jcomponents
-     */
-    public List<JComponent> getJComponents() {
-      return Collections.unmodifiableList(jcomponents);
-    }
-
-    /**
-     * @return the orientation horizontal
-     */
-    public boolean getHorizontal() {
-      return horizontal;
-    }
-
-    /**
-     * @return the group
-     */
-    public SettingGroup getGroup() {
-      return group;
-    }
-
-    /**
      * @return the name
      */
     public String getName() {
-      return name().toLowerCase();
+      return name();
+    }
+
+    @Override
+    public String toString() {
+      return lib;
     }
   }
+  // List
+  private static WebList extensionsLst;
   // Button group
   private final ButtonGroup nfoGroup;
   private final ButtonGroup UIlanguageGroup;
+  private final ButtonGroup searchSorterGroup;
   // List component
   private static List<JComponent> nfoRBtns;
   private static List<JComponent> UIlanguageRBtns;
+  private static List<JComponent> searchSorters;
+  //
+  private final DefaultComboBoxModel movieScrapperModel;
+  private final DefaultComboBoxModel tvshowScrapperModel;
+  //
+  private static WebComboBox movieScrapperCb;
+  private static WebComboBox tvshowScrapperCb;
+  private static WebComboBox thumbNameCb;
+  private static WebComboBox thumbExtCb;
+  private static WebComboBox fanartNameCb;
+
+  //
   private final UISettings settings = UISettings.getInstance();
   private final MovieRenamer mr;
 
@@ -262,24 +337,43 @@ public class SettingPanel extends JDialog {
   private SettingPanel(MovieRenamer mr) {
     this.mr = mr;
     initComponents();
+    extensionsLst = new WebList(settings.getExtensionsList().toArray());
+    initList(extensionsLst);
+
     nfoGroup = new ButtonGroup();
     UIlanguageGroup = new ButtonGroup();
+    searchSorterGroup = new ButtonGroup();
 
     // Normal/Advanced setting rbtn
-    settingsGroup.setSelected(settings.isShowAdvancedSettings() ? advancedRbtn.getModel() : normalRbtn.getModel(), true);
+    //settingsGroup.setSelected(settings.isShowAdvancedSettings() ? advancedRbtn.getModel() : normalRbtn.getModel(), true);
 
     nfoRBtns = createRadioButtonList(NfoInfo.NFOtype.class, nfoGroup);
     UIlanguageRBtns = createRadioButtonList(UISupportedLanguage.class, UIlanguageGroup);
-    ((WebRadioButton)UIlanguageRBtns.get(0)).addActionListener(new ActionListener() {
+    searchSorters = createRadioButtonList(Sorter.SorterType.class, searchSorterGroup);
 
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        Locale.setDefault(Locale.FRENCH);
-        UIManager.getDefaults().setDefaultLocale(Locale.FRENCH);
-        LanguageManager.setLanguage("fr");
-        WebLookAndFeel.updateAllComponentUIs();
-      }
-    });
+    movieScrapperModel = new DefaultComboBoxModel();
+    tvshowScrapperModel = new DefaultComboBoxModel();
+
+    for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
+      movieScrapperModel.addElement(new UIScrapper(scrapper));
+    }
+
+    for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
+      tvshowScrapperModel.addElement(new UIScrapper(scrapper));
+    }
+
+    thumbNameCb = createComboBox(UISettings.ThumbName.class);
+    thumbExtCb = createComboBox(UISettings.ThumbExt.class);
+    fanartNameCb = createComboBox(UISettings.FanartName.class);
+
+    movieScrapperCb = new WebComboBox();
+    movieScrapperCb.setRenderer(UIUtils.iconListRenderer);
+    movieScrapperCb.setModel(movieScrapperModel);
+    //movieScrapperCb.setSelectedItem(UIMovieScrapper);
+    tvshowScrapperCb = new WebComboBox();
+    tvshowScrapperCb.setRenderer(UIUtils.iconListRenderer);
+    tvshowScrapperCb.setModel(tvshowScrapperModel);
+    //movieScrapperCb.setSelectedItem(UIMovieScrapper);
 
     nfoGroup.setSelected(((WebRadioButton) nfoRBtns.get(settings.coreInstance.getMovieNfoType().ordinal())).getModel(), true);
     UIlanguageGroup.setSelected(((WebRadioButton) UIlanguageRBtns.get(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()).ordinal())).getModel(), true);
@@ -295,7 +389,7 @@ public class SettingPanel extends JDialog {
   }
 
   /**
-   * Create list of WebRadioButton depends on interface passed
+   * Create list of WebRadioButton depends on enum passed
    *
    * @param <T> Interface generic type
    * @param clazz Interface class
@@ -315,6 +409,23 @@ public class SettingPanel extends JDialog {
   }
 
   /**
+   * Create combobox depends on enum passed
+   *
+   * @param <T> Interface generic type
+   * @param clazz Interface class
+   * @return WebComboBox
+   */
+  private <T extends Enum<T>> WebComboBox createComboBox(Class<T> clazz) {
+    WebComboBox cbb = new WebComboBox();
+    DefaultComboBoxModel model = new DefaultComboBoxModel();
+    for (T e : clazz.getEnumConstants()) {
+      model.addElement(e.name());
+    }
+    cbb.setModel(model);
+    return cbb;
+  }
+
+  /**
    * Get list of list of SettingsDefinition for a SettingCategory
    *
    * @param catkey SettingCategory
@@ -322,11 +433,11 @@ public class SettingPanel extends JDialog {
    */
   private List<List<SettingsDefinition>> getSettingsDefinition(SettingCategory catkey) {
     List<List<SettingsDefinition>> res = new ArrayList<List<SettingsDefinition>>();
-    List<SettingGroup> keys = getSettingsGroup(catkey);
-    for (SettingGroup key : keys) {
+    List<SettingSubTitle> keys = getSettingsGroup(catkey);
+    for (SettingSubTitle key : keys) {
       List<SettingsDefinition> defKeys = new ArrayList<SettingsDefinition>();
       for (SettingsDefinition definition : SettingsDefinition.values()) {
-        if (key.equals(definition.getGroup()) && catkey.equals(definition.getCategory())) {
+        if (key.equals(definition.getSubTitle()) && catkey.equals(definition.getCategory())) {
           defKeys.add(definition);
         }
       }
@@ -336,19 +447,26 @@ public class SettingPanel extends JDialog {
   }
 
   /**
-   * Get list of SettingGroup for a SettingCategory
+   * Get list of SettingSubTitle for a SettingCategory
    *
    * @param key SettingCategory
-   * @return list of SettingGroup
+   * @return list of SettingSubTitle
    */
-  private List<SettingGroup> getSettingsGroup(SettingCategory key) {
-    List<SettingGroup> defKeys = new ArrayList<SettingGroup>();
+  private List<SettingSubTitle> getSettingsGroup(SettingCategory key) {
+    List<SettingSubTitle> defKeys = new ArrayList<SettingSubTitle>();
     for (SettingsDefinition definition : SettingsDefinition.values()) {
-      if (key.equals(definition.getCategory()) && !defKeys.contains(definition.getGroup())) {
-        defKeys.add(definition.getGroup());
+      if (key.equals(definition.getCategory()) && !defKeys.contains(definition.getSubTitle())) {
+        defKeys.add(definition.getSubTitle());
       }
     }
     return defKeys;
+  }
+
+  private void initList(WebList jlist) {
+    jlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    jlist.setLayoutOrientation(WebList.HORIZONTAL_WRAP);
+    jlist.setVisibleRowCount(-1);
+    jlist.setSelectedIndex(0);
   }
 
   /**
@@ -462,7 +580,7 @@ public class SettingPanel extends JDialog {
           checkbox.getKey().getKey().setValue(((WebCheckBox) checkbox.getValue()).isSelected());
         } catch (IOException ex) {
           UISettings.LOGGER.log(Level.SEVERE, null, ex);
-          // TODO show error
+          WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("saveSettingsFailed"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
           return;
         }
       }
@@ -472,21 +590,21 @@ public class SettingPanel extends JDialog {
           field.getKey().getKey().setValue(((WebTextField) field.getValue()).getText());
         } catch (IOException ex) {
           UISettings.LOGGER.log(Level.SEVERE, null, ex);
-          // TODO show error
+          WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("saveSettingsFailed"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
           return;
         }
       }
 
       for (JComponent component : nfoRBtns) {
         if (((WebRadioButton) component).isSelected()) {
-          Settings.SettingsProperty.movieNfoType.setValue(NfoInfo.NFOtype.valueOf(component.getName()));
+          SettingsProperty.movieNfoType.setValue(NfoInfo.NFOtype.valueOf(component.getName()));
           break;
         }
       }
 
       for (JComponent component : UIlanguageRBtns) {
         if (((WebRadioButton) component).isSelected()) {
-          Settings.SettingsProperty.appLanguage.setValue(new Locale(UISupportedLanguage.valueOf(component.getName()).name()).getLanguage());
+          SettingsProperty.appLanguage.setValue(new Locale(UISupportedLanguage.valueOf(component.getName()).name()).getLanguage());
           break;
         }
       }

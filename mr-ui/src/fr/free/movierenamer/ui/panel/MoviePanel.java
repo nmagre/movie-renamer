@@ -205,7 +205,6 @@ public class MoviePanel extends MediaPanel {
     }
     runtimeField.setText("" + movieInfo.getRuntime());
     //synopsisArea.setText(movieInfo.get);
-
   }
 
   @Override

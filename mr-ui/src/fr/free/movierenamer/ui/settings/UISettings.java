@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.settings;
 
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.res.Sorter;
 import fr.free.movierenamer.utils.*;
 import java.io.File;
 import java.io.IOException;
@@ -80,14 +79,43 @@ public final class UISettings {
   private static final String settingNodeName;
 
   public enum UISupportedLanguage {
+
     fr,
     en;
   }
 
-  public enum SettingLevel {
+  public static enum SettingLevel {
 
     NORMAL,
     ADVANCED;
+  }
+
+  public static enum ImageSize {
+    ORIGINAL,
+    MEDIUM,
+    SMALL,
+  }
+
+  public static enum ThumbName {
+
+    FILENAME,
+    POSTER,
+    THUMB;
+  }
+
+  public static enum ThumbExt {
+    JPG,
+    PNG,
+    TBN,
+  }
+
+  public static enum FanartName {
+
+    FILENAME_FANART,
+    FOLDERNAME_FANART,
+    FOLDERNAME,
+    FANART,
+    BACKDROP;
   }
 
   public enum UISettingsProperty implements Settings.IProperty {
@@ -106,13 +134,27 @@ public final class UISettings {
     showLogo(Boolean.TRUE),
     showBanner(Boolean.TRUE),
     generateThumb(Boolean.TRUE),
+    generateCdart(Boolean.TRUE),
+    generateClearart(Boolean.TRUE),
+    generateLogo(Boolean.TRUE),
     generateFanart(Boolean.TRUE),
+    generateBanner(Boolean.TRUE),
     generateSubtitles(Boolean.FALSE),
+    imageThumbName(ThumbName.FILENAME),
+    imageThumbExt(ThumbExt.JPG),
+    imageThumbResize(Boolean.FALSE),
+    imageThumbSize(ImageSize.ORIGINAL),
+    imageThumbWidth(720),
+    imageThumbResizeLarger(Boolean.TRUE),
+    imageFanartName(FanartName.FILENAME_FANART),
+    imageFanartResize(Boolean.FALSE),
+    imageFanartWidth(1080),
+    imageFanartResizeLarger(Boolean.TRUE),
+    imageFanartSize(ImageSize.ORIGINAL),
     useExtensionFilter(Boolean.TRUE),
     fileChooserPath(userFolder),
     extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
-    showAdvancedSettings(Boolean.FALSE),
-    searchSorter(Sorter.SorterType.LEVEN_YEAR);
+    showAdvancedSettings(Boolean.FALSE);
     private Class<?> vclass;
     private Object defaultValue;
 
@@ -139,107 +181,6 @@ public final class UISettings {
     @Override
     public void setValue(Object object) throws IOException {
       instance.set(this, object);
-    }
-  }
-
-  public static enum SettingsProperty {
-
-    // UI
-    selectFirstMedia(UISettingsProperty.selectFirstMedia),
-    selectFirstResult(UISettingsProperty.selectFirstResult),
-    scanSubfolder(UISettingsProperty.scanSubfolder),
-    checkUpdate(UISettingsProperty.checkUpdate),
-    showMediaPanel(UISettingsProperty.showMediaPanel),
-    showActorImage(UISettingsProperty.showActorImage),
-    showThumb(UISettingsProperty.showThumb),
-    showFanart(UISettingsProperty.showFanart),
-    showSubtitle(UISettingsProperty.showSubtitle),
-    showCdart(UISettingsProperty.showCdart),
-    showClearart(UISettingsProperty.showClearart),
-    showLogo(UISettingsProperty.showLogo),
-    showBanner(UISettingsProperty.showBanner),
-    thumb(UISettingsProperty.generateThumb),
-    fanart(UISettingsProperty.generateFanart),
-    subtitles(UISettingsProperty.generateSubtitles),
-    useExtensionFilter(UISettingsProperty.useExtensionFilter),
-    showAdvancedSettings(UISettingsProperty.showAdvancedSettings),
-    fileChooserPath(UISettingsProperty.fileChooserPath),
-    extensionsList(UISettingsProperty.extensionsList),
-    searchSorter(UISettingsProperty.searchSorter),
-    // CORE
-    appLanguage(Settings.SettingsProperty.appLanguage),
-    // movie filename
-    movieFilenameFormat(Settings.SettingsProperty.movieFilenameFormat),
-    movieFilenameSeparator(Settings.SettingsProperty.movieFilenameSeparator),
-    movieFilenameLimit(Settings.SettingsProperty.movieFilenameLimit),
-    movieFilenameCase(Settings.SettingsProperty.movieFilenameCase),
-    movieFilenameTrim(Settings.SettingsProperty.movieFilenameTrim),
-    movieFilenameRmDupSpace(Settings.SettingsProperty.movieFilenameRmDupSpace),
-    movieFilenameCreateDirectory(Settings.SettingsProperty.movieFilenameCreateDirectory),
-    // movie folder
-    movieFolderFormat(Settings.SettingsProperty.movieFolderFormat),
-    movieFolderSeparator(Settings.SettingsProperty.movieFolderSeparator),
-    movieFolderLimit(Settings.SettingsProperty.movieFolderLimit),
-    movieFolderCase(Settings.SettingsProperty.movieFolderCase),
-    movieFolderTrim(Settings.SettingsProperty.movieFolderTrim),
-    movieFolderRmDupSpace(Settings.SettingsProperty.movieFolderRmDupSpace),
-    // movie NFO
-    movieNfoType(Settings.SettingsProperty.movieNfoType),
-    // tvShow
-    tvShowFilenameFormat(Settings.SettingsProperty.tvShowFilenameFormat),
-    tvShowFilenameSeparator(Settings.SettingsProperty.tvShowFilenameSeparator),
-    tvShowFilenameLimit(Settings.SettingsProperty.tvShowFilenameLimit),
-    tvShowFilenameCase(Settings.SettingsProperty.tvShowFilenameCase),
-    tvShowFilenameTrim(Settings.SettingsProperty.tvShowFilenameTrim),
-    tvShowFilenameRmDupSpace(Settings.SettingsProperty.tvShowFilenameRmDupSpace),
-    // Cache
-    cacheClear(Settings.SettingsProperty.cacheClear),
-    // Search
-    searchMovieScrapper(Settings.SettingsProperty.searchMovieScrapper),
-    searchTvshowScrapper(Settings.SettingsProperty.searchTvshowScrapper),
-    searchSubtitleScrapper(Settings.SettingsProperty.searchSubtitleScrapper),
-    searchScrapperLang(Settings.SettingsProperty.searchScrapperLang),
-    searchSortBySimiYear(Settings.SettingsProperty.searchSortBySimiYear),
-    searchNbResult(Settings.SettingsProperty.searchNbResult),
-    searchDisplayApproximateResult(Settings.SettingsProperty.searchDisplayApproximateResult),
-    // Proxy
-    proxyIsOn(Settings.SettingsProperty.proxyIsOn),
-    proxyUrl(Settings.SettingsProperty.proxyUrl),
-    proxyPort(Settings.SettingsProperty.proxyPort),
-    // http param
-    httpRequestTimeOut(Settings.SettingsProperty.httpRequestTimeOut, SettingLevel.ADVANCED),
-    httpCustomUserAgent(Settings.SettingsProperty.httpCustomUserAgent, SettingLevel.ADVANCED);
-    private String lib;
-    private Class<?> vclass;
-    private SettingLevel level = SettingLevel.NORMAL;
-    private Settings.IProperty key;
-
-    private SettingsProperty(Settings.IProperty key) {
-      this.key = key;
-      this.lib = name();
-      this.vclass = key.getVclass();
-    }
-
-    private SettingsProperty(Settings.IProperty key, SettingLevel level) {
-      this(key);
-      this.level = level;
-    }
-
-    public Class<?> getVClass() {
-      return vclass;
-    }
-
-    public SettingLevel getLevel() {
-      return level;
-    }
-
-    public Settings.IProperty getKey() {
-      return key;
-    }
-
-    @Override
-    public String toString() {
-      return lib;
     }
   }
 
@@ -469,10 +410,6 @@ public final class UISettings {
 
   public boolean isShowAdvancedSettings() {
     return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showAdvancedSettings));
-  }
-
-  public Sorter.SorterType getSearchSorter() {
-    return Sorter.SorterType.valueOf(get(UISettingsProperty.searchSorter));
   }
 
   public String getVersion() {

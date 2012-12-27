@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.panel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -38,10 +37,10 @@ import javax.swing.JPanel;
 public abstract class PanelGenerator extends JPanel {
 
   // Font
-  private final int titleSize = 14;
-  private final int subTitleSize = 13;
-  private final int textSize = 12;
-  private final String textFont = "Ubuntu";
+  protected final int titleSize = 14;
+  protected final int subTitleSize = 13;
+  protected final int textSize = 12;
+  protected final String textFont = "Ubuntu";
   // Inset size
   protected final int smallMargin = 3;
   protected final int mediumMargin = 15;
@@ -65,6 +64,7 @@ public abstract class PanelGenerator extends JPanel {
     TOOLBAR,
     LABEL,
     CUSTOM,
+    CUSTOM_LIST,
     UNKNOWN;
   }
 
@@ -295,8 +295,7 @@ public abstract class PanelGenerator extends JPanel {
       case LABEL:
         component = new WebLabel(LocaleUtils.i18nExt(title));
         break;
-      case CUSTOM:
-      case UNKNOWN:
+      default:
         break;
     }
 

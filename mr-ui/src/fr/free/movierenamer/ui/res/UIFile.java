@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.res;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
 import javax.swing.Icon;
 
@@ -29,7 +30,7 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIFile implements ISort {
+public class UIFile extends Sorter.ISort implements IIconList {
 
   private final FileInfo file;
   private final MediaTag mtag;
@@ -83,6 +84,7 @@ public class UIFile implements ISort {
     file.setSearch(search);
   }
 
+  @Override
   public int getYear() {
      return file.getYear();
   }
@@ -97,7 +99,6 @@ public class UIFile implements ISort {
 //    if (renamed) {
 //      return UIUtils.MEDIARENAMEDICON;
 //    }
-
     if (wasRenamed()) {
       return UIUtils.MEDIAWASRENAMEDICON;
     }

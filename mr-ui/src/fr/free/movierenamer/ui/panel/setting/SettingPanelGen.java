@@ -17,10 +17,13 @@
 package fr.free.movierenamer.ui.panel.setting;
 
 import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.panel.PanelGenerator;
 import fr.free.movierenamer.ui.panel.SettingPanel.SettingsDefinition;
+import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -53,7 +56,7 @@ public class SettingPanelGen extends PanelGenerator {
     fields = new EnumMap<SettingsDefinition, JComponent>(SettingsDefinition.class);
 
     for (List<SettingsDefinition> group : settingsDef) {
-      add(createTitle(group.get(0).getGroup().name()), getTitleConstraint());
+      add(createTitle(group.get(0).getSubTitle().name()), getTitleConstraint());
       for (SettingsDefinition definition : group) {
         switch (definition.getComponent()) {
           //case BUTTON:
@@ -64,18 +67,34 @@ public class SettingPanelGen extends PanelGenerator {
             JComponent component = createComponent(definition.getComponent(), definition.getName());
             if (definition.getComponent() == Component.CHECKBOX && definition.getVclass().equals(Boolean.class)) {
               ((WebCheckBox) component).setSelected(Boolean.parseBoolean(definition.getKey().getValue()));
+              add(component, getGroupConstraint(definition.getIndent()));
               checkboxs.put(definition, component);
             } else if (definition.getComponent() == Component.FIELD) {
+              WebLabel label = new WebLabel(definition.getName());
               ((WebTextField) component).setText(definition.getKey().getValue());
+              label.setFont(new Font(textFont, Font.BOLD, textSize));
+              add(label, getGroupConstraint(0, false, false));
+              add(component, getGroupConstraint(1, true, false));
               fields.put(definition, component);
             }
-            add(component, getGroupConstraint(definition.getIndent()));
             break;
           case CUSTOM:
-            List<JComponent> components = definition.getJComponents();
+            component = definition.getJComponent();
+            component.setFont(new Font(textFont, Font.BOLD, textSize));
+            if (component instanceof WebComboBox) {
+              WebLabel label = new WebLabel(definition.getName());
+              label.setFont(new Font(textFont, Font.BOLD, textSize));
+              add(label, getGroupConstraint(0, false, false));
+              add(definition.getJComponent(), getGroupConstraint(1, true, false));
+            } else {
+              add(definition.getJComponent(), getGroupConstraint());
+            }
+            break;
+          case CUSTOM_LIST:
+            List<JComponent> components = definition.getJComponentsList();
             int size = components.size();
             for (int i = 0; i < size; i++) {
-              if (definition.getHorizontal()) {
+              if (definition.isHorizontal()) {
                 add(components.get(i), getGroupConstraint(i, !((i + 1) < size)));
               } else {
                 add(components.get(i), getGroupConstraint());
