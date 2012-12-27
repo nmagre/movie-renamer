@@ -99,8 +99,11 @@ public final class Settings {
   public interface IProperty {
 
     public Class<?> getVclass();
+
     public Object getDefaultValue();
+
     public String getValue();
+
     public void setValue(Object value) throws IOException;
   }
 
@@ -108,6 +111,7 @@ public final class Settings {
     // app lang
 
     appLanguage(Locale.ENGLISH), // (Locale.ENGLISH.toString()),
+    reservedCharacter(Boolean.TRUE),
     // movie filename
     movieFilenameFormat("<t> (<y>)"), // ("<t> (<y>)"),
     movieFilenameSeparator(", "), // (", "),
@@ -244,7 +248,7 @@ public final class Settings {
     }
     this.settingsDocument = settingsDocument;
     this.settingsNode = settingsNode;
-    if(autosave){
+    if (autosave) {
       saveSetting();
     }
   }
@@ -282,7 +286,7 @@ public final class Settings {
         settingsNode.appendChild(found);
       }
       found.setTextContent(value.toString());
-      if(autosave) {
+      if (autosave) {
         saveSetting();
       }
     }
@@ -294,13 +298,17 @@ public final class Settings {
     for (int i = 0; i < list.getLength(); i++) {
       settingsNode.removeChild(list.item(i));
     }
-    if(autosave) {
+    if (autosave) {
       saveSetting();
     }
   }
 
   public Locale getAppLanguage() {
     return new Locale(get(SettingsProperty.appLanguage));
+  }
+
+  public boolean isReservedCharacter() {
+    return Boolean.parseBoolean(get(SettingsProperty.reservedCharacter));
   }
 
   public String getMovieFilenameFormat() {

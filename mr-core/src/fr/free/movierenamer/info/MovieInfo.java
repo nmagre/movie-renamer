@@ -30,8 +30,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.Icon;
-
 /**
  * Class MovieInfo
  *
@@ -43,6 +41,7 @@ public class MovieInfo extends MediaInfo {
   private static final long serialVersionUID = 1L;
 
   public static enum MovieProperty {
+
     id,
     IMDB_ID,
     originalTitle,
@@ -55,11 +54,8 @@ public class MovieInfo extends MediaInfo {
     posterPath,
     runtime
   }
-
   protected final Map<MovieProperty, String> fields;
-
   protected final String[] genres;
-
   protected final Locale[] countries;
 
   protected MovieInfo() {
@@ -165,12 +161,12 @@ public class MovieInfo extends MediaInfo {
 
   @Override
   public String getRenamedTitle(String format) {
-    // TODO Apply case by tag to avoid this : <ot> IMDBID <tt> -> <ot> Imdbid <tt> (don't change user input)
-    // Add more "sub-tag" like ":i" to ignore case : <ot:i>
+    // TODO Add more "sub-tag" like ":i" to ignore case : <ot:i>
     // or "~X" to remove caratere : <tt~2> (remove the first two caratere)
     // or "~w" to keep only number
     // ...
-    // TODO Remove caracter which are not supported by all OS (need to add an option in settings for that)
+
+    List<String> reservedCharacterList = Arrays.asList(new String[]{"<", ">", ":", "\"", "/", "\\", "|", "?", "*"});
     Settings settings = Settings.getInstance();
     String separator = settings.getMovieFilenameSeparator();
     int limit = settings.getMovieFilenameLimit();
@@ -228,20 +224,20 @@ public class MovieInfo extends MediaInfo {
       int n = Integer.parseInt(matcher.group(2));
       char x = matcher.group(1).charAt(0);
       switch (x) {
-      case 'a':
-        format = format.replaceAll("<a\\d+>", this.getActors().get(n - 1));
-        break;
-      case 'd':
-        format = format.replaceAll("<d\\d+>", this.getDirectors().get(n - 1));
-        break;
-      case 'g':
-        format = format.replaceAll("<g\\d+>", this.getGenres().get(n - 1));
-        break;
-      case 'c':
-        format = format.replaceAll("<c\\d+>", this.getCountries().get(n - 1).getCountry());
-        break;
-      default:
-        break;
+        case 'a':
+          format = format.replaceAll("<a" + n + ">", applyCase(this.getActors().get(n - 1), renameCase));
+          break;
+        case 'd':
+          format = format.replaceAll("<d" + n + ">", applyCase(this.getDirectors().get(n - 1), renameCase));
+          break;
+        case 'g':
+          format = format.replaceAll("<g" + n + ">", applyCase(this.getGenres().get(n - 1), renameCase));
+          break;
+        case 'c':
+          format = format.replaceAll("<c" + n + ">", applyCase(this.getCountries().get(n - 1).getCountry(), renameCase));
+          break;
+        default:
+          break;
       }
     }
 
@@ -253,46 +249,26 @@ public class MovieInfo extends MediaInfo {
       int stream = Integer.parseInt(matcher.group(2));
       stream--;// Offset start at 0, (E.g : For <mac3> -> stream == 2)
       if (tag.equals("mach")) {
-        format = format.replaceAll("<mach\\d+>", mtag.getAudioChannels(stream));
+        format = format.replaceAll("<mach" + stream + ">", applyCase(mtag.getAudioChannels(stream), renameCase));
       } else if (tag.equals("mac")) {
-        format = format.replaceAll("<mac\\d+>", mtag.getAudioCodec(stream));
+        format = format.replaceAll("<mac" + stream + ">", applyCase(mtag.getAudioCodec(stream), renameCase));
       } else if (tag.equals("mal")) {
-        format = format.replaceAll("<mal\\d+>", mtag.getAudioLanguage(stream));
+        format = format.replaceAll("<mal" + stream + ">", applyCase(mtag.getAudioLanguage(stream), renameCase));
       } else if (tag.equals("matt")) {
-        format = format.replaceAll("<matt\\d+>", mtag.getAudioTitle(stream));
+        format = format.replaceAll("<matt" + stream + ">", applyCase(mtag.getAudioTitle(stream), renameCase));
       } else if (tag.equals("mtt")) {
-        format = format.replaceAll("<mtt\\d+>", mtag.getTextTitle(stream));
+        format = format.replaceAll("<mtt" + stream + ">", applyCase(mtag.getTextTitle(stream), renameCase));
       }
     }
 
     // la suite ;)
     for (String key : replace.keySet()) {
       Object val = replace.get(key);
-      format = format.replaceAll(key, (val != null) ? val.toString() : "");
+      format = format.replaceAll(key, (val != null) ? applyCase(val.toString(), renameCase) : "");
     }
 
     if (trim) {
       format = format.trim();
-    }
-
-    // Case conversion
-    String res;
-    switch (renameCase) {
-    case UPPER:
-      res = format.toUpperCase();
-      break;
-    case LOWER:
-      res = format.toLowerCase();
-      break;
-    case FIRSTLO:
-      res = StringUtils.capitalizedLetter(format, true);
-      break;
-    case FIRSTLA:
-      res = StringUtils.capitalizedLetter(format, false);
-      break;
-    default:
-      res = format;
-      break;
     }
 
     // // extension
@@ -315,7 +291,35 @@ public class MovieInfo extends MediaInfo {
     // }
 
     if (settings.isMovieFilenameRmDupSpace()) {
-      res = res.replaceAll("\\s+", " ");
+      format = format.replaceAll("\\s+", " ");
+    }
+
+    if (settings.isReservedCharacter()) {
+      for (String c : reservedCharacterList) {
+        format = format.replace(c, "");
+      }
+    }
+    return format;
+  }
+
+  private String applyCase(String str, StringUtils.CaseConversionType renameCase) {
+    String res = "";
+    switch (renameCase) {
+      case UPPER:
+        res = str.toUpperCase();
+        break;
+      case LOWER:
+        res = str.toLowerCase();
+        break;
+      case FIRSTLO:
+        res = StringUtils.capitalizedLetter(str, true);
+        break;
+      case FIRSTLA:
+        res = StringUtils.capitalizedLetter(str, false);
+        break;
+      default:
+        res = str;
+        break;
     }
     return res;
   }

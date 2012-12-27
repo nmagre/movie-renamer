@@ -32,12 +32,16 @@ import java.util.logging.Level;
  */
 public class Sorter {
 
-  public interface ISort {
+  public static abstract class ISort {
 
-  public String getName();
-  public int getYear();
-  public long getLength();
-}
+    protected abstract String getName();
+
+    protected abstract int getYear();
+
+    protected long getLength() {
+      return 0;
+    }
+  }
 
   public enum SorterType {
 
@@ -52,7 +56,7 @@ public class Sorter {
   }
 
   private Sorter() {
-     throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException();
   }
 
   public static void sort(List<? extends ISort> list, SorterType type) {
@@ -73,7 +77,7 @@ public class Sorter {
 
   public static void sort(List<? extends ISort> list, SorterType type, int year) {
     if (type.equals(SorterType.YEAR_ROUND) || type.equals(SorterType.ALPHA_YEAR)) {
-      sortYear(list, year, type.equals(SorterType.ALPHA_YEAR) ? new AlphabeticSort():null);
+      sortYear(list, year, type.equals(SorterType.ALPHA_YEAR) ? new AlphabeticSort() : null);
       return;
     }
     Settings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported with year sort", type.name());

@@ -32,33 +32,30 @@ import fr.free.movierenamer.settings.Settings;
 
 /**
  * Class StringUtils
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public final class StringUtils {
+
   public enum CaseConversionType {
+
     FIRSTLO,
     FIRSTLA,
     UPPER,
     LOWER,
     NONE
   }
-
   public static final String SPACE = " ";
   public static final String ENDLINE = System.getProperty("line.separator");
   public static final String EMPTY = "";
   public static final String DOT = ".";
-
   private static final Pattern apostrophe = Pattern.compile("['`´‘’ʻ]");
   private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:]]");
-
-  private static final Pattern[] brackets = new Pattern[] {
-      Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
+  private static final Pattern[] brackets = new Pattern[]{
+    Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
   };
-
   private static final Pattern trailingParentheses = Pattern.compile("[(]([^)]*)[)]$");
-
   private static final Pattern checksum = Pattern.compile("[\\(\\[]\\p{XDigit}{8}[\\]\\)]");
 
   public static boolean isEmptyValue(Object object) {
@@ -92,9 +89,9 @@ public final class StringUtils {
 
   /**
    * Rotate string by 13 places
-   * 
+   *
    * @param text
-   *          String
+   * String
    * @return String rotate
    */
   public static String rot13(String text) {
@@ -113,11 +110,11 @@ public final class StringUtils {
 
   /**
    * Capitalized first letter for each words or only first one
-   * 
+   *
    * @param str
-   *          String
+   * String
    * @param onlyFirst
-   *          Only first word letter capitalized
+   * Only first word letter capitalized
    * @return String capitalized
    */
   public static String capitalizedLetter(String str, boolean onlyFirst) {
@@ -128,7 +125,9 @@ public final class StringUtils {
     str = str.toLowerCase();
     for (int i = 0; i < str.length(); i++) {
       ch = str.charAt(i);
-      if (toUpper && Character.isLetter(ch)) {
+      if (ch == 's' && prevCh == '\'') {
+        res.append(ch);
+      } else if (toUpper && Character.isLetter(ch)) {
         if (!Character.isLetter(prevCh) || (prevCh == 'i' && ch == 'i')) {
           res.append(Character.toUpperCase(ch));
           if (onlyFirst) {
@@ -148,13 +147,13 @@ public final class StringUtils {
 
   /**
    * Check if string is uppercase
-   * 
+   *
    * @param str
    * @return True if all letter are uppercase except I,II,III,..., false otherwise
    */
   public static boolean isUpperCase(String str) {
-    String[] romanNumber = new String[] {
-        "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"
+    String[] romanNumber = new String[]{
+      "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"
     };
     for (String number : romanNumber) {
       if (str.equals(number)) {
@@ -172,11 +171,11 @@ public final class StringUtils {
 
   /**
    * Get an array from a string separated by movieFilenameSeparator
-   * 
+   *
    * @param str
-   *          String
+   * String
    * @param separator
-   *          Separator
+   * Separator
    * @return An array of strings
    */
   public static List<String> stringToArray(String str, String separator) {
@@ -194,13 +193,13 @@ public final class StringUtils {
 
   /**
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
-   * 
+   *
    * @param array
-   *          Object array
+   * Object array
    * @param separator
-   *          Separator
+   * Separator
    * @param limit
-   *          Limit
+   * Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(Object[] array, String separator, int limit) {
@@ -226,13 +225,13 @@ public final class StringUtils {
 
   /**
    * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
-   * 
+   *
    * @param array
-   *          ArrayList
+   * ArrayList
    * @param separator
-   *          Separator
+   * Separator
    * @param limit
-   *          Limit
+   * Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(List<?> array, String separator, int limit) {
@@ -246,9 +245,9 @@ public final class StringUtils {
 
   /**
    * Escape XML special character
-   * 
+   *
    * @param str
-   *          String to escape
+   * String to escape
    * @return String escaped
    */
   public static String escapeXML(String str) {
@@ -272,11 +271,11 @@ public final class StringUtils {
 
   /**
    * Unescape XML special character
-   * 
+   *
    * @param str
-   *          String
+   * String
    * @param encode
-   *          Encode type
+   * Encode type
    * @return Unescape string
    */
   public static String unEscapeXML(String str, String encode) {
