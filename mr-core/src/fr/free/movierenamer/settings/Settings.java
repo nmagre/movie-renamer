@@ -418,7 +418,7 @@ public final class Settings {
     return new Locale(get(SettingsProperty.searchScrapperLang));
   }
 
-  private Sorter.SorterType getSearchSorter() {
+  public Sorter.SorterType getSearchSorter() {
     return Sorter.SorterType.valueOf(get(SettingsProperty.searchSort));
   }
 
