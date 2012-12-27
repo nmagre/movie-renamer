@@ -46,7 +46,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class TMDbScrapper : search movie on TMDb
- * 
+ *
  * @see http://help.themoviedb.org/kb/api/
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
@@ -58,6 +58,30 @@ public class TMDbScrapper extends MovieScrapper {
   private static final String version = "2.1"; // TODO change to v3 !!!!
 
   private final String apikey;
+
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    ENGLISH(Locale.ENGLISH),
+    FRENCH(Locale.FRENCH),
+    SPANISH(new Locale("es", "ES")),
+    ITALIAN(new Locale("it", "IT")),
+    GERMAN(Locale.GERMAN);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
 
   public TMDbScrapper() {
     super(Locale.ENGLISH);
@@ -77,7 +101,7 @@ public class TMDbScrapper extends MovieScrapper {
   protected String getHost() {
     return host;
   }
-  
+
   @Override
   public boolean hasLocaleSupport() {
     return true;

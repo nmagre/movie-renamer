@@ -52,7 +52,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class TheTVDBScrapper : search tvshow on TheTVDB
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -65,6 +65,30 @@ public final class TheTVDBScrapper extends TvShowScrapper {
    */
   private final String apikey;
   private final String posterRoot;
+
+    public enum AvailableLanguage implements IAvailableLanguage {
+
+    ENGLISH(Locale.ENGLISH),
+    FRENCH(Locale.FRENCH),
+    SPANISH(new Locale("es", "ES")),
+    ITALIAN(new Locale("it", "IT")),
+    GERMAN(Locale.GERMAN);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
 
   public TheTVDBScrapper() {
     super(Locale.ENGLISH);
@@ -91,7 +115,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   protected String getHost() {
     return host;
   }
-  
+
   @Override
   public boolean hasLocaleSupport() {
     return true;

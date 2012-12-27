@@ -48,6 +48,7 @@ import fr.free.movierenamer.scrapper.impl.IMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.TheTVDBScrapper;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
@@ -138,7 +139,7 @@ public final class Settings {
     searchTvshowScrapper(TheTVDBScrapper.class), // (TheTVDBScrapper.class.toString()),
     searchSubtitleScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),// FIXME
     searchScrapperLang(Locale.ENGLISH), // (Locale.ENGLISH.toString()),
-    searchSortBySimiYear(Boolean.TRUE), // (Boolean.TRUE.toString()),
+    searchSort(Sorter.SorterType.LEVEN_YEAR), // (Boolean.TRUE.toString()),
     searchNbResult(2), // (Integer.decode("2").toString()),
     searchDisplayApproximateResult(Boolean.FALSE), // (Boolean.FALSE.toString()),
     // Proxy
@@ -417,8 +418,8 @@ public final class Settings {
     return new Locale(get(SettingsProperty.searchScrapperLang));
   }
 
-  public boolean isSearchSortBySimiYear() {
-    return Boolean.parseBoolean(get(SettingsProperty.searchSortBySimiYear));
+  private Sorter.SorterType getSearchSorter() {
+    return Sorter.SorterType.valueOf(get(SettingsProperty.searchSort));
   }
 
   public int getSearchNbResult() {

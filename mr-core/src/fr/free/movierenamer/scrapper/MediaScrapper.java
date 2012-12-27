@@ -31,15 +31,21 @@ import fr.free.movierenamer.utils.CacheObject;
 
 /**
  * Class MediaScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extends SearchScrapper<T> {
 
+  protected interface IAvailableLanguage {
+    public Locale getLocale();
+  }
+
   protected MediaScrapper(Locale defaultLocale) {
     super(defaultLocale);
   }
+
+  public abstract Enum<? extends IAvailableLanguage>[] getAvailableLanguage();
 
   @Override
   protected final List<T> search(String query, Locale locale) throws Exception {
@@ -55,7 +61,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
     // perform actual search
     results = searchMedia(query, locale);
     Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, locale.getDisplayLanguage(Locale.ENGLISH)));
-    
+
     // cache results and return
     return (cache != null) ? cache.putList(query, locale, genericClazz, results) : results;
   }

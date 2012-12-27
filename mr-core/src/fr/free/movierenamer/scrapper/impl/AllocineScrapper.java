@@ -43,9 +43,9 @@ import fr.free.movierenamer.utils.URIRequest;
 
 /**
  * Class AllocineScrapper : search movie on allocine
- * 
+ *
  * @see http://wiki.gromez.fr/dev/api/allocine_v3
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -54,8 +54,27 @@ public class AllocineScrapper extends MovieScrapper {
   private static final String host = "api.allocine.fr";
   private static final String name = "Allocine";
   private static final String version = "3";
-
   private final String apikey;
+
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    FRENCH(Locale.FRENCH);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AvailableLanguage[] getAvailableLanguage() {
+    return AvailableLanguage.values();
+  }
 
   public AllocineScrapper() {
     super(Locale.FRENCH);
@@ -75,7 +94,7 @@ public class AllocineScrapper extends MovieScrapper {
   protected String getHost() {
     return host;
   }
-  
+
   @Override
   public boolean hasLocaleSupport() {
     return false;
@@ -146,7 +165,7 @@ public class AllocineScrapper extends MovieScrapper {
 
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
-	  URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
+    URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     JSONObject movieObject = JSONUtils.selectObject("movie", json);
@@ -180,7 +199,7 @@ public class AllocineScrapper extends MovieScrapper {
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
-	  URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
+    URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     JSONObject movieObject = JSONUtils.selectObject("movie", json);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 duffy
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.settings.Settings;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -32,6 +32,13 @@ import java.util.logging.Level;
  */
 public class Sorter {
 
+  public interface ISort {
+
+  public String getName();
+  public int getYear();
+  public long getLength();
+}
+
   public enum SorterType {
 
     NONE,
@@ -45,7 +52,7 @@ public class Sorter {
   }
 
   private Sorter() {
-    //
+     throw new UnsupportedOperationException();
   }
 
   public static void sort(List<? extends ISort> list, SorterType type) {
@@ -60,7 +67,7 @@ public class Sorter {
         Collections.sort(list, new YearSort());
         break;
       default:
-        UISettings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported", type.name());
+        Settings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported", type.name());
     }
   }
 
@@ -69,7 +76,7 @@ public class Sorter {
       sortYear(list, year, type.equals(SorterType.ALPHA_YEAR) ? new AlphabeticSort():null);
       return;
     }
-    UISettings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported with year sort", type.name());
+    Settings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported with year sort", type.name());
   }
 
   public static void sort(List<? extends ISort> list, String search) {
@@ -92,7 +99,7 @@ public class Sorter {
   }
 
   /**
-   * Sort list by YEAR, first exact YEAR then YEAR + 1 , YEAR - 1 , the rest sorted by year
+   * Sort list by YEAR, first exact YEAR then YEAR + 1 , YEAR - 1
    * If search is not null group of YEAR are sorted by COMPARATOR (only for YEAR, YEAR + 1, YEAR -1)
    *
    * @param <T>

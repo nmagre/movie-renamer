@@ -28,7 +28,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class AnidbScrapper : search movie on anidb (Anime DataBase)
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -37,6 +37,26 @@ public class AnidbScrapper extends MovieScrapper {
   private static final String host = "anidb.net";
   private static final String name = "AniDB";
   private static final String version = "2";
+
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    ENGLISH(Locale.ENGLISH);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
 
   public AnidbScrapper() {
     super(Locale.ENGLISH);
@@ -51,12 +71,12 @@ public class AnidbScrapper extends MovieScrapper {
   protected String getHost() {
     return host;
   }
-  
+
   @Override
   public boolean hasLocaleSupport() {
      return true;
   }
-  
+
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
     // TODO Auto-generated method stub

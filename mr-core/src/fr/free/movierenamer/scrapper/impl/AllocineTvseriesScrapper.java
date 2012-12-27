@@ -30,7 +30,7 @@ import fr.free.movierenamer.settings.Settings;
 
 /**
  * Class AllocineTvseriesScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -41,6 +41,26 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   private static final String version = "3";
 
   private final String apikey;
+
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    FRENCH(Locale.FRENCH);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
 
   public AllocineTvseriesScrapper() {
     super(Locale.FRENCH);
@@ -65,7 +85,7 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   public boolean hasLocaleSupport() {
     return false;
   }
-  
+
   @Override
   protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {
     // TODO Auto-generated method stub

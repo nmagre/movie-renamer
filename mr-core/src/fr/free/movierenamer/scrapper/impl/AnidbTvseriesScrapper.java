@@ -29,7 +29,7 @@ import fr.free.movierenamer.searchinfo.TvShow;
 
 /**
  * Class AnidbScrapper : search tvshow on anidb (Anime DataBase)
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -37,6 +37,26 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
 
   private final String host = "anidb.net";
   private final String name = "AniDB";
+
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    ENGLISH(Locale.ENGLISH);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
 
   public AnidbTvseriesScrapper() {
     super(Locale.ENGLISH);

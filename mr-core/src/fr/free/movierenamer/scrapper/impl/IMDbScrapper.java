@@ -60,6 +60,30 @@ public class IMDbScrapper extends MovieScrapper {
 
   private String host;
 
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    ENGLISH(Locale.ENGLISH),
+    FRENCH(Locale.FRENCH),
+    SPANISH(new Locale("es", "ES")),
+    ITALIAN(new Locale("it", "IT")),
+    GERMAN(Locale.GERMAN);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
+
   public IMDbScrapper() {
     super(Locale.ENGLISH);
   }

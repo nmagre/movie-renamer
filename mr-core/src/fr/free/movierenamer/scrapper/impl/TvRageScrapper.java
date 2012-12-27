@@ -48,7 +48,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class TvRageScrapper : search tvshow on TvRage
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -56,6 +56,26 @@ public class TvRageScrapper extends TvShowScrapper {
 
   private static final String host = "services.tvrage.com";
   private static final String name = "TVRage";
+
+  public enum AvailableLanguage implements IAvailableLanguage {
+
+    ENGLISH(Locale.ENGLISH);
+    private final Locale locale;
+
+    private AvailableLanguage(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
+  }
+
+  @Override
+  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
+    return AllocineScrapper.AvailableLanguage.values();
+  }
 
   public TvRageScrapper() {
     super(Locale.ENGLISH);
