@@ -91,6 +91,7 @@ public class SettingPanelGen extends PanelGenerator {
             }
             break;
           case CUSTOM_LIST:
+            System.out.println(definition.name());
             List<JComponent> components = definition.getJComponentsList();
             int size = components.size();
             for (int i = 0; i < size; i++) {

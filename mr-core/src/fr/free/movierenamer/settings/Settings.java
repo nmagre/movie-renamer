@@ -398,7 +398,7 @@ public final class Settings {
   @SuppressWarnings("unchecked")
   public Class<? extends MovieScrapper> getSearchMovieScrapper() {
     try {
-      return (Class<MovieScrapper>) Class.forName(get(SettingsProperty.searchMovieScrapper));
+      return (Class<MovieScrapper>) Class.forName(get(SettingsProperty.searchMovieScrapper).replace("class ", ""));
     } catch (Exception ex) {
       return IMDbScrapper.class;
     }
@@ -407,7 +407,7 @@ public final class Settings {
   @SuppressWarnings("unchecked")
   public Class<? extends TvShowScrapper> getSearchTvshowScrapper() {
     try {
-      return (Class<TvShowScrapper>) Class.forName(get(SettingsProperty.searchTvshowScrapper));
+      return (Class<TvShowScrapper>) Class.forName(get(SettingsProperty.searchTvshowScrapper).replace("class ", ""));
     } catch (Exception ex) {
       return TheTVDBScrapper.class;
     }
@@ -416,7 +416,7 @@ public final class Settings {
   @SuppressWarnings("unchecked")
   public Class<? extends SubtitleScrapper> getSearchSubtitleScrapper() {
     try {
-      return (Class<SubtitleScrapper>) Class.forName(get(SettingsProperty.searchSubtitleScrapper));
+      return (Class<SubtitleScrapper>) Class.forName(get(SettingsProperty.searchSubtitleScrapper).replace("class ", ""));
     } catch (Exception ex) {
       return SubsceneSubtitleScrapper.class;
     }

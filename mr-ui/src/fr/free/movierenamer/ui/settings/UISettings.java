@@ -78,6 +78,11 @@ public final class UISettings {
   private static final String appSettingsNodeName;
   private static final String settingNodeName;
 
+  public static enum SettingPropertyChange {
+    SEARCHMOVIESCRAPPER,
+    SEARCHMTVSHOWSCRAPPER,
+  }
+
   public enum UISupportedLanguage {
 
     fr,
@@ -91,10 +96,10 @@ public final class UISettings {
   }
 
   public static enum ImageSize {
+
     ORIGINAL,
     MEDIUM,
-    SMALL,
-  }
+    SMALL,}
 
   public static enum ThumbName {
 
@@ -104,10 +109,10 @@ public final class UISettings {
   }
 
   public static enum ThumbExt {
+
     JPG,
     PNG,
-    TBN,
-  }
+    TBN,}
 
   public static enum FanartName {
 
@@ -145,12 +150,10 @@ public final class UISettings {
     imageThumbResize(Boolean.FALSE),
     imageThumbSize(ImageSize.ORIGINAL),
     imageThumbWidth(720),
-    imageThumbResizeLarger(Boolean.TRUE),
     imageFanartName(FanartName.FILENAME_FANART),
     imageFanartResize(Boolean.FALSE),
-    imageFanartWidth(1080),
-    imageFanartResizeLarger(Boolean.TRUE),
     imageFanartSize(ImageSize.ORIGINAL),
+    imageFanartWidth(1080),
     useExtensionFilter(Boolean.TRUE),
     fileChooserPath(userFolder),
     extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
@@ -394,6 +397,42 @@ public final class UISettings {
 
   public boolean isGenerateSubtitles() {
     return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateSubtitles));
+  }
+
+  public ThumbName getImageThumbName() {
+    return ThumbName.valueOf(get(UISettingsProperty.imageThumbName));
+  }
+
+  public ThumbExt getImageThumbExt() {
+    return ThumbExt.valueOf(get(UISettingsProperty.imageThumbExt));
+  }
+
+  public boolean isImageThumbResize() {
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.imageThumbResize));
+  }
+
+  public ImageSize getImageThumbSize() {
+    return ImageSize.valueOf(get(UISettingsProperty.imageThumbSize));
+  }
+
+  public int getImageThumbWidth() {
+    return Integer.parseInt(get(UISettingsProperty.imageThumbWidth));
+  }
+
+  public FanartName getImageFanartName() {
+    return FanartName.valueOf(get(UISettingsProperty.imageFanartName));
+  }
+
+  public boolean isImageFanartResize() {
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.imageFanartResize));
+  }
+
+  public ImageSize getImageFanartSize() {
+    return ImageSize.valueOf(get(UISettingsProperty.imageFanartSize));
+  }
+
+  public int getImageFanartWidth() {
+    return Integer.parseInt(get(UISettingsProperty.imageFanartWidth));
   }
 
   public boolean isUseExtensionFilter() {

@@ -57,6 +57,7 @@ import fr.free.movierenamer.ui.res.UILoader;
 import fr.free.movierenamer.ui.res.UIScrapper;
 import fr.free.movierenamer.ui.res.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.settings.UISettings.SettingPropertyChange;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.utils.FileFilter;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -79,6 +80,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
@@ -147,6 +150,26 @@ public class MovieRenamer extends JFrame {
     moviePnl = new MoviePanel();
     tvShowPanel = new TvShowPanel(this);
     settingsChange = new PropertyChangeSupport(setting);
+    settingsChange.addPropertyChangeListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent pce) {
+        switch(SettingPropertyChange.valueOf(pce.getPropertyName())) {
+          case SEARCHMOVIESCRAPPER:
+            UIMovieScrapper = new UIScrapper(ScrapperManager.getMovieScrapper());
+            if(currentMode.equals(MovieRenamerMode.MOVIEMODE)) {
+              scrapperCb.setSelectedItem(UIMovieScrapper);
+            }
+            break;
+          case SEARCHMTVSHOWSCRAPPER:
+            UITvShowScrapper = new UIScrapper(ScrapperManager.getTvShowScrapper());
+            if(currentMode.equals(MovieRenamerMode.TVSHOWMODE)) {
+              scrapperCb.setSelectedItem(UITvShowScrapper);
+            }
+            break;
+        }
+      }
+    });
 
     blueBorder = UIUtils.getBorder(1, 5, new Color(39, 95, 173));
     movieScrapperModel = new DefaultComboBoxModel();
@@ -830,8 +853,8 @@ public class MovieRenamer extends JFrame {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        SettingPanel pnl = SettingPanel.getInstance(MovieRenamer.this);
-        pnl.setLocationRelativeTo(MovieRenamer.this);
+        SettingPanel pnl = SettingPanel.getInstance(MovieRenamer.this, settingsChange);
+        pnl.setLocationRelativeTo(MovieRenamer.this);// Ensure that settingsPanel will be centered on Movie Renamer
         pnl.setVisible(true);
       }
     });  }//GEN-LAST:event_settingBtnActionPerformed
