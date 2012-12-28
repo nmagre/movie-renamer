@@ -99,7 +99,8 @@ public final class UISettings {
 
     ORIGINAL,
     MEDIUM,
-    SMALL,}
+    SMALL;
+  }
 
   public static enum ThumbName {
 

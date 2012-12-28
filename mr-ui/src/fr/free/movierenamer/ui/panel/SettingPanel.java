@@ -91,20 +91,29 @@ public class SettingPanel extends JDialog {
     }
   }
 
-  // i18n key
+  // i18n key, i18n key help
   public enum SettingSubTitle {
 
-    GENERAL,
-    NFO,
-    UPDATE,
-    CACHE,
-    LANGUAGE,
-    SCRAPPER,
-    SORTRESULT,
-    INFORMATION;
+    GENERAL("helpGeneral"),
+    NFO("helpNfo"),
+    UPDATE(null),
+    CACHE(null),
+    LANGUAGE(null),
+    SCRAPPER("helpScrapper"),
+    SORTRESULT("helpSortResult"),
+    INFORMATION("helpInformation");
+    private final String help;
+
+    private SettingSubTitle(String help) {
+      this.help = help;
+    }
 
     public String getName() {
       return this.name().toLowerCase();
+    }
+
+    public String getHelp() {
+      return help;
     }
   }
 
@@ -138,8 +147,8 @@ public class SettingPanel extends JDialog {
     searchTvshowScrapper(SettingsProperty.searchTvshowScrapper, SettingCategory.SEARCH, SettingSubTitle.SCRAPPER, tvshowScrapperCb),
     searchSubtitleScrapper(SettingsProperty.searchSubtitleScrapper, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     searchScrapperLang(SettingsProperty.searchScrapperLang, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
-    searchSorter(SettingsProperty.searchSort, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
-    searchNbResult(SettingsProperty.searchNbResult, SettingCategory.SEARCH, SettingSubTitle.SORTRESULT, searchSorterRBtns, false),
+    searchSorter(SettingsProperty.searchSort, SettingCategory.SEARCH, SettingSubTitle.SORTRESULT, searchSorterRBtns, false),
+    searchNbResult(SettingsProperty.searchNbResult, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     searchDisplayApproximateResult(SettingsProperty.searchDisplayApproximateResult, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     // RENAME
     reservedCharacter(SettingsProperty.reservedCharacter, SettingCategory.RENAME, SettingSubTitle.GENERAL),
@@ -154,12 +163,12 @@ public class SettingPanel extends JDialog {
     imageThumbName(UISettingsProperty.imageThumbName, SettingCategory.IMAGE, SettingSubTitle.GENERAL, thumbNameCb),
     imageThumbExt(UISettingsProperty.imageThumbExt, SettingCategory.IMAGE, SettingSubTitle.GENERAL, thumbExtCb),
     imageThumbResize(UISettingsProperty.imageThumbResize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
-    imageThumbSize(UISettingsProperty.imageThumbSize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageThumbSize(UISettingsProperty.imageThumbSize, SettingCategory.IMAGE, SettingSubTitle.GENERAL, thumbSizeCb),
     imageThumbWidth(UISettingsProperty.imageThumbWidth, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
     imageFanartName(UISettingsProperty.imageFanartName, SettingCategory.IMAGE, SettingSubTitle.GENERAL, fanartNameCb),
     imageFanartResize(UISettingsProperty.imageFanartResize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
     imageFanartWidth(UISettingsProperty.imageFanartWidth, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
-    imageFanartSize(UISettingsProperty.imageFanartSize, SettingCategory.IMAGE, SettingSubTitle.GENERAL),
+    imageFanartSize(UISettingsProperty.imageFanartSize, SettingCategory.IMAGE, SettingSubTitle.GENERAL, fanartSizeCb),
     // movie folder
     movieFolderFormat(SettingsProperty.movieFolderFormat, SettingCategory.RENAME, SettingSubTitle.GENERAL),
     movieFolderSeparator(SettingsProperty.movieFolderSeparator, SettingCategory.RENAME, SettingSubTitle.GENERAL),
@@ -250,10 +259,18 @@ public class SettingPanel extends JDialog {
       return component;
     }
 
+    /*
+     * Get variable class
+     */
     public Class<?> getVclass() {
       return property.getVclass();
     }
 
+    /**
+     * Get property key
+     *
+     * @return Property
+     */
     public Settings.IProperty getKey() {
       return property;
     }
@@ -314,10 +331,13 @@ public class SettingPanel extends JDialog {
   // IMAGE
   private static WebComboBox thumbNameCb;
   private static WebComboBox thumbExtCb;
+  private static WebComboBox thumbSizeCb;
   private static WebComboBox fanartNameCb;
+  private static WebComboBox fanartSizeCb;
   // Misc
   private final UISettings settings = UISettings.getInstance();
   private final Map<PropertyClass, List<JComponent>> radioBtns;
+  private final Map<PropertyClass, WebComboBox> comboboxs;
   private final MovieRenamer mr;
   private final PropertyChangeSupport settingsChange;
 
@@ -341,6 +361,7 @@ public class SettingPanel extends JDialog {
     // Normal/Advanced setting rbtn
     //settingsGroup.setSelected(settings.isShowAdvancedSettings() ? advancedRbtn.getModel() : normalRbtn.getModel(), true);
     radioBtns = new LinkedHashMap<PropertyClass, List<JComponent>>();
+    comboboxs = new LinkedHashMap<PropertyClass, WebComboBox>();
 
     // GENERAL
     nfoRBtns = createRadioButtonList(NfoInfo.NFOtype.class, settings.coreInstance.getMovieNfoType(), SettingsProperty.movieNfoType);
@@ -370,9 +391,11 @@ public class SettingPanel extends JDialog {
     tvshowScrapperModel.setSelectedItem(new UIScrapper(ScrapperManager.getTvShowScrapper()));
 
     // IMAGE
-    thumbNameCb = createComboBox(UISettings.ThumbName.class, settings.getImageThumbName());
-    thumbExtCb = createComboBox(UISettings.ThumbExt.class, settings.getImageThumbExt());
-    fanartNameCb = createComboBox(UISettings.FanartName.class, settings.getImageFanartName());
+    thumbNameCb = createComboBox(UISettings.ThumbName.class, settings.getImageThumbName(), UISettingsProperty.imageThumbName);
+    thumbExtCb = createComboBox(UISettings.ThumbExt.class, settings.getImageThumbExt(), UISettingsProperty.imageThumbExt);
+    thumbSizeCb = createComboBox(UISettings.ImageSize.class, settings.getImageThumbSize(), UISettingsProperty.imageThumbSize);
+    fanartNameCb = createComboBox(UISettings.FanartName.class, settings.getImageFanartName(), UISettingsProperty.imageFanartName);
+    fanartSizeCb = createComboBox(UISettings.ImageSize.class, settings.getImageFanartSize(), UISettingsProperty.imageFanartSize);
 
     // ???
     extensionsLst = new WebList(settings.getExtensionsList().toArray());
@@ -397,13 +420,12 @@ public class SettingPanel extends JDialog {
    * @param group Button group
    * @return List of jcomponents
    */
-  private <T extends Enum<T>> List<JComponent> createRadioButtonList(Class<T> clazz, T selected, SettingsProperty property) {
+  private <T extends Enum<T>> List<JComponent> createRadioButtonList(Class<T> clazz, T selected, Settings.IProperty property) {
     List<JComponent> components = new ArrayList<JComponent>();
     ButtonGroup group = new ButtonGroup();
     for (T e : clazz.getEnumConstants()) {
       WebRadioButton rbtn = new WebRadioButton(LocaleUtils.i18nExt(e.name()));
       rbtn.setName(e.name());
-      rbtn.setToolTipText(LocaleUtils.i18nExt(e.name() + "tt"));
       group.add(rbtn);
       components.add(rbtn);
       if (e.equals(selected)) {
@@ -421,7 +443,7 @@ public class SettingPanel extends JDialog {
    * @param clazz enum class
    * @return WebComboBox
    */
-  private <T extends Enum<T>> WebComboBox createComboBox(Class<T> clazz, T selected) {
+  private <T extends Enum<T>> WebComboBox createComboBox(Class<T> clazz, T selected, Settings.IProperty property) {
     WebComboBox cbb = new WebComboBox();
     DefaultComboBoxModel model = new DefaultComboBoxModel();
     for (T e : clazz.getEnumConstants()) {
@@ -431,6 +453,7 @@ public class SettingPanel extends JDialog {
       }
     }
     cbb.setModel(model);
+    comboboxs.put(new PropertyClass(property, clazz), cbb);
     return cbb;
   }
 
@@ -604,6 +627,7 @@ public class SettingPanel extends JDialog {
       Map<SettingsDefinition, JComponent> checkboxs = panel.getCheckbox();
       Map<SettingsDefinition, JComponent> fields = panel.getField();
 
+      // Save checkbox
       for (Map.Entry<SettingsDefinition, JComponent> checkbox : checkboxs.entrySet()) {
         try {
           checkbox.getKey().getKey().setValue(((WebCheckBox) checkbox.getValue()).isSelected());
@@ -614,6 +638,7 @@ public class SettingPanel extends JDialog {
         }
       }
 
+      // Save text field
       for (Map.Entry<SettingsDefinition, JComponent> field : fields.entrySet()) {
         try {
           field.getKey().getKey().setValue(((WebTextField) field.getValue()).getText());
@@ -624,6 +649,7 @@ public class SettingPanel extends JDialog {
         }
       }
 
+      // Save radio buttons
       for (Map.Entry<PropertyClass, List<JComponent>> radioBtn : radioBtns.entrySet()) {
         for (JComponent component : radioBtn.getValue()) {
           if (((WebRadioButton) component).isSelected()) {
@@ -638,6 +664,21 @@ public class SettingPanel extends JDialog {
                 return;
               }
             }
+          }
+        }
+      }
+
+      // Save combobox
+      for (Map.Entry<PropertyClass, WebComboBox> combobox : comboboxs.entrySet()) {
+        PropertyClass pcls = combobox.getKey();
+        Settings.IProperty property = pcls.getProperty();
+        Class<? extends Enum> clazz = pcls.getClazz();
+        if (property != null) {
+          try {
+            property.setValue(Enum.valueOf(clazz, (String) combobox.getValue().getSelectedItem()));
+          } catch (IOException ex) {
+            WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("saveSettingsFailed"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+            return;
           }
         }
       }

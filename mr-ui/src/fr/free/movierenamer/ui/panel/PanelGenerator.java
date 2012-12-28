@@ -19,12 +19,20 @@ package fr.free.movierenamer.ui.panel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -234,7 +242,7 @@ public abstract class PanelGenerator extends JPanel {
    * @param title
    * @return WebToolBar
    */
-  protected WebToolBar createTitle(String title) {// TODO add help button
+  protected WebToolBar createTitle(String title) {
     WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);
     toolbar.setFloatable(false);
     toolbar.setRollover(true);
@@ -242,6 +250,50 @@ public abstract class PanelGenerator extends JPanel {
     WebLabel label = new WebLabel(LocaleUtils.i18nExt(title));
     label.setFont(new Font(textFont, Font.BOLD, subTitleSize));
     toolbar.add(label);
+    return toolbar;
+  }
+
+  /**
+   * Create title toolbar with help button
+   *
+   * @param title
+   * @param helpText
+   * @return WebToolBar
+   */
+  protected WebToolBar createTitle(String title, final String helpText) {
+    WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);
+    toolbar.setFloatable(false);
+    toolbar.setRollover(true);
+
+    WebLabel label = new WebLabel(LocaleUtils.i18nExt(title));
+    label.setFont(new Font(textFont, Font.BOLD, subTitleSize));
+    toolbar.add(label);
+
+    if (helpText != null) {
+      final WebButton button = new WebButton(UIUtils.HELP);
+      button.setMargin(0);
+      button.setUndecorated(true);
+      button.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+          WebOptionPane.showMessageDialog(PanelGenerator.this, LocaleUtils.i18nExt(helpText), LocaleUtils.i18nExt("help"), WebOptionPane.PLAIN_MESSAGE);
+        }
+      });
+      button.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseEntered(java.awt.event.MouseEvent evt) {
+          button.setIcon(UIUtils.HELPDISABLED);
+        }
+
+        @Override
+        public void mouseExited(java.awt.event.MouseEvent evt) {
+          button.setIcon(UIUtils.HELP);
+        }
+      });
+      TooltipManager.setTooltip(button, LocaleUtils.i18nExt("help"), TooltipWay.down);
+      toolbar.addToEnd(button);
+    }
+
     return toolbar;
   }
 

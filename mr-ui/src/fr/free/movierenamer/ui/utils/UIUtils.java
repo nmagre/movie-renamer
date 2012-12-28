@@ -38,11 +38,13 @@ public class UIUtils {
   public static final Icon MEDIARENAMEDICON = ImageUtils.getIconFromJar("ui/icon-32.png");
   public static final Icon MEDIAWASRENAMEDICON = ImageUtils.getIconFromJar("ui/icon-22.png");
   public static final Icon MEDIAICON = ImageUtils.getIconFromJar("ui/film.png");
-  public static final Icon MEDIAWARNINGICON = new ImageIcon(ImageUtils.getImageFromJAR("ui/film-error.png"));
+  public static final Icon MEDIAWARNINGICON = ImageUtils.getIconFromJar("ui/film-error.png");
   public static final Icon STAR = ImageUtils.getIconFromJar("ui/star.png");
   public static final Icon STAR_HALF = ImageUtils.getIconFromJar("ui/star-half.png");
   public static final Icon STAR_EMPTY = ImageUtils.getIconFromJar("ui/star-empty.png");
   public static final Image LOGO_32 = ImageUtils.getImageFromJAR("ui/icon-32.png");
+  public static final Icon HELP = ImageUtils.getIconFromJar("ui/system-help-3.png");
+  public static final Icon HELPDISABLED = ImageUtils.getIconFromJar("ui/system-help-3-disabled.png");
   private static final Icon loader = ImageUtils.getIconFromJar("ui/loader.gif");
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>(false);
 

@@ -20,9 +20,12 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.panel.PanelGenerator;
 import fr.free.movierenamer.ui.panel.SettingPanel.SettingsDefinition;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.util.Collections;
@@ -56,7 +59,7 @@ public class SettingPanelGen extends PanelGenerator {
     fields = new EnumMap<SettingsDefinition, JComponent>(SettingsDefinition.class);
 
     for (List<SettingsDefinition> group : settingsDef) {
-      add(createTitle(group.get(0).getSubTitle().name()), getTitleConstraint());
+      add(createTitle(group.get(0).getSubTitle().name(), group.get(0).getSubTitle().getHelp()), getTitleConstraint());
       for (SettingsDefinition definition : group) {
         switch (definition.getComponent()) {
           //case BUTTON:
@@ -68,6 +71,7 @@ public class SettingPanelGen extends PanelGenerator {
             if (definition.getComponent() == Component.CHECKBOX && definition.getVclass().equals(Boolean.class)) {
               ((WebCheckBox) component).setSelected(Boolean.parseBoolean(definition.getKey().getValue()));
               add(component, getGroupConstraint(definition.getIndent()));
+              TooltipManager.setTooltip(component, LocaleUtils.i18nExt(definition.getName() + "tt"), TooltipWay.down);
               checkboxs.put(definition, component);
             } else if (definition.getComponent() == Component.FIELD) {
               WebLabel label = new WebLabel(definition.getName());
@@ -91,7 +95,6 @@ public class SettingPanelGen extends PanelGenerator {
             }
             break;
           case CUSTOM_LIST:
-            System.out.println(definition.name());
             List<JComponent> components = definition.getJComponentsList();
             int size = components.size();
             for (int i = 0; i < size; i++) {
