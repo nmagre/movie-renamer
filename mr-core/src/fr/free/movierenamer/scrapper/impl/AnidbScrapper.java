@@ -54,8 +54,8 @@ public class AnidbScrapper extends MovieScrapper {
   }
 
   @Override
-  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
-    return AllocineScrapper.AvailableLanguage.values();
+  public Class<AvailableLanguage> getAvailableLanguage() {
+    return AvailableLanguage.class;
   }
 
   public AnidbScrapper() {

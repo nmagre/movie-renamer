@@ -80,8 +80,8 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
-    return AllocineScrapper.AvailableLanguage.values();
+  public Class<AvailableLanguage> getAvailableLanguage() {
+    return AvailableLanguage.class;
   }
 
   public IMDbScrapper() {
@@ -350,7 +350,7 @@ public class IMDbScrapper extends MovieScrapper {
       String[] foundGenres = searchMatcher.group(1).split("\\|");
       for (int i = 0; i < foundGenres.length; i++) {
         String genre;
-        if (Settings.getInstance().getSearchScrapperLang().getLanguage().equals(Locale.ENGLISH)) {
+        if (Settings.getInstance().getSearchMovieScrapperLang().getLanguage().equals(Locale.ENGLISH)) {
           genre = foundGenres[i].substring(foundGenres[i].indexOf(">") + 1, foundGenres[i].indexOf("</a>")).trim();
           if (genre.equals("See more")) {
             genre = "";

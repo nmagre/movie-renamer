@@ -73,8 +73,8 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  public AllocineScrapper.AvailableLanguage[] getAvailableLanguage() {
-    return AllocineScrapper.AvailableLanguage.values();
+  public Class<AvailableLanguage> getAvailableLanguage() {
+    return AvailableLanguage.class;
   }
 
   public TvRageScrapper() {

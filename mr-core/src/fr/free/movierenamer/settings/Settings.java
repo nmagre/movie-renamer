@@ -142,7 +142,8 @@ public final class Settings {
     searchMovieScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),
     searchTvshowScrapper(TheTVDBScrapper.class), // (TheTVDBScrapper.class.toString()),
     searchSubtitleScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),// FIXME
-    searchScrapperLang(Locale.ENGLISH), // (Locale.ENGLISH.toString()),
+    searchMovieScrapperLang(Locale.ENGLISH),// (Locale.ENGLISH.toString()),
+    searchTvshowScrapperLang(Locale.ENGLISH),// (Locale.ENGLISH.toString()),
     searchSort(Sorter.SorterType.LEVEN_YEAR), // (Boolean.TRUE.toString()),
     searchNbResult(2), // (Integer.decode("2").toString()),
     searchDisplayApproximateResult(Boolean.FALSE), // (Boolean.FALSE.toString()),
@@ -422,8 +423,12 @@ public final class Settings {
     }
   }
 
-  public Locale getSearchScrapperLang() {
-    return new Locale(get(SettingsProperty.searchScrapperLang));
+  public Locale getSearchMovieScrapperLang() {
+    return new Locale(get(SettingsProperty.searchMovieScrapperLang));
+  }
+
+  public Locale getSearchTvshowScrapperLang() {
+    return new Locale(get(SettingsProperty.searchTvshowScrapperLang));
   }
 
   public Sorter.SorterType getSearchSorter() {

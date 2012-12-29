@@ -37,7 +37,7 @@ import fr.free.movierenamer.utils.CacheObject;
  */
 public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extends SearchScrapper<T> {
 
-  protected interface IAvailableLanguage {
+  public interface IAvailableLanguage {
     public Locale getLocale();
   }
 
@@ -45,7 +45,7 @@ public abstract class MediaScrapper<T extends Media, I extends MediaInfo> extend
     super(defaultLocale);
   }
 
-  public abstract Enum<? extends IAvailableLanguage>[] getAvailableLanguage();
+  public abstract Class<? extends Enum<? extends IAvailableLanguage>> getAvailableLanguage();
 
   @Override
   protected final List<T> search(String query, Locale locale) throws Exception {

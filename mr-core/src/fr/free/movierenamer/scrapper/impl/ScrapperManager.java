@@ -84,21 +84,21 @@ public class ScrapperManager {
   public static MovieScrapper getMovieScrapper() {
     Settings settings = Settings.getInstance();
     MovieScrapper scrapper = getScrapper(settings.getSearchMovieScrapper());
-    scrapper.setLocale(settings.getSearchScrapperLang());
+    scrapper.setLocale(settings.getSearchMovieScrapperLang());
     return scrapper;
   }
 
   public static TvShowScrapper getTvShowScrapper() {
     Settings settings = Settings.getInstance();
     TvShowScrapper scrapper = getScrapper(settings.getSearchTvshowScrapper());
-    scrapper.setLocale(settings.getSearchScrapperLang());
+    scrapper.setLocale(settings.getSearchTvshowScrapperLang());
     return scrapper;
   }
 
   public static SubtitleScrapper getSubtitleScrapper() {
     Settings settings = Settings.getInstance();
     SubtitleScrapper scrapper = getScrapper(settings.getSearchSubtitleScrapper());
-    scrapper.setLocale(settings.getSearchScrapperLang());
+    //scrapper.setLocale(settings.getSearchScrapperLang());// FIXME
     return scrapper;
   }
 

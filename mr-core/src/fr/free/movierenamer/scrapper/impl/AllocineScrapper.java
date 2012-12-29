@@ -72,8 +72,8 @@ public class AllocineScrapper extends MovieScrapper {
   }
 
   @Override
-  public AvailableLanguage[] getAvailableLanguage() {
-    return AvailableLanguage.values();
+  public Class<AvailableLanguage> getAvailableLanguage() {
+    return AvailableLanguage.class;
   }
 
   public AllocineScrapper() {

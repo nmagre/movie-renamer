@@ -23,6 +23,7 @@ import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.NfoInfo;
+import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.scrapper.impl.ScrapperManager;
@@ -144,9 +145,10 @@ public class SettingPanel extends JDialog {
     showBanner(UISettingsProperty.showBanner, SettingCategory.MEDIAINFO, SettingSubTitle.GENERAL),
     // SEARCH
     searchMovieScrapper(SettingsProperty.searchMovieScrapper, SettingCategory.SEARCH, SettingSubTitle.SCRAPPER, movieScrapperCb),
+    searchMovieScrapperLang(SettingsProperty.searchMovieScrapperLang, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     searchTvshowScrapper(SettingsProperty.searchTvshowScrapper, SettingCategory.SEARCH, SettingSubTitle.SCRAPPER, tvshowScrapperCb),
+    searchTvshowScrapperLang(SettingsProperty.searchTvshowScrapperLang, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     searchSubtitleScrapper(SettingsProperty.searchSubtitleScrapper, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
-    searchScrapperLang(SettingsProperty.searchScrapperLang, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     searchSorter(SettingsProperty.searchSort, SettingCategory.SEARCH, SettingSubTitle.SORTRESULT, searchSorterRBtns, false),
     searchNbResult(SettingsProperty.searchNbResult, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
     searchDisplayApproximateResult(SettingsProperty.searchDisplayApproximateResult, SettingCategory.SEARCH, SettingSubTitle.GENERAL),
@@ -325,6 +327,7 @@ public class SettingPanel extends JDialog {
   private static WebComboBox tvshowScrapperCb;
   private final DefaultComboBoxModel movieScrapperModel;
   private final DefaultComboBoxModel tvshowScrapperModel;
+  private static List<JComponent> searchMovieScrapperLangRBtns;
   // List component
   private static List<JComponent> searchSorterRBtns;
   //
@@ -354,21 +357,24 @@ public class SettingPanel extends JDialog {
    * @param mr Movie Renamer main interface
    */
   private SettingPanel(MovieRenamer mr, PropertyChangeSupport settingsChange) {
+    super();
     this.mr = mr;
     this.settingsChange = settingsChange;
     initComponents();
 
     // Normal/Advanced setting rbtn
-    //settingsGroup.setSelected(settings.isShowAdvancedSettings() ? advancedRbtn.getModel() : normalRbtn.getModel(), true);
+    settingsGroup.setSelected(settings.isShowAdvancedSettings() ? advancedRbtn.getModel() : normalRbtn.getModel(), true);
     radioBtns = new LinkedHashMap<PropertyClass, List<JComponent>>();
     comboboxs = new LinkedHashMap<PropertyClass, WebComboBox>();
 
     // GENERAL
-    nfoRBtns = createRadioButtonList(NfoInfo.NFOtype.class, settings.coreInstance.getMovieNfoType(), SettingsProperty.movieNfoType);
-    languageRBtns = createRadioButtonList(UISupportedLanguage.class, UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()), null);// FIXME
+    nfoRBtns = createRadioButtonList(settings.coreInstance.getMovieNfoType(), SettingsProperty.movieNfoType);
+    languageRBtns = createRadioButtonList(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()), null);// FIXME
 
     // SEARCH
-    searchSorterRBtns = createRadioButtonList(Sorter.SorterType.class, settings.coreInstance.getSearchSorter(), SettingsProperty.searchSort);
+    Class<? extends Enum<? extends MediaScrapper.IAvailableLanguage>> clazz = ScrapperManager.getMovieScrapper().getAvailableLanguage();
+    //searchMovieScrapperLangRBtns = createRadioButtonList((Enum<? extends MediaScrapper.IAvailableLanguage>)Enum.valueOf((Enum)clazz, settings.coreInstance.getSearchMovieScrapperLang().getLanguage()), null);
+    searchSorterRBtns = createRadioButtonList(settings.coreInstance.getSearchSorter(), SettingsProperty.searchSort);
     movieScrapperModel = new DefaultComboBoxModel();
     tvshowScrapperModel = new DefaultComboBoxModel();
 
@@ -391,11 +397,11 @@ public class SettingPanel extends JDialog {
     tvshowScrapperModel.setSelectedItem(new UIScrapper(ScrapperManager.getTvShowScrapper()));
 
     // IMAGE
-    thumbNameCb = createComboBox(UISettings.ThumbName.class, settings.getImageThumbName(), UISettingsProperty.imageThumbName);
-    thumbExtCb = createComboBox(UISettings.ThumbExt.class, settings.getImageThumbExt(), UISettingsProperty.imageThumbExt);
-    thumbSizeCb = createComboBox(UISettings.ImageSize.class, settings.getImageThumbSize(), UISettingsProperty.imageThumbSize);
-    fanartNameCb = createComboBox(UISettings.FanartName.class, settings.getImageFanartName(), UISettingsProperty.imageFanartName);
-    fanartSizeCb = createComboBox(UISettings.ImageSize.class, settings.getImageFanartSize(), UISettingsProperty.imageFanartSize);
+    thumbNameCb = createComboBox(settings.getImageThumbName(), UISettingsProperty.imageThumbName);
+    thumbExtCb = createComboBox(settings.getImageThumbExt(), UISettingsProperty.imageThumbExt);
+    thumbSizeCb = createComboBox(settings.getImageThumbSize(), UISettingsProperty.imageThumbSize);
+    fanartNameCb = createComboBox(settings.getImageFanartName(), UISettingsProperty.imageFanartName);
+    fanartSizeCb = createComboBox(settings.getImageFanartSize(), UISettingsProperty.imageFanartSize);
 
     // ???
     extensionsLst = new WebList(settings.getExtensionsList().toArray());
@@ -408,6 +414,7 @@ public class SettingPanel extends JDialog {
       webTabbedPane1.add(LocaleUtils.i18nExt(settingcat.getName()), panel);
     }
     pack();
+    setModal(true);
     setTitle(LocaleUtils.i18nExt("settings"));
     setIconImage(UIUtils.LOGO_32);
   }
@@ -416,13 +423,13 @@ public class SettingPanel extends JDialog {
    * Create list of WebRadioButton depends on enum passed
    *
    * @param <T> enum generic type
-   * @param clazz enum class
    * @param group Button group
    * @return List of jcomponents
    */
-  private <T extends Enum<T>> List<JComponent> createRadioButtonList(Class<T> clazz, T selected, Settings.IProperty property) {
+  private <T extends Enum<T>> List<JComponent> createRadioButtonList(T selected, Settings.IProperty property) {
     List<JComponent> components = new ArrayList<JComponent>();
     ButtonGroup group = new ButtonGroup();
+    Class<T> clazz = selected.getDeclaringClass();
     for (T e : clazz.getEnumConstants()) {
       WebRadioButton rbtn = new WebRadioButton(LocaleUtils.i18nExt(e.name()));
       rbtn.setName(e.name());
@@ -443,9 +450,10 @@ public class SettingPanel extends JDialog {
    * @param clazz enum class
    * @return WebComboBox
    */
-  private <T extends Enum<T>> WebComboBox createComboBox(Class<T> clazz, T selected, Settings.IProperty property) {
+  private <T extends Enum<T>> WebComboBox createComboBox(T selected, Settings.IProperty property) {
     WebComboBox cbb = new WebComboBox();
     DefaultComboBoxModel model = new DefaultComboBoxModel();
+    Class<T> clazz = selected.getDeclaringClass();
     for (T e : clazz.getEnumConstants()) {
       model.addElement(e.name());
       if (e.equals(selected)) {
