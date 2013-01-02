@@ -45,7 +45,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    imdb.setLocale(Locale.FRENCH);
+    imdb.setLanguage(Locale.FRENCH);
     List<Movie> results = imdb.search("il était une fois dans l'ouest");
 
     Movie movie = results.get(0);
@@ -59,7 +59,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
   
   @Test
   public void searchOneResult() throws Exception {
-    imdb.setLocale(Locale.FRENCH);
+    imdb.setLanguage(Locale.FRENCH);
     List<Movie> results = imdb.search("le pont de la rivière kwai");
 
     Movie movie = results.get(0);
@@ -74,7 +74,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getMovieInfo() throws Exception {
-    imdb.setLocale(Locale.ITALIAN);
+    imdb.setLanguage(Locale.ITALIAN);
     MovieInfo movie = imdb.getInfo(new Movie(64116, null, null, -1, -1));
 
     Assert.assertEquals("C'era una volta il West", movie.getTitle());

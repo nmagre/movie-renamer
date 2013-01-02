@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import fr.free.movierenamer.info.PersonInfo;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.utils.CacheObject;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class PersonScrapper
@@ -32,33 +33,33 @@ import fr.free.movierenamer.utils.CacheObject;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class PersonScrapper<T extends SearchResult> extends Scrapper {
+public abstract class PersonScrapper<SR extends SearchResult> extends Scrapper {
   
-  protected PersonScrapper(Locale defaultLocale) {
-    super(defaultLocale);
+  protected PersonScrapper(AvailableLanguages... supportedLanguages) {
+    super(supportedLanguages);
   }
 
-  public final List<PersonInfo> getPersons(T search) throws Exception {
-    return getPersons(search, getLocale());
+  public final List<PersonInfo> getPersons(SR search) throws Exception {
+    return getPersons(search, getLanguage());
   }
 
-  protected final List<PersonInfo> getPersons(T search, Locale locale) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get person info list for '%s' in '%s'", getName() , search, locale.getDisplayLanguage(Locale.ENGLISH)));
+  protected final List<PersonInfo> getPersons(SR search, Locale language) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get person info list for '%s' in '%s'", getName() , search, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
-    List<PersonInfo> personList = (cache != null) ? cache.getList(search, locale, PersonInfo.class) : null;
+    List<PersonInfo> personList = (cache != null) ? cache.getList(search, language, PersonInfo.class) : null;
     if (personList != null) {
       return personList;
     }
 
     // perform actual search
-    personList = fetchPersonsInfo(search, locale);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s' in '%s'", getName(), personList.size(), search, locale.getDisplayLanguage(Locale.ENGLISH)));
+    personList = fetchPersonsInfo(search, language);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s' in '%s'", getName(), personList.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
-    return (cache != null) ? cache.putList(search, locale, PersonInfo.class, personList) : personList;
+    return (cache != null) ? cache.putList(search, language, PersonInfo.class, personList) : personList;
   }
 
-  protected abstract List<PersonInfo> fetchPersonsInfo(T search, Locale locale) throws Exception;
+  protected abstract List<PersonInfo> fetchPersonsInfo(SR search, Locale language) throws Exception;
 
   @Override
   protected final String getCacheName() {

@@ -23,7 +23,7 @@ import java.util.Locale;
 import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class OpenSubtitlesScrapper : search subtitles on OpenSubtitles
@@ -38,11 +38,11 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
 
   private static final String host = "???";
   private static final String name = "OpenSubtitles";
-
+  
 //  private final OpenSubtitlesXmlRpc xmlrpc;
 
   public OpenSubtitlesScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.ENGLISH);
 //    String useragent = Settings.getApplicationProperty("opensubtitles.useragent");
 //    if (useragent == null || useragent.trim().length() == 0) {
 //      throw new NullPointerException("OpenSubtitles useragent must not be null");
@@ -61,19 +61,14 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
   }
 
   @Override
-  public boolean hasLocaleSupport() {
-    return true;
-  }
-
-  @Override
-  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale locale) throws Exception {
+  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<Subtitle> searchSubtitles(String query, Locale locale) throws Exception {
+  protected List<Subtitle> searchSubtitles(String query, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

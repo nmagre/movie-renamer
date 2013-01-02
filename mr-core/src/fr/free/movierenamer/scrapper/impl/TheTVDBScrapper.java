@@ -47,6 +47,7 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.EpisodeUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -56,7 +57,7 @@ import fr.free.movierenamer.utils.XPathUtils;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public final class TheTVDBScrapper extends TvShowScrapper {
+public class TheTVDBScrapper extends TvShowScrapper {
   private static final String host = "www.thetvdb.com";
   private static final String name = "TheTVDB";
 
@@ -66,32 +67,8 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   private final String apikey;
   private final String posterRoot;
 
-    public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH),
-    FRENCH(Locale.FRENCH),
-    SPANISH(new Locale("es", "ES")),
-    ITALIAN(new Locale("it", "IT")),
-    GERMAN(Locale.GERMAN);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
-
-  @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
-  }
-
   public TheTVDBScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.ENGLISH, AvailableLanguages.FRENCH, AvailableLanguages.SPANISH, AvailableLanguages.ITALIAN, AvailableLanguages.GERMAN);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("thetvdb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -117,13 +94,8 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  public boolean hasLocaleSupport() {
-    return true;
-  }
-
-  @Override
-  protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + locale.getLanguage());
+  protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
+    URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + language.getLanguage());
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Data/Series", dom);
@@ -145,8 +117,8 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale locale) throws Exception {
-    URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + locale.getLanguage() + ".xml");
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
+    URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.getLanguage() + ".xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
     Node node = XPathUtils.selectNode("//Series", dom);
@@ -176,8 +148,8 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception {
-    Document seriesRecord = getTvShowRecord(tvShow, locale.getLanguage());
+  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
+    Document seriesRecord = getTvShowRecord(tvShow, language.getLanguage());
 
     // we could get the series name from the search result, but the language may
     // not match the given parameter
@@ -232,7 +204,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/banners.xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
@@ -257,7 +229,7 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/actors.xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 

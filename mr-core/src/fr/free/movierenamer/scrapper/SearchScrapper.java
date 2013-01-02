@@ -19,11 +19,9 @@ package fr.free.movierenamer.scrapper;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.free.movierenamer.searchinfo.SearchResult;
-import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class SearchScrapper
@@ -31,17 +29,17 @@ import fr.free.movierenamer.utils.Cache;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class SearchScrapper<T extends SearchResult> extends Scrapper {
+public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
 
-  protected SearchScrapper(Locale defaultLocale) {
-    super(defaultLocale);
+  protected SearchScrapper(AvailableLanguages... supportedLanguages) {
+    super(supportedLanguages);
   }
 
-  public final List<T> search(String query) throws Exception {
-    return search(query, getLocale());
+  public final List<SR> search(String query) throws Exception {
+    return search(query, getLanguage());
   }
 
-  protected abstract List<T> search(String query, Locale locale) throws Exception;
+  protected abstract List<SR> search(String query, Locale language) throws Exception;
   
   @Override
   protected final String getCacheName() {

@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.utils.CacheObject;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class ImageScrapper
@@ -34,31 +35,31 @@ import fr.free.movierenamer.utils.CacheObject;
  */
 public abstract class ImageScrapper extends Scrapper {
 
-  protected ImageScrapper(Locale defaultLocale) {
-    super(defaultLocale);
+  protected ImageScrapper(AvailableLanguages... supportedLanguages) {
+    super(supportedLanguages);
   }
 
   public final List<ImageInfo> getImages(Media media) throws Exception {
-    return getImages(media, getLocale());
+    return getImages(media, getLanguage());
   }
 
-  protected final List<ImageInfo> getImages(Media media, Locale locale) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), media, locale.getDisplayLanguage(Locale.ENGLISH)));
+  protected final List<ImageInfo> getImages(Media media, Locale language) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), media, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
-    List<ImageInfo> imageList = (cache != null) ? cache.getList(media, locale, ImageInfo.class) : null;
+    List<ImageInfo> imageList = (cache != null) ? cache.getList(media, language, ImageInfo.class) : null;
     if (imageList != null) {
       return imageList;
     }
 
     // perform actual search
-    imageList = fetchImagesInfo(media, locale);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d images for '%s' in '%s'", getName(), imageList.size(), media, locale.getDisplayLanguage(Locale.ENGLISH)));
+    imageList = fetchImagesInfo(media, language);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d images for '%s' in '%s'", getName(), imageList.size(), media, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
-    return (cache != null) ? cache.putList(media, locale, ImageInfo.class, imageList) : imageList;
+    return (cache != null) ? cache.putList(media, language, ImageInfo.class, imageList) : imageList;
   }
 
-  protected abstract List<ImageInfo> fetchImagesInfo(Media media, Locale locale) throws Exception;
+  protected abstract List<ImageInfo> fetchImagesInfo(Media media, Locale language) throws Exception;
 
   @Override
   protected final String getCacheName() {

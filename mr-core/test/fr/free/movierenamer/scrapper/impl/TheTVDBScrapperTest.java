@@ -59,7 +59,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
   
   @Override
   public void getTvShowInfo() throws Exception {
-    thetvdb.setLocale(Locale.FRENCH);
+    thetvdb.setLanguage(Locale.FRENCH);
     TvShowInfo tvShow = thetvdb.getInfo(new TvShow(82066, null, null, -1));
 
     Assert.assertEquals("Fringe", tvShow.getName());
@@ -89,7 +89,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
   
   @Override
   public void getEpisodesInfoList() throws Exception {
-    thetvdb.setLocale(Locale.GERMAN);
+    thetvdb.setLanguage(Locale.GERMAN);
     List<EpisodeInfo> episodes = thetvdb.getEpisodesInfoList(new TvShow(81189, null, null, -1));
 
     EpisodeInfo first = episodes.get(0);

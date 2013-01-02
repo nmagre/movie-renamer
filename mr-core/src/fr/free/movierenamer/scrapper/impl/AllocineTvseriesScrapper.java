@@ -27,6 +27,7 @@ import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class AllocineTvseriesScrapper
@@ -42,28 +43,8 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
 
   private final String apikey;
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    FRENCH(Locale.FRENCH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
-
-  @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
-  }
-
   public AllocineTvseriesScrapper() {
-    super(Locale.FRENCH);
+    super(AvailableLanguages.FRENCH);
     String key = Settings.getApplicationProperty("allocine.apikey");
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -82,19 +63,14 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
-  public boolean hasLocaleSupport() {
-    return false;
-  }
-
-  @Override
-  protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {
+  protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
     // URL searchUrl = new URL("http", host, "/rest/v" + version + "/tvseries?season=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + season.getId());
     // URL searchUrl = new URL("http", host, "/rest/v" + version + "/tvseries?episode=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + episode.getId());
     // TODO Auto-generated method stub
@@ -103,21 +79,21 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception {
+  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

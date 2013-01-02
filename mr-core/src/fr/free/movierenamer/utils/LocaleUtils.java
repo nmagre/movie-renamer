@@ -42,8 +42,12 @@ import fr.free.movierenamer.settings.Settings;
  */
 public final class LocaleUtils {
 
+  public interface Country {
+    public Locale getLocale();
+  }
+
   // Only most common country for video media
-  private enum CustomLocaleCountry {
+  private static enum Countries implements Country {
     ARGENTINA(new Locale("", "AR"), "Argentine", "Argentinien"),
     AUSTRALIA(new Locale("", "AU"), "Australie", "Australien"),
     AUSTRIA(new Locale("", "AT"), "Autriche", "Österreich"),
@@ -88,7 +92,7 @@ public final class LocaleUtils {
     private List<String> identifier;
     private final Locale locale;
 
-    CustomLocaleCountry(Locale locale, String... countries) {
+    Countries(Locale locale, String... countries) {
       this.locale = locale;
       identifier = new ArrayList<String>();
       identifier.addAll(Arrays.asList(countries));
@@ -101,11 +105,34 @@ public final class LocaleUtils {
     public Locale getLocale() {
       return locale;
     }
+
+  }
+
+  public interface Language {
+    public Locale getLocale();
+  }
+
+  public static enum AvailableLanguages implements Language {
+    ENGLISH(Locale.ENGLISH),
+    FRENCH(Locale.FRENCH),
+    SPANISH(new Locale("es", "")),
+    ITALIAN(Locale.ITALIAN),
+    GERMAN(Locale.GERMAN);
+    private final Locale locale;
+
+    private AvailableLanguages(Locale locale) {
+      this.locale = locale;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
   }
 
   // Only most common languages for video media
   // @see http://www.roseindia.net/tutorials/i18n/locales-list.shtml
-  private enum CustomLocaleLang {
+  private static enum Languages implements Language {
     Arabic(new Locale("ar", ""), "Arabe", "Arabisch", "Arabo", "árabe"),
     Bulgarian(new Locale("bg", ""), "Bulgare", "Bulgarisch", "Bulgarian", "Búlgaro"),
     Chinese(new Locale("zh", ""), "Chinois", "Cinese", "Chino"),
@@ -134,7 +161,7 @@ public final class LocaleUtils {
     private List<String> identifier;
     private final Locale locale;
 
-    CustomLocaleLang(Locale locale, String... langs) {
+    Languages(Locale locale, String... langs) {
       this.locale = locale;
       identifier = new ArrayList<String>();
       identifier.addAll(Arrays.asList(langs));
@@ -147,6 +174,7 @@ public final class LocaleUtils {
     public Locale getLocale() {
       return locale;
     }
+
   }
 
   private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
@@ -161,7 +189,7 @@ public final class LocaleUtils {
   public static Locale findLanguage(String languageName, Locale... supportedDisplayLocales) {
     Locale lang = null;
 
-    for (CustomLocaleLang cll : CustomLocaleLang.values()) {
+    for (Languages cll : Languages.values()) {
       if (languageName.equalsIgnoreCase(cll.name().replace("_", " "))) {
         // check enum name
         lang = cll.getLocale();
@@ -240,7 +268,7 @@ public final class LocaleUtils {
   public static Locale findCountry(String countryName, Locale... supportedDisplayLocales) {
     Locale country = null;
 
-    for (CustomLocaleCountry clc : CustomLocaleCountry.values()) {
+    for (Countries clc : Countries.values()) {
       if (countryName.equalsIgnoreCase(clc.name().replace("_", " "))) {
         // check enum name
         country = clc.getLocale();

@@ -25,6 +25,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class AnidbScrapper : search movie on anidb (Anime DataBase)
@@ -38,28 +39,8 @@ public class AnidbScrapper extends MovieScrapper {
   private static final String name = "AniDB";
   private static final String version = "2";
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
-
-  @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
-  }
-
   public AnidbScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.ENGLISH);
   }
 
   @Override
@@ -73,33 +54,28 @@ public class AnidbScrapper extends MovieScrapper {
   }
 
   @Override
-  public boolean hasLocaleSupport() {
-     return true;
-  }
-
-  @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
+  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;

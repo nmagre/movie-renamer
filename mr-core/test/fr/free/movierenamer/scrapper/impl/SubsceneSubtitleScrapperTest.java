@@ -52,7 +52,7 @@ public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
   
   @Override
   public void getSubtitleInfo() throws Exception {
-    subscene.setLocale(Locale.FRENCH);
+    subscene.setLanguage(Locale.FRENCH);
     List<SubtitleInfo> subtitles = subscene.getSubtitles(new Subtitle(null, null, new URL("http://subscene.com/subtitles/avatar")));
     Assert.assertTrue(subtitles.size() > 15);
 

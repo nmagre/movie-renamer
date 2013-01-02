@@ -35,6 +35,7 @@ import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.info.SubtitleInfo.SubtitleProperty;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -49,7 +50,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   private static final String name = "Subscene";
 
   public SubsceneSubtitleScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.ENGLISH);
   }
 
   @Override
@@ -61,14 +62,9 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   protected String getHost() {
     return host;
   }
-  
-  @Override
-  public boolean hasLocaleSupport() {
-    return true;
-  }
 
   @Override
-  protected List<Subtitle> searchSubtitles(String query, Locale locale) throws Exception {
+  protected List<Subtitle> searchSubtitles(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/subtitles/title.aspx?q=" + URIRequest.encode(query));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
@@ -95,21 +91,21 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   }
 
   @Override
-  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale locale) throws Exception {
-    Document dom = URIRequest.getHtmlDocument(subtitle.getURL().toURI(), new URIRequest.RequestProperty("Cookie", "Filter=" + locale.getDisplayLanguage()));
+  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale language) throws Exception {
+    Document dom = URIRequest.getHtmlDocument(subtitle.getURL().toURI(), new URIRequest.RequestProperty("Cookie", "Filter=" + language.getDisplayLanguage()));
 
     List<Node> rows = XPathUtils.selectNodes("//TD[@class='a1']", dom);
     List<SubtitleInfo> subtitles = new ArrayList<SubtitleInfo>();
     for (Node row : rows) {
       try {
         List<Node> fields = XPathUtils.selectNodes(".//SPAN", row);
-        String language = XPathUtils.getTextContent(fields.get(0));
-        if (locale == null || language.equalsIgnoreCase(locale.getDisplayLanguage(Locale.ENGLISH))) {
+        String lang = XPathUtils.getTextContent(fields.get(0));
+        if (lang == null || lang.equalsIgnoreCase(language.getDisplayLanguage(Locale.ENGLISH))) {
           String href = XPathUtils.selectString(".//A/@href", row);
           Map<SubtitleProperty, String> subtitleFields = new EnumMap<SubtitleProperty, String>(SubtitleProperty.class);
           subtitleFields.put(SubtitleProperty.name, XPathUtils.getTextContent(fields.get(1)));
           subtitleFields.put(SubtitleProperty.href, new URL(subtitle.getURL().getProtocol(), subtitle.getURL().getHost(), href).toExternalForm());
-          subtitleFields.put(SubtitleProperty.language, language);
+          subtitleFields.put(SubtitleProperty.language, lang);
           subtitles.add(new SubtitleInfo(subtitleFields));
         }
       } catch (Exception e) {
