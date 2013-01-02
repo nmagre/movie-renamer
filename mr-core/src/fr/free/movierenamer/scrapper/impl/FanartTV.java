@@ -17,19 +17,22 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
-import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.scrapper.ImageScrapper;
-import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.json.simple.JSONObject;
+
+import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.scrapper.ImageScrapper;
+import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.JSONUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.URIRequest;
 
 
 /**
@@ -44,7 +47,7 @@ public class FanartTV extends ImageScrapper { // TODO Get images for Tv show
   private static final String name = "FanartTV";
   private final String apikey;
 
-  private enum ImageType {
+  private static enum ImageType {
 
     hdmovielogo, // logo HD
     movielogo, // logo
@@ -57,7 +60,7 @@ public class FanartTV extends ImageScrapper { // TODO Get images for Tv show
   }
 
   public FanartTV() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.en);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("fanarttv.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -76,7 +79,7 @@ public class FanartTV extends ImageScrapper { // TODO Get images for Tv show
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Media media, Locale locale) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(Media media, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/movie/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     JSONObject movie = JSONUtils.selectFirstObject(json);

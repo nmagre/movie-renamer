@@ -27,8 +27,6 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.Settings.SettingsProperty;
 
 /**
  * Class AllocineScrapperTest
@@ -42,7 +40,7 @@ public class AllocineScrapperTest extends MovieScrapperTest {
   public void init() {
     allocine = new AllocineScrapper();
   }
-
+  
   @Override
   public void search() throws Exception {
     List<Movie> results = allocine.search("avatar");

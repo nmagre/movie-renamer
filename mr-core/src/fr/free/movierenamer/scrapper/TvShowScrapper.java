@@ -26,6 +26,7 @@ import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.CacheObject;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class TvShowScrapper
@@ -35,34 +36,34 @@ import fr.free.movierenamer.utils.CacheObject;
  */
 public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
 
-  protected TvShowScrapper(Locale defaultLocale) {
-    super(defaultLocale);
+  protected TvShowScrapper(AvailableLanguages... supportedLanguages) {
+    super(supportedLanguages);
   }
 
-  protected abstract List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception;
+  protected abstract List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception;
 
   public final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow) throws Exception {
-    return getEpisodesInfoList(tvShow, getLocale());
+    return getEpisodesInfoList(tvShow, getLanguage());
   }
 
-  protected final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, locale.getDisplayLanguage(Locale.ENGLISH)));
+  protected final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
-    List<EpisodeInfo> episodes = (cache != null) ? cache.getList(tvShow, locale, EpisodeInfo.class) : null;
+    List<EpisodeInfo> episodes = (cache != null) ? cache.getList(tvShow, language, EpisodeInfo.class) : null;
     if (episodes != null) {
       return episodes;
     }
 
     // perform actual search
-    episodes = fetchEpisodesInfoList(tvShow, locale);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, locale.getDisplayLanguage(Locale.ENGLISH)));
+    episodes = fetchEpisodesInfoList(tvShow, language);
+    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
-    return (cache != null) ? cache.putList(tvShow, locale, EpisodeInfo.class, episodes) : episodes;
+    return (cache != null) ? cache.putList(tvShow, language, EpisodeInfo.class, episodes) : episodes;
   }
 
-  // public TvShowInfo getTvShowInfoByID(int id, Locale locale) throws Exception;
+  // public TvShowInfo getTvShowInfoByID(int id, Locale language) throws Exception;
 
-  // public TvShowInfo getSeriesInfoByIMDBID(int imdbid, Locale locale) throws Exception;
+  // public TvShowInfo getSeriesInfoByIMDBID(int imdbid, Locale language) throws Exception;
 
 }

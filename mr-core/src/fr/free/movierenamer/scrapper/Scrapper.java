@@ -17,11 +17,15 @@
  */
 package fr.free.movierenamer.scrapper;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.LocaleUtils.Language;
 
 /**
  * Class Scrapper
@@ -31,14 +35,16 @@ import fr.free.movierenamer.utils.CacheObject;
  */
 public abstract class Scrapper {
 
-  private Locale defaultLocale;
-  private Locale locale;
+  private final Locale defaultLanguage;
+  private final List<AvailableLanguages> supportedLanguages;
+  private Locale language;
 
-  protected Scrapper(Locale defaultLocale) {
-    if (defaultLocale != null && defaultLocale != Locale.ROOT) {
-      this.defaultLocale = defaultLocale;
+  protected Scrapper(AvailableLanguages... supportedLanguages) {
+    if (supportedLanguages == null || supportedLanguages.length == 0 || supportedLanguages[0] == null) {
+      throw new NullPointerException("defaultLanguage must not be null");
     } else {
-      this.defaultLocale = Locale.ENGLISH;
+      this.defaultLanguage = supportedLanguages[0].getLocale();
+      this.supportedLanguages = Arrays.asList(supportedLanguages);
     }
   }
 
@@ -60,27 +66,40 @@ public abstract class Scrapper {
     return null;
   }
 
-  protected final Locale getLocale() {
-    if (hasLocaleSupport() && locale != null) {
-      return locale;
+  public final List<AvailableLanguages> getSupportedLanguages() {
+    return supportedLanguages;
+  }
+
+  protected final Locale getLanguage() {
+    if (hasLanguageSupport() && language != null) {
+      return language;
     } else {
-      return defaultLocale;
+      return defaultLanguage;
     }
   }
 
-  public boolean hasLocaleSupport() {
-    return false;
+  public final boolean hasLanguageSupport() {
+    return supportedLanguages != null && supportedLanguages.size() > 1;
   }
 
-  public final void setLocale(Locale locale) {
-    if(!hasLocaleSupport()) {
-      Settings.LOGGER.warning("Try to set Locale to a scrapper which has no locale support !");
+  public final void setLanguage(Locale language) {
+    if (!hasLanguageSupport()) {
+      Settings.LOGGER.warning("Try to set Language to a scrapper which has no language support !");
     }
-    this.locale = locale;
+    this.language = null;
+    for (Language lang : getSupportedLanguages()) {
+      if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
+        this.language = lang.getLocale();
+        break;
+      }
+    }
+    if (this.language == null) {
+      throw new NullPointerException("Try to set Language to a scrapper which has no support for it ! : " + language);
+    }
   }
 
   @Override
   public final String toString() {
-    return getName();
+    return String.format("%s", getName());
   }
 }

@@ -41,6 +41,7 @@ import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
@@ -58,23 +59,11 @@ public class IMDbScrapper extends MovieScrapper {
   private static final String defaultHost = "www.imdb.com";
   private static final String name = "IMDb";
   private static final String CHARSET = URIRequest.ISO;
-  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
-    AvailableLanguage.en,
-    AvailableLanguage.fr,
-    AvailableLanguage.es,
-    AvailableLanguage.it,
-    AvailableLanguage.de
-  });
 
   private String host;
 
-  @Override
-  public List<AvailableLanguage> getAvailableLanguage() {
-    return supportedLang;
-  }
-
   public IMDbScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de);
   }
 
   @Override
@@ -84,20 +73,15 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected String getHost() {
-    return getHost(getLocale());
+    return getHost(getLanguage());
   }
 
-  @Override
-  public boolean hasLocaleSupport() {
-    return true;
-  }
-
-  protected final String getHost(Locale locale) {
+  protected final String getHost(Locale language) {
     if (host == null) {
       host = defaultHost;
-      if (locale != null && !locale.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
+      if (language != null && !language.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
         try {
-          URL url = new URL("http", defaultHost.replace("com", locale.getLanguage()), "");
+          URL url = new URL("http", defaultHost.replace("com", language.getLanguage()), "");
           int responseCode = URIRequest.getResponseCode(url);
           if (responseCode == 200) {
             host = url.getHost();
@@ -176,12 +160,12 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
+  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
     // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
     // Only title -> ref_=fn_tt
     // Only movie -> ref_=fn_ft
     // Add an option to select between both (default "title" because "movie" does not find video)
-    URL searchUrl = new URL("http", getHost(locale), "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
+    URL searchUrl = new URL("http", getHost(language), "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     // select movie results
@@ -220,14 +204,14 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
     // http://www.imdb.com/title/
     // or http://www.deanclatworthy.com/imdb/
     // or new URL("http", "www.imdb.com",
     // String.format("/title/tt%07d/releaseinfo", movie.getMovieId())
     // new URL("http", "www.imdb.com", String.format("/title/tt%07d/combined",
     // movie.getMovieId())
-    URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/combined", movie.getMediaId()));
+    URL searchUrl = new URL("http", getHost(language), String.format("/title/tt%07d/combined", movie.getMediaId()));
     String moviePage = URIRequest.getDocumentContent(searchUrl.toURI());
 
     Pattern pattern;
@@ -406,8 +390,8 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/mediaindex", movie.getMediaId()));
+  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
+    URL searchUrl = new URL("http", getHost(language), String.format("/title/tt%07d/mediaindex", movie.getMediaId()));
     String imagesPage = URIRequest.getDocumentContent(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
@@ -423,8 +407,8 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", getHost(locale), String.format("/title/tt%07d/fullcredits", movie.getMediaId()));
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
+    URL searchUrl = new URL("http", getHost(language), String.format("/title/tt%07d/fullcredits", movie.getMediaId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();

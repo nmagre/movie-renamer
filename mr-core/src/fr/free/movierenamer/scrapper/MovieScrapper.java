@@ -17,10 +17,9 @@
  */
 package fr.free.movierenamer.scrapper;
 
-import java.util.Locale;
-
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class MovieScrapper
@@ -30,12 +29,12 @@ import fr.free.movierenamer.searchinfo.Movie;
  */
 public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
 
-  protected MovieScrapper(Locale defaultLocale) {
-    super(defaultLocale);
+  protected MovieScrapper(AvailableLanguages... supportedLanguages) {
+    super(supportedLanguages);
   }
 
-  // public MovieInfo getMovieInfoByID(int id, Locale locale) throws Exception;
+  // public MovieInfo getMovieInfoByID(int id, Locale language) throws Exception;
 
-  // public MovieInfo getMovieInfoByIMDBID(int imdbid, Locale locale) throws Exception;
+  // public MovieInfo getMovieInfoByIMDBID(int imdbid, Locale language) throws Exception;
 
 }

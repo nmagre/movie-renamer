@@ -41,6 +41,7 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.util.Arrays;
@@ -60,21 +61,8 @@ public class TMDbScrapper extends MovieScrapper {
 
   private final String apikey;
 
-  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
-    AvailableLanguage.en,
-    AvailableLanguage.fr,
-    AvailableLanguage.es,
-    AvailableLanguage.it,
-    AvailableLanguage.de
-  });
-
-  @Override
-  public List<AvailableLanguage> getAvailableLanguage() {
-    return supportedLang;
-  }
-
   public TMDbScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -93,13 +81,8 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  public boolean hasLocaleSupport() {
-    return true;
-  }
-
-  @Override
-  protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + locale.getLanguage() + "/xml/" + apikey + "/" + URIRequest.encode(query));
+  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
+    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + language.getLanguage() + "/xml/" + apikey + "/" + URIRequest.encode(query));
     // FIXME has to be v3 !!!!
     // URL searchUrl = new URL("http", host, "/" + version + "/search/movie" +
     // "?api_key=" + apikey + "&language=" + locale.getLanguage() + "&query=" +
@@ -142,8 +125,8 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + locale.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
+  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
+    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + language.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
@@ -179,8 +162,8 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getImages/" + locale.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
+  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
+    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getImages/" + language.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
@@ -209,8 +192,8 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + locale.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
+    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + language.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);

@@ -44,7 +44,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    tmdb.setLocale(Locale.CHINESE);
+    tmdb.setLanguage(Locale.CHINESE);
     List<Movie> results = tmdb.search("pulp fiction");
 
     Movie movie = results.get(0);
@@ -58,7 +58,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getMovieInfo() throws Exception {
-    tmdb.setLocale(Locale.GERMAN);
+    tmdb.setLanguage(Locale.GERMAN);
     MovieInfo movie = tmdb.getInfo(new Movie(1858, null, null, -1, -1));
 
     Assert.assertEquals(Integer.valueOf(1858), movie.getId());

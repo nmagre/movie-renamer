@@ -39,6 +39,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
 import java.util.Arrays;
 
@@ -56,17 +57,9 @@ public class AllocineScrapper extends MovieScrapper {
   private static final String name = "Allocine";
   private static final String version = "3";
   private final String apikey;
-  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
-    AvailableLanguage.fr,
-  });
-
-  @Override
-  public List<AvailableLanguage> getAvailableLanguage() {
-    return supportedLang;
-  }
 
   public AllocineScrapper() {
-    super(Locale.FRENCH);
+    super(AvailableLanguages.fr);
     String key = Settings.getApplicationProperty("allocine.apikey");
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -85,12 +78,7 @@ public class AllocineScrapper extends MovieScrapper {
   }
 
   @Override
-  public boolean hasLocaleSupport() {
-    return false;
-  }
-
-  @Override
-  protected List<Movie> searchMedia(String query, Locale locale) throws Exception {
+  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/search?partner=" + apikey + "&filter=movie&striptags=synopsis,synopsisshort&format=json&q=" + URIRequest.encode(query));
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
@@ -118,7 +106,7 @@ public class AllocineScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale locale) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
@@ -145,7 +133,7 @@ public class AllocineScrapper extends MovieScrapper {
 
     List<Locale> countries = new ArrayList<Locale>();
     for (JSONObject country : JSONUtils.selectList("nationality", movieObject)) {
-      countries.add(LocaleUtils.findCountry(JSONUtils.selectString("$", country), locale));
+      countries.add(LocaleUtils.findCountry(JSONUtils.selectString("$", country), language));
     }
 
     MovieInfo movieInfo = new MovieInfo(fields, genres, countries);
@@ -153,7 +141,7 @@ public class AllocineScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale locale) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
@@ -187,7 +175,7 @@ public class AllocineScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale locale) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 

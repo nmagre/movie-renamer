@@ -38,6 +38,7 @@ import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.settings.UISettings.UISupportedLanguage;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeSupport;
@@ -364,15 +365,15 @@ public class SettingPanel extends JDialog {
     languageRBtns = createRadioButtonList(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()), null);// FIXME
 
     // SEARCH
-    MediaScrapper.AvailableLanguage selected;
-    List<MediaScrapper.AvailableLanguage> languages;
+    AvailableLanguages selected;
+    List<AvailableLanguages> languages;
 
-    languages = ScrapperManager.getMovieScrapper().getAvailableLanguage();
+    languages = ScrapperManager.getMovieScrapper().getSupportedLanguages();
     selected = getSearchLangSelected(settings.coreInstance.getSearchMovieScrapperLang().getLanguage(), languages);
     searchMovieScrapperLangRBtns = createRadioButtonList(selected, Settings.SettingsProperty.searchMovieScrapperLang);
     setSearchScrapperLangRbtn(searchMovieScrapperLangRBtns, selected, languages);
 
-    languages = ScrapperManager.getTvShowScrapper().getAvailableLanguage();
+    languages = ScrapperManager.getTvShowScrapper().getSupportedLanguages();
     selected = getSearchLangSelected(settings.coreInstance.getSearchTvshowScrapperLang().getLanguage(), languages);
     searchtvshowScrapperLangRBtns = createRadioButtonList(selected, Settings.SettingsProperty.searchTvshowScrapperLang);
     setSearchScrapperLangRbtn(searchtvshowScrapperLangRBtns, selected, languages);
@@ -396,7 +397,7 @@ public class SettingPanel extends JDialog {
     movieScrapperCb.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ae) {
-        List<MediaScrapper.AvailableLanguage> lang = ((UIScrapper) movieScrapperCb.getSelectedItem()).getScrapper().getAvailableLanguage();
+        List<AvailableLanguages> lang = ((UIScrapper) movieScrapperCb.getSelectedItem()).getScrapper().getSupportedLanguages();
         setSearchScrapperLangRbtn(searchMovieScrapperLangRBtns, settings.coreInstance.getSearchMovieScrapperLang().getLanguage(), lang);
       }
     });
@@ -408,7 +409,7 @@ public class SettingPanel extends JDialog {
     tvshowScrapperCb.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ae) {
-        List<MediaScrapper.AvailableLanguage> lang = ((UIScrapper) tvshowScrapperCb.getSelectedItem()).getScrapper().getAvailableLanguage();
+        List<AvailableLanguages> lang = ((UIScrapper) tvshowScrapperCb.getSelectedItem()).getScrapper().getSupportedLanguages();
         setSearchScrapperLangRbtn(searchtvshowScrapperLangRBtns, settings.coreInstance.getSearchTvshowScrapperLang().getLanguage(), lang);
       }
     });
@@ -437,7 +438,7 @@ public class SettingPanel extends JDialog {
     setIconImage(UIUtils.LOGO_32);
   }
 
-  private void setSearchScrapperLangRbtn(List<JComponent> components, MediaScrapper.AvailableLanguage selected, List<MediaScrapper.AvailableLanguage> languages) {
+  private void setSearchScrapperLangRbtn(List<JComponent> components, AvailableLanguages selected, List<AvailableLanguages> languages) {
     for (JComponent component : components) {
       component.setEnabled(isInLangList(languages, component.getName()));
       if (component.getName().equals(selected.getLocale().getLanguage())) {
@@ -446,21 +447,21 @@ public class SettingPanel extends JDialog {
     }
   }
 
-  private void setSearchScrapperLangRbtn(List<JComponent> components, String lang, List<MediaScrapper.AvailableLanguage> languages) {
-    MediaScrapper.AvailableLanguage selected = getSearchLangSelected(lang, languages);
+  private void setSearchScrapperLangRbtn(List<JComponent> components, String lang, List<AvailableLanguages> languages) {
+    AvailableLanguages selected = getSearchLangSelected(lang, languages);
     setSearchScrapperLangRbtn(components, selected, languages);
   }
 
-  private MediaScrapper.AvailableLanguage getSearchLangSelected(String lang, List<MediaScrapper.AvailableLanguage> languages) {
-    MediaScrapper.AvailableLanguage selected = MediaScrapper.AvailableLanguage.valueOf(lang);
+  private AvailableLanguages getSearchLangSelected(String lang, List<AvailableLanguages> languages) {
+    AvailableLanguages selected = AvailableLanguages.valueOf(lang);
     if (!languages.contains(selected)) {
       selected = languages.get(0);
     }
     return selected;
   }
 
-  private boolean isInLangList(List<MediaScrapper.AvailableLanguage> languages, String name) {
-    for (MediaScrapper.AvailableLanguage lang : languages) {
+  private boolean isInLangList(List<AvailableLanguages> languages, String name) {
+    for (AvailableLanguages lang : languages) {
       if (lang.getLocale().getLanguage().equals(name)) {
         return true;
       }

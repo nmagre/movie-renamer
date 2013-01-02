@@ -26,7 +26,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
-import java.util.Arrays;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class AnidbScrapper : search tvshow on anidb (Anime DataBase)
@@ -39,17 +39,8 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   private final String host = "anidb.net";
   private final String name = "AniDB";
 
-  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
-    AvailableLanguage.en,
-  });
-
-  @Override
-  public List<AvailableLanguage> getAvailableLanguage() {
-    return supportedLang;
-  }
-
   public AnidbTvseriesScrapper() {
-    super(Locale.ENGLISH);
+    super(AvailableLanguages.en);
   }
 
   @Override
@@ -63,35 +54,35 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, Locale locale) throws Exception {
+  protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale locale) throws Exception {
+  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale locale) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

@@ -17,12 +17,13 @@
  */
 package fr.free.movierenamer.utils;
 
-import fr.free.movierenamer.scrapper.SearchScrapper;
-import fr.free.movierenamer.utils.Cache.CacheKey;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.utils.Cache.CacheKey;
 
 /**
  * Class CacheObject
@@ -43,18 +44,18 @@ public class CacheObject {
     return query == null ? null : query.trim().toLowerCase();
   }
 
-  public synchronized <T> List<T> putList(Object key, Locale locale, Class<T> type, List<T> object) {
+  public synchronized <T> List<T> putList(Object key, Locale language, Class<T> type, List<T> object) {
     try {
-      cache.put(new CacheKey(id, key, type, locale), object);
+      cache.put(new CacheKey(id, key, type, language), object);
     } catch (Exception e) {
       Logger.getLogger(SearchScrapper.class.getName()).log(Level.WARNING, e.getMessage());
     }
     return object;
   }
 
-  public synchronized <T> T putData(Object key, Locale locale, T object) {
+  public synchronized <T> T putData(Object key, Locale language, T object) {
     try {
-      cache.put(new CacheKey(id, key, locale), object);
+      cache.put(new CacheKey(id, key, language), object);
     } catch (Exception e) {
       Logger.getLogger(SearchScrapper.class.getName()).log(Level.WARNING, e.getMessage());
     }
@@ -62,10 +63,10 @@ public class CacheObject {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> List<T> getList(Object key, Locale locale, Class<T> type) {
+  public <T> List<T> getList(Object key, Locale language, Class<T> type) {
     // return getData(key, locale, (Class<List<T>>) (Class<?>) List.class);
     try {
-      List<T> value = cache.get(new CacheKey(id, key, type, locale), List.class);
+      List<T> value = cache.get(new CacheKey(id, key, type, language), List.class);
       if (value != null) {
         return value;
       }
@@ -76,9 +77,9 @@ public class CacheObject {
     return null;
   }
 
-  public <T> T getData(Object key, Locale locale, Class<T> type) {
+  public <T> T getData(Object key, Locale language, Class<T> type) {
     try {
-      T value = cache.get(new CacheKey(id, key, locale), type);
+      T value = cache.get(new CacheKey(id, key, language), type);
       if (value != null) {
         return value;
       }
