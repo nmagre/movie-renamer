@@ -27,6 +27,7 @@ import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
+import java.util.Arrays;
 
 /**
  * Class AllocineTvseriesScrapper
@@ -42,24 +43,13 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
 
   private final String apikey;
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    FRENCH(Locale.FRENCH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.fr,
+  });
 
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public AllocineTvseriesScrapper() {

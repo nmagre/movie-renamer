@@ -20,6 +20,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.tooltip.TooltipManager;
@@ -33,7 +34,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 /**
  * Class PanelGenerator
@@ -41,7 +41,7 @@ import javax.swing.JPanel;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class PanelGenerator extends JPanel {
+public abstract class PanelGenerator extends WebPanel {
 
   // Font
   protected final int titleSize = 14;

@@ -26,6 +26,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
+import java.util.Arrays;
 
 /**
  * Class AnidbScrapper : search tvshow on anidb (Anime DataBase)
@@ -38,24 +39,13 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   private final String host = "anidb.net";
   private final String name = "AniDB";
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.en,
+  });
 
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public AnidbTvseriesScrapper() {

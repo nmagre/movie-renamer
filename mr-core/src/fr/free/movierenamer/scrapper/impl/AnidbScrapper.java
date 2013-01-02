@@ -25,6 +25,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
+import java.util.Arrays;
 
 /**
  * Class AnidbScrapper : search movie on anidb (Anime DataBase)
@@ -38,24 +39,13 @@ public class AnidbScrapper extends MovieScrapper {
   private static final String name = "AniDB";
   private static final String version = "2";
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.en,
+  });
 
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public AnidbScrapper() {

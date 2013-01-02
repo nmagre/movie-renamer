@@ -45,6 +45,7 @@ import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.util.Arrays;
 
 /**
  * Class TvRageScrapper : search tvshow on TvRage
@@ -57,24 +58,13 @@ public class TvRageScrapper extends TvShowScrapper {
   private static final String host = "services.tvrage.com";
   private static final String name = "TVRage";
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.en
+  });
 
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public TvRageScrapper() {

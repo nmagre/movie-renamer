@@ -49,6 +49,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.util.Arrays;
 
 /**
  * Class TheTVDBScrapper : search tvshow on TheTVDB
@@ -66,28 +67,17 @@ public final class TheTVDBScrapper extends TvShowScrapper {
   private final String apikey;
   private final String posterRoot;
 
-    public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH),
-    FRENCH(Locale.FRENCH),
-    SPANISH(new Locale("es", "ES")),
-    ITALIAN(new Locale("it", "IT")),
-    GERMAN(Locale.GERMAN);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.en,
+    AvailableLanguage.fr,
+    AvailableLanguage.es,
+    AvailableLanguage.it,
+    AvailableLanguage.de
+  });
 
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public TheTVDBScrapper() {

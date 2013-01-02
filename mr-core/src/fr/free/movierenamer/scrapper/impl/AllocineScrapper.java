@@ -40,6 +40,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.URIRequest;
+import java.util.Arrays;
 
 /**
  * Class AllocineScrapper : search movie on allocine
@@ -55,25 +56,13 @@ public class AllocineScrapper extends MovieScrapper {
   private static final String name = "Allocine";
   private static final String version = "3";
   private final String apikey;
-
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    FRENCH(Locale.FRENCH);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.fr,
+  });
 
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public AllocineScrapper() {

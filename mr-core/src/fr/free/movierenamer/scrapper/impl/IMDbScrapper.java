@@ -45,6 +45,7 @@ import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.util.Arrays;
 
 /**
  * Class IMDbScrapper : search movie on IMDB
@@ -57,31 +58,19 @@ public class IMDbScrapper extends MovieScrapper {
   private static final String defaultHost = "www.imdb.com";
   private static final String name = "IMDb";
   private static final String CHARSET = URIRequest.ISO;
+  private static final List<AvailableLanguage> supportedLang = Arrays.asList(new AvailableLanguage[]{
+    AvailableLanguage.en,
+    AvailableLanguage.fr,
+    AvailableLanguage.es,
+    AvailableLanguage.it,
+    AvailableLanguage.de
+  });
 
   private String host;
 
-  public enum AvailableLanguage implements IAvailableLanguage {
-
-    ENGLISH(Locale.ENGLISH),
-    FRENCH(Locale.FRENCH),
-    SPANISH(new Locale("es", "ES")),
-    ITALIAN(new Locale("it", "IT")),
-    GERMAN(Locale.GERMAN);
-    private final Locale locale;
-
-    private AvailableLanguage(Locale locale) {
-      this.locale = locale;
-    }
-
-    @Override
-    public Locale getLocale() {
-      return locale;
-    }
-  }
-
   @Override
-  public Class<AvailableLanguage> getAvailableLanguage() {
-    return AvailableLanguage.class;
+  public List<AvailableLanguage> getAvailableLanguage() {
+    return supportedLang;
   }
 
   public IMDbScrapper() {
@@ -373,7 +362,7 @@ public class IMDbScrapper extends MovieScrapper {
     // for (int i = 0; i < countries.length; i++) {
     // String country;
     // switch (config.movieScrapperLang) {
-    // case ENGLISH:
+    // case en:
     // country = countries[i].substring(countries[i].indexOf(">") + 1,
     // countries[i].indexOf("</a>")).trim();
     // break;
