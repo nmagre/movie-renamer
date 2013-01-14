@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
-import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.ui.list.UIFile;
 import java.util.ArrayList;
 import java.util.List;
 

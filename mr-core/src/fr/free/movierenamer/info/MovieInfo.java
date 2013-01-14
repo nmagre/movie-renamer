@@ -17,16 +17,18 @@
  */
 package fr.free.movierenamer.info;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
-
+import fr.free.movierenamer.mediainfo.MediaAudio;
+import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaTag;
+import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.StringUtils;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -201,20 +203,34 @@ public class MovieInfo extends MediaInfo {
     // replace.put("<d>", this.getDirectorsString(separator, limit));
     // replace.put("<g>", this.getGenresString(separator, limit));
     // replace.put("<c>", this.getCountriesString(separator, limit));
-    if (mtag != null) {
-      replace.put("<mrt>", mtag.getDuration());
-      replace.put("<mfs>", mtag.getFileSize());
-      replace.put("<mc>", mtag.getVideoCodec());
-      replace.put("<mdc>", mtag.getVideoDefinitionCategory());
-      replace.put("<mf>", mtag.getVideoFormat());
-      replace.put("<mfr>", mtag.getVideoFrameRate());
-      replace.put("<mr>", mtag.getVideoResolution());
-      replace.put("<mcf>", mtag.getContainerFormat());
-      replace.put("<mach>", mtag.getTagString(MediaTag.TagList.AudioChannel, separator, limit));
-      replace.put("<mac>", mtag.getTagString(MediaTag.TagList.AudioCodec, separator, limit));
-      replace.put("<mal>", mtag.getTagString(MediaTag.TagList.AudioLanguage, separator, limit));
-      replace.put("<matt>", mtag.getTagString(MediaTag.TagList.AudioTitleString, separator, limit));
-      replace.put("<mtt>", mtag.getTagString(MediaTag.TagList.TextTitle, separator, limit));
+    if (mtag != null && mtag.libMediaInfo) {
+      MediaVideo video = mtag.getMediaVideo();
+      // General
+      replace.put("<vrt>", mtag.getDuration());
+      replace.put("<vcf>", mtag.getContainerFormat());
+//      replace.put("<mfs>", mtag.getFileSize());
+      // Video
+      replace.put("<vc>", video.getCodec());
+      replace.put("<vd>", video.getVideoDefinition());
+      replace.put("<vr>", video.getVideoResolution());
+      replace.put("<vfr>", video.getFrameRate());
+      replace.put("<vst>", video.getScanType());
+      replace.put("<vfc>", video.getFrameCount());
+      replace.put("<vh>", video.getHeight());
+      replace.put("<vw>", video.getWidth());
+      replace.put("<var>", video.getAspectRatio());
+      // Audio
+      replace.put("<asc>", mtag.getTagString(MediaTag.Tags.AudioStreamCount, separator, limit));
+      replace.put("<ach>", mtag.getTagString(MediaTag.Tags.AudioChannels, separator, limit));
+      replace.put("<ac>", mtag.getTagString(MediaTag.Tags.AudioCodec, separator, limit));
+      replace.put("<al>", mtag.getTagString(MediaTag.Tags.AudioLanguage, separator, limit));
+      replace.put("<att>", mtag.getTagString(MediaTag.Tags.AudioTitle, separator, limit));
+      replace.put("<ab>", mtag.getTagString(MediaTag.Tags.AudioBitRate, separator, limit));
+      replace.put("<abm>", mtag.getTagString(MediaTag.Tags.AudioBitRateMode, separator, limit));
+      // Subtitle
+      replace.put("<stc>", mtag.getTagString(MediaTag.Tags.TextStreamCount, separator, limit));
+      replace.put("<stt>", mtag.getTagString(MediaTag.Tags.TextTitle, separator, limit));
+      replace.put("<stl>", mtag.getTagString(MediaTag.Tags.TextLanguage, separator, limit));
     }
 
     // replace actors, directors, genres, coutries
@@ -241,26 +257,39 @@ public class MovieInfo extends MediaInfo {
       }
     }
 
-    // replace media tags
-    pattern = Pattern.compile("<(ma?[chtl]*)(\\d+)>");
-    matcher = pattern.matcher(format);
-    while (matcher.find()) {
-      String tag = matcher.group(1);
-      int stream = Integer.parseInt(matcher.group(2));
-      stream--;// Offset start at 0, (E.g : For <mac3> -> stream == 2)
-      if (tag.equals("mach")) {
-        format = format.replaceAll("<mach" + stream + ">", applyCase(mtag.getAudioChannels(stream), renameCase));
-      } else if (tag.equals("mac")) {
-        format = format.replaceAll("<mac" + stream + ">", applyCase(mtag.getAudioCodec(stream), renameCase));
-      } else if (tag.equals("mal")) {
-        format = format.replaceAll("<mal" + stream + ">", applyCase(mtag.getAudioLanguage(stream), renameCase));
-      } else if (tag.equals("matt")) {
-        format = format.replaceAll("<matt" + stream + ">", applyCase(mtag.getAudioTitle(stream), renameCase));
-      } else if (tag.equals("mtt")) {
-        format = format.replaceAll("<mtt" + stream + ">", applyCase(mtag.getTextTitle(stream), renameCase));
+    if (mtag != null && mtag.libMediaInfo) {
+      // replace media tags
+      pattern = Pattern.compile("<([as]t?[scltb]*)(\\d+)>");
+      matcher = pattern.matcher(format);
+      List<MediaAudio> audios = mtag.getMediaAudios();
+      List<MediaSubTitle> subTitles = mtag.getMediaSubTitles();
+
+      while (matcher.find()) {
+        String tag = matcher.group(1);
+        int stream = Integer.parseInt(matcher.group(2));
+        if(stream <= 0 || (tag.startsWith("a") && stream > audios.size()) || (tag.startsWith("s") && stream > subTitles.size())) {
+          continue;
+        }
+
+        if (tag.equals("ach")) {
+          format = format.replaceAll("<ach" + stream + ">", "" + audios.get(stream - 1).getChannel());
+        } else if (tag.equals("ac")) {
+          format = format.replaceAll("<ac" + stream + ">", applyCase(audios.get(stream - 1).getCodec(), renameCase));
+        } else if (tag.equals("al")) {
+          format = format.replaceAll("<al" + stream + ">", applyCase(audios.get(stream - 1).getLanguage().getLanguage(), renameCase));
+        } else if (tag.equals("att")) {
+          format = format.replaceAll("<att" + stream + ">", applyCase(audios.get(stream - 1).getTitle(), renameCase));
+        } else if (tag.equals("ab")) {
+          format = format.replaceAll("<ab" + stream + ">", applyCase("" + audios.get(stream - 1).getBitRate(), renameCase));
+        } else if (tag.equals("abm")) {
+          format = format.replaceAll("<abm" + stream + ">", applyCase(audios.get(stream - 1).getBitRateMode(), renameCase));
+        } else if (tag.equals("stt")) {
+          format = format.replaceAll("<stt" + stream + ">", applyCase(subTitles.get(stream - 1).getTitle(), renameCase));
+        } else if (tag.equals("stl")) {
+          format = format.replaceAll("<stl" + stream + ">", applyCase(subTitles.get(stream - 1).getLanguage().getLanguage(), renameCase));
+        }
       }
     }
-
     // la suite ;)
     for (String key : replace.keySet()) {
       Object val = replace.get(key);

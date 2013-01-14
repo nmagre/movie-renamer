@@ -97,6 +97,11 @@ public class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + language.getLanguage());
+    return searchMedia(searchUrl, language);
+  }
+
+  @Override
+  protected List<TvShow> searchMedia(URL searchUrl, Locale language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Data/Series", dom);

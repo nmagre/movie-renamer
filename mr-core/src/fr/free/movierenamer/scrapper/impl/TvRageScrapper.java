@@ -76,6 +76,11 @@ public class TvRageScrapper extends TvShowScrapper {
   @Override
   protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/feeds/search.php?show=" + URIRequest.encode(query));
+    return searchMedia(searchUrl, language);
+  }
+
+  @Override
+  protected List<TvShow> searchMedia(URL searchUrl, Locale language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Results/show", dom);

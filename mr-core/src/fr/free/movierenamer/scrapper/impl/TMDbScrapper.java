@@ -1,5 +1,5 @@
 /*
-" * movie-renamer-core
+ " * movie-renamer-core
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,6 @@ public class TMDbScrapper extends MovieScrapper {
   private static final String host = "api.themoviedb.org";
   private static final String name = "TheMovieDb";
   private static final String version = "2.1"; // TODO change to v3 !!!!
-
   private final String apikey;
 
   public TMDbScrapper() {
@@ -82,11 +81,15 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<Movie> searchMedia(String query, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + language.getLanguage() + "/xml/" + apikey + "/" + URIRequest.encode(query));
     // FIXME has to be v3 !!!!
     // URL searchUrl = new URL("http", host, "/" + version + "/search/movie" +
     // "?api_key=" + apikey + "&language=" + locale.getLanguage() + "&query=" +
     // URIRequest.encode(query));
+    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + language.getLanguage() + "/xml/" + apikey + "/" + URIRequest.encode(query));
+    return searchMedia(searchUrl, language);
+  }
+
+  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
@@ -117,7 +120,7 @@ public class TMDbScrapper extends MovieScrapper {
       Date released = Date.parse(XPathUtils.getTextContent("released", node), "yyyy-MM-dd");
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(id, movieName, thumb, (released!=null)?released.getYear():-1, imdbId));
+        resultSet.put(id, new Movie(id, movieName, thumb, (released != null) ? released.getYear() : -1, imdbId));
       }
     }
 
@@ -167,9 +170,9 @@ public class TMDbScrapper extends MovieScrapper {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
-    for (String section : new String[] {
-        "backdrop", "posterPath"
-    }) {
+    for (String section : new String[]{
+              "backdrop", "posterPath"
+            }) {
       List<Node> sectionNodes = XPathUtils.selectNodes("//" + section, dom);
       for (Node curNode : sectionNodes) {
         for (Node image : XPathUtils.selectNodes("image", curNode)) {
@@ -212,5 +215,4 @@ public class TMDbScrapper extends MovieScrapper {
 
     return null;
   }
-
 }

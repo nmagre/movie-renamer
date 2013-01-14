@@ -17,25 +17,29 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import com.alee.extended.image.WebImageGallery;
+import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.alee.laf.text.WebTextArea;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.popup.PopupWay;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.border.LineBorder;
 
 /**
  * Class MoviePanel
@@ -45,118 +49,42 @@ import javax.swing.event.ListSelectionListener;
 public class MoviePanel extends MediaPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private WebList castingList;
-  private WebList countryList;
   private WebTextField directorField;
-  private WebList fanartList;
-  private WebToolBar fanartTb;
-  private JScrollPane fanartsScrollPane;
-  private WebTextField genreField;
-  private JScrollPane jScrollPane1;
-  private JScrollPane jScrollPane3;
-  private WebToolBar movieTb;
+  private WebPanel filePanel;
+  private WebTabbedPane imageTp;
+  private WebTabbedPane movieInfoTp;
+  private WebPanel moviePanel;
   private WebTextField origTitleField;
-  private WebTextField runtimeField;
-  private JLabel star;
-  private JLabel star1;
-  private JLabel star2;
-  private JLabel star3;
-  private JLabel star4;
-  private WebPanel starPanel;
-  private JScrollPane synopsScroll;
-  private JTextArea synopsisArea;
-  private WebLabel synopsisLbl;
-  private JLabel thumbLbl;
-  private WebToolBar thumbnailTb;
-  private WebList thumbnailsList;
-  private JScrollPane thumbsScrollPane;
-  private WebLabel titleLbl;
+  private WebTextArea synopsisArea;
+  private JScrollPane synopsisSp;
   private WebLabel webLabel1;
   private WebLabel webLabel2;
-  private WebLabel webLabel5;
-  private WebToolBar webToolBar3;
-  private WebToolBar webToolBar4;
-  private WebLabel yearLbl;
+  private WebLabel webLabel3;
+  private WebLabel webLabel4;
+  private WebPanel webPanel1;
+  private WebPanel webPanel2;
+  private WebTextField webTextField1;
+  private WebTextField webTextField2;
+  private WebTextField webTextField3;
+  private WebTextField webTextField4;
+  private WebToolBar webToolBar1;
   // End of variables declaration//GEN-END:variables
   private static final long serialVersionUID = 1L;
-  private final DefaultListModel castingModel = new DefaultListModel();
-  private final DefaultListModel thumbnailsModel = new DefaultListModel();
-  private final DefaultListModel fanartsModel = new DefaultListModel();
-  private final DefaultListModel subTitleModel = new DefaultListModel();
-  private final DefaultListModel audioModel = new DefaultListModel();
-  private final DefaultListModel countryModel = new DefaultListModel();
   private final UISettings setting;
   private MediaInfo mediaInfo;
+  private final MovieRenamer mr;
 
   /**
    * Creates new form MoviePanel
    *
+   * @param mr
    */
-  public MoviePanel() {
+  public MoviePanel(MovieRenamer mr) {
+    this.mr = mr;
     this.setting = UISettings.getInstance();
 
-    // Init
     initComponents();
-
-    mediaInfo = null;
-//
-//    origTitleField.setLeadingComponent(origTitleLbl);
-//    directorField.setLeadingComponent(directorLbl);
-//    runtimeField.setLeadingComponent(runtimeLbl);
-//    genreField.setLeadingComponent(genreLbl);
-
-    // Add component to toolbar
-    movieTb.addToEnd(starPanel);
-
-    thumbnailsList.setModel(thumbnailsModel);
-    fanartList.setModel(fanartsModel);
-    castingList.setModel(castingModel);
-    countryList.setModel(countryModel);
-    thumbnailsList.setCellRenderer(UIUtils.iconListRenderer);
-    fanartList.setCellRenderer(UIUtils.iconListRenderer);
-    castingList.setCellRenderer(UIUtils.iconListRenderer);
-
-    countryList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    countryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    countryList.setVisibleRowCount(-1);
-
-    thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    thumbnailsList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    thumbnailsList.setVisibleRowCount(-1);
-    thumbnailsList.addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        // TODO
-      }
-    });
-
-    fanartList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    fanartList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    fanartList.setVisibleRowCount(-1);
-    fanartList.addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent lse) {
-        // TODO
-      }
-    });
-
-    // TODO Add drag and drop image on thumbnail list
-
-    // TODO Add drag and drop image on fanart list
-
-    castingList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    castingList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    castingList.setVisibleRowCount(-1);
-
-    // Disable drag and drop on list until a movie is added
-//    dropFanartTarget.setActive(false);
-//    dropThumbTarget.setActive(false);
-
-//    thumbnailTb.setVisible(setting.thumb);
-//    fanartTb.setVisible(setting.fanart);
-//    thumbsScrollPane.setVisible(setting.thumb);
-//    fanartsScrollPane.setVisible(setting.fanart);
-
+    webToolBar1.addToEnd(UIUtils.createSettingbutton(PopupWay.leftDown, "settingHelp", true, new WebCheckBox()));
   }
 
   @Override
@@ -164,47 +92,17 @@ public class MoviePanel extends MediaPanel {
     SwingUtilities.invokeLater(new Thread() {
       @Override
       public void run() {
-//        dropFanartTarget.setActive(false);
-//        dropThumbTarget.setActive(false);
-
         mediaInfo = null;
-        castingModel.clear();
-        thumbnailsModel.clear();
-        fanartsModel.clear();
-
-        subTitleModel.clear();
-        audioModel.clear();
-        countryModel.clear();
-        origTitleField.setText("");
-        yearLbl.setText("");
-        runtimeField.setText("");
-        synopsisArea.setText("");
-        genreField.setText("");
-        directorField.setText("");
-        titleLbl.setText("");
-        thumbLbl.setIcon(null);
-        resetStar();
-        validate();
-        repaint();
+        clearStars();
       }
     });
   }
-
-
 
   @Override
   public void setMediaInfo(MediaInfo mediaInfo) {
     this.mediaInfo = mediaInfo;
     MovieInfo movieInfo = (MovieInfo) mediaInfo;
-    origTitleField.setText(movieInfo.getOriginalTitle());
-    for (String director : movieInfo.getDirectors()) {
-      directorField.setText(directorField.getText() + (directorField.getText().isEmpty() ? "" : ",") + director);
-    }
-    for (String genre : movieInfo.getGenres()) {
-      genreField.setText(genreField.getText() + (genreField.getText().isEmpty() ? "" : ",") + genre);
-    }
-    runtimeField.setText("" + movieInfo.getRuntime());
-    //synopsisArea.setText(movieInfo.get);
+    setRate(movieInfo.getRating());
   }
 
   @Override
@@ -214,17 +112,17 @@ public class MoviePanel extends MediaPanel {
 
   @Override
   public WebList getCastingList() {
-    return castingList;
+    return null;
   }
 
   @Override
   public WebList getThumbnailsList() {
-    return thumbnailsList;
+    return null;
   }
 
   @Override
-  public WebList getFanartsList() {
-    return fanartList;
+  public WebImageGallery getFanartsList() {
+    return null;
   }
 
   @Override
@@ -240,239 +138,215 @@ public class MoviePanel extends MediaPanel {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    starPanel = new WebPanel();
-    star4 = new JLabel();
-    star3 = new JLabel();
-    star2 = new JLabel();
-    star1 = new JLabel();
-    star = new JLabel();
-    movieTb = new WebToolBar();
-    titleLbl = new WebLabel();
-    yearLbl = new WebLabel();
-    thumbLbl = new JLabel();
+    movieInfoTp = new WebTabbedPane();
+    moviePanel = new WebPanel();
     origTitleField = new WebTextField();
     directorField = new WebTextField();
-    genreField = new WebTextField();
-    webToolBar3 = new WebToolBar();
-    webLabel5 = new WebLabel();
-    jScrollPane3 = new JScrollPane();
-    castingList = new WebList();
-    webToolBar4 = new WebToolBar();
-    synopsisLbl = new WebLabel();
-    synopsScroll = new JScrollPane();
-    synopsisArea = new JTextArea();
-    runtimeField = new WebTextField();
-    jScrollPane1 = new JScrollPane();
-    countryList = new WebList(){
-      public String getToolTipText(MouseEvent evt) {
-        // Get item index
-        int index = locationToIndex(evt.getPoint());
-
-        // Get item
-        ImageIcon item = (ImageIcon) getModel().getElementAt(index);
-
-        // Return the tool tip text
-        return item.getDescription();
-      }
-    };
-    thumbnailTb = new WebToolBar();
+    synopsisSp = new JScrollPane();
+    synopsisArea = new WebTextArea();
+    webTextField1 = new WebTextField();
+    webTextField2 = new WebTextField();
+    webTextField3 = new WebTextField();
+    webTextField4 = new WebTextField();
+    filePanel = new WebPanel();
+    imageTp = new WebTabbedPane();
+    webPanel1 = new WebPanel();
     webLabel1 = new WebLabel();
-    thumbsScrollPane = new JScrollPane();
-    thumbnailsList = new WebList();
-    fanartTb = new WebToolBar();
     webLabel2 = new WebLabel();
-    fanartsScrollPane = new JScrollPane();
-    fanartList = new WebList();
+    webLabel3 = new WebLabel();
+    webLabel4 = new WebLabel();
+    webPanel2 = new WebPanel();
+    webToolBar1 = new WebToolBar();
 
-    starPanel.setAlignmentY(0.0F);
-
-    star4.setIcon(UIUtils.STAR_EMPTY);
-
-    star3.setIcon(UIUtils.STAR_EMPTY);
-
-    star2.setIcon(UIUtils.STAR_EMPTY);
-
-    star1.setIcon(UIUtils.STAR_EMPTY);
-
-    star.setIcon(UIUtils.STAR_EMPTY);
-
-    GroupLayout starPanelLayout = new GroupLayout(starPanel);
-    starPanel.setLayout(starPanelLayout);
-    starPanelLayout.setHorizontalGroup(
-      starPanelLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(starPanelLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(star)
-        .addGap(8, 8, 8)
-        .addComponent(star1)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(star2)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(star3)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(star4)
-        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-    starPanelLayout.setVerticalGroup(
-      starPanelLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(star1)
-      .addComponent(star2)
-      .addComponent(star3)
-      .addComponent(star4)
-      .addComponent(star)
-    );
-
-    setMargin(new Insets(10, 10, 10, 10));
     setMinimumSize(new Dimension(10, 380));
     setPreferredSize(new Dimension(562, 400));
 
-    movieTb.setFloatable(false);
-    movieTb.setRollover(true);
-
-    titleLbl.setFont(new Font("Ubuntu", 1, 14)); // NOI18N
-    movieTb.add(titleLbl);
-
-    yearLbl.setFont(new Font("Ubuntu", 1, 14)); // NOI18N
-    movieTb.add(yearLbl);
-
-    thumbLbl.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-
     origTitleField.setEditable(false);
+    origTitleField.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
 
     directorField.setEditable(false);
+    directorField.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
 
-    webToolBar3.setFloatable(false);
-    webToolBar3.setRollover(true);
-
-    webLabel5.setText(LocaleUtils.i18nExt("actor")); // NOI18N
-    webLabel5.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
-    webToolBar3.add(webLabel5);
-
-    castingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    jScrollPane3.setViewportView(castingList);
-
-    webToolBar4.setFloatable(false);
-    webToolBar4.setRollover(true);
-
-    synopsisLbl.setText(LocaleUtils.i18nExt("Synopsis")); // NOI18N
-    synopsisLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
-    webToolBar4.add(synopsisLbl);
-
-    synopsScroll.setPreferredSize(new Dimension(264, 62));
-
-    synopsisArea.setEditable(false);
     synopsisArea.setColumns(20);
-    synopsisArea.setLineWrap(true);
-    synopsisArea.setRows(4);
-    synopsisArea.setWrapStyleWord(true);
-    synopsisArea.setBorder(null);
-    synopsisArea.setOpaque(false);
-    synopsScroll.setViewportView(synopsisArea);
+    synopsisArea.setRows(5);
+    synopsisSp.setViewportView(synopsisArea);
 
-    countryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    countryList.setAutoscrolls(false);
-    countryList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    jScrollPane1.setViewportView(countryList);
+    webTextField1.setText("webTextField1");
 
-    thumbnailTb.setFloatable(false);
-    thumbnailTb.setRollover(true);
+    webTextField2.setText("webTextField2");
 
-    webLabel1.setText(LocaleUtils.i18nExt("thumbnails")); // NOI18N
-    webLabel1.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
-    thumbnailTb.add(webLabel1);
+    webTextField3.setText("webTextField3");
 
-    thumbnailsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    thumbsScrollPane.setViewportView(thumbnailsList);
+    GroupLayout moviePanelLayout = new GroupLayout(moviePanel);
+    moviePanel.setLayout(moviePanelLayout);
+    moviePanelLayout.setHorizontalGroup(
+      moviePanelLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(moviePanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING)
+          .addComponent(synopsisSp)
+          .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(directorField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(webTextField4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(moviePanelLayout.createSequentialGroup()
+            .addComponent(webTextField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.UNRELATED)
+            .addComponent(webTextField2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.UNRELATED)
+            .addComponent(webTextField3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    moviePanelLayout.setVerticalGroup(
+      moviePanelLayout.createParallelGroup(Alignment.LEADING)
+      .addGroup(moviePanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(directorField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(webTextField4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addGroup(moviePanelLayout.createParallelGroup(Alignment.BASELINE)
+          .addComponent(webTextField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addComponent(webTextField2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addComponent(webTextField3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(synopsisSp, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(223, Short.MAX_VALUE))
+    );
 
-    fanartTb.setFloatable(false);
-    fanartTb.setRollover(true);
-    fanartTb.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    movieInfoTp.addTab("Movie", moviePanel);
 
-    webLabel2.setText(LocaleUtils.i18nExt("fanart")); // NOI18N
-    webLabel2.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
-    fanartTb.add(webLabel2);
+    GroupLayout filePanelLayout = new GroupLayout(filePanel);
+    filePanel.setLayout(filePanelLayout);
+    filePanelLayout.setHorizontalGroup(
+      filePanelLayout.createParallelGroup(Alignment.LEADING)
+      .addGap(0, 740, Short.MAX_VALUE)
+    );
+    filePanelLayout.setVerticalGroup(
+      filePanelLayout.createParallelGroup(Alignment.LEADING)
+      .addGap(0, 441, Short.MAX_VALUE)
+    );
 
-    fanartList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    fanartsScrollPane.setViewportView(fanartList);
+    movieInfoTp.addTab("File", filePanel);
+
+    imageTp.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
+
+    webPanel1.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
+
+    webLabel1.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
+    webLabel1.setHorizontalAlignment(SwingConstants.CENTER);
+    webLabel1.addMouseListener(new MouseAdapter() {
+      public void mouseReleased(MouseEvent evt) {
+        webLabel1MouseReleased(evt);
+      }
+    });
+
+    webLabel2.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
+    webLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+
+    webLabel3.setText("Thumbnail");
+
+    webLabel4.setText("Fanart");
+
+    GroupLayout webPanel1Layout = new GroupLayout(webPanel1);
+    webPanel1.setLayout(webPanel1Layout);
+    webPanel1Layout.setHorizontalGroup(
+      webPanel1Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(webPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(webPanel1Layout.createParallelGroup(Alignment.LEADING)
+          .addComponent(webLabel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addGroup(webPanel1Layout.createSequentialGroup()
+            .addGap(12, 12, 12)
+            .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
+          .addComponent(webLabel2, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+          .addComponent(webLabel4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(22, Short.MAX_VALUE))
+    );
+    webPanel1Layout.setVerticalGroup(
+      webPanel1Layout.createParallelGroup(Alignment.LEADING)
+      .addGroup(webPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(webLabel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.UNRELATED)
+        .addComponent(webLabel4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.RELATED)
+        .addComponent(webLabel2, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(104, Short.MAX_VALUE))
+    );
+
+    imageTp.addTab("Image", webPanel1);
+
+    GroupLayout webPanel2Layout = new GroupLayout(webPanel2);
+    webPanel2.setLayout(webPanel2Layout);
+    webPanel2Layout.setHorizontalGroup(
+      webPanel2Layout.createParallelGroup(Alignment.LEADING)
+      .addGap(0, 710, Short.MAX_VALUE)
+    );
+    webPanel2Layout.setVerticalGroup(
+      webPanel2Layout.createParallelGroup(Alignment.LEADING)
+      .addGap(0, 450, Short.MAX_VALUE)
+    );
+
+    imageTp.addTab("More", webPanel2);
+
+    webToolBar1.setFloatable(false);
+    webToolBar1.setRollover(true);
 
     GroupLayout layout = new GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(Alignment.LEADING)
-      .addComponent(movieTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
+        .addContainerGap()
         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(directorField, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(genreField, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jScrollPane3)
-          .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(webToolBar1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(webToolBar3, GroupLayout.PREFERRED_SIZE, 47, Short.MAX_VALUE)
-            .addGap(9, 9, 9)
-            .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 156, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.UNRELATED)
-            .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 165, GroupLayout.PREFERRED_SIZE))))
-      .addComponent(synopsScroll, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(webToolBar4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
-          .addComponent(thumbnailTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addGap(26, 26, 26)
-        .addGroup(layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(fanartsScrollPane, GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
-          .addComponent(fanartTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addComponent(imageTp, GroupLayout.PREFERRED_SIZE, 181, GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(movieInfoTp, GroupLayout.DEFAULT_SIZE, 351, Short.MAX_VALUE)))
+        .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(Alignment.LEADING)
       .addGroup(Alignment.TRAILING, layout.createSequentialGroup()
-        .addComponent(movieTb, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(Alignment.LEADING, false)
-          .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(origTitleField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(directorField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(genreField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-              .addComponent(webToolBar3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-              .addComponent(runtimeField, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
-              .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(jScrollPane3, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(webToolBar4, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(synopsScroll, GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addGroup(layout.createParallelGroup(Alignment.TRAILING)
-          .addComponent(thumbnailTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-          .addComponent(fanartTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(ComponentPlacement.RELATED)
+        .addContainerGap()
+        .addComponent(webToolBar1, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+        .addGap(14, 14, 14)
         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
-          .addComponent(fanartsScrollPane, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+          .addComponent(imageTp, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+          .addComponent(movieInfoTp, GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE))
+        .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
 
+  private void webLabel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_webLabel1MouseReleased
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        Gallerie gallerie = new Gallerie(mr);
+        gallerie.setVisible(true);
+      }
+    });
+
+  }//GEN-LAST:event_webLabel1MouseReleased
+
   @Override
   public DefaultListModel getCastingModel() {
-    return castingModel;
+    return null;
   }
 
   @Override
   public DefaultListModel getThumbnailsModel() {
-    return thumbnailsModel;
+    return null;
   }
 
   @Override
   public DefaultListModel getFanartsModel() {
-    return fanartsModel;
+    return null;
   }
 
   @Override

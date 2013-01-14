@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,10 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.FileInfo;
-import fr.free.movierenamer.ui.res.UIFile;
+import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
+import fr.free.movierenamer.namematcher.TvShowNameMatcher;
+import fr.free.movierenamer.renamer.NameCleaner;
+import fr.free.movierenamer.ui.list.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -28,6 +31,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
 
 /**
  * Class listFilesWorker ,get List of media files in files list
@@ -39,6 +43,8 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
   private final List<File> files;
   private boolean subFolder;
   private final UISettings setting;
+  private boolean paused = false;
+  private final String[] extensions = NameCleaner.getCleanerProperty("file.extension").split("|");
   private final FilenameFilter folderFilter = new FilenameFilter() {
     @Override
     public boolean accept(File dir, String name) {
@@ -74,7 +80,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
 
     if (!subFolder && subFolder(files)) {
       publish(LocaleUtils.i18n("scanSubFolder"));
-      wait();
+      pause();
     }
 
     int count = files.size();
@@ -87,9 +93,9 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       if (files.get(i).isDirectory()) {
         addFiles(medias, files.get(i));
       } else {
-        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName(), setting.getExtensionsList().toArray(new String[0]));// Really useful ?
+        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName(), extensions);
         if (addfiletoUI) {
-          medias.add(new UIFile(new FileInfo(files.get(i))));
+          addUIfile(medias, files.get(i));
         }
       }
     }
@@ -98,10 +104,24 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     return medias;
   }
 
+  private void pause() {
+    paused = true;
+    while (paused && !isCancelled()) {
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException ex) {
+      }
+    }
+  }
+
+  private void resume() {
+    paused = false;
+  }
+
   @Override
-  public final void process(List<String> v) {// TODO
-    // JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-    notify();
+  public final void process(List<String> v) {
+    JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+    resume();
   }
 
   /**
@@ -138,9 +158,24 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolder) {
         addFiles(medias, listFiles[i]);
-      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName(), setting.getExtensionsList().toArray(new String[0]))) {// Really useful ?
-        medias.add(new UIFile(new FileInfo(listFiles[i])));
+      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName(), extensions)) {
+        addUIfile(medias, listFiles[i]);
       }
     }
+  }
+
+  private void addUIfile(List<UIFile> medias, File file) {
+    FileInfo fileInfo = new FileInfo(file);
+    String groupName = fileInfo.getFile().getName().substring(0, 1);
+    switch (fileInfo.getType()) {
+      case MOVIE:
+        break;
+      case TVSHOW:
+        TvShowNameMatcher nameMatcher = new TvShowNameMatcher(file, new ArrayList<String>());
+        TvShowEpisodeNumMatcher epMatch = new TvShowEpisodeNumMatcher(file);
+        groupName = nameMatcher.getName() + " " + LocaleUtils.i18nExt("season") + " " + epMatch.matchEpisode().seasonL0();
+        break;
+    }
+    medias.add(new UIFile(new FileInfo(file), groupName));
   }
 }

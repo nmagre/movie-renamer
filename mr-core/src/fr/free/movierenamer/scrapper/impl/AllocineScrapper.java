@@ -41,7 +41,10 @@ import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
+import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class AllocineScrapper : search movie on allocine
@@ -53,9 +56,11 @@ import java.util.Arrays;
  */
 public class AllocineScrapper extends MovieScrapper {
 
+  //http://www.allocine.fr/film/fichefilm_gen_cfilm=28546.html
   private static final String host = "api.allocine.fr";
   private static final String name = "Allocine";
   private static final String version = "3";
+  private static final Pattern allocineID = Pattern.compile(".*gen_cfilm=(\\d+).*");
   private final String apikey;
 
   public AllocineScrapper() {
@@ -80,29 +85,51 @@ public class AllocineScrapper extends MovieScrapper {
   @Override
   protected List<Movie> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/search?partner=" + apikey + "&filter=movie&striptags=synopsis,synopsisshort&format=json&q=" + URIRequest.encode(query));
-    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+    return searchMedia(searchUrl, language);
+  }
+
+  @Override
+  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+    URL url = searchUrl;
+    if (url.getHost().equals(host)) {
+      Matcher id = allocineID.matcher(searchUrl.toString());
+      if (id.find()) {
+        // http://api.allocine.fr/rest/v3/movie?partner=YW5kcm9pZC12M3M&code=61282&format=json&filter=movie
+        url = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&format=json&filter=movie&code=" + id.group(1));
+      }
+    }
+
+    JSONObject json = URIRequest.getJsonDocument(url.toURI());
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
 
     for (JSONObject movie : JSONUtils.selectList("feed/movie", json)) {
-      String name = JSONUtils.selectString("title", movie);
-      if (name == null || name.isEmpty()) {
-        name = JSONUtils.selectString("originalTitle", movie);
-      }
-      Integer year = JSONUtils.selectInteger("productionYear", movie);
-      Integer imdbId = -1;
-      Integer movieId = JSONUtils.selectInteger("code", movie);
-      JSONObject poster = JSONUtils.selectObject("poster", movie);
-      URL posterURL;
-      if (poster != null) {
-        posterURL = new URL(JSONUtils.selectString("href", poster));
-      } else {
-        posterURL = null;
-      }
+      parseJson(movie, resultSet);
+    }
 
-      resultSet.put(movieId, new Movie(movieId, name, posterURL, year, imdbId));
+    for (JSONObject movie : JSONUtils.selectList("movie", json)) {
+      parseJson(movie, resultSet);
     }
 
     return new ArrayList<Movie>(resultSet.values());
+  }
+
+  private void parseJson(JSONObject movie, Map<Integer, Movie> resultSet) throws MalformedURLException {
+    String name = JSONUtils.selectString("title", movie);
+    if (name == null || name.isEmpty()) {
+      name = JSONUtils.selectString("originalTitle", movie);
+    }
+    Integer year = JSONUtils.selectInteger("productionYear", movie);
+    Integer imdbId = -1;
+    Integer movieId = JSONUtils.selectInteger("code", movie);
+    JSONObject poster = JSONUtils.selectObject("poster", movie);
+    URL posterURL;
+    if (poster != null) {
+      posterURL = new URL(JSONUtils.selectString("href", poster));
+    } else {
+      posterURL = null;
+    }
+
+    resultSet.put(movieId, new Movie(movieId, name, posterURL, year, imdbId));
   }
 
   @Override

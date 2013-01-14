@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
@@ -166,61 +167,6 @@ public class TvShowPanel extends MediaPanel {
     // star5.setIcon(STAR_EMPTY);
   }
 
-  /**
-   * Set star compared with rate
-   *
-   * @param rate
-   */
-  private void setRate(Double rate) {
-    if (rate < 0.00) {
-      return;
-    }
-    rate /= 2;
-    int n = rate.intValue();
-    switch (n) {
-    case 0:
-      break;
-    case 1:
-      star1.setIcon(UIUtils.STAR);
-      if ((rate - rate.intValue()) >= 0.50) {
-        star2.setIcon(UIUtils.STAR_HALF);
-      }
-      break;
-    case 2:
-      star1.setIcon(UIUtils.STAR);
-      star2.setIcon(UIUtils.STAR);
-      if ((rate - rate.intValue()) >= 0.50) {
-        star3.setIcon(UIUtils.STAR_HALF);
-      }
-      break;
-    case 3:
-      star1.setIcon(UIUtils.STAR);
-      star2.setIcon(UIUtils.STAR);
-      star3.setIcon(UIUtils.STAR);
-      if ((rate - rate.intValue()) >= 0.50) {
-        star4.setIcon(UIUtils.STAR_HALF);
-      }
-      break;
-    case 4:
-      star1.setIcon(UIUtils.STAR);
-      star2.setIcon(UIUtils.STAR);
-      star3.setIcon(UIUtils.STAR);
-      star4.setIcon(UIUtils.STAR);
-      if ((rate - rate.intValue()) >= 0.50) {
-        star5.setIcon(UIUtils.STAR_HALF);
-      }
-      break;
-    case 5:
-      star1.setIcon(UIUtils.STAR);
-      star2.setIcon(UIUtils.STAR);
-      star3.setIcon(UIUtils.STAR);
-      star4.setIcon(UIUtils.STAR);
-      star5.setIcon(UIUtils.STAR);
-      break;
-    default:
-      break;
-    }
-  }
 
   @Override
   public WebList getCastingList() {
@@ -228,8 +174,8 @@ public class TvShowPanel extends MediaPanel {
   }
 
   @Override
-  public WebList getFanartsList() {
-    return fanartList;
+  public WebImageGallery getFanartsList() {
+    return null;
   }
 
   @Override
@@ -255,12 +201,6 @@ public class TvShowPanel extends MediaPanel {
     directorLbl = new WebLabel();
     runtimeLbl = new WebLabel();
     genreLbl = new WebLabel();
-    starPanel = new WebPanel();
-    star5 = new JLabel();
-    star4 = new JLabel();
-    star3 = new JLabel();
-    star2 = new JLabel();
-    star1 = new JLabel();
     countryLbl = new WebLabel();
     tvShowTb = new WebToolBar();
     titleLbl = new WebLabel();
@@ -316,48 +256,9 @@ public class TvShowPanel extends MediaPanel {
     genreLbl.setText(LocaleUtils.i18n("genre")); // NOI18N
     genreLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
 
-    starPanel.setAlignmentY(0.0F);
-
-    star5.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); // NOI18N
-
-    star4.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); // NOI18N
-
-    star3.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); // NOI18N
-
-    star2.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); // NOI18N
-
-    star1.setIcon(new ImageIcon(getClass().getResource("/image/ui/star-empty.png"))); // NOI18N
-
-    GroupLayout starPanelLayout = new GroupLayout(starPanel);
-    starPanel.setLayout(starPanelLayout);
-    starPanelLayout.setHorizontalGroup(
-      starPanelLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(starPanelLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(star1)
-        .addGap(8, 8, 8)
-        .addComponent(star2)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(star3)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(star4)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(star5)
-        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-    starPanelLayout.setVerticalGroup(
-      starPanelLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(star2)
-      .addComponent(star3)
-      .addComponent(star4)
-      .addComponent(star5)
-      .addComponent(star1)
-    );
-
     countryLbl.setText(LocaleUtils.i18n("country")); // NOI18N
     countryLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
 
-    setMargin(new Insets(10, 10, 10, 10));
     setMinimumSize(new Dimension(10, 380));
     setPreferredSize(new Dimension(562, 400));
 
@@ -510,7 +411,7 @@ public class TvShowPanel extends MediaPanel {
             .addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(webToolBar4, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)))
         .addGap(37, 37, 37)
-        .addComponent(synopsScroll, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+        .addComponent(synopsScroll, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(Alignment.TRAILING)
           .addComponent(thumbnailTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -518,7 +419,7 @@ public class TvShowPanel extends MediaPanel {
           .addComponent(subtitlesTb, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+          .addComponent(thumbsScrollPane, GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
           .addComponent(fanartsScrollPane, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
           .addComponent(subtitlesScrollPane, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)))
     );
@@ -542,12 +443,6 @@ public class TvShowPanel extends MediaPanel {
   private WebLabel origTitleLbl;
   private WebTextField runtimeField;
   private WebLabel runtimeLbl;
-  private JLabel star1;
-  private JLabel star2;
-  private JLabel star3;
-  private JLabel star4;
-  private JLabel star5;
-  private WebPanel starPanel;
   private WebList subtitlesList;
   private JScrollPane subtitlesScrollPane;
   private WebToolBar subtitlesTb;

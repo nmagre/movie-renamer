@@ -88,18 +88,18 @@ public class TvShowEpisodeNumMatcher {
    * @return SxE
    */
   private SxE matchAll() {
-    System.out.println("File : " + episodeName);
+    //System.out.println("File : " + episodeName);
     SxE sxe;
     List<SxE> SxEs = new ArrayList<SxE>();
     for (TvShowEpisodeNumMatcher.TvShowNumPattern patternToTest : TvShowEpisodeNumMatcher.TvShowNumPattern.values()) {
       if ((sxe = match(patternToTest)) != null) {
         SxEs.add(sxe);
-        System.out.println("  Matcher " + patternToTest.name() + " Match : " + sxe);
+       // System.out.println("  Matcher " + patternToTest.name() + " Match : " + sxe);
       }
     }
 
     if (SxEs.isEmpty()) {
-      System.out.println("  No Match Found, Try To match Separately");
+      //System.out.println("  No Match Found, Try To match Separately");
       sxe = new SxE();
       Matcher matcher = seasonPattern.matcher(parentFolder == null ? episodeName : parentFolder);
       if (matcher.find()) {
@@ -112,11 +112,11 @@ public class TvShowEpisodeNumMatcher {
         String episode = matcher.group(1) == null ? matcher.group(2) : matcher.group(1);
         sxe.setEpisode(NumberUtils.isDigit(episode) ? Integer.parseInt(episode) : 1);
       }
-      
+
       if(!sxe.isValid()){
         return new SxE(1,1);
       }
-      
+
       if (sxe.isPartial()) {
         if (sxe.getSeason() < 0) {
           sxe.setSeason(1);

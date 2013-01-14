@@ -59,7 +59,6 @@ public class IMDbScrapper extends MovieScrapper {
   private static final String defaultHost = "www.imdb.com";
   private static final String name = "IMDb";
   private static final String CHARSET = URIRequest.ISO;
-
   private String host;
 
   public IMDbScrapper() {
@@ -98,32 +97,8 @@ public class IMDbScrapper extends MovieScrapper {
     return host;
   }
 
-  public enum ImdbSearchPattern {
-    IMDBURL("http://www.imdb.com/title/tt\\d+/"),
-    POPULARPATTERN(".*?Popular Titles.*?Displaying (\\d+)(.*?)</table>"),
-    EXACTPATTERN("Titles \\(Exact Matches.*?Displaying (\\d+)(.*?)</table>"),
-    PARTIALPATTERN("Titles \\(Partial.*?Displaying (\\d+)(.*?)</table>"),
-    APPROXIMATEPATTERN("Titles \\(Approx.*?Displaying (\\d+)(.*?)</table>"),
-    MOVIEIMDBPATTERN("(?:<img src=.(http://ia.media-imdb.com/images.*?\\.jpg).*?)?>\\d+.<\\/td>.*?a href=.\\/title\\/(tt\\d+)\\/.[^>]*>([^<]*).*?\\((\\d+)?.*?\\).?(\\(.*?\\) )?"),
-    IMDBMOVIETITLE("<meta property=.og:title. content=.(.*?) \\(.*?(\\d\\d\\d\\d).*\\)?."),
-    IMDBMOVIEID("tt(\\d+{7})"),
-    IMDBMOVIETHUMB("<meta property=.og:image. content=.(http://.*.jpg).");
-    private final Pattern pattern;
-
-    private ImdbSearchPattern(String pattern) {
-      this.pattern = Pattern.compile(pattern);
-    }
-
-    public Pattern getPattern() {
-      return pattern;
-    }
-
-    public String getPatternString() {
-      return pattern.toString();
-    }
-  }
-
   public enum ImdbInfoPattern {
+
     TITLE("<title>(.* \\(.*\\d+.*\\).*)</title>"),
     THUMB("src=\"(http://ia.media-imdb.com/images/.*)\""),
     ORIGTITLE("info-content.>\\s+\"(.*)\"&nbsp.*?[Oo]riginal"),
@@ -166,6 +141,12 @@ public class IMDbScrapper extends MovieScrapper {
     // Only movie -> ref_=fn_ft
     // Add an option to select between both (default "title" because "movie" does not find video)
     URL searchUrl = new URL("http", getHost(language), "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
+    return searchMedia(searchUrl, language);
+
+  }
+
+  @Override
+  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     // select movie results
@@ -199,6 +180,29 @@ public class IMDbScrapper extends MovieScrapper {
         // ignore
       }
     }
+
+
+    // we might have been redirected to the movie page
+    if (results.isEmpty()) {
+      try {
+        int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
+        MovieInfo info = fetchMediaInfo(new Movie(imdbid, null, null, -1, imdbid), language);
+        URL thumb;
+        try {
+          String imgPath = info.getPosterPath().toURL().toExternalForm();
+          thumb = new URL(createImgPath(imgPath));
+        } catch (Exception ex) {
+          thumb = null;
+        }
+        Movie movie = new Movie(imdbid, info.getTitle(), thumb, info.getYear(), imdbid);
+        if (movie != null) {
+          results.add(movie);
+        }
+      } catch (Exception e) {
+        // ignore, can't find movie
+      }
+    }
+
 
     return results;
   }
@@ -474,5 +478,4 @@ public class IMDbScrapper extends MovieScrapper {
     }
     return null;
   }
-
 }

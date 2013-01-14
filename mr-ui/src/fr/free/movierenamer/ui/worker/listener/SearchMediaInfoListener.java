@@ -32,9 +32,11 @@ import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
 
   private final MediaPanel mediaPanel;
+  private final MovieRenamer mr;
 
   public SearchMediaInfoListener(SearchMediaInfoWorker worker, MovieRenamer mr, MediaPanel mediaPanel) {
     super(mr, worker);
+    this.mr = mr;
     this.mediaPanel = mediaPanel;
   }
 
@@ -43,11 +45,11 @@ public class SearchMediaInfoListener extends AbstractListener<MediaInfo> {
     MediaInfo info = worker.get();
     if (info != null) {
       mediaPanel.setMediaInfo(info);
-      // FIXME Mr need to know about this worker
       SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(info, mediaPanel.getCastingList());
       SearchMediaCastingListener castingListener = new SearchMediaCastingListener(castingWorker, mr, mediaPanel);
       castingWorker.addPropertyChangeListener(castingListener);
       castingWorker.execute();
+      mr.addWorker(castingWorker);
       mr.updateRenamedTitle();
     }
   }

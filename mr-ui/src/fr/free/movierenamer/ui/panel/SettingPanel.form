@@ -5,6 +5,9 @@
     <Component class="javax.swing.ButtonGroup" name="settingsGroup">
     </Component>
   </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+  </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
   </SyntheticProperties>
@@ -39,7 +42,7 @@
           <Group type="102" attributes="0">
               <Component id="webPanel1" min="-2" pref="32" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="webTabbedPane1" pref="402" max="32767" attributes="0"/>
+              <Component id="webTabbedPane1" pref="409" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="saveBtn" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -126,8 +129,8 @@
     </Container>
     <Component class="com.alee.laf.button.WebButton" name="saveBtn">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/image/ui/dialog-ok-2.png"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="ImageUtils.OK_24" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="save" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
@@ -139,8 +142,8 @@
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="cancelBtn">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/image/ui/dialog-cancel-2.png"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="ImageUtils.CANCEL_24" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
           <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="cancel" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>

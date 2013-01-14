@@ -20,7 +20,7 @@ package fr.free.movierenamer.ui.worker;
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.ui.res.UIPersonImage;
+import fr.free.movierenamer.ui.list.UIPersonImage;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.util.ArrayList;
 import java.util.List;

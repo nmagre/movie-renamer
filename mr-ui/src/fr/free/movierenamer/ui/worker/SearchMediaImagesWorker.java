@@ -21,9 +21,8 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.searchinfo.SearchResult;
-import fr.free.movierenamer.ui.res.UIMediaImage;
-import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.list.UIMediaImage;
+import fr.free.movierenamer.ui.list.UISearchResult;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +41,12 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
    * Constructor arguments
    *
    * @param searchResult
-   * @param scrapper
    */
   @SuppressWarnings("unchecked")
-  public SearchMediaImagesWorker(UISearchResult searchResult, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
+  public SearchMediaImagesWorker(UISearchResult searchResult) {
     super();
     this.searchResult = searchResult;
-    this.scrapper = (MediaScrapper<Media, MediaInfo>) scrapper;
+    this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
   }
 
   @Override
@@ -56,8 +54,9 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
     List<ImageInfo> infos;
     List<UIMediaImage> mediaImages = new ArrayList<UIMediaImage>();
 
-    if (searchResult != null && scrapper != null) {
-      Media media = searchResult.getSearchResult();
+    Media media = searchResult.getSearchResult();
+    if (searchResult != null && scrapper != null && media != null) {
+
       infos = scrapper.getImages(media);
       int count = infos.size();
       for (int i = 0; i < count; i++) {

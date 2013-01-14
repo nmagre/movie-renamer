@@ -1,5 +1,5 @@
 /*
- * Movie Renamer
+ * movie-renamer-core
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ import java.util.Locale;
 
 /**
  * Class MediaAudio
- * 
+ *
  * @author Nicolas Magré
  */
 public class MediaAudio {
@@ -29,12 +29,18 @@ public class MediaAudio {
   private final int stream;
   private String title;
   private String codec;
-  private String channel;
+  private int channel;
+  private String bitRateMode;
   private Locale language;
-  
+  private int bitRate;
+
   public MediaAudio(int stream) {
     this.stream = stream;
-    codec = channel = title = "?";
+    codec = "?";
+    channel = -1;
+    bitRate = -1;
+    title = "?";
+    bitRateMode = "?";
     language = Locale.ROOT;
   }
 
@@ -42,11 +48,11 @@ public class MediaAudio {
     return stream;
   }
 
-  public String getChannel() {
+  public int getChannel() {
     return channel;
   }
 
-  public void setChannel(String channel) {
+  public void setChannel(int channel) {
     this.channel = channel;
   }
 
@@ -73,7 +79,23 @@ public class MediaAudio {
   public void setTitle(String title) {
     this.title = title;
   }
-  
+
+  public String getBitRateMode() {
+    return bitRateMode;
+  }
+
+  public void setBitRateMode(String bitRateMode) {
+    this.bitRateMode = bitRateMode;
+  }
+
+  public int getBitRate() {
+    return bitRate;
+  }
+
+  public void setBitRate(int bitRate) {
+    this.bitRate = bitRate;
+  }
+
   @Override
   public String toString(){
     return title;

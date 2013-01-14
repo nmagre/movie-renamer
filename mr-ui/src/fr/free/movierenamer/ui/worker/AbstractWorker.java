@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.worker;
 
 import com.alee.laf.optionpane.WebOptionPane;
+import fr.free.movierenamer.exception.InvalidUrlException;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -40,6 +41,10 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> {
     T result = null;
     try {
       result = executeInBackground();
+    }
+    catch(InvalidUrlException e) {
+      UISettings.LOGGER.log(Level.SEVERE,ClassUtils.getStackTrace("InvalidUrlException", e.getStackTrace()));
+      publish(String.format("InvalidUrlException %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     }
     catch(Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE,ClassUtils.getStackTrace("Exception", ex.getStackTrace()));

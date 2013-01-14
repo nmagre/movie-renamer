@@ -22,7 +22,7 @@ import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.panel.MediaPanel;
-import fr.free.movierenamer.ui.res.UIMediaImage;
+import fr.free.movierenamer.ui.list.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.ImageWorker;
@@ -55,7 +55,7 @@ public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImag
   private enum UIImageCategoryProperty {
 
     thumb(mediapanel.getThumbnailsList(), mediapanel.getThumbnailsModel(), ImageCategoryProperty.thumb),
-    fanart(mediapanel.getFanartsList(), mediapanel.getFanartsModel(), ImageCategoryProperty.fanart),
+    //fanart(mediapanel.getFanartsList()., mediapanel.getFanartsModel(), ImageCategoryProperty.fanart),
     banner(mediapanel.getBannersList(), mediapanel.getBannersModel(), ImageCategoryProperty.banner),
     cdart(mediapanel.getCdartsList(), mediapanel.getCdartsModel(), ImageCategoryProperty.cdart),
     logo(mediapanel.getLogosList(), mediapanel.getLogosModel(), ImageCategoryProperty.logo),
@@ -109,6 +109,10 @@ public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImag
   protected void done() throws Exception {
 
     List<UIMediaImage> images = worker.get();
+    if(images == null) {
+      return;
+    }
+
     for (UIMediaImage image : images) {
       addMediaImage(image);
     }
@@ -116,7 +120,7 @@ public class SearchMediaImagesListener extends AbstractListener<List<UIMediaImag
     for (UIImageCategoryProperty key : UIImageCategoryProperty.values()) {
       ImageWorker<UIMediaImage> imageWorker = new ImageWorker<UIMediaImage>(key.getUrls(), key.getModel(), key.getDimension(), null);
       imageWorker.execute();
-      mr.addImageWorker(imageWorker);
+      mr.addWorker(imageWorker);
     }
   }
 

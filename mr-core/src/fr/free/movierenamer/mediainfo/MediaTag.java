@@ -1,5 +1,5 @@
 /*
- * Movie Renamer
+ * movie-renamer-core
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@ package fr.free.movierenamer.mediainfo;
 import fr.free.movierenamer.mediainfo.MediaInfo.StreamKind;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils;
-import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -30,215 +29,86 @@ import java.util.Scanner;
 
 /**
  * Class MediaTag
- * 
+ *
  * @author Nicolas Magré
  */
 public class MediaTag {
 
   private MediaInfo mediaInfo;
   private final File mediaFile;
-  private final boolean libMediaInfo = Settings.libMediaInfo();
+  public final boolean libMediaInfo = Settings.libMediaInfo();
 
   public enum TagType {
 
+    Video,
     Audio,
     Text;
   }
 
-  public enum TagList {
+  public enum Tags {
 
-    AudioChannel(TagType.Audio),
-    AudioCodec(TagType.Audio),
-    AudioLanguage(TagType.Audio),
-    AudioTitleString(TagType.Audio),
-    TextTitle(TagType.Text),
-    TextLanguage(TagType.Text);
-    private TagType type;
+    ContainerFormat(StreamKind.General, true, "Codec/Extensions", "Format"),
+    //    FileSize(StreamKind.General, Long.class, "FileSize/String4", "FileSize/String"),
+    Duration(StreamKind.General, Long.class, "Duration"),
+    VideoCodec(StreamKind.Video, true, "Encoded_Library/Name", "CodecID/Hint", "Format"),
+    VideoFrameRate(StreamKind.Video, Double.class, "FrameRate"),
+    VideoScanType(StreamKind.Video, "ScanType"),
+    VideoFrameCount(StreamKind.Video, Long.class, "FrameCount"),
+    VideoHeight(StreamKind.Video, Integer.class, "Height"),
+    VideoWidth(StreamKind.Video, Integer.class, "Width"),
+    VideoAspectRatio(StreamKind.Video, Float.class, "DisplayAspectRatio"),
+    AudioStreamCount(StreamKind.Audio, Integer.class, "StreamCount"),
+    AudioCodec(StreamKind.Audio, "CodecID/Hint", "Format"),
+    AudioLanguage(StreamKind.Audio, "Language/String"),
+    AudioChannels(StreamKind.Audio, Integer.class, "Channel(s)"),
+    AudioBitRateMode(StreamKind.Audio, "BitRate_Mode"),
+    AudioBitRate(StreamKind.Audio, Integer.class, "BitRate"),
+    AudioTitle(StreamKind.Audio, "Title"),
+    TextStreamCount(StreamKind.Text, "StreamCount"),
+    TextTitle(StreamKind.Text, "Title"),
+    TextLanguage(StreamKind.Text, "Language/String");
+    private StreamKind kind;
+    private String[] keys;
+    private boolean getFirst = false;
+    private Class<?> clazz = String.class;
 
-    TagList(TagType type) {
-      this.type = type;
+    Tags(StreamKind kind, String... keys) {
+      this.kind = kind;
+      this.keys = keys;
     }
 
-    public TagType getTagType() {
-      return type;
+    Tags(StreamKind kind, Class<?> clazz, String... keys) {
+      this.kind = kind;
+      this.clazz = clazz;
+      this.keys = keys;
+    }
+
+    Tags(StreamKind kind, boolean getFirst, String... keys) {
+      this.kind = kind;
+      this.keys = keys;
+      this.getFirst = getFirst;
+    }
+
+    public StreamKind getStreamKind() {
+      return kind;
+    }
+
+    public Class<?> getVClass() {
+      return clazz;
+    }
+
+    public String[] getKeys() {
+      return keys;
+    }
+
+    public boolean isGetFirst() {
+      return getFirst;
     }
   }
 
   public MediaTag(File mediaFile) {
     this.mediaFile = mediaFile;
     mediaInfo = null;
-  }
-
-  public String getContainerFormat() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String extensions = getMediaInfo(StreamKind.General, 0, "Codec/Extensions", "Format");
-    if (extensions == null || extensions.length() == 0) {
-      return StringUtils.EMPTY;
-    }
-    return new Scanner(extensions).next().toLowerCase();
-  }
-
-  public String getFileSize() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String fileSize = getMediaInfo(StreamKind.General, 0, "FileSize/String4", "FileSize/String");
-    return fileSize == null ? StringUtils.EMPTY : fileSize;
-  }
-
-  public String getDuration() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String duration = getMediaInfo(StreamKind.General, 0, "Duration/String");
-    return duration == null ? StringUtils.EMPTY : duration;
-  }
-
-  public String getVideoCodec() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String codec = getMediaInfo(StreamKind.Video, 0, "Encoded_Library/Name", "CodecID/Hint", "Format");
-    if (codec == null || codec.length() == 0) {
-      return StringUtils.EMPTY;
-    }
-    return new Scanner(codec).next();
-  }
-
-  public String getVideoFrameRate() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String frameRate = getMediaInfo(StreamKind.Video, 0, "FrameRate", "FrameRate/String");
-    return frameRate == null ? StringUtils.EMPTY : frameRate;
-  }
-
-  public String getVideoFormat() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String height = getMediaInfo(StreamKind.Video, 0, "Height");
-    String scanType = getMediaInfo(StreamKind.Video, 0, "ScanType");
-
-    if (height == null || scanType == null) {
-      return StringUtils.EMPTY;
-    }
-    return height + Character.toLowerCase(scanType.charAt(0));
-  }
-
-  public String getVideoResolution() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String width = getMediaInfo(StreamKind.Video, 0, "Width");
-    String height = getMediaInfo(StreamKind.Video, 0, "Height");
-
-    if (width == null || height == null) {
-      return StringUtils.EMPTY;
-    }
-    return width + 'x' + height;
-  }
-
-  public String getVideoDefinitionCategory() {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String width = getMediaInfo(StreamKind.Video, 0, "Width");
-    if (width == null || !NumberUtils.isDigit(width)) {
-      return StringUtils.EMPTY;
-    }
-    return Integer.parseInt(width) < 900 ? "SD" : "HD";
-  }
-
-  private int getAudioStreamCount() {
-    if (!libMediaInfo) {
-      return -1;
-    }
-    String count = getMediaInfo(StreamKind.Audio, 0, "StreamCount");
-    if (!NumberUtils.isDigit(count)) {
-      return 0;
-    }
-
-    return Integer.parseInt(count);
-  }
-
-  public String getAudioCodec(int stream) {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-
-    String codec = getMediaInfo(StreamKind.Audio, stream, "CodecID/Hint", "Format");
-    return codec == null ? StringUtils.EMPTY : codec.replaceAll("\\p{Punct}", StringUtils.EMPTY);
-  }
-
-  public String getAudioLanguage(int stream) {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String language = getMediaInfo(StreamKind.Audio, stream, "Language/String");
-    if (language == null) {
-      return StringUtils.EMPTY;
-    }
-
-    return language.toLowerCase();
-  }
-
-  public String getAudioChannels(int stream) {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String channels = getMediaInfo(StreamKind.Audio, stream, "Channel(s)");
-    if (channels == null) {
-      return StringUtils.EMPTY;
-    }
-    return channels + "ch";
-  }
-
-  public String getAudioTitle(int stream) {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String title = getMediaInfo(StreamKind.Audio, stream, "Title");
-    if (title == null) {
-      return StringUtils.EMPTY;
-    }
-    return title;
-  }
-
-  private int getTextStreamCount() {
-    if (!libMediaInfo) {
-      return -1;
-    }
-    String count = getMediaInfo(StreamKind.Text, 0, "StreamCount");
-    if (!NumberUtils.isDigit(count)) {
-      return 0;
-    }
-
-    return Integer.parseInt(count);
-  }
-
-  public String getTextTitle(int stream) {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String title = getMediaInfo(StreamKind.Text, stream, "Title");
-    if (title == null) {
-      return "Untitled";
-    }
-    return title;
-  }
-
-  public String getTextLanguage(int stream) {
-    if (!libMediaInfo) {
-      return StringUtils.EMPTY;
-    }
-    String lang = getMediaInfo(StreamKind.Text, stream, "Language/String");
-    if (lang == null) {
-      return StringUtils.EMPTY;
-    }
-    return lang;
   }
 
   private synchronized MediaInfo getMediaInfo() {
@@ -254,107 +124,162 @@ public class MediaTag {
     return mediaInfo;
   }
 
-  private String getMediaInfo(StreamKind streamKind, int streamNumber, String... keys) {
-    for (String key : keys) {
-      String value = getMediaInfo().get(streamKind, streamNumber, key);
+  private Object getMediaInfo(Tags tag) {
+    return getMediaInfo(tag, 0);
+  }
+
+  private Object getMediaInfo(Tags tag, int streamNumber) {
+    for (String key : tag.getKeys()) {
+      String value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
 
       if (value.length() > 0) {
-        return value;
+        if (tag.getVClass().equals(Integer.class)) {
+          return Integer.parseInt(value);
+        } else if (tag.getVClass().equals(Float.class)) {
+          return Float.parseFloat(value);
+        } else if (tag.getVClass().equals(Double.class)) {
+          return Double.parseDouble(value);
+        } else if (tag.getVClass().equals(Long.class)) {
+          return Long.parseLong(value);
+        }
+
+        if (tag.isGetFirst()) {
+          return new Scanner(value).next().toLowerCase();
+        }
+
+        return value.replaceAll("\\p{Punct}", StringUtils.EMPTY);
       }
     }
 
-    return null;
+    return StringUtils.EMPTY;
+  }
+
+  public String getContainerFormat() {
+    if (!libMediaInfo) {
+      return StringUtils.EMPTY;
+    }
+    return getMediaInfo(Tags.ContainerFormat).toString();
+  }
+
+  public Long getDuration() {
+    long rvalue = 0L;
+    if (!libMediaInfo) {
+      return rvalue;
+    }
+
+    Object value = getMediaInfo(Tags.Duration);
+    if (value instanceof Long) {
+      rvalue = (Long) value;
+    }
+    return rvalue;
+  }
+
+  public MediaVideo getMediaVideo() {
+    MediaVideo mediaVideo = new MediaVideo();
+    if (!libMediaInfo) {
+      return mediaVideo;
+    }
+    Object value = getMediaInfo(Tags.VideoAspectRatio);
+    if (value instanceof Float) {
+      mediaVideo.setAspectRatio((Float) value);
+    }
+    value = getMediaInfo(Tags.VideoFrameCount);
+    if (value instanceof Long) {
+      mediaVideo.setFrameCount((Long) value);
+    }
+    value = getMediaInfo(Tags.VideoFrameRate);
+    if (value instanceof Double) {
+      mediaVideo.setFrameRate((Double) value);
+    }
+    value = getMediaInfo(Tags.VideoHeight);
+    if (value instanceof Integer) {
+      mediaVideo.setHeight((Integer) value);
+    }
+    value = getMediaInfo(Tags.VideoWidth);
+    if (value instanceof Integer) {
+      mediaVideo.setWidth((Integer) value);
+    }
+    mediaVideo.setScanType(getMediaInfo(Tags.VideoScanType).toString());
+    mediaVideo.setCodec(getMediaInfo(Tags.VideoCodec).toString());
+
+    return mediaVideo;
   }
 
   public List<MediaAudio> getMediaAudios() {
-    List<MediaAudio> audios = new ArrayList<MediaAudio>();
+    List<MediaAudio> mediaAudio = new ArrayList<MediaAudio>();
     if (!libMediaInfo) {
-      return audios;
+      return mediaAudio;
     }
 
-    for (int i = 0; i < getAudioStreamCount(); i++) {
-      String title = getAudioTitle(i).trim();
-      String toFind = getAudioLanguage(i).trim();
-      Locale lang = LocaleUtils.getLanguageMap().get(toFind);
-      if (title.equals(StringUtils.EMPTY) || lang == null || lang.equals(Locale.ROOT)) {
-        continue;
+    int count = (Integer) getMediaInfo(Tags.AudioStreamCount);
+    Object intObj;
+    for (int i = 0; i < count; i++) {
+      MediaAudio maudio = new MediaAudio(i);
+      maudio.setCodec(getMediaInfo(Tags.AudioCodec, i).toString());
+      Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.AudioLanguage, i).toString());
+      maudio.setLanguage(lang);
+      intObj = getMediaInfo(Tags.AudioChannels, i);
+      if (intObj instanceof Integer) {
+        maudio.setChannel((Integer) intObj);
       }
-      MediaAudio audio = new MediaAudio(i + 1);
-      audio.setTitle(title);
-      audio.setCodec(getAudioCodec(i));
-      audio.setLanguage(lang);
-      audio.setChannel(getAudioChannels(i));
-      audios.add(audio);
+      maudio.setBitRateMode(getMediaInfo(Tags.AudioBitRateMode, i).toString());
+      intObj = getMediaInfo(Tags.AudioBitRate, i);
+      if (intObj instanceof Integer) {
+        maudio.setBitRate((Integer) intObj);
+      }
+      maudio.setTitle(getMediaInfo(Tags.AudioTitle, i).toString());
+
+      mediaAudio.add(maudio);
+
     }
 
-    return audios;
+    return mediaAudio;
   }
-  
+
   public List<MediaSubTitle> getMediaSubTitles() {
     List<MediaSubTitle> subTitles = new ArrayList<MediaSubTitle>();
     if (!libMediaInfo) {
       return subTitles;
     }
 
-    for (int i = 0; i < getTextStreamCount(); i++) {
-      String title = getTextTitle(i).trim();
-      String toFind = getAudioLanguage(i).trim();
-      Locale lang = LocaleUtils.getLanguageMap().get(toFind);
-      if (title.equals(StringUtils.EMPTY) || lang == null || lang.equals(Locale.ROOT)) {
-        continue;
-      }
-      MediaSubTitle subTitle = new MediaSubTitle(i + 1);
-      subTitle.setTitle(title);
+    int count = (Integer) getMediaInfo(Tags.TextStreamCount);
+    for (int i = 0; i < count; i++) {
+      MediaSubTitle subTitle = new MediaSubTitle(i);
+      Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.TextLanguage, i).toString());
       subTitle.setLanguage(lang);
+      subTitle.setTitle(getMediaInfo(Tags.TextTitle, i).toString());
       subTitles.add(subTitle);
     }
 
     return subTitles;
   }
 
-  public String getTagString(TagList tag, String separator, int limit) {
+  public String getTagString(Tags tag, String separator, int limit) {
     if (!libMediaInfo) {
       return StringUtils.EMPTY;
     }
 
     int count = 0;
-    switch (tag.getTagType()) {
+    switch (tag.getStreamKind()) {
       case Audio:
-        count = getAudioStreamCount();
+        count = (Integer) getMediaInfo(Tags.AudioStreamCount);
+        if(tag.equals(Tags.AudioStreamCount)) {
+          return "" + count;
+        }
         break;
       case Text:
-        count = getTextStreamCount();
+        count = (Integer) getMediaInfo(Tags.TextStreamCount);
+        if(tag.equals(Tags.TextStreamCount)) {
+          return "" + count;
+        }
         break;
       default:
-        break;
+        return getMediaInfo(tag).toString();
     }
 
     StringBuilder res = new StringBuilder();
     for (int i = 0; i < count; i++) {
-      String info = StringUtils.EMPTY;
-      switch (tag) {
-        case AudioChannel:
-          info = getAudioChannels(i);
-          break;
-        case AudioCodec:
-          info = getAudioCodec(i);
-          break;
-        case AudioLanguage:
-          info = getAudioLanguage(i);
-          break;
-        case AudioTitleString:
-          info = getAudioTitle(i);
-          break;
-        case TextTitle:
-          info = getTextTitle(i);
-          break;
-        case TextLanguage:
-          info = getTextLanguage(i);
-          break;
-        default:
-          break;
-      }
-
+      String info = getMediaInfo(tag, i).toString();
       if (!info.equals(StringUtils.EMPTY)) {
         res.append(info);
         if (i + 1 < count && limit <= 0 || i < limit - 1) {
@@ -370,23 +295,44 @@ public class MediaTag {
 
   @Override
   public String toString() {
-    String res = "Media Info : \n";
-    res += "  Duration : " + getDuration() + " \n";
-    res += "  File size : " + getFileSize() + " \n";
-    res += "  Video codec : " + getVideoCodec() + " \n";
-    res += "  Video definition category : " + getVideoDefinitionCategory() + " \n";
-    res += "  Video format : " + getVideoFormat() + " \n";
-    res += "  Video framerate : " + getVideoFrameRate() + " \n";
-    res += "  Video resolution : " + getVideoResolution() + " \n";
-    res += "  Container format : " + getContainerFormat() + " \n";
+    MediaVideo video = getMediaVideo();
     List<MediaAudio> audios = getMediaAudios();
-    for(MediaAudio audio : audios){
-      res += audio.toString() + " \n";
-    }
     List<MediaSubTitle> subTitles = getMediaSubTitles();
-    for(MediaSubTitle subTitle : subTitles){
-      res += subTitle.toString() + " \n";
+
+    String res = "Media Info : \n";
+    res += "  Container format : " + getContainerFormat() + " \n";
+    res += "  Duration : " + getDuration() + " \n";
+    res += "  Video codec : " + video.getCodec() + " \n";
+    res += "  Video scan type : " + video.getScanType() + " \n";
+    res += "  Video aspect ratio : " + video.getAspectRatio() + " \n";
+    res += "  Video frame count : " + video.getFrameCount() + " \n";
+    res += "  Video frame count : " + video.getFrameCount() + " \n";
+    res += "  Video width : " + video.getWidth() + " \n";
+    res += "  Video height : " + video.getHeight() + " \n";
+    res += "  Video resolution : " + video.getVideoResolution() + " \n";
+    res += "  Video definition : " + video.getVideoDefinition() + " \n";
+
+    StringBuilder str = new StringBuilder();
+    for (MediaAudio audio : audios) {
+      str.append("  Audio stream " + audio.getStream()).append("\n");
+      str.append("    Audio title : " + audio.getTitle()).append("\n");
+      str.append("    Audio codec : " + audio.getCodec()).append("\n");
+      str.append("    Audio bitrate : " + audio.getBitRate()).append("\n");
+      str.append("    Audio bitrate mode : " + audio.getBitRateMode()).append("\n");
+      str.append("    Audio channel : " + audio.getChannel()).append("\n");
+      str.append("    Audio language : " + audio.getLanguage()).append("\n");
     }
+
+    res += str.toString();
+
+    str.delete(0, str.length());
+    for (MediaSubTitle subTitle : subTitles) {
+      str.append("  SubTitle stream " + subTitle.getStream()).append("\n");
+      str.append("    SubTitle title : " + subTitle.getTitle()).append("\n");
+      str.append("    SubTitle language : " + subTitle.getLanguage()).append("\n");
+    }
+
+    res += str.toString();
     return res;
   }
 }

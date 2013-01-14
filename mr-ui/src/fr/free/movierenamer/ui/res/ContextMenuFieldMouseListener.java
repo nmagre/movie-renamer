@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   public ContextMenuFieldMouseListener() {
 
-    cut = new AbstractAction(LocaleUtils.i18n("cut")) {
+    cut = new AbstractAction(LocaleUtils.i18nExt("cut")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -61,7 +61,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    copy = new AbstractAction(LocaleUtils.i18n("copy")) {
+    copy = new AbstractAction(LocaleUtils.i18nExt("copy")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -71,7 +71,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    paste = new AbstractAction(LocaleUtils.i18n("paste")) {
+    paste = new AbstractAction(LocaleUtils.i18nExt("paste")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -81,7 +81,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    selectAll = new AbstractAction(LocaleUtils.i18n("selectAll")) {
+    selectAll = new AbstractAction(LocaleUtils.i18nExt("selectAll")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -127,5 +127,5 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       popup.show(e.getComponent(), x, y);
     }
   }
-  
+
 }

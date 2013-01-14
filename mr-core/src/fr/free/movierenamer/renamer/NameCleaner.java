@@ -38,7 +38,7 @@ import fr.free.movierenamer.utils.StringUtils;
 
 /**
  * Class NameCleaner
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class NameCleaner {
@@ -55,7 +55,7 @@ public class NameCleaner {
     return StringUtils.removePunctuation(item);
   }
 
-  public String extractName(String item, boolean strict) {
+  public String extractName(String item, boolean strict) {//
     Pattern[] stoplist;
     Pattern[] cleanlist;
 
@@ -198,7 +198,7 @@ public class NameCleaner {
     return item;
   }
 
-  private static String getCleanerProperty(String key) {
+  public static String getCleanerProperty(String key) {
     return ResourceBundle.getBundle(NameCleaner.class.getName(), Locale.ROOT).getString(key);
   }
 }

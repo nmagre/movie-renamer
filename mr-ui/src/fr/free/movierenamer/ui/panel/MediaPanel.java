@@ -17,13 +17,17 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * class MediaPanel
@@ -32,27 +36,21 @@ import java.awt.FlowLayout;
  */
 public abstract class MediaPanel extends WebPanel {
 
+  private final int nbStar = 5;
   private final WebPanel starPanel;
-  private final WebLabel star;
-  private final WebLabel star1;
-  private final WebLabel star2;
-  private final WebLabel star3;
-  private final WebLabel star4;
+  private final List<WebLabel> stars;
 
   protected MediaPanel() {
     starPanel = new WebPanel();
+    starPanel.setMargin(0);
     starPanel.setLayout(new FlowLayout());
-    star = new WebLabel();
-    star1 = new WebLabel();
-    star2 = new WebLabel();
-    star3 = new WebLabel();
-    star4 = new WebLabel();
-    starPanel.add(star);
-    starPanel.add(star1);
-    starPanel.add(star2);
-    starPanel.add(star3);
-    starPanel.add(star4);
-    resetStar();
+    stars = new ArrayList<WebLabel>();
+    for (int i = 0; i < nbStar; i++) {
+      stars.add(new WebLabel());
+      starPanel.add(stars.get(i));
+    }
+
+    clearStars();
   }
 
   /**
@@ -68,7 +66,7 @@ public abstract class MediaPanel extends WebPanel {
 
   public abstract WebList getThumbnailsList();
 
-  public abstract WebList getFanartsList();
+  public abstract WebImageGallery getFanartsList();
 
   public abstract WebList getBannersList();
 
@@ -100,12 +98,10 @@ public abstract class MediaPanel extends WebPanel {
     return starPanel;
   }
 
-  protected void resetStar() {
-    star.setIcon(UIUtils.STAR_EMPTY);
-    star1.setIcon(UIUtils.STAR_EMPTY);
-    star2.setIcon(UIUtils.STAR_EMPTY);
-    star3.setIcon(UIUtils.STAR_EMPTY);
-    star4.setIcon(UIUtils.STAR_EMPTY);
+  protected void clearStars() {
+    for (int i = 0; i < nbStar; i++) {
+      stars.get(i).setIcon(ImageUtils.STAREMPTY_24);
+    }
   }
 
   /**
@@ -113,54 +109,22 @@ public abstract class MediaPanel extends WebPanel {
    *
    * @param rate
    */
-  protected void setRate(Float rate) {
-    if (rate < 0.00) {
+  protected void setRate(Double rate) {
+    if (rate == null || rate < 0.00) {
       return;
     }
-    rate /= 2;
+
+    if (rate > 5) {
+      rate /= (10 / nbStar);
+    }
+
     int n = rate.intValue();
-    switch (n) {
-      case 0:
-        break;
-      case 1:
-        star.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star1.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 2:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star2.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 3:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        star2.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star3.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 4:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        star2.setIcon(UIUtils.STAR);
-        star3.setIcon(UIUtils.STAR);
-        if ((rate - rate.intValue()) >= 0.50) {
-          star4.setIcon(UIUtils.STAR_HALF);
-        }
-        break;
-      case 5:
-        star.setIcon(UIUtils.STAR);
-        star1.setIcon(UIUtils.STAR);
-        star2.setIcon(UIUtils.STAR);
-        star3.setIcon(UIUtils.STAR);
-        star4.setIcon(UIUtils.STAR);
-        break;
-      default:
-        break;
+    for (int i = 0; i < n; i++) {
+      stars.get(i).setIcon(ImageUtils.STAR_24);
+    }
+
+    if ((rate - rate.intValue()) >= 0.50 && (n + 1) < nbStar) {
+      stars.get(n + 1).setIcon(ImageUtils.STARHALF_24);
     }
   }
 }

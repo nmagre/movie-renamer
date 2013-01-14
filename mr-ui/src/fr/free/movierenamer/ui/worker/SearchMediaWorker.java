@@ -21,8 +21,8 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
-import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.list.UIFile;
+import fr.free.movierenamer.ui.list.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Dimension;
@@ -74,8 +74,6 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
         results.add(new UISearchResult(res.get(i), scrapper, icon));
       }
     }
-
-    
 
     return results;
   }

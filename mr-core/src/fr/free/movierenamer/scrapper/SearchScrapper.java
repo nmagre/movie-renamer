@@ -25,7 +25,7 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class SearchScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -40,7 +40,7 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
   }
 
   protected abstract List<SR> search(String query, Locale language) throws Exception;
-  
+
   @Override
   protected final String getCacheName() {
     return "short";

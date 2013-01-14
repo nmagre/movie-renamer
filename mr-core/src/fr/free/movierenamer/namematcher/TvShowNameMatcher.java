@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class TvShowNameMatcher
- * 
+ *
  * @author Nicolas Magré
  */
 public class TvShowNameMatcher extends MediaNameMatcher {
@@ -54,7 +54,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
       return pattern;
     }
   }
-  private final boolean DEBUG = true;
+  private final boolean DEBUG = false;
 
   public TvShowNameMatcher(File file, List<String> regexs) {
     super(file, regexs);
@@ -125,7 +125,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
       }
     }
     res = CommonWords.getFilteredName(res, regexs);
-    
+
     folderNameMatcher.setMatch(CommonWords.normalize(res));
     return folderNameMatcher;
   }
@@ -141,17 +141,17 @@ public class TvShowNameMatcher extends MediaNameMatcher {
     String name = file.getName();
     Pattern pattern = Pattern.compile(TVSHOWNAMEBYEPISODE);
     Matcher matcher = pattern.matcher(name);
-    
+
     if (matcher.find()) {//Match episode in fileName
       name = name.substring(0, name.indexOf(matcher.group(0)));
     } else {
       name = "";
     }
-    
+
     if(!name.equals("")){
       name = CommonWords.getFilteredName(name, regexs);
     }
-    
+
     episodeMatcher.setMatch(CommonWords.normalize(name));
     return episodeMatcher;
   }

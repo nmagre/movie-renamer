@@ -22,17 +22,17 @@ import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.list.IIconList;
+import fr.free.movierenamer.ui.list.IconListRenderer;
+import fr.free.movierenamer.ui.list.UIFile;
+import fr.free.movierenamer.ui.list.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.SearchMediaWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JOptionPane;
 
 /**
@@ -64,6 +64,9 @@ public class SearchMediaListener extends AbstractListener<List<UISearchResult>> 
     searchResultModel.removeAllElements();
     try {
       List<UISearchResult> results = worker.get();
+      if(results == null) {
+        return;
+      }
 
       // Sort search results
       Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
@@ -86,7 +89,7 @@ public class SearchMediaListener extends AbstractListener<List<UISearchResult>> 
           break;
       }
 
-      searchResultList.setCellRenderer(UISettings.getInstance().isShowThumb() ? UIUtils.iconListRenderer : new DefaultListCellRenderer());
+      searchResultList.setCellRenderer(new IconListRenderer<IIconList>(false)/*UISettings.getInstance().isShowThumb() ? mr.iconListRenderer : new DefaultListCellRenderer()*/);// FIXME
       searchResultModel.addElements(results);
 
       if (searchResultModel.isEmpty()) {

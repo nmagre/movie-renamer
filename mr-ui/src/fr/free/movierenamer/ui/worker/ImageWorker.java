@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 duffy
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 package fr.free.movierenamer.ui.worker;
 
 import com.alee.laf.list.DefaultListModel;
-import fr.free.movierenamer.ui.res.IIconList;
+import fr.free.movierenamer.ui.list.IIconList;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Dimension;
 import java.net.URI;

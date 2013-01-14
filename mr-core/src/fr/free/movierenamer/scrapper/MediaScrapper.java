@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper;
 
+import fr.free.movierenamer.exception.InvalidUrlException;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +30,9 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Class MediaScrapper
@@ -54,7 +58,16 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     }
 
     // perform actual search
-    results = searchMedia(query, language);
+    try {
+      URL url = new URL(query);
+      if(!url.getHost().equals(getHost())) {
+        System.out.println(url.getHost()+ " != " + getHost());
+        throw new InvalidUrlException(query);
+      }
+      results = searchMedia(url, language);
+    }catch(MalformedURLException ex) {
+      results = searchMedia(query, language);
+    }
     Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
@@ -62,6 +75,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   }
 
   protected abstract List<M> searchMedia(String query, Locale language) throws Exception;
+  protected abstract List<M> searchMedia(URL searchUrl, Locale language) throws Exception;
 
   public final MI getInfo(M search) throws Exception {
     return getInfo(search, getLanguage());

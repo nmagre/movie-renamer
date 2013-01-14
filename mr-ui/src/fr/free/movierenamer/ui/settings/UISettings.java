@@ -79,9 +79,9 @@ public final class UISettings {
   private static final String settingNodeName;
 
   public static enum SettingPropertyChange {
+
     SEARCHMOVIESCRAPPER,
-    SEARCHMTVSHOWSCRAPPER,
-  }
+    SEARCHMTVSHOWSCRAPPER,}
 
   public enum UISupportedLanguage {
 
@@ -113,7 +113,8 @@ public final class UISettings {
 
     JPG,
     PNG,
-    TBN,}
+    TBN;
+  }
 
   public static enum FanartName {
 
@@ -157,8 +158,10 @@ public final class UISettings {
     imageFanartWidth(1080),
     useExtensionFilter(Boolean.TRUE),
     fileChooserPath(userFolder),
-    extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
-    showAdvancedSettings(Boolean.FALSE);
+    //extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
+    showAdvancedSettings(Boolean.FALSE),
+    groupMediaList(Boolean.TRUE),
+    showIconMediaList(Boolean.TRUE);
     private Class<?> vclass;
     private Object defaultValue;
 
@@ -444,12 +447,16 @@ public final class UISettings {
     return get(UISettings.UISettingsProperty.fileChooserPath);
   }
 
-  public List<String> getExtensionsList() {
-    return Arrays.asList(get(UISettings.UISettingsProperty.extensionsList).replaceAll("\\[|\\]", "").split(", "));
-  }
-
   public boolean isShowAdvancedSettings() {
     return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showAdvancedSettings));
+  }
+
+  public boolean isGroupMediaList() {
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.groupMediaList));
+  }
+
+  public boolean isShowIconMediaList() {
+    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showIconMediaList));
   }
 
   public String getVersion() {

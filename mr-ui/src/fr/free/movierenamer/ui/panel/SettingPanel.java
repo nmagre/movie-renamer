@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 duffy
+ * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,20 +22,21 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
-import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.scrapper.impl.ScrapperManager;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.panel.PanelGenerator.Component;
-import fr.free.movierenamer.ui.panel.setting.SettingPanelGen;
-import fr.free.movierenamer.ui.res.UIScrapper;
+import fr.free.movierenamer.ui.list.UIScrapper;
+import fr.free.movierenamer.ui.panel.generator.PanelGenerator;
+import fr.free.movierenamer.ui.panel.generator.PanelGenerator.Component;
+import fr.free.movierenamer.ui.panel.generator.SettingPanelGen;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.SettingPropertyChange;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.settings.UISettings.UISupportedLanguage;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
@@ -67,7 +68,7 @@ public class SettingPanel extends JDialog {
 
   private static final int SUBLEVEL = 2;
   private static final long serialVersionUID = 1L;
-  private static SettingPanel instance = null;
+  //private static SettingPanel instance = null;
 
   // Panel
   public enum Category {
@@ -77,7 +78,8 @@ public class SettingPanel extends JDialog {
     RENAME,
     MEDIAINFO,
     IMAGE,
-    NETWORK;
+    NETWORK,
+    ABOUT;
 
     public String getName() {
       return this.name().toLowerCase();
@@ -120,6 +122,8 @@ public class SettingPanel extends JDialog {
     generateFanart(UISettingsProperty.generateFanart, Category.GENERAL, SubTitle.GENERAL),
     generateSubtitles(UISettingsProperty.generateSubtitles, Category.GENERAL, SubTitle.GENERAL),
     useExtensionFilter(UISettingsProperty.useExtensionFilter, Category.GENERAL, SubTitle.GENERAL),
+    groupMediaList(UISettingsProperty.groupMediaList, Category.GENERAL, SubTitle.GENERAL),
+    showIconMediaList(UISettingsProperty.showIconMediaList, Category.GENERAL, SubTitle.GENERAL),
     //extensionsList(UISettingsProperty.extensionsList, Category.GENERAL, SubTitle.GENERAL, extensionsLst), // FIXME create a panel instead
     checkUpdate(UISettingsProperty.checkUpdate, Category.GENERAL, SubTitle.UPDATE),
     cacheClear(SettingsProperty.cacheClear, Category.GENERAL, SubTitle.CACHE),
@@ -139,7 +143,7 @@ public class SettingPanel extends JDialog {
     searchMovieScrapper(SettingsProperty.searchMovieScrapper, Category.SEARCH, SubTitle.SCRAPPER, movieScrapperCb),
     searchMovieScrapperLang(SettingsProperty.searchMovieScrapperLang, Category.SEARCH, SubTitle.SCRAPPER, searchMovieScrapperLangRBtns, true),
     searchTvshowScrapper(SettingsProperty.searchTvshowScrapper, Category.SEARCH, SubTitle.SCRAPPER, tvshowScrapperCb),
-    searchTvshowScrapperLang(SettingsProperty.searchTvshowScrapperLang, Category.SEARCH, SubTitle.SCRAPPER,searchtvshowScrapperLangRBtns, true),
+    searchTvshowScrapperLang(SettingsProperty.searchTvshowScrapperLang, Category.SEARCH, SubTitle.SCRAPPER, searchtvshowScrapperLangRBtns, true),
     searchSubtitleScrapper(SettingsProperty.searchSubtitleScrapper, Category.SEARCH, SubTitle.GENERAL),
     searchSorter(SettingsProperty.searchSort, Category.SEARCH, SubTitle.SORTRESULT, searchSorterRBtns, false),
     searchNbResult(SettingsProperty.searchNbResult, Category.SEARCH, SubTitle.GENERAL),
@@ -179,11 +183,11 @@ public class SettingPanel extends JDialog {
     tvShowFilenameRmDupSpace(SettingsProperty.tvShowFilenameRmDupSpace, Category.RENAME, SubTitle.GENERAL),
     // Proxy
     proxyIsOn(SettingsProperty.proxyIsOn, Category.NETWORK, SubTitle.GENERAL),
-    proxyUrl(SettingsProperty.proxyUrl, Category.NETWORK, SubTitle.GENERAL),
-    proxyPort(SettingsProperty.proxyPort, Category.NETWORK, SubTitle.GENERAL),
+    proxyUrl(SettingsProperty.proxyUrl, Category.NETWORK, SubTitle.GENERAL, SUBLEVEL),
+    proxyPort(SettingsProperty.proxyPort, Category.NETWORK, SubTitle.GENERAL, SUBLEVEL),
     // http param
-    httpRequestTimeOut(SettingsProperty.httpRequestTimeOut, Category.NETWORK, SubTitle.GENERAL),
-    httpCustomUserAgent(SettingsProperty.httpCustomUserAgent, Category.NETWORK, SubTitle.GENERAL);
+    httpRequestTimeOut(SettingsProperty.httpRequestTimeOut, Category.NETWORK, SubTitle.GENERAL, SUBLEVEL),
+    httpCustomUserAgent(SettingsProperty.httpCustomUserAgent, Category.NETWORK, SubTitle.GENERAL, SUBLEVEL);
     private Settings.IProperty property;
     private String lib;
     private Category category;
@@ -312,8 +316,6 @@ public class SettingPanel extends JDialog {
   // GENERAL
   private static List<JComponent> nfoRBtns;
   private static List<JComponent> languageRBtns;
-  // ???
-  private static WebList extensionsLst;
   // SEARCH
   private static WebComboBox movieScrapperCb;
   private static WebComboBox tvshowScrapperCb;
@@ -337,19 +339,13 @@ public class SettingPanel extends JDialog {
   private final MovieRenamer mr;
   private final PropertyChangeSupport settingsChange;
 
-  public static SettingPanel getInstance(MovieRenamer mr, PropertyChangeSupport settingsChange) {
-    if (instance == null) {
-      instance = new SettingPanel(mr, settingsChange);
-    }
-    return instance;
-  }
-
   /**
    * Creates new form Setting
    *
    * @param mr Movie Renamer main interface
+   * @param settingsChange
    */
-  private SettingPanel(MovieRenamer mr, PropertyChangeSupport settingsChange) {
+  public SettingPanel(MovieRenamer mr, PropertyChangeSupport settingsChange) {
     this.mr = mr;
     this.settingsChange = settingsChange;
     panels = new ArrayList<SettingPanelGen>();
@@ -362,7 +358,7 @@ public class SettingPanel extends JDialog {
 
     // GENERAL
     nfoRBtns = createRadioButtonList(settings.coreInstance.getMovieNfoType(), SettingsProperty.movieNfoType);
-    languageRBtns = createRadioButtonList(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()), null);// FIXME
+    languageRBtns = createRadioButtonList(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()), null);
 
     // SEARCH
     AvailableLanguages selected;
@@ -421,11 +417,6 @@ public class SettingPanel extends JDialog {
     fanartNameCb = createComboBox(settings.getImageFanartName(), UISettingsProperty.imageFanartName);
     fanartSizeCb = createComboBox(settings.getImageFanartSize(), UISettingsProperty.imageFanartSize);
 
-    // ???
-    extensionsLst = new WebList(settings.getExtensionsList().toArray());
-    initList(extensionsLst);
-
-
     for (Category settingcat : Category.values()) {
       SettingPanelGen panel = new SettingPanelGen();
       panel.addSettings(getSettingsDefinition(settingcat));
@@ -435,7 +426,7 @@ public class SettingPanel extends JDialog {
     pack();
     setModal(true);
     setTitle(LocaleUtils.i18nExt("settings"));
-    setIconImage(UIUtils.LOGO_32);
+    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
   }
 
   private void setSearchScrapperLangRbtn(List<JComponent> components, AvailableLanguages selected, List<AvailableLanguages> languages) {
@@ -596,6 +587,8 @@ public class SettingPanel extends JDialog {
     saveBtn = new com.alee.laf.button.WebButton();
     cancelBtn = new com.alee.laf.button.WebButton();
 
+    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
     webLabel1.setText(LocaleUtils.i18nExt("settings")); // NOI18N
     webLabel1.setFont(new java.awt.Font("Ubuntu", 1, 14)); // NOI18N
 
@@ -631,7 +624,7 @@ public class SettingPanel extends JDialog {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    saveBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/dialog-ok-2.png"))); // NOI18N
+    saveBtn.setIcon(ImageUtils.OK_24);
     saveBtn.setText(LocaleUtils.i18nExt("save")); // NOI18N
     saveBtn.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -639,7 +632,7 @@ public class SettingPanel extends JDialog {
       }
     });
 
-    cancelBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/dialog-cancel-2.png"))); // NOI18N
+    cancelBtn.setIcon(ImageUtils.CANCEL_24);
     cancelBtn.setText(LocaleUtils.i18nExt("cancel")); // NOI18N
     cancelBtn.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -665,7 +658,7 @@ public class SettingPanel extends JDialog {
       .addGroup(layout.createSequentialGroup()
         .addComponent(webPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(webTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+        .addComponent(webTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -750,7 +743,7 @@ public class SettingPanel extends JDialog {
       settings.coreInstance.set(SettingsProperty.searchTvshowScrapper, tvscrapper.getScrapper().getClass());
       settingsChange.firePropertyChange(SettingPropertyChange.SEARCHMTVSHOWSCRAPPER.name(), oldTvScrapper, tvscrapper.getScrapper().getClass());
 
-      for (JComponent component : languageRBtns) {// FIXME
+      for (JComponent component : languageRBtns) {// TODO Ask for restart app
         if (((WebRadioButton) component).isSelected()) {
           SettingsProperty.appLanguage.setValue(new Locale(UISupportedLanguage.valueOf(component.getName()).name()).getLanguage());
           break;

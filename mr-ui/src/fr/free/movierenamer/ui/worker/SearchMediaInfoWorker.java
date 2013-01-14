@@ -20,8 +20,8 @@ package fr.free.movierenamer.ui.worker;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.ui.res.UIFile;
-import fr.free.movierenamer.ui.res.UISearchResult;
+import fr.free.movierenamer.ui.list.UIFile;
+import fr.free.movierenamer.ui.list.UISearchResult;
 
 /**
  * Class SearchMediaInfosWorker

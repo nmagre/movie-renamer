@@ -25,7 +25,9 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.net.URL;
 
 /**
  * Class AnidbScrapper : search movie on anidb (Anime DataBase)
@@ -65,6 +67,11 @@ public class AnidbScrapper extends MovieScrapper {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
+  }
+
+  @Override
+  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override

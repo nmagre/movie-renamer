@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,28 @@
  */
 package fr.free.movierenamer.ui.utils;
 
-import com.alee.extended.background.BorderPainter;
+import com.alee.extended.panel.GroupPanel;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
-import fr.free.movierenamer.ui.res.IIconList;
-import fr.free.movierenamer.ui.res.IconListRenderer;
-import java.awt.Color;
+import com.alee.managers.popup.PopupWay;
+import com.alee.managers.popup.WebButtonPopup;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
+import fr.free.movierenamer.ui.list.IIconList;
+import fr.free.movierenamer.ui.list.IconListRenderer;
+import fr.free.movierenamer.ui.list.UIFile;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.ImageObserver;
+import java.util.Comparator;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.SwingConstants;
 
 /**
  * Class MediaRenamed, Renamed movie
@@ -34,48 +46,16 @@ import javax.swing.JComponent;
  */
 public class UIUtils {
 
-  // images
-  public static final Icon MEDIARENAMEDICON = ImageUtils.getIconFromJar("ui/icon-32.png");
-  public static final Icon MEDIAWASRENAMEDICON = ImageUtils.getIconFromJar("ui/icon-22.png");
-  public static final Icon MEDIAICON = ImageUtils.getIconFromJar("ui/film.png");
-  public static final Icon MEDIAWARNINGICON = ImageUtils.getIconFromJar("ui/film-error.png");
-  public static final Icon STAR = ImageUtils.getIconFromJar("ui/star.png");
-  public static final Icon STAR_HALF = ImageUtils.getIconFromJar("ui/star-half.png");
-  public static final Icon STAR_EMPTY = ImageUtils.getIconFromJar("ui/star-empty.png");
-  public static final Image LOGO_32 = ImageUtils.getImageFromJAR("ui/icon-32.png");
-  public static final Icon HELP = ImageUtils.getIconFromJar("ui/system-help-3.png");
-  public static final Icon HELPDISABLED = ImageUtils.getIconFromJar("ui/system-help-3-disabled.png");
-  private static final Icon loader = ImageUtils.getIconFromJar("ui/loader.gif");
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>(false);
-
-  public static BorderPainter<? extends JComponent> getBorder() {
-    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
-    return border;
-  }
-
-  public static BorderPainter<? extends JComponent> getBorder(int size) {
-    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
-    border.setWidth(size);
-    return border;
-  }
-
-  public static BorderPainter<? extends JComponent> getBorder(int size, int round) {
-    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
-    border.setWidth(size);
-    border.setRound(round);
-    return border;
-  }
-
-  public static BorderPainter<? extends JComponent> getBorder(int size, int round, Color color) {
-    BorderPainter<? extends JComponent> border = new BorderPainter<JComponent>();
-    border.setWidth(size);
-    border.setRound(round);
-    border.setColor(color);
-    return border;
-  }
+  public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
+    @Override
+    public int compare(UIFile stringOne, UIFile stringTwo) {
+      return stringOne.getGroupName().toLowerCase().compareTo(stringTwo.getGroupName().toLowerCase());
+    }
+  };
 
   public static Icon getAnimatedLoader(final WebList list, final int row) {
-    ImageIcon icon = (ImageIcon) loader;
+    ImageIcon icon = (ImageIcon) ImageUtils.LOADER;
     icon.setImageObserver(new ImageObserver() {
       @Override
       public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
@@ -85,7 +65,37 @@ public class UIUtils {
         return (infoflags & (ALLBITS | ABORT)) == 0;
       }
     });
-    return loader;
+    return icon;
+  }
+
+  public static WebButton createSettingbutton(PopupWay way, String tooltip, JComponent... components) {
+    return createSettingbutton(way, tooltip, false, components);
+  }
+
+  public static WebButton createSettingbutton(PopupWay way, String tooltip, boolean decorated, JComponent... components) {
+    WebButton button = new WebButton();
+    button.setIcon(ImageUtils.SETTING_16);
+    button.setUndecorated(!decorated);
+    createPopup(button, way, components);
+    TooltipWay ttway = TooltipWay.down;
+    switch (way) {
+      case upCenter:
+      case upLeft:
+      case upRight:
+        ttway = TooltipWay.up;
+        break;
+    }
+    TooltipManager.setTooltip(button, new WebLabel(LocaleUtils.i18nExt(tooltip), ImageUtils.SETTING_16, SwingConstants.TRAILING), ttway);
+    return button;
+  }
+
+  private static WebButtonPopup createPopup(WebButton button, PopupWay way, JComponent... components) {
+    WebButtonPopup popup = new WebButtonPopup(button, way);
+    GroupPanel content = new GroupPanel(5, false, (Object[]) components);
+    content.setMargin(15);
+    popup.setContent(content);
+
+    return popup;
   }
 
   private UIUtils() {
