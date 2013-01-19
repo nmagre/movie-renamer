@@ -18,6 +18,7 @@ package fr.free.movierenamer.ui.list;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import java.net.URI;
 import javax.swing.Icon;
 
 /**
@@ -48,6 +49,11 @@ public class UILoader implements IIconList {
   @Override
   public String toString() {
     return "";
+  }
+
+  @Override
+  public URI getUri() {
+    return null;
   }
 
 }

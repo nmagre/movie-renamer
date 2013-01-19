@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.list;
 
+import java.net.URI;
 import javax.swing.Icon;
 
 /**
@@ -27,6 +28,7 @@ import javax.swing.Icon;
 public interface IIconList {
   public Icon getIcon();
   public void setIcon(Icon icon);
+  public URI getUri();
 
   @Override
   public String toString();

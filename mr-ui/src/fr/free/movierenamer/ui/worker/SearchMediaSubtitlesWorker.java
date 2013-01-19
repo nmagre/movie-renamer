@@ -19,17 +19,18 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.list.UIFile;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class SearchMediaImagesWorker
+ * Class SearchMediaSubtitlesWorker
  *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
+public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {// TODO
 
   private final UIFile media;
   private final SubtitleScrapper scrapper;
@@ -37,12 +38,12 @@ public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
   /**
    * Constructor arguments
    *
-   * @param errorSupport
+   * @param mr
    * @param media
    * @param scrapper
    */
-  public SearchMediaSubtitlesWorker(UIFile media, SubtitleScrapper scrapper) {
-    super();
+  public SearchMediaSubtitlesWorker(MovieRenamer mr, UIFile media, SubtitleScrapper scrapper) {
+    super(mr);
     this.media = media;
     this.scrapper = scrapper;
   }
@@ -65,5 +66,10 @@ public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
     }
 
     return results;
+  }
+
+  @Override
+  protected void workerDone() throws Exception {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

@@ -17,19 +17,30 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.list.DefaultListModel;
+import com.alee.laf.list.WebList;
+import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.list.IIconList;
+import fr.free.movierenamer.ui.list.IconListRenderer;
 import fr.free.movierenamer.ui.list.UIFile;
 import fr.free.movierenamer.ui.list.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.Sorter;
 import java.awt.Dimension;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
-import javax.swing.Icon;
+import javax.swing.JOptionPane;
 
 /**
  * Class SearchMediaWorker
@@ -41,18 +52,31 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
 
   private final UIFile media;
   private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
+  private final WebList searchResultList;
+  private final WebButton searchBtn;
+  private final WebTextField searchField;
+  private final DefaultListModel searchResultModel;
   private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
    * Constructor arguments
    *
+   * @param mr
    * @param media
    * @param scrapper
+   * @param searchResultList
+   * @param searchBtn
+   * @param searchField
+   * @param searchResultModel
    */
-  public SearchMediaWorker(UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper) {
-    super();
+  public SearchMediaWorker(MovieRenamer mr, UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper, WebList searchResultList, WebButton searchBtn, WebTextField searchField, DefaultListModel searchResultModel) {
+    super(mr);
     this.media = media;
     this.scrapper = scrapper;
+    this.searchResultList = searchResultList;
+    this.searchBtn = searchBtn;
+    this.searchField = searchField;
+    this.searchResultModel = searchResultModel;
   }
 
   @Override
@@ -70,11 +94,65 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
           UISettings.LOGGER.log(Level.INFO, "SearchMediaWorker Cancelled");
           return new ArrayList<UISearchResult>();
         }
-        Icon icon = ImageUtils.getIcon(res.get(i).getURL(), searchListDim, "ui/nothumb.png");
-        results.add(new UISearchResult(res.get(i), scrapper, icon));
+
+        //Icon icon = ImageUtils.getIcon(res.get(i).getURL(), searchListDim, "ui/nothumb.png");
+        results.add(new UISearchResult(res.get(i), scrapper, UIUtils.getAnimatedLoader(searchResultList, i)));
       }
     }
 
     return results;
+  }
+
+  @Override
+  protected void workerDone() throws Exception {
+    // Remove loader
+    searchResultModel.removeAllElements();
+
+    try {
+      List<UISearchResult> results = get();
+      if (results == null) {
+        return;
+      }
+
+      // Sort search results
+      Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
+      UISettings.LOGGER.log(Level.INFO, "Sort type {0} , year {1} , search {2}", new Object[]{type.name(), media.getYear(), media.getSearch()});
+      switch (type) {
+        case ALPHABETIC:
+        case LENGTH:
+        case YEAR:
+          Sorter.sort(results, type);
+          break;
+        case YEAR_ROUND:
+        case ALPHA_YEAR:
+          Sorter.sort(results, type, media.getYear());
+          break;
+        case LEVENSTHEIN:
+          Sorter.sort(results, media.getSearch());
+          break;
+        case LEVEN_YEAR:
+          Sorter.sort(results, media.getYear(), media.getSearch());
+          break;
+      }
+
+      searchResultList.setCellRenderer(new IconListRenderer<IIconList>(false)/*UISettings.getInstance().isShowThumb() ? mr.iconListRenderer : new DefaultListCellRenderer()*/);// FIXME
+      searchResultModel.addElements(results);
+
+      if (searchResultModel.isEmpty()) {
+        JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+      } else {
+        if (UISettings.getInstance().isSelectFirstResult()) {
+          searchResultList.setSelectedIndex(0);
+        }
+        getImages(results, searchResultModel, searchListDim);
+      }
+
+    } catch (CancellationException e) {
+      // Worker canceled
+      UISettings.LOGGER.log(Level.INFO, "SearchMediaWorker Cancelled");
+    } finally {
+      searchBtn.setEnabled(true);
+      searchField.setEnabled(true);
+    }
   }
 }

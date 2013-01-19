@@ -17,11 +17,9 @@
  */
 package fr.free.movierenamer.ui.panel;
 
-import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import fr.free.movierenamer.info.MediaInfo;
@@ -29,11 +27,9 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.util.Locale;
 import javax.swing.*;
@@ -50,7 +46,6 @@ public class TvShowPanel extends MediaPanel {
 
   private static final long serialVersionUID = 1L;
   private MovieInfo tvShowInfo;
-  private final MovieRenamer mr;
   private final Dimension thumbDim = new Dimension(160, 200);
   private final DefaultListModel castingModel = new DefaultListModel();
   private final DefaultListModel thumbnailsModel = new DefaultListModel();
@@ -62,11 +57,11 @@ public class TvShowPanel extends MediaPanel {
   /**
    * Creates new form MoviePanel
    *
-   * @param parent
+   * @param mr
    */
-  public TvShowPanel(MovieRenamer parent) {
+  public TvShowPanel(MovieRenamer mr) {
+    super(mr);
     initComponents();
-    this.mr = parent;
   }
 
   @Override
@@ -172,23 +167,6 @@ public class TvShowPanel extends MediaPanel {
   public WebList getCastingList() {
     return actorList;
   }
-
-  @Override
-  public WebImageGallery getFanartsList() {
-    return null;
-  }
-
-  @Override
-  public WebList getSubtitlesList() {
-    return subtitlesList;
-  }
-
-  @Override
-  public WebList getThumbnailsList() {
-    return thumbnailsList;
-  }
-
-
 
   /**
    * This method is called from within the constructor to initialize the form.
@@ -466,60 +444,5 @@ public class TvShowPanel extends MediaPanel {
   @Override
   public DefaultListModel getCastingModel() {
     return castingModel;
-  }
-
-  @Override
-  public DefaultListModel getThumbnailsModel() {
-    return thumbnailsModel;
-  }
-
-  @Override
-  public DefaultListModel getFanartsModel() {
-    return fanartsModel;
-  }
-
- @Override
-  public DefaultListModel getSubtitlesModel() {
-    return null;
-  }
-
-  @Override
-  public WebList getBannersList() {
-    return null;
-  }
-
-  @Override
-  public WebList getCdartsList() {
-    return null;
-  }
-
-  @Override
-  public WebList getLogosList() {
-    return null;
-  }
-
-  @Override
-  public WebList getClearartsList() {
-    return null;
-  }
-
-  @Override
-  public DefaultListModel getBannersModel() {
-    return null;
-  }
-
-  @Override
-  public DefaultListModel getCdartsModel() {
-    return null;
-  }
-
-  @Override
-  public DefaultListModel getLogosModel() {
-    return null;
-  }
-
-  @Override
-  public DefaultListModel getClearartsModel() {
-    return null;
   }
 }

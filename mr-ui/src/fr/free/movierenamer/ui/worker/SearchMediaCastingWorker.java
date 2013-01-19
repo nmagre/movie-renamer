@@ -17,16 +17,21 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.list.UIPersonImage;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
- * Class SearchMediaImagesWorker
+ * Class SearchMediaCastingWorker
  *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
@@ -35,16 +40,17 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
 
   private final MediaInfo info;
   private final WebList castingList;
+  private final Dimension actorListDim = new Dimension(30, 53);
 
   /**
    * Constructor arguments
    *
+   * @param mr
    * @param info
    * @param castingList
    */
-  @SuppressWarnings("unchecked")
-  public SearchMediaCastingWorker(MediaInfo info, WebList castingList) {
-    super();
+  public SearchMediaCastingWorker(MovieRenamer mr, MediaInfo info, WebList castingList) {
+    super(mr);
     this.info = info;
     this.castingList = castingList;
   }
@@ -59,6 +65,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
       int count = infos.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
+          UISettings.LOGGER.log(Level.INFO, "SearchMediaCastingWorker Cancelled");
           return new ArrayList<UIPersonImage>();
         }
 
@@ -67,5 +74,16 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
     }
 
     return persons;
+  }
+
+  @Override
+  protected void workerDone() throws Exception {
+    List<UIPersonImage> infos = get();
+    final DefaultListModel castingModel = mr.getCurrentMediaPanel().getCastingModel();
+
+    if (infos != null) {
+      castingModel.addElements(infos);
+      getImages(infos, castingModel, actorListDim);
+    }
   }
 }

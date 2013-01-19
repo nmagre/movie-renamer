@@ -51,8 +51,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -96,7 +98,8 @@ public class SettingPanel extends JDialog {
     LANGUAGE(null),
     SCRAPPER("helpScrapper"),
     SORTRESULT("helpSortResult"),
-    INFORMATION("helpInformation");
+    INFORMATION("helpInformation"),
+    INTERFACE(null);
     private final String help;
 
     private SubTitle(String help) {
@@ -122,8 +125,9 @@ public class SettingPanel extends JDialog {
     generateFanart(UISettingsProperty.generateFanart, Category.GENERAL, SubTitle.GENERAL),
     generateSubtitles(UISettingsProperty.generateSubtitles, Category.GENERAL, SubTitle.GENERAL),
     useExtensionFilter(UISettingsProperty.useExtensionFilter, Category.GENERAL, SubTitle.GENERAL),
-    groupMediaList(UISettingsProperty.groupMediaList, Category.GENERAL, SubTitle.GENERAL),
-    showIconMediaList(UISettingsProperty.showIconMediaList, Category.GENERAL, SubTitle.GENERAL),
+    groupMediaList(UISettingsProperty.groupMediaList, Category.GENERAL, SubTitle.INTERFACE),
+    showIconMediaList(UISettingsProperty.showIconMediaList, Category.GENERAL, SubTitle.INTERFACE),
+    showFormatField(UISettingsProperty.showIconMediaList, Category.GENERAL, SubTitle.INTERFACE),
     //extensionsList(UISettingsProperty.extensionsList, Category.GENERAL, SubTitle.GENERAL, extensionsLst), // FIXME create a panel instead
     checkUpdate(UISettingsProperty.checkUpdate, Category.GENERAL, SubTitle.UPDATE),
     cacheClear(SettingsProperty.cacheClear, Category.GENERAL, SubTitle.CACHE),
@@ -236,74 +240,42 @@ public class SettingPanel extends JDialog {
       this.component = Component.CUSTOM;
     }
 
-    /**
-     * @return the category
-     */
     public Category getCategory() {
       return category;
     }
 
-    /**
-     * @return the subTitle
-     */
     public SubTitle getSubTitle() {
       return subTitle;
     }
 
-    /**
-     * @return the component
-     */
     public PanelGenerator.Component getComponent() {
       return component;
     }
 
-    /*
-     * Get variable class
-     */
     public Class<?> getVclass() {
       return property.getVclass();
     }
 
-    /**
-     * Get property key
-     *
-     * @return Property
-     */
     public Settings.IProperty getKey() {
       return property;
     }
 
-    /**
-     * @return the orientation horizontal
-     */
     public boolean isHorizontal() {
       return horizontal;
     }
 
-    /**
-     * @return the array of jcomponents
-     */
     public List<JComponent> getJComponentsList() {
       return Collections.unmodifiableList(jcomponents);
     }
 
-    /**
-     * @return the jcomponent
-     */
     public JComponent getJComponent() {
       return jcomponent;
     }
 
-    /**
-     * @return the indent
-     */
     public int getIndent() {
       return indent;
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
       return name();
     }
@@ -359,6 +331,11 @@ public class SettingPanel extends JDialog {
     // GENERAL
     nfoRBtns = createRadioButtonList(settings.coreInstance.getMovieNfoType(), SettingsProperty.movieNfoType);
     languageRBtns = createRadioButtonList(UISupportedLanguage.valueOf(settings.coreInstance.getAppLanguage().getLanguage()), null);
+
+    for (JComponent compo : nfoRBtns) {// FIXME
+      Icon icon = ImageUtils.getIconFromJar("mediacenter/" + compo.getName().toLowerCase() + ".png");
+      ((WebRadioButton) compo).setIcon(icon);
+    }
 
     // SEARCH
     AvailableLanguages selected;
@@ -425,7 +402,7 @@ public class SettingPanel extends JDialog {
     }
     pack();
     setModal(true);
-    setTitle(LocaleUtils.i18nExt("settings"));
+    setTitle(UISettings.APPNAME + " " + LocaleUtils.i18nExt("settings"));
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
   }
 
@@ -543,13 +520,6 @@ public class SettingPanel extends JDialog {
     return defKeys;
   }
 
-  private void initList(WebList jlist) {
-    jlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    jlist.setLayoutOrientation(WebList.HORIZONTAL_WRAP);
-    jlist.setVisibleRowCount(-1);
-    jlist.setSelectedIndex(0);
-  }
-
   private class PropertyClass {
 
     private final Settings.IProperty property;
@@ -584,6 +554,7 @@ public class SettingPanel extends JDialog {
     webLabel1 = new com.alee.laf.label.WebLabel();
     normalRbtn = new com.alee.laf.radiobutton.WebRadioButton();
     advancedRbtn = new com.alee.laf.radiobutton.WebRadioButton();
+    resetBtn = new com.alee.laf.button.WebButton();
     saveBtn = new com.alee.laf.button.WebButton();
     cancelBtn = new com.alee.laf.button.WebButton();
 
@@ -600,6 +571,17 @@ public class SettingPanel extends JDialog {
     advancedRbtn.setText(LocaleUtils.i18nExt("advanced")); // NOI18N
     advancedRbtn.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
 
+    resetBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/ui/16/logs.png"))); // NOI18N
+    resetBtn.setText(LocaleUtils.i18nExt("Reset")); // NOI18N
+    resetBtn.setFocusable(false);
+    resetBtn.setRolloverDarkBorderOnly(true);
+    resetBtn.setRolloverDecoratedOnly(true);
+    resetBtn.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        resetBtnActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout webPanel1Layout = new javax.swing.GroupLayout(webPanel1);
     webPanel1.setLayout(webPanel1Layout);
     webPanel1Layout.setHorizontalGroup(
@@ -611,7 +593,9 @@ public class SettingPanel extends JDialog {
         .addComponent(normalRbtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(advancedRbtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(273, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 243, Short.MAX_VALUE)
+        .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap())
     );
     webPanel1Layout.setVerticalGroup(
       webPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -620,7 +604,8 @@ public class SettingPanel extends JDialog {
         .addGroup(webPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(normalRbtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(advancedRbtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(advancedRbtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -656,9 +641,9 @@ public class SettingPanel extends JDialog {
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(webPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(webPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(webTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+        .addComponent(webTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -710,6 +695,7 @@ public class SettingPanel extends JDialog {
               try {
                 property.setValue(Enum.valueOf(clazz, component.getName()));
               } catch (IOException ex) {
+                UISettings.LOGGER.log(Level.SEVERE, null, ex);
                 WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("saveSettingsFailed"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
                 return;
               }
@@ -727,6 +713,7 @@ public class SettingPanel extends JDialog {
           try {
             property.setValue(Enum.valueOf(clazz, (String) combobox.getValue().getSelectedItem()));
           } catch (IOException ex) {
+            UISettings.LOGGER.log(Level.SEVERE, null, ex);
             WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("saveSettingsFailed"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
             return;
           }
@@ -755,10 +742,20 @@ public class SettingPanel extends JDialog {
     setVisible(false);
     dispose();
   }//GEN-LAST:event_saveBtnActionPerformed
+
+  private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
+    try {
+      settings.clear();
+    } catch (IOException ex) {
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
+      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("saveSettingsFailed"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+    }
+  }//GEN-LAST:event_resetBtnActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.alee.laf.radiobutton.WebRadioButton advancedRbtn;
   private com.alee.laf.button.WebButton cancelBtn;
   private com.alee.laf.radiobutton.WebRadioButton normalRbtn;
+  private com.alee.laf.button.WebButton resetBtn;
   private com.alee.laf.button.WebButton saveBtn;
   private javax.swing.ButtonGroup settingsGroup;
   private com.alee.laf.label.WebLabel webLabel1;

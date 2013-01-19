@@ -16,28 +16,91 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.res.LogsTableModel;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.utils.LocaleUtils;
+import java.awt.Color;
+import java.awt.Component;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import javax.swing.JDialog;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author duffy
  */
-public class LogPanel extends JDialog {// TODO
+public class LogPanel extends JDialog {
 
+  private static final long serialVersionUID = 1L;
+// TODO
   private final logHandler handler = new logHandler();
+  private final StringWriter text = new StringWriter();
+  private final PrintWriter out = new PrintWriter(text);
+  private final LogsTableModel logsModel = new LogsTableModel();
+  private final TableRowSorter<LogsTableModel> sorter;
+  private boolean showInfo = true;
+
   /**
    * Creates new form LogPanel
    */
   public LogPanel() {
     initComponents();
+    logsTable.setModel(logsModel);
+    logsTable.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+      private static final long serialVersionUID = 1L;
 
+      @Override
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        Level level = (Level) value;
+        if (level.equals(Level.SEVERE)) {
+          setBackground(Color.red);
+          setForeground(Color.WHITE);
+        } else if (level.equals(Level.WARNING)) {
+          setBackground(Color.YELLOW);
+          setForeground(Color.BLACK);
+        } else {
+          setBackground(Color.WHITE);
+          setForeground(Color.BLACK);
+        }
+
+        return this;
+      }
+    });
+
+    RowFilter<LogsTableModel, Integer> ageFilter = new RowFilter<LogsTableModel, Integer>() {
+      @Override
+      public boolean include(Entry<? extends LogsTableModel, ? extends Integer> entry) {
+        LogsTableModel obj = entry.getModel();
+        int index = entry.getIdentifier();
+        Level level = (Level) obj.getValueAt(index, 1);
+        if (!level.equals(Level.SEVERE) && !level.equals(Level.WARNING) && !showInfo) {
+          return false;
+        }
+
+        return true;
+      }
+    };
+
+    sorter = new TableRowSorter<LogsTableModel>(logsModel);
+    sorter.setRowFilter(ageFilter);
+    logsTable.setRowSorter(sorter);
+    logsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
   }
-
-
 
   /**
    * This method is called from within the constructor to
@@ -49,70 +112,92 @@ public class LogPanel extends JDialog {// TODO
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jScrollPane1 = new javax.swing.JScrollPane();
-    webTextArea1 = new com.alee.laf.text.WebTextArea();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    logsTable = new com.alee.laf.table.WebTable(){
+      @Override
+      public Component prepareRenderer(TableCellRenderer renderer, int row,
+        int column) {
+        Component component = super.prepareRenderer(renderer, row, column);
+        int rendererWidth = component.getPreferredSize().width;
+        TableColumn tableColumn = getColumnModel().getColumn(column);
+        tableColumn.setPreferredWidth(Math.max(rendererWidth +
+          getIntercellSpacing().width,
+          tableColumn.getPreferredWidth()));
+      return  component;
+    }
+  };
+  webCheckBox1 = new com.alee.laf.checkbox.WebCheckBox();
+  logsFileBtn = new com.alee.laf.button.WebButton();
 
-    webTextArea1.setColumns(20);
-    webTextArea1.setRows(5);
-    jScrollPane1.setViewportView(webTextArea1);
+  jScrollPane2.setViewportView(logsTable);
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
-        .addContainerGap())
-    );
+  webCheckBox1.setText("Hide INFO");
+  webCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+      webCheckBox1ActionPerformed(evt);
+    }
+  });
 
-    pack();
+  logsFileBtn.setIcon(ImageUtils.TEXTFILE_16);
+  logsFileBtn.setText(LocaleUtils.i18nExt("logfile")); // NOI18N
+  logsFileBtn.setEnabled(false);
+  logsFileBtn.addActionListener(new java.awt.event.ActionListener() {
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+      logsFileBtnActionPerformed(evt);
+    }
+  });
+
+  javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+  getContentPane().setLayout(layout);
+  layout.setHorizontalGroup(
+    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+    .addGroup(layout.createSequentialGroup()
+      .addContainerGap()
+      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 648, Short.MAX_VALUE)
+          .addGap(13, 13, 13))
+        .addGroup(layout.createSequentialGroup()
+          .addComponent(webCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(logsFileBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addContainerGap())))
+  );
+  layout.setVerticalGroup(
+    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+      .addContainerGap()
+      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        .addComponent(webCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(logsFileBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+      .addGap(19, 19, 19)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+      .addContainerGap())
+  );
+
+  pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String args[]) {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-     */
-    try {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (ClassNotFoundException ex) {
-      java.util.logging.Logger.getLogger(LogPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-      java.util.logging.Logger.getLogger(LogPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-      java.util.logging.Logger.getLogger(LogPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-      java.util.logging.Logger.getLogger(LogPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
+  private void webCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webCheckBox1ActionPerformed
+    showInfo = !webCheckBox1.isSelected();
+    sorter.allRowsChanged();
+  }//GEN-LAST:event_webCheckBox1ActionPerformed
 
-     /* Create and display the form */java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        new LogPanel().setVisible(true);
-      }
-    });
-  }
+  private void logsFileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logsFileBtnActionPerformed
+    StringBuilder logs = new StringBuilder();
+    for(LogRecord record : handler.getRecord()) {
+      logs.append(record.getSequenceNumber()).append(" : ").append(record.getSourceClassName()).append(".");
+      logs.append(record.getSourceMethodName()).append(" : ").append(record.getMessage()).append("\n");
+    }
+
+    System.out.println(logs);
+  }//GEN-LAST:event_logsFileBtnActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JScrollPane jScrollPane1;
-  private com.alee.laf.text.WebTextArea webTextArea1;
+  private javax.swing.JScrollPane jScrollPane2;
+  private com.alee.laf.button.WebButton logsFileBtn;
+  private com.alee.laf.table.WebTable logsTable;
+  private com.alee.laf.checkbox.WebCheckBox webCheckBox1;
   // End of variables declaration//GEN-END:variables
 
   /**
@@ -124,25 +209,37 @@ public class LogPanel extends JDialog {// TODO
 
   private class logHandler extends Handler {
 
+    private List<LogRecord> records;
+
+    public logHandler() {
+      records = new ArrayList<LogRecord>();
+    }
+
+    public List<LogRecord> getRecord() {
+      return Collections.unmodifiableList(records);
+    }
+
     @Override
     public void publish(LogRecord record) {
-      StringWriter text = new StringWriter();
-      PrintWriter out = new PrintWriter(text);
-      out.println(webTextArea1.getText());
-      out.printf("[%s] [Thread-%d]: %s.%s -> %s", record.getLevel(),
-              record.getThreadID(), record.getSourceClassName(),
-              record.getSourceMethodName(), record.getMessage());
-      webTextArea1.setText(text.toString());
+      logsModel.addRecord(record);
+      records.add(record);
+      if(records.size() == 1 ) logsFileBtn.setEnabled(true);
     }
 
     @Override
     public void flush() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      out.flush();
+      text.flush();
     }
 
     @Override
     public void close() throws SecurityException {
-      throw new UnsupportedOperationException("Not supported yet.");
+      out.close();
+      try {
+        text.close();
+      } catch (IOException ex) {
+        Settings.LOGGER.log(Level.SEVERE, null, ex);
+      }
     }
   }
 }

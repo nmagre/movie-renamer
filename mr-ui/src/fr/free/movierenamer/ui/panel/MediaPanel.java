@@ -17,15 +17,15 @@
  */
 package fr.free.movierenamer.ui.panel;
 
-import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,18 +39,30 @@ public abstract class MediaPanel extends WebPanel {
   private final int nbStar = 5;
   private final WebPanel starPanel;
   private final List<WebLabel> stars;
+  private final GalleryPanel galleryPanel;
 
-  protected MediaPanel() {
+  protected MediaPanel(MovieRenamer mr) {
+    galleryPanel = new GalleryPanel(mr);
     starPanel = new WebPanel();
     starPanel.setMargin(0);
     starPanel.setLayout(new FlowLayout());
     stars = new ArrayList<WebLabel>();
     for (int i = 0; i < nbStar; i++) {
-      stars.add(new WebLabel());
+      WebLabel label = new WebLabel();
+      label.setMargin(new Insets(-3, 0, 0, 0));
+      stars.add(label);
       starPanel.add(stars.get(i));
     }
 
     clearStars();
+  }
+
+  protected List<WebLabel> getStarsLabel() {
+    return stars;
+  }
+
+  public GalleryPanel getGalleryPanel() {
+    return galleryPanel;
   }
 
   /**
@@ -64,35 +76,8 @@ public abstract class MediaPanel extends WebPanel {
 
   public abstract WebList getCastingList();
 
-  public abstract WebList getThumbnailsList();
-
-  public abstract WebImageGallery getFanartsList();
-
-  public abstract WebList getBannersList();
-
-  public abstract WebList getCdartsList();
-
-  public abstract WebList getLogosList();
-
-  public abstract WebList getClearartsList();
-
-  public abstract WebList getSubtitlesList();
-
   public abstract DefaultListModel getCastingModel();
 
-  public abstract DefaultListModel getThumbnailsModel();
-
-  public abstract DefaultListModel getFanartsModel();
-
-  public abstract DefaultListModel getBannersModel();
-
-  public abstract DefaultListModel getCdartsModel();
-
-  public abstract DefaultListModel getLogosModel();
-
-  public abstract DefaultListModel getClearartsModel();
-
-  public abstract DefaultListModel getSubtitlesModel();
 
   protected WebPanel getStarPanel() {
     return starPanel;
@@ -100,7 +85,7 @@ public abstract class MediaPanel extends WebPanel {
 
   protected void clearStars() {
     for (int i = 0; i < nbStar; i++) {
-      stars.get(i).setIcon(ImageUtils.STAREMPTY_24);
+      stars.get(i).setIcon(ImageUtils.STAREMPTY_16);
     }
   }
 
@@ -120,11 +105,11 @@ public abstract class MediaPanel extends WebPanel {
 
     int n = rate.intValue();
     for (int i = 0; i < n; i++) {
-      stars.get(i).setIcon(ImageUtils.STAR_24);
+      stars.get(i).setIcon(ImageUtils.STAR_16);
     }
 
-    if ((rate - rate.intValue()) >= 0.50 && (n + 1) < nbStar) {
-      stars.get(n + 1).setIcon(ImageUtils.STARHALF_24);
+    if ((rate - rate.intValue()) >= 0.50 && n < nbStar) {
+      stars.get(n).setIcon(ImageUtils.STARHALF_16);
     }
   }
 }

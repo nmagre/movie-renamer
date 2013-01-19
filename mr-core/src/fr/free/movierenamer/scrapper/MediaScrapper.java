@@ -28,6 +28,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.net.MalformedURLException;
@@ -68,7 +69,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     }catch(MalformedURLException ex) {
       results = searchMedia(query, language);
     }
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(query, language, genericClazz, results) : results;
@@ -93,7 +94,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
     // perform actual search
     info = fetchMediaInfo(search, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns '%s' as info for '%s' in '%s'", getName(), info, search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns '%s' as info for '%s' in '%s'", getName(), info, search, language.getDisplayLanguage(Locale.ENGLISH)));
 
     //let's fetch casting
     List<CastingInfo> casting;
@@ -125,7 +126,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
     // perform actual search
     imagesInfo = fetchImagesInfo(search, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d image(s) info for '%s' in '%s'", getName(), imagesInfo.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d image(s) info for '%s' in '%s'", getName(), imagesInfo.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(search, language, ImageInfo.class, imagesInfo) : imagesInfo;
@@ -147,7 +148,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
     // perform actual search
     personsInfo = fetchCastingInfo(search, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d casting info for '%s' in '%s'", getName(), personsInfo.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d casting info for '%s' in '%s'", getName(), personsInfo.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(search, language, CastingInfo.class, personsInfo) : personsInfo;

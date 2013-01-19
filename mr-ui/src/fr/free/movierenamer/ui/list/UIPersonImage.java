@@ -49,6 +49,7 @@ public class UIPersonImage implements IIconList {
     return person;
   }
 
+  @Override
   public URI getUri() {
     return person.getPicturePath();
   }

@@ -20,7 +20,11 @@ package fr.free.movierenamer.ui.list;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.Sorter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
 import javax.swing.Icon;
 
 /**
@@ -67,6 +71,16 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
 
   public void showId(boolean showId) {
     this.showId = showId;
+  }
+
+  @Override
+  public URI getUri() {
+    try {
+      return searchResult.getURL().toURI();
+    } catch (URISyntaxException ex) {
+      UISettings.LOGGER.log(Level.WARNING, null, ex);
+    }
+    return null;
   }
 
   @Override

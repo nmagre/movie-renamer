@@ -21,6 +21,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.net.URI;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -69,6 +70,11 @@ public class UIScrapper implements IIconList {
   @Override
   public void setIcon(Icon icon) {
     // DO nothing
+  }
+
+  @Override
+  public URI getUri() {
+    return null;
   }
 
 }

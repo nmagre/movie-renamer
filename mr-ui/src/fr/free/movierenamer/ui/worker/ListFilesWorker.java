@@ -17,10 +17,17 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
+import com.alee.laf.list.WebList;
+import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.renamer.NameCleaner;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.list.IIconList;
+import fr.free.movierenamer.ui.list.IconListRenderer;
 import fr.free.movierenamer.ui.list.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.FileUtils;
@@ -41,6 +48,9 @@ import javax.swing.JOptionPane;
 public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
 
   private final List<File> files;
+  private final WebList list;
+  private final EventList<UIFile> eventList;
+  private final EventListModel<UIFile> model;
   private boolean subFolder;
   private final UISettings setting;
   private boolean paused = false;
@@ -56,10 +66,17 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    * Constructor arguments
    *
    * @param files
+   * @param mr
+   * @param list
+   * @param eventList
+   * @param model
    */
-  public ListFilesWorker(List<File> files) {
-    super();
+  public ListFilesWorker(MovieRenamer mr, List<File> files, WebList list, EventList<UIFile> eventList, EventListModel<UIFile> model) {
+    super(mr);
     this.files = files;
+    this.list = list;
+    this.eventList = eventList;
+    this.model = model;
     setting = UISettings.getInstance();
     subFolder = setting.isScanSubfolder();
   }
@@ -68,6 +85,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    * Retreive all media files in a folder and subfolder
    *
    * @return List of UIfile
+   * @throws InterruptedException
    */
   @Override
   public List<UIFile> executeInBackground() throws InterruptedException {
@@ -177,5 +195,23 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
         break;
     }
     medias.add(new UIFile(new FileInfo(file), groupName));
+  }
+
+  @Override
+  protected void workerDone() throws Exception {
+    List<UIFile> medias = get();
+
+    list.setCellRenderer(new IconListRenderer<IIconList>(false));
+
+    eventList.addAll(medias);
+    list.setModel(model);
+
+    if (eventList.isEmpty()) {
+      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);
+    } else if (UISettings.getInstance().isSelectFirstMedia()) {
+      list.setSelectedIndex(0);
+      list.revalidate();
+      list.repaint();
+    }
   }
 }

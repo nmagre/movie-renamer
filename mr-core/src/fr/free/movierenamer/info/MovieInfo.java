@@ -191,7 +191,7 @@ public class MovieInfo extends MediaInfo {
     }
 
     Map<String, Object> replace = new HashMap<String, Object>();
-    replace.put("<t>", shortTitle);
+    replace.put("<t>", this.getTitle());
     replace.put("<tp>", titlePrefix);
     replace.put("<st>", shortTitle);
     replace.put("<ot>", this.getOriginalTitle());

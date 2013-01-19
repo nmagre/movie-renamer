@@ -54,7 +54,7 @@ public final class UISettings {
     configFile = appNameNospace + ".conf";
     renamedFile = "renamed.xml";
     logFile = appNameNospace + ".log";
-    LOGGER = Logger.getLogger(appNameNospace + " Logger");
+    LOGGER = Logger.getLogger("UI");
     appSettingsNodeName = appNameNospace;
     settingNodeName = "settings";
   }
@@ -81,7 +81,8 @@ public final class UISettings {
   public static enum SettingPropertyChange {
 
     SEARCHMOVIESCRAPPER,
-    SEARCHMTVSHOWSCRAPPER,}
+    SEARCHMTVSHOWSCRAPPER;
+  }
 
   public enum UISupportedLanguage {
 
@@ -161,7 +162,8 @@ public final class UISettings {
     //extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
     showAdvancedSettings(Boolean.FALSE),
     groupMediaList(Boolean.TRUE),
-    showIconMediaList(Boolean.TRUE);
+    showIconMediaList(Boolean.TRUE),
+    showFormatField(Boolean.FALSE);
     private Class<?> vclass;
     private Object defaultValue;
 
@@ -302,12 +304,13 @@ public final class UISettings {
   }
 
   public synchronized void clear() throws IOException {
-    Logger.getLogger(Settings.class.getName()).log(Level.INFO, String.format("Clear UISettings"));
+    LOGGER.log(Level.INFO, String.format("Clear UISettings"));
     NodeList list = this.settingsNode.getChildNodes();
     for (int i = 0; i < list.getLength(); i++) {
       this.settingsNode.removeChild(list.item(i));
     }
     saveSetting();
+    coreInstance.clear();
   }
 
   /**
@@ -340,67 +343,67 @@ public final class UISettings {
   }
 
   public boolean isSelectFirstMedia() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstMedia));
+    return Boolean.parseBoolean(get(UISettingsProperty.selectFirstMedia));
   }
 
   public boolean isSelectFirstResult() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.selectFirstResult));
+    return Boolean.parseBoolean(get(UISettingsProperty.selectFirstResult));
   }
 
   public boolean isScanSubfolder() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.scanSubfolder));
+    return Boolean.parseBoolean(get(UISettingsProperty.scanSubfolder));
   }
 
   public boolean isCheckUpdate() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.checkUpdate));
+    return Boolean.parseBoolean(get(UISettingsProperty.checkUpdate));
   }
 
   public boolean isShowActorImage() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showActorImage));
+    return Boolean.parseBoolean(get(UISettingsProperty.showActorImage));
   }
 
   public boolean isShowThumb() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showThumb));
+    return Boolean.parseBoolean(get(UISettingsProperty.showThumb));
   }
 
   public boolean isShowMediaPanel() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showMediaPanel));
+    return Boolean.parseBoolean(get(UISettingsProperty.showMediaPanel));
   }
 
   public boolean isShowFanart() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showFanart));
+    return Boolean.parseBoolean(get(UISettingsProperty.showFanart));
   }
 
   public boolean isShowSubtitle() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showSubtitle));
+    return Boolean.parseBoolean(get(UISettingsProperty.showSubtitle));
   }
 
   public boolean isShowCdart() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showCdart));
+    return Boolean.parseBoolean(get(UISettingsProperty.showCdart));
   }
 
   public boolean isShowClearart() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showClearart));
+    return Boolean.parseBoolean(get(UISettingsProperty.showClearart));
   }
 
   public boolean isShowLogo() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showLogo));
+    return Boolean.parseBoolean(get(UISettingsProperty.showLogo));
   }
 
   public boolean isShowBanner() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showBanner));
+    return Boolean.parseBoolean(get(UISettingsProperty.showBanner));
   }
 
   public boolean isGenerateThumb() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateThumb));
+    return Boolean.parseBoolean(get(UISettingsProperty.generateThumb));
   }
 
   public boolean isGenerateFanart() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateFanart));
+    return Boolean.parseBoolean(get(UISettingsProperty.generateFanart));
   }
 
   public boolean isGenerateSubtitles() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.generateSubtitles));
+    return Boolean.parseBoolean(get(UISettingsProperty.generateSubtitles));
   }
 
   public ThumbName getImageThumbName() {
@@ -412,7 +415,7 @@ public final class UISettings {
   }
 
   public boolean isImageThumbResize() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.imageThumbResize));
+    return Boolean.parseBoolean(get(UISettingsProperty.imageThumbResize));
   }
 
   public ImageSize getImageThumbSize() {
@@ -428,7 +431,7 @@ public final class UISettings {
   }
 
   public boolean isImageFanartResize() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.imageFanartResize));
+    return Boolean.parseBoolean(get(UISettingsProperty.imageFanartResize));
   }
 
   public ImageSize getImageFanartSize() {
@@ -440,23 +443,27 @@ public final class UISettings {
   }
 
   public boolean isUseExtensionFilter() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.useExtensionFilter));
+    return Boolean.parseBoolean(get(UISettingsProperty.useExtensionFilter));
   }
 
   public String getFileChooserPath() {
-    return get(UISettings.UISettingsProperty.fileChooserPath);
+    return get(UISettingsProperty.fileChooserPath);
   }
 
   public boolean isShowAdvancedSettings() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showAdvancedSettings));
+    return Boolean.parseBoolean(get(UISettingsProperty.showAdvancedSettings));
   }
 
   public boolean isGroupMediaList() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.groupMediaList));
+    return Boolean.parseBoolean(get(UISettingsProperty.groupMediaList));
   }
 
   public boolean isShowIconMediaList() {
-    return Boolean.parseBoolean(get(UISettings.UISettingsProperty.showIconMediaList));
+    return Boolean.parseBoolean(get(UISettingsProperty.showIconMediaList));
+  }
+
+  public boolean isShowFormatField() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showFormatField));
   }
 
   public String getVersion() {

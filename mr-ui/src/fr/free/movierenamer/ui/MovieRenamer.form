@@ -109,6 +109,19 @@
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="fileFormatFieldKeyReleased"/>
       </Events>
     </Component>
+    <Component class="com.alee.laf.button.WebButton" name="logsBtn">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="ImageUtils.LOGS_24" type="code"/>
+        </Property>
+        <Property name="focusable" type="boolean" value="false"/>
+        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
+        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logsBtnActionPerformed"/>
+      </Events>
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -440,6 +453,8 @@
                       <Font name="Ubuntu" size="14" style="1"/>
                     </Property>
                   </Properties>
+                </Component>
+                <Component class="com.alee.laf.label.WebLabel" name="mediaLoaderLbl">
                 </Component>
               </SubComponents>
             </Container>

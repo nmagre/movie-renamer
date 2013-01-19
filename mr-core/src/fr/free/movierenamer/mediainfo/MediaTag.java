@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 /**
  * Class MediaTag
@@ -59,14 +60,14 @@ public class MediaTag {
     VideoAspectRatio(StreamKind.Video, Float.class, "DisplayAspectRatio"),
     AudioStreamCount(StreamKind.Audio, Integer.class, "StreamCount"),
     AudioCodec(StreamKind.Audio, "CodecID/Hint", "Format"),
-    AudioLanguage(StreamKind.Audio, "Language/String"),
+    AudioLanguage(StreamKind.Audio, "Language/String3"),
     AudioChannels(StreamKind.Audio, Integer.class, "Channel(s)"),
     AudioBitRateMode(StreamKind.Audio, "BitRate_Mode"),
     AudioBitRate(StreamKind.Audio, Integer.class, "BitRate"),
     AudioTitle(StreamKind.Audio, "Title"),
-    TextStreamCount(StreamKind.Text, "StreamCount"),
+    TextStreamCount(StreamKind.Text, Integer.class, "StreamCount"),
     TextTitle(StreamKind.Text, "Title"),
-    TextLanguage(StreamKind.Text, "Language/String");
+    TextLanguage(StreamKind.Text, "Language/String3");
     private StreamKind kind;
     private String[] keys;
     private boolean getFirst = false;
@@ -133,14 +134,18 @@ public class MediaTag {
       String value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
 
       if (value.length() > 0) {
-        if (tag.getVClass().equals(Integer.class)) {
-          return Integer.parseInt(value);
-        } else if (tag.getVClass().equals(Float.class)) {
-          return Float.parseFloat(value);
-        } else if (tag.getVClass().equals(Double.class)) {
-          return Double.parseDouble(value);
-        } else if (tag.getVClass().equals(Long.class)) {
-          return Long.parseLong(value);
+        try {
+          if (tag.getVClass().equals(Integer.class)) {
+            return Integer.parseInt(new Scanner(value).next());
+          } else if (tag.getVClass().equals(Float.class)) {
+            return Float.parseFloat(new Scanner(value).next());
+          } else if (tag.getVClass().equals(Double.class)) {
+            return Double.parseDouble(new Scanner(value).next());
+          } else if (tag.getVClass().equals(Long.class)) {
+            return Long.parseLong(new Scanner(value).next());
+          }
+        } catch (NumberFormatException ex) {
+          Settings.LOGGER.log(Level.SEVERE, tag.name() + " : " + ex.getMessage());
         }
 
         if (tag.isGetFirst()) {
@@ -217,7 +222,7 @@ public class MediaTag {
       MediaAudio maudio = new MediaAudio(i);
       maudio.setCodec(getMediaInfo(Tags.AudioCodec, i).toString());
       Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.AudioLanguage, i).toString());
-      maudio.setLanguage(lang);
+      if(lang != null) maudio.setLanguage(lang);
       intObj = getMediaInfo(Tags.AudioChannels, i);
       if (intObj instanceof Integer) {
         maudio.setChannel((Integer) intObj);
@@ -242,13 +247,15 @@ public class MediaTag {
       return subTitles;
     }
 
-    int count = (Integer) getMediaInfo(Tags.TextStreamCount);
-    for (int i = 0; i < count; i++) {
-      MediaSubTitle subTitle = new MediaSubTitle(i);
-      Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.TextLanguage, i).toString());
-      subTitle.setLanguage(lang);
-      subTitle.setTitle(getMediaInfo(Tags.TextTitle, i).toString());
-      subTitles.add(subTitle);
+    if (getMediaInfo(Tags.TextStreamCount) instanceof Integer) {
+      int count = (Integer) getMediaInfo(Tags.TextStreamCount);
+      for (int i = 0; i < count; i++) {
+        MediaSubTitle subTitle = new MediaSubTitle(i);
+        Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.TextLanguage, i).toString());
+        subTitle.setLanguage(lang);
+        subTitle.setTitle(getMediaInfo(Tags.TextTitle, i).toString());
+        subTitles.add(subTitle);
+      }
     }
 
     return subTitles;
@@ -262,14 +269,18 @@ public class MediaTag {
     int count = 0;
     switch (tag.getStreamKind()) {
       case Audio:
-        count = (Integer) getMediaInfo(Tags.AudioStreamCount);
-        if(tag.equals(Tags.AudioStreamCount)) {
+        if (getMediaInfo(Tags.AudioStreamCount) instanceof Integer) {
+          count = (Integer) getMediaInfo(Tags.AudioStreamCount);
+        }
+        if (tag.equals(Tags.AudioStreamCount)) {
           return "" + count;
         }
         break;
       case Text:
-        count = (Integer) getMediaInfo(Tags.TextStreamCount);
-        if(tag.equals(Tags.TextStreamCount)) {
+        if (getMediaInfo(Tags.TextStreamCount) instanceof Integer) {
+          count = (Integer) getMediaInfo(Tags.TextStreamCount);
+        }
+        if (tag.equals(Tags.TextStreamCount)) {
           return "" + count;
         }
         break;

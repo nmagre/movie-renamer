@@ -20,9 +20,9 @@ package fr.free.movierenamer.ui.list;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
+import java.net.URI;
 import javax.swing.Icon;
 
 /**
@@ -143,5 +143,10 @@ public class UIFile extends Sorter.ISort implements IIconList {
    */
   public String getGroupName() {
     return groupName;
+  }
+
+  @Override
+  public URI getUri() {
+    return null;
   }
 }

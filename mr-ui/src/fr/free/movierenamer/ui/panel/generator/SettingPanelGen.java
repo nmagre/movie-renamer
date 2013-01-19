@@ -23,8 +23,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.panel.SettingPanel.SettingsDefinition;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -111,7 +111,7 @@ public class SettingPanelGen extends PanelGenerator {
             add(panel, getGroupConstraint(0, true, false, 0));
             break;
           case UNKNOWN:
-            Settings.LOGGER.log(Level.SEVERE, "Unknown component for {0}", definition.getName());
+            UISettings.LOGGER.log(Level.SEVERE, "Unknown component for {0}", definition.getName());
             break;
         }
       }

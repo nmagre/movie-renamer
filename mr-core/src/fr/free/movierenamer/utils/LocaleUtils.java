@@ -102,6 +102,7 @@ public final class LocaleUtils {
       return identifier;
     }
 
+    @Override
     public Locale getLocale() {
       return locale;
     }

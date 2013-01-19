@@ -17,9 +17,11 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.Locale;
+import java.util.logging.Level;
 import javax.swing.Icon;
 
 /**
@@ -30,59 +32,83 @@ import javax.swing.Icon;
 public abstract class Flag {
 
   //Unknown flag
-  private static final Icon Unknown = ImageUtils.getIconFromJar("country/Unknown.png");
+  private static final Icon Unknown = ImageUtils.getIconFromJar("country/unknown.png");
 
   // Only most common flag for video media
   private enum localeFlag {
 
-    Algeria(ImageUtils.getIconFromJar("country/Algeria.png")),
-    Argentina(ImageUtils.getIconFromJar("country/Argentina.png")),
-    Australia(ImageUtils.getIconFromJar("country/Australia.png")),
-    Austria(ImageUtils.getIconFromJar("country/Austria.png")),
-    Belgium(ImageUtils.getIconFromJar("country/Belgium.png")),
-    Brazil(ImageUtils.getIconFromJar("country/Brazil.png")),
-    Bulgaria(ImageUtils.getIconFromJar("country/Bulgaria.png")),
-    Canada(ImageUtils.getIconFromJar("country/Canada.png")),
-    China(ImageUtils.getIconFromJar("country/China.png")),
-    Colombia(ImageUtils.getIconFromJar("country/Colombia.png")),
-    Costa_Rica(ImageUtils.getIconFromJar("country/Costa_Rica.png")),
-    Croatia(ImageUtils.getIconFromJar("country/Croatia.png")),
-    Czech_Republic(ImageUtils.getIconFromJar("country/Czech_Republic.png")),
-    Denmark(ImageUtils.getIconFromJar("country/Denmark.png")),
-    Finland(ImageUtils.getIconFromJar("country/Finland.png")),
-    France(ImageUtils.getIconFromJar("country/France.png")),
-    Germany(ImageUtils.getIconFromJar("country/Germany.png")),
-    Greece(ImageUtils.getIconFromJar("country/Greece.png")),
-    Hong_Kong(ImageUtils.getIconFromJar("country/Hong_Kong.png")),
-    Hungary(ImageUtils.getIconFromJar("country/Hungary.png")),
-    Iceland(ImageUtils.getIconFromJar("country/Iceland.png")),
-    India(ImageUtils.getIconFromJar("country/India.png")),
-    Iran(ImageUtils.getIconFromJar("country/Iran.png")),
-    Ireland(ImageUtils.getIconFromJar("country/Ireland.png")),
-    Italy(ImageUtils.getIconFromJar("country/Italy.png")),
-    Israel(ImageUtils.getIconFromJar("country/Israel.png")),
-    Japan(ImageUtils.getIconFromJar("country/Japan.png")),
-    Malaysia(ImageUtils.getIconFromJar("country/Malaysia.png")),
-    Mexico(ImageUtils.getIconFromJar("country/Mexico.png")),
-    Netherlands(ImageUtils.getIconFromJar("country/Netherlands.png")),
-    New_Zealand(ImageUtils.getIconFromJar("country/New_Zealand.png")),
-    Norway(ImageUtils.getIconFromJar("country/Norway.png")),
-    Pakistan(ImageUtils.getIconFromJar("country/Pakistan.png")),
-    Poland(ImageUtils.getIconFromJar("country/Poland.png")),
-    Portugal(ImageUtils.getIconFromJar("country/Portugal.png")),
-    Romania(ImageUtils.getIconFromJar("country/Romania.png")),
-    Russian_Federation(ImageUtils.getIconFromJar("country/Russian_Federation.png")),
-    Singapore(ImageUtils.getIconFromJar("country/Singapore.png")),
-    South_Africa(ImageUtils.getIconFromJar("country/South_Africa.png")),
-    South_Korea(ImageUtils.getIconFromJar("country/South_Korea.png")),
-    Spain(ImageUtils.getIconFromJar("country/Spain.png")),
-    Sweden(ImageUtils.getIconFromJar("country/Sweden.png")),
-    Switzerland(ImageUtils.getIconFromJar("country/Switzerland.png")),
-    Thailand(ImageUtils.getIconFromJar("country/Thailand.png")),
-    Turkey(ImageUtils.getIconFromJar("country/Turkey.png")),
-    Ukraine(ImageUtils.getIconFromJar("country/Ukraine.png")),
-    United_Kingdom(ImageUtils.getIconFromJar("country/United_Kingdom.png")),
-    United_States(ImageUtils.getIconFromJar("country/United_States_of_America.png"));
+    ara(ImageUtils.getIconFromJar("country/ara.png")),
+    ar(ImageUtils.getIconFromJar("country/ar.png")),
+    at(ImageUtils.getIconFromJar("country/at.png")),
+    au(ImageUtils.getIconFromJar("country/au.png")),
+    be(ImageUtils.getIconFromJar("country/be.png")),
+    bg(ImageUtils.getIconFromJar("country/bg.png")),
+    br(ImageUtils.getIconFromJar("country/br.png")),
+    ca(ImageUtils.getIconFromJar("country/ca.png")),
+    ch(ImageUtils.getIconFromJar("country/ch.png")),
+    cn(ImageUtils.getIconFromJar("country/cn.png")),
+    co(ImageUtils.getIconFromJar("country/co.png")),
+    cr(ImageUtils.getIconFromJar("country/cr.png")),
+    cs(ImageUtils.getIconFromJar("country/cs.png")),
+    cz(ImageUtils.getIconFromJar("country/cz.png")),
+    da(ImageUtils.getIconFromJar("country/da.png")),
+    de(ImageUtils.getIconFromJar("country/de.png")),
+    dk(ImageUtils.getIconFromJar("country/dk.png")),
+    el(ImageUtils.getIconFromJar("country/el.png")),
+    en(ImageUtils.getIconFromJar("country/en.png")),
+    es(ImageUtils.getIconFromJar("country/es.png")),
+    et(ImageUtils.getIconFromJar("country/et.png")),
+    fa(ImageUtils.getIconFromJar("country/fa.png")),
+    fi(ImageUtils.getIconFromJar("country/fi.png")),
+    fr(ImageUtils.getIconFromJar("country/fr.png")),
+    gb(ImageUtils.getIconFromJar("country/gb.png")),
+    gr(ImageUtils.getIconFromJar("country/gr.png")),
+    he(ImageUtils.getIconFromJar("country/he.png")),
+    hi(ImageUtils.getIconFromJar("country/hi.png")),
+    hk(ImageUtils.getIconFromJar("country/hk.png")),
+    hr(ImageUtils.getIconFromJar("country/hr.png")),
+    hu(ImageUtils.getIconFromJar("country/hu.png")),
+    hy(ImageUtils.getIconFromJar("country/hy.png")),
+    id(ImageUtils.getIconFromJar("country/id.png")),
+    ie(ImageUtils.getIconFromJar("country/ie.png")),
+    in(ImageUtils.getIconFromJar("country/in.png")),
+    ir(ImageUtils.getIconFromJar("country/ir.png")),
+    is(ImageUtils.getIconFromJar("country/is.png")),
+    it(ImageUtils.getIconFromJar("country/it.png")),
+    iw(ImageUtils.getIconFromJar("country/iw.png")),
+    ja(ImageUtils.getIconFromJar("country/ja.png")),
+    jp(ImageUtils.getIconFromJar("country/jp.png")),
+    ko(ImageUtils.getIconFromJar("country/ko.png")),
+    lt(ImageUtils.getIconFromJar("country/lt.png")),
+    lv(ImageUtils.getIconFromJar("country/lv.png")),
+    mk(ImageUtils.getIconFromJar("country/mk.png")),
+    ms(ImageUtils.getIconFromJar("country/ms.png")),
+    mx(ImageUtils.getIconFromJar("country/mx.png")),
+    my(ImageUtils.getIconFromJar("country/my.png")),
+    nl(ImageUtils.getIconFromJar("country/nl.png")),
+    no(ImageUtils.getIconFromJar("country/no.png")),
+    nz(ImageUtils.getIconFromJar("country/nz.png")),
+    pb(ImageUtils.getIconFromJar("country/pb.png")),
+    pk(ImageUtils.getIconFromJar("country/pk.png")),
+    pl(ImageUtils.getIconFromJar("country/pl.png")),
+    pt(ImageUtils.getIconFromJar("country/pt.png")),
+    ro(ImageUtils.getIconFromJar("country/ro.png")),
+    ru(ImageUtils.getIconFromJar("country/ru.png")),
+    se(ImageUtils.getIconFromJar("country/se.png")),
+    sg(ImageUtils.getIconFromJar("country/sg.png")),
+    sk(ImageUtils.getIconFromJar("country/sk.png")),
+    sl(ImageUtils.getIconFromJar("country/sl.png")),
+    sq(ImageUtils.getIconFromJar("country/sq.png")),
+    sr(ImageUtils.getIconFromJar("country/sr.png")),
+    sv(ImageUtils.getIconFromJar("country/sv.png")),
+    th(ImageUtils.getIconFromJar("country/th.png")),
+    tr(ImageUtils.getIconFromJar("country/tr.png")),
+    uk(ImageUtils.getIconFromJar("country/uk.png")),
+    unknown(ImageUtils.getIconFromJar("country/unknown.png")),
+    us(ImageUtils.getIconFromJar("country/us.png")),
+    vi(ImageUtils.getIconFromJar("country/vi.png")),
+    za(ImageUtils.getIconFromJar("country/za.png")),
+    zh(ImageUtils.getIconFromJar("country/zh.png"));
     private final Icon flag;
 
     localeFlag(Icon flag) {
@@ -95,15 +121,28 @@ public abstract class Flag {
   }
 
   public static Icon getFlag(String code) {
-    Locale local = LocaleUtils.findCountry(code);
-    if(local != null) {
+    Locale langLocal = LocaleUtils.findLanguage(code);
+    Locale countryLocale = LocaleUtils.findCountry(code);
+
+    if (langLocal != null || countryLocale != null) {
       for (localeFlag lFlag : localeFlag.values()) {
-        if (local.getDisplayCountry(Locale.ENGLISH).equalsIgnoreCase(lFlag.name().replace("_", " "))) {
+        if (langLocal != null) {
+          String language = langLocal.getLanguage();
+          if (language.equals("ar")) {
+            language = "ara";
+          }
+          if (language.equalsIgnoreCase(lFlag.name())) {
+            return lFlag.getFlagIcon();
+          }
+        }
+        
+        if (countryLocale != null && langLocal.getCountry().equalsIgnoreCase(lFlag.name())) {
           return lFlag.getFlagIcon();
         }
       }
     }
+
+    UISettings.LOGGER.log(Level.WARNING, "Flag not found : " + code);
     return Unknown;
   }
-  
 }

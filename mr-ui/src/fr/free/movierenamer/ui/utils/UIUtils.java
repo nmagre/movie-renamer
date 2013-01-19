@@ -18,7 +18,6 @@ package fr.free.movierenamer.ui.utils;
 
 import com.alee.extended.panel.GroupPanel;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.managers.popup.PopupWay;
@@ -30,8 +29,6 @@ import fr.free.movierenamer.ui.list.IconListRenderer;
 import fr.free.movierenamer.ui.list.UIFile;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.ImageObserver;
 import java.util.Comparator;
 import javax.swing.Icon;

@@ -73,7 +73,7 @@ public final class Settings {
     appFolder = getApplicationFolder();
     configFileName = appNameNospace + "_" + appModuleNospace + ".conf";
     logFileName = appNameNospace + "_" + appModuleNospace + ".log";
-    LOGGER = Logger.getLogger(appName + " Logger");
+    LOGGER = Logger.getLogger(appModule);
     appSettingsNodeName = appNameNospace + "_" + appModuleNospace;
     settingNodeName = "settings";
   }

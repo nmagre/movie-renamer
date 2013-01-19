@@ -20,8 +20,10 @@ package fr.free.movierenamer.ui.worker;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.list.UIFile;
 import fr.free.movierenamer.ui.list.UISearchResult;
+import fr.free.movierenamer.ui.panel.MediaPanel;
 
 /**
  * Class SearchMediaInfosWorker
@@ -38,12 +40,13 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
   /**
    * Constructor arguments
    *
+   * @param mr
    * @param file
    * @param searchResult
    */
   @SuppressWarnings("unchecked")
-  public SearchMediaInfoWorker(UIFile file, UISearchResult searchResult) {
-    super();
+  public SearchMediaInfoWorker(MovieRenamer mr, UIFile file, UISearchResult searchResult) {
+    super(mr);
     this.file = file;
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
@@ -58,5 +61,19 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
       info.setMediaTag(file.getMediaTag());
     }
     return info;
+  }
+
+  @Override
+  protected void workerDone() throws Exception {
+    MediaInfo info = get();
+    if (info != null) {
+      MediaPanel mediaPanel = mr.getCurrentMediaPanel();
+      mr.getCurrentMediaPanel().setMediaInfo(info);
+      SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, mediaPanel.getCastingList());
+      castingWorker.execute();
+
+      mr.addWorker(castingWorker);
+      mr.updateRenamedTitle();
+    }
   }
 }

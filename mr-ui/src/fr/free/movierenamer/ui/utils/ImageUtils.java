@@ -49,13 +49,14 @@ public final class ImageUtils {
   public static final Icon FOLDERVIDEO_24 = getIconFromJar("ui/24/folder-video.png");
   public static final Icon MOVIE_24 = getIconFromJar("ui/24/movie.png");
   public static final Icon SETTING_24 = getIconFromJar("ui/24/setting.png");
-  public static final Icon STAREMPTY_24 = getIconFromJar("ui/24/star-empty.png");
-  public static final Icon STARHALF_24 = getIconFromJar("ui/24/star-half.png");
-  public static final Icon STAR_24 = getIconFromJar("ui/24/star.png");
+//  public static final Icon STAREMPTY_24 = getIconFromJar("ui/24/star-empty.png");
+//  public static final Icon STARHALF_24 = getIconFromJar("ui/24/star-half.png");
+//  public static final Icon STAR_24 = getIconFromJar("ui/24/star.png");
   public static final Icon TV_24 = getIconFromJar("ui/24/tv.png");
   public static final Icon UPDATE_24 = getIconFromJar("ui/24/update.png");
   public static final Icon OK_24 = getIconFromJar("ui/24/ok.png");
   public static final Icon HELP_24 = getIconFromJar("ui/24/help.png");
+  public static final Icon LOGS_24 = getIconFromJar("ui/24/logs.png");
   // 16 pixel icon
   public static final Icon CANCEL_16 = getIconFromJar("ui/16/cancel.png");
   public static final Icon FILEVIEW_16 = getIconFromJar("ui/16/fileview.png");
@@ -76,6 +77,12 @@ public final class ImageUtils {
   public static final Icon FOLDERVIDEO_16 = getIconFromJar("ui/16/folder-video.png");
   public static final Icon UPDATE_16 = getIconFromJar("ui/16/update.png");
   public static final Icon APPLICATIONEXIT_16 = getIconFromJar("ui/16/application-exit.png");
+  public static final Icon LOGS_16 = getIconFromJar("ui/16/logs.png");
+  public static final Icon TEXTFILE_16 = getIconFromJar("ui/16/text.png");
+  public static final Icon STAREMPTY_16 = getIconFromJar("ui/16/star-empty.png");
+  public static final Icon STARHALF_16 = getIconFromJar("ui/16/star-half.png");
+  public static final Icon STAR_16 = getIconFromJar("ui/16/star.png");
+  public static final Icon LOADER_16 = getIconFromJar("ui/16/loader.gif");
   // Movie Renamer logo
   public static final Icon LOGO_22 = getIconFromJar("ui/icon-22.png");
   public static final Icon LOGO_32 = getIconFromJar("ui/icon-32.png");

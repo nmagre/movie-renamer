@@ -16,13 +16,16 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.ui.list.IIconList;
+import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Dimension;
 import java.net.URI;
 import java.util.List;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 /**
@@ -38,10 +41,20 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
   private final Dimension imageSize;
   private final String defaultImage;
   private final DefaultListModel model;
+  private final GalleryPanel gallery;
 
   public ImageWorker(List<URI> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
     this.images = images;
     this.model = model;
+    this.imageSize = imageSize;
+    this.defaultImage = defaultImage;
+    this.gallery = null;
+  }
+
+  public ImageWorker(List<URI> images, GalleryPanel gallery, Dimension imageSize, String defaultImage) {
+    this.images = images;
+    this.model = null;
+    this.gallery = gallery;
     this.imageSize = imageSize;
     this.defaultImage = defaultImage;
   }
@@ -50,7 +63,7 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
   @SuppressWarnings("unchecked")
   protected Void doInBackground() {
 
-    if (model != null) {
+    if (model != null || gallery != null) {
       for (int i = 0; i < images.size(); i++) {
         if (isCancelled()) {
           break;
@@ -67,17 +80,23 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
   @Override
   public final void process(List<ImageWorker<T>.ImageChunk> chunks) {
     for (ImageWorker<T>.ImageChunk chunk : chunks) {
-      Icon icon = chunk.getIcon();
-      int index = chunk.getIndex();
-      if (index >= model.size()) {
-        return;
+      if (model != null) {
+        Icon icon = chunk.getIcon();
+        int index = chunk.getIndex();
+        if (index >= model.size()) {
+          return;
+        }
+
+        @SuppressWarnings("unchecked")
+        T obj = (T) model.get(index);
+
+        obj.setIcon(icon);
+        model.setElementAt(obj, index);
       }
 
-      @SuppressWarnings("unchecked")
-      T obj = (T) model.get(index);
-
-      obj.setIcon(icon);
-      model.setElementAt(obj, index);
+      if(gallery != null) {
+        gallery.addImage((ImageIcon) chunk.getIcon());
+      }
     }
   }
 

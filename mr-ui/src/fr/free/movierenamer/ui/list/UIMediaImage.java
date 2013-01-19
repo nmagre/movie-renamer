@@ -18,7 +18,11 @@
 package fr.free.movierenamer.ui.list;
 
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.ui.settings.UISettings;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
 import javax.swing.Icon;
 
 /**
@@ -64,6 +68,16 @@ public class UIMediaImage implements IIconList {
   @Override
   public void setIcon(Icon icon) {
     this.icon = icon;
+  }
+
+  @Override
+  public URI getUri() {
+    try {
+      return info.getHref().toURI();
+    } catch (URISyntaxException ex) {
+      UISettings.LOGGER.log(Level.WARNING, null, ex);
+    }
+    return null;
   }
 
 }
