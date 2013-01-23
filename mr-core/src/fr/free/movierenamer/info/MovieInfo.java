@@ -54,23 +54,27 @@ public class MovieInfo extends MediaInfo {
     votes,
     budget,
     posterPath,
+    collection,
     runtime
   }
   protected final Map<MovieProperty, String> fields;
   protected final String[] genres;
   protected final Locale[] countries;
+  protected final String[] studios;
 
   protected MovieInfo() {
     // used by serializer
     this.fields = null;
     this.genres = null;
     this.countries = null;
+    this.studios = null;
   }
 
-  public MovieInfo(Map<MovieProperty, String> fields, List<String> genres, List<Locale> countries) {
+  public MovieInfo(Map<MovieProperty, String> fields, List<String> genres, List<Locale> countries, List<String> studios) {
     this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
     this.genres = (genres != null) ? genres.toArray(new String[0]) : new String[0];
     this.countries = (countries != null) ? countries.toArray(new Locale[0]) : new Locale[0];
+    this.studios = (studios != null) ? studios.toArray(new String[0]) : new String[0];
   }
 
   private String get(MovieProperty key) {
@@ -159,6 +163,10 @@ public class MovieInfo extends MediaInfo {
 
   public List<Locale> getCountries() {
     return unmodifiableList(asList(countries));
+  }
+
+  public List<String> getStudios() {
+    return unmodifiableList(asList(studios));
   }
 
   @Override
@@ -290,6 +298,7 @@ public class MovieInfo extends MediaInfo {
         }
       }
     }
+
     // la suite ;)
     for (String key : replace.keySet()) {
       Object val = replace.get(key);

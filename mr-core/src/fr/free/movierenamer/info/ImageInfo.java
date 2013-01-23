@@ -17,9 +17,13 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.settings.Settings;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class ImageInfo
@@ -31,15 +35,26 @@ public class ImageInfo extends Info {
 
   private static final long serialVersionUID = 1L;
 
+  public enum ImageSize {
+
+    small,// Thumb
+    medium,
+    big// Original
+  }
+
   public static enum ImageProperty {
+
     language,
     width,
     height,
     url,
+    urlTumb,
+    urlMid,
     desc
   }
 
   public static enum ImageCategoryProperty {
+
     actor,
     thumb,
     fanart,
@@ -49,13 +64,12 @@ public class ImageInfo extends Info {
     clearart,
     unknown
   }
-
   protected Map<ImageProperty, String> fields;
   protected ImageCategoryProperty category;
 
   public ImageInfo(Map<ImageProperty, String> fields, ImageCategoryProperty category) {
     this.fields = new EnumMap<ImageProperty, String>(fields);
-    if(category == null) {
+    if (category == null) {
       this.category = ImageCategoryProperty.unknown;
     } else {
       this.category = category;
@@ -90,21 +104,36 @@ public class ImageInfo extends Info {
     }
   }
 
-  public URL getHref() {
-    try {
-      return new URL(get(ImageProperty.url));
-    } catch (Exception e) {
+  public URL getHref(ImageSize size) {
+    String url = null;
+    switch (size) {
+      case small:
+        url = get(ImageProperty.urlTumb);
+        if (url != null && url.length() > 0) {
+          break;
+        }
+      case medium:
+        url = get(ImageProperty.urlMid);
+        if (url != null && url.length() > 0) {
+          break;
+        }
+      case big:
+        url = get(ImageProperty.url);
+        break;
+    }
+
+    if(url == null) {
       return null;
     }
-  }
 
-//  public URI getURI() {
-//    try {
-//      return getHref().toURI();
-//    } catch (URISyntaxException e) {
-//      throw new RuntimeException(e);
-//    }
-//  }
+    try {
+      return new URL(url);
+    } catch (MalformedURLException ex) {
+      Settings.LOGGER.log(Level.WARNING, null, ex);
+    }
+
+    return null;
+  }
 
   public String getDescription() {
     return get(ImageProperty.desc);

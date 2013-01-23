@@ -31,7 +31,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class TMDbScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class TMDbScrapperTest extends MovieScrapperTest {
@@ -44,7 +44,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    tmdb.setLanguage(Locale.CHINESE);
+    tmdb.setLanguage(Locale.FRENCH);
     List<Movie> results = tmdb.search("pulp fiction");
 
     Movie movie = results.get(0);
@@ -83,7 +83,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
         actor = true;
       }
     }
-    
+
     if(!dir || !actor) {
       Assert.fail();
     }
@@ -92,7 +92,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getImages() throws Exception {
     List<ImageInfo> images = tmdb.getImages(new Movie(1858, null, null, -1, -1));
-    
+
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
     Assert.assertEquals(Integer.valueOf(1920), images.get(0).getWidth());
     Assert.assertEquals(Integer.valueOf(1080), images.get(0).getHeight());

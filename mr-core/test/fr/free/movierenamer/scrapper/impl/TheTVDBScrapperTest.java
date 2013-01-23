@@ -32,7 +32,7 @@ import fr.free.movierenamer.searchinfo.TvShow;
 
 /**
  * Class TheTVDBScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public final class TheTVDBScrapperTest extends TvShowScrapperTest {
@@ -42,7 +42,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
   public void init() {
     thetvdb = new TheTVDBScrapper();
   }
-  
+
   @Override
   public void search() throws Exception {
     List<TvShow> results = thetvdb.search("desperate housewives");
@@ -56,7 +56,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
     Assert.assertEquals(2004, tvShow.getYear());
     Assert.assertEquals(73800, tvShow.getMediaId());
   }
-  
+
   @Override
   public void getTvShowInfo() throws Exception {
     thetvdb.setLanguage(Locale.FRENCH);
@@ -76,7 +76,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
         return;
       }
     }
-    
+
     Assert.fail();
   }
 
@@ -84,9 +84,9 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
   public void getImages() throws Exception {
     List<ImageInfo> images = thetvdb.getImages(new TvShow(70327, null, null, -1));
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
-    Assert.assertNotNull(images.get(1).getHref());
+    Assert.assertNotNull(images.get(1).getHref(ImageInfo.ImageSize.big));
   }
-  
+
   @Override
   public void getEpisodesInfoList() throws Exception {
     thetvdb.setLanguage(Locale.GERMAN);

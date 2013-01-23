@@ -30,7 +30,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class AllocineScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class AllocineScrapperTest extends MovieScrapperTest {
@@ -40,7 +40,7 @@ public class AllocineScrapperTest extends MovieScrapperTest {
   public void init() {
     allocine = new AllocineScrapper();
   }
-  
+
   @Override
   public void search() throws Exception {
     List<Movie> results = allocine.search("avatar");
@@ -77,7 +77,7 @@ public class AllocineScrapperTest extends MovieScrapperTest {
         actor = true;
       }
     }
-    
+
     if(!dir || !actor) {
       Assert.fail();
     }
@@ -87,6 +87,6 @@ public class AllocineScrapperTest extends MovieScrapperTest {
   public void getImages() throws Exception {
     List<ImageInfo> images = allocine.getImages(new Movie(61282, null, null, -1, -1));
     Assert.assertEquals(ImageCategoryProperty.thumb, images.get(0).getCategory());
-    Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref().toExternalForm());
+    Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());// FIXME
   }
 }

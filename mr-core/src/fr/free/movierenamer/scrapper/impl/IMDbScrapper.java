@@ -365,7 +365,9 @@ public class IMDbScrapper extends MovieScrapper {
     // }
     // }
 
-    MovieInfo movieInfo = new MovieInfo(fields, genres, countries);
+    List<String> studios = new ArrayList<String>();
+
+    MovieInfo movieInfo = new MovieInfo(fields, genres, countries, studios);
     return movieInfo;
   }
 

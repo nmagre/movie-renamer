@@ -32,7 +32,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 
 /**
  * Class IMDbScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class IMDbScrapperTest extends MovieScrapperTest {
@@ -56,7 +56,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals(64116, movie.getImdbId());
     Assert.assertEquals(64116, movie.getMediaId());
   }
-  
+
   @Test
   public void searchOneResult() throws Exception {
     imdb.setLanguage(Locale.FRENCH);
@@ -69,7 +69,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals(1957, movie.getYear());
     Assert.assertEquals(50212, movie.getImdbId());
     Assert.assertEquals(50212, movie.getMediaId());
-    
+
   }
 
   @Override
@@ -90,15 +90,15 @@ public class IMDbScrapperTest extends MovieScrapperTest {
         success = "Sergio Leone".equals(info.getName());
       }
     }
-    
+
     Assert.assertTrue(success);
   };
 
   @Override
   public void getImages() throws Exception {
     List<ImageInfo> images = imdb.getImages(new Movie(64116, null, null, -1, -1));
-    
+
     Assert.assertEquals(ImageCategoryProperty.unknown, images.get(0).getCategory());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());
   }
 }

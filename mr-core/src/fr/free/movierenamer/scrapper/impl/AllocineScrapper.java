@@ -94,7 +94,6 @@ public class AllocineScrapper extends MovieScrapper {
     if (url.getHost().equals(host)) {
       Matcher id = allocineID.matcher(searchUrl.toString());
       if (id.find()) {
-        // http://api.allocine.fr/rest/v3/movie?partner=YW5kcm9pZC12M3M&code=61282&format=json&filter=movie
         url = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&format=json&filter=movie&code=" + id.group(1));
       }
     }
@@ -135,6 +134,7 @@ public class AllocineScrapper extends MovieScrapper {
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
+    System.out.println(searchUrl);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     JSONObject movieObject = JSONUtils.selectObject("movie", json);
@@ -163,7 +163,10 @@ public class AllocineScrapper extends MovieScrapper {
       countries.add(LocaleUtils.findCountry(JSONUtils.selectString("$", country), language));
     }
 
-    MovieInfo movieInfo = new MovieInfo(fields, genres, countries);
+    List<String> studios = new ArrayList<String>();
+    studios.add(JSONUtils.selectString("distributor", JSONUtils.selectObject("release", movieObject)));
+
+    MovieInfo movieInfo = new MovieInfo(fields, genres, countries, studios);
     return movieInfo;
   }
 

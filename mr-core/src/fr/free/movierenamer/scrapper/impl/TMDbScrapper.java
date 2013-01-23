@@ -1,5 +1,5 @@
 /*
- " * movie-renamer-core
+ * movie-renamer-core
  * Copyright (C) 2012 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,16 +35,18 @@ import fr.free.movierenamer.info.CastingInfo.PersonProperty;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
+import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
-import java.util.Arrays;
+import org.json.simple.JSONObject;
 
 /**
  * Class TMDbScrapper : search movie on TMDb
@@ -57,8 +59,37 @@ public class TMDbScrapper extends MovieScrapper {
 
   private static final String host = "api.themoviedb.org";
   private static final String name = "TheMovieDb";
-  private static final String version = "2.1"; // TODO change to v3 !!!!
+  private static final String version = "3";
   private final String apikey;
+  private final String imageUrl = "http://cf2.imgobject.com/t/p/";
+
+  private enum TmdbImageSize {
+    backdrop("w300", "w780"),
+    poster("w92", "w185"),
+    cast("w45", "w185");
+
+    private String small;
+    private String medium;
+    private String big;
+
+    private TmdbImageSize(String small, String medium) {
+      this.small = small;
+      this.medium = medium;
+      this.big = "original";
+    }
+
+    public String getSmall() {
+      return small;
+    }
+
+    public String getMedium() {
+      return medium;
+    }
+
+    public String getBig() {
+      return big;
+    }
+  }
 
   public TMDbScrapper() {
     super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de);
@@ -81,46 +112,32 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<Movie> searchMedia(String query, Locale language) throws Exception {
-    // FIXME has to be v3 !!!!
-    // URL searchUrl = new URL("http", host, "/" + version + "/search/movie" +
-    // "?api_key=" + apikey + "&language=" + locale.getLanguage() + "&query=" +
-    // URIRequest.encode(query));
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.search/" + language.getLanguage() + "/xml/" + apikey + "/" + URIRequest.encode(query));
+    URL searchUrl = new URL("http", host, "/" + version + "/search/movie"
+            + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&query="
+            + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
+  @Override
   protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
-    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+    List<JSONObject> jsonObj = JSONUtils.selectList("results", json);
+    Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>(jsonObj.size());
 
-    List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
-    Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>(nodes.size());
-
-    for (Node node : nodes) {
-      int id = XPathUtils.getIntegerContent("id", node);
-      int imdbId = -1;
-      try {
-        String imdb = XPathUtils.getTextContent("imdb_id", node);
-        imdbId = Integer.parseInt(imdb.substring(2));
-      } catch (Exception e) {
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Invalid imdb ID", e);
-      }
-      String movieName = XPathUtils.getTextContent("name", node);
-      Node imagesNodes = XPathUtils.selectNode("//images", dom);
+    for (JSONObject node : jsonObj) {
+      int id = JSONUtils.selectInteger("id", node);
+      String movieName = JSONUtils.selectString("title", node);
+      String imageNode = JSONUtils.selectString("poster_path", node);
       URL thumb = null;
-      for (Node image : XPathUtils.selectNodes("image", imagesNodes)) {
-        try {
-          if ("original".equals(XPathUtils.getAttribute("size", image))) {
-            thumb = new URL(XPathUtils.getAttribute("url", image));
-            break;
-          }
-        } catch (Exception e) {
-          Logger.getLogger(getClass().getName()).log(Level.WARNING, "Invalid image: " + image, e);
-        }
+      try {
+        thumb = new URL("http://cf2.imgobject.com/t/p/w92" + imageNode);
+      } catch (Exception e) {
+        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Invalid image: " + thumb, e);
       }
-      Date released = Date.parse(XPathUtils.getTextContent("released", node), "yyyy-MM-dd");
+      Date released = Date.parse(JSONUtils.selectString("release_date", node), "yyyy-MM-dd");
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(id, movieName, thumb, (released != null) ? released.getYear() : -1, imdbId));
+        resultSet.put(id, new Movie(id, movieName, thumb, (released != null) ? released.getYear() : -1, id));
       }
     }
 
@@ -129,65 +146,65 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + language.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
-    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "?api_key=" + apikey);
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
+    Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
+    fields.put(MovieProperty.title, JSONUtils.selectString("title", json));
+    fields.put(MovieProperty.rating, JSONUtils.selectString("vote_average", json));
+    fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
+    fields.put(MovieProperty.id, JSONUtils.selectString("id", json));
+    fields.put(MovieProperty.IMDB_ID, JSONUtils.selectString("imdb_id", json));
+    fields.put(MovieProperty.originalTitle, JSONUtils.selectString("original_title", json));
+    Date released = Date.parse(JSONUtils.selectString("release_date", json), "yyyy-MM-dd");
+    fields.put(MovieProperty.releasedDate, "" + released.getYear());
+    fields.put(MovieProperty.overview, JSONUtils.selectString("overview", json));
+    fields.put(MovieProperty.runtime, JSONUtils.selectString("runtime", json));
+    fields.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
+    fields.put(MovieProperty.collection, JSONUtils.selectString("name", JSONUtils.selectObject("belongs_to_collection", json)));
 
-    for (Node node : nodes) {
-      Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-      fields.put(MovieProperty.title, XPathUtils.getTextContent("name", node));
-      fields.put(MovieProperty.rating, XPathUtils.getTextContent("rating", node));
-      fields.put(MovieProperty.votes, XPathUtils.getTextContent("votes", node));
-      fields.put(MovieProperty.id, XPathUtils.getTextContent("id", node));
-      fields.put(MovieProperty.IMDB_ID, XPathUtils.getTextContent("imdb_id", node));
-      fields.put(MovieProperty.originalTitle, XPathUtils.getTextContent("original_name", node));
-      fields.put(MovieProperty.releasedDate, XPathUtils.getTextContent("released", node));
-      fields.put(MovieProperty.overview, XPathUtils.getTextContent("overview", node));
-      fields.put(MovieProperty.runtime, XPathUtils.getTextContent("runtime", node));
-      fields.put(MovieProperty.budget, XPathUtils.getTextContent("budget", node));
-
-      List<String> genres = new ArrayList<String>();
-      for (Node category : XPathUtils.selectNodes("categories/category", node)) {
-        if ("genre".equals(XPathUtils.getAttribute("type", category))) {
-          genres.add(XPathUtils.getAttribute("name", category));
-        }
-      }
-
-      List<Locale> countries = new ArrayList<Locale>();
-      // TODO set country
-
-      MovieInfo movieInfo = new MovieInfo(fields, genres, countries);
-      return movieInfo;
+    List<String> genres = new ArrayList<String>();
+    for (JSONObject jsonObj : JSONUtils.selectList("genres", json)) {
+      genres.add(JSONUtils.selectString("name", jsonObj));
     }
 
-    return null;
+    List<Locale> countries = new ArrayList<Locale>();
+    for (JSONObject jsonObj : JSONUtils.selectList("production_countries", json)) {
+      countries.add(new Locale("", JSONUtils.selectString("iso_3166_1", jsonObj)));
+    }
+
+    List<String> studios = new ArrayList<String>();
+    for (JSONObject jsonObj : JSONUtils.selectList("production_companies", json)) {
+      studios.add(JSONUtils.selectString("name", jsonObj));
+    }
+
+    MovieInfo movieInfo = new MovieInfo(fields, genres, countries, studios);
+    return movieInfo;
   }
 
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getImages/" + language.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
-    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "/images?api_key=" + apikey);
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     for (String section : new String[]{
-              "backdrop", "posterPath"
+              "backdrops", "posters"
             }) {
-      List<Node> sectionNodes = XPathUtils.selectNodes("//" + section, dom);
-      for (Node curNode : sectionNodes) {
-        for (Node image : XPathUtils.selectNodes("image", curNode)) {
-          try {
-            if ("original".equals(XPathUtils.getAttribute("size", image))) {
-              Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
-              imageFields.put(ImageProperty.height, XPathUtils.getAttribute("height", image));
-              imageFields.put(ImageProperty.url, XPathUtils.getAttribute("url", image));
-              imageFields.put(ImageProperty.width, XPathUtils.getAttribute("width", image));
-              images.add(new ImageInfo(imageFields, section.equals("posterPath") ? ImageCategoryProperty.thumb : ImageCategoryProperty.fanart));
-            }
-          } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Invalid image: " + image, e);
-          }
-        }
+      List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
+      TmdbImageSize imageSize = section.equals("backdrops") ? TmdbImageSize.backdrop : TmdbImageSize.poster;
+      for (JSONObject jsonObj : jsonObjs) {
+        Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
+        String file_path = JSONUtils.selectString("file_path", jsonObj);
+        imageFields.put(ImageProperty.url, imageUrl + imageSize.getBig() + file_path);
+        imageFields.put(ImageProperty.urlMid, imageUrl + imageSize.getMedium() + file_path);
+        imageFields.put(ImageProperty.urlTumb, imageUrl + imageSize.getSmall() + file_path);
+
+        imageFields.put(ImageProperty.language, JSONUtils.selectString("iso_639_1", jsonObj));
+        imageFields.put(ImageProperty.width, JSONUtils.selectString("width", jsonObj));
+        imageFields.put(ImageProperty.height, JSONUtils.selectString("height", jsonObj));
+
+        images.add(new ImageInfo(imageFields, section.equals("posters") ? ImageCategoryProperty.thumb : ImageCategoryProperty.fanart));
       }
     }
 
@@ -196,23 +213,34 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/Movie.getInfo/" + language.getLanguage() + "/xml/" + apikey + "/" + movie.getMediaId());
-    Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "/casts?api_key=" + apikey);
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    List<Node> nodes = XPathUtils.selectNodes("OpenSearchDescription/movies/movie", dom);
+    List<CastingInfo> casting = new ArrayList<CastingInfo>();
 
-    for (Node node : nodes) {
-      List<CastingInfo> casting = new ArrayList<CastingInfo>();
-      for (Node person : XPathUtils.selectNodes("cast/person", node)) {
+    for (String section : new String[]{
+              "cast", "crew"
+            }) {
+      List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
+      for (JSONObject jsonObj : jsonObjs) {
         Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
-        personFields.put(PersonProperty.name, XPathUtils.getAttribute("name", person));
-        personFields.put(PersonProperty.character, XPathUtils.getAttribute("character", person));
-        personFields.put(PersonProperty.job, XPathUtils.getAttribute("job", person));
+        personFields.put(PersonProperty.name, JSONUtils.selectString("name", jsonObj));
+        personFields.put(PersonProperty.character, JSONUtils.selectString("character", jsonObj));
+        String image = JSONUtils.selectString("profile_path", jsonObj);
+        if(image != null && image.length() > 0) {
+           personFields.put(PersonProperty.picturePath, imageUrl + TmdbImageSize.cast.medium + image);
+        }
+
+        if (section.equals("crew")) {
+          personFields.put(PersonProperty.job, JSONUtils.selectString("job", jsonObj));
+        }
+        else {
+          personFields.put(PersonProperty.job, CastingInfo.ACTOR);
+        }
         casting.add(new CastingInfo(personFields));
       }
-      return casting;
     }
 
-    return null;
+    return casting;
   }
 }
