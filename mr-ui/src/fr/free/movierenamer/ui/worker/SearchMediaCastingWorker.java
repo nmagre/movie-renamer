@@ -79,7 +79,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
   @Override
   protected void workerDone() throws Exception {
     List<UIPersonImage> infos = get();
-    final DefaultListModel castingModel = mr.getCurrentMediaPanel().getCastingModel();
+    final DefaultListModel castingModel = mr.getMediaPanel().getCastingModel();
 
     if (infos != null) {
       castingModel.addElements(infos);

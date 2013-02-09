@@ -21,7 +21,6 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventListModel;
-import com.alee.extended.filechooser.FilesToChoose;
 import com.alee.extended.filechooser.SelectionMode;
 import com.alee.extended.filechooser.WebFileChooser;
 import com.alee.extended.layout.ToolbarLayout;
@@ -148,7 +147,7 @@ public class MovieRenamer extends JFrame {
 
   public MovieRenamer() {
 
-    // Cache.clearAllCache();//FIXME remove !!!
+    //Cache.clearAllCache();//FIXME remove !!!
 
     logPanel = new LogPanel();
     moviePnl = new MoviePanel(this);
@@ -197,7 +196,7 @@ public class MovieRenamer extends JFrame {
     init();
     renameTb.remove(fileFormatField);
 
-    changeMediaPanel();
+    loadMediaPanel();
 
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
     setLocationRelativeTo(null);
@@ -296,7 +295,8 @@ public class MovieRenamer extends JFrame {
     searchResultList.setCellRenderer(new IconListRenderer<IIconList>(false));
 
     // file chooser init
-    fileChooser.setFilesToChoose(FilesToChoose.all);
+    //fileChooser.setFilesToChoose(FilesToChoose.all);
+    fileChooser.setAvailableFilter(new FileFilter());
     fileChooser.setSelectionMode(SelectionMode.MULTIPLE_SELECTION);
     FileFilter ff = new FileFilter();
     fileChooser.setPreviewFilter(ff);
@@ -368,6 +368,7 @@ public class MovieRenamer extends JFrame {
   }
 
   /**
+   * Load and show media files
    *
    * @param files
    */
@@ -411,20 +412,20 @@ public class MovieRenamer extends JFrame {
     MediaScrapper<? extends Media, ? extends MediaInfo> mediaScrapper = ((UIScrapper) scrapperCb.getSelectedItem()).getScrapper();
     SearchMediaWorker searchWorker = new SearchMediaWorker(this, currentMedia, mediaScrapper, searchResultList, searchBtn, searchField, searchResultModel);
     searchWorker.execute();
-    
+
     workerQueue.add(searchWorker);
   }
 
+  /*
+   * Search for media information
+   */
   private void searchMediaInfo() {
     UISearchResult searchResult = getSelectedSearchResult();
     if (searchResult == null) {
       return;
     }
 
-    MediaPanel ipanel = getCurrentMediaPanel();
-    if (ipanel == null) {
-      return;
-    }
+    MediaPanel ipanel = getMediaPanel();
 
     SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(this, currentMedia, searchResult);
     SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(this, searchResult);
@@ -437,19 +438,20 @@ public class MovieRenamer extends JFrame {
     workerQueue.add(imagesWorker);
   }
 
-  private void cancelWorker() {
-    SwingWorker<?, ?> worker;
-    worker = workerQueue.poll();
-    while (worker != null) {
-      worker.cancel(true);
-      worker = workerQueue.poll();
-    }
-  }
-
+  /**
+   * Add worker to queue
+   *
+   * @param worker
+   */
   public synchronized void addWorker(SwingWorker<?, ?> worker) {
     workerQueue.add(worker);
   }
 
+  /**
+   * Get selected media file
+   *
+   * @return UIFile selected or null
+   */
   public UIFile getSelectedMediaFile() {
     UIFile current = null;
     if (mediaFileList != null) {
@@ -464,6 +466,11 @@ public class MovieRenamer extends JFrame {
     return current;
   }
 
+  /**
+   * Get selected serah result
+   *
+   * @return UISearchResult selected or null
+   */
   public UISearchResult getSelectedSearchResult() {
     UISearchResult current = null;
     if (searchResultList != null) {
@@ -478,7 +485,10 @@ public class MovieRenamer extends JFrame {
     return current;
   }
 
-  private void changeMediaPanel() {
+  /*
+   * Load media panel with fade effect
+   */
+  private void loadMediaPanel() {
     movieModeBtn.setEnabled(false);
     tvShowModeBtn.setEnabled(false);
     switch (currentMode) {
@@ -501,19 +511,37 @@ public class MovieRenamer extends JFrame {
     setTitle(UISettings.APPNAME + "-" + setting.getVersion() + " " + currentMode.getTitleMode());
   }
 
-  public MediaPanel getCurrentMediaPanel() {
+  /**
+   * Get media panel
+   *
+   * @return mediapanel
+   */
+  public MediaPanel getMediaPanel() {
+    return getMediaPanel(currentMode);
+  }
+
+  /**
+   * Get media panel
+   *
+   * @param mode
+   * @return mediapanel
+   */
+  public MediaPanel getMediaPanel(UIMode mode) {
     MediaPanel current = null;
-    Component compo = containerTransitionMediaPanel.getContent();
-    if (compo != null) {
-      if (compo instanceof MediaPanel) {
-        current = (MediaPanel) compo;
-      }
+    switch (mode) {
+      case MOVIEMODE:
+        current = moviePnl;
+        break;
+      case TVSHOWMODE:
+        current = tvShowPanel;
+        break;
+      default:
     }
     return current;
   }
 
   public void updateRenamedTitle() {// TODO
-    MediaInfo mediaInfo = getCurrentMediaPanel().getMediaInfo();
+    MediaInfo mediaInfo = getMediaPanel().getMediaInfo();
     if (mediaInfo != null) {
       renameField.setText(mediaInfo.getRenamedTitle(fileFormatField.getText()));
     } else {
@@ -529,7 +557,12 @@ public class MovieRenamer extends JFrame {
    */
   private void clearInterface(boolean clearMediaList, boolean clearSearchResultList) {
     // Stop all running workers
-    cancelWorker();
+    SwingWorker<?, ?> worker;
+    worker = workerQueue.poll();
+    while (worker != null) {
+      worker.cancel(true);
+      worker = workerQueue.poll();
+    }
 
     if (clearMediaList) {
       searchField.setText(null);
@@ -542,8 +575,8 @@ public class MovieRenamer extends JFrame {
       searchResultModel.removeAllElements();
     }
 
-    moviePnl.clear();
-    tvShowPanel.clear();
+    moviePnl.clearPanel();
+    tvShowPanel.clearPanel();
     updateRenamedTitle();
   }
 
@@ -874,12 +907,12 @@ public class MovieRenamer extends JFrame {
 
   private void movieModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_movieModeBtnActionPerformed
     currentMode = UIMode.MOVIEMODE;
-    changeMediaPanel();
+    loadMediaPanel();
   }//GEN-LAST:event_movieModeBtnActionPerformed
 
   private void tvShowModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_tvShowModeBtnActionPerformed
     currentMode = UIMode.TVSHOWMODE;
-    changeMediaPanel();
+    loadMediaPanel();
   }//GEN-LAST:event_tvShowModeBtnActionPerformed
 
   private void exitBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed

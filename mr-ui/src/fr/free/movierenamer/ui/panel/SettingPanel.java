@@ -18,7 +18,6 @@ package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.text.WebTextField;
@@ -51,14 +50,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.ListSelectionModel;
 
 /**
  * Class Setting dialog

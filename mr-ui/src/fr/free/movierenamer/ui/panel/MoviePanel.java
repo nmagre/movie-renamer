@@ -32,6 +32,8 @@ import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.popup.PopupWay;
 import com.alee.utils.SwingUtils;
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
@@ -139,7 +141,7 @@ public class MoviePanel extends MediaPanel {
    * @param mr
    */
   public MoviePanel(MovieRenamer mr) {
-    super(mr);
+    super(mr, ImageCategoryProperty.thumb);
     this.setting = UISettings.getInstance();
 
     initComponents();
@@ -154,6 +156,7 @@ public class MoviePanel extends MediaPanel {
     actorList.setModel(actorListModel);
     audioList.setModel(audioListModel);
     subtitleList.setModel(subtitleListModel);
+
     countryList.setCellRenderer(new IconListRenderer<IIconList>(false));
     actorList.setCellRenderer(new IconListRenderer<IIconList>(false));
     audioList.setCellRenderer(new IconListRenderer<IIconList>(false));
@@ -164,7 +167,7 @@ public class MoviePanel extends MediaPanel {
   }
 
   @Override
-  public void clear() {
+  protected void clear() {
     SwingUtilities.invokeLater(new Thread() {
       @Override
       public void run() {
@@ -191,7 +194,7 @@ public class MoviePanel extends MediaPanel {
     titleLbl.setText(movieInfo.getTitle() + " (" + movieInfo.getYear() + ")");
     setRate(movieInfo.getRating());
     for (Locale locale : movieInfo.getCountries()) {
-      countryListModel.addElement(Flag.getFlag(locale.getCountry()));
+      countryListModel.addElement(new UICountry(locale));
     }
 
     for (CastingInfo info : movieInfo.getCast()) {
@@ -225,7 +228,6 @@ public class MoviePanel extends MediaPanel {
       // Audio
       for (MediaAudio audio : maudios) {
         audioListModel.addElement(new UIMediaAudio(audio));
-        System.out.println(audio.getLanguage().getCountry());
       }
 
       // Subtitle
@@ -308,7 +310,7 @@ public class MoviePanel extends MediaPanel {
     webLabel8 = new WebLabel();
     componentTransition2 = new ComponentTransition();
     imagePanel = new WebPanel();
-    thumbLbl = new WebLabel();
+    thumbLbl = getThumbLabel(ImageCategoryProperty.thumb);
     fanartLbl = new WebLabel();
     thumbnailLbl = new WebLabel();
     fanarttLbl = new WebLabel();
@@ -598,6 +600,11 @@ public class MoviePanel extends MediaPanel {
 
     fanartLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
     fanartLbl.setHorizontalAlignment(SwingConstants.CENTER);
+    fanartLbl.addMouseListener(new MouseAdapter() {
+      public void mouseReleased(MouseEvent evt) {
+        fanartLblMouseReleased(evt);
+      }
+    });
 
     thumbnailLbl.setText("Thumbnail");
     thumbnailLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
@@ -733,12 +740,7 @@ public class MoviePanel extends MediaPanel {
   }// </editor-fold>//GEN-END:initComponents
 
   private void thumbLblMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_thumbLblMouseReleased
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getGalleryPanel().setVisible(true);
-      }
-    });
+    showGalleryPanel(ImageInfo.ImageCategoryProperty.thumb);
   }//GEN-LAST:event_thumbLblMouseReleased
 
   private void movieBctActionPerformed(ActionEvent evt) {//GEN-FIRST:event_movieBctActionPerformed
@@ -757,9 +759,18 @@ public class MoviePanel extends MediaPanel {
     componentTransition2.performTransition(imagePanelPlus);
   }//GEN-LAST:event_moreBctActionPerformed
 
+  private void fanartLblMouseReleased(MouseEvent evt) {//GEN-FIRST:event_fanartLblMouseReleased
+    showGalleryPanel(ImageInfo.ImageCategoryProperty.fanart);
+  }//GEN-LAST:event_fanartLblMouseReleased
+
   @Override
   public DefaultListModel getCastingModel() {
     return actorListModel;
+  }
+
+  @Override
+  protected String getPanelName() {
+    return "Movie Panel";
   }
 
   public class UICastingInfo implements IIconList {
@@ -786,8 +797,39 @@ public class MoviePanel extends MediaPanel {
     }
 
     @Override
-    public URI getUri() {
+    public URI getUri(ImageInfo.ImageSize size) {
       return info.getPicturePath();
+    }
+  }
+
+  public class UICountry implements IIconList {
+
+    private Locale country;
+    private Icon icon;
+
+    public UICountry(Locale country) {
+      this.country = country;
+      icon = Flag.getFlag(country.getCountry()).getIcon();
+    }
+
+    @Override
+    public Icon getIcon() {
+      return icon;
+    }
+
+    @Override
+    public void setIcon(Icon icon) {
+      this.icon = icon;
+    }
+
+    @Override
+    public String toString() {
+      return country.getDisplayCountry(UISettings.getInstance().coreInstance.getAppLanguage());
+    }
+
+    @Override
+    public URI getUri(ImageInfo.ImageSize size) {
+      return null;
     }
   }
 }

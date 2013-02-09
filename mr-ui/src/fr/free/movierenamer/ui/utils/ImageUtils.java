@@ -161,20 +161,25 @@ public final class ImageUtils {
     return getIcon(uri, dim, defaultImage);
   }
 
+  public static boolean isInCache(URI imagePth) {
+    Cache cache = Cache.getCache("long");
+    if (cache != null) {
+      ImageIcon stored = cache.get(imagePth, ImageIcon.class);
+      if (stored != null) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public static Icon getIcon(URI imagePth, Dimension dim, String defaultImage) {
     Cache cache = Cache.getCache("long");
     java.awt.Image img;
+
+
     if (imagePth != null) {
-      if (cache != null) {
-        ImageIcon stored = cache.get(imagePth, ImageIcon.class);
-        if (stored != null) {
-          img = stored.getImage();
-        } else {
-          img = null;
-        }
-      } else {
-        img = null;
-      }
+      img = isInCache(imagePth) ? cache.get(imagePth, ImageIcon.class).getImage() : null;
       if (img == null) {
         try {
           InputStream is = URIRequest.getInputStream(imagePth);

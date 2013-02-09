@@ -130,9 +130,11 @@ public class TMDbScrapper extends MovieScrapper {
       String imageNode = JSONUtils.selectString("poster_path", node);
       URL thumb = null;
       try {
-        thumb = new URL("http://cf2.imgobject.com/t/p/w92" + imageNode);
+        if(!imageNode.equals("null")) {
+          thumb = new URL(imageUrl + TmdbImageSize.poster.small + imageNode);
+        }
       } catch (Exception e) {
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Invalid image: " + thumb, e);
+        Settings.LOGGER.log(Level.WARNING, "Invalid image: " + thumb, e);
       }
       Date released = Date.parse(JSONUtils.selectString("release_date", node), "yyyy-MM-dd");
 
@@ -196,11 +198,15 @@ public class TMDbScrapper extends MovieScrapper {
       for (JSONObject jsonObj : jsonObjs) {
         Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
         String file_path = JSONUtils.selectString("file_path", jsonObj);
+
         imageFields.put(ImageProperty.url, imageUrl + imageSize.getBig() + file_path);
         imageFields.put(ImageProperty.urlMid, imageUrl + imageSize.getMedium() + file_path);
         imageFields.put(ImageProperty.urlTumb, imageUrl + imageSize.getSmall() + file_path);
 
-        imageFields.put(ImageProperty.language, JSONUtils.selectString("iso_639_1", jsonObj));
+        String lang = JSONUtils.selectString("iso_639_1", jsonObj);
+        if(lang != null && !lang.equals("null")) {
+          imageFields.put(ImageProperty.language, lang);
+        }
         imageFields.put(ImageProperty.width, JSONUtils.selectString("width", jsonObj));
         imageFields.put(ImageProperty.height, JSONUtils.selectString("height", jsonObj));
 

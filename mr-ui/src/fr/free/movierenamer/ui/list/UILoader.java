@@ -17,6 +17,7 @@
 package fr.free.movierenamer.ui.list;
 
 import com.alee.laf.list.WebList;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.net.URI;
 import javax.swing.Icon;
@@ -52,7 +53,7 @@ public class UILoader implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageInfo.ImageSize size) {
     return null;
   }
 

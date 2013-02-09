@@ -18,7 +18,11 @@
 package fr.free.movierenamer.ui.list;
 
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
+import fr.free.movierenamer.info.ImageInfo.ImageSize;
+import fr.free.movierenamer.ui.res.Flag;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.utils.Sorter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,16 +35,18 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIMediaImage implements IIconList {
+public class UIMediaImage extends Sorter.ISort implements IIconList {
 
   private final ImageInfo info;
   private Icon icon;
-  private final ImageInfo.ImageCategoryProperty type;
+  private UIImageLang imglang;
+  private final ImageCategoryProperty type;
 
   public UIMediaImage(ImageInfo info, Icon icon) {
     this.info = info;
-    this.type = info == null ? null : info.getCategory();
+    this.type = info.getCategory();
     this.icon = icon;
+    imglang = Flag.getFlag(info.getLanguage());
   }
 
   @Override
@@ -52,11 +58,20 @@ public class UIMediaImage implements IIconList {
     return info;
   }
 
-  public URL getUrl() {
-    return info.getHref();
+  @Override
+  public String getLanguage() {
+    return info.getLanguage();
   }
 
-  public ImageInfo.ImageCategoryProperty getType() {
+  public UIImageLang getImagelang() {
+    return imglang;
+  }
+
+  private URL getUrl(ImageSize size) {
+    return info.getHref(size);
+  }
+
+  public ImageCategoryProperty getType() {
     return type;
   }
 
@@ -71,13 +86,22 @@ public class UIMediaImage implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageSize size) {
     try {
-      return info.getHref().toURI();
+      return getUrl(size).toURI();
     } catch (URISyntaxException ex) {
       UISettings.LOGGER.log(Level.WARNING, null, ex);
     }
     return null;
   }
 
+  @Override
+  protected String getName() {
+    return getUrl(ImageSize.small).toString();
+  }
+
+  @Override
+  protected int getYear() {
+    return 0;
+  }
 }

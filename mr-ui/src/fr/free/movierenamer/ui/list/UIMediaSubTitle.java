@@ -16,6 +16,7 @@
  */
 package fr.free.movierenamer.ui.list;
 
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.ui.res.Flag;
 import java.net.URI;
@@ -28,7 +29,7 @@ import javax.swing.Icon;
 public class UIMediaSubTitle implements IIconList {
 
   private MediaSubTitle msubtitle;
-  private Icon icon;
+  private UIImageLang image;
 
   public UIMediaSubTitle(MediaSubTitle msubtitle) {
     this.msubtitle = msubtitle;
@@ -36,15 +37,15 @@ public class UIMediaSubTitle implements IIconList {
 
   @Override
   public Icon getIcon() {
-    if(icon == null) {
-      icon = Flag.getFlag(msubtitle.getLanguage().getLanguage());
+    if(image == null) {
+      image = Flag.getFlag(msubtitle.getLanguage().getLanguage());
     }
-    return icon;
+    return image.getIcon();
   }
 
   @Override
   public void setIcon(Icon icon) {
-    this.icon = icon;
+    //image.setIcon(icon);
   }
 
   @Override
@@ -53,7 +54,7 @@ public class UIMediaSubTitle implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageInfo.ImageSize size) {
     return null;
   }
 

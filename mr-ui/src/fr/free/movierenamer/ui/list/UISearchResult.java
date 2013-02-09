@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.list;
 
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
@@ -74,7 +75,7 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageInfo.ImageSize size) {
     try {
       return searchResult.getURL().toURI();
     } catch (URISyntaxException ex) {
@@ -109,9 +110,11 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
     if (showYear) {
       toString += " (" + searchResult.getYear() + ")";
     }
+
     if (showId) {
       toString += " (id:" + searchResult.getMediaId() + ")";
     }
     return toString;
   }
+
 }

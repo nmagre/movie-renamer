@@ -693,6 +693,9 @@
                   <Events>
                     <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="thumbLblMouseReleased"/>
                   </Events>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="getThumbLabel(ImageCategoryProperty.thumb)"/>
+                  </AuxValues>
                 </Component>
                 <Component class="com.alee.laf.label.WebLabel" name="fanartLbl">
                   <Properties>
@@ -705,6 +708,9 @@
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="0"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fanartLblMouseReleased"/>
+                  </Events>
                 </Component>
                 <Component class="com.alee.laf.label.WebLabel" name="thumbnailLbl">
                   <Properties>

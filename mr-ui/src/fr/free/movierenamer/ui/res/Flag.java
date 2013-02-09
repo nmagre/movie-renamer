@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.res;
 
+import fr.free.movierenamer.ui.list.UIImageLang;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -35,12 +36,13 @@ public abstract class Flag {
   private static final Icon Unknown = ImageUtils.getIconFromJar("country/unknown.png");
 
   // Only most common flag for video media
-  private enum localeFlag {
+  private enum FlagsIcon {
 
     ara(ImageUtils.getIconFromJar("country/ara.png")),
     ar(ImageUtils.getIconFromJar("country/ar.png")),
     at(ImageUtils.getIconFromJar("country/at.png")),
     au(ImageUtils.getIconFromJar("country/au.png")),
+    az(ImageUtils.getIconFromJar("country/tr.png")),
     be(ImageUtils.getIconFromJar("country/be.png")),
     bg(ImageUtils.getIconFromJar("country/bg.png")),
     br(ImageUtils.getIconFromJar("country/br.png")),
@@ -55,7 +57,7 @@ public abstract class Flag {
     de(ImageUtils.getIconFromJar("country/de.png")),
     dk(ImageUtils.getIconFromJar("country/dk.png")),
     el(ImageUtils.getIconFromJar("country/el.png")),
-    en(ImageUtils.getIconFromJar("country/en.png")),
+    en(ImageUtils.getIconFromJar("country/gb.png")),
     es(ImageUtils.getIconFromJar("country/es.png")),
     et(ImageUtils.getIconFromJar("country/et.png")),
     fa(ImageUtils.getIconFromJar("country/fa.png")),
@@ -79,8 +81,10 @@ public abstract class Flag {
     ja(ImageUtils.getIconFromJar("country/ja.png")),
     jp(ImageUtils.getIconFromJar("country/jp.png")),
     ko(ImageUtils.getIconFromJar("country/ko.png")),
+    la(ImageUtils.getIconFromJar("country/la.png")),
     lt(ImageUtils.getIconFromJar("country/lt.png")),
     lv(ImageUtils.getIconFromJar("country/lv.png")),
+    mc(ImageUtils.getIconFromJar("country/mc.png")),
     mk(ImageUtils.getIconFromJar("country/mk.png")),
     ms(ImageUtils.getIconFromJar("country/ms.png")),
     mx(ImageUtils.getIconFromJar("country/mx.png")),
@@ -91,6 +95,7 @@ public abstract class Flag {
     pb(ImageUtils.getIconFromJar("country/pb.png")),
     pk(ImageUtils.getIconFromJar("country/pk.png")),
     pl(ImageUtils.getIconFromJar("country/pl.png")),
+    pr(ImageUtils.getIconFromJar("country/pr.png")),
     pt(ImageUtils.getIconFromJar("country/pt.png")),
     ro(ImageUtils.getIconFromJar("country/ro.png")),
     ru(ImageUtils.getIconFromJar("country/ru.png")),
@@ -111,7 +116,7 @@ public abstract class Flag {
     zh(ImageUtils.getIconFromJar("country/zh.png"));
     private final Icon flag;
 
-    localeFlag(Icon flag) {
+    private FlagsIcon(Icon flag) {
       this.flag = flag;
     }
 
@@ -120,29 +125,41 @@ public abstract class Flag {
     }
   }
 
-  public static Icon getFlag(String code) {
+  public static UIImageLang getFlag(String code) {
+    if(code == null || code.length() == 0) {
+      return new UIImageLang(Locale.ROOT, Unknown);
+    }
+
+    code = code.toLowerCase();
+
     Locale langLocal = LocaleUtils.findLanguage(code);
     Locale countryLocale = LocaleUtils.findCountry(code);
 
     if (langLocal != null || countryLocale != null) {
-      for (localeFlag lFlag : localeFlag.values()) {
+      for (FlagsIcon lFlag : FlagsIcon.values()) {
+
+        if(lFlag.name().equals(code)) {
+          return new UIImageLang(new Locale("", lFlag.name()), lFlag.getFlagIcon());
+        }
+
         if (langLocal != null) {
           String language = langLocal.getLanguage();
           if (language.equals("ar")) {
             language = "ara";
           }
+
           if (language.equalsIgnoreCase(lFlag.name())) {
-            return lFlag.getFlagIcon();
+            return new UIImageLang(new Locale("", lFlag.name()), lFlag.getFlagIcon());
           }
         }
-        
+
         if (countryLocale != null && langLocal.getCountry().equalsIgnoreCase(lFlag.name())) {
-          return lFlag.getFlagIcon();
+          return new UIImageLang(new Locale("", lFlag.name()), lFlag.getFlagIcon());
         }
       }
     }
 
-    UISettings.LOGGER.log(Level.WARNING, "Flag not found : " + code);
-    return Unknown;
+    UISettings.LOGGER.log(Level.WARNING, String.format("Flag not found : %s", code));
+    return new UIImageLang(Locale.ROOT, Unknown);
   }
 }

@@ -16,12 +16,15 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import com.alee.extended.filechooser.WebFileChooser;
+import com.alee.extended.filefilter.DefaultFileFilter;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.res.LogsTableModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Color;
 import java.awt.Component;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
@@ -40,11 +44,13 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 /**
+ * Class LogPanel
  *
- * @author duffy
+ * @author Nicolas Magré
  */
 public class LogPanel extends JDialog {
 
+  private final WebFileChooser fileChooser;
   private static final long serialVersionUID = 1L;
 // TODO
   private final logHandler handler = new logHandler();
@@ -58,7 +64,28 @@ public class LogPanel extends JDialog {
    * Creates new form LogPanel
    */
   public LogPanel() {
+
     initComponents();
+
+    fileChooser = new WebFileChooser(this, LocaleUtils.i18nExt("saveLogFile"));// FIXME i18n
+    DefaultFileFilter filter = new DefaultFileFilter() {
+
+      @Override
+      public ImageIcon getIcon() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public String getDescription() {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public boolean accept(File pathname) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+    };
+
     logsTable.setModel(logsModel);
     logsTable.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
       private static final long serialVersionUID = 1L;
@@ -185,14 +212,13 @@ public class LogPanel extends JDialog {
 
   private void logsFileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logsFileBtnActionPerformed
     StringBuilder logs = new StringBuilder();
-    for(LogRecord record : handler.getRecord()) {
+    for (LogRecord record : handler.getRecord()) {
       logs.append(record.getSequenceNumber()).append(" : ").append(record.getSourceClassName()).append(".");
       logs.append(record.getSourceMethodName()).append(" : ").append(record.getMessage()).append("\n");
     }
 
     System.out.println(logs);
   }//GEN-LAST:event_logsFileBtnActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane jScrollPane2;
   private com.alee.laf.button.WebButton logsFileBtn;
@@ -223,7 +249,9 @@ public class LogPanel extends JDialog {
     public void publish(LogRecord record) {
       logsModel.addRecord(record);
       records.add(record);
-      if(records.size() == 1 ) logsFileBtn.setEnabled(true);
+      if (records.size() == 1) {
+        logsFileBtn.setEnabled(true);
+      }
     }
 
     @Override

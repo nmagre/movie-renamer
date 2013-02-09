@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.list;
 
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
@@ -73,7 +74,7 @@ public class UIScrapper implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageInfo.ImageSize size) {
     return null;
   }
 

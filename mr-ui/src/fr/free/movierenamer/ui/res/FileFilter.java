@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.res;
 import com.alee.extended.filefilter.DefaultFileFilter;
 import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
@@ -56,6 +57,6 @@ public class FileFilter extends DefaultFileFilter {
 
   @Override
   public ImageIcon getIcon() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return (ImageIcon) ImageUtils.LOGO_32;
   }
 }

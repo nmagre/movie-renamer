@@ -15,7 +15,6 @@
  * along with WebLookAndFeel library.  If not, see <http://www.gnu.org/licenses/>.*/
 package fr.free.movierenamer.ui.panel;
 
-import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.StyleConstants;
 import com.alee.laf.scroll.WebScrollBarUI;
 import com.alee.laf.scroll.WebScrollPane;
@@ -23,16 +22,15 @@ import com.alee.utils.ImageUtils;
 import com.alee.utils.LafUtils;
 import com.alee.utils.SwingUtils;
 import com.alee.utils.swing.Timer;
+import fr.free.movierenamer.ui.list.UIMediaImage;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -43,8 +41,11 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -54,27 +55,23 @@ import javax.swing.SwingUtilities;
 
 /**
  * User: mgarin Date: 05.09.11 Time: 15:45
+ * Source : com.alee.extended.image.WebImageGallery.java
  */
 /**
  * Class CustomWebImageGallery
+ *
+ *
  */
-public class CustomWebImageGallery extends WebImageGallery {
+@SuppressWarnings("serial")
+public class CustomWebImageGallery extends JComponent {
 
   private int spacing = 20;
   private int imageLength = 200;
   private int borderWidth = 3;
-  private float fadeHeight = 0.7f;
-  private int opacity = 125;
-  private Color light = new Color(128, 128, 128);
-  private Color selectedLight = new Color(255, 255, 255);
-  private Color transparent = new Color(128, 128, 128, 0);
-  private Color selectedTransparent = new Color(255, 255, 255, 0);
   private int maxWidth = 0;
   private int maxHeight = 0;
   private List<ImageIcon> images = new ArrayList<ImageIcon>();
-  private List<BufferedImage> reflections = new ArrayList<BufferedImage>();
-  private List<String> descriptions = new ArrayList<String>();
-  //    private List<Integer> sizes = new ArrayList<Integer> (  );
+  private List<UIMediaImage> descriptions = new ArrayList<UIMediaImage>();
   private int preferredColumnCount = 4;
   private boolean scrollOnSelection = true;
   private int selectedIndex = -1;
@@ -82,9 +79,11 @@ public class CustomWebImageGallery extends WebImageGallery {
   private float progress = 0f;
   private Timer reflectionMover = null;
   private WebScrollPane view;
+  private PropertyChangeSupport propertyChange;
 
   public CustomWebImageGallery() {
     super();
+    propertyChange = new PropertyChangeSupport(selectedIndex);
 
     SwingUtils.setOrientation(this);
     setFocusable(true);
@@ -124,6 +123,7 @@ public class CustomWebImageGallery extends WebImageGallery {
         setSelectedIndex(newIndex);
       }
     };
+
     addMouseListener(mouseAdapter);
     addMouseWheelListener(mouseAdapter);
 
@@ -146,32 +146,29 @@ public class CustomWebImageGallery extends WebImageGallery {
     });
   }
 
-  @Override
-  public List<ImageIcon> getImages() {
-    return images;
+  public PropertyChangeSupport getPropertyChange() {
+    return propertyChange;
   }
 
-  @Override
+  public List<ImageIcon> getImages() {
+    return Collections.unmodifiableList(images);
+  }
+
   public int getPreferredColumnCount() {
     return preferredColumnCount;
   }
 
-  @Override
   public void setPreferredColumnCount(int preferredColumnCount) {
     this.preferredColumnCount = preferredColumnCount;
   }
 
-  @Override
   public WebScrollPane getView() {
     return getView(true);
   }
 
-  @Override
   public WebScrollPane getView(boolean withBorder) {
     if (view == null) {
       view = new WebScrollPane(CustomWebImageGallery.this, withBorder) {
-        private static final long serialVersionUID = 1L;
-
         @Override
         public Dimension getPreferredSize() {
           int columns = Math.min(images.size(), preferredColumnCount);
@@ -191,33 +188,26 @@ public class CustomWebImageGallery extends WebImageGallery {
     return view;
   }
 
-  @Override
   public int getImageLength() {
     return imageLength;
   }
 
-  @Override
   public void setImageLength(int imageLength) {
     this.imageLength = imageLength;
-    refresh();
   }
 
-  @Override
   public boolean isScrollOnSelection() {
     return scrollOnSelection;
   }
 
-  @Override
   public void setScrollOnSelection(boolean scrollOnSelection) {
     this.scrollOnSelection = scrollOnSelection;
   }
 
-  @Override
   public int getSelectedIndex() {
     return selectedIndex;
   }
 
-  @Override
   public void setSelectedIndex(int selectedIndex) {
     if (this.selectedIndex == selectedIndex) {
       return;
@@ -225,14 +215,15 @@ public class CustomWebImageGallery extends WebImageGallery {
 
     this.oldSelectedIndex = this.selectedIndex;
     this.selectedIndex = selectedIndex;
+
+    propertyChange.firePropertyChange("selectedImage", oldSelectedIndex, selectedIndex);
+
     repaint();
     if (scrollOnSelection) {
       Rectangle rect = getImageRect(selectedIndex);
-      if(rect == null) {
-        return;
-      }
       SwingUtils.scrollSmoothly(getView(), rect.x + rect.width / 2 - CustomWebImageGallery.this.getVisibleRect().width / 2, rect.y);
     }
+
     moveReflection();
   }
 
@@ -242,7 +233,7 @@ public class CustomWebImageGallery extends WebImageGallery {
     }
 
     progress = 0f;
-    reflectionMover = new Timer("WebImageGallery.reflectionMoveTimer", StyleConstants.fastAnimationDelay, new ActionListener() {
+    reflectionMover = new Timer("CustomWebImageGallery.reflectionMoveTimer", StyleConstants.fastAnimationDelay, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (progress < 1f) {
@@ -257,15 +248,7 @@ public class CustomWebImageGallery extends WebImageGallery {
     reflectionMover.start();
   }
 
-  public boolean isEmpty() {
-    return images.isEmpty();
-  }
-
-  @Override
   public Rectangle getImageRect(int index) {
-    if(images.isEmpty()) {
-      return null;
-    }
     int iconWidth = images.get(index).getIconWidth();
     int iconHeight = images.get(index).getIconHeight();
     Dimension ps = getPreferredSize();
@@ -275,61 +258,41 @@ public class CustomWebImageGallery extends WebImageGallery {
     return new Rectangle(x - iconWidth / 2, y - iconHeight / 2, iconWidth, iconHeight);
   }
 
-  @Override
-  public void addImage(ImageIcon image) {
-    addImage(0, image);
+  public void addImage(UIMediaImage image) {
+    addImage(images.size(), image);
   }
 
-  @Override
-  public void addImage(int index, ImageIcon image) {
+  public void addImage(int index, UIMediaImage image) {
     try {
-      ImageIcon previewIcon = ImageUtils.createPreviewIcon(image, imageLength);
-      int rwidth = previewIcon.getIconWidth() * (imageLength /600);
-      int rheight = previewIcon.getIconHeight() * (imageLength /600);
-
-      BufferedImage reflection = ImageUtils.createCompatibleImage(rwidth, rheight, Transparency.TRANSLUCENT);
-      Graphics2D g2d = reflection.createGraphics();
-      LafUtils.setupAntialias(g2d);
-      g2d.drawImage(previewIcon.getImage(), 0, 0, null);
-      g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_IN));
-      g2d.setPaint(new GradientPaint(0, rheight * (1f - fadeHeight), new Color(0, 0, 0, 0), 0, rheight,
-              new Color(0, 0, 0, opacity)));
-      g2d.fillRect(0, 0, rwidth, rheight);
-      g2d.dispose();
+      ImageIcon previewIcon = ImageUtils.createPreviewIcon((ImageIcon) image.getIcon(), imageLength);
 
       images.add(index, previewIcon);
-      descriptions.add(index, image.getIconWidth() + " x " + image.getIconHeight() + " px \n" + image.getDescription());
-
-      reflections.add(index, reflection);
+      descriptions.add(index, image);
     } catch (Throwable e) {
       // Out of memory
+    }
+
+    if (selectedIndex == -1) {
+      setSelectedIndex(0);
     }
 
     recalcualteMaxSizes();
     updateContainer();
   }
 
-  public void refresh() {
-
-    recalcualteMaxSizes();
-    updateContainer();
-  }
-
-  @Override
   public void removeImage(ImageIcon image) {
     if (images.contains(image)) {
       removeImage(images.indexOf(image));
     }
   }
 
-  @Override
   public void removeImage(int index) {
     if (index >= 0 && index < images.size()) {
       boolean wasSelected = getSelectedIndex() == index;
 
       images.remove(index);
       descriptions.remove(index);
-      reflections.remove(index).flush();
+
       recalcualteMaxSizes();
       updateContainer();
 
@@ -337,6 +300,22 @@ public class CustomWebImageGallery extends WebImageGallery {
         setSelectedIndex(index < images.size() ? index : index - 1);
       }
     }
+  }
+
+  public void removeAllImages() {
+    images.clear();
+    descriptions.clear();
+
+    recalcualteMaxSizes();
+    updateContainer();
+  }
+
+  public UIMediaImage getUIMediaImage() {
+    if (selectedIndex >= 0 && descriptions.size() > selectedIndex) {
+      return descriptions.get(selectedIndex);
+    }
+
+    return null;
   }
 
   private void updateContainer() {
@@ -348,23 +327,19 @@ public class CustomWebImageGallery extends WebImageGallery {
 
   private void recalcualteMaxSizes() {
     for (ImageIcon icon : images) {
-      maxWidth = Math.max(maxWidth, icon.getIconWidth() * (imageLength /600));
-      maxHeight = Math.max(maxHeight, icon.getIconHeight() * (imageLength /600));
+      maxWidth = Math.max(maxWidth, icon.getIconWidth());
+      maxHeight = Math.max(maxHeight, icon.getIconHeight());
     }
   }
 
   @Override
-  protected void paintComponent(Graphics g) {
+  protected void paintComponent(final Graphics g) {
     super.paintComponent(g);
 
     int height = getHeight();
-    int width = getWidth();
 
     Graphics2D g2d = (Graphics2D) g;
     LafUtils.setupAntialias(g2d);
-
-    g2d.setPaint(new GradientPaint(0, 0, Color.black, 0, height, Color.darkGray));
-    g2d.fillRect(0, 0, width, height);
 
     Rectangle vr = getVisibleRect();
     Dimension ps = getPreferredSize();
@@ -376,61 +351,42 @@ public class CustomWebImageGallery extends WebImageGallery {
 
       ImageIcon icon = images.get(i);
       BufferedImage bi = ImageUtils.getBufferedImage(icon);
-      int imageWidth = icon.getIconWidth() * (imageLength /600);
-      int imageHeight = icon.getIconHeight() * (imageLength /600);
+      int imageWidth = icon.getIconWidth();
+      int imageHeight = icon.getIconHeight();
 
       int x = (getWidth() > ps.width ? (getWidth() - ps.width) / 2 : 0) + spacing
               + (maxWidth + spacing) * i + maxWidth / 2;
-      int y = height / 2 - spacing / 2 - imageHeight / 2;
-      int y2 = height / 2 + spacing / 2 + imageHeight / 2;
+      int y = spacing / 2;
+      int y2 = height * (4 / 5) + spacing / 2 + imageHeight / 2;
 
       // Initial image
+      UIMediaImage uiImage = descriptions.get(i);
+      Icon flag = uiImage.getImagelang().getIcon();
 
       float add = selectedIndex == i ? progress * 0.4f : (oldSelectedIndex == i ? 0.4f - progress * 0.4f : 0);
       g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f + add));
 
-      g2d.drawImage(bi, x - imageWidth / 2, y - imageHeight / 2, null);
+      g2d.drawImage(ImageUtils.getBufferedImage(flag), x - flag.getIconWidth() / 2, y, null);// Flag
+      g2d.drawImage(bi, x - imageWidth / 2, y + spacing / 2 + borderWidth * 2 + flag.getIconHeight(), null);// Image
 
-      g2d.setPaint(selectedIndex == i ? Color.WHITE : Color.GRAY);
-      Area gp = new Area(new RoundRectangle2D.Double(x - imageWidth / 2 - borderWidth, y - imageHeight / 2 - borderWidth,
+      g2d.setPaint(selectedIndex == i ? Color.BLACK : Color.GRAY);
+      Area gp = new Area(new RoundRectangle2D.Double(x - imageWidth / 2 - borderWidth, y + flag.getIconHeight() + borderWidth + spacing / 2,
               imageWidth + borderWidth * 2, imageHeight + borderWidth * 2, borderWidth * 2, borderWidth * 2));
-      gp.subtract(new Area(new Rectangle(x - imageWidth / 2, y - imageHeight / 2, imageWidth, imageHeight)));
+      gp.subtract(new Area(new Rectangle(x - imageWidth / 2, y + spacing / 2 + flag.getIconHeight() + borderWidth * 2, imageWidth, imageHeight)));
       g2d.fill(gp);
 
       g2d.setComposite(oldComposite);
 
       // Info text
-
       if (selectedIndex == i || oldSelectedIndex == i) {
         float opacity = selectedIndex == i ? progress : 1f - progress;
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        g2d.setPaint(Color.WHITE);
-        String infoText = descriptions.get(i);
+        g2d.setPaint(Color.BLACK);
+        String infoText = uiImage.getInfo().getWidth() + " x " + uiImage.getInfo().getHeight();
         g2d.drawString(infoText, x - g2d.getFontMetrics().stringWidth(infoText) / 2,
-                getHeight() / 2 + spacing / 2 + g2d.getFontMetrics().getAscent() / 2);
+                height / 2 + spacing / 2 + g2d.getFontMetrics().getAscent() / 2);
         g2d.setComposite(oldComposite);
       }
-
-      // Reflection
-
-      int rwidth = imageWidth + borderWidth * 2;
-      int rheight = imageHeight + borderWidth * 2;
-
-      int addition = selectedIndex == i ? Math.round(progress * spacing)
-              : (oldSelectedIndex == i ? spacing - Math.round(progress * spacing) : 0);
-      if (reflections.get(i) != null) {
-        g2d.drawImage(reflections.get(i), x - imageWidth / 2, y2 + imageHeight / 2 + addition, imageWidth, -imageHeight,
-                null);
-      }
-
-      gp = new Area(new RoundRectangle2D.Double(x - rwidth / 2, y2 - rheight / 2 + addition, rwidth, rheight, borderWidth * 2,
-              borderWidth * 2));
-      gp.subtract(new Area(
-              new Rectangle(x - rwidth / 2 + borderWidth, y2 - rheight / 2 + addition + borderWidth, rwidth - borderWidth * 2,
-              rheight - borderWidth * 2)));
-      g2d.setPaint(new GradientPaint(0, y2 - imageHeight / 2 + addition, selectedIndex == i ? selectedLight : light, 0,
-              y2 - imageHeight / 2 + addition + imageHeight * fadeHeight, selectedIndex == i ? selectedTransparent : transparent));
-      g2d.fill(gp);
     }
   }
 

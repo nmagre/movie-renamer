@@ -38,7 +38,6 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
 
 /**
  * Class listFilesWorker ,get List of media files in files list
@@ -138,7 +137,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
 
   @Override
   public final void process(List<String> v) {
-    JOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+    super.process(v);
     resume();
   }
 
@@ -207,9 +206,9 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     list.setModel(model);
 
     if (eventList.isEmpty()) {
-      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);
+      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n
     } else if (UISettings.getInstance().isSelectFirstMedia()) {
-      list.setSelectedIndex(0);
+      list.setSelectedIndex(0);// FIXME 0 it's not necessary the first entry (
       list.revalidate();
       list.repaint();
     }

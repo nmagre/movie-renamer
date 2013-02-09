@@ -35,7 +35,6 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.awt.Dimension;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -95,7 +94,6 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
           return new ArrayList<UISearchResult>();
         }
 
-        //Icon icon = ImageUtils.getIcon(res.get(i).getURL(), searchListDim, "ui/nothumb.png");
         results.add(new UISearchResult(res.get(i), scrapper, UIUtils.getAnimatedLoader(searchResultList, i)));
       }
     }

@@ -17,13 +17,12 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.exception.InvalidUrlException;
+import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.list.IIconList;
-import fr.free.movierenamer.ui.list.UISearchResult;
 import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
@@ -31,8 +30,6 @@ import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
@@ -64,7 +61,7 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> implement
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("InvalidUrlException", e.getStackTrace()));
       publish(String.format("InvalidUrlException %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toString(), ex.getStackTrace()));
       publish(String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     }
     return result;
@@ -96,9 +93,9 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> implement
           workerDone();
         } catch (CancellationException e) {
           // Worker canceled
-          UISettings.LOGGER.log(Level.INFO, "Worker {0} canceled", e.getClass().getSimpleName());
+          UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", e.getClass().getSimpleName()));
         } catch (Exception ex) {
-          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getMessage(), ex.getStackTrace()));
+          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
         }
         break;
       default:
@@ -106,27 +103,16 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> implement
     }
   }
 
-  protected void getImages(List<? extends IIconList> list, DefaultListModel model, Dimension imageSize) {
-    List<URI> uris = getUriList(list);
-    ImageWorker<UISearchResult> imagesWorker = new ImageWorker<UISearchResult>(uris, model, imageSize, "ui/unknown.png");
+  protected <V extends IIconList> void getImages(List<V> images, DefaultListModel model, Dimension imageSize) {
+    ImageWorker<V> imagesWorker = new ImageWorker<V>(images, model, imageSize, "ui/unknown.png");
     imagesWorker.execute();
     mr.addWorker(imagesWorker);
   }
 
-  protected void getImages(List<? extends IIconList> list, GalleryPanel gallery, Dimension imageSize) {
-    List<URI> uris = getUriList(list);
-    ImageWorker<UISearchResult> imagesWorker = new ImageWorker<UISearchResult>(uris, gallery, imageSize, "ui/unknown.png");
+  protected <V extends IIconList> void getImages(List<V> images, GalleryPanel gallery) {
+    ImageWorker<V> imagesWorker = new ImageWorker<V>(images, gallery, "ui/unknown.png", ImageSize.small);
     imagesWorker.execute();
     mr.addWorker(imagesWorker);
-  }
-
-  private List<URI> getUriList(List<? extends IIconList> list) {
-    List<URI> uris = new ArrayList<URI>();
-    for (IIconList icon : list) {
-      uris.add(icon.getUri());
-    }
-
-    return uris;
   }
 
   protected void workerStarted() {

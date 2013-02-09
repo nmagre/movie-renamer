@@ -16,6 +16,7 @@
  */
 package fr.free.movierenamer.ui.list;
 
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.ui.res.Flag;
 import java.net.URI;
@@ -29,7 +30,7 @@ import javax.swing.Icon;
 public class UIMediaAudio implements IIconList {
 
   private MediaAudio maudio;
-  private Icon icon;
+  private UIImageLang image;
 
   public UIMediaAudio(MediaAudio maudio) {
     this.maudio = maudio;
@@ -37,15 +38,15 @@ public class UIMediaAudio implements IIconList {
 
   @Override
   public Icon getIcon() {
-    if (icon == null) {
-      icon = Flag.getFlag(maudio.getLanguage().getLanguage());
+    if (image == null) {
+      image = Flag.getFlag(maudio.getLanguage().getLanguage());
     }
-    return icon;
+    return image.getIcon();
   }
 
   @Override
   public void setIcon(Icon icon) {
-    this.icon = icon;
+    //image.setIcon(icon);
   }
 
   @Override
@@ -54,7 +55,8 @@ public class UIMediaAudio implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageInfo.ImageSize size) {
     return null;
   }
+
 }

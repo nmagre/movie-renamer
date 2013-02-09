@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.list;
 
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -146,7 +147,8 @@ public class UIFile extends Sorter.ISort implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageSize size) {
     return null;
   }
+
 }

@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.list;
 
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.ImageInfo;
 import java.net.URI;
 import javax.swing.Icon;
 
@@ -50,7 +51,7 @@ public class UIPersonImage implements IIconList {
   }
 
   @Override
-  public URI getUri() {
+  public URI getUri(ImageInfo.ImageSize size) {
     return person.getPicturePath();
   }
 

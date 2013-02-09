@@ -21,8 +21,10 @@ import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JList;
@@ -74,7 +76,13 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
 
 
-    IIconList obj = (IIconList) value;
+    IIconList obj;
+    try {
+      obj = (IIconList) value;
+    } catch (java.lang.ClassCastException e) {
+      UISettings.LOGGER.log(Level.SEVERE, "IconListRenderer ClassCastException : IIconList != " + value.getClass().getSimpleName());
+      return label;
+    }
 
     Icon icon = obj.getIcon();
 

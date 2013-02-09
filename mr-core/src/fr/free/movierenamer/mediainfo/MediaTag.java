@@ -20,6 +20,7 @@ package fr.free.movierenamer.mediainfo;
 import fr.free.movierenamer.mediainfo.MediaInfo.StreamKind;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -133,27 +134,23 @@ public class MediaTag {
     for (String key : tag.getKeys()) {
       String value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
 
-      if (value.length() > 0) {
-        try {
-          if (tag.getVClass().equals(Integer.class)) {
-            return Integer.parseInt(new Scanner(value).next());
-          } else if (tag.getVClass().equals(Float.class)) {
-            return Float.parseFloat(new Scanner(value).next());
-          } else if (tag.getVClass().equals(Double.class)) {
-            return Double.parseDouble(new Scanner(value).next());
-          } else if (tag.getVClass().equals(Long.class)) {
-            return Long.parseLong(new Scanner(value).next());
-          }
-        } catch (NumberFormatException ex) {
-          Settings.LOGGER.log(Level.SEVERE, tag.name() + " : " + ex.getMessage());
-        }
+      String nvalue = value.length() > 0 ? new Scanner(value).next() : " ";
 
-        if (tag.isGetFirst()) {
-          return new Scanner(value).next().toLowerCase();
-        }
-
-        return value.replaceAll("\\p{Punct}", StringUtils.EMPTY);
+      if (tag.getVClass().equals(Integer.class)) {
+        return NumberUtils.isNumeric(nvalue) ? Integer.parseInt(nvalue) : 0;
+      } else if (tag.getVClass().equals(Float.class)) {
+        return NumberUtils.isNumeric(nvalue) ? Float.parseFloat(nvalue) : 0.0F;
+      } else if (tag.getVClass().equals(Double.class)) {
+        return NumberUtils.isNumeric(nvalue) ? Double.parseDouble(nvalue) : 0.0;
+      } else if (tag.getVClass().equals(Long.class)) {
+        return NumberUtils.isNumeric(nvalue) ? Long.parseLong(nvalue) : 0L;
       }
+
+      if (tag.isGetFirst()) {
+        return nvalue.toLowerCase();
+      }
+
+      return value.replaceAll("\\p{Punct}", StringUtils.EMPTY);
     }
 
     return StringUtils.EMPTY;
@@ -217,12 +214,15 @@ public class MediaTag {
     }
 
     int count = (Integer) getMediaInfo(Tags.AudioStreamCount);
+
     Object intObj;
     for (int i = 0; i < count; i++) {
       MediaAudio maudio = new MediaAudio(i);
       maudio.setCodec(getMediaInfo(Tags.AudioCodec, i).toString());
       Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.AudioLanguage, i).toString());
-      if(lang != null) maudio.setLanguage(lang);
+      if (lang != null) {
+        maudio.setLanguage(lang);
+      }
       intObj = getMediaInfo(Tags.AudioChannels, i);
       if (intObj instanceof Integer) {
         maudio.setChannel((Integer) intObj);
@@ -235,7 +235,6 @@ public class MediaTag {
       maudio.setTitle(getMediaInfo(Tags.AudioTitle, i).toString());
 
       mediaAudio.add(maudio);
-
     }
 
     return mediaAudio;

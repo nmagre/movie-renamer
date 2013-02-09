@@ -16,16 +16,18 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.extended.image.WebImageGallery;
 import com.alee.laf.list.DefaultListModel;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.list.IIconList;
+import fr.free.movierenamer.ui.list.UIMediaImage;
 import fr.free.movierenamer.ui.panel.GalleryPanel;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Dimension;
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 /**
@@ -35,53 +37,76 @@ import javax.swing.SwingWorker;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWorker<T>.ImageChunk> {
+public class ImageWorker<T extends IIconList> extends SwingWorker<Icon, ImageWorker.ImageChunk> {
 
-  private final List<URI> images;
+  private final List<T> images;
   private final Dimension imageSize;
   private final String defaultImage;
   private final DefaultListModel model;
   private final GalleryPanel gallery;
+  private ImageInfo.ImageSize size;
+  private T image;
 
-  public ImageWorker(List<URI> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
+  public ImageWorker(T image, Dimension imageSize, String defaultImage, ImageInfo.ImageSize size) {
+    images = new ArrayList<T>();
+    this.image = image;
+    this.imageSize = imageSize;
+    this.defaultImage = defaultImage;
+    this.size = size;
+    this.model = null;
+    this.gallery = null;
+  }
+
+  public ImageWorker(List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
     this.images = images;
     this.model = model;
     this.imageSize = imageSize;
     this.defaultImage = defaultImage;
     this.gallery = null;
+    this.size = ImageInfo.ImageSize.small;
   }
 
-  public ImageWorker(List<URI> images, GalleryPanel gallery, Dimension imageSize, String defaultImage) {
+  public ImageWorker(List<T> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
     this.images = images;
     this.model = null;
     this.gallery = gallery;
-    this.imageSize = imageSize;
+    this.imageSize = null;
     this.defaultImage = defaultImage;
+    this.size = size;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  protected Void doInBackground() {
+  protected Icon doInBackground() {
+    if (model == null && gallery == null) {
+      Icon icon = ImageUtils.getIcon(image.getUri(size), imageSize, defaultImage);
+      return icon;
+    }
 
-    if (model != null || gallery != null) {
-      for (int i = 0; i < images.size(); i++) {
-        if (isCancelled()) {
-          break;
-        }
+    int count = 0;
+    for (T image : images) {
+      if (isCancelled()) {
+          UISettings.LOGGER.log(Level.INFO, String.format("Worker ImageWorker canceled"));
+        break;
+      }
 
-        Icon icon = ImageUtils.getIcon(images.get(i), imageSize, defaultImage);
-        ImageWorker<T>.ImageChunk chunk = new ImageWorker<T>.ImageChunk(icon, i);
-        publish(chunk);
+      Icon icon = ImageUtils.getIcon(image.getUri(size), imageSize, defaultImage);
+      if (icon != null) {
+        image.setIcon(icon);
+        publish(new ImageChunk(image, count++));
+      }
+      else {
+        images.remove(image);
       }
     }
-    return null;
+
+    return (images.size() > 0) ? images.get(0).getIcon() : null;
   }
 
   @Override
-  public final void process(List<ImageWorker<T>.ImageChunk> chunks) {
-    for (ImageWorker<T>.ImageChunk chunk : chunks) {
+  public final void process(List<ImageWorker.ImageChunk> chunks) {
+    for (ImageWorker.ImageChunk chunk : chunks) {
       if (model != null) {
-        Icon icon = chunk.getIcon();
+        Icon icon = chunk.getMediaImage().getIcon();
         int index = chunk.getIndex();
         if (index >= model.size()) {
           return;
@@ -94,8 +119,12 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
         model.setElementAt(obj, index);
       }
 
-      if(gallery != null) {
-        gallery.addImage((ImageIcon) chunk.getIcon());
+      if (gallery != null) {
+        gallery.addThumbPreview((UIMediaImage) chunk.getMediaImage());
+        if(chunk.getIndex() == 0) {
+          gallery.setSelectedIndex(chunk.getIndex());
+          gallery.getPropertyChange().firePropertyChange("updateThumb", null, chunk.getMediaImage().getIcon());
+        }
       }
     }
   }
@@ -103,10 +132,10 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
   public class ImageChunk {
 
     private int index;
-    private Icon icon;
+    private T mimage;
 
-    public ImageChunk(Icon icon, int index) {
-      this.icon = icon;
+    public ImageChunk(T mimage, int index) {
+      this.mimage = mimage;
       this.index = index;
     }
 
@@ -114,8 +143,8 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Void, ImageWor
       return index;
     }
 
-    public Icon getIcon() {
-      return icon;
+    public T getMediaImage() {
+      return mimage;
     }
   }
 }

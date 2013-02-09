@@ -152,7 +152,7 @@ public class TvShowPanel extends MediaPanel {
   }
 
   @Override
-  public void clear() {
+  protected void clear() {
     // TODO
     setMediaInfo(new TvShowInfo(null));
     // star1.setIcon(STAR_EMPTY);
@@ -162,10 +162,14 @@ public class TvShowPanel extends MediaPanel {
     // star5.setIcon(STAR_EMPTY);
   }
 
-
   @Override
   public WebList getCastingList() {
     return actorList;
+  }
+
+  @Override
+  protected String getPanelName() {
+    return "TvShow Panel";
   }
 
   /**
@@ -402,7 +406,6 @@ public class TvShowPanel extends MediaPanel {
           .addComponent(subtitlesScrollPane, GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)))
     );
   }// </editor-fold>//GEN-END:initComponents
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private WebLabel actorLbl;
   private WebList actorList;

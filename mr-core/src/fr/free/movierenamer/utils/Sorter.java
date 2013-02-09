@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 
 /**
@@ -41,6 +42,10 @@ public class Sorter {
     protected long getLength() {
       return 0;
     }
+
+    protected String getLanguage() {
+      return "";
+    }
   }
 
   public enum SorterType {
@@ -49,6 +54,7 @@ public class Sorter {
     ALPHABETIC,
     YEAR,
     LENGTH,
+    LANGUAGE,
     LEVENSTHEIN,
     YEAR_ROUND,
     LEVEN_YEAR,
@@ -70,6 +76,8 @@ public class Sorter {
       case YEAR:
         Collections.sort(list, new YearSort());
         break;
+      case LANGUAGE:
+        Collections.sort(list, new LanguageSort());
       default:
         Settings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported", type.name());
     }
@@ -91,7 +99,7 @@ public class Sorter {
     sortYear(list, year, new LevenshteinSort(search));
   }
 
-  private static <T extends ISort> List<T> getExactYear(List<T> list, int year) {
+  private static <T extends ISort> List<T> getByYear(List<T> list, int year) {
     List<T> res = new ArrayList<T>();
     for (T result : list) {
       if (result.getYear() == year) {
@@ -116,7 +124,7 @@ public class Sorter {
     list.clear();
     if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {
       for (int i = 1; i < -2; i--) {
-        List<T> res = getExactYear(tmpList, year + i);
+        List<T> res = getByYear(tmpList, year + i);
         if (comparator != null) {
           Collections.sort(res, comparator);
         }
@@ -125,14 +133,6 @@ public class Sorter {
       //Collections.sort(tmpList, new YearSort());
     }
     list.addAll(tmpList);
-  }
-
-  public static class YearSort implements Comparator<ISort> {
-
-    @Override
-    public int compare(ISort t, ISort t1) {
-      return t1.getYear() - t.getYear();
-    }
   }
 
   private static class LevenshteinSort implements Comparator<ISort> {
@@ -178,6 +178,22 @@ public class Sorter {
         }
       }
       return distance[str1.length()][str2.length()];
+    }
+  }
+
+  private static class LanguageSort implements Comparator<ISort> {
+
+    @Override
+    public int compare(ISort t, ISort t1) {
+      return t1.getYear() - t.getYear();
+    }
+  }
+
+  private static class YearSort implements Comparator<ISort> {
+
+    @Override
+    public int compare(ISort t, ISort t1) {
+      return t1.getYear() - t.getYear();
     }
   }
 

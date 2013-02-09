@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.list;
 
+import fr.free.movierenamer.info.ImageInfo;
 import java.net.URI;
 import javax.swing.Icon;
 
@@ -26,9 +27,10 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  */
 public interface IIconList {
+
   public Icon getIcon();
   public void setIcon(Icon icon);
-  public URI getUri();
+  public URI getUri(ImageInfo.ImageSize size);
 
   @Override
   public String toString();
