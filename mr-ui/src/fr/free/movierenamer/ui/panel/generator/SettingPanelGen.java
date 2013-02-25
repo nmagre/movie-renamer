@@ -111,7 +111,7 @@ public class SettingPanelGen extends PanelGenerator {
             add(panel, getGroupConstraint(0, true, false, 0));
             break;
           case UNKNOWN:
-            UISettings.LOGGER.log(Level.SEVERE, "Unknown component for {0}", definition.getName());
+            UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s", definition.getName()));
             break;
         }
       }

@@ -62,7 +62,7 @@ public class IMDbScrapper extends MovieScrapper {
   private String host;
 
   public IMDbScrapper() {
-    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de);
+    super(AvailableLanguages.en/*, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de*/);
   }
 
   @Override

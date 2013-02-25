@@ -70,6 +70,7 @@ import fr.free.movierenamer.ui.worker.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.SearchMediaWorker;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
@@ -124,8 +125,6 @@ public class MovieRenamer extends JFrame {
   // Clear interface
   private final boolean CLEAR_MEDIALIST = true;
   private final boolean CLEAR_SEARCHRESULTLIST = true;
-  // Worker queue
-  private Queue<SwingWorker<?, ?>> workerQueue;
   // Model
   private EventList<UIFile> mediaFileEventList = new BasicEventList<UIFile>();
   private final DefaultListModel searchResultModel = new DefaultListModel();
@@ -152,7 +151,6 @@ public class MovieRenamer extends JFrame {
     logPanel = new LogPanel();
     moviePnl = new MoviePanel(this);
     tvShowPanel = new TvShowPanel(this);
-    workerQueue = new LinkedList<SwingWorker<?, ?>>();
     movieScrapperModel = new DefaultComboBoxModel();
     tvshowScrapperModel = new DefaultComboBoxModel();
     mediaFileSeparator = new SeparatorList<UIFile>(mediaFileEventList, UIUtils.groupFileComparator, 1, 1000);
@@ -211,7 +209,7 @@ public class MovieRenamer extends JFrame {
 
   private void init() {
 
-    // Add button to main toolbar on right
+    // Add button to main toolbar to end
     mainTb.addToEnd(helpBtn);
     mainTb.addToEnd(logsBtn);
     mainTb.addToEnd(new JSeparator(JSeparator.VERTICAL));
@@ -265,6 +263,8 @@ public class MovieRenamer extends JFrame {
       public void valueChanged(ListSelectionEvent lse) {
         if (!lse.getValueIsAdjusting()) {
           if (currentMedia == getSelectedMediaFile()) {
+            // User cancel list files
+            clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
             return;
           }
 
@@ -325,9 +325,9 @@ public class MovieRenamer extends JFrame {
     });
     groupFile = setting.isGroupMediaList();
 
-    renameTb.addToEnd(UIUtils.createSettingbutton(PopupWay.upLeft, "settingHelp", thumbChk, fanartChk, nfoChk, showFormatFieldChk));
-    mediaFileTb.addToEnd(UIUtils.createSettingbutton(PopupWay.downRight, "settingHelp", toggleGroup, showIconMediaListChk));
-    searchTb.addToEnd(UIUtils.createSettingbutton(PopupWay.downLeft, "settingHelp", showIconResultListChk));
+    renameTb.addToEnd(UIUtils.createSettingButton(PopupWay.upLeft, "settingHelp", thumbChk, fanartChk, nfoChk, showFormatFieldChk));
+    mediaFileTb.addToEnd(UIUtils.createSettingButton(PopupWay.downRight, "settingHelp", toggleGroup, showIconMediaListChk));
+    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, "settingHelp", showIconResultListChk));
   }
 
   private WebCheckBox createShowIconChk(final WebList list, boolean selected) {
@@ -381,9 +381,7 @@ public class MovieRenamer extends JFrame {
 
     mediaLoaderLbl.setIcon(ImageUtils.LOADER_16);
 
-    ListFilesWorker listFileWorker = new ListFilesWorker(this, files, mediaFileList, mediaFileEventList, groupFile ? mediaFileSeparatorModel : mediaFileModel);
-    listFileWorker.execute();
-    workerQueue.add(listFileWorker);
+    WorkerManager.listFiles(this, files, mediaFileList, mediaFileEventList, groupFile ? mediaFileSeparatorModel : mediaFileModel);
   }
 
   /**
@@ -410,10 +408,7 @@ public class MovieRenamer extends JFrame {
     currentMedia.setSearch(search);
 
     MediaScrapper<? extends Media, ? extends MediaInfo> mediaScrapper = ((UIScrapper) scrapperCb.getSelectedItem()).getScrapper();
-    SearchMediaWorker searchWorker = new SearchMediaWorker(this, currentMedia, mediaScrapper, searchResultList, searchBtn, searchField, searchResultModel);
-    searchWorker.execute();
-
-    workerQueue.add(searchWorker);
+    WorkerManager.search(this, currentMedia, mediaScrapper, searchResultList, searchBtn, searchField, searchResultModel);
   }
 
   /*
@@ -425,26 +420,8 @@ public class MovieRenamer extends JFrame {
       return;
     }
 
-    MediaPanel ipanel = getMediaPanel();
-
-    SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(this, currentMedia, searchResult);
-    SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(this, searchResult);
-    //subtitleWorker = new SearchMediaSubtitlesWorker(currentMedia, null);
-
-    infoWorker.execute();
-    imagesWorker.execute();
-
-    workerQueue.add(infoWorker);
-    workerQueue.add(imagesWorker);
-  }
-
-  /**
-   * Add worker to queue
-   *
-   * @param worker
-   */
-  public synchronized void addWorker(SwingWorker<?, ?> worker) {
-    workerQueue.add(worker);
+    WorkerManager.fetchInfo(this, currentMedia, searchResult);
+    WorkerManager.fetchImages(this, searchResult);
   }
 
   /**
@@ -557,16 +534,12 @@ public class MovieRenamer extends JFrame {
    */
   private void clearInterface(boolean clearMediaList, boolean clearSearchResultList) {
     // Stop all running workers
-    SwingWorker<?, ?> worker;
-    worker = workerQueue.poll();
-    while (worker != null) {
-      worker.cancel(true);
-      worker = workerQueue.poll();
-    }
+    WorkerManager.stop();
 
     if (clearMediaList) {
       searchField.setText(null);
       mediaFileEventList.clear();
+      mediaFileList.setModel(mediaFileModel);
     }
 
     if (clearSearchResultList) {

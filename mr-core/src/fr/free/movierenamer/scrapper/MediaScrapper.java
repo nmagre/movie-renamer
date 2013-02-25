@@ -62,7 +62,6 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     try {
       URL url = new URL(query);
       if(!url.getHost().equals(getHost())) {
-        System.out.println(url.getHost()+ " != " + getHost());
         throw new InvalidUrlException(query);
       }
       results = searchMedia(url, language);

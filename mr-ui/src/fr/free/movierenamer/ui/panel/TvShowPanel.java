@@ -443,9 +443,4 @@ public class TvShowPanel extends MediaPanel {
   private WebToolBar webToolBar4;
   private WebLabel yearLbl;
   // End of variables declaration//GEN-END:variables
-
-  @Override
-  public DefaultListModel getCastingModel() {
-    return castingModel;
-  }
 }

@@ -114,7 +114,7 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
 
       // Sort search results
       Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
-      UISettings.LOGGER.log(Level.INFO, "Sort type {0} , year {1} , search {2}", new Object[]{type.name(), media.getYear(), media.getSearch()});
+      UISettings.LOGGER.log(Level.INFO, String.format("Sort type %s, year %s , search %s", type.name(), media.getYear(), media.getSearch()));
       switch (type) {
         case ALPHABETIC:
         case LENGTH:
@@ -137,12 +137,12 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
       searchResultModel.addElements(results);
 
       if (searchResultModel.isEmpty()) {
-        JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog
       } else {
         if (UISettings.getInstance().isSelectFirstResult()) {
           searchResultList.setSelectedIndex(0);
         }
-        getImages(results, searchResultModel, searchListDim);
+        WorkerManager.fetchImages(this.getClass(), results, searchResultModel, searchListDim, "ui/unknown.png");
       }
 
     } catch (CancellationException e) {

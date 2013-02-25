@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
@@ -95,6 +94,7 @@ public abstract class MediaPanel extends WebPanel {
       thumbLbl.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseReleased(MouseEvent evt) {
+
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -118,7 +118,7 @@ public abstract class MediaPanel extends WebPanel {
 
   public GalleryPanel getGallery(ImageCategoryProperty key) {
     if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, "Image " + key.name() + " is not supported by this panel");
+      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
       return null;
     }
     return galleryPanels.get(key);
@@ -126,7 +126,7 @@ public abstract class MediaPanel extends WebPanel {
 
   public WebLabel getThumbLabel(ImageCategoryProperty key) {
     if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, "Image " + key.name() + " is not supported by this panel");
+      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
       return null;
     }
     return thumbLabel.get(key);
@@ -134,16 +134,18 @@ public abstract class MediaPanel extends WebPanel {
 
   public void addImages(List<UIMediaImage> image, ImageCategoryProperty key) {
     if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, "Panel {0} does not support image type : {1}", new Object[]{getPanelName(), key.name()});
+      UISettings.LOGGER.log(Level.SEVERE, String.format("Panel %s does not support image type : %s", getPanelName(), key.name()));
       return;
     }
 
+    thumbLabel.get(key).setIcon(null);
+    galleryPanels.get(key).clear();
     galleryPanels.get(key).addImages(image);
   }
 
-  public void showGalleryPanel(final ImageCategoryProperty key) {
+  private void showGalleryPanel(final ImageCategoryProperty key) {
     if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, "Image " + key.name() + " is not supported by this panel");
+      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
       return;
     }
 
@@ -158,11 +160,16 @@ public abstract class MediaPanel extends WebPanel {
   public void clearPanel() {
     clear();
     clearStars();
-    for(GalleryPanel gpnl : galleryPanels.values()) {
+
+    for (GalleryPanel gpnl : galleryPanels.values()) {
       gpnl.clear();
     }
-    for(WebLabel thumbLbl : thumbLabel.values()){
+
+    for (WebLabel thumbLbl : thumbLabel.values()) {
       thumbLbl.setIcon(null);
+      if(thumbLbl.getMouseListeners().length > 0) {
+        thumbLbl.removeMouseListener(thumbLbl.getMouseListeners()[0]);
+      }
     }
   }
 
@@ -179,19 +186,29 @@ public abstract class MediaPanel extends WebPanel {
    */
   protected abstract void clear();
 
-  public abstract void setMediaInfo(MediaInfo mediaInfo);
+  public void addMediaInfo(MediaInfo mediaInfo) {
+    setMediaInfo(mediaInfo);
+    for (final ImageCategoryProperty property : thumbLabel.keySet()) {
+      thumbLabel.get(property).addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseReleased(MouseEvent evt) {
+          showGalleryPanel(property);
+        }
+      });
+    }
+  }
+
+  protected abstract void setMediaInfo(MediaInfo mediaInfo);
 
   public abstract MediaInfo getMediaInfo();
 
   public abstract WebList getCastingList();
 
-  public abstract DefaultListModel getCastingModel();
-
   protected WebPanel getStarPanel() {
     return starPanel;
   }
 
-  protected void clearStars() {
+  protected final void clearStars() {
     for (int i = 0; i < nbStar; i++) {
       stars.get(i).setIcon(ImageUtils.STAREMPTY_16);
     }
@@ -203,15 +220,16 @@ public abstract class MediaPanel extends WebPanel {
    * @param rate
    */
   protected void setRate(Double rate) {
-    if (rate == null || rate < 0.00) {
+    Double value = rate;
+    if (value == null || value < 0.00) {
       return;
     }
 
-    if (rate > 5) {
-      rate /= (10 / nbStar);
+    if (value > 5) {
+      value /= (10 / nbStar);
     }
 
-    int n = rate.intValue();
+    int n = value.intValue();
     for (int i = 0; i < n; i++) {
       stars.get(i).setIcon(ImageUtils.STAR_16);
     }

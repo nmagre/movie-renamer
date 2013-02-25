@@ -107,7 +107,6 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
     for (ImageInfo.ImageCategoryProperty key : mediapanel.getSupportedImages()) {
       List<UIMediaImage> mimages = getImagesByType(images, key);
       mediapanel.addImages(mimages, key);
-      getImages(mimages, mediapanel.getGallery(key)); // FIXME size
     }
   }
 }

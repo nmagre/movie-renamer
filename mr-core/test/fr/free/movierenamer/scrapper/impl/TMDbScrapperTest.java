@@ -44,7 +44,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    tmdb.setLanguage(Locale.FRENCH);
+    tmdb.setLanguage(Locale.CHINESE);
     List<Movie> results = tmdb.search("pulp fiction");
 
     Movie movie = results.get(0);
@@ -59,7 +59,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getMovieInfo() throws Exception {
     tmdb.setLanguage(Locale.GERMAN);
-    MovieInfo movie = tmdb.getInfo(new Movie(1858, null, null, -1, -1));
+    MovieInfo movie = tmdb.getInfo(new Movie(1858, null, null, -1, 1858));
 
     Assert.assertEquals(Integer.valueOf(1858), movie.getId());
     Assert.assertEquals(Integer.valueOf(418279), movie.getImdbId());
@@ -71,7 +71,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = tmdb.getCasting(new Movie(1858, null, null, -1, -1));
+    List<CastingInfo> cast = tmdb.getCasting(new Movie(1858, null, null, -1, 1858));
     boolean dir = false, actor = false;
     for(CastingInfo info : cast) {
       if(!dir && info.isDirector()) {
@@ -91,7 +91,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = tmdb.getImages(new Movie(1858, null, null, -1, -1));
+    List<ImageInfo> images = tmdb.getImages(new Movie(1858, null, null, -1, 1858));
 
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
     Assert.assertEquals(Integer.valueOf(1920), images.get(0).getWidth());

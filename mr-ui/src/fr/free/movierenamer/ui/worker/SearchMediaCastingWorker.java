@@ -45,7 +45,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
   /**
    * Constructor arguments
    *
-   * @param mr
+   * @param mr 
    * @param info
    * @param castingList
    */
@@ -79,11 +79,11 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
   @Override
   protected void workerDone() throws Exception {
     List<UIPersonImage> infos = get();
-    final DefaultListModel castingModel = mr.getMediaPanel().getCastingModel();
+    final DefaultListModel castingModel = (DefaultListModel) castingList.getModel();
 
     if (infos != null) {
       castingModel.addElements(infos);
-      getImages(infos, castingModel, actorListDim);
+      WorkerManager.fetchImages(this.getClass(), infos, castingModel, actorListDim, "ui/unknown.png");
     }
   }
 }

@@ -80,9 +80,11 @@ public class CustomWebImageGallery extends JComponent {
   private Timer reflectionMover = null;
   private WebScrollPane view;
   private PropertyChangeSupport propertyChange;
+  private boolean showFlag;
 
-  public CustomWebImageGallery() {
+  public CustomWebImageGallery(boolean showFlag) {
     super();
+    this.showFlag = showFlag;
     propertyChange = new PropertyChangeSupport(selectedIndex);
 
     SwingUtils.setOrientation(this);
@@ -152,6 +154,10 @@ public class CustomWebImageGallery extends JComponent {
 
   public List<ImageIcon> getImages() {
     return Collections.unmodifiableList(images);
+  }
+
+  public int getImagesSize() {
+    return images.size();
   }
 
   public int getPreferredColumnCount() {
@@ -366,7 +372,10 @@ public class CustomWebImageGallery extends JComponent {
       float add = selectedIndex == i ? progress * 0.4f : (oldSelectedIndex == i ? 0.4f - progress * 0.4f : 0);
       g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f + add));
 
-      g2d.drawImage(ImageUtils.getBufferedImage(flag), x - flag.getIconWidth() / 2, y, null);// Flag
+      if(showFlag) { // Flag
+        g2d.drawImage(ImageUtils.getBufferedImage(flag), x - flag.getIconWidth() / 2, y, null);
+      }
+      
       g2d.drawImage(bi, x - imageWidth / 2, y + spacing / 2 + borderWidth * 2 + flag.getIconHeight(), null);// Image
 
       g2d.setPaint(selectedIndex == i ? Color.BLACK : Color.GRAY);

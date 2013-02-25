@@ -41,7 +41,7 @@ import javax.swing.SwingConstants;
  *
  * @author Nicolas Magré
  */
-public class UIUtils {
+public final class UIUtils {
 
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>(false);
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
@@ -65,11 +65,11 @@ public class UIUtils {
     return icon;
   }
 
-  public static WebButton createSettingbutton(PopupWay way, String tooltip, JComponent... components) {
-    return createSettingbutton(way, tooltip, false, components);
+  public static WebButton createSettingButton(PopupWay way, String tooltip, JComponent... components) {
+    return createSettingButton(way, tooltip, false, components);
   }
 
-  public static WebButton createSettingbutton(PopupWay way, String tooltip, boolean decorated, JComponent... components) {
+  public static WebButton createSettingButton(PopupWay way, String tooltip, boolean decorated, JComponent... components) {
     WebButton button = new WebButton();
     button.setIcon(ImageUtils.SETTING_16);
     button.setUndecorated(!decorated);

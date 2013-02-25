@@ -16,7 +16,7 @@
  */
 package fr.free.movierenamer.ui.panel;
 
-import fr.free.movierenamer.info.ImageInfo;
+import com.alee.utils.LafUtils;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -27,8 +27,13 @@ import fr.free.movierenamer.ui.list.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.ImageWorker;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -57,7 +62,7 @@ public class GalleryPanel extends JDialog {
   private final DefaultComboBoxModel languagesModel;
   private final ImageCategoryProperty property;
   private final MovieRenamer mr;
-  private PropertyChangeSupport propertyChange;
+  private final PropertyChangeSupport propertyChange;
 
   /**
    * Creates new form GalleryPanel
@@ -77,7 +82,26 @@ public class GalleryPanel extends JDialog {
     languageCbb.setModel(languagesModel);
     languageCbb.setRenderer(new IconListRenderer<IIconList>(false));
 
-    thumbPreviewGallery = new CustomWebImageGallery();
+    boolean useLanguage = false;
+    switch (property) {
+      case thumb:
+      case banner:
+      case cdart:
+      case logo:
+        useLanguage = true;
+        break;
+      case actor:
+      case clearart:
+      case fanart:
+      case unknown:
+        previewLbl.setPreferredSize(new Dimension(520, 320));
+        useLanguage = false;
+        break;
+    }
+
+    languageCbb.setVisible(useLanguage);
+
+    thumbPreviewGallery = new CustomWebImageGallery(useLanguage);
     thumbPreviewPnl.setLayout(new BorderLayout());
     thumbPreviewGallery.setOpaque(false);
     images = new ArrayList<UIMediaImage>();
@@ -99,8 +123,8 @@ public class GalleryPanel extends JDialog {
             return;
           }
 
-          final ImageWorker<UIMediaImage> imgWorker = new ImageWorker<UIMediaImage>(image, null, null, ImageSize.medium);
-          imgWorker.addPropertyChangeListener(new PropertyChangeListener() {
+          final ImageWorker<UIMediaImage> imgWorker = new ImageWorker<UIMediaImage>(image, null, null, ImageSize.medium);//FIXME
+          PropertyChangeListener propertyChange = new PropertyChangeListener() {//FIXME
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
               if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
@@ -112,6 +136,7 @@ public class GalleryPanel extends JDialog {
                   Icon icon = imgWorker.get();
                   if (icon != null) {
                     previewLbl.setIcon(icon);
+                    GalleryPanel.this.propertyChange.firePropertyChange("updateThumb", null, getSelectedImage());
                   } else {
                     // TODO
                   }
@@ -122,8 +147,9 @@ public class GalleryPanel extends JDialog {
                 }
               }
             }
-          });
-          imgWorker.execute();
+          };
+          imgWorker.addPropertyChangeListener(propertyChange);//FIXME
+          imgWorker.execute();//FIXME
         }
       }
     });
@@ -144,10 +170,9 @@ public class GalleryPanel extends JDialog {
   }
 
   private void getTumbPreview(String country) {
+    WorkerManager.stop(this.getClass());//Stop running images worker
     List<UIMediaImage> imageslang = getImageByLanguage(images, country);
-    ImageWorker<UIMediaImage> imagesWorker = new ImageWorker<UIMediaImage>(imageslang, this, "ui/unknown.png", ImageInfo.ImageSize.small);
-    imagesWorker.execute();
-    mr.addWorker(imagesWorker);
+    WorkerManager.fetchImages(this.getClass(), imageslang, this, "ui/unknown.png", ImageSize.small);
   }
 
   public void addImages(List<UIMediaImage> images) {
@@ -161,24 +186,17 @@ public class GalleryPanel extends JDialog {
       }
     }
 
-    languagesModel.setSelectedItem(languages.get(0));
-    //getTumbPreview(Settings.getInstance().getAppLanguage().getLanguage());
+    if(languages.size() > 0) {
+      languagesModel.setSelectedItem(languages.get(0));
+    }
   }
 
   public synchronized void addThumbPreview(UIMediaImage mimage) {
     if (mimage != null && mimage.getIcon() != null) {
+      thumbPreviewGallery.addImage(0, mimage);
 
-      UIImageLang imglang = mimage.getImagelang();
-
-      if (imglang.getLang().equals(Locale.ROOT)) {
-        thumbPreviewGallery.addImage(mimage);
-      } else {
-        thumbPreviewGallery.addImage(0, mimage);
-      }
-
-      if (!languages.contains(imglang)) {
-        languages.add(imglang);
-        languagesModel.addElement(imglang);
+      if (thumbPreviewGallery.getImagesSize() == 1) {
+        thumbPreviewGallery.setSelectedIndex(0);
       }
     }
   }
@@ -191,8 +209,6 @@ public class GalleryPanel extends JDialog {
 
       if (country.replace("_", "").equalsIgnoreCase(uiimagelang.getCountry())) {
         limages.add(0, image);
-      } else if (uiimagelang.equals(Locale.ROOT)) {
-        limages.add(image);
       }
     }
 
@@ -226,19 +242,7 @@ public class GalleryPanel extends JDialog {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    galleryPnl = new com.alee.laf.panel.WebPanel() {
-      @Override
-      protected void paintComponent(final Graphics g) {
-        super.paintComponent(g);
-        //    final Graphics2D g2d = (Graphics2D) g;
-        //    LafUtils.setupAntialias(g2d);
-        //
-        //    g2d.setPaint(new GradientPaint(0, 0, Color.black, 0, getHeight(), Color.darkGray));
-        //    g2d.fillRect(0, 0, getWidth(), getHeight());
-      }
-
-    }
-    ;
+    galleryPnl = new com.alee.laf.panel.WebPanel();
     thumbPreviewPnl = new com.alee.laf.panel.WebPanel();
     previewPnl = new com.alee.laf.panel.WebPanel();
     previewLbl = new com.alee.laf.label.WebLabel();

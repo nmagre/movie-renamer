@@ -141,7 +141,7 @@ public class MoviePanel extends MediaPanel {
    * @param mr
    */
   public MoviePanel(MovieRenamer mr) {
-    super(mr, ImageCategoryProperty.thumb);
+    super(mr, ImageCategoryProperty.thumb, ImageCategoryProperty.fanart);
     this.setting = UISettings.getInstance();
 
     initComponents();
@@ -163,7 +163,7 @@ public class MoviePanel extends MediaPanel {
     subtitleList.setCellRenderer(new IconListRenderer<IIconList>(false));
 
     webToolBar1.addToEnd(getStarPanel());
-    webToolBar1.addToEnd(UIUtils.createSettingbutton(PopupWay.downLeft, "settingHelp", false, new WebCheckBox()));
+    webToolBar1.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, "settingHelp", false, new WebCheckBox()));
   }
 
   @Override
@@ -182,6 +182,7 @@ public class MoviePanel extends MediaPanel {
 //        ratingField.setText("");
 //        voteField.setText("");
         synopsisArea.setText("");
+
       }
     });
   }
@@ -311,7 +312,7 @@ public class MoviePanel extends MediaPanel {
     componentTransition2 = new ComponentTransition();
     imagePanel = new WebPanel();
     thumbLbl = getThumbLabel(ImageCategoryProperty.thumb);
-    fanartLbl = new WebLabel();
+    fanartLbl = getThumbLabel(ImageCategoryProperty.fanart);
     thumbnailLbl = new WebLabel();
     fanarttLbl = new WebLabel();
     infoBc = new WebBreadcrumb();
@@ -592,19 +593,9 @@ public class MoviePanel extends MediaPanel {
 
     thumbLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
     thumbLbl.setHorizontalAlignment(SwingConstants.CENTER);
-    thumbLbl.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        thumbLblMouseReleased(evt);
-      }
-    });
 
     fanartLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
     fanartLbl.setHorizontalAlignment(SwingConstants.CENTER);
-    fanartLbl.addMouseListener(new MouseAdapter() {
-      public void mouseReleased(MouseEvent evt) {
-        fanartLblMouseReleased(evt);
-      }
-    });
 
     thumbnailLbl.setText("Thumbnail");
     thumbnailLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
@@ -739,10 +730,6 @@ public class MoviePanel extends MediaPanel {
     );
   }// </editor-fold>//GEN-END:initComponents
 
-  private void thumbLblMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_thumbLblMouseReleased
-    showGalleryPanel(ImageInfo.ImageCategoryProperty.thumb);
-  }//GEN-LAST:event_thumbLblMouseReleased
-
   private void movieBctActionPerformed(ActionEvent evt) {//GEN-FIRST:event_movieBctActionPerformed
     componentTransition1.performTransition(moviePanel);
   }//GEN-LAST:event_movieBctActionPerformed
@@ -758,15 +745,6 @@ public class MoviePanel extends MediaPanel {
   private void moreBctActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moreBctActionPerformed
     componentTransition2.performTransition(imagePanelPlus);
   }//GEN-LAST:event_moreBctActionPerformed
-
-  private void fanartLblMouseReleased(MouseEvent evt) {//GEN-FIRST:event_fanartLblMouseReleased
-    showGalleryPanel(ImageInfo.ImageCategoryProperty.fanart);
-  }//GEN-LAST:event_fanartLblMouseReleased
-
-  @Override
-  public DefaultListModel getCastingModel() {
-    return actorListModel;
-  }
 
   @Override
   protected String getPanelName() {
@@ -824,7 +802,7 @@ public class MoviePanel extends MediaPanel {
 
     @Override
     public String toString() {
-      return country.getDisplayCountry(UISettings.getInstance().coreInstance.getAppLanguage());
+      return country.getDisplayCountry(setting.coreInstance.getAppLanguage());
     }
 
     @Override

@@ -17,17 +17,12 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.exception.InvalidUrlException;
-import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.list.IIconList;
-import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -95,24 +90,12 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> implement
           // Worker canceled
           UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", e.getClass().getSimpleName()));
         } catch (Exception ex) {
-          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("Exception", ex.getStackTrace()));
+          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getClass().getSimpleName(), ex.getStackTrace()));
         }
         break;
       default:
         break;
     }
-  }
-
-  protected <V extends IIconList> void getImages(List<V> images, DefaultListModel model, Dimension imageSize) {
-    ImageWorker<V> imagesWorker = new ImageWorker<V>(images, model, imageSize, "ui/unknown.png");
-    imagesWorker.execute();
-    mr.addWorker(imagesWorker);
-  }
-
-  protected <V extends IIconList> void getImages(List<V> images, GalleryPanel gallery) {
-    ImageWorker<V> imagesWorker = new ImageWorker<V>(images, gallery, "ui/unknown.png", ImageSize.small);
-    imagesWorker.execute();
-    mr.addWorker(imagesWorker);
   }
 
   protected void workerStarted() {

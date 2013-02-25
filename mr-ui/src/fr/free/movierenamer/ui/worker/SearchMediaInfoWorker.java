@@ -68,11 +68,8 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
     MediaInfo info = get();
     if (info != null) {
       MediaPanel mediaPanel = mr.getMediaPanel();
-      mr.getMediaPanel().setMediaInfo(info);
-      SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, mediaPanel.getCastingList());
-      castingWorker.execute();
-
-      mr.addWorker(castingWorker);
+      mediaPanel.addMediaInfo(info);
+      WorkerManager.fetchCasting(this.getClass(), mr, info, mediaPanel.getCastingList());
       mr.updateRenamedTitle();
     }
   }

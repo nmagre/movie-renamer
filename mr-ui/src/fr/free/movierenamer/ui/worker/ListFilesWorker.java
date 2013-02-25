@@ -18,13 +18,13 @@
 package fr.free.movierenamer.ui.worker;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
-import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.list.IIconList;
 import fr.free.movierenamer.ui.list.IconListRenderer;
@@ -53,7 +53,6 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
   private boolean subFolder;
   private final UISettings setting;
   private boolean paused = false;
-  private final String[] extensions = NameCleaner.getCleanerProperty("file.extension").split("|");
   private final FilenameFilter folderFilter = new FilenameFilter() {
     @Override
     public boolean accept(File dir, String name) {
@@ -110,7 +109,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       if (files.get(i).isDirectory()) {
         addFiles(medias, files.get(i));
       } else {
-        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName(), extensions);
+        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName());
         if (addfiletoUI) {
           addUIfile(medias, files.get(i));
         }
@@ -168,14 +167,14 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
   private void addFiles(List<UIFile> medias, File file) {
     File[] listFiles = file.listFiles();
     if (listFiles == null) {
-      UISettings.LOGGER.log(Level.SEVERE, "Directory \"{0}\" does not exist or is not a Directory", file.getName());
+      UISettings.LOGGER.log(Level.SEVERE, String.format("Directory \"%s\" does not exist or is not a Directory", file.getName()));
       return;
     }
 
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolder) {
         addFiles(medias, listFiles[i]);
-      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName(), extensions)) {
+      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName())) {
         addUIfile(medias, listFiles[i]);
       }
     }
@@ -208,9 +207,11 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     if (eventList.isEmpty()) {
       WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n
     } else if (UISettings.getInstance().isSelectFirstMedia()) {
-      list.setSelectedIndex(0);// FIXME 0 it's not necessary the first entry (
-      list.revalidate();
-      list.repaint();
+      int index = 0;
+      if(model.getElementAt(index) instanceof SeparatorList.Separator) {
+        index++;
+      }
+      list.setSelectedIndex(index);
     }
   }
 }

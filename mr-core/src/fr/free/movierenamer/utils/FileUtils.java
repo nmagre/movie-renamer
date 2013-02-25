@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.renamer.NameCleaner;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -39,7 +40,7 @@ import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
 
 /**
  * Class FileUtils
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -114,9 +115,20 @@ public final class FileUtils {
     return Pattern.compile("\\s*[\\\\/]+\\s*").matcher(path).replaceAll(replacement);
   }
 
+    /**
+   * Check if file have a good extension
+   *
+   * @param fileName
+   *          File to check extension
+   * @return True if file extension is in array
+   */
+  public static boolean checkFileExt(String fileName) {
+    return checkFileExt(fileName, NameCleaner.getCleanerProperty("file.extension").split("|"));
+  }
+
   /**
    * Check if file have a good extension
-   * 
+   *
    * @param fileName
    *          File to check extension
    * @param extensions
@@ -144,7 +156,7 @@ public final class FileUtils {
 
   /**
    * Check if dir is a root directory
-   * 
+   *
    * @param dir
    *          Directory
    * @return True if it is a directory

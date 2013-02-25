@@ -121,10 +121,6 @@ public class ImageWorker<T extends IIconList> extends SwingWorker<Icon, ImageWor
 
       if (gallery != null) {
         gallery.addThumbPreview((UIMediaImage) chunk.getMediaImage());
-        if(chunk.getIndex() == 0) {
-          gallery.setSelectedIndex(chunk.getIndex());
-          gallery.getPropertyChange().firePropertyChange("updateThumb", null, chunk.getMediaImage().getIcon());
-        }
       }
     }
   }

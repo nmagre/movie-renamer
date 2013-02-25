@@ -41,9 +41,6 @@
   </Layout>
   <SubComponents>
     <Container class="com.alee.laf.panel.WebPanel" name="galleryPnl">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.alee.laf.panel.WebPanel() {&#xa;  @Override&#xa;  protected void paintComponent(final Graphics g) {&#xa;    super.paintComponent(g);&#xa;//    final Graphics2D g2d = (Graphics2D) g;&#xa;//    LafUtils.setupAntialias(g2d);&#xa;//&#xa;//    g2d.setPaint(new GradientPaint(0, 0, Color.black, 0, getHeight(), Color.darkGray));&#xa;//    g2d.fillRect(0, 0, getWidth(), getHeight());&#xa;  }&#xa;&#xa;}&#xa;"/>
-      </AuxValues>
 
       <Layout>
         <DimensionLayout dim="0">

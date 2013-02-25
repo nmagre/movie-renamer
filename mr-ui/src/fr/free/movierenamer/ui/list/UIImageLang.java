@@ -40,6 +40,7 @@ public class UIImageLang implements IIconList {
     return lang;
   }
 
+  @Override
   public Icon getIcon() {
     return icon;
   }
