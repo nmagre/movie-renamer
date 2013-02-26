@@ -29,21 +29,21 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class ImageScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class ImageScrapper extends Scrapper {
+public abstract class ImageScrapper<M extends Media> extends Scrapper {
 
   protected ImageScrapper(AvailableLanguages... supportedLanguages) {
     super(supportedLanguages);
   }
 
-  public final List<ImageInfo> getImages(Media media) throws Exception {
+  public final List<ImageInfo> getImages(M media) throws Exception {
     return getImages(media, getLanguage());
   }
 
-  protected final List<ImageInfo> getImages(Media media, Locale language) throws Exception {
+  protected final List<ImageInfo> getImages(M media, Locale language) throws Exception {
     Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), media, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<ImageInfo> imageList = (cache != null) ? cache.getList(media, language, ImageInfo.class) : null;
@@ -59,7 +59,7 @@ public abstract class ImageScrapper extends Scrapper {
     return (cache != null) ? cache.putList(media, language, ImageInfo.class, imageList) : imageList;
   }
 
-  protected abstract List<ImageInfo> fetchImagesInfo(Media media, Locale language) throws Exception;
+  protected abstract List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception;
 
   @Override
   protected final String getCacheName() {

@@ -16,7 +16,6 @@
  */
 package fr.free.movierenamer.ui.panel;
 
-import com.alee.utils.LafUtils;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -29,11 +28,7 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -53,7 +48,8 @@ import javax.swing.SwingWorker;
  * @author Nicolas Magré
  */
 public class GalleryPanel extends JDialog {
-
+  // TODO fix image size, panel size
+  // add fanart,cdart,.. support
   private static final long serialVersionUID = 1L;
   private int imgsize = 130;
   private final CustomWebImageGallery thumbPreviewGallery;

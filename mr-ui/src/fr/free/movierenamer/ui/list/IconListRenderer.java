@@ -80,7 +80,7 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     try {
       obj = (IIconList) value;
     } catch (ClassCastException e) {
-      UISettings.LOGGER.log(Level.SEVERE, "IconListRenderer ClassCastException : IIconList != " + value.getClass().getSimpleName());
+      UISettings.LOGGER.log(Level.SEVERE, String.format("IconListRenderer ClassCastException : IIconList != %s", value.getClass().getSimpleName()));
       return label;
     }
 

@@ -23,8 +23,8 @@ import java.util.Locale;
 import javax.swing.Icon;
 
 /**
- *
- * @author duffy
+ * Class UIImageLang
+ * @author Nicolas Magré
  */
 public class UIImageLang implements IIconList {
 

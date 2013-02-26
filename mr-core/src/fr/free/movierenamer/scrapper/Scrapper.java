@@ -26,10 +26,11 @@ import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.LocaleUtils.Language;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 
 /**
  * Class Scrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */

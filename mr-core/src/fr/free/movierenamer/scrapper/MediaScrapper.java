@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.scrapper.impl.FanartTVImagesScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
@@ -116,22 +117,28 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   }
 
   protected final List<ImageInfo> getImages(M search, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), search, language.getDisplayLanguage(Locale.ENGLISH)));
-    CacheObject cache = getCache();
-    List<ImageInfo> imagesInfo = (cache != null) ? cache.getList(search, language, ImageInfo.class) : null;
-    if (imagesInfo != null) {
-      return imagesInfo;
+
+    List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
+    FanartTVImagesScrapper fanartImagesSc = new FanartTVImagesScrapper();
+    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages(search, language);
+    if(tmpImagesInfo != null) {
+      imagesInfo.addAll(tmpImagesInfo);
+    }
+    // TODO add tmbd
+
+    if(imagesInfo.isEmpty()) {
+      tmpImagesInfo = fetchImagesInfo(search, language);
+      if(tmpImagesInfo != null) {
+        imagesInfo.addAll(tmpImagesInfo);//FIXME use cache instead
+      }
     }
 
-    // perform actual search
-    imagesInfo = fetchImagesInfo(search, language);
-    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d image(s) info for '%s' in '%s'", getName(), imagesInfo.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
-
-    // cache results and return
-    return (cache != null) ? cache.putList(search, language, ImageInfo.class, imagesInfo) : imagesInfo;
+    return imagesInfo;
   }
 
-  protected abstract List<ImageInfo> fetchImagesInfo(M search, Locale language) throws Exception;
+  protected List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception {
+    return null;
+  }
 
   public final List<CastingInfo> getCasting(M search) throws Exception {
     return getCasting(search, getLanguage());

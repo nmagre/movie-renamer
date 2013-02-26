@@ -31,11 +31,11 @@ import java.util.List;
  * @author Nicolas Magré
  */
 public class FanartTVTest extends ImageScrapperTest {
-  private FanartTV fanarttv = null;
+  private FanartTVImagesScrapper fanarttv = null;
 
   @Override
   public void init() {
-    fanarttv = new FanartTV();
+    fanarttv = new FanartTVImagesScrapper();
   }
 
   @Override

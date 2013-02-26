@@ -81,12 +81,12 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
     // return null;
   }
 
-  @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    // return null;
-  }
+//  @Override
+//  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
+//    // TODO Auto-generated method stub
+//    throw new UnsupportedOperationException("Not supported yet.");
+//    // return null;
+//  }
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {

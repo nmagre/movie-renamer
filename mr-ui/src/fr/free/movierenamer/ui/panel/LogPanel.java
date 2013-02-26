@@ -49,7 +49,6 @@ public class LogPanel extends JDialog {
 
   private final WebFileChooser fileChooser;
   private static final long serialVersionUID = 1L;
-// TODO
   private final logHandler handler = new logHandler();
   private final StringWriter text = new StringWriter();
   private final PrintWriter out = new PrintWriter(text);
@@ -191,13 +190,14 @@ public class LogPanel extends JDialog {
   }//GEN-LAST:event_webCheckBox1ActionPerformed
 
   private void logsFileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logsFileBtnActionPerformed
+    // TODO save logs
     StringBuilder logs = new StringBuilder();
     for (LogRecord record : handler.getRecord()) {
       logs.append(record.getSequenceNumber()).append(" : ").append(record.getSourceClassName()).append(".");
       logs.append(record.getSourceMethodName()).append(" : ").append(record.getMessage()).append("\n");
     }
 
-    System.out.println(logs);
+    System.out.println(logs);// FIXME remove
   }//GEN-LAST:event_logsFileBtnActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane jScrollPane2;

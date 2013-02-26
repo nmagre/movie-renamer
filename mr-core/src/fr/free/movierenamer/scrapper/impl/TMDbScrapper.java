@@ -61,9 +61,9 @@ public class TMDbScrapper extends MovieScrapper {
   private static final String name = "TheMovieDb";
   private static final String version = "3";
   private final String apikey;
-  private final String imageUrl = "http://cf2.imgobject.com/t/p/";
+  public static final String imageUrl = "http://cf2.imgobject.com/t/p/";
 
-  private enum TmdbImageSize {
+  public static enum TmdbImageSize {
     backdrop("w300", "w780"),
     poster("w92", "w185"),
     cast("w45", "w185");
@@ -182,39 +182,6 @@ public class TMDbScrapper extends MovieScrapper {
 
     MovieInfo movieInfo = new MovieInfo(fields, genres, countries, studios);
     return movieInfo;
-  }
-
-  @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "/images?api_key=" + apikey);
-    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-
-    List<ImageInfo> images = new ArrayList<ImageInfo>();
-    for (String section : new String[]{
-              "backdrops", "posters"
-            }) {
-      List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
-      TmdbImageSize imageSize = section.equals("backdrops") ? TmdbImageSize.backdrop : TmdbImageSize.poster;
-      for (JSONObject jsonObj : jsonObjs) {
-        Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
-        String file_path = JSONUtils.selectString("file_path", jsonObj);
-
-        imageFields.put(ImageProperty.url, imageUrl + imageSize.getBig() + file_path);
-        imageFields.put(ImageProperty.urlMid, imageUrl + imageSize.getMedium() + file_path);
-        imageFields.put(ImageProperty.urlTumb, imageUrl + imageSize.getSmall() + file_path);
-
-        String lang = JSONUtils.selectString("iso_639_1", jsonObj);
-        if(lang != null && !lang.equals("null")) {
-          imageFields.put(ImageProperty.language, lang);
-        }
-        imageFields.put(ImageProperty.width, JSONUtils.selectString("width", jsonObj));
-        imageFields.put(ImageProperty.height, JSONUtils.selectString("height", jsonObj));
-
-        images.add(new ImageInfo(imageFields, section.equals("posters") ? ImageCategoryProperty.thumb : ImageCategoryProperty.fanart));
-      }
-    }
-
-    return images;
   }
 
   @Override

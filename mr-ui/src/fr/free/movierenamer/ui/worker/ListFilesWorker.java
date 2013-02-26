@@ -141,7 +141,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
   }
 
   /**
-   * Check if one of directory contain a subdirectory
+   * Check if one directory contains a subdirectory
    *
    * @param files
    * @return true if there is at least one subdirectory, otherwise false

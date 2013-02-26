@@ -74,12 +74,12 @@ public class AnidbScrapper extends MovieScrapper {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
-    // return null;
-  }
+//  @Override
+//  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
+//    // TODO Auto-generated method stub
+//    throw new UnsupportedOperationException("Not supported yet.");
+//    // return null;
+//  }
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {

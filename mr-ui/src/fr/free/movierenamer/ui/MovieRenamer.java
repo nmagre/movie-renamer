@@ -66,10 +66,6 @@ import fr.free.movierenamer.ui.settings.UISettings.SettingPropertyChange;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.ui.worker.ListFilesWorker;
-import fr.free.movierenamer.ui.worker.SearchMediaImagesWorker;
-import fr.free.movierenamer.ui.worker.SearchMediaInfoWorker;
-import fr.free.movierenamer.ui.worker.SearchMediaWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
@@ -83,9 +79,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.logging.Level;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
@@ -209,7 +203,7 @@ public class MovieRenamer extends JFrame {
 
   private void init() {
 
-    // Add button to main toolbar to end
+    // Add button to main toolbar
     mainTb.addToEnd(helpBtn);
     mainTb.addToEnd(logsBtn);
     mainTb.addToEnd(new JSeparator(JSeparator.VERTICAL));
@@ -444,7 +438,7 @@ public class MovieRenamer extends JFrame {
   }
 
   /**
-   * Get selected serah result
+   * Get selected search result
    *
    * @return UISearchResult selected or null
    */

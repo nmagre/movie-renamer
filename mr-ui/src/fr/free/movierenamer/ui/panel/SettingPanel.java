@@ -741,6 +741,7 @@ public class SettingPanel extends JDialog {
   }//GEN-LAST:event_saveBtnActionPerformed
 
   private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
+    // TODO confirm dialog
     try {
       settings.clear();
     } catch (IOException ex) {
