@@ -29,6 +29,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.impl.FanartTVImagesScrapper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
@@ -120,7 +121,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
     List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
     FanartTVImagesScrapper fanartImagesSc = new FanartTVImagesScrapper();
-    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages(search, language);
+    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages((Movie)search, language);// FIXMe cast Movie
     if(tmpImagesInfo != null) {
       imagesInfo.addAll(tmpImagesInfo);
     }
