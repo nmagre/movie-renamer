@@ -23,15 +23,17 @@ import org.junit.Assert;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapperTest;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.EpisodeUtils;
+import fr.free.movierenamer.utils.ScrapperUtils;
 
 /**
  * Class TvRageScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public final class TvRageScrapperTest extends TvShowScrapperTest {
@@ -57,7 +59,7 @@ public final class TvRageScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getTvShowInfo() throws Exception {
-    TvShowInfo tvShow = tvrage.getInfo(new TvShow(27811, null, null, -1));
+    TvShowInfo tvShow = tvrage.getInfo(new TvShow(new IdInfo(27811, ScrapperUtils.AvailableApiIds.TVRAGE), null, null, -1));
 
     Assert.assertEquals("Homeland", tvShow.getName());
     Assert.assertEquals("2011-10-02", tvShow.getFirstAired().toString());
@@ -88,13 +90,13 @@ public final class TvRageScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = tvrage.getCasting(new TvShow(2930, null, null, -1));
+    List<CastingInfo> cast = tvrage.getCasting(new TvShow(new IdInfo(2930, ScrapperUtils.AvailableApiIds.TVRAGE), null, null, -1));
     Assert.assertEquals(null, cast);
   };
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = tvrage.getImages(new TvShow(1858, null, null, -1));
+    List<ImageInfo> images = tvrage.getImages(new TvShow(new IdInfo(1858, ScrapperUtils.AvailableApiIds.TVRAGE), null, null, -1));
     Assert.assertEquals(null, images);
   }
 }

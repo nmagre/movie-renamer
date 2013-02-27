@@ -29,6 +29,7 @@ import org.json.simple.JSONObject;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.CastingInfo.PersonProperty;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
@@ -40,9 +41,9 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,7 +119,6 @@ public class AllocineScrapper extends MovieScrapper {
       name = JSONUtils.selectString("originalTitle", movie);
     }
     Integer year = JSONUtils.selectInteger("productionYear", movie);
-    Integer imdbId = -1;
     Integer movieId = JSONUtils.selectInteger("code", movie);
     JSONObject poster = JSONUtils.selectObject("poster", movie);
     URL posterURL;
@@ -128,7 +128,7 @@ public class AllocineScrapper extends MovieScrapper {
       posterURL = null;
     }
 
-    resultSet.put(movieId, new Movie(movieId, name, posterURL, year, imdbId));
+    resultSet.put(movieId, new Movie(new IdInfo(movieId, AvailableApiIds.ALLOCINE), name, posterURL, year));
   }
 
   @Override
@@ -145,13 +145,15 @@ public class AllocineScrapper extends MovieScrapper {
     fields.put(MovieProperty.title, JSONUtils.selectString("title", movieObject));
     fields.put(MovieProperty.rating, String.valueOf(JSONUtils.selectDouble("userRating", statistics) * 2));// allocine return rating out of 5
     fields.put(MovieProperty.votes, JSONUtils.selectString("userRatingCount", statistics));
-    fields.put(MovieProperty.id, JSONUtils.selectString("code", movieObject));
     fields.put(MovieProperty.originalTitle, JSONUtils.selectString("originalTitle", movieObject));
     fields.put(MovieProperty.releasedDate, JSONUtils.selectString("releaseDate", release));
     fields.put(MovieProperty.overview, JSONUtils.selectString("synopsis", movieObject));
     fields.put(MovieProperty.runtime, String.valueOf(JSONUtils.selectInteger("runtime", movieObject) / 60));// allocine return time in sec
     fields.put(MovieProperty.budget, JSONUtils.selectString("budget", movieObject));
     fields.put(MovieProperty.posterPath, JSONUtils.selectString("href", JSONUtils.selectObject("posterPath", movieObject)));
+
+    List<IdInfo> ids = new ArrayList<IdInfo>();
+    ids.add(new IdInfo(JSONUtils.selectInteger("code", movieObject), AvailableApiIds.ALLOCINE));
 
     List<String> genres = new ArrayList<String>();
     for (JSONObject genre : JSONUtils.selectList("genre", movieObject)) {
@@ -166,12 +168,12 @@ public class AllocineScrapper extends MovieScrapper {
     List<String> studios = new ArrayList<String>();
     studios.add(JSONUtils.selectString("distributor", JSONUtils.selectObject("release", movieObject)));
 
-    MovieInfo movieInfo = new MovieInfo(fields, genres, countries, studios);
+    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
     return movieInfo;
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(Movie movie, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 

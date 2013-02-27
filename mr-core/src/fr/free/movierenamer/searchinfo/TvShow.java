@@ -17,13 +17,12 @@
  */
 package fr.free.movierenamer.searchinfo;
 
+import fr.free.movierenamer.info.IdInfo;
 import java.net.URL;
-
-
 
 /**
  * Class TvShow
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -35,25 +34,25 @@ public class TvShow extends Media {
  // used by serializer
   }
 
-  public TvShow(int showId, String seriesName, URL thumb, int year) {
-    super(showId, seriesName, thumb, year, null);
+  public TvShow(IdInfo id, String seriesName, URL thumb, int year) {
+    super(id, seriesName, thumb, year, null);
   }
 
   @Override
   public int hashCode() {
-    return mediaId;
+    return id.getId();
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof TvShow) {
       TvShow other = (TvShow) object;
-      return this.mediaId == other.mediaId;
+      return this.id.equals(other.id);
     }
 
     return false;
   }
-  
+
   @Override
   public String toString() {
      return super.toString();

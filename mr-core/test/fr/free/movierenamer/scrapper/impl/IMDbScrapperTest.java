@@ -24,11 +24,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.utils.ScrapperUtils;
 
 /**
  * Class IMDbScrapperTest
@@ -53,8 +55,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1968, movie.getYear());
-    Assert.assertEquals(64116, movie.getImdbId());
-    Assert.assertEquals(64116, movie.getMediaId());
+    Assert.assertEquals(64116, movie.getMediaId().getId());
   }
 
   @Test
@@ -67,15 +68,14 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals("Le pont de la rivière Kwai", movie.getName());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1957, movie.getYear());
-    Assert.assertEquals(50212, movie.getImdbId());
-    Assert.assertEquals(50212, movie.getMediaId());
+    Assert.assertEquals(50212, movie.getMediaId().getId());
 
   }
 
   @Override
   public void getMovieInfo() throws Exception {
     imdb.setLanguage(Locale.ITALIAN);
-    MovieInfo movie = imdb.getInfo(new Movie(64116, null, null, -1, -1));
+    MovieInfo movie = imdb.getInfo(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, -1));
 
     Assert.assertEquals("C'era una volta il West", movie.getTitle());
     Assert.assertEquals(Integer.valueOf(175), Integer.valueOf(movie.getRuntime()));
@@ -84,7 +84,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getCasting() throws Exception {
     boolean success = false;
-    List<CastingInfo> cast = imdb.getCasting(new Movie(64116, null, null, -1, -1));
+    List<CastingInfo> cast = imdb.getCasting(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, -1));
     for(CastingInfo info : cast) {
       if(info.isDirector()) {
         success = "Sergio Leone".equals(info.getName());
@@ -96,7 +96,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = imdb.getImages(new Movie(64116, null, null, -1, -1));
+    List<ImageInfo> images = imdb.getImages(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, -1));
 
     Assert.assertEquals(ImageCategoryProperty.unknown, images.get(0).getCategory());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTM2NTQ2MzkwNV5BMl5BanBnXkFtZTcwMjU1ODIwNw@@._V1._SY214_SX314_.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());

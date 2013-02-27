@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.CastingInfo.PersonProperty;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
@@ -44,6 +45,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import org.json.simple.JSONObject;
@@ -92,7 +94,7 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   public TMDbScrapper() {
-    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de);
+    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de, AvailableLanguages.zh);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -139,7 +141,7 @@ public class TMDbScrapper extends MovieScrapper {
       Date released = Date.parse(JSONUtils.selectString("release_date", node), "yyyy-MM-dd");
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(id, movieName, thumb, (released != null) ? released.getYear() : -1, id));
+        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), movieName, thumb, (released != null) ? released.getYear() : -1));
       }
     }
 
@@ -148,15 +150,13 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "?api_key=" + apikey);
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
     fields.put(MovieProperty.title, JSONUtils.selectString("title", json));
     fields.put(MovieProperty.rating, JSONUtils.selectString("vote_average", json));
     fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
-    fields.put(MovieProperty.id, JSONUtils.selectString("id", json));
-    fields.put(MovieProperty.IMDB_ID, JSONUtils.selectString("imdb_id", json));
     fields.put(MovieProperty.originalTitle, JSONUtils.selectString("original_title", json));
     Date released = Date.parse(JSONUtils.selectString("release_date", json), "yyyy-MM-dd");
     fields.put(MovieProperty.releasedDate, "" + released.getYear());
@@ -164,6 +164,10 @@ public class TMDbScrapper extends MovieScrapper {
     fields.put(MovieProperty.runtime, JSONUtils.selectString("runtime", json));
     fields.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
     fields.put(MovieProperty.collection, JSONUtils.selectString("name", JSONUtils.selectObject("belongs_to_collection", json)));
+
+    List<IdInfo> ids = new ArrayList<IdInfo>();
+    ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.TMDB));
+    ids.add(new IdInfo(Integer.parseInt(JSONUtils.selectString("imdb_id", json).substring(2)), ScrapperUtils.AvailableApiIds.IMDB));
 
     List<String> genres = new ArrayList<String>();
     for (JSONObject jsonObj : JSONUtils.selectList("genres", json)) {
@@ -180,13 +184,13 @@ public class TMDbScrapper extends MovieScrapper {
       studios.add(JSONUtils.selectString("name", jsonObj));
     }
 
-    MovieInfo movieInfo = new MovieInfo(fields, genres, countries, studios);
+    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
     return movieInfo;
   }
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "/casts?api_key=" + apikey);
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "/casts?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();

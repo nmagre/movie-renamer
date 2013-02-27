@@ -17,20 +17,17 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.utils.JSONUtils;
+import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.json.simple.JSONObject;
-
-import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.URIRequest;
 
 
 /**
@@ -39,14 +36,7 @@ import fr.free.movierenamer.utils.URIRequest;
  * @author Simon QUÉMÉNEUR
  * @author Nicolas Magré
  */
-public class FanartTVImagesScrapper extends FanartTvScrapper<Movie> { // TODO Get images for Tv show
-
-  private static final String host = "api.fanart.tv/webservice";
-  private static final String name = "FanartTV";
-
-  public FanartTVImagesScrapper() {
-
-  }
+public class FanartTVImagesScrapper extends FanartTvScrapper<Movie> {
 
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie media, Locale language) throws Exception {
@@ -55,6 +45,10 @@ public class FanartTVImagesScrapper extends FanartTvScrapper<Movie> { // TODO Ge
     JSONObject movie = JSONUtils.selectFirstObject(json);
 
     List<ImageInfo> imagesInfos = new ArrayList<ImageInfo>();
+
+    if(movie == null) {// No images for this movie
+      return imagesInfos;
+    }
 
     for (ImageType type : ImageType.values()) {
       List<JSONObject> images = JSONUtils.selectList(type.name(), movie);

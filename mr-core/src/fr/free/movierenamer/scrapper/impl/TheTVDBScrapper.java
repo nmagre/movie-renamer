@@ -38,6 +38,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.CastingInfo.PersonProperty;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.EpisodeInfo.EpisodeProperty;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
@@ -48,6 +49,7 @@ import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.util.Arrays;
@@ -115,7 +117,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
 
       if (!resultSet.containsKey(sid)) {
         // search can have multiple times the result (fr, en, ...)
-        resultSet.put(sid, new TvShow(sid, seriesName, banner, year));
+        resultSet.put(sid, new TvShow(new IdInfo(sid, ScrapperUtils.AvailableApiIds.TVDB), seriesName, banner, year));
       }
     }
 
@@ -210,7 +212,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(TvShow tvShow, Locale language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/banners.xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 

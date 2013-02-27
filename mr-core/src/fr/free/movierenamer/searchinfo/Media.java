@@ -17,11 +17,12 @@
  */
 package fr.free.movierenamer.searchinfo;
 
+import fr.free.movierenamer.info.IdInfo;
 import java.net.URL;
 
 /**
  * Class Media
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -29,20 +30,20 @@ public abstract class Media extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
   protected int year;
-  protected int mediaId; // TODO Change MediaId from int to an object because many API doesn't work with all ID type
+  protected IdInfo id;
 
   protected Media() {
     // used by serializer
   }
 
-  public Media(int mediaId, String name, URL thumb, int year, SearchResultType type) {
+  public Media(IdInfo id, String name, URL thumb, int year, SearchResultType type) {
     super(name, thumb, type);
     this.year = year;
-    this.mediaId = mediaId;
+    this.id = id;
   }
 
-  public int getMediaId() {
-    return mediaId;
+  public IdInfo getMediaId() {
+    return id;
   }
 
   public int getYear() {
@@ -62,14 +63,14 @@ public abstract class Media extends Hyperlink {
   @Override
   public String toString() {
     if(year > 0) {
-      if(mediaId > 0) {
-        return super.toString() + String.format(" (%04d) (id:%d)", year, mediaId);
+      if(id.getId() > 0) {
+        return super.toString() + String.format(" (%04d) (id:%d)", year, id.getId());
       } else {
         return super.toString() + String.format(" (%04d)", year);
       }
     } else {
-      if(mediaId > 0) {
-        return super.toString() + String.format(" (id:%d)", mediaId);
+      if(id.getId() > 0) {
+        return super.toString() + String.format(" (id:%d)", id.getId());
       } else {
         return super.toString();
       }

@@ -24,11 +24,13 @@ import org.junit.Assert;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapperTest;
 import fr.free.movierenamer.searchinfo.TvShow;
+import fr.free.movierenamer.utils.ScrapperUtils;
 
 /**
  * Class TheTVDBScrapperTest
@@ -60,7 +62,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
   @Override
   public void getTvShowInfo() throws Exception {
     thetvdb.setLanguage(Locale.FRENCH);
-    TvShowInfo tvShow = thetvdb.getInfo(new TvShow(82066, null, null, -1));
+    TvShowInfo tvShow = thetvdb.getInfo(new TvShow(new IdInfo(82066, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
 
     Assert.assertEquals("Fringe", tvShow.getName());
     Assert.assertEquals("2008-08-26", tvShow.getFirstAired().toString());
@@ -69,7 +71,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = thetvdb.getCasting(new TvShow(82066, null, null, -1));
+    List<CastingInfo> cast = thetvdb.getCasting(new TvShow(new IdInfo(82066, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
     for(CastingInfo info : cast) {
       if(info.isActor()) {
         Assert.assertEquals("Anna Torv", info.getName());
@@ -82,7 +84,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = thetvdb.getImages(new TvShow(70327, null, null, -1));
+    List<ImageInfo> images = thetvdb.getImages(new TvShow(new IdInfo(70327, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
     Assert.assertNotNull(images.get(1).getHref(ImageInfo.ImageSize.big));
   }
@@ -90,7 +92,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
   @Override
   public void getEpisodesInfoList() throws Exception {
     thetvdb.setLanguage(Locale.GERMAN);
-    List<EpisodeInfo> episodes = thetvdb.getEpisodesInfoList(new TvShow(81189, null, null, -1));
+    List<EpisodeInfo> episodes = thetvdb.getEpisodesInfoList(new TvShow(new IdInfo(81189, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
 
     EpisodeInfo first = episodes.get(0);
 

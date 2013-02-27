@@ -48,8 +48,9 @@ public final class JSONUtils {
       JSONObject toSearch = rootObject;
       return (JSONObject) toSearch.get(toSearch.keySet().iterator().next());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      //
     }
+    return null;
   }
 
   public static List<JSONObject> selectList(String path, final JSONObject rootObject) {

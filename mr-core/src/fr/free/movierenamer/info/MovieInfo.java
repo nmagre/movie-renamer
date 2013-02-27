@@ -23,6 +23,7 @@ import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import java.net.URI;
 import java.net.URL;
@@ -44,8 +45,6 @@ public class MovieInfo extends MediaInfo {
 
   public static enum MovieProperty {
 
-    id,
-    IMDB_ID,
     originalTitle,
     title,
     overview,
@@ -58,6 +57,7 @@ public class MovieInfo extends MediaInfo {
     runtime
   }
   protected final Map<MovieProperty, String> fields;
+  protected final IdInfo[] ids;
   protected final String[] genres;
   protected final Locale[] countries;
   protected final String[] studios;
@@ -65,13 +65,15 @@ public class MovieInfo extends MediaInfo {
   protected MovieInfo() {
     // used by serializer
     this.fields = null;
+    this.ids = null;
     this.genres = null;
     this.countries = null;
     this.studios = null;
   }
 
-  public MovieInfo(Map<MovieProperty, String> fields, List<String> genres, List<Locale> countries, List<String> studios) {
+  public MovieInfo(Map<MovieProperty, String> fields, List<IdInfo> ids, List<String> genres, List<Locale> countries, List<String> studios) {
     this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
+    this.ids = (ids != null) ? ids.toArray(new IdInfo[0]) : new IdInfo[0];
     this.genres = (genres != null) ? genres.toArray(new String[0]) : new String[0];
     this.countries = (countries != null) ? countries.toArray(new Locale[0]) : new Locale[0];
     this.studios = (studios != null) ? studios.toArray(new String[0]) : new String[0];
@@ -89,20 +91,26 @@ public class MovieInfo extends MediaInfo {
     return get(MovieProperty.title);
   }
 
-  public Integer getId() {
-    try {
-      return new Integer(get(MovieProperty.id));
-    } catch (Exception e) {
-      return null;
+  public String getIdString(AvailableApiIds idType) {
+    Integer id = getId(idType);
+    if(id != null) {
+      return idType.getPrefix() + id;
     }
+    return null;
+  }
+
+  public Integer getId(AvailableApiIds idType) {
+    for(IdInfo id : ids) {
+      if(id.getIdType().equals(idType)) {
+        return id.getId();
+      }
+    }
+
+    return null;
   }
 
   public Integer getImdbId() {
-    try {
-      return new Integer(get(MovieProperty.IMDB_ID).substring(2));
-    } catch (Exception e) {
-      return null;
-    }
+    return getId(AvailableApiIds.IMDB);
   }
 
   public URI getPosterPath() {
@@ -203,7 +211,7 @@ public class MovieInfo extends MediaInfo {
     replace.put("<tp>", titlePrefix);
     replace.put("<st>", shortTitle);
     replace.put("<ot>", this.getOriginalTitle());
-    replace.put("<tt>", this.getId());
+    replace.put("<tt>", this.getIdString(AvailableApiIds.IMDB));
     replace.put("<y>", this.getYear());
     replace.put("<rt>", this.getRuntime());
     replace.put("<ra>", this.getRating());

@@ -27,9 +27,7 @@ import java.util.logging.Logger;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.impl.FanartTVImagesScrapper;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
@@ -63,11 +61,11 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     // perform actual search
     try {
       URL url = new URL(query);
-      if(!url.getHost().equals(getHost())) {
+      if (!url.getHost().equals(getHost())) {
         throw new InvalidUrlException(query);
       }
       results = searchMedia(url, language);
-    }catch(MalformedURLException ex) {
+    } catch (MalformedURLException ex) {
       results = searchMedia(query, language);
     }
     Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, language.getDisplayLanguage(Locale.ENGLISH)));
@@ -77,6 +75,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   }
 
   protected abstract List<M> searchMedia(String query, Locale language) throws Exception;
+
   protected abstract List<M> searchMedia(URL searchUrl, Locale language) throws Exception;
 
   public final MI getInfo(M search) throws Exception {
@@ -114,30 +113,16 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   protected abstract MI fetchMediaInfo(M searchResult, Locale language) throws Exception;
 
   public final List<ImageInfo> getImages(M search) throws Exception {
-    return getImages(search, getLanguage());
-  }
-
-  protected final List<ImageInfo> getImages(M search, Locale language) throws Exception {
-
-    List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
-    FanartTVImagesScrapper fanartImagesSc = new FanartTVImagesScrapper();
-    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages((Movie)search, language);// FIXMe cast Movie
-    if(tmpImagesInfo != null) {
-      imagesInfo.addAll(tmpImagesInfo);
-    }
-    // TODO add tmbd
-
+    List<ImageInfo> imagesInfo = fetchImagesInfo(search, getLanguage());
     if(imagesInfo.isEmpty()) {
-      tmpImagesInfo = fetchImagesInfo(search, language);
-      if(tmpImagesInfo != null) {
-        imagesInfo.addAll(tmpImagesInfo);//FIXME use cache instead
-      }
+      imagesInfo = getScrapperImages(search, getLanguage());
     }
-
-    return imagesInfo;
+    return imagesInfo != null ? imagesInfo : new ArrayList<ImageInfo>();
   }
 
-  protected List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception {
+  protected abstract List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception;
+
+  protected List<ImageInfo> getScrapperImages(M searchResult, Locale language) throws Exception {
     return null;
   }
 
@@ -162,5 +147,4 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   }
 
   protected abstract List<CastingInfo> fetchCastingInfo(M search, Locale language) throws Exception;
-
 }

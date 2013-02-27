@@ -23,14 +23,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.EpisodeInfo;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
+import fr.free.movierenamer.scrapper.impl.FanartTVImagesScrapper;
+import fr.free.movierenamer.scrapper.impl.FanartTVshowImagesScrapper;
+import fr.free.movierenamer.scrapper.impl.TMDbImagesScrapper;
+import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.util.ArrayList;
 
 /**
  * Class TvShowScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -62,8 +68,32 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
     return (cache != null) ? cache.putList(tvShow, language, EpisodeInfo.class, episodes) : episodes;
   }
 
-  // public TvShowInfo getTvShowInfoByID(int id, Locale language) throws Exception;
+  @Override
+  protected final List<ImageInfo> fetchImagesInfo(TvShow tvshow, Locale language) throws Exception {
 
-  // public TvShowInfo getSeriesInfoByIMDBID(int imdbid, Locale language) throws Exception;
+    List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
 
+    // TODO tvdb images
+
+    // Try to get images from fanart.tv
+    FanartTVshowImagesScrapper fanartImagesSc = new FanartTVshowImagesScrapper();
+    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages(tvshow, language);
+    if (tmpImagesInfo != null) {
+      imagesInfo.addAll(tmpImagesInfo);
+    }
+
+    // use scrapper default get image
+    if (imagesInfo.isEmpty()) {
+      tmpImagesInfo = getScrapperImages(tvshow, language);
+      if (tmpImagesInfo != null) {
+        imagesInfo.addAll(tmpImagesInfo);
+      }
+    }
+
+    return imagesInfo;
+  }
+
+  protected List<ImageInfo> getScrapperImages(TvShow movie, Locale language) throws Exception {
+    return null;
+  }
 }

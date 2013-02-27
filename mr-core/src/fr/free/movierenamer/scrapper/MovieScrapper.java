@@ -17,13 +17,19 @@
  */
 package fr.free.movierenamer.scrapper;
 
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.scrapper.impl.FanartTVImagesScrapper;
+import fr.free.movierenamer.scrapper.impl.TMDbImagesScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Class MovieScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -33,8 +39,37 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
     super(supportedLanguages);
   }
 
-  // public MovieInfo getMovieInfoByID(int id, Locale language) throws Exception;
+  @Override
+  protected final List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
 
-  // public MovieInfo getMovieInfoByIMDBID(int imdbid, Locale language) throws Exception;
+    List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
+    List<ImageInfo> tmpImagesInfo;
+    try {
+      // Try to get images from tmdb
+      TMDbImagesScrapper tmiscc = new TMDbImagesScrapper();
+      tmpImagesInfo = tmiscc.getImages(movie);
+      if (tmpImagesInfo != null) {
+        imagesInfo.addAll(tmpImagesInfo);
+      }
 
+      // Try to get images from fanart.tv
+      FanartTVImagesScrapper fanartImagesSc = new FanartTVImagesScrapper();
+      tmpImagesInfo = fanartImagesSc.getImages(movie, language);
+      if (tmpImagesInfo != null) {
+        imagesInfo.addAll(tmpImagesInfo);
+      }
+    } catch (UnsupportedOperationException ex) {
+      // Images scrapper do not support id type
+    }
+
+    // use scrapper default get image
+    if (imagesInfo.isEmpty()) {
+      tmpImagesInfo = getScrapperImages(movie, language);
+      if (tmpImagesInfo != null) {
+        imagesInfo.addAll(tmpImagesInfo);
+      }
+    }
+
+    return imagesInfo;
+  }
 }

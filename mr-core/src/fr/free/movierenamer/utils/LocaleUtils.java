@@ -118,7 +118,8 @@ public final class LocaleUtils {
     fr(Locale.FRENCH),
     es(new Locale("es", "")),
     it(Locale.ITALIAN),
-    de(Locale.GERMAN);
+    de(Locale.GERMAN),
+    zh(Locale.CHINESE);
     private final Locale locale;
 
     private AvailableLanguages(Locale locale) {

@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.EpisodeInfo.EpisodeProperty;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.info.TvShowInfo.TvShowProperty;
@@ -44,6 +45,7 @@ import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.util.Arrays;
@@ -92,7 +94,7 @@ public class TvRageScrapper extends TvShowScrapper {
       URL url = getPosterURL(XPathUtils.getTextContent("link", node));
       int year = XPathUtils.getIntegerContent("started", node);
 
-      searchResults.add(new TvShow(showid, name, url, year));
+      searchResults.add(new TvShow(new IdInfo(showid, ScrapperUtils.AvailableApiIds.TVDB), name, url, year));
     }
 
     return searchResults;
@@ -181,7 +183,7 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow tvShow, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(TvShow tvShow, Locale language) throws Exception {
     return null;
   }
 

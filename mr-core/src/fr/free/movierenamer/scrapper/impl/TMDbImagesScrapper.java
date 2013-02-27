@@ -23,6 +23,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,9 +56,26 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
     this.apikey = key;
   }
 
+  private String imdbIDLookUp(String imdbId) throws Exception {
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + imdbId + "?api_key=" + apikey);
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+    return JSONUtils.selectString("id", json);
+  }
+
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getImdbId() + "/images?api_key=" + apikey);
+    String id = movie.getId().toString();
+    switch(movie.getId().getIdType()) {
+      case IMDB:
+        id = imdbIDLookUp(id);
+        break;
+      case TMDB:
+        break;
+      default:
+        throw new UnsupportedOperationException(movie.getId().getIdType().name() + " is not supported by tmsb image scrapper");
+    }
+
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + id + "/images?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();

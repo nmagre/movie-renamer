@@ -30,8 +30,8 @@ import fr.free.movierenamer.utils.LocaleUtils;
  */
 public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M> {
 
-  private static final String host = "api.fanart.tv/webservice";
-  private static final String name = "FanartTV";
+  protected final String host = "api.fanart.tv/webservice";
+  protected final String name = "FanartTV";
   protected final String apikey;
 
   protected enum ImageType {

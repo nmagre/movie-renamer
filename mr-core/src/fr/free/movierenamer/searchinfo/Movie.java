@@ -17,19 +17,20 @@
  */
 package fr.free.movierenamer.searchinfo;
 
+import fr.free.movierenamer.info.IdInfo;
 import java.net.URL;
 import java.util.Arrays;
 
 /**
  * Class Movie
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public class Movie extends Media {
 
   private static final long serialVersionUID = 1L;
-  protected int imdbId;
+  protected IdInfo id;
 
   protected Movie() {
     // used by serializer
@@ -39,26 +40,24 @@ public class Movie extends Media {
   // this(obj.name, obj.year, obj.imdbId, obj.movieId);
   // }
 
-  public Movie(int movieId, String name, URL thumb, int year, int imdbId) {
-    super(movieId, name, thumb, year, null);
-    this.imdbId = imdbId;
+  public Movie(IdInfo id, String name, URL thumb, int year) {
+    super(id, name, thumb, year, null);
+    this.id = id;
   }
 
-  public int getImdbId() {
-    return imdbId;
+  public IdInfo getId() {
+    return id;
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof Movie) {
       Movie other = (Movie) object;
-      if (imdbId > 0 && other.imdbId > 0) {
-        return imdbId == other.imdbId;
-      } else if (mediaId > 0 && other.mediaId > 0) {
-        return mediaId == other.mediaId;
+      if (id.equals(other.getMediaId())) {
+        return true;
       }
 
-      return name.equalsIgnoreCase(other.name);
+      //return name.equalsIgnoreCase(other.name);
     }
 
     return false;
@@ -78,8 +77,8 @@ public class Movie extends Media {
 
   @Override
   public String toString() {
-    if (imdbId > 0) {
-      return super.toString() + String.format(" (imdbid:%d)", imdbId);
+    if (id.getId() > 0) {
+      return super.toString() + String.format(" (%s:%d)", id.getIdType().name(), id.getId());
     }
     return super.toString();
   }
