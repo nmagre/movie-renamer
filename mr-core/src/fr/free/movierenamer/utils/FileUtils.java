@@ -123,7 +123,7 @@ public final class FileUtils {
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(String fileName) {
-    return checkFileExt(fileName, NameCleaner.getCleanerProperty("file.extension").split("|"));
+    return checkFileExt(fileName, NameCleaner.getCleanerProperty("file.extension").split("\\|"));
   }
 
   /**

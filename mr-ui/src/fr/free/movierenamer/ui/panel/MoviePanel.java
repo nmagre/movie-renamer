@@ -61,7 +61,9 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.SoftBevelBorder;
 
 /**
  * Class MoviePanel
@@ -119,6 +121,8 @@ public class MoviePanel extends MediaPanel {
   private WebLabel thumbnailLbl;
   private WebLabel titleLbl;
   private WebLabel videoLbl;
+  private WebLabel webLabel1;
+  private WebLabel webLabel2;
   private WebLabel webLabel5;
   private WebLabel webLabel6;
   private WebLabel webLabel8;
@@ -139,7 +143,7 @@ public class MoviePanel extends MediaPanel {
    * @param mr
    */
   public MoviePanel(MovieRenamer mr) {
-    super(mr, ImageCategoryProperty.thumb, ImageCategoryProperty.fanart);
+    super(mr, ImageCategoryProperty.thumb, ImageCategoryProperty.fanart, ImageCategoryProperty.logo, ImageCategoryProperty.cdart);
     this.setting = UISettings.getInstance();
 
     initComponents();
@@ -287,6 +291,8 @@ public class MoviePanel extends MediaPanel {
     jScrollPane4 = new JScrollPane();
     subtitleList = new WebList();
     imagePanelPlus = new WebPanel();
+    webLabel1 = getThumbLabel(ImageCategoryProperty.logo);
+    webLabel2 = getThumbLabel(ImageCategoryProperty.cdart);
     webToolBar1 = new WebToolBar();
     titleLbl = new WebLabel();
     webPanel3 = new WebPanel();
@@ -456,15 +462,29 @@ public class MoviePanel extends MediaPanel {
         .addContainerGap(224, Short.MAX_VALUE))
     );
 
+    webLabel1.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+
+    webLabel2.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+
     GroupLayout imagePanelPlusLayout = new GroupLayout(imagePanelPlus);
     imagePanelPlus.setLayout(imagePanelPlusLayout);
     imagePanelPlusLayout.setHorizontalGroup(
       imagePanelPlusLayout.createParallelGroup(Alignment.LEADING)
-      .addGap(0, 710, Short.MAX_VALUE)
+      .addGroup(Alignment.TRAILING, imagePanelPlusLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(imagePanelPlusLayout.createParallelGroup(Alignment.TRAILING)
+          .addComponent(webLabel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(webLabel1, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))
+        .addContainerGap())
     );
     imagePanelPlusLayout.setVerticalGroup(
       imagePanelPlusLayout.createParallelGroup(Alignment.LEADING)
-      .addGap(0, 615, Short.MAX_VALUE)
+      .addGroup(imagePanelPlusLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.UNRELATED)
+        .addComponent(webLabel2, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+        .addContainerGap())
     );
 
     setMinimumSize(new Dimension(10, 380));

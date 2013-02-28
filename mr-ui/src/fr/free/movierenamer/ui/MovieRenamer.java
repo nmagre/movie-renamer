@@ -67,6 +67,7 @@ import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
@@ -140,7 +141,7 @@ public class MovieRenamer extends JFrame {
 
   public MovieRenamer() {
 
-    //Cache.clearAllCache();//FIXME remove !!!
+    Cache.clearAllCache();//FIXME remove !!!
 
     logPanel = new LogPanel();
     moviePnl = new MoviePanel(this);

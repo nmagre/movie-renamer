@@ -17,10 +17,22 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.scrapper.ImageScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.URIRequest;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import org.json.simple.JSONObject;
 
 /**
  * Class FanartTvScrapper
@@ -34,18 +46,6 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
   protected final String name = "FanartTV";
   protected final String apikey;
 
-  protected enum ImageType {
-
-    hdmovielogo, // logo HD
-    movielogo, // logo
-    movieart, // clearart
-    hdmovieart, // clearart
-    moviebackground,// fanart
-    moviebanner, // banner (not useful)
-    moviedisc, // cdart
-    //moviethumb; // thumb but not really no
-  }
-
   protected FanartTvScrapper() {
     super(LocaleUtils.AvailableLanguages.en);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("fanarttv.apkapikey"));
@@ -56,6 +56,42 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
   }
 
   @Override
+  protected final List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception {// TODO check id type
+    URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
+
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+    JSONObject jmedia = JSONUtils.selectFirstObject(json);
+
+    List<ImageInfo> imagesInfos = new ArrayList<ImageInfo>();
+    if (jmedia == null) {
+      return imagesInfos;
+    }
+
+    for (String tag : getTags()) {
+      List<JSONObject> images = JSONUtils.selectList(tag, jmedia);
+      if (images == null) {
+        continue;
+      }
+
+      for (JSONObject image : images) {
+        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+        imageFields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("url", image));
+        imageFields.put(ImageInfo.ImageProperty.language, JSONUtils.selectString("lang", image));
+        ImageInfo.ImageCategoryProperty category = getCategory(tag);
+        imagesInfos.add(new ImageInfo(imageFields, category));
+      }
+    }
+
+    return imagesInfos;
+  }
+
+  protected abstract String getTypeName();
+
+  protected abstract List<String> getTags();
+
+  protected abstract ImageCategoryProperty getCategory(String tag);
+
+  @Override
   public String getName() {
     return name;
   }
@@ -64,5 +100,4 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
   protected String getHost() {
     return host;
   }
-
 }

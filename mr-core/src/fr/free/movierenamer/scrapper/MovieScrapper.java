@@ -59,7 +59,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
         imagesInfo.addAll(tmpImagesInfo);
       }
     } catch (UnsupportedOperationException ex) {
-      // Images scrapper do not support id type
+      // Images scrapper do not support this id type
     }
 
     // use scrapper default get image

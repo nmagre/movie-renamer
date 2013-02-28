@@ -1,20 +1,26 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Movie Renamer
+ * Copyright (C) 2012 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.free.movierenamer.scrapper.impl;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.searchinfo.TvShow;
-import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.URIRequest;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import org.json.simple.JSONObject;
 
 /**
  * Class FanartTVshowImagesScrapper
@@ -23,50 +29,54 @@ import org.json.simple.JSONObject;
  */
 public class FanartTVshowImagesScrapper extends FanartTvScrapper<TvShow> {
 
+  private enum TvImagesType {
+
+    hdtvlogo,
+    clearlogo,
+    clearart,
+    seasonthumb,
+    tvthumb,
+    showbackground
+  }
+
   @Override
-  protected List<ImageInfo> fetchImagesInfo(TvShow media, Locale language) throws Exception {// TODO
-    URL searchUrl = new URL("http", host, "/movie/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
-    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    JSONObject movie = JSONUtils.selectFirstObject(json);
+  public List<String> getTags() {
+    List<String> tags = new ArrayList<String>();
+    for (TvImagesType imgtype : TvImagesType.values()) {
+      tags.add(imgtype.name());
+    }
 
-    List<ImageInfo> imagesInfos = new ArrayList<ImageInfo>();
+    return tags;
+  }
 
-//    for (ImageType type : ImageType.values()) {
-//      List<JSONObject> images = JSONUtils.selectList(type.name(), movie);
-//      if (images == null) {
-//        continue;
-//      }
-//
-//      for (JSONObject image : images) {
-//        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
-//        imageFields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("url", image));
-//        imageFields.put(ImageInfo.ImageProperty.language, JSONUtils.selectString("lang", image));
-//        ImageInfo.ImageCategoryProperty category;
-//        switch (type) {
-//          case hdmovielogo:
-//          case movielogo:
-//            category = ImageInfo.ImageCategoryProperty.logo;
-//            break;
-//          case hdmovieart:
-//          case movieart:
-//            category = ImageInfo.ImageCategoryProperty.clearart;
-//            break;
-//          case moviedisc:
-//            category = ImageInfo.ImageCategoryProperty.cdart;
-//            break;
-//          case moviebackground:
-//            category = ImageInfo.ImageCategoryProperty.fanart;
-//            break;
-//          case moviebanner:
-//            category = ImageInfo.ImageCategoryProperty.banner;
-//            break;
-//          default:
-//            category = ImageInfo.ImageCategoryProperty.unknown;
-//        }
-//        imagesInfos.add(new ImageInfo(imageFields, category));
-//      }
-//    }
+  @Override
+  protected String getTypeName() {
+    return "series";
+  }
 
-    return imagesInfos;
+  @Override
+  protected ImageInfo.ImageCategoryProperty getCategory(String key) {
+    TvImagesType type = Enum.valueOf(TvImagesType.class, key);
+    ImageInfo.ImageCategoryProperty category;
+    switch (type) {
+      case hdtvlogo:
+      case clearlogo:
+        category = ImageInfo.ImageCategoryProperty.logo;
+        break;
+      case clearart:
+        category = ImageInfo.ImageCategoryProperty.clearart;
+        break;
+      case tvthumb:
+      case seasonthumb:
+        category = ImageInfo.ImageCategoryProperty.thumb;
+        break;
+      case showbackground:
+        category = ImageInfo.ImageCategoryProperty.fanart;
+        break;
+      default:
+        category = ImageInfo.ImageCategoryProperty.unknown;
+    }
+
+    return category;
   }
 }
