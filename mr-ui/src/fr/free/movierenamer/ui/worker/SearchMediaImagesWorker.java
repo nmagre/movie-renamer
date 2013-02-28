@@ -104,10 +104,6 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
       return;
     }
 
-    for(UIMediaImage img : images) {
-      System.out.println(img.getType().name() + " : " + img.getLanguage() + " -> " + img.getUri(ImageInfo.ImageSize.small));
-    }
-
     for (ImageInfo.ImageCategoryProperty key : mediapanel.getSupportedImages()) {
       List<UIMediaImage> mimages = getImagesByType(images, key);
       mediapanel.addImages(mimages, key);
