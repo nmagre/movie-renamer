@@ -127,6 +127,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.getLanguage() + ".xml");
+        System.out.println(url);
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
     Node node = XPathUtils.selectNode("//Series", dom);

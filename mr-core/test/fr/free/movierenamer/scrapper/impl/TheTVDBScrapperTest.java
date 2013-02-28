@@ -47,7 +47,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void search() throws Exception {
-    List<TvShow> results = thetvdb.search("desperate housewives");
+    List<TvShow> results = thetvdb.search("Mystères du Cosmos");
 
     Assert.assertEquals(1, results.size());
 

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Magré
  */
-public class TvShowNameMatcher extends MediaNameMatcher {
+public class TvShowNameMatcher {
 
   private static final String SEASONFOLDERPATTERN = "(?i:season)|(?i:saison)|(?i:s).*\\d+";
   private static final String TVSHOWFOLDERPATTERN = ".*(?i:tvshwow)|(?i:tv)|(?i:serie)|(?i:série).*";
@@ -57,7 +57,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
   private final boolean DEBUG = false;
 
   public TvShowNameMatcher(File file, List<String> regexs) {
-    super(file, regexs);
+    //super(file, regexs);
   }
 
   /**
@@ -65,10 +65,10 @@ public class TvShowNameMatcher extends MediaNameMatcher {
    *
    * @return TvShow name or empty string if no name found
    */
-  @Override
+
   public String getName() {
     if (DEBUG) {
-      System.out.println("File : " + file.getName());
+    //  System.out.println("File : " + file.getName());
     }
     if (DEBUG) {
       System.out.println("  Match :");
@@ -81,12 +81,12 @@ public class TvShowNameMatcher extends MediaNameMatcher {
     getMatcherRes(names, matchByCommonSeqFileName());
     getMatcherRes(names, matchByRegEx());
     if (names.isEmpty()) {
-      return CommonWords.normalize(file.getName().substring(0, file.getName().lastIndexOf(".")));
+     // return CommonWords.normalize(file.getName().substring(0, file.getName().lastIndexOf(".")));
     }
-    return CommonWords.matchAll(names, true);
+    return /*CommonWords.matchAll(names, true);*/ null;
   }
 
-  @Override
+
   public int getYear() {
     return -1;
   }
@@ -98,12 +98,12 @@ public class TvShowNameMatcher extends MediaNameMatcher {
    * @param tvshowMatcher Matcher to add
    */
   private void getMatcherRes(List<NameMatcher> matchResults, NameMatcher tvshowMatcher) {
-    if (tvshowMatcher.found()) {
+  /*  if (tvshowMatcher.found()) {
       matchResults.add(tvshowMatcher);
       if (DEBUG) {
         System.out.println("    " + tvshowMatcher);
       }
-    }
+    }*/
   }
 
   /**
@@ -112,7 +112,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
    * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
    */
   private NameMatcher matchByFolderName() {
-    NameMatcher folderNameMatcher = new NameMatcher("Folder Name Macther", NameMatcher.HIGH);
+    /*NameMatcher folderNameMatcher = new NameMatcher("Folder Name Macther", NameMatcher.HIGH);
     String res = "";
     final File mediafile = file;
     if (mediafile.getParent() != null) {
@@ -126,8 +126,8 @@ public class TvShowNameMatcher extends MediaNameMatcher {
     }
     res = CommonWords.getFilteredName(res, regexs);
 
-    folderNameMatcher.setMatch(CommonWords.normalize(res));
-    return folderNameMatcher;
+    folderNameMatcher.setMatch(CommonWords.normalize(res));*/
+    return /*folderNameMatcher;*/ null;
   }
 
   /**
@@ -136,7 +136,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
    * @return A string from beginning to the episode detection in media filename or empty if no episode found
    */
   private NameMatcher matchByEpisode() {
-
+/*
     NameMatcher episodeMatcher = new NameMatcher("Episode Matcher", NameMatcher.MEDIUM);
     String name = file.getName();
     Pattern pattern = Pattern.compile(TVSHOWNAMEBYEPISODE);
@@ -152,8 +152,8 @@ public class TvShowNameMatcher extends MediaNameMatcher {
       name = CommonWords.getFilteredName(name, regexs);
     }
 
-    episodeMatcher.setMatch(CommonWords.normalize(name));
-    return episodeMatcher;
+    episodeMatcher.setMatch(CommonWords.normalize(name));*/
+    return /*episodeMatcher;*/ null;
   }
 
   /**
@@ -162,7 +162,7 @@ public class TvShowNameMatcher extends MediaNameMatcher {
    * @return String with all common words from other files or empty
    */
   private NameMatcher matchByCommonSeqFileName() {
-
+/*
     NameMatcher commonMatcher = new NameMatcher("Common sequence in files matcher", NameMatcher.LOW);
     File fil = file.getParentFile();
     File[] files = fil.listFiles(new FileFilter() {// Retreive all file that seems to be a tvShow in parent folder
@@ -214,8 +214,8 @@ public class TvShowNameMatcher extends MediaNameMatcher {
     String res = CommonWords.getSmallStringList(tvShowNames);
     res = CommonWords.getFilteredName(res, regexs);
 
-    commonMatcher.setMatch(CommonWords.normalize(res));
-    return commonMatcher;
+    commonMatcher.setMatch(CommonWords.normalize(res));*/
+    return /*commonMatcher;*/ null;
   }
 
   /**
@@ -224,11 +224,11 @@ public class TvShowNameMatcher extends MediaNameMatcher {
    * @return Parent folder name (or is parent) or empty string if it not seems to be the tvShow name
    */
   private NameMatcher matchByRegEx() {
-    NameMatcher tvshowMatcher = new NameMatcher("Regex Matcher", NameMatcher.MEDIUM);
+    /*NameMatcher tvshowMatcher = new NameMatcher("Regex Matcher", NameMatcher.MEDIUM);
     String name = file.getName().substring(0, file.getName().lastIndexOf("."));
     name = CommonWords.getFilteredName(name, regexs);
-    tvshowMatcher.setMatch(CommonWords.normalize(name));
-    return tvshowMatcher;
+    tvshowMatcher.setMatch(CommonWords.normalize(name));*/
+    return /*tvshowMatcher;*/ null;
   }
 
   /**

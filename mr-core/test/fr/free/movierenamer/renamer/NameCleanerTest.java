@@ -21,63 +21,52 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.free.movierenamer.renamer.NameCleaner;
-
 /**
  * Class NameCleanerTest
  * @author Simon QUÉMÉNEUR
  */
 public class NameCleanerTest {
 
-  private NameCleaner cleaner;
-
-  @Before
-  public void init() {
-    cleaner = new NameCleaner();
-  }
-
-
   @Test
   public void extractYear() {
-    Assert.assertEquals(Integer.valueOf(2012), cleaner.extractYear("2012.avi"));// It should return "null", because there is no year
-    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("2012 (2009).avi"));
-    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds 2009.avi"));
-    Assert.assertEquals(Integer.valueOf(2009), cleaner.extractYear("12 Rounds (2009).avi"));
+    Assert.assertEquals(Integer.valueOf(2012), NameCleaner.extractYear("2012.avi"));// It should return "null", because there is no year
+    Assert.assertEquals(Integer.valueOf(2009), NameCleaner.extractYear("2012 (2009).avi"));
+    Assert.assertEquals(Integer.valueOf(2009), NameCleaner.extractYear("12 Rounds 2009.avi"));
+    Assert.assertEquals(Integer.valueOf(2009), NameCleaner.extractYear("12 Rounds (2009).avi"));
   }
 
   @Test
   public void extractNameNotStrict() {
-    Assert.assertEquals("2012", cleaner.extractName("2012.avi", false));
-    Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", false));
-    Assert.assertEquals("13 jeux de mort", cleaner.extractName("13 jeux de mort (2006).avi", false));
-    Assert.assertEquals("16 Wishes", cleaner.extractName("16 Wishes (2010).avi", false));
-    Assert.assertEquals("17 Again", cleaner.extractName("17.Again.FRENCH.DVDRiP.XViD-SURViVAL.avi", false));
-    Assert.assertEquals("17 again", cleaner.extractName("17.again.FRENCH.DVDScr.XviD-VODKA.avi", false));
-    Assert.assertEquals("2012", cleaner.extractName("2012 (2009).avi", false));
-    Assert.assertEquals("2:22", cleaner.extractName("2:22 (2008).avi", false));
-    Assert.assertEquals("30 Days of Night: Dark Days", cleaner.extractName("30 Days of Night: Dark Days (2010).avi", false));
-    Assert.assertEquals("35 rhums", cleaner.extractName("35 rhums (2008).avi", false));
-    Assert.assertEquals("600 kilos d or pur", cleaner.extractName("600 kilos d'or pur (2010).avi", false));
-    Assert.assertEquals("7 Plans Avant Mes 30 Ans", cleaner.extractName("7.Plans.Avant.Mes.30.Ans.FRENCH.DVDRiP.XviD-HARIJO.avi", false));
-    Assert.assertEquals("8 fois debout", cleaner.extractName("8 fois debout (2009).avi", false));
-    Assert.assertEquals("A Christmas Carol", cleaner.extractName("A Christmas Carol (2004).avi", false));
-    Assert.assertEquals("Acolytes", cleaner.extractName("Acolytes.2009.FRENCH.DVDRiP.XViD-ARTEFAC.avi", false));
-    Assert.assertEquals("Adam", cleaner.extractName("Adam (2009).avi", false));
-    Assert.assertEquals("Adventureland", cleaner.extractName("Adventureland.TRUEFRENCH.DVDRiP.XviD-HARIJO.avi", false));
-    Assert.assertEquals("After Life", cleaner.extractName("After.Life (2009).avi", false));
-    Assert.assertEquals("Age Of The Dragons", cleaner.extractName("Age.Of.The.Dragons.2011.TRUEFRENCH.DVDRiP.XViD-Julien333.avi", false));
-    Assert.assertEquals("Agora", cleaner.extractName("Agora (2009).avi", false));
-    Assert.assertEquals("Tout Est Illuminé 2005", cleaner.extractName("Tout Est Illuminé 2005 (2005).avi", false));
-    Assert.assertEquals("King Kong", cleaner.extractName("King-Kong-FRENCH.DVDRiP.XviD-HARIJO.avi", false));
-    Assert.assertEquals("Animal 2", cleaner.extractName("Animal.2.FRENCH.DVDRiP.XViD-THEWARRIOR777.avi", false));
-    Assert.assertEquals("Sammy s Adventures 2 3D", cleaner.extractName("Sammy.s.Adventures.2.3D.2012.FRENCH.1080p.Bluray.DTS.X264-JASS", false));
-    Assert.assertEquals("ParaNorman", cleaner.extractName("ParaNorman2012TRUEFRENCHDVDRipXvid-FUZION", false));
+    Assert.assertEquals("2012", NameCleaner.extractName("2012.avi", false));
+    Assert.assertEquals("12 Rounds", NameCleaner.extractName("12 Rounds (2009).avi", false));
+    Assert.assertEquals("13 jeux de mort", NameCleaner.extractName("13 jeux de mort (2006).avi", false));
+    Assert.assertEquals("16 Wishes", NameCleaner.extractName("16 Wishes (2010).avi", false));
+    Assert.assertEquals("17 Again", NameCleaner.extractName("17.Again.FRENCH.DVDRiP.XViD-SURViVAL.avi", false));
+    Assert.assertEquals("17 again", NameCleaner.extractName("17.again.FRENCH.DVDScr.XviD-VODKA.avi", false));
+    Assert.assertEquals("2012", NameCleaner.extractName("2012 (2009).avi", false));
+    Assert.assertEquals("2:22", NameCleaner.extractName("2:22 (2008).avi", false));
+    Assert.assertEquals("30 Days of Night: Dark Days", NameCleaner.extractName("30 Days of Night: Dark Days (2010).avi", false));
+    Assert.assertEquals("35 rhums", NameCleaner.extractName("35 rhums (2008).avi", false));
+    Assert.assertEquals("600 kilos d or pur", NameCleaner.extractName("600 kilos d'or pur (2010).avi", false));
+    Assert.assertEquals("7 Plans Avant Mes 30 Ans", NameCleaner.extractName("7.Plans.Avant.Mes.30.Ans.FRENCH.DVDRiP.XviD-HARIJO.avi", false));
+    Assert.assertEquals("8 fois debout", NameCleaner.extractName("8 fois debout (2009).avi", false));
+    Assert.assertEquals("A Christmas Carol", NameCleaner.extractName("A Christmas Carol (2004).avi", false));
+    Assert.assertEquals("Acolytes", NameCleaner.extractName("Acolytes.2009.FRENCH.DVDRiP.XViD-ARTEFAC.avi", false));
+    Assert.assertEquals("Adam", NameCleaner.extractName("Adam (2009).avi", false));
+    Assert.assertEquals("Adventureland", NameCleaner.extractName("Adventureland.TRUEFRENCH.DVDRiP.XviD-HARIJO.avi", false));
+    Assert.assertEquals("After Life", NameCleaner.extractName("After.Life (2009).avi", false));
+    Assert.assertEquals("Age Of The Dragons", NameCleaner.extractName("Age.Of.The.Dragons.2011.TRUEFRENCH.DVDRiP.XViD-Julien333.avi", false));
+    Assert.assertEquals("Agora", NameCleaner.extractName("Agora (2009).avi", false));
+    Assert.assertEquals("Tout Est Illuminé 2005", NameCleaner.extractName("Tout Est Illuminé 2005 (2005).avi", false));
+    Assert.assertEquals("King Kong", NameCleaner.extractName("King-Kong-FRENCH.DVDRiP.XviD-HARIJO.avi", false));
+    Assert.assertEquals("Animal 2", NameCleaner.extractName("Animal.2.FRENCH.DVDRiP.XViD-THEWARRIOR777.avi", false));
+    Assert.assertEquals("Sammy s Adventures 2", NameCleaner.extractName("Sammy.s.Adventures.2.3D.2012.FRENCH.1080p.Bluray.DTS.X264-JASS", false));
   }
 
   @Test
   public void extractNameStrict() {
-    Assert.assertEquals("12 Rounds", cleaner.extractName("12 Rounds (2009).avi", true));
-    Assert.assertEquals("17 Again", cleaner.extractName("17.Again.FRENCH.DVDRiP.XViD.avi", true));
-    Assert.assertEquals("17 again", cleaner.extractName("17.again.FRENCH.DVDScr.XviD.avi", true));
+    Assert.assertEquals("12 Rounds", NameCleaner.extractName("12 Rounds (2009).avi", true));
+    Assert.assertEquals("17 Again", NameCleaner.extractName("17.Again.FRENCH.DVDRiP.XViD.avi", true));
+    Assert.assertEquals("17 again", NameCleaner.extractName("17.again.FRENCH.DVDScr.XviD.avi", true));
   }
 }

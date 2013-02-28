@@ -17,55 +17,106 @@
  */
 package fr.free.movierenamer.namematcher;
 
+import fr.free.movierenamer.info.FileInfo.FileProperty;
+import fr.free.movierenamer.info.FileInfo.MediaType;
+import fr.free.movierenamer.renamer.NameCleaner;
+import fr.free.movierenamer.utils.FileUtils;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Class NameMatcher
+ *
  * @author Nicolas Magré
  */
-class NameMatcher {// FIXME DEAD CODE
+public abstract class NameMatcher {
 
-  public static final int HIGH = 3;
-  public static final int MEDIUM = 1;
-  public static final int LOW = 2;
-  private int priority;
-  private String name;
-  private String result;
+  private static List<String> fileExts = Arrays.asList(new String[]{"nfo", "xml"});
 
-  /**
-   * Constructor
-   *
-   * @param name Matcher name
-   * @param priority Matcher priority
-   */
-  public NameMatcher(String name, int priority) {
-    this.name = name;
-    this.priority = priority;
-    result = "";
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getMatch() {
-    return result;
-  }
-
-  public void setMatch(String result) {
-    if (result != null && result.length() > 0) {
-      this.result = result;
+  public static Map<FileProperty, String> getProperty(File file, MediaType type) {
+    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+    switch (type) {
+      case MOVIE:
+        properties = getMovieProperty(file);
+        break;
+      case TVSHOW:
+        properties = getTvShowProperty(file);
+        break;
     }
+    properties.put(FileProperty.year, "" + NameCleaner.extractYear(file.getName()));
+    return properties;
   }
 
-  public int getPriority() {
-    return priority;
+  private static Map<FileProperty, String> getMovieProperty(File file) {
+    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+    properties.put(FileProperty.name, extractName(file.getName()));
+    /*Integer imdbId = getImdbId(file);// FIXME i'am crashing :(
+    if(imdbId != null) {
+      properties.put(FileProperty.imdbId, "" + imdbId);
+    }*/
+
+    return properties;
   }
 
-  public boolean found() {
-    return result.length() > 0;
+  public static String extractName(String fileName) {
+    String extractedName = NameCleaner.extractName(fileName, false);
+    // Try to extract name from String without spacing
+    String[] names = extractedName.split(" ");
+    if(names.length < 3 && names[0].length() > 15) {
+      extractedName = names[0].replaceAll("(\\p{Lower})(\\p{Upper})", "$1 $2");
+      extractedName = NameCleaner.extractName(extractedName, false);
+    }
+    return extractedName;
   }
 
-  @Override
-  public String toString() {
-    return name + " : " + result;
+  private static Map<FileProperty, String> getTvShowProperty(File file) {// TODO
+    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+
+    return properties;
+  }
+
+  private static Integer getImdbId(File file) {
+    final String fileName = FileUtils.getNameWithoutExtension(file.getName());
+    Pattern imdbIdPattern = Pattern.compile("tt(\\d{7})");
+    Matcher imdbIdMatch = imdbIdPattern.matcher(fileName);
+
+    if(imdbIdMatch.find()) {
+      return Integer.parseInt(imdbIdMatch.group(1));
+    }
+
+    List<File> nfoFiles = Arrays.asList(file.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        if (fileName.equalsIgnoreCase(FileUtils.getNameWithoutExtension(name)) || dir.getName().equalsIgnoreCase(name)) {
+          String fext = FileUtils.getExtension(name);
+          if (fext != null && fileExts.contains(fext)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    }));
+
+    for (File nfile : nfoFiles) {
+      try {
+        String str = new Scanner(nfile).useDelimiter("\\A").next();
+        imdbIdMatch = imdbIdPattern.matcher(str);
+        if (imdbIdMatch.find()) {
+          return Integer.parseInt(imdbIdMatch.group(1));
+        }
+      } catch (FileNotFoundException ex) {
+        //
+      }
+    }
+    return null;
   }
 }

@@ -17,15 +17,13 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.namematcher.NameMatcher;
 import java.io.File;
 import java.net.URI;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.utils.FileUtils;
+import java.util.Map;
 
 /**
  * Class FileInfo
@@ -35,57 +33,45 @@ import fr.free.movierenamer.utils.FileUtils;
  */
 public class FileInfo {
 
-  public enum MediaType {
-    MOVIE,
-    TVSHOW
-  }
-
-  public static boolean isMovie(File file) {// TODO A refaire , améliorer la detection !!!
-    String filename = file.getName();
-
-    for (TvShowNameMatcher.TvShowPattern patternToTest : TvShowNameMatcher.TvShowPattern.values()) {
-      if (searchPattern(filename, patternToTest.getPattern())) {
-        return false;
-      }
-    }
-    String parent = file.getParent();
-    if (parent != null) {
-      if (parent.matches(".*((?i:season)|(?i:saison)).*")) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Search pattern in string
-   *
-   * @param text
-   *          String to search in
-   * @param pattern
-   *          Pattern to match
-   * @return True if pattern is find in string , False otherwise
-   */
-  private static boolean searchPattern(String text, Pattern pattern) {
-    Matcher searchMatcher = pattern.matcher(text);
-    if (searchMatcher.find()) {
-      return true;
-    }
-    return false;
-  }
-
+  private final long minMovieFileSize = 450000;
   private File file;
   private final MediaType type;
   private String firstSearch;
   private String search;
   private Integer year;
+  private Map<FileProperty, String> fileProperty;
+
+  public enum MediaType {
+
+    MOVIE,
+    TVSHOW
+  }
+
+  public enum FileProperty {
+
+    name,
+    year,
+    season,
+    episode,
+    imdbId
+  }
 
   public FileInfo(File file) {
     this.file = file;
-    this.type = isMovie(file) ? MediaType.MOVIE : MediaType.TVSHOW;
-    NameCleaner nc = new NameCleaner();
-    setSearch(nc.extractName(file.getName(), false));
-    this.year = nc.extractYear(file.getName());
+    this.type = getMediaType(file);
+    fileProperty = NameMatcher.getProperty(file, type);
+    setSearch(fileProperty.get(FileProperty.name));
+    this.year = -1;/*fileProperty.get(FileProperty.year) == null ? -1 : Integer.parseInt(fileProperty.get(FileProperty.year));*/
+  }
+
+  private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
+    String filename = file.getName();
+
+    if (file.length() < minMovieFileSize) {
+      return MediaType.TVSHOW;
+    }
+
+    return MediaType.MOVIE;
   }
 
   public String getSearch() {
@@ -93,7 +79,7 @@ public class FileInfo {
   }
 
   public Integer getYear() {
-    return year == null ? -1:year;
+    return year == null ? -1 : year;
   }
 
   public boolean wasRenamed() {
@@ -125,5 +111,4 @@ public class FileInfo {
   public File getFile() {
     return file;
   }
-
 }

@@ -31,7 +31,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import org.json.simple.JSONObject;
 
 /**

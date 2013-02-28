@@ -235,6 +235,10 @@ public final class LocaleUtils {
   }
 
   public static Map<String, Locale> getLanguageMap(Locale... supportedDisplayLocales) {
+    return getLanguageMap(null, supportedDisplayLocales);
+  }
+
+  public static Map<String, Locale> getLanguageMap(List<String> removeTokens, Locale... supportedDisplayLocales) {
     Collator collator = Collator.getInstance(Locale.ROOT);
     collator.setDecomposition(Collator.FULL_DECOMPOSITION);
     collator.setStrength(Collator.PRIMARY);
@@ -262,6 +266,15 @@ public final class LocaleUtils {
     languageMap.remove("");
     languageMap.remove("II");
     languageMap.remove("III");
+    languageMap.remove("VI");
+    languageMap.remove("VII");
+    languageMap.remove("VIII");
+    languageMap.remove("IX");
+
+    if(removeTokens != null) {
+      for(String token : removeTokens)
+        languageMap.remove(token);
+    }
 
     Map<String, Locale> result = Collections.unmodifiableMap(languageMap);
     return result;

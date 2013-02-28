@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Class NameCleaner
@@ -44,10 +46,13 @@ import fr.free.movierenamer.utils.StringUtils;
 public class NameCleaner {
 
   private static final Pattern yearPattern = Pattern.compile("\\D?(\\d{4})\\D");
-  private final Map<Boolean, Pattern[]> stoplist = new HashMap<Boolean, Pattern[]>(2);
-  private final Map<Boolean, Pattern[]> cleanlist = new HashMap<Boolean, Pattern[]>(2);
+  private static final Map<Boolean, Pattern[]> mstoplist = new HashMap<Boolean, Pattern[]>(2);
+  private static final Map<Boolean, Pattern[]> mcleanlist = new HashMap<Boolean, Pattern[]>(2);
+  private static final List<String> keepLanguages = Arrays.asList(new String[]{
+    "lit", "Italian", "be", "English", "it", "mal", "in", "run", "Irish", "sun", "li", "am", "est", "or"
+  });
 
-  public String clean(String item, Pattern... cleanPattern) {
+  public static String clean(String item, Pattern... cleanPattern) {
     for (Pattern it : cleanPattern) {
       item = it.matcher(item).replaceAll("");
     }
@@ -55,17 +60,17 @@ public class NameCleaner {
     return StringUtils.removePunctuation(item);
   }
 
-  public String extractName(String item, boolean strict) {//
+  public static String extractName(String item, boolean strict) {
     Pattern[] stoplist;
     Pattern[] cleanlist;
 
-    synchronized (this.stoplist) {
-      stoplist = this.stoplist.get(strict);
-      cleanlist = this.cleanlist.get(strict);
+    synchronized (mstoplist) {
+      stoplist = mstoplist.get(strict);
+      cleanlist = mcleanlist.get(strict);
 
       //use cache for speed
       if (stoplist == null || cleanlist == null) {
-        Set<String> languages = LocaleUtils.getLanguageMap(LocaleUtils.getSupportedDisplayLocales()).keySet();
+        Set<String> languages = LocaleUtils.getLanguageMap(keepLanguages, Locale.ENGLISH).keySet();
         Pattern bracket = getBracketPattern(strict);
         Pattern releaseGroup = getReleaseGroupPattern(strict);
         Pattern languageSuffix = getLanguageSuffixPattern(languages);
@@ -77,14 +82,14 @@ public class NameCleaner {
         Pattern customBlacklist = getCustomBlacklistPattern();
         Pattern extensions = getExtensionPattern();
 
-        stoplist = new Pattern[] {
-            languageTag, videoSource, videoFormat, resolution, languageSuffix, extensions
+        stoplist = new Pattern[]{
+          languageTag, videoSource, videoFormat, resolution, languageSuffix, extensions
         };
-        cleanlist = new Pattern[] {
-            extensions, bracket, releaseGroup, languageTag, videoSource, videoFormat, resolution, languageSuffix, blacklist, customBlacklist
+        cleanlist = new Pattern[]{
+          extensions, bracket, releaseGroup, languageTag, videoSource, videoFormat, resolution, languageSuffix, blacklist, customBlacklist
         };
-        this.stoplist.put(strict, stoplist);
-        this.cleanlist.put(strict, cleanlist);
+        mstoplist.put(strict, stoplist);
+        mcleanlist.put(strict, cleanlist);
       }
     }
 
@@ -97,15 +102,18 @@ public class NameCleaner {
     Integer year = extractYear(item);
     if (year != null && output.length() > 7 && year > 0) {
       // ensure the output contains something else ;)
-      output = StringUtils.replaceLast(output, Integer.toString(year), "");
+      int index = output.lastIndexOf(Integer.toString(year));
+      if(index != -1 && index < output.length())
+        output = output.substring(0, index);
+      else output = StringUtils.replaceLast(output, Integer.toString(year), "");
     }
     //reclean to be sure ;)
     output = clean(output, cleanlist);
 
-    return output;
+    return output.trim();
   }
 
-  public Integer extractYear(String item) {
+  public static Integer extractYear(String item) {
     Matcher matcher = yearPattern.matcher(item);
     Integer year = null;
     while (matcher.find()) {
@@ -119,65 +127,69 @@ public class NameCleaner {
     return year;
   }
 
-  private Pattern getBracketPattern(boolean strict) {
+  private static Pattern getYearPattern() {
+    return Pattern.compile("(?<!\\p{Punct}|\\p{Space})([1-2]\\d{3})(?=\\D.*)");
+  }
+
+  private static Pattern getBracketPattern(boolean strict) {
     // match patterns like [Action, Drama] or {ENG-XViD-MP3-DVDRiP} etc
     String contentFilter = strict ? "[\\p{Space}\\p{Punct}&&[^\\[\\]]]" : "\\p{Alpha}";
     return Pattern.compile("(?:\\[([^\\[\\]]+?" + contentFilter + "[^\\[\\]]+?)\\])|(?:\\{([^\\{\\}]+?" + contentFilter + "[^\\{\\}]+?)\\})|(?:\\(([^\\(\\)]+?" + contentFilter + "[^\\(\\)]+?)\\))");
   }
 
-  private Pattern getReleaseGroupPattern(boolean strict) {
+  private static Pattern getReleaseGroupPattern(boolean strict) {
     // pattern matching any release group name enclosed in separators
     String pattern = getCleanerProperty("releaseGroup");
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", strict ? 0 : Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
-  private Pattern getLanguageTagPattern(Collection<String> languages) {
+  private static Pattern getLanguageTagPattern(Collection<String> languages) {
     // [en]
     return compile("(?<=[-\\[{(])(" + StringUtils.join(quote(languages), "|") + ")(?=\\p{Punct})", CASE_INSENSITIVE | UNICODE_CASE);
   }
 
-  private Pattern getLanguageSuffixPattern(Collection<String> languages) {
+  private static Pattern getLanguageSuffixPattern(Collection<String> languages) {
     // .en.srt
     return compile("(?<=[\\p{Punct}\\p{Space}])(" + StringUtils.join(quote(languages), "|") + ")(?=[._ ]*$)", CASE_INSENSITIVE | UNICODE_CASE);
   }
 
-  private Pattern getVideoSourcePattern() {
+  private static Pattern getVideoSourcePattern() {
     // pattern matching any video source name
     String pattern = getCleanerProperty("video.source");
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE);
   }
 
-  private Pattern getVideoFormatPattern() {
+  private static Pattern getVideoFormatPattern() {
     // pattern matching any video source name
     String pattern = getCleanerProperty("video.format");
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE);
   }
 
-  private Pattern getResolutionPattern() {
+  private static Pattern getResolutionPattern() {
     // match screen resolutions 640x480, 1280x720, etc
     return Pattern.compile("(?<!\\p{Alnum})(\\d{4}|[6-9]\\d{2})x(\\d{4}|[4-9]\\d{2})(?!\\p{Alnum})");
   }
 
-  private Pattern getBlacklistPattern() {
+  private static Pattern getBlacklistPattern() {
     // pattern matching any blacklist word enclosed in separators
     String pattern = getCleanerProperty("blacklist");
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
-  private Pattern getCustomBlacklistPattern() {
+  private static Pattern getCustomBlacklistPattern() {
     // pattern matching any 'custom' blacklist word enclosed in separators
     // TODO parse custom file for blacklist word
     String pattern = "";
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
-  private Pattern getExtensionPattern() {
+  private static Pattern getExtensionPattern() {
     // pattern matching any blacklist word enclosed in separators
     String pattern = getCleanerProperty("file.extension");
     return Pattern.compile("(\\.(" + pattern + "))$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
-  private Collection<String> quote(Collection<String> strings) {
+  private static Collection<String> quote(Collection<String> strings) {
     List<String> patterns = new ArrayList<String>(strings.size());
     for (String it : strings) {
       patterns.add(Pattern.quote(it));
@@ -185,7 +197,7 @@ public class NameCleaner {
     return patterns;
   }
 
-  private String substringBefore(String item, Pattern... stopwords) {
+  private static String substringBefore(String item, Pattern... stopwords) {
     for (Pattern it : stopwords) {
       Matcher matcher = it.matcher(item);
       if (matcher.find()) {
@@ -200,5 +212,9 @@ public class NameCleaner {
 
   public static String getCleanerProperty(String key) {
     return ResourceBundle.getBundle(NameCleaner.class.getName(), Locale.ROOT).getString(key);
+  }
+
+  private NameCleaner() {
+    throw new UnsupportedOperationException();
   }
 }
