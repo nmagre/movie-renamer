@@ -18,11 +18,10 @@
 package fr.free.movierenamer.info;
 
 import fr.free.movierenamer.namematcher.NameMatcher;
-import java.io.File;
-import java.net.URI;
-import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.utils.FileUtils;
+import java.io.File;
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -61,7 +60,11 @@ public class FileInfo {
     this.type = getMediaType(file);
     fileProperty = NameMatcher.getProperty(file, type);
     setSearch(fileProperty.get(FileProperty.name));
-    this.year = -1;/*fileProperty.get(FileProperty.year) == null ? -1 : Integer.parseInt(fileProperty.get(FileProperty.year));*/
+    try {
+      this.year = Integer.parseInt(fileProperty.get(FileProperty.year));
+    } catch(Exception ex) {
+      this.year = -1;
+    }
   }
 
   private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
@@ -90,7 +93,7 @@ public class FileInfo {
     return type;
   }
 
-  public void setSearch(String search) {
+  public final void setSearch(String search) {
     if (firstSearch == null) {
       firstSearch = search;
     }

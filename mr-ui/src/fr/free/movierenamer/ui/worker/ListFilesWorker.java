@@ -25,13 +25,11 @@ import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.list.IIconList;
 import fr.free.movierenamer.ui.list.IconListRenderer;
 import fr.free.movierenamer.ui.list.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -107,7 +105,7 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
         UISettings.LOGGER.log(Level.INFO, "ListFilesWorker Cancelled");
         return new ArrayList<UIFile>();
       }
-try {
+
       if (files.get(i).isDirectory()) {
         addFiles(medias, files.get(i));
       } else {
@@ -116,9 +114,6 @@ try {
           addUIfile(medias, files.get(i));
         }
       }
-}catch(Exception ex) {
-Settings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toString(), ex.getStackTrace()));
-}
     }
 
     Sorter.sort(medias, Sorter.SorterType.ALPHABETIC);
@@ -169,7 +164,7 @@ Settings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toStrin
    * @param medias List of movies
    * @param file File to add or directory to scan
    */
-  private void addFiles(List<UIFile> medias, File file) throws Exception {
+  private void addFiles(List<UIFile> medias, File file) {
     File[] listFiles = file.listFiles();
     if (listFiles == null) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("Directory \"%s\" does not exist or is not a Directory", file.getName()));
@@ -185,7 +180,7 @@ Settings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toStrin
     }
   }
 
-  private void addUIfile(List<UIFile> medias, File file) throws Exception{
+  private void addUIfile(List<UIFile> medias, File file) {
     FileInfo fileInfo = new FileInfo(file);
     String groupName = fileInfo.getFile().getName().substring(0, 1);
     switch (fileInfo.getType()) {

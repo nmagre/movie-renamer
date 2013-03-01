@@ -127,10 +127,6 @@ public class NameCleaner {
     return year;
   }
 
-  private static Pattern getYearPattern() {
-    return Pattern.compile("(?<!\\p{Punct}|\\p{Space})([1-2]\\d{3})(?=\\D.*)");
-  }
-
   private static Pattern getBracketPattern(boolean strict) {
     // match patterns like [Action, Drama] or {ENG-XViD-MP3-DVDRiP} etc
     String contentFilter = strict ? "[\\p{Space}\\p{Punct}&&[^\\[\\]]]" : "\\p{Alpha}";

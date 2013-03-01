@@ -66,10 +66,10 @@ public class TMDbScrapper extends MovieScrapper {
   public static final String imageUrl = "http://cf2.imgobject.com/t/p/";
 
   public static enum TmdbImageSize {
+
     backdrop("w300", "w780"),
     poster("w92", "w185"),
     cast("w45", "w185");
-
     private String small;
     private String medium;
     private String big;
@@ -132,16 +132,15 @@ public class TMDbScrapper extends MovieScrapper {
       String imageNode = JSONUtils.selectString("poster_path", node);
       URL thumb = null;
       try {
-        if(!imageNode.equals("null")) {
+        if (imageNode != null) {
           thumb = new URL(imageUrl + TmdbImageSize.poster.small + imageNode);
         }
       } catch (Exception e) {
-        Settings.LOGGER.log(Level.WARNING, "Invalid image: " + thumb, e);
+        Settings.LOGGER.log(Level.WARNING, "Invalid image: " + imageNode, e);
       }
-      Date released = Date.parse(JSONUtils.selectString("release_date", node), "yyyy-MM-dd");
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), movieName, thumb, (released != null) ? released.getYear() : -1));
+        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), movieName, thumb, getReleaseDate(node)));
       }
     }
 
@@ -158,16 +157,19 @@ public class TMDbScrapper extends MovieScrapper {
     fields.put(MovieProperty.rating, JSONUtils.selectString("vote_average", json));
     fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
     fields.put(MovieProperty.originalTitle, JSONUtils.selectString("original_title", json));
-    Date released = Date.parse(JSONUtils.selectString("release_date", json), "yyyy-MM-dd");
-    fields.put(MovieProperty.releasedDate, "" + released.getYear());
+    fields.put(MovieProperty.releasedDate, "" + getReleaseDate(json));
     fields.put(MovieProperty.overview, JSONUtils.selectString("overview", json));
     fields.put(MovieProperty.runtime, JSONUtils.selectString("runtime", json));
     fields.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
-    fields.put(MovieProperty.collection, JSONUtils.selectString("name", JSONUtils.selectObject("belongs_to_collection", json)));
+    JSONObject collection = JSONUtils.selectObject("belongs_to_collection", json);
+    fields.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection) : "");
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.TMDB));
-    ids.add(new IdInfo(Integer.parseInt(JSONUtils.selectString("imdb_id", json).substring(2)), ScrapperUtils.AvailableApiIds.IMDB));
+    String imdbId = JSONUtils.selectString("imdb_id", json);
+    if(imdbId != null) {
+      ids.add(new IdInfo(Integer.parseInt(imdbId.substring(2)), ScrapperUtils.AvailableApiIds.IMDB));
+    }
 
     List<String> genres = new ArrayList<String>();
     for (JSONObject jsonObj : JSONUtils.selectList("genres", json)) {
@@ -204,14 +206,13 @@ public class TMDbScrapper extends MovieScrapper {
         personFields.put(PersonProperty.name, JSONUtils.selectString("name", jsonObj));
         personFields.put(PersonProperty.character, JSONUtils.selectString("character", jsonObj));
         String image = JSONUtils.selectString("profile_path", jsonObj);
-        if(image != null && image.length() > 0) {
-           personFields.put(PersonProperty.picturePath, imageUrl + TmdbImageSize.cast.medium + image);
+        if (image != null && image.length() > 0) {
+          personFields.put(PersonProperty.picturePath, imageUrl + TmdbImageSize.cast.medium + image);
         }
 
         if (section.equals("crew")) {
           personFields.put(PersonProperty.job, JSONUtils.selectString("job", jsonObj));
-        }
-        else {
+        } else {
           personFields.put(PersonProperty.job, CastingInfo.ACTOR);
         }
         casting.add(new CastingInfo(personFields));
@@ -219,5 +220,14 @@ public class TMDbScrapper extends MovieScrapper {
     }
 
     return casting;
+  }
+
+  private int getReleaseDate(JSONObject node) {
+    String date = JSONUtils.selectString("release_date", node);
+    Date released = null;
+    if (date != null) {
+      released = Date.parse(date, "yyyy-MM-dd");
+    }
+    return released != null ? released.getYear() : -1;
   }
 }
