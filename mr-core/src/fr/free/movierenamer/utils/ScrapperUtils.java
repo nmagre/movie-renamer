@@ -24,11 +24,33 @@ package fr.free.movierenamer.utils;
  */
 public final class ScrapperUtils {
 
-  public static enum ScrapperProperty {
+  public static enum TmdbImageSize {
 
+    backdrop("w300", "w780"),
+    poster("w92", "w185"),
+    cast("w45", "w185");
+    private String small;
+    private String medium;
+    private String big;
+
+    private TmdbImageSize(String small, String medium) {
+      this.small = small;
+      this.medium = medium;
+      this.big = "original";
+    }
+
+    public String getSmall() {
+      return small;
+    }
+
+    public String getMedium() {
+      return medium;
+    }
+
+    public String getBig() {
+      return big;
+    }
   }
-
-
 
   public static enum AvailableApiIds {
 

@@ -27,7 +27,7 @@ import fr.free.movierenamer.scrapper.impl.ScrapperManager;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.list.UIScrapper;
+import fr.free.movierenamer.ui.bean.UIScrapper;
 import fr.free.movierenamer.ui.panel.generator.PanelGenerator;
 import fr.free.movierenamer.ui.panel.generator.PanelGenerator.Component;
 import fr.free.movierenamer.ui.panel.generator.SettingPanelGen;

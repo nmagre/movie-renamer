@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.tvshow.TvRageScrapper;
 import java.util.List;
 
 import org.junit.Assert;

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import java.util.List;
 import java.util.Locale;
 

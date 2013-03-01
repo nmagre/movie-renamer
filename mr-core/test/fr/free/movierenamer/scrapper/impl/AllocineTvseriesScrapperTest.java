@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.tvshow.AllocineTvseriesScrapper;
 import org.junit.Assert;
 
 import fr.free.movierenamer.scrapper.TvShowScrapperTest;
@@ -32,12 +33,12 @@ public class AllocineTvseriesScrapperTest extends TvShowScrapperTest {
   public void init() {
     allocine = new AllocineTvseriesScrapper();
   }
-  
+
   @Override
   public void search() throws Exception {
     Assert.fail();
   }
-  
+
   @Override
   public void getTvShowInfo() throws Exception {
     Assert.fail();
@@ -52,7 +53,7 @@ public class AllocineTvseriesScrapperTest extends TvShowScrapperTest {
   public void getImages() throws Exception {
     Assert.fail();
   }
-  
+
   @Override
   public void getEpisodesInfoList() throws Exception {
     Assert.fail();

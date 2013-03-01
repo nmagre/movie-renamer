@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.ui.list.UIImageLang;
+import fr.free.movierenamer.ui.bean.UIImageLang;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;

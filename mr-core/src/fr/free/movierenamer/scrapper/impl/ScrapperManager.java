@@ -17,6 +17,12 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.AnidbScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
+import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
+import fr.free.movierenamer.scrapper.impl.tvshow.TvRageScrapper;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

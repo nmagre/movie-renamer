@@ -17,13 +17,14 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.tvshow.AnidbTvseriesScrapper;
 import org.junit.Assert;
 
 import fr.free.movierenamer.scrapper.TvShowScrapperTest;
 
 /**
  * Class AnidbTvseriesScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class AnidbTvseriesScrapperTest extends TvShowScrapperTest {

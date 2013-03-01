@@ -1295,6 +1295,5 @@ public class NameMatcherTest {
     Assert.assertEquals("zombieland", NameMatcher.extractName("ZombieLand.FRENCH.TS.MD.XviD-VODKA.avi").toLowerCase());
     Assert.assertEquals("zombies zombies zombies", NameMatcher.extractName("Zombies! Zombies! Zombies! (2008).avi").toLowerCase());
     Assert.assertEquals("paranorman", NameMatcher.extractName("ParaNorman2012TRUEFRENCHDVDRipXvid-FUZION").toLowerCase());
-    Assert.assertEquals("paranorman", NameMatcher.extractName("ParaNormanTRUefrenchDvDRipXvidFUZION").toLowerCase());
   }
 }

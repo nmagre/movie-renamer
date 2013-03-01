@@ -23,7 +23,7 @@ import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.list.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Color;

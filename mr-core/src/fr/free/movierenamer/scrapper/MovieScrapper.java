@@ -19,8 +19,8 @@ package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
-import fr.free.movierenamer.scrapper.impl.FanartTVImagesScrapper;
-import fr.free.movierenamer.scrapper.impl.TMDbImagesScrapper;
+import fr.free.movierenamer.scrapper.impl.image.FanartTVImagesScrapper;
+import fr.free.movierenamer.scrapper.impl.image.TMDbImagesScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.ArrayList;

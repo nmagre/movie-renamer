@@ -18,7 +18,7 @@ package fr.free.movierenamer.ui.panel;
 
 import com.alee.extended.filechooser.WebFileChooser;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.res.LogsTableModel;
+import fr.free.movierenamer.ui.swing.LogsTableModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Color;

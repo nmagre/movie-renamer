@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
 import java.util.List;
 import java.util.Locale;
 

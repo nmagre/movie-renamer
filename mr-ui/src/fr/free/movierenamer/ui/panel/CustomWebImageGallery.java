@@ -22,7 +22,7 @@ import com.alee.utils.ImageUtils;
 import com.alee.utils.LafUtils;
 import com.alee.utils.SwingUtils;
 import com.alee.utils.swing.Timer;
-import fr.free.movierenamer.ui.list.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UIMediaImage;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -375,7 +375,7 @@ public class CustomWebImageGallery extends JComponent {
       if(showFlag) { // Flag
         g2d.drawImage(ImageUtils.getBufferedImage(flag), x - flag.getIconWidth() / 2, y, null);
       }
-      
+
       g2d.drawImage(bi, x - imageWidth / 2, y + spacing / 2 + borderWidth * 2 + flag.getIconHeight(), null);// Image
 
       g2d.setPaint(selectedIndex == i ? Color.BLACK : Color.GRAY);

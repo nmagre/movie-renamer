@@ -17,13 +17,14 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.scrapper.impl.movie.AnidbScrapper;
 import org.junit.Assert;
 
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
 
 /**
  * Class AnidbScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class AnidbScrapperTest extends MovieScrapperTest {
@@ -38,7 +39,7 @@ public class AnidbScrapperTest extends MovieScrapperTest {
   public void search() throws Exception {
     Assert.fail();
 //    List<Movie> list = anidb.search("princesse mononoke");
-//    
+//
 //    Movie anime = list.get(0);
 //    Assert.assertEquals("Princesse Mononoke", anime.getName());
 //    Assert.assertEquals("http://img7.anidb.net/pics/anime/13197.jpg", anime.getURL().toExternalForm());

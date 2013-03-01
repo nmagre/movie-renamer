@@ -18,8 +18,8 @@ package fr.free.movierenamer.ui.worker;
 
 import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.list.IIconList;
-import fr.free.movierenamer.ui.list.UIMediaImage;
+import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
