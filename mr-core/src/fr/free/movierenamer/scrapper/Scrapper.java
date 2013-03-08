@@ -27,6 +27,7 @@ import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.LocaleUtils.Language;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
+import java.util.logging.Level;
 
 /**
  * Class Scrapper
@@ -84,18 +85,22 @@ public abstract class Scrapper {
   }
 
   public final void setLanguage(Locale language) {
-    if (!hasLanguageSupport()) {
-      Settings.LOGGER.warning("Try to set Language to a scrapper which has no language support !");
+    // 2013-03-08:EV:if no language support, choose the supported one.
+    if (!hasLanguageSupport()) { 
+      for (Language lang : getSupportedLanguages()) { this.language = lang.getLocale();break; }
+      Settings.LOGGER.log(Level.WARNING, "Try to set Language ({0}) to scrapper ({1}) which has no language support ! Select default language ({0})", new Object[]{language, getName(),this.language});
     }
-    this.language = null;
-    for (Language lang : getSupportedLanguages()) {
-      if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
-        this.language = lang.getLocale();
-        break;
-      }
-    }
-    if (this.language == null) {
-      throw new NullPointerException("Try to set Language to a scrapper which has no support for it ! : " + language);
+    else {
+        this.language = null;
+        for (Language lang : getSupportedLanguages()) {
+            if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
+                this.language = lang.getLocale();
+                break;
+            }
+        }
+        if (this.language == null) {
+            throw new NullPointerException("Try to set Language ("+language+") to scrapper ("+getName()+") which has no support for it ! : ");
+        }
     }
   }
 
