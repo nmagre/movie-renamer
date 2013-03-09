@@ -30,7 +30,7 @@ public abstract class Media extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
   protected int year;
-  protected IdInfo id;
+  protected IdInfo idInfo;
 
   protected Media() {
     // used by serializer
@@ -39,11 +39,11 @@ public abstract class Media extends Hyperlink {
   public Media(IdInfo id, String name, URL thumb, int year, SearchResultType type) {
     super(name, thumb, type);
     this.year = year;
-    this.id = id;
+    this.idInfo = id;
   }
 
   public IdInfo getMediaId() {
-    return id;
+    return idInfo;
   }
 
   public int getYear() {
@@ -63,14 +63,14 @@ public abstract class Media extends Hyperlink {
   @Override
   public String toString() {
     if(year > 0) {
-      if(id.getId() > 0) {
-        return super.toString() + String.format(" (%04d) (id:%d)", year, id.getId());
+      if(idInfo.getId() > 0) {
+        return super.toString() + String.format(" (%04d) (id:%d)", year, idInfo.getId());
       } else {
         return super.toString() + String.format(" (%04d)", year);
       }
     } else {
-      if(id.getId() > 0) {
-        return super.toString() + String.format(" (id:%d)", id.getId());
+      if(idInfo.getId() > 0) {
+        return super.toString() + String.format(" (id:%d)", idInfo.getId());
       } else {
         return super.toString();
       }

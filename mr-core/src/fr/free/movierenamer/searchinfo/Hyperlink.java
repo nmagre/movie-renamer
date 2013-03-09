@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 /**
  * Class Hyperlink
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public abstract class Hyperlink extends SearchResult {
@@ -54,7 +54,7 @@ public abstract class Hyperlink extends SearchResult {
   public boolean equals(Object object) {
     if (object instanceof Hyperlink) {
       Hyperlink other = (Hyperlink) object;
-      return name.equals(name) && ((url == null) ? "" : url.toString()).toString().equals((other.url == null) ? "" : other.url.toString());
+      return name.equals(other.name) && ((url == null) ? "" : url.toString()).toString().equals((other.url == null) ? "" : other.url.toString());
     }
 
     return false;

@@ -512,7 +512,7 @@ public final class Settings {
     return ResourceBundle.getBundle(Settings.class.getName(), Locale.ROOT).getString(key);
   }
 
-  public static File getApplicationFolder() {
+  public static File getApplicationFolder()  {
     String applicationDirPath = System.getProperty("application.dir");
     String userHome = System.getProperty("user.home");
     String userDir = System.getProperty("user.dir");
@@ -531,13 +531,13 @@ public final class Settings {
 
     // create folder if necessary
     if (!applicationFolder.exists()) {
-      applicationFolder.mkdirs();
+      applicationFolder.mkdirs();// FIXME mkdirs can return false or thrown a SecurityException, user must be know about this case
     }
 
     return applicationFolder;
   }
   private static boolean libzen = false;
-  private static Boolean mediainfo = null;
+  private volatile static Boolean mediainfo = null;
 
   /**
    * Check if lib media info is installed

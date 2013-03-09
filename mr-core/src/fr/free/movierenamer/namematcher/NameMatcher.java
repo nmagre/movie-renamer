@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Magré
  */
-public abstract class NameMatcher {
+public abstract class NameMatcher {// TODO
 
   private static List<String> fileExts = Arrays.asList(new String[]{"nfo", "xml"});
 

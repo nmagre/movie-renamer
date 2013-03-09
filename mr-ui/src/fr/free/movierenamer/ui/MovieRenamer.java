@@ -47,11 +47,10 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.scrapper.impl.ScrapperManager;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.swing.DragAndDrop;
 import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UILoader;
+import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UIScrapper;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.panel.LogPanel;
@@ -59,11 +58,12 @@ import fr.free.movierenamer.ui.panel.MediaPanel;
 import fr.free.movierenamer.ui.panel.MoviePanel;
 import fr.free.movierenamer.ui.panel.SettingPanel;
 import fr.free.movierenamer.ui.panel.TvShowPanel;
-import fr.free.movierenamer.ui.swing.FileFilter;
-import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.SettingPropertyChange;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
+import fr.free.movierenamer.ui.swing.DragAndDrop;
+import fr.free.movierenamer.ui.swing.FileFilter;
+import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -257,16 +257,19 @@ public class MovieRenamer extends JFrame {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         if (!lse.getValueIsAdjusting()) {
-          if (currentMedia == getSelectedMediaFile()) {
+          UIFile mediaFile = getSelectedMediaFile();
+          if (mediaFile == null) {
+            System.out.println("mediaFile is null");
+            return;
+          }
+
+          if (currentMedia == mediaFile) {
             // User cancel list files
             clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
             return;
           }
 
-          currentMedia = getSelectedMediaFile();
-          if (currentMedia == null) {
-            return;
-          }
+          currentMedia = mediaFile;
 
           moviePnl.clearMediaTag();
           moviePnl.setMediaTag(currentMedia.getMediaTag());

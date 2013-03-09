@@ -40,14 +40,14 @@ public class TvShow extends Media {
 
   @Override
   public int hashCode() {
-    return id.getId();
+    return idInfo.getId();
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof TvShow) {
       TvShow other = (TvShow) object;
-      return this.id.equals(other.id);
+      return this.idInfo.equals(other.idInfo);
     }
 
     return false;

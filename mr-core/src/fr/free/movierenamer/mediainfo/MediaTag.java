@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
-import java.util.logging.Level;
 
 /**
  * Class MediaTag
@@ -100,7 +99,7 @@ public class MediaTag {
     }
 
     public String[] getKeys() {
-      return keys;
+      return keys.clone();
     }
 
     public boolean isGetFirst() {
@@ -324,22 +323,22 @@ public class MediaTag {
 
     StringBuilder str = new StringBuilder();
     for (MediaAudio audio : audios) {
-      str.append("  Audio stream " + audio.getStream()).append("\n");
-      str.append("    Audio title : " + audio.getTitle()).append("\n");
-      str.append("    Audio codec : " + audio.getCodec()).append("\n");
-      str.append("    Audio bitrate : " + audio.getBitRate()).append("\n");
-      str.append("    Audio bitrate mode : " + audio.getBitRateMode()).append("\n");
-      str.append("    Audio channel : " + audio.getChannel()).append("\n");
-      str.append("    Audio language : " + audio.getLanguage()).append("\n");
+      str.append("  Audio stream ").append(audio.getStream()).append("\n");
+      str.append("    Audio title : ").append(audio.getTitle()).append("\n");
+      str.append("    Audio codec : ").append(audio.getCodec()).append("\n");
+      str.append("    Audio bitrate : ").append(audio.getBitRate()).append("\n");
+      str.append("    Audio bitrate mode : ").append(audio.getBitRateMode()).append("\n");
+      str.append("    Audio channel : ").append(audio.getChannel()).append("\n");
+      str.append("    Audio language : ").append(audio.getLanguage()).append("\n");
     }
 
     res += str.toString();
 
     str.delete(0, str.length());
     for (MediaSubTitle subTitle : subTitles) {
-      str.append("  SubTitle stream " + subTitle.getStream()).append("\n");
-      str.append("    SubTitle title : " + subTitle.getTitle()).append("\n");
-      str.append("    SubTitle language : " + subTitle.getLanguage()).append("\n");
+      str.append("  SubTitle stream ").append(subTitle.getStream()).append("\n");
+      str.append("    SubTitle title : ").append(subTitle.getTitle()).append("\n");
+      str.append("    SubTitle language : ").append(subTitle.getLanguage()).append("\n");
     }
 
     res += str.toString();

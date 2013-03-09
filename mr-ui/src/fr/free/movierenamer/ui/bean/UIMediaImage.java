@@ -76,11 +76,6 @@ public class UIMediaImage extends Sorter.ISort implements IIconList {
   }
 
   @Override
-  public String toString() {
-    return (info != null) ? info.getDescription() : null;
-  }
-
-  @Override
   public void setIcon(Icon icon) {
     this.icon = icon;
   }
@@ -104,4 +99,10 @@ public class UIMediaImage extends Sorter.ISort implements IIconList {
   protected int getYear() {
     return 0;
   }
+
+  @Override
+  public String toString() {
+    return (info != null) ? info.getDescription() : type.name();
+  }
+
 }

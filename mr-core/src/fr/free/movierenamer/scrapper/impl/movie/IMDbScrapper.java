@@ -158,7 +158,7 @@ public class IMDbScrapper extends MovieScrapper {
     for (Node node : nodes) {
       try {
         Node retNode = XPathUtils.selectNode("TD[@class='result_text']", node);
-        String name = XPathUtils.selectNode("A", retNode).getTextContent().trim();
+        String title = XPathUtils.selectNode("A", retNode).getTextContent().trim();
         Matcher m = Pattern.compile("\\((\\d{4}).*\\)").matcher(retNode.getTextContent());
         String year;
         if (m.find()) {
@@ -166,7 +166,7 @@ public class IMDbScrapper extends MovieScrapper {
         } else {
           year = "-1";
         }
-        // String year = retNode.getTextContent().replaceAll(name, "").replaceAll("\\D", "").replaceAll("[\\p{Punct}\\p{Space}]+", ""); // remove non-number characters //FIXME à refaire !
+        // String year = retNode.getTextContent().replaceAll(title, "").replaceAll("\\D", "").replaceAll("[\\p{Punct}\\p{Space}]+", ""); // remove non-number characters //FIXME à refaire !
         String href = XPathUtils.getAttribute("href", XPathUtils.selectNode("A", retNode));
         int imdbid = findImdbId(href);
         URL thumb;
@@ -177,7 +177,7 @@ public class IMDbScrapper extends MovieScrapper {
           thumb = null;
         }
 
-        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), name, thumb, Integer.parseInt(year)));
+        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), title, thumb, Integer.parseInt(year)));
       } catch (Exception e) {
         // ignore
       }
@@ -248,8 +248,6 @@ public class IMDbScrapper extends MovieScrapper {
           int year = Integer.parseInt(res);
           if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {// Before all "movies" producted are more short video than a movie
             fields.put(MovieProperty.releasedDate, res);
-          } else {
-            year = -1;
           }
         }
       }
@@ -332,7 +330,7 @@ public class IMDbScrapper extends MovieScrapper {
       String[] foundGenres = searchMatcher.group(1).split("\\|");
       for (int i = 0; i < foundGenres.length; i++) {
         String genre;
-        if (Settings.getInstance().getSearchMovieScrapperLang().getLanguage().equals(Locale.ENGLISH)) {
+        if (Settings.getInstance().getSearchMovieScrapperLang().equals(Locale.ENGLISH)) {
           genre = foundGenres[i].substring(foundGenres[i].indexOf(">") + 1, foundGenres[i].indexOf("</a>")).trim();
           if (genre.equals("See more")) {
             genre = "";
@@ -470,13 +468,13 @@ public class IMDbScrapper extends MovieScrapper {
     if (node != null) {
       Node link = XPathUtils.selectNode(".//A", node);
       if (link != null) {
-        String name = StringUtils.unEscapeXML(link.getTextContent().trim(), CHARSET);
-        if (name.length() > 1) {
+        String pname = StringUtils.unEscapeXML(link.getTextContent().trim(), CHARSET);
+        if (pname.length() > 1) {
           int imdbId = findCastImdbId(XPathUtils.getAttribute("href", link));
           if (imdbId != 0) {
             Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
             personFields.put(PersonProperty.id, Integer.toString(imdbId));
-            personFields.put(PersonProperty.name, name);
+            personFields.put(PersonProperty.name, pname);
 
             return personFields;
           }

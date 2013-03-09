@@ -35,7 +35,6 @@ import javax.swing.Icon;
 public class UIFile extends Sorter.ISort implements IIconList {
 
   private final FileInfo file;
-  private final MediaTag mtag;
   private String groupName;
 
   /**
@@ -47,7 +46,6 @@ public class UIFile extends Sorter.ISort implements IIconList {
   public UIFile(FileInfo file, String groupName) {
     this.file = file;
     this.groupName = groupName;
-    this.mtag = (file != null) ? new MediaTag(file.getFile()) : null;
   }
 
   /**
@@ -63,7 +61,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
    * @return the mtag
    */
   public MediaTag getMediaTag() {
-    return mtag;
+    return file.getMediaTag();
   }
 
   /**

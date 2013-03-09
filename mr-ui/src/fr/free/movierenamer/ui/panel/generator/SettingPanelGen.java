@@ -113,6 +113,9 @@ public class SettingPanelGen extends PanelGenerator {
           case UNKNOWN:
             UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s", definition.getName()));
             break;
+          default:
+            UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown case option %s", definition.getComponent()));
+            return;
         }
       }
     }

@@ -517,7 +517,7 @@ public class SettingPanel extends JDialog {
     return defKeys;
   }
 
-  private class PropertyClass {
+  private static class PropertyClass {
 
     private final Settings.IProperty property;
     private final Class<? extends Enum<?>> clazz;

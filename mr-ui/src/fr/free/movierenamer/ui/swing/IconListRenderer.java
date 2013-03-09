@@ -17,12 +17,12 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import fr.free.movierenamer.ui.bean.UIFile;
-import fr.free.movierenamer.ui.bean.IIconList;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.Component;
 import java.awt.Font;
@@ -95,4 +95,5 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     label.setOpaque(true);
     return label;
   }
+
 }

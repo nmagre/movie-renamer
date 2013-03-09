@@ -27,9 +27,9 @@ import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -201,9 +201,9 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     List<UIFile> medias = get();
 
     list.setCellRenderer(new IconListRenderer<IIconList>(false));
-
-    eventList.addAll(medias);
     list.setModel(model);
+    eventList.addAll(medias);// FIXME apparently this run out of EDT, i don't know why :(
+
 
     if (eventList.isEmpty()) {
       WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n

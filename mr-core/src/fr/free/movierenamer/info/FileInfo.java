@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.namematcher.NameMatcher;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.utils.FileUtils;
@@ -38,7 +39,8 @@ public class FileInfo {
   private String firstSearch;
   private String search;
   private Integer year;
-  private Map<FileProperty, String> fileProperty;
+  private final Map<FileProperty, String> fileProperty;
+  private final MediaTag mtag;
 
   public enum MediaType {
 
@@ -62,9 +64,10 @@ public class FileInfo {
     setSearch(fileProperty.get(FileProperty.name));
     try {
       this.year = Integer.parseInt(fileProperty.get(FileProperty.year));
-    } catch(Exception ex) {
+    } catch (Exception ex) {
       this.year = -1;
     }
+    this.mtag = new MediaTag(file);
   }
 
   private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
@@ -91,6 +94,10 @@ public class FileInfo {
 
   public MediaType getType() {
     return type;
+  }
+
+  public MediaTag getMediaTag() {
+    return mtag;
   }
 
   public final void setSearch(String search) {

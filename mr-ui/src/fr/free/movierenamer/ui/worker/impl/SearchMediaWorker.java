@@ -27,10 +27,10 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -133,6 +133,8 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
         case LEVEN_YEAR:
           Sorter.sort(results, media.getYear(), media.getSearch());
           break;
+        default:
+          // Do nothing
       }
 
       searchResultList.setCellRenderer(new IconListRenderer<IIconList>(false)/*UISettings.getInstance().isShowThumb() ? mr.iconListRenderer : new DefaultListCellRenderer()*/);// FIXME

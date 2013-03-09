@@ -769,7 +769,7 @@ public class MoviePanel extends MediaPanel {
     return "Movie Panel";
   }
 
-  public class UICastingInfo implements IIconList {
+  private static class UICastingInfo implements IIconList {
 
     private CastingInfo info;
 

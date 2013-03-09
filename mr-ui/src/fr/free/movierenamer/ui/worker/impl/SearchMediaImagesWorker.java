@@ -41,7 +41,7 @@ public class SearchMediaImagesWorker extends AbstractWorker<List<UIMediaImage>> 
 
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
-  private static MediaPanel mediapanel;
+  private final MediaPanel mediapanel;
 
   /**
    * Constructor arguments
