@@ -29,6 +29,9 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import fr.free.movierenamer.settings.Settings;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 /**
  * Class StringUtils
@@ -332,6 +335,28 @@ public final class StringUtils {
       pass.append(chars.charAt(i));
     }
     return pass.toString();
+  }
+
+  public static byte[] getSha1(String str) {
+    try {
+      MessageDigest md = MessageDigest.getInstance("SHA1");
+      md.update(str.getBytes());
+      return md.digest();
+    } catch (NoSuchAlgorithmException ex) {
+      Logger.getLogger(StringUtils.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }
+
+  public static String bytesToHex(byte[] b) {
+    char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+      '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    StringBuffer buf = new StringBuffer();
+    for (int j = 0; j < b.length; j++) {
+      buf.append(hexDigit[(b[j] >> 4) & 0x0f]);
+      buf.append(hexDigit[b[j] & 0x0f]);
+    }
+    return buf.toString();
   }
 
   private StringUtils() {

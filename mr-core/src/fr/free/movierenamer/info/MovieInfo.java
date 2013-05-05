@@ -93,15 +93,15 @@ public class MovieInfo extends MediaInfo {
 
   public String getIdString(AvailableApiIds idType) {
     Integer id = getId(idType);
-    if(id != null) {
+    if (id != null) {
       return idType.getPrefix() + id;
     }
     return null;
   }
 
   public Integer getId(AvailableApiIds idType) {
-    for(IdInfo id : ids) {
-      if(id.getIdType().equals(idType)) {
+    for (IdInfo id : ids) {
+      if (id.getIdType().equals(idType)) {
         return id.getId();
       }
     }
@@ -283,7 +283,7 @@ public class MovieInfo extends MediaInfo {
       while (matcher.find()) {
         String tag = matcher.group(1);
         int stream = Integer.parseInt(matcher.group(2));
-        if(stream <= 0 || (tag.startsWith("a") && stream > audios.size()) || (tag.startsWith("s") && stream > subTitles.size())) {
+        if (stream <= 0 || (tag.startsWith("a") && stream > audios.size()) || (tag.startsWith("s") && stream > subTitles.size())) {
           continue;
         }
 

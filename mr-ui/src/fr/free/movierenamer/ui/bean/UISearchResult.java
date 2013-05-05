@@ -99,6 +99,10 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
     return searchResult.getName();
   }
 
+  public String getOriginalTitle() {
+    return searchResult.getOriginalTitle();
+  }
+
   @Override
   public long getLength() {
     return getName().length();

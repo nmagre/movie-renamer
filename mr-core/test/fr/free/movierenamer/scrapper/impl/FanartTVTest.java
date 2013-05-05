@@ -43,7 +43,7 @@ public class FanartTVTest extends ImageScrapperTest {
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = fanarttv.getImages(new Movie(new IdInfo(19995, ScrapperUtils.AvailableApiIds.TMDB), null, null, -1));
+    List<ImageInfo> images = fanarttv.getImages(new Movie(new IdInfo(19995, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
     Assert.assertEquals(ImageInfo.ImageCategoryProperty.logo, images.get(0).getCategory());
     Assert.assertEquals("http://assets.fanart.tv/fanart/movies/19995/hdmovielogo/avatar-503e0262ba196.png", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());
   }

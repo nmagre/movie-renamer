@@ -36,12 +36,8 @@ public class Movie extends Media {
     // used by serializer
   }
 
-  // public Movie(Movie obj) {
-  // this(obj.name, obj.year, obj.imdbId, obj.movieId);
-  // }
-
-  public Movie(IdInfo id, String name, URL thumb, int year) {
-    super(id, name, thumb, year, null);
+  public Movie(IdInfo id, String title, String originalTitle, URL thumb, int year) {
+    super(id, title, originalTitle, thumb, year, null);
     this.id = id;
   }
 
@@ -57,21 +53,16 @@ public class Movie extends Media {
         return true;
       }
 
-      //return name.equalsIgnoreCase(other.name);
+      //return title.equalsIgnoreCase(other.title);
     }
 
     return false;
   }
 
-  // @Override
-  // public Movie clone() {
-  // return new Movie(this);
-  // }
-
   @Override
   public int hashCode() {
     return Arrays.hashCode(new Object[] {
-        name.toLowerCase(), year
+        title.toLowerCase(), year
     });
   }
 

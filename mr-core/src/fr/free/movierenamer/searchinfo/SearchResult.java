@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 /**
  * Class SearchResult
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -43,20 +43,24 @@ public abstract class SearchResult implements Serializable {
   }
 
   private static final long serialVersionUID = 1L;
-  protected String name;
+  protected String title;
   protected SearchResultType type;
 
   protected SearchResult() {
     // used by serializer
   }
 
-  public SearchResult(String name, SearchResultType type) {
-    this.name = (name == null) ? "" : name;
+  public SearchResult(String title, SearchResultType type) {
+    this.title = (title == null) ? "" : title;
     this.type = (type == null) ? SearchResultType.NONE : type;
   }
 
   public String getName() {
-    return name;
+    return title;
+  }
+
+  public String getOriginalTitle() {
+    return title;
   }
 
   public SearchResultType getType() {
@@ -66,9 +70,9 @@ public abstract class SearchResult implements Serializable {
   @Override
   public String toString() {
     if (type == null || type == SearchResultType.NONE) {
-      return name;
+      return title;
     }
 
-    return String.format("%s : %s)", name, type);
+    return String.format("%s : %s)", title, type);
   }
 }

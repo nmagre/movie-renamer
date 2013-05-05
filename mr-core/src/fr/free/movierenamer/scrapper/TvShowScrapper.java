@@ -93,6 +93,7 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
     return imagesInfo;
   }
 
+  @Override
   protected List<ImageInfo> getScrapperImages(TvShow movie, Locale language) throws Exception {
     return null;
   }

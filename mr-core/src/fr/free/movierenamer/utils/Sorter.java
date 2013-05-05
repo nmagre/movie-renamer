@@ -22,8 +22,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.JaccardSimilarity;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Jaro;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 /**
  * Class Sorter
@@ -55,7 +59,7 @@ public class Sorter {
     YEAR,
     LENGTH,
     LANGUAGE,
-    LEVENSTHEIN,
+    SIMMETRICS,
     YEAR_ROUND,
     LEVEN_YEAR,
     ALPHA_YEAR;
@@ -92,11 +96,11 @@ public class Sorter {
   }
 
   public static void sort(List<? extends ISort> list, String search) {
-    Collections.sort(list, new LevenshteinSort(search));
+    Collections.sort(list, new SimmetricsSort(search));
   }
 
   public static void sort(List<? extends ISort> list, int year, String search) {
-    sortYear(list, year, new LevenshteinSort(search));
+    sortYear(list, year, new SimmetricsSort(search));
   }
 
   private static <T extends ISort> List<T> getByYear(List<T> list, int year) {
@@ -135,19 +139,19 @@ public class Sorter {
     list.addAll(tmpList);
   }
 
-  private static class LevenshteinSort implements Comparator<ISort> {
+  private static class SimmetricsSort implements Comparator<ISort> {
 
     private String search;
-    private boolean damerau;
+    private final Float accuracy;
 
-    public LevenshteinSort(String search) {
+    public SimmetricsSort(String search) {
       this.search = search;
-      this.damerau = true;
+      accuracy = 2.8F;
     }
 
-    public LevenshteinSort(String search, boolean damerau) {
+    public SimmetricsSort(String search, Float accuracy) {
       this.search = search;
-      this.damerau = damerau;
+      this.accuracy = accuracy;
     }
 
     @Override
@@ -155,29 +159,22 @@ public class Sorter {
       if (search == null) {
         return 0;
       }
-      return DamerauLevenshteinDistance(search, t.getName()) - DamerauLevenshteinDistance(search, t1.getName());
+      return simCompare(search, t.getName()) - simCompare(search, t1.getName());
     }
 
-    private int minimum(int a, int b, int c) {
-      return Math.min(Math.min(a, b), c);
-    }
+    private int simCompare(String str1, String str2) {
+      AbstractStringMetric algorithm;
+      Float res = 0.0F;
+      algorithm = new Jaro();
+      res += algorithm.getSimilarity(str1, str2);
+      algorithm = new JaroWinkler();
+      res += algorithm.getSimilarity(str1, str2);
+      algorithm = new Levenshtein();
+      res += algorithm.getSimilarity(str1, str2);
+      algorithm = new JaccardSimilarity();
+      res += algorithm.getSimilarity(str1, str2);
 
-    private int DamerauLevenshteinDistance(String str1, String str2) {
-      int[][] distance = new int[str1.length() + 1][str2.length() + 1];
-      for (int i = 1; i <= str1.length(); i++) {
-        for (int j = 1; j <= str2.length(); j++) {
-          int cost = ((str1.charAt(i - 1) == str2.charAt(j - 1)) ? 0 : 1);
-          distance[i][j] = minimum(distance[i - 1][j] + 1, distance[i][j - 1] + 1, distance[i - 1][j - 1] + cost);
-          if (damerau) {
-            if (i < str1.length() && j < str2.length() && str1.charAt(i) == str2.charAt(j - 1) && str1.charAt(i - 1) == str2.charAt(j)) {
-              if (i > 1 && j > 1) {
-                distance[i][j] = Math.min(distance[i][j], distance[i - 2][j - 2] + cost);
-              }
-            }
-          }
-        }
-      }
-      return distance[str1.length()][str2.length()];
+      return Math.round(res - accuracy);
     }
   }
 
@@ -185,7 +182,7 @@ public class Sorter {
 
     @Override
     public int compare(ISort t, ISort t1) {
-      return t1.getYear() - t.getYear();
+      return t1.getLanguage().compareTo(t.getLanguage());
     }
   }
 

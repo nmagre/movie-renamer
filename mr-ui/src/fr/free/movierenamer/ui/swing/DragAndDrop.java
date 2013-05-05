@@ -32,7 +32,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.JList;
 
 /**
  * Class DragAndDrop
@@ -43,7 +42,7 @@ public abstract class DragAndDrop implements DropTargetListener {
 
   private final MovieRenamer mr;
 
-  public DragAndDrop(MovieRenamer parent, JList list) {
+  public DragAndDrop(MovieRenamer parent) {
     mr = parent;
   }
 

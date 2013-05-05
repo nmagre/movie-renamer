@@ -25,8 +25,8 @@ import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIFile;
+import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
@@ -43,6 +43,11 @@ import javax.swing.SwingConstants;
  */
 public final class UIUtils {
 
+  public static enum MainUIEvent {
+    SEARCH_MOVIE_SCRAPPER,
+    SEARCH_TV_SHOW_SCRAPPER,
+    SHOW_FORMAT_FIELD,
+  }
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>(false);
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
     @Override

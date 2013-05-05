@@ -76,6 +76,10 @@ public final class FileUtils {
   public static boolean hasExtension(String filename, String... extensions) {
     String extension = getExtension(filename);
 
+    if(extensions == null || extensions.length == 0) {
+      return true;
+    }
+
     for (String value : extensions) {
       if ((extension == null && value == null) || (extension != null && extension.equalsIgnoreCase(value)))
         return true;

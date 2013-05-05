@@ -33,8 +33,8 @@ public abstract class Hyperlink extends SearchResult {
     // used by serializer
   }
 
-  public Hyperlink(String name, URL url, SearchResultType type) {
-    super(name, type);
+  public Hyperlink(String title, URL url, SearchResultType type) {
+    super(title, type);
     this.url = url;
   }
 
@@ -54,7 +54,7 @@ public abstract class Hyperlink extends SearchResult {
   public boolean equals(Object object) {
     if (object instanceof Hyperlink) {
       Hyperlink other = (Hyperlink) object;
-      return name.equals(other.name) && ((url == null) ? "" : url.toString()).toString().equals((other.url == null) ? "" : other.url.toString());
+      return title.equals(other.title) && ((url == null) ? "" : url.toString()).toString().equals((other.url == null) ? "" : other.url.toString());
     }
 
     return false;
@@ -63,7 +63,7 @@ public abstract class Hyperlink extends SearchResult {
   @Override
   public int hashCode() {
     return Arrays.hashCode(new Object[] {
-        name, (url == null) ? null : url.toString()
+        title, (url == null) ? null : url.toString()
     });
   }
 

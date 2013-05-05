@@ -127,7 +127,8 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
         case ALPHA_YEAR:
           Sorter.sort(results, type, media.getYear());
           break;
-        case LEVENSTHEIN:
+        case SIMMETRICS:
+          UISettings.LOGGER.log(Level.INFO, "Sort SIMMETRICS");
           Sorter.sort(results, media.getSearch());
           break;
         case LEVEN_YEAR:
@@ -137,6 +138,7 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
           // Do nothing
       }
 
+      searchResultList.setModel(searchResultModel);
       searchResultList.setCellRenderer(new IconListRenderer<IIconList>(false)/*UISettings.getInstance().isShowThumb() ? mr.iconListRenderer : new DefaultListCellRenderer()*/);// FIXME
       searchResultModel.addElements(results);
 

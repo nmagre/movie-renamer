@@ -21,7 +21,7 @@ import fr.free.movierenamer.searchinfo.SearchResult.SearchResultType;
 
 /**
  * Class Person
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -51,7 +51,7 @@ public class Person extends SearchResult {
         return personId == other.personId;
       }
 
-      return name.equalsIgnoreCase(other.name);
+      return title.equalsIgnoreCase(other.title);
     }
 
     return false;

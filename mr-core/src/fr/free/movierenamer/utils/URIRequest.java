@@ -150,7 +150,7 @@ public final class URIRequest {
       Settings settings = Settings.getInstance();
       connection.setReadTimeout(settings.getHttpRequestTimeOut() * 1000); // in ms
       //fake user agent ;)
-      connection.addRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
+      connection.addRequestProperty("User-Agent", "Dalvik/1.6.0 (Linux; U; Android 4.2.2; Nexus 4 Build/JDQ39E)");
       connection.addRequestProperty("From", "googlebot(at)googlebot.com");
       connection.addRequestProperty("Accept", "*/*");
       String customUserAgent = settings.getHttpCustomUserAgent();

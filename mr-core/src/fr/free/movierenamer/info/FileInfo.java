@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class FileInfo {
 
-  private final long minMovieFileSize = 450000;
+  private static final long minMovieFileSize = 450000;
   private File file;
   private final MediaType type;
   private String firstSearch;
@@ -70,7 +70,7 @@ public class FileInfo {
     this.mtag = new MediaTag(file);
   }
 
-  private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
+  public static MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
     String filename = file.getName();
 
     if (file.length() < minMovieFileSize) {
@@ -80,8 +80,9 @@ public class FileInfo {
     return MediaType.MOVIE;
   }
 
-  public String getSearch() {
-    return search;
+  public static String getSearch(File file) {
+    Map<FileProperty, String> fileProperty = NameMatcher.getProperty(file, getMediaType(file));
+    return fileProperty.get(FileProperty.name);
   }
 
   public Integer getYear() {

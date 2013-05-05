@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
-import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
@@ -34,8 +33,11 @@ import javax.swing.Icon;
  */
 public class UIFile extends Sorter.ISort implements IIconList {
 
-  private final FileInfo file;
+  private final File file;
+  private FileInfo fileInfo;
   private String groupName;
+  private Icon icon;
+  private String search;
 
   /**
    * Constructor arguments
@@ -43,9 +45,28 @@ public class UIFile extends Sorter.ISort implements IIconList {
    * @param file A mediaInfo file
    * @param groupName
    */
-  public UIFile(FileInfo file, String groupName) {
+  public UIFile(File file, String groupName) {
     this.file = file;
     this.groupName = groupName;
+    this.icon = ImageUtils.MOVIE_16;
+    fileInfo = null;
+    search = null;
+  }
+
+  public FileInfo getFileInfo() {
+    return fileInfo;
+  }
+
+  public void setFileInfo(FileInfo fileInfo) {
+    this.fileInfo = fileInfo;
+  }
+
+  public String getSearch() {
+    return search;
+  }
+
+  public void setSearch(String search) {
+    this.search = search;
   }
 
   /**
@@ -54,41 +75,12 @@ public class UIFile extends Sorter.ISort implements IIconList {
    * @return File
    */
   public File getFile() {
-    return file.getFile();
-  }
-
-  /**
-   * @return the mtag
-   */
-  public MediaTag getMediaTag() {
-    return file.getMediaTag();
-  }
-
-  /**
-   * Media has been renamed
-   *
-   * @return True is media was renamed, false otherwise
-   */
-  public boolean wasRenamed() {
-    return file.wasRenamed();
-  }
-
-  /**
-   * Get file type
-   *
-   * @return Media type
-   */
-  public FileInfo.MediaType getType() {
-    return file.getType();
-  }
-
-  public final void setSearch(String search) {
-    file.setSearch(search);
+    return file;
   }
 
   @Override
   public int getYear() {
-    return file.getYear();
+    return -1; //FIXME
   }
 
   /**
@@ -98,11 +90,15 @@ public class UIFile extends Sorter.ISort implements IIconList {
    */
   @Override
   public Icon getIcon() {
-    if (wasRenamed()) {
-      return ImageUtils.LOGO_22;
+    /*if (wasRenamed()) {
+      return ImageUtils.LOGO_22;// FIXME change icon
     }
 
-    switch (file.getType()) {
+    if (fileInfo == null) {
+      getFileInfo();
+    }
+
+    switch (fileInfo.getType()) {
       case MOVIE:
         return ImageUtils.MOVIE_16;
       case TVSHOW:
@@ -110,21 +106,18 @@ public class UIFile extends Sorter.ISort implements IIconList {
     }
 
     //return ImageUtils.MEDIA;
-    return null; // FIXME
+    * */
+    return icon; // FIXME
   }
 
   @Override
   public String toString() {
-    return file.getFile().getName();
-  }
-
-  public final String getSearch() {
-    return file.getSearch();
+    return file.getName();
   }
 
   @Override
   public void setIcon(Icon icon) {
-    // DO nothing
+    this.icon = icon;
   }
 
   @Override
@@ -146,7 +139,6 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
   @Override
   public URI getUri(ImageSize size) {
-    return null;
+    return file.toURI();
   }
-
 }

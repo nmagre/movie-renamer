@@ -51,6 +51,7 @@ public abstract class NameMatcher {// TODO
         properties = getTvShowProperty(file);
         break;
     }
+    
     properties.put(FileProperty.year, "" + NameCleaner.extractYear(file.getName()));
     return properties;
   }

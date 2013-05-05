@@ -177,7 +177,7 @@ public class IMDbScrapper extends MovieScrapper {
           thumb = null;
         }
 
-        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), title, thumb, Integer.parseInt(year)));
+        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), title, null, thumb, Integer.parseInt(year)));
       } catch (Exception e) {
         // ignore
       }
@@ -188,7 +188,7 @@ public class IMDbScrapper extends MovieScrapper {
     if (results.isEmpty()) {
       try {
         int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
-        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, null, -1), language);
+        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, -1), language);
         URL thumb;
         try {
           String imgPath = info.getPosterPath().toURL().toExternalForm();
@@ -196,7 +196,7 @@ public class IMDbScrapper extends MovieScrapper {
         } catch (Exception ex) {
           thumb = null;
         }
-        Movie movie = new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), info.getTitle(), thumb, info.getYear());
+        Movie movie = new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), info.getTitle(), null, thumb, info.getYear());
         if (movie != null) {
           results.add(movie);
         }

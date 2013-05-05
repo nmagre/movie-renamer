@@ -26,14 +26,15 @@ import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
+import fr.free.movierenamer.ui.swing.FileFilter;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
+import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
+import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -48,12 +49,29 @@ import java.util.logging.Level;
 public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
 
   private final List<File> files;
-  private final WebList list;
   private final EventList<UIFile> eventList;
   private final EventListModel<UIFile> model;
   private boolean subFolder;
   private final UISettings setting;
   private boolean paused = false;
+  private final FilenameFilter filaAndFolder = new FilenameFilter() {
+    @Override
+    public boolean accept(File dir, String name) {
+      if (dir.isDirectory()) {
+        return !dir.isHidden();
+      }
+
+      if (dir.isHidden()) {
+        return false;
+      }
+
+      if (dir.getName().contains(StringUtils.DOT)) {
+        //return true;
+      }
+
+      return false;
+    }
+  };
   private final FilenameFilter folderFilter = new FilenameFilter() {
     @Override
     public boolean accept(File dir, String name) {
@@ -66,14 +84,12 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    *
    * @param files
    * @param mr
-   * @param list
    * @param eventList
    * @param model
    */
-  public ListFilesWorker(MovieRenamer mr, List<File> files, WebList list, EventList<UIFile> eventList, EventListModel<UIFile> model) {
+  public ListFilesWorker(MovieRenamer mr, List<File> files, EventList<UIFile> eventList, EventListModel<UIFile> model) {
     super(mr);
     this.files = files;
-    this.list = list;
     this.eventList = eventList;
     this.model = model;
     setting = UISettings.getInstance();
@@ -100,45 +116,29 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       pause();
     }
 
-    int count = files.size();
-    for (int i = 0; i < count; i++) {
-      if (isCancelled()) {
-        UISettings.LOGGER.log(Level.INFO, "ListFilesWorker Cancelled");
-        return new ArrayList<UIFile>();
-      }
+    try {
+      int count = files.size();
+      for (int i = 0; i < count; i++) {
+        if (isCancelled()) {
+          UISettings.LOGGER.log(Level.INFO, "ListFilesWorker Cancelled");
+          return new ArrayList<UIFile>();
+        }
 
-      if (files.get(i).isDirectory()) {
-        addFiles(medias, files.get(i));
-      } else {
-        boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName());
-        if (addfiletoUI) {
-          addUIfile(medias, files.get(i));
+        if (files.get(i).isDirectory()) {
+          addFiles(medias, files.get(i));
+        } else {
+          boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName());
+          if (addfiletoUI) {
+            addUIfile(medias, files.get(i));
+          }
         }
       }
+    } catch (Exception ex) {
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getClass().toString(), ex.getStackTrace()));
     }
 
     Sorter.sort(medias, Sorter.SorterType.ALPHABETIC);
     return medias;
-  }
-
-  private void pause() {
-    paused = true;
-    while (paused && !isCancelled()) {
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException ex) {
-      }
-    }
-  }
-
-  private void resume() {
-    paused = false;
-  }
-
-  @Override
-  public final void process(List<String> v) {
-    super.process(v);
-    resume();
   }
 
   /**
@@ -166,7 +166,8 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    * @param file File to add or directory to scan
    */
   private void addFiles(List<UIFile> medias, File file) {
-    File[] listFiles = file.listFiles();
+
+    File[] listFiles = file.listFiles(new FileFilter());
     if (listFiles == null) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("Directory \"%s\" does not exist or is not a Directory", file.getName()));
       return;
@@ -181,10 +182,9 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     }
   }
 
-  private void addUIfile(List<UIFile> medias, File file) {
-    FileInfo fileInfo = new FileInfo(file);
-    String groupName = fileInfo.getFile().getName().substring(0, 1);
-    switch (fileInfo.getType()) {
+  private void addUIfile(List<UIFile> medias, File file) {;
+    String groupName = file.getName().substring(0, 1);
+    switch (FileInfo.getMediaType(file)) {
       case MOVIE:
         break;
       case TVSHOW:
@@ -193,26 +193,47 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
         groupName = nameMatcher.getName() + " " + LocaleUtils.i18nExt("season") + " " + epMatch.matchEpisode().seasonL0();
         break;
     }
-    medias.add(new UIFile(new FileInfo(file), groupName));
+    medias.add(new UIFile(file, groupName));
   }
 
   @Override
   protected void workerDone() throws Exception {
     List<UIFile> medias = get();
 
-    list.setCellRenderer(new IconListRenderer<IIconList>(false));
-    list.setModel(model);
-    eventList.addAll(medias);// FIXME apparently this run out of EDT, i don't know why :(
+    WebList list = mr.getMediaList();
 
+    list.setCellRenderer(MovieRenamer.mediaFileListRenderer);
+    list.setModel(model);
+    eventList.addAll(medias);
 
     if (eventList.isEmpty()) {
       WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n
     } else if (UISettings.getInstance().isSelectFirstMedia()) {
       int index = 0;
-      if(model.getElementAt(index) instanceof SeparatorList.Separator) {
+      if (model.getElementAt(index) instanceof SeparatorList.Separator) {
         index++;
       }
       list.setSelectedIndex(index);
     }
+  }
+
+  private void pause() {
+    paused = true;
+    while (paused && !isCancelled()) {
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException ex) {
+      }
+    }
+  }
+
+  private void resume() {
+    paused = false;
+  }
+
+  @Override
+  public final void process(List<String> v) {
+    super.process(v);
+    resume();
   }
 }

@@ -20,9 +20,9 @@ package fr.free.movierenamer.ui.swing;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
-import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
+import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.Component;
 import java.awt.Font;
@@ -64,10 +64,11 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
       label.setHorizontalAlignment(WebLabel.CENTER);
     }
 
+    // Media list separator
     if (value instanceof SeparatorList.Separator && showGroup) {
       SeparatorList.Separator separator = (SeparatorList.Separator) value;
       UIFile file = (UIFile) separator.getGroup().get(0);
-      label.setText(file.getType() == FileInfo.MediaType.TVSHOW ? file.getGroupName() : file.toString().substring(0, 1));
+      label.setText(file.getGroupName());
 
       label.setFont(label.getFont().deriveFont(Font.BOLD));
       label.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
@@ -88,6 +89,14 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
 
     Icon icon = obj.getIcon();
 
+    if (value instanceof UISearchResult) {
+      UISearchResult sres = (UISearchResult) value;
+      String text = label.getText();
+      if(!text.equals(sres.getOriginalTitle())) {
+        label.setText("<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>");
+      }
+    }
+
     if (icon != null && showIcon) {
       label.setIcon(icon);
     }
@@ -95,5 +104,4 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     label.setOpaque(true);
     return label;
   }
-
 }

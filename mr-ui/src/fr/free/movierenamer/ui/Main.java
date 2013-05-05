@@ -22,10 +22,12 @@ import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.LocaleUtils;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 /**
@@ -68,6 +70,33 @@ public class Main {
         break;
       }
     }
+
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        while (true) {
+          Runtime runtime = Runtime.getRuntime();
+
+          NumberFormat format = NumberFormat.getInstance();
+
+          StringBuilder sb = new StringBuilder();
+          long maxMemory = runtime.maxMemory();
+          long allocatedMemory = runtime.totalMemory();
+          long freeMemory = runtime.freeMemory();
+
+          sb.append("free memory: " + format.format(freeMemory / 1024) + "\n");
+          sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + "\n");
+          sb.append("max memory: " + format.format(maxMemory / 1024) + "\n");
+          sb.append("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "\n");
+          System.out.println(sb.toString());
+          try {
+            Thread.sleep(20000);
+          } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        }
+      }
+    }).start();
 
     LanguageManager.setLanguage(lcode);
 

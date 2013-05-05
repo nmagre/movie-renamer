@@ -78,12 +78,6 @@ public final class UISettings {
   private static final String appSettingsNodeName;
   private static final String settingNodeName;
 
-  public static enum SettingPropertyChange {
-
-    SEARCHMOVIESCRAPPER,
-    SEARCHMTVSHOWSCRAPPER;
-  }
-
   public enum UISupportedLanguage {
 
     fr,

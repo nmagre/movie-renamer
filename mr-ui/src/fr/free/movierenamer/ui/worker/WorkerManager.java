@@ -32,6 +32,7 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.worker.impl.GetFileInfo;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
@@ -60,34 +61,39 @@ public final class WorkerManager {
     throw new UnsupportedOperationException();
   }
 
-  public static void listFiles(MovieRenamer mr, List<File> files, WebList list, EventList<UIFile> eventList, EventListModel<UIFile> model) {
-    ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, list, eventList, model);
-    start(listFileWorker, mr.getClass());
+  public static void getFileInfo(MovieRenamer mr, UIFile file) {
+    GetFileInfo getFileInfoWorker = new GetFileInfo(mr, file);
+    start(getFileInfoWorker, mr.getClass(), file);
+  }
+
+  public static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList, EventListModel<UIFile> model) {
+    ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList, model);
+    start(listFileWorker, mr.getClass(), files);
   }
 
   public static void search(MovieRenamer mr, UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper, WebList list, WebButton button, WebTextField field, DefaultListModel model) {
     SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media, scrapper, list, button, field, model);
-    start(searchWorker, mr.getClass());
+    start(searchWorker, mr.getClass(), media);
   }
 
   public static void fetchInfo(MovieRenamer mr, UIFile file, UISearchResult searchResult) {
     SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(mr, file, searchResult);
-    start(infoWorker, mr.getClass());
+    start(infoWorker, mr.getClass(), searchResult);
   }
 
   public static void fetchImages(MovieRenamer mr, UISearchResult searchResult) {
     SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
-    start(imagesWorker, mr.getClass());
+    start(imagesWorker, mr.getClass(), searchResult);
   }
 
   public static <T extends IIconList> void fetchImages(Class<?> clazz, List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, imageSize, defaultImage);
-    start(imagesWorker, clazz);
+    start(imagesWorker, clazz, "");
   }
 
   public static <T extends IIconList> void fetchImages(Class<?> clazz, List<T> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, gallery, defaultImage, size);
-    start(imagesWorker, clazz);
+    start(imagesWorker, clazz, "");
   }
 
 //  public static <T extends IIconList> void fetchImage(Class<?> clazz, T image, Dimension imageSize, String defaultImage, ImageInfo.ImageSize size, PropertyChangeListener propertyChange) {
@@ -99,11 +105,11 @@ public final class WorkerManager {
 //  }
   public static void fetchCasting(Class<?> clazz, MovieRenamer mr, MediaInfo info, WebList castingList) {
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList);
-    start(castingWorker, clazz);
+    start(castingWorker, clazz, "");
   }
 
-  private static void start(SwingWorker<?, ?> worker, Class<?> clazz) {
-    UISettings.LOGGER.log(Level.INFO, worker.getClass().getSimpleName());
+  private static void start(SwingWorker<?, ?> worker, Class<?> clazz, Object obj) {
+    UISettings.LOGGER.log(Level.INFO, worker.getClass().getSimpleName() + " " + obj.toString());
     worker.execute();
     workerQueue.add(new Worker(worker, clazz));
   }

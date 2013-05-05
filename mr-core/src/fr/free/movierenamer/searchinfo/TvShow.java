@@ -35,7 +35,7 @@ public class TvShow extends Media {
   }
 
   public TvShow(IdInfo id, String seriesName, URL thumb, int year) {
-    super(id, seriesName, thumb, year, null);
+    super(id, seriesName, null, thumb, year, null);
   }
 
   @Override

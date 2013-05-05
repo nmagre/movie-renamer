@@ -92,7 +92,8 @@ public class TMDbScrapper extends MovieScrapper {
 
     for (JSONObject node : jsonObj) {
       int id = JSONUtils.selectInteger("id", node);
-      String movieName = JSONUtils.selectString("title", node);
+      String title = JSONUtils.selectString("title", node);
+      String originalTitle = JSONUtils.selectString("original_title", node);
       String imageNode = JSONUtils.selectString("poster_path", node);
       URL thumb = null;
       try {
@@ -104,7 +105,7 @@ public class TMDbScrapper extends MovieScrapper {
       }
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), movieName, thumb, getReleaseDate(node)));
+        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, originalTitle, thumb, getReleaseDate(node)));
       }
     }
 

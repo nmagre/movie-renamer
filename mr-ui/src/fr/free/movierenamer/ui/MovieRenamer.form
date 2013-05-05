@@ -214,6 +214,8 @@
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="modeSep">
         </Component>
+        <Component class="com.alee.laf.label.WebLabel" name="statusLbl">
+        </Component>
       </SubComponents>
     </Container>
     <Container class="com.alee.laf.toolbar.WebToolBar" name="renameTb">
@@ -453,8 +455,6 @@
                       <Font name="Ubuntu" size="14" style="1"/>
                     </Property>
                   </Properties>
-                </Component>
-                <Component class="com.alee.laf.label.WebLabel" name="mediaLoaderLbl">
                 </Component>
               </SubComponents>
             </Container>

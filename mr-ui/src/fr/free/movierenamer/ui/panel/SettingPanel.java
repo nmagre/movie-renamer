@@ -32,11 +32,11 @@ import fr.free.movierenamer.ui.panel.generator.PanelGenerator;
 import fr.free.movierenamer.ui.panel.generator.PanelGenerator.Component;
 import fr.free.movierenamer.ui.panel.generator.SettingPanelGen;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.settings.UISettings.SettingPropertyChange;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.settings.UISettings.UISupportedLanguage;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.utils.UIUtils.MainUIEvent;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.awt.event.ActionEvent;
@@ -720,12 +720,12 @@ public class SettingPanel extends JDialog {
       UIScrapper mvscrapper = (UIScrapper) movieScrapperCb.getSelectedItem();
       Class<? extends MovieScrapper> oldMovieScapper = settings.coreInstance.getSearchMovieScrapper();
       settings.coreInstance.set(SettingsProperty.searchMovieScrapper, mvscrapper.getScrapper().getClass());
-      settingsChange.firePropertyChange(SettingPropertyChange.SEARCHMOVIESCRAPPER.name(), oldMovieScapper, mvscrapper.getScrapper().getClass());
+      settingsChange.firePropertyChange(MainUIEvent.SEARCH_MOVIE_SCRAPPER.name(), oldMovieScapper, mvscrapper.getScrapper().getClass());
 
       UIScrapper tvscrapper = (UIScrapper) tvshowScrapperCb.getSelectedItem();
       Class<? extends TvShowScrapper> oldTvScrapper = settings.coreInstance.getSearchTvshowScrapper();
       settings.coreInstance.set(SettingsProperty.searchTvshowScrapper, tvscrapper.getScrapper().getClass());
-      settingsChange.firePropertyChange(SettingPropertyChange.SEARCHMTVSHOWSCRAPPER.name(), oldTvScrapper, tvscrapper.getScrapper().getClass());
+      settingsChange.firePropertyChange(MainUIEvent.SEARCH_TV_SHOW_SCRAPPER.name(), oldTvScrapper, tvscrapper.getScrapper().getClass());
 
       for (JComponent component : languageRBtns) {// TODO Ask for restart app
         if (((WebRadioButton) component).isSelected()) {

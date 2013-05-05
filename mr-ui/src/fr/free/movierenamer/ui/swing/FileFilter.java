@@ -33,13 +33,20 @@ import javax.swing.ImageIcon;
  */
 public class FileFilter extends DefaultFileFilter {
 
+  private final UISettings settings = UISettings.getInstance();
+
   public FileFilter() {
     super();
   }
 
   @Override
   public boolean accept(File file) {
-    if (!UISettings.getInstance().isUseExtensionFilter()) {
+
+    if(file.isHidden()) {
+      return false;
+    }
+
+    if (!settings.isUseExtensionFilter()) {
       return true;
     }
 

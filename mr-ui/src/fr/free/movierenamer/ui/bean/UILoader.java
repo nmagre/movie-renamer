@@ -32,6 +32,12 @@ public class UILoader implements IIconList {
 
   private final WebList list;
   private final int row;
+
+  public UILoader(WebList list) {
+    this.list = list;
+    this.row = 0;
+  }
+
   public UILoader(WebList list, int row) {
     this.list = list;
     this.row = row;
@@ -56,5 +62,4 @@ public class UILoader implements IIconList {
   public URI getUri(ImageInfo.ImageSize size) {
     return null;
   }
-
 }

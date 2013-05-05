@@ -60,7 +60,7 @@ public class SearchMediaInfoWorker extends AbstractWorker<MediaInfo> {
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
       info = scrapper.getInfo(media);
-      info.setMediaTag(file.getMediaTag());
+      //info.setMediaTag(file.getMediaTag());
     }
     return info;
   }
