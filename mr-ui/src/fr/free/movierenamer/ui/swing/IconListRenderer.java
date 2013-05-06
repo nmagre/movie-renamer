@@ -20,10 +20,7 @@ package fr.free.movierenamer.ui.swing;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
-import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.bean.UIFile;
-import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.Component;
 import java.awt.Font;
@@ -41,16 +38,15 @@ import javax.swing.JList;
 public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
 
   private static final long serialVersionUID = 1L;
-  private boolean showGroup;
   private boolean showIcon;
 
-  public IconListRenderer() {
-    showGroup = true;
-    showIcon = true;
+  public interface IProperty {
+    public boolean getValue();
+    public void setValue(boolean value);
   }
 
-  public void showGroup(boolean showGroup) {
-    this.showGroup = showGroup;
+  public IconListRenderer() {
+    showIcon = true;
   }
 
   public void showIcon(boolean showIcon) {
@@ -61,41 +57,30 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-    // Media list separator
-    if (value instanceof SeparatorList.Separator && showGroup) {
-      SeparatorList.Separator separator = (SeparatorList.Separator) value;
-      UIFile file = (UIFile) separator.getGroup().get(0);
-      label.setText(file.getGroupName());
-
-      label.setFont(label.getFont().deriveFont(Font.BOLD));
-      label.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
-      return label;
-    }
-
     label.setFont(label.getFont().deriveFont(Font.PLAIN));
     label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
 
     IIconList obj;
     try {
-      obj = (IIconList) value;
+      if (!(value instanceof SeparatorList.Separator)) {
+        obj = (IIconList) value;
+        Icon icon = obj.getIcon();
+
+        if (icon != null && showIcon) {
+          label.setIcon(icon);
+        }
+      }
     } catch (ClassCastException e) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("IconListRenderer ClassCastException : IIconList != %s", value.getClass().getSimpleName()));
-      return label;
-    }
-
-    Icon icon = obj.getIcon();
-
-    if (value instanceof UISearchResult) {
-      UISearchResult sres = (UISearchResult) value;
-      String text = label.getText();
-      label.setText("<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>");
-    }
-
-    if (icon != null && showIcon) {
-      label.setIcon(icon);
     }
 
     label.setOpaque(true);
+
+    return getListCellRendererComponent(list, label, value, index);
+  }
+
+  protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
     return label;
   }
+
 }

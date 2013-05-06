@@ -90,8 +90,6 @@ public final class ImageUtils {
   public static final Icon LOGO_32 = getIconFromJar("ui/icon-32.png");
   public static final Icon LOGO_48 = getIconFromJar("ui/icon-48.png");
   public static final Icon LOGO_72 = getIconFromJar("ui/icon-72.png");
-  //
-  public static final Icon LOAD_24_65 = new SpinningDial(25, 65);
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {

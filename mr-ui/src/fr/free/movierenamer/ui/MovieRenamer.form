@@ -383,6 +383,7 @@
                           <StringArray count="0"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
+                        <Property name="fixedCellHeight" type="int" value="75"/>
                       </Properties>
                     </Component>
                   </SubComponents>

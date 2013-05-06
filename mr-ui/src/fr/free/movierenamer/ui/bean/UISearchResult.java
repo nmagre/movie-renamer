@@ -39,9 +39,7 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
 
   private final Media searchResult;
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
-  private Icon icon = ImageUtils.LOAD_24_65;
-  private boolean showYear = true;
-  private boolean showId = true;
+  private Icon icon = ImageUtils.LOAD_24;
 
   /**
    * @param searchResult
@@ -63,14 +61,6 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
 
   public Media getSearchResult() {
     return searchResult;
-  }
-
-  public void showYear(boolean showYear) {
-    this.showYear = showYear;
-  }
-
-  public void showId(boolean showId) {
-    this.showId = showId;
   }
 
   @Override
@@ -112,6 +102,13 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
   @Override
   public String toString() {
     String toString = getName();
+
+    return toString;
+  }
+
+  public String print(boolean showId, boolean showYear) {
+    String toString = getName();
+
     if (showYear) {
       toString += " (" + searchResult.getYear() + ")";
     }
@@ -119,6 +116,7 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
     if (showId) {
       toString += " (id:" + searchResult.getMediaId() + ")";
     }
+
     return toString;
   }
 }

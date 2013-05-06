@@ -135,6 +135,9 @@ public final class UISettings {
     showClearart(Boolean.TRUE),
     showLogo(Boolean.TRUE),
     showBanner(Boolean.TRUE),
+    showId(Boolean.TRUE),
+    showYear(Boolean.TRUE),
+    showOrigTitle(Boolean.TRUE),
     generateThumb(Boolean.TRUE),
     generateCdart(Boolean.TRUE),
     generateClearart(Boolean.TRUE),
@@ -386,6 +389,18 @@ public final class UISettings {
 
   public boolean isShowBanner() {
     return Boolean.parseBoolean(get(UISettingsProperty.showBanner));
+  }
+
+  public boolean isShowId() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showId));
+  }
+
+  public boolean isShowYear() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showYear));
+  }
+
+  public boolean isShowOrigTitle() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showOrigTitle));
   }
 
   public boolean isGenerateThumb() {

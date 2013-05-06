@@ -65,6 +65,8 @@ import fr.free.movierenamer.ui.swing.DragAndDrop;
 import fr.free.movierenamer.ui.swing.FileFilter;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.swing.ListTooltip;
+import fr.free.movierenamer.ui.swing.MediaListRenderer;
+import fr.free.movierenamer.ui.swing.SearchResultListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.utils.UIUtils.MainUIEvent;
@@ -77,10 +79,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -130,8 +128,8 @@ public class MovieRenamer extends JFrame {
   private final DefaultComboBoxModel tvshowScrapperModel = new DefaultComboBoxModel();
   private final EventListModel<UIFile> mediaFileSeparatorModel;
   private final EventListModel<UIFile> mediaFileModel = new EventListModel<UIFile>(mediaFileEventList);
-  private final IconListRenderer<IIconList> mediaFileListRenderer = new IconListRenderer<IIconList>();
-  private final IconListRenderer<IIconList> searchResultListRenderer = new IconListRenderer<IIconList>();
+  private final MediaListRenderer mediaFileListRenderer = new MediaListRenderer();
+  private final SearchResultListRenderer searchResultListRenderer = new SearchResultListRenderer();
   //
   private final DefaultListModel loaderModel = new DefaultListModel();
   // Separator
@@ -139,12 +137,17 @@ public class MovieRenamer extends JFrame {
   // List option checkbox
   private final WebCheckBox showIconMediaListChk;
   private final WebCheckBox showIconResultListChk;
+  private final WebCheckBox showIdResultListChk;
+  private final WebCheckBox showYearResultListChk;
+  private final WebCheckBox showOrigTitleResultListChk;
   private final WebCheckBox showFormatFieldChk;
   // Property change
   private final PropertyChangeSupport settingsChange;
   // UI tools
   public static final Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   public static final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+  //
+  private final ListSelectionListener mediaFileListListener = createMediaFileListListener();
 
   public MovieRenamer() {
 
@@ -171,8 +174,13 @@ public class MovieRenamer extends JFrame {
     initComponents();
 
     // List option
-    showIconMediaListChk = createShowIconChk(mediaFileList, setting.isShowIconMediaList());
-    showIconResultListChk = createShowIconChk(searchResultList, setting.isShowThumb());
+    showIconMediaListChk = createShowIconChk(mediaFileList, setting.isShowIconMediaList(), "showIcon");// FIXME i18n
+    showIconResultListChk = createShowIconChk(searchResultList, setting.isShowThumb(), "showIcon");
+
+    showIdResultListChk = createShowChk(searchResultList, SearchResultListRenderer.Property.showId, setting.isShowId(), "showID");// FIXME i18n
+    showYearResultListChk = createShowChk(searchResultList, SearchResultListRenderer.Property.showYear, setting.isShowYear(), "showYear");// FIXME i18n
+    showOrigTitleResultListChk = createShowChk(searchResultList, SearchResultListRenderer.Property.showOrigTitle, setting.isShowOrigTitle(), "showOrigTitle");// FIXME i18n
+
 
     showFormatFieldChk = new WebCheckBox(LocaleUtils.i18nExt("showFormatField"));// FIXME i18n
     showFormatFieldChk.setSelected(setting.isShowFormatField());
@@ -238,12 +246,13 @@ public class MovieRenamer extends JFrame {
     // Media file list listener
     ListTooltip mediaFileTooltip = new ListTooltip();
 
-    mediaFileList.addListSelectionListener(createMediaFileListListener());
+    mediaFileList.addListSelectionListener(mediaFileListListener);
     addDragAndDropListener(mediaFileList);//Add drag and drop listener on mediaFileList
-    mediaFileList.setModel(loaderModel);
-    mediaFileList.setCellRenderer(mediaFileListRenderer);
     mediaFileList.addMouseListener(mediaFileTooltip);
     mediaFileList.addMouseMotionListener(mediaFileTooltip);
+
+    mediaFileList.setModel(loaderModel);
+    mediaFileList.setCellRenderer(mediaFileListRenderer);
 
     searchResultList.addListSelectionListener(createSearchResultList());
     searchResultList.setModel(searchResultModel);
@@ -260,19 +269,28 @@ public class MovieRenamer extends JFrame {
     toggleGroup.setText("togglegroup");// FIXME i18n
     toggleGroup.addActionListener(createToggleGroupListener());
     groupFile = setting.isGroupMediaList();
+    setToggleGroupIcon();
 
     // Add settings button in toolbar
     renameTb.addToEnd(UIUtils.createSettingButton(PopupWay.upLeft, "settingHelp", thumbChk, fanartChk, nfoChk, showFormatFieldChk));
     mediaFileTb.addToEnd(UIUtils.createSettingButton(PopupWay.downRight, "settingHelp", toggleGroup, showIconMediaListChk));
-    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, "settingHelp", showIconResultListChk));
+    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, "settingHelp", showIconResultListChk, showIdResultListChk, showYearResultListChk, showOrigTitleResultListChk));
   }
 
-  private WebCheckBox createShowIconChk(final WebList list, boolean selected) {
-    final WebCheckBox checkbox = new WebCheckBox(LocaleUtils.i18nExt("showIcon"));
+  private WebCheckBox createShowIconChk(final WebList list, boolean selected, String text) {
+    return createShowChk(list, null, selected, text);
+  }
+
+  private WebCheckBox createShowChk(final WebList list, final IconListRenderer.IProperty property, boolean selected, String text) {
+    final WebCheckBox checkbox = new WebCheckBox(LocaleUtils.i18nExt(text));
     checkbox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ae) {
-        ((IconListRenderer) list.getCellRenderer()).showIcon(checkbox.isSelected());
+        if (property != null) {
+          property.setValue(checkbox.isSelected());
+        } else {
+          ((IconListRenderer) list.getCellRenderer()).showIcon(checkbox.isSelected());
+        }
         list.revalidate();
         list.repaint();
       }
@@ -299,15 +317,17 @@ public class MovieRenamer extends JFrame {
         Object obj = mediaFileList.getSelectedValue();
         groupFile = !groupFile;
 
-        ((IconListRenderer) mediaFileList.getCellRenderer()).showGroup(groupFile);
+        MediaListRenderer.Property.showGroup.setValue(groupFile);
         mediaFileList.setModel(getMediaFileListModel());
 
         if (index > -1 && obj != null) {
+          mediaFileList.removeListSelectionListener(mediaFileListListener);
           mediaFileList.setSelectedValue(obj, false);
           mediaFileList.ensureIndexIsVisible(mediaFileList.getSelectedIndex());
+          mediaFileList.addListSelectionListener(mediaFileListListener);
         }
         mediaFileList.revalidate();
-        toggleGroup.setIcon(groupFile ? ImageUtils.FILEVIEW_16 : ImageUtils.GROUPVIEW_16);
+        setToggleGroupIcon();
       }
     };
   }
@@ -532,6 +552,10 @@ public class MovieRenamer extends JFrame {
       default:
     }
     return current;
+  }
+
+  private void setToggleGroupIcon() {
+    toggleGroup.setIcon(groupFile ? ImageUtils.GROUPVIEW_16 : ImageUtils.FILEVIEW_16);
   }
 
   public void updateRenamedTitle() {// TODO
@@ -797,6 +821,7 @@ public class MovieRenamer extends JFrame {
     });
 
     searchResultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    searchResultList.setFixedCellHeight(75);
     jScrollPane1.setViewportView(searchResultList);
 
     scrapperCb.addActionListener(new ActionListener() {

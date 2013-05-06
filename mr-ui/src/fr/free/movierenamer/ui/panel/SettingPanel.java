@@ -140,6 +140,9 @@ public class SettingPanel extends JDialog {
     showClearart(UISettingsProperty.showClearart, Category.MEDIAINFO, SubTitle.GENERAL),
     showLogo(UISettingsProperty.showLogo, Category.MEDIAINFO, SubTitle.GENERAL),
     showBanner(UISettingsProperty.showBanner, Category.MEDIAINFO, SubTitle.GENERAL),
+    showId(UISettingsProperty.showId, Category.MEDIAINFO, SubTitle.GENERAL),
+    showYear(UISettingsProperty.showYear, Category.MEDIAINFO, SubTitle.GENERAL),
+    showOrigTitle(UISettingsProperty.showOrigTitle, Category.MEDIAINFO, SubTitle.GENERAL),
     // SEARCH
     searchMovieScrapper(SettingsProperty.searchMovieScrapper, Category.SEARCH, SubTitle.SCRAPPER, movieScrapperCb),
     searchMovieScrapperLang(SettingsProperty.searchMovieScrapperLang, Category.SEARCH, SubTitle.SCRAPPER, searchMovieScrapperLangRBtns, true),

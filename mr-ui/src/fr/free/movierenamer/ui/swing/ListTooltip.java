@@ -53,42 +53,47 @@ public class ListTooltip extends MouseAdapter {
 
   @Override
   public void mouseMoved(MouseEvent e) {
-    final WebList theList = (WebList) e.getSource();
-    ListModel model = theList.getModel();
-    int index = theList.locationToIndex(e.getPoint());
+    final WebList list = (WebList) e.getSource();
+    ListModel model = list.getModel();
+    int index = list.locationToIndex(e.getPoint());
+
     if (index > -1) {
       if (lastIndex != index) {
         TooltipManager.hideAllTooltips();
         Object obj = model.getElementAt(index);
-        final Rectangle rect = theList.getCellBounds(index, index);
+        final Rectangle rect = list.getCellBounds(index, index);
+
         if (obj instanceof IIconList) {
           final String str = obj instanceof UILoader ? LocaleUtils.i18nExt("clickToCancel") : obj.toString();// FIXME i18n
           if (timer != null) {
             timer.stop();
           }
+
           timer = new Timer(time, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              TooltipManager.showOneTimeTooltip(theList, new Point(theList.getParent().getWidth(), rect.getLocation().y + rect.height / 2), str, TooltipWay.right);
+              TooltipManager.showOneTimeTooltip(list, new Point(list.getParent().getWidth(), rect.getLocation().y + rect.height / 2), str, TooltipWay.right);
               timer.stop();
             }
           });
+
           timer.start();
           lastIndex = index;
         } else {
-          if (timer != null) {
-            timer.stop();
-          }
-          lastIndex = -1;
+          reset();
         }
       }
     } else {
       TooltipManager.hideAllTooltips();
-      if (timer != null) {
-        timer.stop();
-      }
-      lastIndex = -1;
+      reset();
     }
+  }
+
+  private void reset() {
+    if (timer != null) {
+      timer.stop();
+    }
+    lastIndex = -1;
   }
 
   @Override
