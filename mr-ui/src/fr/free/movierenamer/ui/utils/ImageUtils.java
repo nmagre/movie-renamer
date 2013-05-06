@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.utils;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.swing.SpinningDial;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.URIRequest;
 import java.awt.Dimension;
@@ -57,6 +58,7 @@ public final class ImageUtils {
   public static final Icon OK_24 = getIconFromJar("ui/24/ok.png");
   public static final Icon HELP_24 = getIconFromJar("ui/24/help.png");
   public static final Icon LOGS_24 = getIconFromJar("ui/24/logs.png");
+  public static final Icon LOAD_24 = new SpinningDial(24, 24);
   // 16 pixel icon
   public static final Icon CANCEL_16 = getIconFromJar("ui/16/cancel.png");
   public static final Icon FILEVIEW_16 = getIconFromJar("ui/16/fileview.png");
@@ -82,14 +84,12 @@ public final class ImageUtils {
   public static final Icon STAREMPTY_16 = getIconFromJar("ui/16/star-empty.png");
   public static final Icon STARHALF_16 = getIconFromJar("ui/16/star-half.png");
   public static final Icon STAR_16 = getIconFromJar("ui/16/star.png");
-  public static final Icon LOADER_16 = getIconFromJar("ui/16/loader.gif");
+  public static final Icon LOAD_16 = new SpinningDial(16, 16);
   // Movie Renamer logo
   public static final Icon LOGO_22 = getIconFromJar("ui/icon-22.png");
   public static final Icon LOGO_32 = getIconFromJar("ui/icon-32.png");
   public static final Icon LOGO_48 = getIconFromJar("ui/icon-48.png");
   public static final Icon LOGO_72 = getIconFromJar("ui/icon-72.png");
-  // Misc
-  public static final Icon LOADER = getIconFromJar("ui/loader.gif");
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {

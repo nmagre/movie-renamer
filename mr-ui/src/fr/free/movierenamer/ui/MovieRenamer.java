@@ -438,7 +438,7 @@ public class MovieRenamer extends JFrame {
 
     // Add loader image
     /*searchResultModel.addElement(new UILoader(searchResultList));
-    searchResultList.setCellRenderer(loaderListRenderer);*/
+     searchResultList.setCellRenderer(loaderListRenderer);*/
 
     currentMedia.setSearch(search);
 

@@ -18,7 +18,7 @@ package fr.free.movierenamer.ui.bean;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.net.URI;
 import javax.swing.Icon;
 
@@ -45,7 +45,7 @@ public class UILoader implements IIconList {
 
   @Override
   public Icon getIcon() {
-    return UIUtils.getAnimatedLoader(list, row);
+    return ImageUtils.LOAD_24;
   }
 
   @Override

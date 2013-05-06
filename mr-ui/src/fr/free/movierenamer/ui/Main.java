@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
  * @author Simon QUÉMÉNEUR
  */
 public class Main {
-
+// vm option : -Xmx256m -verbose:gc
   private static MovieRenamer mvr;
 
   public static void main(String args[]) {
@@ -96,7 +96,7 @@ public class Main {
           }
         }
       }
-    }).start();
+    })/*.start()*/;
 
     LanguageManager.setLanguage(lcode);
 

@@ -45,6 +45,7 @@ import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIMediaAudio;
 import fr.free.movierenamer.ui.bean.UIMediaSubTitle;
+import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.res.Flag;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -201,7 +202,7 @@ public class MoviePanel extends MediaPanel {
     }
 
     for (CastingInfo info : movieInfo.getCast()) {
-      actorListModel.addElement(new UICastingInfo(info));
+      actorListModel.addElement(new UIPersonImage(info));
     }
 
     origTitleField.setText(movieInfo.getOriginalTitle());
@@ -769,22 +770,27 @@ public class MoviePanel extends MediaPanel {
     return "Movie Panel";
   }
 
+  @Override
+  public DefaultListModel getCastingModel() {
+    return actorListModel;
+  }
+
   private static class UICastingInfo implements IIconList {
 
-    private CastingInfo info;
+    private UIPersonImage info;
 
-    public UICastingInfo(CastingInfo info) {
+    public UICastingInfo(UIPersonImage info) {
       this.info = info;
     }
 
     @Override
     public Icon getIcon() {
-      return null;
+      return info.getIcon();
     }
 
     @Override
     public void setIcon(Icon icon) {
-      //throw new UnsupportedOperationException("Not supported yet.");
+      info.setIcon(icon);
     }
 
     @Override
@@ -794,7 +800,7 @@ public class MoviePanel extends MediaPanel {
 
     @Override
     public URI getUri(ImageInfo.ImageSize size) {
-      return info.getPicturePath();
+      return info.getUri(size);
     }
   }
 

@@ -48,7 +48,8 @@ public class UIFile extends Sorter.ISort implements IIconList {
   public UIFile(File file, String groupName) {
     this.file = file;
     this.groupName = groupName;
-    this.icon = ImageUtils.MOVIE_16;
+    this.icon = ImageUtils.MEDIA_16;
+
     fileInfo = null;
     search = null;
   }

@@ -22,7 +22,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.text.WebTextField;
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.SearchResult;
@@ -30,7 +29,6 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.worker.impl.GetFileInfo;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
@@ -91,10 +89,10 @@ public final class WorkerManager {
     start(imagesWorker, clazz, "");
   }
 
-  public static <T extends IIconList> void fetchImages(Class<?> clazz, List<T> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
-    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, gallery, defaultImage, size);
-    start(imagesWorker, clazz, "");
-  }
+//  public static <T extends IIconList> void fetchImages(Class<?> clazz, List<T> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
+//    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, gallery, defaultImage, size);
+//    start(imagesWorker, clazz, "");
+//  }
 
 //  public static <T extends IIconList> void fetchImage(Class<?> clazz, T image, Dimension imageSize, String defaultImage, ImageInfo.ImageSize size, PropertyChangeListener propertyChange) {
 //    ImageWorker<T> imageWorker = new ImageWorker<T>(image, imageSize, defaultImage, size);
@@ -103,8 +101,8 @@ public final class WorkerManager {
 //    }
 //    start(imageWorker, clazz);
 //  }
-  public static void fetchCasting(Class<?> clazz, MovieRenamer mr, MediaInfo info, WebList castingList) {
-    SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList);
+  public static void fetchCasting(Class<?> clazz, MovieRenamer mr, MediaInfo info, WebList castingList, DefaultListModel model) {
+    SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
     start(castingWorker, clazz, "");
   }
 

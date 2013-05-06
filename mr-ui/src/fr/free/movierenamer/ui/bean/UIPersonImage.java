@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.net.URI;
 import javax.swing.Icon;
 
@@ -30,11 +31,10 @@ import javax.swing.Icon;
  */
 public class UIPersonImage implements IIconList {
   private final CastingInfo person;
-  private Icon icon;
+  private Icon icon = ImageUtils.LOAD_24;
 
-  public UIPersonImage(CastingInfo person, Icon icon) {
+  public UIPersonImage(CastingInfo person) {
     this.person = person;
-    this.icon = icon;
   }
 
   @Override

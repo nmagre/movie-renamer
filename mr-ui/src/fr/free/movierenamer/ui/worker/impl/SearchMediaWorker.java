@@ -31,7 +31,7 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
-import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -96,7 +96,7 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
           return new ArrayList<UISearchResult>();
         }
 
-        results.add(new UISearchResult(res.get(i), scrapper, UIUtils.getAnimatedLoader(searchResultList, i)));
+        results.add(new UISearchResult(res.get(i), scrapper));
       }
     }
 
@@ -148,7 +148,7 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
         if (UISettings.getInstance().isSelectFirstResult()) {
           searchResultList.setSelectedIndex(0);
         }
-        WorkerManager.fetchImages(this.getClass(), results, searchResultModel, searchListDim, "ui/unknown.png");
+        WorkerManager.fetchImages(this.getClass(), results, searchResultModel, searchListDim, "ui/nothumb.png");
       }
 
     } catch (CancellationException e) {

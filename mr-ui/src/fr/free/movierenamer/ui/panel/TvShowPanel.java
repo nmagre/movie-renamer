@@ -47,7 +47,7 @@ public class TvShowPanel extends MediaPanel {
   private static final long serialVersionUID = 1L;
   private MovieInfo tvShowInfo;
   private final Dimension thumbDim = new Dimension(160, 200);
-  private final DefaultListModel castingModel = new DefaultListModel();
+  private final DefaultListModel actorListModel = new DefaultListModel();
   private final DefaultListModel thumbnailsModel = new DefaultListModel();
   private final DefaultListModel fanartsModel = new DefaultListModel();
   private final DefaultListModel subTitleModel = new DefaultListModel();
@@ -165,6 +165,11 @@ public class TvShowPanel extends MediaPanel {
   @Override
   public WebList getCastingList() {
     return actorList;
+  }
+
+  @Override
+  public DefaultListModel getCastingModel() {
+    return actorListModel;
   }
 
   @Override

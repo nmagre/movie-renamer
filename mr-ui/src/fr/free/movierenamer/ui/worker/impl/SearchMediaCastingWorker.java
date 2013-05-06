@@ -24,7 +24,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
@@ -43,6 +43,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
   private final MediaInfo info;
   private final WebList castingList;
   private final Dimension actorListDim = new Dimension(30, 53);
+  private final DefaultListModel castingModel;
 
   /**
    * Constructor arguments
@@ -50,11 +51,13 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
    * @param mr
    * @param info
    * @param castingList
+   * @param castingModel
    */
-  public SearchMediaCastingWorker(MovieRenamer mr, MediaInfo info, WebList castingList) {
+  public SearchMediaCastingWorker(MovieRenamer mr, MediaInfo info, WebList castingList, DefaultListModel castingModel) {
     super(mr);
     this.info = info;
     this.castingList = castingList;
+    this.castingModel = castingModel;
   }
 
   @Override
@@ -71,7 +74,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
           return new ArrayList<UIPersonImage>();
         }
 
-        persons.add(new UIPersonImage(infos.get(i), UIUtils.getAnimatedLoader(castingList, i)));
+        persons.add(new UIPersonImage(infos.get(i)));
       }
     }
 
@@ -81,8 +84,7 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
   @Override
   protected void workerDone() throws Exception {
     List<UIPersonImage> infos = get();
-    final DefaultListModel castingModel = (DefaultListModel) castingList.getModel();
-
+    castingList.setModel(castingModel);
     if (infos != null) {
       castingModel.addElements(infos);
       WorkerManager.fetchImages(this.getClass(), infos, castingModel, actorListDim, "ui/unknown.png");

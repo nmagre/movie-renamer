@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.utils;
 import com.alee.extended.panel.GroupPanel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.list.WebList;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
@@ -28,11 +27,7 @@ import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.awt.Image;
-import java.awt.image.ImageObserver;
 import java.util.Comparator;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 
@@ -55,20 +50,6 @@ public final class UIUtils {
       return stringOne.getGroupName().toLowerCase().compareTo(stringTwo.getGroupName().toLowerCase());
     }
   };
-
-  public static Icon getAnimatedLoader(final WebList list, final int row) {
-    ImageIcon icon = (ImageIcon) ImageUtils.LOADER;
-    icon.setImageObserver(new ImageObserver() {
-      @Override
-      public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
-        if ((infoflags & (FRAMEBITS | ALLBITS)) != 0 && list.isShowing()) {
-          list.repaint(list.getCellBounds(row, row));
-        }
-        return (infoflags & (ALLBITS | ABORT)) == 0;
-      }
-    });
-    return icon;
-  }
 
   public static WebButton createSettingButton(PopupWay way, String tooltip, JComponent... components) {
     return createSettingButton(way, tooltip, false, components);

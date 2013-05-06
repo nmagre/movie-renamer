@@ -20,10 +20,10 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIImageLang;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.ImageWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -107,7 +107,7 @@ public class GalleryPanel extends JDialog {
       @Override
       public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("selectedImage")) {
-          previewLbl.setIcon(ImageUtils.LOADER);
+          previewLbl.setIcon(ImageUtils.LOAD_24);
           UIMediaImage image = thumbPreviewGallery.getUIMediaImage();
           if (image == null) {
             UISettings.LOGGER.log(Level.WARNING, "UIMediaImage null");
@@ -168,7 +168,7 @@ public class GalleryPanel extends JDialog {
   private void getTumbPreview(String country) {
     WorkerManager.stop(this.getClass());//Stop running images worker
     List<UIMediaImage> imageslang = getImageByLanguage(images, country);
-    WorkerManager.fetchImages(this.getClass(), imageslang, this, "ui/unknown.png", ImageSize.small);
+   // WorkerManager.fetchImages(this.getClass(), imageslang, this, "ui/unknown.png", ImageSize.small);
   }
 
   public void addImages(List<UIMediaImage> images) {

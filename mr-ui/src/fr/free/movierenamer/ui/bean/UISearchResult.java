@@ -22,6 +22,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,19 +39,17 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
 
   private final Media searchResult;
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
-  private Icon icon;
+  private Icon icon = ImageUtils.LOAD_24;
   private boolean showYear = true;
   private boolean showId = true;
 
   /**
    * @param searchResult
    * @param scrapper
-   * @param icon
    */
-  public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper, Icon icon) {
+  public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
     this.searchResult = searchResult;
     this.scrapper = scrapper;
-    this.icon = icon;
   }
 
   @Override
@@ -76,10 +75,12 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
 
   @Override
   public URI getUri(ImageInfo.ImageSize size) {
-    try {
-      return searchResult.getURL().toURI();
-    } catch (URISyntaxException ex) {
-      UISettings.LOGGER.log(Level.WARNING, null, ex);
+    if (searchResult.getURL() != null) {
+      try {
+        return searchResult.getURL().toURI();
+      } catch (URISyntaxException ex) {
+        UISettings.LOGGER.log(Level.WARNING, null, ex);
+      }
     }
     return null;
   }
@@ -120,5 +121,4 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
     }
     return toString;
   }
-
 }

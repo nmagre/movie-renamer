@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.panel;
 
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
@@ -203,6 +204,8 @@ public abstract class MediaPanel extends WebPanel {
   public abstract MediaInfo getMediaInfo();
 
   public abstract WebList getCastingList();
+
+  public abstract DefaultListModel getCastingModel();
 
   protected WebPanel getStarPanel() {
     return starPanel;
