@@ -64,8 +64,8 @@ public final class WorkerManager {
     start(getFileInfoWorker, mr.getClass(), file);
   }
 
-  public static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList, EventListModel<UIFile> model) {
-    ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList, model);
+  public static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
+    ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList);
     start(listFileWorker, mr.getClass(), files);
   }
 

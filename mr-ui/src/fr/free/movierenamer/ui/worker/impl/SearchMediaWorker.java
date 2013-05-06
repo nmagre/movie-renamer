@@ -26,12 +26,9 @@ import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
-import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -138,8 +135,6 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
           // Do nothing
       }
 
-      searchResultList.setModel(searchResultModel);
-      searchResultList.setCellRenderer(new IconListRenderer<IIconList>(false)/*UISettings.getInstance().isShowThumb() ? mr.iconListRenderer : new DefaultListCellRenderer()*/);// FIXME
       searchResultModel.addElements(results);
 
       if (searchResultModel.isEmpty()) {

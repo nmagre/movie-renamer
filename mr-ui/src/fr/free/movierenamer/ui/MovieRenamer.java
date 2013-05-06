@@ -64,6 +64,7 @@ import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.DragAndDrop;
 import fr.free.movierenamer.ui.swing.FileFilter;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
+import fr.free.movierenamer.ui.swing.ListTooltip;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.utils.UIUtils.MainUIEvent;
@@ -76,6 +77,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -125,12 +130,12 @@ public class MovieRenamer extends JFrame {
   private final DefaultComboBoxModel tvshowScrapperModel = new DefaultComboBoxModel();
   private final EventListModel<UIFile> mediaFileSeparatorModel;
   private final EventListModel<UIFile> mediaFileModel = new EventListModel<UIFile>(mediaFileEventList);
-  public static final ListCellRenderer mediaFileListRenderer = new IconListRenderer<IIconList>(false);
+  private final IconListRenderer<IIconList> mediaFileListRenderer = new IconListRenderer<IIconList>();
+  private final IconListRenderer<IIconList> searchResultListRenderer = new IconListRenderer<IIconList>();
+  //
+  private final DefaultListModel loaderModel = new DefaultListModel();
   // Separator
   private final SeparatorList<UIFile> mediaFileSeparator = new SeparatorList<UIFile>(mediaFileEventList, UIUtils.groupFileComparator, 1, 1000);
-  // Loader
-  private final IconListRenderer<IIconList> loaderListRenderer = new IconListRenderer<IIconList>(true);
-  private final DefaultListModel loaderModel = new DefaultListModel();
   // List option checkbox
   private final WebCheckBox showIconMediaListChk;
   private final WebCheckBox showIconResultListChk;
@@ -182,8 +187,6 @@ public class MovieRenamer extends JFrame {
 
     loadMediaPanel();
 
-    loaderModel.addElement(new UILoader(mediaFileList));
-
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
     setLocationRelativeTo(null);
     setTitle(UISettings.APPNAME + "-" + setting.getVersion() + " " + currentMode.getTitleMode());
@@ -233,13 +236,21 @@ public class MovieRenamer extends JFrame {
     scrapperCb.setRenderer(UIUtils.iconListRenderer);
 
     // Media file list listener
+    ListTooltip mediaFileTooltip = new ListTooltip();
+
     mediaFileList.addListSelectionListener(createMediaFileListListener());
     addDragAndDropListener(mediaFileList);//Add drag and drop listener on mediaFileList
+    mediaFileList.setModel(loaderModel);
+    mediaFileList.setCellRenderer(mediaFileListRenderer);
+    mediaFileList.addMouseListener(mediaFileTooltip);
+    mediaFileList.addMouseMotionListener(mediaFileTooltip);
 
     searchResultList.addListSelectionListener(createSearchResultList());
-
+    searchResultList.setModel(searchResultModel);
+    searchResultList.setCellRenderer(searchResultListRenderer);
     // file chooser init
     // fileChooser.setFilesToChoose(FilesToChoose.all);
+
     fileChooser.setAvailableFilter(new FileFilter());
     fileChooser.setSelectionMode(SelectionMode.MULTIPLE_SELECTION);
     FileFilter ff = new FileFilter();
@@ -289,7 +300,7 @@ public class MovieRenamer extends JFrame {
         groupFile = !groupFile;
 
         ((IconListRenderer) mediaFileList.getCellRenderer()).showGroup(groupFile);
-        mediaFileList.setModel(groupFile ? mediaFileSeparatorModel : mediaFileModel);
+        mediaFileList.setModel(getMediaFileListModel());
 
         if (index > -1 && obj != null) {
           mediaFileList.setSelectedValue(obj, false);
@@ -335,11 +346,15 @@ public class MovieRenamer extends JFrame {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         if (!lse.getValueIsAdjusting()) {
-          UIFile mediaFile = getSelectedMediaFile();
+          UIFile mediaFile = null;
+
+          try {
+            mediaFile = getSelectedMediaFile();
+          } catch (ClassCastException ex) {// Spinningdial
+            clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
+          }
 
           if (mediaFile == null) {
-            // User cancel list files
-            clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
             return;
           }
 
@@ -386,11 +401,10 @@ public class MovieRenamer extends JFrame {
   private void loadFiles(List<File> files) {
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
-    // Add loader image
-    //mediaFileList.setModel(loaderModel);
-    //mediaFileList.setCellRenderer(loaderListRenderer);
+    loaderModel.addElement(new UILoader());
+    mediaFileList.setModel(loaderModel);
 
-    WorkerManager.listFiles(this, files, mediaFileEventList, groupFile ? mediaFileSeparatorModel : mediaFileModel);
+    WorkerManager.listFiles(this, files, mediaFileEventList);
   }
 
   /*
@@ -436,10 +450,6 @@ public class MovieRenamer extends JFrame {
 
     clearInterface(!CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
-    // Add loader image
-    /*searchResultModel.addElement(new UILoader(searchResultList));
-     searchResultList.setCellRenderer(loaderListRenderer);*/
-
     currentMedia.setSearch(search);
 
     MediaScrapper<? extends Media, ? extends MediaInfo> mediaScrapper = ((UIScrapper) scrapperCb.getSelectedItem()).getScrapper();
@@ -457,6 +467,10 @@ public class MovieRenamer extends JFrame {
 
     WorkerManager.fetchInfo(this, currentMedia, searchResult);
     WorkerManager.fetchImages(this, searchResult);
+  }
+
+  public EventListModel<UIFile> getMediaFileListModel() {
+    return groupFile ? mediaFileSeparatorModel : mediaFileModel;
   }
 
   public WebList getMediaList() {
@@ -542,9 +556,8 @@ public class MovieRenamer extends JFrame {
     if (clearMediaList) {
       searchField.setText(null);
       mediaFileEventList.clear();
-      mediaFileList.removeAll();
       mediaFileSeparator.clear();
-      System.gc();
+      loaderModel.removeAllElements();
     }
 
     if (clearSearchResultList) {

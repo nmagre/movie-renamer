@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;

@@ -160,10 +160,10 @@ public class MoviePanel extends MediaPanel {
     audioList.setModel(audioListModel);
     subtitleList.setModel(subtitleListModel);
 
-    countryList.setCellRenderer(new IconListRenderer<IIconList>(false));
-    actorList.setCellRenderer(new IconListRenderer<IIconList>(false));
-    audioList.setCellRenderer(new IconListRenderer<IIconList>(false));
-    subtitleList.setCellRenderer(new IconListRenderer<IIconList>(false));
+    countryList.setCellRenderer(new IconListRenderer<IIconList>());
+    actorList.setCellRenderer(new IconListRenderer<IIconList>());
+    audioList.setCellRenderer(new IconListRenderer<IIconList>());
+    subtitleList.setCellRenderer(new IconListRenderer<IIconList>());
 
     webToolBar1.addToEnd(getStarPanel());
     webToolBar1.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, "settingHelp", false, new WebCheckBox()));

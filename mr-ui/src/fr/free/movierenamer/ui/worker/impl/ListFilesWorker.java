@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
-import ca.odell.glazedlists.swing.EventListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.FileInfo;
@@ -50,7 +49,6 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
 
   private final List<File> files;
   private final EventList<UIFile> eventList;
-  private final EventListModel<UIFile> model;
   private boolean subFolder;
   private final UISettings setting;
   private boolean paused = false;
@@ -85,13 +83,11 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
    * @param files
    * @param mr
    * @param eventList
-   * @param model
    */
-  public ListFilesWorker(MovieRenamer mr, List<File> files, EventList<UIFile> eventList, EventListModel<UIFile> model) {
+  public ListFilesWorker(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
     super(mr);
     this.files = files;
     this.eventList = eventList;
-    this.model = model;
     setting = UISettings.getInstance();
     subFolder = setting.isScanSubfolder();
   }
@@ -173,6 +169,10 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
       return;
     }
 
+    if (isCancelled()) {
+      return;
+    }
+
     for (int i = 0; i < listFiles.length; i++) {
       if (listFiles[i].isDirectory() && subFolder) {
         addFiles(medias, listFiles[i]);
@@ -182,8 +182,8 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     }
   }
 
-  private void addUIfile(List<UIFile> medias, File file) {;
-    String groupName = file.getName().substring(0, 1);
+  private void addUIfile(List<UIFile> medias, File file) {
+    String groupName = file.getName().trim().substring(0, 1);
     switch (FileInfo.getMediaType(file)) {
       case MOVIE:
         break;
@@ -201,16 +201,15 @@ public class ListFilesWorker extends AbstractWorker<List<UIFile>> {
     List<UIFile> medias = get();
 
     WebList list = mr.getMediaList();
+    list.setModel(mr.getMediaFileListModel());
 
-    list.setCellRenderer(MovieRenamer.mediaFileListRenderer);
-    list.setModel(model);
     eventList.addAll(medias);
 
     if (eventList.isEmpty()) {
       WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n
     } else if (UISettings.getInstance().isSelectFirstMedia()) {
       int index = 0;
-      if (model.getElementAt(index) instanceof SeparatorList.Separator) {
+      if (mr.getMediaFileListModel().getElementAt(index) instanceof SeparatorList.Separator) {
         index++;
       }
       list.setSelectedIndex(index);

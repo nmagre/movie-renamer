@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.swing;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
+import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
@@ -40,12 +41,12 @@ import javax.swing.JList;
 public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
 
   private static final long serialVersionUID = 1L;
-  private boolean horizontalAlign = false;
-  private boolean showGroup = true;
-  private boolean showIcon = true;
+  private boolean showGroup;
+  private boolean showIcon;
 
-  public IconListRenderer(boolean horizontalAlign) {
-    this.horizontalAlign = horizontalAlign;
+  public IconListRenderer() {
+    showGroup = true;
+    showIcon = true;
   }
 
   public void showGroup(boolean showGroup) {
@@ -59,10 +60,6 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-    if (horizontalAlign) {
-      label.setHorizontalAlignment(WebLabel.CENTER);
-    }
 
     // Media list separator
     if (value instanceof SeparatorList.Separator && showGroup) {
@@ -78,7 +75,6 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     label.setFont(label.getFont().deriveFont(Font.PLAIN));
     label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
 
-
     IIconList obj;
     try {
       obj = (IIconList) value;
@@ -92,9 +88,7 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     if (value instanceof UISearchResult) {
       UISearchResult sres = (UISearchResult) value;
       String text = label.getText();
-      if(!text.equals(sres.getOriginalTitle())) {
-        label.setText("<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>");
-      }
+      label.setText("<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>");
     }
 
     if (icon != null && showIcon) {

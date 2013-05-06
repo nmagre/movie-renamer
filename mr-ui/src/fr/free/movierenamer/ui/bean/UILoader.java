@@ -16,7 +16,6 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.net.URI;
@@ -30,22 +29,11 @@ import javax.swing.Icon;
  */
 public class UILoader implements IIconList {
 
-  private final WebList list;
-  private final int row;
-
-  public UILoader(WebList list) {
-    this.list = list;
-    this.row = 0;
-  }
-
-  public UILoader(WebList list, int row) {
-    this.list = list;
-    this.row = row;
-  }
+  private final Icon icon = ImageUtils.LOAD_24;
 
   @Override
   public Icon getIcon() {
-    return ImageUtils.LOAD_24;
+    return icon;
   }
 
   @Override
@@ -55,7 +43,7 @@ public class UILoader implements IIconList {
 
   @Override
   public String toString() {
-    return "";
+    return "Loading ...";// FIXME i18n
   }
 
   @Override

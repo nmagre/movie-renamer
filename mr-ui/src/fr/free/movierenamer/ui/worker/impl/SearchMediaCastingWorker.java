@@ -24,7 +24,6 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;

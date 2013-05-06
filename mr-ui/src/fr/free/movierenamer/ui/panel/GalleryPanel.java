@@ -76,7 +76,7 @@ public class GalleryPanel extends JDialog {
     languages = new ArrayList<UIImageLang>();
     languagesModel = new DefaultComboBoxModel();
     languageCbb.setModel(languagesModel);
-    languageCbb.setRenderer(new IconListRenderer<IIconList>(false));
+    languageCbb.setRenderer(new IconListRenderer<IIconList>());
 
     boolean useLanguage = false;
     switch (property) {

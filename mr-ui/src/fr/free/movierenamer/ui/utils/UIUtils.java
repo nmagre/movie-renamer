@@ -39,11 +39,12 @@ import javax.swing.SwingConstants;
 public final class UIUtils {
 
   public static enum MainUIEvent {
+
     SEARCH_MOVIE_SCRAPPER,
     SEARCH_TV_SHOW_SCRAPPER,
-    SHOW_FORMAT_FIELD,
+    SHOW_FORMAT_FIELD
   }
-  public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>(false);
+  public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>();
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
     @Override
     public int compare(UIFile stringOne, UIFile stringTwo) {

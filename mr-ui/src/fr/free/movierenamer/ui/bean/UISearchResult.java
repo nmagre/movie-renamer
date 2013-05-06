@@ -39,7 +39,7 @@ public class UISearchResult extends Sorter.ISort implements IIconList {
 
   private final Media searchResult;
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
-  private Icon icon = ImageUtils.LOAD_24;
+  private Icon icon = ImageUtils.LOAD_24_65;
   private boolean showYear = true;
   private boolean showId = true;
 
