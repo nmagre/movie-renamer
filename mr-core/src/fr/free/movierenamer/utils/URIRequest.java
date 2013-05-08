@@ -134,7 +134,7 @@ public final class URIRequest {
     return (JSONObject) JSONValue.parse(reader);
   }
 
-  private synchronized static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
+  private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
     boolean isHttpRequest = Proxy.Type.HTTP.name().equalsIgnoreCase(uri.getScheme());
     URLConnection connection;
     if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
@@ -175,7 +175,7 @@ public final class URIRequest {
     return getInputStream(openConnection(uri, properties));
   }
 
-  private static InputStream getInputStream(URLConnection connection) throws IOException {
+  private synchronized static InputStream getInputStream(URLConnection connection) throws IOException {
     String encoding = connection.getContentEncoding();
     InputStream inputStream;
     try {
