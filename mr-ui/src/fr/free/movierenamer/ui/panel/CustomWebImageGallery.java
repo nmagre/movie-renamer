@@ -225,7 +225,7 @@ public class CustomWebImageGallery extends JComponent {
     propertyChange.firePropertyChange("selectedImage", oldSelectedIndex, selectedIndex);
 
     repaint();
-    
+
     if (scrollOnSelection) {
       Rectangle rect = getImageRect(selectedIndex);
       SwingUtils.scrollSmoothly(getView(), rect.x + rect.width / 2 - CustomWebImageGallery.this.getVisibleRect().width / 2, rect.y);
@@ -315,6 +315,7 @@ public class CustomWebImageGallery extends JComponent {
 
   public void removeAllImages() {
     images.clear();
+    selectedIndex = -1;
 
     recalcualteMaxSizes();
     updateContainer();

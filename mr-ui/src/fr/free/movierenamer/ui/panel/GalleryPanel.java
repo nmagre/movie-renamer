@@ -193,7 +193,9 @@ public class GalleryPanel extends JDialog {
           }
 
           if (ImageUtils.isInCache(image.getUri(ImageSize.medium))) {
-            previewLbl.setIcon(ImageUtils.getIcon(image.getUri(ImageSize.medium), null, null));
+            Icon icon = ImageUtils.getIcon(image.getUri(ImageSize.medium), null, null);
+            previewLbl.setIcon(icon);
+            GalleryPanel.this.propertyChange.firePropertyChange("updateThumb", null, icon);
             return;
           }
 
