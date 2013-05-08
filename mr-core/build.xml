@@ -24,7 +24,7 @@
     <mkdir dir="${javadoc-core}" />
   </target>
 
-  <target name="init-core">
+  <target name="init-core" depends="clean-core">
     <mkdir dir="${lib-core}" />
     <mkdir dir="${build-core}" />
   </target>
