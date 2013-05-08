@@ -17,20 +17,24 @@
 package fr.free.movierenamer.ui.worker;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.text.WebTextField;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.bean.UIFile;
+import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
+import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.worker.impl.GetFileInfo;
+import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
+import fr.free.movierenamer.ui.worker.impl.GetFileInfoWorker;
+import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
@@ -44,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.logging.Level;
-import javax.swing.SwingWorker;
 
 /**
  * Class WorkerManager
@@ -60,7 +63,7 @@ public final class WorkerManager {
   }
 
   public static void getFileInfo(MovieRenamer mr, UIFile file) {
-    GetFileInfo getFileInfoWorker = new GetFileInfo(mr, file);
+    GetFileInfoWorker getFileInfoWorker = new GetFileInfoWorker(mr, file);
     start(getFileInfoWorker, mr.getClass(), file);
   }
 
@@ -84,30 +87,29 @@ public final class WorkerManager {
     start(imagesWorker, mr.getClass(), searchResult);
   }
 
-  public static <T extends IIconList> void fetchImages(Class<?> clazz, List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
+  public static <T extends IImage> void fetchImages(Class<?> clazz, List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, imageSize, defaultImage);
     start(imagesWorker, clazz, "");
   }
 
-//  public static <T extends IIconList> void fetchImages(Class<?> clazz, List<T> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
-//    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, gallery, defaultImage, size);
-//    start(imagesWorker, clazz, "");
-//  }
+  public static <T extends IImage> void fetchImages(Class<?> clazz, List<T> images, DefaultListModel model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, size, imageSize, defaultImage);
+    start(imagesWorker, clazz, "");
+  }
 
-//  public static <T extends IIconList> void fetchImage(Class<?> clazz, T image, Dimension imageSize, String defaultImage, ImageInfo.ImageSize size, PropertyChangeListener propertyChange) {
-//    ImageWorker<T> imageWorker = new ImageWorker<T>(image, imageSize, defaultImage, size);
-//    if(propertyChange != null) {
-//      imageWorker.addPropertyChangeListener(propertyChange);
-//    }
-//    start(imageWorker, clazz);
-//  }
+  public static AbstractImageWorker<UIMediaImage> fetchImages(Class<?> clazz, List<UIMediaImage> images, GalleryPanel gallery, String defaultImage, Dimension imageSize, ImageInfo.ImageSize size) {
+    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, imageSize, defaultImage); // FIXME dimension
+    start(GalleryWorker, clazz, "");
+    return GalleryWorker;
+  }
+
   public static void fetchCasting(Class<?> clazz, MovieRenamer mr, MediaInfo info, WebList castingList, DefaultListModel model) {
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
     start(castingWorker, clazz, "");
   }
 
-  private static void start(SwingWorker<?, ?> worker, Class<?> clazz, Object obj) {
-    UISettings.LOGGER.log(Level.INFO, worker.getClass().getSimpleName() + " " + obj.toString());
+  private static void start(AbstractWorker<?, ?> worker, Class<?> clazz, Object obj) {
+    UISettings.LOGGER.log(Level.INFO, String.format("%s %s", worker.getName(), obj.toString()));
     worker.execute();
     workerQueue.add(new Worker(worker, clazz));
   }
@@ -116,7 +118,7 @@ public final class WorkerManager {
     synchronized (workerQueue) {
       Worker worker = workerQueue.poll();
       while (worker != null) {
-        SwingWorker<?, ?> sworker = worker.getWorker();
+        AbstractWorker<?, ?> sworker = worker.getWorker();
         if (!sworker.isDone()) {
           UISettings.LOGGER.log(Level.INFO, sworker.getClass().getSimpleName());
           sworker.cancel(true);
@@ -133,9 +135,9 @@ public final class WorkerManager {
       while (iterator.hasNext()) {
         Worker worker = iterator.next();
         if (worker.getClazz().equals(clazz)) {
-          SwingWorker<?, ?> sworker = worker.getWorker();
+          AbstractWorker<?, ?> sworker = worker.getWorker();
           if (!sworker.isDone()) {
-            UISettings.LOGGER.log(Level.INFO, sworker.getClass().getSimpleName());
+            UISettings.LOGGER.log(Level.INFO, sworker.getName());
             sworker.cancel(true);
           }
           workers.add(worker);
@@ -145,17 +147,34 @@ public final class WorkerManager {
     }
   }
 
+  public static void stop(AbstractImageWorker<?> worker) {
+    synchronized (workerQueue) {
+      Iterator<Worker> iterator = workerQueue.iterator();
+      while (iterator.hasNext()) {
+        Worker qworker = iterator.next();
+        AbstractWorker<?, ?> sworker = qworker.getWorker();
+        if (sworker == worker) {
+          if (!worker.isDone()) {
+            UISettings.LOGGER.log(Level.INFO, worker.getName());
+            worker.cancel(true);
+          }
+        }
+        workerQueue.remove(qworker);
+      }
+    }
+  }
+
   private static class Worker {
 
-    private SwingWorker<?, ?> worker;
+    private AbstractWorker<?, ?> worker;
     private Class<?> clazz;
 
-    public Worker(SwingWorker<?, ?> worker, Class<?> clazz) {
+    public Worker(AbstractWorker<?, ?> worker, Class<?> clazz) {
       this.worker = worker;
       this.clazz = clazz;
     }
 
-    public SwingWorker<?, ?> getWorker() {
+    public AbstractWorker<?, ?> getWorker() {
       return worker;
     }
 

@@ -42,6 +42,7 @@ import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIMediaAudio;
 import fr.free.movierenamer.ui.bean.UIMediaSubTitle;
@@ -775,7 +776,7 @@ public class MoviePanel extends MediaPanel {
     return actorListModel;
   }
 
-  private static class UICastingInfo implements IIconList {
+  private static class UICastingInfo implements IImage {
 
     private UIPersonImage info;
 
@@ -804,7 +805,7 @@ public class MoviePanel extends MediaPanel {
     }
   }
 
-  public class UICountry implements IIconList {
+  public class UICountry implements IImage {
 
     private Locale country;
     private Icon icon;

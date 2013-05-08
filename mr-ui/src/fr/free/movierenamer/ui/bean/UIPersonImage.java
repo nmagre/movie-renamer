@@ -29,7 +29,7 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIPersonImage implements IIconList {
+public class UIPersonImage implements IImage {
   private final CastingInfo person;
   private Icon icon = ImageUtils.LOAD_24;
 

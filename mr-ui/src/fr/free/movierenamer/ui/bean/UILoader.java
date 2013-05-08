@@ -16,9 +16,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.net.URI;
 import javax.swing.Icon;
 
 /**
@@ -37,17 +35,7 @@ public class UILoader implements IIconList {
   }
 
   @Override
-  public void setIcon(Icon icon) {
-    // DO nothing
-  }
-
-  @Override
   public String toString() {
     return "Loading ...";// FIXME i18n
-  }
-
-  @Override
-  public URI getUri(ImageInfo.ImageSize size) {
-    return null;
   }
 }

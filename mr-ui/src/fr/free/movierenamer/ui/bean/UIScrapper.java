@@ -53,7 +53,7 @@ public class UIScrapper implements IIconList {
       return false;
     }
     UIScrapper other = (UIScrapper) obj;
-    return scrapper.getName().equals(other.scrapper.getName());
+    return scrapper.getName().equals(other.getScrapper().getName());
   }
 
   @Override
@@ -66,16 +66,6 @@ public class UIScrapper implements IIconList {
   @Override
   public String toString() {
     return scrapper.getName();
-  }
-
-  @Override
-  public void setIcon(Icon icon) {
-    // DO nothing
-  }
-
-  @Override
-  public URI getUri(ImageInfo.ImageSize size) {
-    return null;
   }
 
 }

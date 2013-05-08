@@ -1,6 +1,6 @@
 /*
  * movie-renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,57 +17,40 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.laf.optionpane.WebOptionPane;
-import fr.free.movierenamer.exception.InvalidUrlException;
-import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 /**
  * Class Worker
  *
  * @param <T>
+ * @param <V>
  * @author Magré Nicolas
  * @author QUÉMÉNEUR Simon
  */
-public abstract class AbstractWorker<T> extends SwingWorker<T, String> implements PropertyChangeListener {
+public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener {
 
-  protected final MovieRenamer mr;
-
-  public AbstractWorker(MovieRenamer mr) {
-    this.mr = mr;
+  protected AbstractWorker() {
     addPropertyChangeListener(this);
   }
 
   @Override
-  protected final T doInBackground() {
+  protected T doInBackground() {
     T result = null;
     try {
       result = executeInBackground();
-    } catch (InvalidUrlException e) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("InvalidUrlException", e.getStackTrace()));
-      publish(String.format("InvalidUrlException %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toString(), ex.getStackTrace()));
-      publish(String.format("worker %s failed", AbstractWorker.this.getClass().getSimpleName())); // FIXME i18n
     }
     return result;
   }
 
   protected abstract T executeInBackground() throws Exception;
-
-  @Override
-  protected void process(List<String> v) {
-    WebOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
-  }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
@@ -88,7 +71,7 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> implement
           workerDone();
         } catch (CancellationException e) {
           // Worker canceled
-          UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", e.getClass().getSimpleName()));
+          UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getName()));
         } catch (Exception ex) {
           UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getClass().getSimpleName(), ex.getStackTrace()));
         }
@@ -97,6 +80,8 @@ public abstract class AbstractWorker<T> extends SwingWorker<T, String> implement
         break;
     }
   }
+
+  protected abstract String getName();
 
   protected void workerStarted() {
     // DO nothing

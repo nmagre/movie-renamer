@@ -16,57 +16,45 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.bean.IImage;
+import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
 import java.awt.Dimension;
 import java.util.List;
 import javax.swing.Icon;
 
 /**
- * Class ImageWorker
+ * Class GalleryWorker
  *
- * @param <T>
  * @author Nicolas Magré
  */
-public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
+public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
 
-  private final DefaultListModel model;
+  private final GalleryPanel panel;
 
-  public ImageWorker(List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
-    this(images, model, ImageInfo.ImageSize.small, imageSize, defaultImage);
+  public GalleryWorker(List<UIMediaImage> images, GalleryPanel panel, Dimension imageSize, String defaultImage) {
+    this(images, panel, ImageInfo.ImageSize.small, imageSize, defaultImage);
   }
 
-  public ImageWorker(List<T> images, DefaultListModel model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
+  public GalleryWorker(List<UIMediaImage> images, GalleryPanel panel, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
     super(images, imageSize, size, defaultImage);
-    this.model = model;
+    this.panel = panel;
   }
 
   @Override
-  public final void process(List<AbstractImageWorker<T>.ImageChunk> chunks) {
-    if(model == null) {
-      return;
-    }
-    
-    for (AbstractImageWorker<T>.ImageChunk chunk : chunks) {
+  public final void process(List<AbstractImageWorker<UIMediaImage>.ImageChunk> chunks) {
+    for (AbstractImageWorker<UIMediaImage>.ImageChunk chunk : chunks) {
 
       Icon icon = chunk.getIcon();
       int index = chunk.getIndex();
-      if (index >= model.size()) {
-        continue;
-      }
 
-      @SuppressWarnings("unchecked")
-      T obj = (T) model.get(index);
-
-      obj.setIcon(icon);
-      model.setElementAt(obj, index);
+      panel.addThumbPreview(icon, index);
     }
   }
 
   @Override
   protected String getName() {
-    return "Image";
+    return "Gallery";
   }
 }

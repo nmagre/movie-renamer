@@ -22,6 +22,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.res.Flag;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,17 +36,16 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIMediaImage extends Sorter.ISort implements IIconList {
+public class UIMediaImage extends Sorter.ISort implements IImage {
 
   private final ImageInfo info;
-  private Icon icon;
+  private Icon icon = ImageUtils.LOAD_24;
   private UIImageLang imglang;
   private final ImageCategoryProperty type;
 
-  public UIMediaImage(ImageInfo info, Icon icon) {
+  public UIMediaImage(ImageInfo info) {
     this.info = info;
     this.type = info.getCategory();
-    this.icon = icon;
     imglang = Flag.getFlag(info.getLanguage());
   }
 

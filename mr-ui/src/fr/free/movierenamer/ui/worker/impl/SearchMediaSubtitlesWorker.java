@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
-import fr.free.movierenamer.ui.worker.AbstractWorker;
+import fr.free.movierenamer.ui.worker.Worker;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {// TODO
+public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
 
   private final UIFile media;
   private final SubtitleScrapper scrapper;
@@ -71,6 +71,11 @@ public class SearchMediaSubtitlesWorker extends AbstractWorker<List<Subtitle>> {
 
   @Override
   protected void workerDone() throws Exception {
-    throw new UnsupportedOperationException("Not supported yet.");
+    // TODO
+  }
+
+  @Override
+  protected String getName() {
+    return "Search Media Subtitles";
   }
 }

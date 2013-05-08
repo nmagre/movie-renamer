@@ -23,6 +23,7 @@ import com.alee.utils.LafUtils;
 import com.alee.utils.SwingUtils;
 import com.alee.utils.swing.Timer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.swing.SpinningDial;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -62,16 +63,14 @@ import javax.swing.SwingUtilities;
  *
  *
  */
-@SuppressWarnings("serial")
 public class CustomWebImageGallery extends JComponent {
 
+  private static final long serialVersionUID = 1L;
   private int spacing = 20;
-  private int imageLength = 200;
   private int borderWidth = 3;
   private int maxWidth = 0;
   private int maxHeight = 0;
-  private List<ImageIcon> images = new ArrayList<ImageIcon>();
-  private List<UIMediaImage> descriptions = new ArrayList<UIMediaImage>();
+  private List<UIMediaImage> images = new ArrayList<UIMediaImage>();
   private int preferredColumnCount = 4;
   private boolean scrollOnSelection = true;
   private int selectedIndex = -1;
@@ -81,10 +80,12 @@ public class CustomWebImageGallery extends JComponent {
   private WebScrollPane view;
   private PropertyChangeSupport propertyChange;
   private boolean showFlag;
+  private final Dimension imgDim;
 
-  public CustomWebImageGallery(boolean showFlag) {
+  public CustomWebImageGallery(boolean showFlag, Dimension imgDim) {
     super();
     this.showFlag = showFlag;
+    this.imgDim = imgDim;
     propertyChange = new PropertyChangeSupport(selectedIndex);
 
     SwingUtils.setOrientation(this);
@@ -152,7 +153,7 @@ public class CustomWebImageGallery extends JComponent {
     return propertyChange;
   }
 
-  public List<ImageIcon> getImages() {
+  public List<UIMediaImage> getImages() {
     return Collections.unmodifiableList(images);
   }
 
@@ -194,20 +195,19 @@ public class CustomWebImageGallery extends JComponent {
     return view;
   }
 
-  public int getImageLength() {
-    return imageLength;
-  }
-
-  public void setImageLength(int imageLength) {
-    this.imageLength = imageLength;
-  }
-
   public boolean isScrollOnSelection() {
     return scrollOnSelection;
   }
 
   public void setScrollOnSelection(boolean scrollOnSelection) {
     this.scrollOnSelection = scrollOnSelection;
+  }
+
+  public UIMediaImage getSelectedImage() {
+    if (selectedIndex != -1 && selectedIndex < images.size()) {
+      return images.get(selectedIndex);
+    }
+    return null;
   }
 
   public int getSelectedIndex() {
@@ -225,6 +225,7 @@ public class CustomWebImageGallery extends JComponent {
     propertyChange.firePropertyChange("selectedImage", oldSelectedIndex, selectedIndex);
 
     repaint();
+    
     if (scrollOnSelection) {
       Rectangle rect = getImageRect(selectedIndex);
       SwingUtils.scrollSmoothly(getView(), rect.x + rect.width / 2 - CustomWebImageGallery.this.getVisibleRect().width / 2, rect.y);
@@ -255,8 +256,8 @@ public class CustomWebImageGallery extends JComponent {
   }
 
   public Rectangle getImageRect(int index) {
-    int iconWidth = images.get(index).getIconWidth();
-    int iconHeight = images.get(index).getIconHeight();
+    int iconWidth = imgDim.width;
+    int iconHeight = imgDim.height;
     Dimension ps = getPreferredSize();
     int x = (getWidth() > ps.width ? (getWidth() - ps.width) / 2 : 0) + spacing
             + (maxWidth + spacing) * index + maxWidth / 2;
@@ -264,21 +265,12 @@ public class CustomWebImageGallery extends JComponent {
     return new Rectangle(x - iconWidth / 2, y - iconHeight / 2, iconWidth, iconHeight);
   }
 
-  public void addImage(UIMediaImage image) {
-    addImage(images.size(), image);
-  }
-
-  public void addImage(int index, UIMediaImage image) {
-    try {
-      ImageIcon previewIcon = ImageUtils.createPreviewIcon((ImageIcon) image.getIcon(), imageLength);
-
-      images.add(index, previewIcon);
-      descriptions.add(index, image);
-    } catch (Throwable e) {
-      // Out of memory
+  public void addImages(List<UIMediaImage> uiimages) {
+    for (UIMediaImage image : uiimages) {
+      images.add(images.size(), image);
     }
 
-    if (selectedIndex == -1) {
+    if (images.size() > 0) {
       setSelectedIndex(0);
     }
 
@@ -286,7 +278,21 @@ public class CustomWebImageGallery extends JComponent {
     updateContainer();
   }
 
-  public void removeImage(ImageIcon image) {
+  public void setImage(Icon icon, int index) {
+    try {
+      UIMediaImage uiimg = images.get(index);
+      uiimg.setIcon(icon);
+      images.set(index, uiimg);
+    } catch (Throwable e) {
+      // Out of memory
+      return;
+    }
+
+    recalcualteMaxSizes();
+    updateContainer();
+  }
+
+  public void removeImage(UIMediaImage image) {
     if (images.contains(image)) {
       removeImage(images.indexOf(image));
     }
@@ -297,7 +303,6 @@ public class CustomWebImageGallery extends JComponent {
       boolean wasSelected = getSelectedIndex() == index;
 
       images.remove(index);
-      descriptions.remove(index);
 
       recalcualteMaxSizes();
       updateContainer();
@@ -310,18 +315,9 @@ public class CustomWebImageGallery extends JComponent {
 
   public void removeAllImages() {
     images.clear();
-    descriptions.clear();
 
     recalcualteMaxSizes();
     updateContainer();
-  }
-
-  public UIMediaImage getUIMediaImage() {
-    if (selectedIndex >= 0 && descriptions.size() > selectedIndex) {
-      return descriptions.get(selectedIndex);
-    }
-
-    return null;
   }
 
   private void updateContainer() {
@@ -332,9 +328,9 @@ public class CustomWebImageGallery extends JComponent {
   }
 
   private void recalcualteMaxSizes() {
-    for (ImageIcon icon : images) {
-      maxWidth = Math.max(maxWidth, icon.getIconWidth());
-      maxHeight = Math.max(maxHeight, icon.getIconHeight());
+    for (UIMediaImage icon : images) {
+      maxWidth = Math.max(maxWidth, imgDim.width);
+      maxHeight = Math.max(maxHeight, imgDim.height);
     }
   }
 
@@ -355,10 +351,8 @@ public class CustomWebImageGallery extends JComponent {
         continue;
       }
 
-      ImageIcon icon = images.get(i);
-      BufferedImage bi = ImageUtils.getBufferedImage(icon);
-      int imageWidth = icon.getIconWidth();
-      int imageHeight = icon.getIconHeight();
+      int imageWidth = imgDim.width;
+      int imageHeight = imgDim.height;
 
       int x = (getWidth() > ps.width ? (getWidth() - ps.width) / 2 : 0) + spacing
               + (maxWidth + spacing) * i + maxWidth / 2;
@@ -366,17 +360,24 @@ public class CustomWebImageGallery extends JComponent {
       int y2 = height * (4 / 5) + spacing / 2 + imageHeight / 2;
 
       // Initial image
-      UIMediaImage uiImage = descriptions.get(i);
+      UIMediaImage uiImage = images.get(i);
       Icon flag = uiImage.getImagelang().getIcon();
 
       float add = selectedIndex == i ? progress * 0.4f : (oldSelectedIndex == i ? 0.4f - progress * 0.4f : 0);
       g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f + add));
 
-      if(showFlag) { // Flag
+      if (showFlag) { // Flag
         g2d.drawImage(ImageUtils.getBufferedImage(flag), x - flag.getIconWidth() / 2, y, null);
       }
 
-      g2d.drawImage(bi, x - imageWidth / 2, y + spacing / 2 + borderWidth * 2 + flag.getIconHeight(), null);// Image
+      Icon icon = images.get(i).getIcon();
+
+      if (icon instanceof SpinningDial) {
+        icon.paintIcon(this, g2d, x - 32 / 2, y + spacing / 2 + borderWidth * 2 + flag.getIconHeight());
+      } else {
+        BufferedImage bi = ImageUtils.getBufferedImage((ImageIcon) icon);
+        g2d.drawImage(bi, x - imageWidth / 2, y + spacing / 2 + borderWidth * 2 + flag.getIconHeight(), null);// Image
+      }
 
       g2d.setPaint(selectedIndex == i ? Color.BLACK : Color.GRAY);
       Area gp = new Area(new RoundRectangle2D.Double(x - imageWidth / 2 - borderWidth, y + flag.getIconHeight() + borderWidth + spacing / 2,

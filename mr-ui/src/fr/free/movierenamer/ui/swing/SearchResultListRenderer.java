@@ -22,8 +22,9 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import javax.swing.JList;
 
 /**
+ * Class SearchResultListRenderer
  *
- * @author duffy
+ * @author Nicolas Magré
  */
 public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
 
@@ -42,12 +43,12 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
     }
 
     @Override
-    public boolean getValue() {
+    public boolean isEnabled() {
       return value;
     }
 
     @Override
-    public void setValue(boolean value) {
+    public void setEnabled(boolean value) {
       this.value = value;
     }
   }
@@ -55,14 +56,12 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
   @Override
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
 
-    if (value instanceof UISearchResult) {
-      UISearchResult sres = (UISearchResult) value;
-      String text = sres.print(Property.showId.getValue(), Property.showYear.getValue());
-      if (Property.showOrigTitle.getValue()) {
-        text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
-      }
-      label.setText(text);
+    UISearchResult sres = (UISearchResult) value;
+    String text = sres.print(Property.showId.isEnabled(), Property.showYear.isEnabled());
+    if (Property.showOrigTitle.isEnabled()) {
+      text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
     }
+    label.setText(text);
 
     return label;
   }

@@ -10,8 +10,6 @@
     </subant>
   </target>
 
-  <available file="${jarfile-core}/" property="isFileAvail" />
-
   <target name="core" depends="jar-core">
     <echo>Build core done</echo>
   </target>

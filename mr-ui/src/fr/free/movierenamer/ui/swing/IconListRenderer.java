@@ -41,8 +41,8 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   private boolean showIcon;
 
   public interface IProperty {
-    public boolean getValue();
-    public void setValue(boolean value);
+    public boolean isEnabled();
+    public void setEnabled(boolean value);
   }
 
   public IconListRenderer() {

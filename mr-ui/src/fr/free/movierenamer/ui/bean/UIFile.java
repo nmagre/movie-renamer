@@ -117,11 +117,6 @@ public class UIFile extends Sorter.ISort implements IIconList {
   }
 
   @Override
-  public void setIcon(Icon icon) {
-    this.icon = icon;
-  }
-
-  @Override
   public String getName() {
     return toString();
   }
@@ -136,10 +131,5 @@ public class UIFile extends Sorter.ISort implements IIconList {
    */
   public String getGroupName() {
     return groupName;
-  }
-
-  @Override
-  public URI getUri(ImageSize size) {
-    return file.toURI();
   }
 }

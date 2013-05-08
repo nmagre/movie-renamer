@@ -16,10 +16,8 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.ui.res.Flag;
-import java.net.URI;
 import javax.swing.Icon;
 
 /**
@@ -45,18 +43,8 @@ public class UIMediaAudio implements IIconList {
   }
 
   @Override
-  public void setIcon(Icon icon) {
-    //image.setIcon(icon);
-  }
-
-  @Override
   public String toString() {
     return (maudio != null && maudio.getTitle().length() > 0) ? maudio.getTitle() : maudio.getLanguage().getLanguage();// FIXME maudio == null ?
-  }
-
-  @Override
-  public URI getUri(ImageInfo.ImageSize size) {
-    return null;
   }
 
 }

@@ -35,7 +35,7 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UISearchResult extends Sorter.ISort implements IIconList {
+public class UISearchResult extends Sorter.ISort implements IImage {
 
   private final Media searchResult;
   private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;

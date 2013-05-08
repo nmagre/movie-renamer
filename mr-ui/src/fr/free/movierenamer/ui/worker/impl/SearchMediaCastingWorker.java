@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.worker.AbstractWorker;
+import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.logging.Level;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>> {
+public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
 
   private final MediaInfo info;
   private final WebList castingList;
@@ -88,5 +88,10 @@ public class SearchMediaCastingWorker extends AbstractWorker<List<UIPersonImage>
       castingModel.addElements(infos);
       WorkerManager.fetchImages(this.getClass(), infos, castingModel, actorListDim, "ui/unknown.png");
     }
+  }
+
+  @Override
+  protected String getName() {
+    return "Search Media Casting";
   }
 }

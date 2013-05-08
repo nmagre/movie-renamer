@@ -287,7 +287,7 @@ public class MovieRenamer extends JFrame {
       @Override
       public void actionPerformed(ActionEvent ae) {
         if (property != null) {
-          property.setValue(checkbox.isSelected());
+          property.setEnabled(checkbox.isSelected());
         } else {
           ((IconListRenderer) list.getCellRenderer()).showIcon(checkbox.isSelected());
         }
@@ -317,7 +317,7 @@ public class MovieRenamer extends JFrame {
         Object obj = mediaFileList.getSelectedValue();
         groupFile = !groupFile;
 
-        MediaListRenderer.Property.showGroup.setValue(groupFile);
+        MediaListRenderer.Property.showGroup.setEnabled(groupFile);
         mediaFileList.setModel(getMediaFileListModel());
 
         if (index > -1 && obj != null) {

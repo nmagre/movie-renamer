@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import javax.swing.ImageIcon;
  */
 public enum UIMode {
 
-  MOVIEMODE(LocaleUtils.i18nExt("movie"), LocaleUtils.i18nExt("movieMode"), FileInfo.MediaType.MOVIE, "ui/24/movie.png"),
+  MOVIEMODE(LocaleUtils.i18nExt("movie"), LocaleUtils.i18nExt("movieMode"), FileInfo.MediaType.MOVIE, "ui/24/movie.png"),// FIXME i18n
   TVSHOWMODE(LocaleUtils.i18nExt("tvshow"), LocaleUtils.i18nExt("tvshowMode"), FileInfo.MediaType.TVSHOW, "ui/24/tv.png");
 
   private FileInfo.MediaType mediaType;

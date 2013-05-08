@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.worker.AbstractWorker;
+import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -46,7 +46,7 @@ import javax.swing.JOptionPane;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
+public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
   private final UIFile media;
   private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
@@ -138,7 +138,7 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
       searchResultModel.addElements(results);
 
       if (searchResultModel.isEmpty()) {
-        JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog
+        JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog + i18n
       } else {
         if (UISettings.getInstance().isSelectFirstResult()) {
           searchResultList.setSelectedIndex(0);
@@ -146,12 +146,17 @@ public class SearchMediaWorker extends AbstractWorker<List<UISearchResult>> {
         WorkerManager.fetchImages(this.getClass(), results, searchResultModel, searchListDim, "ui/nothumb.png");
       }
 
-    } catch (CancellationException e) {
+    } catch (CancellationException e) {// ???? Really useful ?
       // Worker canceled
-      UISettings.LOGGER.log(Level.INFO, "SearchMediaWorker Cancelled");
+      UISettings.LOGGER.log(Level.INFO, String.format("%s Cancelled", getName()));
     } finally {
       searchBtn.setEnabled(true);
       searchField.setEnabled(true);
     }
+  }
+
+  @Override
+  protected String getName() {
+    return "Search Media";
   }
 }

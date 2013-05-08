@@ -25,6 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JList;
 
 /**
+ * Class MediaListRenderer
  *
  * @author Nicolas Magré
  */
@@ -43,12 +44,12 @@ public class MediaListRenderer extends IconListRenderer<UIFile> {
     }
 
     @Override
-    public boolean getValue() {
+    public boolean isEnabled() {
       return value;
     }
 
     @Override
-    public void setValue(boolean value) {
+    public void setEnabled(boolean value) {
       this.value = value;
     }
   }
@@ -56,11 +57,11 @@ public class MediaListRenderer extends IconListRenderer<UIFile> {
   @Override
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
     // Media list separator
-    if (value instanceof SeparatorList.Separator && Property.showGroup.getValue()) {
+    if (value instanceof SeparatorList.Separator && Property.showGroup.isEnabled()) {
       SeparatorList.Separator separator = (SeparatorList.Separator) value;
       UIFile file = (UIFile) separator.getGroup().get(0);
       label.setText(file.getGroupName());
-      
+
       label.setFont(label.getFont().deriveFont(Font.BOLD));
       label.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
       return label;

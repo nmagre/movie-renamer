@@ -16,34 +16,17 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.mediainfo.MediaSubTitle;
-import fr.free.movierenamer.ui.res.Flag;
+import fr.free.movierenamer.info.ImageInfo;
+import java.net.URI;
 import javax.swing.Icon;
 
 /**
- * Class UIMediaSubTitle
- * @author Nicolas Magré
+ *
+ * @author duffy
  */
-public class UIMediaSubTitle implements IIconList {
+public interface IImage extends IIconList {
 
-  private MediaSubTitle msubtitle;
-  private UIImageLang image;
+  public void setIcon(Icon icon);
 
-  public UIMediaSubTitle(MediaSubTitle msubtitle) {
-    this.msubtitle = msubtitle;
-  }
-
-  @Override
-  public Icon getIcon() {
-    if(image == null) {
-      image = Flag.getFlag(msubtitle.getLanguage().getLanguage());
-    }
-    return image.getIcon();
-  }
-
-  @Override
-  public String toString() {
-    return msubtitle.getTitle();
-  }
-
+  public URI getUri(ImageInfo.ImageSize size);
 }

@@ -26,7 +26,7 @@ import javax.swing.Icon;
  * Class UIImageLang
  * @author Nicolas Magré
  */
-public class UIImageLang implements IIconList {
+public class UIImageLang implements IImage {
 
   private Icon icon;
   private final Locale lang;

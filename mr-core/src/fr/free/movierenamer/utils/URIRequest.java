@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
@@ -50,6 +49,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import fr.free.movierenamer.settings.Settings;
+import java.net.InetSocketAddress;
 
 /**
  * Class URIRequest
@@ -150,7 +150,7 @@ public final class URIRequest {
       Settings settings = Settings.getInstance();
       connection.setReadTimeout(settings.getHttpRequestTimeOut() * 1000); // in ms
       //fake user agent ;)
-      connection.addRequestProperty("User-Agent", "Dalvik/1.6.0 (Linux; U; Android 4.2.2; Nexus 4 Build/JDQ39E)");
+      connection.addRequestProperty("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
       connection.addRequestProperty("From", "googlebot(at)googlebot.com");
       connection.addRequestProperty("Accept", "*/*");
       String customUserAgent = settings.getHttpCustomUserAgent();

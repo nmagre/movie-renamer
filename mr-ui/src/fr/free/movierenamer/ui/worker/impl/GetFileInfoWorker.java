@@ -20,17 +20,17 @@ import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
-import fr.free.movierenamer.ui.worker.AbstractWorker;
+import fr.free.movierenamer.ui.worker.Worker;
 
 /**
- *
- * @author duffy
+ * Class GetFileInfoWorker
+ * @author Nicolas Magré
  */
-public class GetFileInfo extends AbstractWorker<FileInfo> {
+public class GetFileInfoWorker extends Worker<FileInfo> {
 
   private final UIFile file;
 
-  public GetFileInfo(MovieRenamer mr, UIFile file) {
+  public GetFileInfoWorker(MovieRenamer mr, UIFile file) {
     super(mr);
     this.file = file;
   }
@@ -47,4 +47,9 @@ public class GetFileInfo extends AbstractWorker<FileInfo> {
     file.setFileInfo(fileInfo);
   }
 
+
+  @Override
+  protected String getName() {
+    return "Get File Info";
+  }
 }

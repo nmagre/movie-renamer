@@ -23,18 +23,13 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="galleryPnl" alignment="0" min="-2" max="-2" attributes="0"/>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="webButton1" min="-2" pref="114" max="-2" attributes="0"/>
-          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <Component id="galleryPnl" alignment="0" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="webButton1" min="-2" max="-2" attributes="0"/>
+              <Component id="galleryPnl" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -49,7 +44,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="previewPnl" alignment="0" max="32767" attributes="0"/>
-                      <Component id="thumbPreviewPnl" alignment="0" max="32767" attributes="0"/>
+                      <Component id="thumbGalleryPnl" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -61,14 +56,14 @@
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="previewPnl" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="thumbPreviewPnl" pref="180" max="32767" attributes="0"/>
+                  <Component id="thumbGalleryPnl" pref="180" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Container class="com.alee.laf.panel.WebPanel" name="thumbPreviewPnl">
+        <Container class="com.alee.laf.panel.WebPanel" name="thumbGalleryPnl">
           <Properties>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
@@ -110,21 +105,10 @@
                   <StringArray count="0"/>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="languageCbbActionPerformed"/>
-              </Events>
             </Component>
           </SubComponents>
         </Container>
       </SubComponents>
     </Container>
-    <Component class="com.alee.laf.button.WebButton" name="webButton1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="ok"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="webButton1ActionPerformed"/>
-      </Events>
-    </Component>
   </SubComponents>
 </Form>

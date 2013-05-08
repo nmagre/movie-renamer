@@ -41,6 +41,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
@@ -82,8 +83,8 @@ public abstract class MediaPanel extends WebPanel {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
           if (evt.getPropertyName().equals("updateThumb")) {
-            if (galleryPanel.getSelectedImage() != null) {
-              thumbLabel.get(galleryPanel.getImageProperty()).setIcon(galleryPanel.getSelectedImage().getIcon());
+            if (evt.getNewValue() != null) {
+              thumbLabel.get(galleryPanel.getImageProperty()).setIcon((Icon) evt.getNewValue());
             }
           }
         }
