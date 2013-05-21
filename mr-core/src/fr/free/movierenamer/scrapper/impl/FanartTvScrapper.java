@@ -55,7 +55,17 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
   }
 
   @Override
-  protected final List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception {// TODO check id type
+  protected final List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception {
+
+    switch (media.getMediaId().getIdType()) {
+      case IMDB:
+        break;
+      case TMDB:
+        break;
+      default:
+        throw new UnsupportedOperationException(media.getMediaId().getIdType() + " is not supported by " + getName() + " image scrapper");
+    }
+
     URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
 
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());

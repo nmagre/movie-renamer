@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ public abstract class Hyperlink extends SearchResult {
     // used by serializer
   }
 
-  public Hyperlink(String title, URL url, SearchResultType type) {
-    super(title, type);
+  public Hyperlink(String title, String originalTitle, URL url) {
+    super(title, originalTitle);
     this.url = url;
   }
 

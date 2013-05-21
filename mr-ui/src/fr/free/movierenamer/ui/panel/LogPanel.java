@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -63,7 +64,7 @@ public class LogPanel extends JDialog {
 
     initComponents();
 
-    fileChooser = new WebFileChooser(this, LocaleUtils.i18nExt("saveLogFile"));// FIXME i18n
+    fileChooser = new WebFileChooser(this, LocaleUtils.i18nExt("popup.fileChooser.saveLogFile"));
 
     logsTable.setModel(logsModel);
     logsTable.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
@@ -137,7 +138,7 @@ public class LogPanel extends JDialog {
 
   jScrollPane2.setViewportView(logsTable);
 
-  webCheckBox1.setText("Hide INFO");
+  webCheckBox1.setText(LocaleUtils.i18nExt("logs.showOnlyError")); // NOI18N
   webCheckBox1.addActionListener(new java.awt.event.ActionListener() {
     public void actionPerformed(java.awt.event.ActionEvent evt) {
       webCheckBox1ActionPerformed(evt);
@@ -145,7 +146,7 @@ public class LogPanel extends JDialog {
   });
 
   logsFileBtn.setIcon(ImageUtils.TEXTFILE_16);
-  logsFileBtn.setText(LocaleUtils.i18nExt("logfile")); // NOI18N
+  logsFileBtn.setText(LocaleUtils.i18nExt("logs.saveLogFile")); // NOI18N
   logsFileBtn.setEnabled(false);
   logsFileBtn.addActionListener(new java.awt.event.ActionListener() {
     public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -197,7 +198,7 @@ public class LogPanel extends JDialog {
       logs.append(record.getSourceMethodName()).append(" : ").append(record.getMessage()).append("\n");
     }
 
-    System.out.println(logs);// FIXME remove
+    System.out.println(logs);// FIXME remove !!!
   }//GEN-LAST:event_logsFileBtnActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane jScrollPane2;

@@ -38,7 +38,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 
 /**
  * Class Renamer
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class Renamer {
@@ -54,7 +54,7 @@ public class Renamer {
 
   /**
    * Access to the Settings instance
-   * 
+   *
    * @return The only instance of MR Settings
    */
   public static Renamer getInstance() {
@@ -88,12 +88,12 @@ public class Renamer {
 
   /**
    * Save renamed
-   * 
+   *
    * @return True if renamed was saved, False otherwise
    */
   private boolean saveRenamed() {
     boolean saveSuccess;
-    Settings.LOGGER.log(Level.INFO, "Save renamed files to {0}", renamedFileName);
+    Settings.LOGGER.log(Level.INFO, String.format("Save renamed files to %s", renamedFileName));
     try {
       // write it to file
       File renamedFile = new File(Settings.appFolder, renamedFileName);

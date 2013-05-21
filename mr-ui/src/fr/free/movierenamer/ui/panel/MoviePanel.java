@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,15 +43,14 @@ import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.IImage;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.bean.UIMediaAudio;
 import fr.free.movierenamer.ui.bean.UIMediaSubTitle;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.res.Flag;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.IconListRenderer;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -63,9 +62,6 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.SoftBevelBorder;
 
 /**
  * Class MoviePanel
@@ -84,30 +80,22 @@ public class MoviePanel extends MediaPanel {
   private WebTextField codecField;
   private WebLabel codecLbl;
   private ComponentTransition componentTransition1;
-  private ComponentTransition componentTransition2;
   private WebTextField containerField;
   private WebLabel containerLbl;
   private WebList countryList;
   private WebTextField directorField;
   private WebLabel directorLbl;
-  private WebLabel fanartLbl;
-  private WebLabel fanarttLbl;
   private WebBreadcrumbToggleButton fileBct;
   private WebPanel filePanel;
   private WebTextField frameRateField;
   private WebLabel frameRateLbl;
   private WebTextField genreField;
   private WebLabel genreLbl;
-  private WebBreadcrumb imageBc;
-  private WebBreadcrumbToggleButton imageBct;
-  private WebPanel imagePanel;
-  private WebPanel imagePanelPlus;
   private WebBreadcrumb infoBc;
   private JScrollPane jScrollPane1;
   private JScrollPane jScrollPane2;
   private JScrollPane jScrollPane3;
   private JScrollPane jScrollPane4;
-  private WebBreadcrumbToggleButton moreBct;
   private WebBreadcrumbToggleButton movieBct;
   private WebPanel moviePanel;
   private WebTextField origTitleField;
@@ -119,12 +107,8 @@ public class MoviePanel extends MediaPanel {
   private WebList subtitleList;
   private WebTextArea synopsisArea;
   private JScrollPane synopsisSp;
-  private WebLabel thumbLbl;
-  private WebLabel thumbnailLbl;
   private WebLabel titleLbl;
   private WebLabel videoLbl;
-  private WebLabel webLabel1;
-  private WebLabel webLabel2;
   private WebLabel webLabel5;
   private WebLabel webLabel6;
   private WebLabel webLabel8;
@@ -145,16 +129,15 @@ public class MoviePanel extends MediaPanel {
    * @param mr
    */
   public MoviePanel(MovieRenamer mr) {
-    super(mr, ImageCategoryProperty.thumb, ImageCategoryProperty.fanart, ImageCategoryProperty.logo, ImageCategoryProperty.cdart);
+    super(mr);
     this.setting = UISettings.getInstance();
 
     initComponents();
     SwingUtils.groupButtons(infoBc);
-    SwingUtils.groupButtons(imageBc);
+
     movieBct.setSelected(true);
-    imageBct.setSelected(true);
+
     componentTransition1.setTransitionEffect(new FadeTransitionEffect());
-    componentTransition2.setTransitionEffect(new FadeTransitionEffect());
 
     countryList.setModel(countryListModel);
     actorList.setModel(actorListModel);
@@ -167,11 +150,11 @@ public class MoviePanel extends MediaPanel {
     subtitleList.setCellRenderer(new IconListRenderer<IIconList>());
 
     webToolBar1.addToEnd(getStarPanel());
-    webToolBar1.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, "settingHelp", false, new WebCheckBox()));
+    webToolBar1.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, new WebCheckBox()));
   }
 
   @Override
-  protected void clear() {
+  public void clear() {// CHECK if SwingUtilities is needed
     SwingUtilities.invokeLater(new Thread() {
       @Override
       public void run() {
@@ -186,7 +169,7 @@ public class MoviePanel extends MediaPanel {
 //        ratingField.setText("");
 //        voteField.setText("");
         synopsisArea.setText("");
-
+        actorListModel.clear();
       }
     });
   }
@@ -213,7 +196,6 @@ public class MoviePanel extends MediaPanel {
 //    ratingField.setText("" + movieInfo.getRating());
 //    voteField.setText("" + movieInfo.getVotes());
     synopsisArea.setText(movieInfo.getOverview());
-
   }
 
   public void setMediaTag(MediaTag mtag) {
@@ -243,7 +225,6 @@ public class MoviePanel extends MediaPanel {
   }
 
   public void clearMediaTag() {
-    actorListModel.clear();
     audioListModel.clear();
     subtitleListModel.clear();
     containerField.setText("");
@@ -292,9 +273,6 @@ public class MoviePanel extends MediaPanel {
     webLabel6 = new WebLabel();
     jScrollPane4 = new JScrollPane();
     subtitleList = new WebList();
-    imagePanelPlus = new WebPanel();
-    webLabel1 = getThumbLabel(ImageCategoryProperty.logo);
-    webLabel2 = getThumbLabel(ImageCategoryProperty.cdart);
     webToolBar1 = new WebToolBar();
     titleLbl = new WebLabel();
     webPanel3 = new WebPanel();
@@ -315,18 +293,9 @@ public class MoviePanel extends MediaPanel {
     actorList = new WebList();
     actorLbl = new WebLabel();
     webLabel8 = new WebLabel();
-    componentTransition2 = new ComponentTransition();
-    imagePanel = new WebPanel();
-    thumbLbl = getThumbLabel(ImageCategoryProperty.thumb);
-    fanartLbl = getThumbLabel(ImageCategoryProperty.fanart);
-    thumbnailLbl = new WebLabel();
-    fanarttLbl = new WebLabel();
     infoBc = new WebBreadcrumb();
     movieBct = new WebBreadcrumbToggleButton();
     fileBct = new WebBreadcrumbToggleButton();
-    imageBc = new WebBreadcrumb();
-    imageBct = new WebBreadcrumbToggleButton();
-    moreBct = new WebBreadcrumbToggleButton();
 
     filePanel.setPreferredSize(new Dimension(568, 378));
     filePanel.setUndecorated(false);
@@ -412,7 +381,7 @@ public class MoviePanel extends MediaPanel {
                 .addComponent(audioLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
               .addGroup(filePanelLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addComponent(jScrollPane3, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)))
+                .addComponent(jScrollPane3, GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)))
             .addPreferredGap(ComponentPlacement.UNRELATED)
             .addGroup(filePanelLayout.createParallelGroup(Alignment.LEADING)
               .addGroup(filePanelLayout.createSequentialGroup()
@@ -420,7 +389,7 @@ public class MoviePanel extends MediaPanel {
                 .addGap(181, 229, Short.MAX_VALUE))
               .addGroup(filePanelLayout.createSequentialGroup()
                 .addGap(12, 12, 12)
-                .addComponent(jScrollPane4, GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)))))
+                .addComponent(jScrollPane4, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)))))
         .addContainerGap())
     );
     filePanelLayout.setVerticalGroup(
@@ -464,32 +433,8 @@ public class MoviePanel extends MediaPanel {
         .addContainerGap(224, Short.MAX_VALUE))
     );
 
-    webLabel1.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
-
-    webLabel2.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
-
-    GroupLayout imagePanelPlusLayout = new GroupLayout(imagePanelPlus);
-    imagePanelPlus.setLayout(imagePanelPlusLayout);
-    imagePanelPlusLayout.setHorizontalGroup(
-      imagePanelPlusLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(Alignment.TRAILING, imagePanelPlusLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(imagePanelPlusLayout.createParallelGroup(Alignment.TRAILING)
-          .addComponent(webLabel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(webLabel1, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE))
-        .addContainerGap())
-    );
-    imagePanelPlusLayout.setVerticalGroup(
-      imagePanelPlusLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(imagePanelPlusLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(webLabel1, GroupLayout.PREFERRED_SIZE, 228, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(webLabel2, GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-        .addContainerGap())
-    );
-
-    setMinimumSize(new Dimension(10, 380));
+    setMinimumSize(new Dimension(400, 400));
+    setPreferredSize(new Dimension(400, 400));
 
     webToolBar1.setFloatable(false);
     webToolBar1.setRollover(true);
@@ -498,6 +443,7 @@ public class MoviePanel extends MediaPanel {
     titleLbl.setMargin(new Insets(0, 0, 0, 10));
     webToolBar1.add(titleLbl);
 
+    moviePanel.setMinimumSize(new Dimension(400, 390));
     moviePanel.setPreferredSize(new Dimension(568, 382));
     moviePanel.setUndecorated(false);
     moviePanel.setWebColored(false);
@@ -508,10 +454,10 @@ public class MoviePanel extends MediaPanel {
     directorField.setEditable(false);
     directorField.setFont(new Font("Ubuntu", 0, 12)); // NOI18N
 
-    synopsisArea.setColumns(20);
     synopsisArea.setLineWrap(true);
     synopsisArea.setRows(5);
     synopsisArea.setWrapStyleWord(true);
+    synopsisArea.setPreferredSize(new Dimension(30, 79));
     synopsisSp.setViewportView(synopsisArea);
 
     genreField.setEditable(false);
@@ -549,28 +495,26 @@ public class MoviePanel extends MediaPanel {
       .addGroup(moviePanelLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING)
+          .addComponent(synopsisSp)
+          .addGroup(Alignment.TRAILING, moviePanelLayout.createSequentialGroup()
+            .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING)
+              .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING, false)
+                .addComponent(originalTitleLbl, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                .addComponent(directorLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(genreLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(webLabel5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .addComponent(actorLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addGroup(moviePanelLayout.createParallelGroup(Alignment.TRAILING)
+              .addComponent(jScrollPane1, Alignment.LEADING)
+              .addComponent(genreField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(directorField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(origTitleField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(jScrollPane2)))
           .addGroup(moviePanelLayout.createSequentialGroup()
             .addComponent(webLabel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addGroup(moviePanelLayout.createSequentialGroup()
-            .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING)
-              .addComponent(synopsisSp, GroupLayout.DEFAULT_SIZE, 538, Short.MAX_VALUE)
-              .addGroup(moviePanelLayout.createSequentialGroup()
-                .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING)
-                  .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING, false)
-                    .addComponent(originalTitleLbl, GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
-                    .addComponent(directorLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(genreLbl, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(webLabel5, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                  .addComponent(actorLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(ComponentPlacement.RELATED)
-                .addGroup(moviePanelLayout.createParallelGroup(Alignment.TRAILING)
-                  .addComponent(jScrollPane1, Alignment.LEADING)
-                  .addComponent(genreField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(directorField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(origTitleField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(jScrollPane2))))
-            .addContainerGap())))
+            .addGap(0, 0, Short.MAX_VALUE)))
+        .addContainerGap())
     );
     moviePanelLayout.setVerticalGroup(
       moviePanelLayout.createParallelGroup(Alignment.LEADING)
@@ -593,66 +537,27 @@ public class MoviePanel extends MediaPanel {
           .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
         .addGroup(moviePanelLayout.createParallelGroup(Alignment.LEADING)
           .addGroup(moviePanelLayout.createSequentialGroup()
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE))
-          .addGroup(moviePanelLayout.createSequentialGroup()
             .addGap(18, 18, 18)
-            .addComponent(actorLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-        .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(actorLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+          .addGroup(moviePanelLayout.createSequentialGroup()
+            .addPreferredGap(ComponentPlacement.RELATED)
+            .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)))
+        .addGap(4, 4, 4)
         .addComponent(webLabel8, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(synopsisSp, GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
-        .addGap(31, 31, 31))
+        .addComponent(synopsisSp, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
     );
 
-    componentTransition1.add(moviePanel);
-
-    imagePanel.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
-    imagePanel.setUndecorated(false);
-    imagePanel.setWebColored(false);
-
-    thumbLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
-    thumbLbl.setHorizontalAlignment(SwingConstants.CENTER);
-
-    fanartLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
-    fanartLbl.setHorizontalAlignment(SwingConstants.CENTER);
-
-    thumbnailLbl.setText("Thumbnail");
-    thumbnailLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
-
-    fanarttLbl.setText("Fanart");
-    fanarttLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
-
-    GroupLayout imagePanelLayout = new GroupLayout(imagePanel);
-    imagePanel.setLayout(imagePanelLayout);
-    imagePanelLayout.setHorizontalGroup(
-      imagePanelLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(imagePanelLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(imagePanelLayout.createParallelGroup(Alignment.LEADING)
-          .addComponent(thumbnailLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addGroup(imagePanelLayout.createSequentialGroup()
-            .addGap(12, 12, 12)
-            .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
-          .addComponent(fanartLbl, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
-          .addComponent(fanarttLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(548, Short.MAX_VALUE))
+    GroupLayout componentTransition1Layout = new GroupLayout(componentTransition1);
+    componentTransition1.setLayout(componentTransition1Layout);
+    componentTransition1Layout.setHorizontalGroup(
+      componentTransition1Layout.createParallelGroup(Alignment.LEADING)
+      .addComponent(moviePanel, GroupLayout.PREFERRED_SIZE, 392, Short.MAX_VALUE)
     );
-    imagePanelLayout.setVerticalGroup(
-      imagePanelLayout.createParallelGroup(Alignment.LEADING)
-      .addGroup(imagePanelLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(thumbnailLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(thumbLbl, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(fanarttLbl, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(fanartLbl, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(352, Short.MAX_VALUE))
+    componentTransition1Layout.setVerticalGroup(
+      componentTransition1Layout.createParallelGroup(Alignment.LEADING)
+      .addComponent(moviePanel, GroupLayout.PREFERRED_SIZE, 322, Short.MAX_VALUE)
     );
-
-    componentTransition2.add(imagePanel);
 
     infoBc.setFocusable(false);
 
@@ -676,28 +581,6 @@ public class MoviePanel extends MediaPanel {
     });
     infoBc.add(fileBct);
 
-    imageBc.setFocusable(false);
-
-    imageBct.setIcon(new ImageIcon(getClass().getResource("/image/ui/16/image.png"))); // NOI18N
-    imageBct.setText("Image");
-    imageBct.setFocusable(false);
-    imageBct.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        imageBctActionPerformed(evt);
-      }
-    });
-    imageBc.add(imageBct);
-
-    moreBct.setIcon(new ImageIcon(getClass().getResource("/image/ui/16/image_add.png"))); // NOI18N
-    moreBct.setText("More");
-    moreBct.setFocusable(false);
-    moreBct.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        moreBctActionPerformed(evt);
-      }
-    });
-    imageBc.add(moreBct);
-
     GroupLayout webPanel3Layout = new GroupLayout(webPanel3);
     webPanel3.setLayout(webPanel3Layout);
     webPanel3Layout.setHorizontalGroup(
@@ -705,26 +588,16 @@ public class MoviePanel extends MediaPanel {
       .addGroup(webPanel3Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(webPanel3Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(componentTransition2, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
-          .addComponent(imageBc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addGroup(webPanel3Layout.createParallelGroup(Alignment.LEADING)
-          .addGroup(webPanel3Layout.createSequentialGroup()
-            .addComponent(infoBc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(componentTransition1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(componentTransition1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(infoBc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
         .addContainerGap())
     );
     webPanel3Layout.setVerticalGroup(
       webPanel3Layout.createParallelGroup(Alignment.LEADING)
       .addGroup(webPanel3Layout.createSequentialGroup()
-        .addGroup(webPanel3Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(infoBc, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-          .addComponent(imageBc, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+        .addComponent(infoBc, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
         .addGap(9, 9, 9)
-        .addGroup(webPanel3Layout.createParallelGroup(Alignment.LEADING)
-          .addComponent(componentTransition1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(componentTransition2, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+        .addComponent(componentTransition1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -736,8 +609,7 @@ public class MoviePanel extends MediaPanel {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(Alignment.LEADING)
           .addComponent(webPanel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(webToolBar1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap())
+          .addComponent(webToolBar1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(Alignment.LEADING)
@@ -757,14 +629,6 @@ public class MoviePanel extends MediaPanel {
   private void fileBctActionPerformed(ActionEvent evt) {//GEN-FIRST:event_fileBctActionPerformed
     componentTransition1.performTransition(filePanel);
   }//GEN-LAST:event_fileBctActionPerformed
-
-  private void imageBctActionPerformed(ActionEvent evt) {//GEN-FIRST:event_imageBctActionPerformed
-    componentTransition2.performTransition(imagePanel);
-  }//GEN-LAST:event_imageBctActionPerformed
-
-  private void moreBctActionPerformed(ActionEvent evt) {//GEN-FIRST:event_moreBctActionPerformed
-    componentTransition2.performTransition(imagePanelPlus);
-  }//GEN-LAST:event_moreBctActionPerformed
 
   @Override
   protected String getPanelName() {
@@ -827,7 +691,7 @@ public class MoviePanel extends MediaPanel {
 
     @Override
     public String toString() {
-      return country.getDisplayCountry(setting.coreInstance.getAppLanguage());
+      return country.getDisplayCountry(setting.coreInstance.getAppLanguage().getLocale());
     }
 
     @Override

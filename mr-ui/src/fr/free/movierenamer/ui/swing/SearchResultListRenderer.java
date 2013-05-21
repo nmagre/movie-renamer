@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +32,7 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
   private static final long serialVersionUID = 1L;
   private static final UISettings settings = UISettings.getInstance();
 
-  public enum Property implements IProperty {
+  public enum Property implements IRendererProperty {
 
     showId(settings.isShowId()),
     showYear(settings.isShowYear()),
@@ -56,12 +57,14 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
   @Override
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
 
-    UISearchResult sres = (UISearchResult) value;
-    String text = sres.print(Property.showId.isEnabled(), Property.showYear.isEnabled());
-    if (Property.showOrigTitle.isEnabled()) {
-      text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
+    if (value instanceof UISearchResult) {
+      UISearchResult sres = (UISearchResult) value;
+      String text = sres.print(Property.showId.isEnabled(), Property.showYear.isEnabled());
+      if (Property.showOrigTitle.isEnabled()) {
+        text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
+      }
+      label.setText(text);
     }
-    label.setText(text);
 
     return label;
   }

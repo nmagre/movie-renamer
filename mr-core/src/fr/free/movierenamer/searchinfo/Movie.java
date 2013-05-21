@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ public class Movie extends Media {
   }
 
   public Movie(IdInfo id, String title, String originalTitle, URL thumb, int year) {
-    super(id, title, originalTitle, thumb, year, null);
+    super(id, title, originalTitle, thumb, year);
     this.id = id;
   }
 

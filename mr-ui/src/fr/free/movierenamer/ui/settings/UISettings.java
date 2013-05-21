@@ -1,6 +1,6 @@
 /*
- * movie-renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Movie Renamer
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 package fr.free.movierenamer.ui.settings;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.Settings.SettingsSubType;
+import fr.free.movierenamer.settings.Settings.SettingsType;
 import fr.free.movierenamer.utils.*;
 import java.io.File;
 import java.io.IOException;
@@ -78,18 +80,6 @@ public final class UISettings {
   private static final String appSettingsNodeName;
   private static final String settingNodeName;
 
-  public enum UISupportedLanguage {
-
-    fr,
-    en;
-  }
-
-  public static enum SettingLevel {
-
-    NORMAL,
-    ADVANCED;
-  }
-
   public static enum ImageSize {
 
     ORIGINAL,
@@ -122,51 +112,54 @@ public final class UISettings {
 
   public enum UISettingsProperty implements Settings.IProperty {
 
-    selectFirstMedia(Boolean.FALSE),
-    selectFirstResult(Boolean.TRUE),
-    scanSubfolder(Boolean.TRUE),
-    checkUpdate(Boolean.TRUE),
-    showMediaPanel(Boolean.TRUE),
-    showActorImage(Boolean.TRUE),
-    showThumb(Boolean.TRUE),
-    showFanart(Boolean.TRUE),
-    showSubtitle(Boolean.FALSE),
-    showCdart(Boolean.TRUE),
-    showClearart(Boolean.TRUE),
-    showLogo(Boolean.TRUE),
-    showBanner(Boolean.TRUE),
-    showId(Boolean.TRUE),
-    showYear(Boolean.TRUE),
-    showOrigTitle(Boolean.TRUE),
-    generateThumb(Boolean.TRUE),
-    generateCdart(Boolean.TRUE),
-    generateClearart(Boolean.TRUE),
-    generateLogo(Boolean.TRUE),
-    generateFanart(Boolean.TRUE),
-    generateBanner(Boolean.TRUE),
-    generateSubtitles(Boolean.FALSE),
-    imageThumbName(ThumbName.FILENAME),
-    imageThumbExt(ThumbExt.JPG),
-    imageThumbResize(Boolean.FALSE),
-    imageThumbSize(ImageSize.ORIGINAL),
-    imageThumbWidth(720),
-    imageFanartName(FanartName.FILENAME_FANART),
-    imageFanartResize(Boolean.FALSE),
-    imageFanartSize(ImageSize.ORIGINAL),
-    imageFanartWidth(1080),
-    useExtensionFilter(Boolean.TRUE),
-    fileChooserPath(userFolder),
-    //extensionsList(Arrays.asList(new String[]{"mkv", "avi", "wmv", "mp4", "m4v", "mov", "ts", "m2ts", "ogm", "mpg", "mpeg", "flv", "iso", "rm", "mov", "asf"})),
-    showAdvancedSettings(Boolean.FALSE),
-    groupMediaList(Boolean.TRUE),
-    showIconMediaList(Boolean.TRUE),
-    showFormatField(Boolean.FALSE);
+    selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    checkUpdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
+    showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showThumb(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showFanart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showSubtitle(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showCdart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showClearart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showLogo(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showBanner(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showId(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showYear(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showOrigTitle(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    generateThumb(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    generateCdart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    generateClearart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    generateLogo(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    generateFanart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    generateBanner(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    generateSubtitles(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    imageThumbName(ThumbName.FILENAME, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbExt(ThumbExt.JPG, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbWidth(720, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageFanartName(FanartName.FILENAME_FANART, SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartWidth(1080, SettingsType.IMAGE, SettingsSubType.FANART),
+    useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
+    fileChooserPath(userFolder, null, null),
+    showAdvancedSettings(Boolean.FALSE, null, null),
+    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL);
     private Class<?> vclass;
     private Object defaultValue;
+    private SettingsType type;
+    private SettingsSubType subType;
 
-    private UISettingsProperty(Object defaultValue) {
+    private UISettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
       this.vclass = defaultValue.getClass();
       this.defaultValue = defaultValue;
+      this.type = type;
+      this.subType = subType;
     }
 
     @Override
@@ -187,6 +180,16 @@ public final class UISettings {
     @Override
     public void setValue(Object object) throws IOException {
       instance.set(this, object);
+    }
+
+    @Override
+    public SettingsType getType() {
+      return type;
+    }
+
+    @Override
+    public SettingsSubType getSubType() {
+      return subType;
     }
   }
 
@@ -318,7 +321,7 @@ public final class UISettings {
   private synchronized boolean saveSetting() throws IOException {
     boolean saveSuccess;
     try {
-      LOGGER.log(Level.INFO, "Save configuration to {0}", configFile);
+      LOGGER.log(Level.INFO, String.format("Save configuration to %s", configFile));
       File confRoot = new File(Settings.appFolder, "conf");
       if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
         throw new IOException("Failed to create conf dir: " + confRoot);

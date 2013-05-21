@@ -25,11 +25,9 @@ import java.util.logging.Logger;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
-import fr.free.movierenamer.scrapper.impl.image.FanartTVImagesScrapper;
 import fr.free.movierenamer.scrapper.impl.image.FanartTVshowImagesScrapper;
-import fr.free.movierenamer.scrapper.impl.image.TMDbImagesScrapper;
-import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.searchinfo.TvShow;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.ArrayList;
@@ -53,7 +51,7 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
   }
 
   protected final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<EpisodeInfo> episodes = (cache != null) ? cache.getList(tvShow, language, EpisodeInfo.class) : null;
     if (episodes != null) {
@@ -62,7 +60,7 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
 
     // perform actual search
     episodes = fetchEpisodesInfoList(tvShow, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(tvShow, language, EpisodeInfo.class, episodes) : episodes;

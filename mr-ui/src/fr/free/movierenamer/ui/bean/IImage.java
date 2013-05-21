@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +22,8 @@ import java.net.URI;
 import javax.swing.Icon;
 
 /**
- *
- * @author duffy
+ * Interface IImage
+ * @author Nicolas MAgré
  */
 public interface IImage extends IIconList {
 

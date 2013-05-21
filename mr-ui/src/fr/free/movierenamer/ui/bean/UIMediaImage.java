@@ -40,7 +40,7 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
 
   private final ImageInfo info;
   private Icon icon = ImageUtils.LOAD_24;
-  private UIImageLang imglang;
+  private UILang imglang;
   private final ImageCategoryProperty type;
 
   public UIMediaImage(ImageInfo info) {
@@ -63,7 +63,7 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
     return info.getLanguage();
   }
 
-  public UIImageLang getImagelang() {
+  public UILang getImagelang() {
     return imglang;
   }
 

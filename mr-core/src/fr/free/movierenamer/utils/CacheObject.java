@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache.CacheKey;
 
 /**
@@ -48,7 +49,7 @@ public class CacheObject {
     try {
       cache.put(new CacheKey(id, key, type, language), object);
     } catch (Exception e) {
-      Logger.getLogger(SearchScrapper.class.getName()).log(Level.WARNING, e.getMessage());
+      Settings.LOGGER.log(Level.WARNING, e.getMessage());
     }
     return object;
   }
@@ -57,7 +58,7 @@ public class CacheObject {
     try {
       cache.put(new CacheKey(id, key, language), object);
     } catch (Exception e) {
-      Logger.getLogger(SearchScrapper.class.getName()).log(Level.WARNING, e.getMessage());
+      Settings.LOGGER.log(Level.WARNING, e.getMessage());
     }
     return object;
   }
@@ -71,7 +72,7 @@ public class CacheObject {
         return value;
       }
     } catch (Exception e) {
-      Logger.getLogger(SearchScrapper.class.getName()).log(Level.WARNING, e.getMessage(), e);
+      Settings.LOGGER.log(Level.WARNING, e.getMessage(), e);
     }
 
     return null;
@@ -84,7 +85,7 @@ public class CacheObject {
         return value;
       }
     } catch (Exception e) {
-      Logger.getLogger(SearchScrapper.class.getName()).log(Level.WARNING, e.getMessage(), e);
+      Settings.LOGGER.log(Level.WARNING, e.getMessage(), e);
     }
 
     return null;

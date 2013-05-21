@@ -24,17 +24,18 @@ import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.PersonInfo;
 import fr.free.movierenamer.searchinfo.SearchResult;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class PersonScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public abstract class PersonScrapper<SR extends SearchResult> extends Scrapper {
-  
+
   protected PersonScrapper(AvailableLanguages... supportedLanguages) {
     super(supportedLanguages);
   }
@@ -44,7 +45,7 @@ public abstract class PersonScrapper<SR extends SearchResult> extends Scrapper {
   }
 
   protected final List<PersonInfo> getPersons(SR search, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get person info list for '%s' in '%s'", getName() , search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get person info list for '%s' in '%s'", getName() , search, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<PersonInfo> personList = (cache != null) ? cache.getList(search, language, PersonInfo.class) : null;
     if (personList != null) {
@@ -53,7 +54,7 @@ public abstract class PersonScrapper<SR extends SearchResult> extends Scrapper {
 
     // perform actual search
     personList = fetchPersonsInfo(search, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s' in '%s'", getName(), personList.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s' in '%s'", getName(), personList.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(search, language, PersonInfo.class, personList) : personList;

@@ -40,7 +40,7 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   private static final long serialVersionUID = 1L;
   private boolean showIcon;
 
-  public interface IProperty {
+  public interface IRendererProperty {
     public boolean isEnabled();
     public void setEnabled(boolean value);
   }

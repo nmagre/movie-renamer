@@ -24,6 +24,7 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
+import fr.free.movierenamer.ui.panel.ImagePanel;
 import fr.free.movierenamer.ui.panel.MediaPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.worker.Worker;
@@ -105,10 +106,12 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
       return;
     }
 
-    for (ImageInfo.ImageCategoryProperty key : mediapanel.getSupportedImages()) {
+    ImagePanel panel = mr.getImagePanel();
+    for (ImageInfo.ImageCategoryProperty key : panel.getSupportedImages()) {
       List<UIMediaImage> mimages = getImagesByType(images, key);
-      mediapanel.addImages(mimages, key);
+      panel.addImages(mimages, key);
     }
+    panel.enabledListener();
   }
 
   @Override

@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +35,7 @@ public class MediaListRenderer extends IconListRenderer<UIFile> {
   private static final long serialVersionUID = 1L;
   private static final UISettings settings = UISettings.getInstance();
 
-  public enum Property implements IProperty {
+  public enum Property implements IRendererProperty {
 
     showGroup(settings.isGroupMediaList());
     private boolean value = true;

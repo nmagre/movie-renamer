@@ -26,7 +26,6 @@ import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.LocaleUtils.Language;
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import java.util.logging.Level;
 
 /**
@@ -86,9 +85,9 @@ public abstract class Scrapper {
 
   public final void setLanguage(Locale language) {
     // 2013-03-08:EV:if no language support, choose the supported one.
-    if (!hasLanguageSupport()) { 
+    if (!hasLanguageSupport()) {
       for (Language lang : getSupportedLanguages()) { this.language = lang.getLocale();break; }
-      Settings.LOGGER.log(Level.WARNING, "Try to set Language ({0}) to scrapper ({1}) which has no language support ! Select default language ({0})", new Object[]{language, getName(),this.language});
+      Settings.LOGGER.log(Level.WARNING, String.format("Try to set Language (%s) to scrapper (%s) which has no language support ! Select default language (%s)", language, getName(), this.language));
     }
     else {
         this.language = null;

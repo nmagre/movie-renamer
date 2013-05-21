@@ -70,7 +70,7 @@ public class FileInfo {
     this.mtag = new MediaTag(file);
   }
 
-  public static MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
+  private static MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
     String filename = file.getName();
 
     if (file.length() < minMovieFileSize) {

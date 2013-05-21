@@ -141,7 +141,6 @@ public final class URIRequest {
       Settings settings = Settings.getInstance();
       Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
       connection = uri.toURL().openConnection(proxy);
-
     } else {
       connection = uri.toURL().openConnection();
     }
@@ -175,7 +174,19 @@ public final class URIRequest {
     return getInputStream(openConnection(uri, properties));
   }
 
-  private synchronized static InputStream getInputStream(URLConnection connection) throws IOException {
+  private static InputStream getInputStream(URLConnection connection) throws IOException {
+    if (Settings.LINUX) {
+      // getContentEncoding() crash JVM under linux in multiThreaded context
+      return getInputStreamSync(connection);
+    }
+    return getInputStreamNoSync(connection);
+  }
+
+  private synchronized static InputStream getInputStreamSync(URLConnection connection) throws IOException {
+    return getInputStreamNoSync(connection);
+  }
+
+  private static InputStream getInputStreamNoSync(URLConnection connection) throws IOException {
     String encoding = connection.getContentEncoding();
     InputStream inputStream;
     try {
@@ -194,9 +205,21 @@ public final class URIRequest {
   }
 
   private static Reader getReader(URLConnection connection) throws IOException {
+    if (Settings.LINUX) {
+      // getContentType() crash JVM under linux in multiThreaded context
+      return getReaderSync(connection);
+    }
+    return getReaderNoSync(connection);
+  }
+
+  private static synchronized Reader getReaderSync(URLConnection connection) throws IOException {
+    return getReaderNoSync(connection);
+  }
+
+  private static Reader getReaderNoSync(URLConnection connection) throws IOException {
     Charset charset = getCharset(connection.getContentType());
 
-    return new InputStreamReader(getInputStream(connection), charset);
+    return new InputStreamReader(getInputStreamNoSync(connection), charset);
   }
 
   private static Charset getCharset(String contentType) {
@@ -208,7 +231,7 @@ public final class URIRequest {
         try {
           return Charset.forName(matcher.group(1));
         } catch (IllegalArgumentException e) {
-          Logger.getLogger(URIRequest.class.getName()).log(Level.WARNING, e.getMessage());
+          Settings.LOGGER.log(Level.WARNING, e.getMessage());
         }
       }
 

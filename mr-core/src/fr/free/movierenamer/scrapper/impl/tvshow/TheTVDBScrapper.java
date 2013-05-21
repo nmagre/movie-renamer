@@ -71,7 +71,11 @@ public class TheTVDBScrapper extends TvShowScrapper {
   private final String posterRoot;
 
   public TheTVDBScrapper() {
-    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de);
+    super(AvailableLanguages.en, AvailableLanguages.sv, AvailableLanguages.no, AvailableLanguages.da, AvailableLanguages.fi,
+            AvailableLanguages.nl, AvailableLanguages.de, AvailableLanguages.it, AvailableLanguages.es, AvailableLanguages.fr,
+            AvailableLanguages.pl, AvailableLanguages.hu, AvailableLanguages.el, AvailableLanguages.tr, AvailableLanguages.ru,
+            AvailableLanguages.ja, AvailableLanguages.pt, AvailableLanguages.zh, AvailableLanguages.cs, AvailableLanguages.sl,
+            AvailableLanguages.hr, AvailableLanguages.ko);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("thetvdb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");

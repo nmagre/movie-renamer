@@ -19,12 +19,10 @@ package fr.free.movierenamer.scrapper.impl.movie;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,14 +39,13 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
-import java.util.Arrays;
+import org.w3c.dom.NodeList;
 
 /**
  * Class IMDbScrapper : search movie on IMDB
@@ -58,13 +55,12 @@ import java.util.Arrays;
  */
 public class IMDbScrapper extends MovieScrapper {
 
-  private static final String defaultHost = "www.imdb.com";
+  private static final String host = "www.imdb.com";
   private static final String name = "IMDb";
   private static final String CHARSET = URIRequest.ISO;
-  private String host;
 
   public IMDbScrapper() {
-    super(AvailableLanguages.en/*, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de*/);
+    super(AvailableLanguages.values());
   }
 
   @Override
@@ -74,66 +70,15 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected String getHost() {
-    return getHost(getLanguage());
-  }
-
-  protected final String getHost(Locale language) {
-    if (host == null) {
-      host = defaultHost;
-      if (language != null && !language.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
-        try {
-          URL url = new URL("http", defaultHost.replace("com", language.getLanguage()), "");
-          int responseCode = URIRequest.getResponseCode(url);
-          if (responseCode == 200) {
-            host = url.getHost();
-          } else {
-            host = defaultHost;
-          }
-        } catch (Exception ex) {
-          host = defaultHost;
-        }
-      } else {
-        host = defaultHost;
-      }
-    }
     return host;
-  }
-
-  public enum ImdbInfoPattern {
-
-    TITLE("<title>(.* \\(.*\\d+.*\\).*)</title>"),
-    THUMB("src=\"(http://ia.media-imdb.com/images/.*)\""),
-    ORIGTITLE("info-content.>\\s+\"(.*)\"&nbsp.*?[Oo]riginal"),
-    RUNTIME("<h5>.*?:</h5><div class=\".*\">.*?(\\d+) [Mm]in"),
-    RATING("<b>(.[\\.,].)/10</b>"),
-    VOTES("tn15more.>(.*) (?:vot..?|Stimmen)</a>"),
-    DIRECTOR("src=./rg/directorlist/position-\\d+/images/b.gif.link=name/nm(\\d+)/.;\">(.*)</a>"),
-    WRITER("src=./rg/writerlist/position-\\d/images/b.gif.link=name/nm(\\d+)/.;\">(.*)</a>"),
-    GENRE("<h5>G(?:e|&#xE9;)n...?:</h5>\n.*info-content.*\n(.*)"),
-    TAGLINE("<div class=\"info-content\">\n(.*)<a class=\".*\" href=\"/title/tt\\d+/taglines\""), // Only on .com site (english)
-    PLOT("<div class=.info-content.>\n(.*)(?:\n?)<a class=..*. href=./title/tt\\d+/plotsummary."),
-    CAST("<h3>((Cast)|(Ensemble)|(Besetzung)|(Reparto))</h3>.*"),
-    ACTOR("\"><img src=\".*/rg/castlist/position-\\d+/images/b.gif.link=/name/nm\\d+/';\">.*</td>"),
-    COUNTRY("<h5>(?:(?:Country)|(?:Pays)|(?:Nazionalit&#xE0;)|(?:Pa&#xED;s)|(?:Land)):</h5><div class=\"info-content\">(.*?)</div></div><div class=\"info\"><h5>.*?:</h5>"),
-    STUDIO("<h5>(?:(?:Company)|(?:Soci&#xE9;t&#xE9;)|(?:Compagnia)|(?:Compa&#xF1;&#xED;a)|(?:Firma)):</h5><div class=..*.><a href=..*.>(.*)</a><a"),
-    TOP250("<a href=./chart/top\\?tt\\d{7}.>(?:(?:Top 250)|(?:Las 250 m&#xE1;s votadas)): #(\\d{1,3})</a>");
-    private final Pattern pattern;
-
-    private ImdbInfoPattern(String pattern) {
-      this.pattern = Pattern.compile(pattern);
-    }
-
-    public Pattern getPattern() {
-      return pattern;
-    }
-
-    public String getPatternString() {
-      return pattern.toString();
-    }
   }
 
   private String createImgPath(String imgPath) {
     return imgPath.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY70_SX100.jpg");
+  }
+
+  private URIRequest.RequestProperty getRequestProperties(Locale language) {
+    return new URIRequest.RequestProperty("Accept-Language", String.format("%s-%s", language.getLanguage(), language.getCountry()));
   }
 
   @Override
@@ -141,15 +86,13 @@ public class IMDbScrapper extends MovieScrapper {
     // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
     // Only title -> ref_=fn_tt
     // Only movie -> ref_=fn_ft
-    // Add an option to select between both (default "title" because "movie" does not find video)
-    URL searchUrl = new URL("http", getHost(language), "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
+    URL searchUrl = new URL("http", host, "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
-
   }
 
   @Override
   protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
-    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     // select movie results
     List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='findList']//TR", dom);
@@ -172,7 +115,11 @@ public class IMDbScrapper extends MovieScrapper {
         URL thumb;
         try {
           String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("TD[@class='primary_photo']/A/IMG", node));
-          thumb = new URL(createImgPath(imgPath));
+          if (imgPath.contains("nopicture")) {
+            thumb = new URL(createImgPath(imgPath));
+          } else {
+            thumb = null;
+          }
         } catch (Exception ex) {
           thumb = null;
         }
@@ -182,7 +129,6 @@ public class IMDbScrapper extends MovieScrapper {
         // ignore
       }
     }
-
 
     // we might have been redirected to the movie page
     if (results.isEmpty()) {
@@ -205,170 +151,108 @@ public class IMDbScrapper extends MovieScrapper {
       }
     }
 
-
     return results;
   }
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    // http://www.imdb.com/title/
-    // or http://www.deanclatworthy.com/imdb/
-    // or new URL("http", "www.imdb.com",
-    // String.format("/title/tt%07d/releaseinfo", movie.getMovieId())
-    // new URL("http", "www.imdb.com", String.format("/title/tt%07d/combined",
-    // movie.getMovieId())
-    URL searchUrl = new URL("http", getHost(language), String.format("/title/%s/combined", movie.getMediaId()));
-    String moviePage = URIRequest.getDocumentContent(searchUrl.toURI());
-
-    Pattern pattern;
+    URL searchUrl = new URL("http", host, String.format("/title/%s/combined", movie.getMediaId()));
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-
-    // Title + Year
-    Matcher searchMatcher = ImdbInfoPattern.TITLE.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String res = searchMatcher.group(1);
-
-      pattern = Pattern.compile("(.*)\\(\\d{4}\\).\\(.*\\)");// Fixed issue 7, E.g: 6 Guns (2010) (V)
-      searchMatcher = pattern.matcher(res);
-      String title;
-      if (searchMatcher.find()) {
-        title = searchMatcher.group(1);
-      } else {
-        title = res.substring(0, res.lastIndexOf("(") - 1);
-      }
-      fields.put(MovieProperty.title, StringUtils.unEscapeXML(title, CHARSET));
-
-      // Get year
-      pattern = Pattern.compile("\\((\\d{4}).*\\)");
-      searchMatcher = pattern.matcher(res);
-      if (searchMatcher.find()) {
-        res = searchMatcher.group(1);
-        if (res != null && NumberUtils.isDigit(res)) {
-          int year = Integer.parseInt(res);
-          if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {// Before all "movies" producted are more short video than a movie
-            fields.put(MovieProperty.releasedDate, res);
-          }
-        }
-      }
-    } else {
-      Settings.LOGGER.log(Level.SEVERE, "No title found in imdb page");
-    }
-
-    // Original Title
-    searchMatcher = ImdbInfoPattern.ORIGTITLE.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      fields.put(MovieProperty.originalTitle, StringUtils.unEscapeXML(searchMatcher.group(1), CHARSET));
-    }
-
-    // Runtime
-    searchMatcher = ImdbInfoPattern.RUNTIME.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String runtime = searchMatcher.group(1);
-      fields.put(MovieProperty.runtime, runtime);
-    }
-
-    // Rating
-    searchMatcher = ImdbInfoPattern.RATING.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String rating = searchMatcher.group(1);
-      fields.put(MovieProperty.rating, rating);
-    }
-
-    // Votes
-    searchMatcher = ImdbInfoPattern.VOTES.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String votes = searchMatcher.group(1).replaceAll("[., ]", "");
-      fields.put(MovieProperty.votes, votes);
-    }
-
-    // // TagLine
-    // searchMatcher = ImdbPattern.TAGLINE.getPattern().matcher(moviePage);
-    // if (searchMatcher.find()) {
-    // String tagline = searchMatcher.group(1);
-    // movieInfo.setTagline(StringUtils.unEscapeXML(tagline, CHARSET));
-    // }
-
-    // Plot
-    searchMatcher = ImdbInfoPattern.PLOT.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String plot = searchMatcher.group(1);
-      fields.put(MovieProperty.overview, StringUtils.unEscapeXML(plot, CHARSET));
-    }
-
-    // // Studio
-    // searchMatcher = ImdbPattern.STUDIO.getPattern().matcher(moviePage);
-    // while (searchMatcher.find()) {
-    // String studio = searchMatcher.group(1);
-    // studio = StringUtils.unEscapeXML(studio, CHARSET);
-    // movieInfo.addStudio(studio);
-    // }
-
-    // // Top 250
-    // searchMatcher = ImdbPattern.TOP250.getPattern().matcher(moviePage);
-    // if (searchMatcher.find()) {
-    // String top250 = searchMatcher.group(1);
-    // if (top250 != null && NumberUtils.isDigit(top250)) {
-    // movieInfo.setTop250(top250);
-    // }
-    // }
-
-    // Thumb
-    searchMatcher = ImdbInfoPattern.THUMB.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String imdbThumb = searchMatcher.group(1);
-      fields.put(MovieProperty.posterPath, imdbThumb);
-    }
-
-    List<IdInfo> ids = new ArrayList<IdInfo>();// TODO check if id in page is the same as movie id
-    ids.add(movie.getId());
-
     List<String> genres = new ArrayList<String>();
-    // Genres
-    searchMatcher = ImdbInfoPattern.GENRE.getPattern().matcher(moviePage);
-    if (searchMatcher.find()) {
-      String[] foundGenres = searchMatcher.group(1).split("\\|");
-      for (int i = 0; i < foundGenres.length; i++) {
-        String genre;
-        if (Settings.getInstance().getSearchMovieScrapperLang().equals(Locale.ENGLISH)) {
-          genre = foundGenres[i].substring(foundGenres[i].indexOf(">") + 1, foundGenres[i].indexOf("</a>")).trim();
-          if (genre.equals("See more")) {
-            genre = "";
-          }
-        } else {
-          genre = foundGenres[i].trim();
-        }
+    List<Locale> countries = new ArrayList<Locale>();
+    List<String> studios = new ArrayList<String>();
 
-        if (!genre.equals("")) {
-          genres.add(StringUtils.unEscapeXML(genre, CHARSET));
-        }
+    Node node = XPathUtils.selectNode("//H1", dom);
+    fields.put(MovieProperty.title, StringUtils.unEscapeXML(XPathUtils.selectString("text()", node), CHARSET));
+
+    String year = XPathUtils.selectString("//SPAN/A[contains(@href,'year')]", node);
+    if (year != null) {
+      Pattern pattern = Pattern.compile("\\d{4}");
+      Matcher matcher = pattern.matcher(year);
+      if (matcher.find()) {
+        fields.put(MovieProperty.releasedDate, year);
       }
     }
 
-    List<Locale> countries = new ArrayList<Locale>();
-    // // Countries
-    // searchMatcher = ImdbPattern.COUNTRY.getPattern().matcher(moviePage);
-    // if (searchMatcher.find()) {
-    // String[] countries = searchMatcher.group(1).split("\\|");
-    // for (int i = 0; i < countries.length; i++) {
-    // String country;
-    // switch (config.movieScrapperLang) {
-    // case en:
-    // country = countries[i].substring(countries[i].indexOf(">") + 1,
-    // countries[i].indexOf("</a>")).trim();
-    // break;
-    // default:
-    // country = countries[i].trim();
-    // break;
-    // }
-    // if (!country.equals("")) {
-    // country = StringUtils.unEscapeXML(country, CHARSET);
-    // movieInfo.addCountry(country);
-    // }
-    // }
-    // }
+    String originalTitle = XPathUtils.selectString("//SPAN[@class='title-extra']/I[contains(., '(original title)')]/preceding-sibling::text()", node);
+    if (originalTitle != null) {
+      fields.put(MovieProperty.originalTitle, StringUtils.unEscapeXML(originalTitle, CHARSET));
+    }
 
-    List<String> studios = new ArrayList<String>();
+    String rating = XPathUtils.selectString("//DIV[@class='starbar-meta']/B", dom);
+    if (rating.contains("/")) {
+      String[] rateVal = rating.split("\\/");
+      Float rate = Float.parseFloat(rateVal[0]);
+      fields.put(MovieProperty.rating, String.valueOf(rate / 2));
+    }
+
+    String votes = XPathUtils.selectString("//DIV[@class='starbar-meta']/A[@href='ratings']", dom);
+    if (votes.contains(" votes")) {
+      fields.put(MovieProperty.votes, votes.replaceAll(" .*", ""));
+    }
+
+    String runtime = XPathUtils.selectString("//DIV[@class='info']/H5[contains(., 'Runtime')]/following-sibling", dom);
+    if (!runtime.equals("")) {
+      Pattern pattern = Pattern.compile(".*(\\d{3}) min.*");
+      Matcher matcher = pattern.matcher(runtime);
+      if (matcher.find()) {
+        fields.put(MovieProperty.runtime, matcher.group(1));
+      }
+    }
+
+    List<Node> ngenres = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'Genres')]", dom);
+    for (Node genre : ngenres) {
+      genres.add(StringUtils.unEscapeXML(XPathUtils.selectString("text()", genre), CHARSET));
+    }
+
+    List<Node> ncountries = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'country')]", dom);
+    for (Node country : ncountries) {
+      countries.add(LocaleUtils.findCountry(StringUtils.unEscapeXML(XPathUtils.selectString("text()", country), CHARSET), language));
+    }
+
+    Node nstudios = XPathUtils.selectNode("//DIV[@id='tn15content']//B[@class='blackcatheader' and contains(., 'Production Companies')]", dom);
+    if (nstudios != null) {
+      NodeList nl = nstudios.getNextSibling().getChildNodes();
+      for (int i = 0; i < nl.getLength(); i++) {
+        String studio = nl.item(i).getTextContent();
+        studios.add(StringUtils.removeBrackets(StringUtils.unEscapeXML(studio, CHARSET)).trim());
+      }
+    }
+
+    try {
+      String posterPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("//DIV[@class='photo']/A[@name='poster']/IMG", dom));
+      if (!posterPath.equals("")) {
+        fields.put(MovieProperty.posterPath, createImgPath(posterPath));
+      }
+    } catch (Exception ex) {
+      // No thumb
+    }
+
+    Node plot = XPathUtils.selectNode(String.format("//A[@href='/title/%s/plotsummary']", movie.getMediaId()), dom);
+    if (plot != null) {
+      searchUrl = new URL("http", host, String.format("/title/%s/plotsummary", movie.getMediaId()));
+      dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
+      String overview = XPathUtils.selectString("//P[@class='plotpar']/text()", dom);
+      fields.put(MovieProperty.overview, StringUtils.unEscapeXML(overview, CHARSET));
+    }
+
+    for (String str : fields.values()) {
+      System.out.println(str);
+    }
+
+    /*
+     // Thumb
+     searchMatcher = ImdbInfoPattern.THUMB.getPattern().matcher(moviePage);
+     if (searchMatcher.find()) {
+     String imdbThumb = searchMatcher.group(1);
+     fields.put(MovieProperty.posterPath, imdbThumb);
+     }
+     */
+
+    List<IdInfo> ids = new ArrayList<IdInfo>();
+    ids.add(movie.getId());
 
     MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
     return movieInfo;
@@ -400,8 +284,8 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<ImageInfo> getScrapperImages(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", getHost(language), String.format("/title/%s/mediaindex", movie.getMediaId()));
-    String imagesPage = URIRequest.getDocumentContent(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getMediaId()));
+    String imagesPage = URIRequest.getDocumentContent(searchUrl.toURI(), getRequestProperties(language));
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
 
@@ -417,8 +301,8 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", getHost(language), String.format("/title/%s/fullcredits", movie.getMediaId()));
-    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+    URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", movie.getMediaId()));
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
 

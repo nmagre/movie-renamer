@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,28 +17,30 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.info.ImageInfo.ImageSize;
-import fr.free.movierenamer.settings.Settings;
-import java.net.URI;
+import fr.free.movierenamer.utils.LocaleUtils.Language;
 import java.util.Locale;
 import javax.swing.Icon;
 
 /**
- * Class UIImageLang
+ * Class UILang
  * @author Nicolas Magré
  */
-public class UIImageLang implements IImage {
+public class UILang implements IIconList {
 
   private Icon icon;
-  private final Locale lang;
+  private final Language lang;
 
-  public UIImageLang(Locale lang, Icon icon) {
+  public UILang(Language lang, Icon icon) {
     this.lang = lang;
     this.icon = icon;
   }
 
-  public Locale getLang() {
+  public Language getLanguage() {
     return lang;
+  }
+
+  public Locale getLang() {
+    return lang != null ? lang.getLocale() : Locale.ROOT;
   }
 
   @Override
@@ -47,17 +50,17 @@ public class UIImageLang implements IImage {
 
   @Override
   public String toString() {
-    return lang.getDisplayCountry(Settings.getInstance().getAppLanguage());
+    return lang != null ? lang.getDisplayName() : "????";
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof UIImageLang)) {
+    if (!(obj instanceof UILang)) {
       return false;
     }
 
-    UIImageLang imgLang = (UIImageLang) obj;
-    if (imgLang.getIcon().equals(this.icon) && imgLang.getLang().equals(this.lang)) {
+    UILang imgLang = (UILang) obj;
+    if (imgLang.getIcon().equals(this.icon) && imgLang.getLang().equals(this.getLang())) {
       return true;
     }
 
@@ -70,15 +73,5 @@ public class UIImageLang implements IImage {
     hash = 59 * hash + (this.icon != null ? this.icon.hashCode() : 0);
     hash = 59 * hash + (this.lang != null ? this.lang.hashCode() : 0);
     return hash;
-  }
-
-  @Override
-  public void setIcon(Icon icon) {
-    //
-  }
-
-  @Override
-  public URI getUri(ImageSize size) {
-    return null;
   }
 }

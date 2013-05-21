@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.settings.Settings;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
@@ -33,44 +34,44 @@ import java.util.logging.Logger;
 
 /**
  * Class Date
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public final class Date implements Serializable {
-  
+
   private static final long serialVersionUID = 1L;
   private int year;
   private int month;
   private int day;
-  
+
 
   protected Date() {
     // used by serializer
   }
-  
+
 
   public Date(int year, int month, int day) {
     this.year = year;
     this.month = month;
     this.day = day;
   }
-  
+
 
   public int getYear() {
     return year;
   }
-  
+
 
   public int getMonth() {
     return month;
   }
-  
+
 
   public int getDay() {
     return day;
   }
-  
+
 
   @Override
   public boolean equals(Object obj) {
@@ -78,32 +79,32 @@ public final class Date implements Serializable {
       Date other = (Date) obj;
       return year == other.year && month == other.month && day == other.day;
     }
-    
+
     return super.equals(obj);
   }
-  
+
 
   @Override
   public int hashCode() {
     return Arrays.hashCode(new Object[] { year, month, day });
   }
-  
+
 
   @Override
   public String toString() {
     return String.format("%04d-%02d-%02d", year, month, day);
   }
-  
+
 
   public String format(String pattern) {
     return format(pattern, Locale.ROOT);
   }
-  
+
 
   public String format(String pattern, Locale locale) {
     return new SimpleDateFormat(pattern, locale).format(new GregorianCalendar(year, month - 1, day).getTime()); // Calendar months start at 0
   }
-  
+
 
   public static Date parse(String string, String pattern) {
     return parse(string, pattern, Locale.ROOT);
@@ -113,19 +114,19 @@ public final class Date implements Serializable {
   public static Date parse(String string, String pattern, Locale locale) {
     if (string == null || string.isEmpty())
       return null;
-    
+
     SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
     formatter.setLenient(false); // enable strict mode (e.g. fail on invalid dates like 0000-00-00)
-    
+
     try {
       Calendar date = new GregorianCalendar(locale);
       date.setTime(formatter.parse(string));
       return new Date(date.get(YEAR), date.get(MONTH) + 1, date.get(DAY_OF_MONTH)); // Calendar months start at 0
     } catch (ParseException e) {
       // no result if date is invalid
-      Logger.getLogger(Date.class.getName()).log(Level.WARNING, e.getMessage());
+      Settings.LOGGER.log(Level.WARNING, e.getMessage());
       return null;
     }
   }
-  
+
 }

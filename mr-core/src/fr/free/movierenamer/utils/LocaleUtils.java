@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,11 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 
 import fr.free.movierenamer.settings.Settings;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Class LocaleUtils
@@ -43,11 +48,13 @@ import fr.free.movierenamer.settings.Settings;
 public final class LocaleUtils {
 
   public interface Country {
+
     public Locale getLocale();
   }
 
   // Only most common country for video media
   private static enum Countries implements Country {
+
     ARGENTINA(new Locale("", "AR"), "Argentine", "Argentinien"),
     AUSTRALIA(new Locale("", "AU"), "Australie", "Australien"),
     AUSTRIA(new Locale("", "AT"), "Autriche", "Österreich"),
@@ -106,24 +113,91 @@ public final class LocaleUtils {
     public Locale getLocale() {
       return locale;
     }
-
   }
 
   public interface Language {
+
     public Locale getLocale();
+
+    public String name();
+
+    public String getDisplayName();
+  }
+
+  public static enum AppLanguages implements Language {
+
+    fr(Locale.FRENCH),
+    en(Locale.US),
+    it(Locale.ITALIAN);
+    private final Locale locale;
+    private final String name;
+
+    private AppLanguages(Locale locale) {
+      this.locale = locale;
+      this.name = locale.getDisplayName(locale);
+    }
+
+    private AppLanguages(Locale locale, String name) {
+      this.locale = locale;
+      this.name = name;
+    }
+
+    public String getDisplayName() {
+      return name;
+    }
+
+    @Override
+    public Locale getLocale() {
+      return locale;
+    }
   }
 
   public static enum AvailableLanguages implements Language {
-    en(Locale.ENGLISH),
-    fr(Locale.FRENCH),
-    es(new Locale("es", "")),
-    it(Locale.ITALIAN),
-    de(Locale.GERMAN),
-    zh(Locale.CHINESE);
+
+    ar(new Locale("ar", "MA"), "lang.arabic"),
+    bg(new Locale("bg", "BG"), "lang.bulgarian"),
+    zh(Locale.CHINA),
+    da(new Locale("da", "DK"), "lang.danish"),
+    hr(new Locale("hr", "HR"), "lang.croatian"),
+    cs(new Locale("cs", "CZ"), "lang.czech"),
+    nl(new Locale("nl", "NL"), "lang.dutch"),
+    en(Locale.UK),
+    fi(new Locale("fi", "FI"), "lang.finnish"),
+    fr(Locale.FRANCE),
+    de(Locale.GERMANY),
+    el(new Locale("el", "GR"), "lang.greek"),
+    iw(new Locale("iw", "IL"), "lang.hebrew"),
+    hu(new Locale("hu", "HU"), "lang.hungarian"),
+    is(new Locale("is", "IS"), "lang.icelandic"),
+    it(Locale.ITALY),
+    ja(Locale.JAPAN),
+    ko(Locale.KOREA),
+    no(new Locale("no", "NO"), "lang.norwegian"),
+    pl(new Locale("pl", "PL"), "lang.polish"),
+    pt(new Locale("pt", "PT"), "lang.portuguese"),
+    ro(new Locale("ro", "RO"), "lang.romanian"),
+    ru(new Locale("ru", "RU"), "lang.russian"),
+    sl(new Locale("sl", "SI"), "lang.slovenian"),
+    es(new Locale("es", "ES"), "lang.spanish"),
+    sv(new Locale("sv", "SE"), "lang.swedish"),
+    tr(new Locale("tr", "TR"), "lang.turkish"),
+    uk(new Locale("uk", "UA"), "lang.ukrainian");
     private final Locale locale;
+    private final String name;
 
     private AvailableLanguages(Locale locale) {
       this.locale = locale;
+      this.name = null;
+    }
+
+    private AvailableLanguages(Locale locale, String name) {
+      this.locale = locale;
+      this.name = name;
+    }
+
+    @Override
+    public String getDisplayName() {
+      return name != null ?  i18n(name) : StringUtils.capitalizedLetter(locale.getDisplayLanguage(Settings.getInstance().getAppLanguage().getLocale()), true);
     }
 
     @Override
@@ -135,6 +209,7 @@ public final class LocaleUtils {
   // Only most common languages for video media
   // @see http://www.roseindia.net/tutorials/i18n/locales-list.shtml
   private static enum Languages implements Language {
+
     Arabic(new Locale("ar", ""), "Arabe", "Arabisch", "Arabo", "árabe"),
     Bulgarian(new Locale("bg", ""), "Bulgare", "Bulgarisch", "Bulgarian", "Búlgaro"),
     Chinese(new Locale("zh", ""), "Chinois", "Cinese", "Chino"),
@@ -159,7 +234,8 @@ public final class LocaleUtils {
     Spanish(new Locale("es", ""), "Espagnol", "Spanisch", "Spagnolo", "Español"),
     Swedish(new Locale("sv", ""), "Suédois", "Schwedisch", "Svedese", "Sueco"),
     Turkish(new Locale("tr", ""), "Turc", "Türkisch", "Turco"),
-    Ukrainian(new Locale("uk", ""), "Ukrainien", "Ukrainisch", "Ucraino", "Ucranio");
+    Ukrainian(new Locale("uk", ""), "Ukrainien", "Ukrainisch", "Ucraino", "Ucranio"),
+    Unknown(Locale.ROOT);
     private List<String> identifier;
     private final Locale locale;
 
@@ -173,19 +249,23 @@ public final class LocaleUtils {
       return identifier;
     }
 
+    @Override
     public Locale getLocale() {
       return locale;
     }
 
+    @Override
+    public String getDisplayName() {
+      return locale.getDisplayLanguage(Settings.getInstance().getAppLanguage().getLocale());
+    }
   }
-
   private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
   public static ResourceBundle localBundleExt = null;
 
   public static Locale[] getSupportedDisplayLocales() {
-    return new Locale[] {
-        Locale.ENGLISH, Locale.FRENCH
-    };
+    return new Locale[]{
+              Locale.ENGLISH, Locale.FRENCH
+            };
   }
 
   public static Locale findLanguage(String languageName, Locale... supportedDisplayLocales) {
@@ -244,7 +324,7 @@ public final class LocaleUtils {
     collator.setStrength(Collator.PRIMARY);
 
     @SuppressWarnings({
-        "unchecked", "rawtypes"
+      "unchecked", "rawtypes"
     })
     Comparator<String> order = (Comparator) collator;
     Map<String, Locale> languageMap = new TreeMap<String, Locale>(order);
@@ -271,9 +351,10 @@ public final class LocaleUtils {
     languageMap.remove("VIII");
     languageMap.remove("IX");
 
-    if(removeTokens != null) {
-      for(String token : removeTokens)
+    if (removeTokens != null) {
+      for (String token : removeTokens) {
         languageMap.remove(token);
+      }
     }
 
     Map<String, Locale> result = Collections.unmodifiableMap(languageMap);
@@ -332,7 +413,7 @@ public final class LocaleUtils {
     collator.setStrength(Collator.PRIMARY);
 
     @SuppressWarnings({
-        "unchecked", "rawtypes"
+      "unchecked", "rawtypes"
     })
     Comparator<String> order = (Comparator) collator;
     Map<String, Locale> countryMap = new TreeMap<String, Locale>(order);
@@ -361,7 +442,7 @@ public final class LocaleUtils {
    * Get string in i18n files
    *
    * @param bundleKey
-   *          CacheKey to find
+   * CacheKey to find
    * @return String depends on locale
    */
   public static String i18n(String bundleKey) {
@@ -380,16 +461,25 @@ public final class LocaleUtils {
    * Get string in i18n files
    *
    * @param bundleKey
-   *          CacheKey to find
+   * CacheKey to find
    * @param defaultValue
-   *          Default value
+   * Default value
    * @return String depends on locale or default value if key dos not exist
    */
   public static String i18n(String bundleKey, String defaultValue, ResourceBundle lBundle) {
     if (lBundle != null && lBundle.containsKey(bundleKey)) {
       return lBundle.getString(bundleKey);
     } else {
-      Settings.LOGGER.log(Level.CONFIG, "No internationlization found for {0}, use default value", bundleKey);
+      /*if (localBundleExt == lBundle) {
+
+        try {// FIXME remove !!!!
+          PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Settings.appFolder + File.separator + "i18n_missing.properties", true)));
+          out.println(bundleKey + "=");
+          out.close();
+        } catch (IOException e) {
+        }
+      }*/
+      Settings.LOGGER.log(Level.CONFIG, String.format("No internationlization found for %s, use default value", bundleKey));
       return defaultValue;
     }
   }

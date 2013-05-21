@@ -35,6 +35,7 @@ import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.info.SubtitleInfo.SubtitleProperty;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
@@ -83,7 +84,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
       try {
         subtitles.add(new Subtitle(shortName, title, new URL("http", host, href)));
       } catch (MalformedURLException e) {
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Invalid href: " + href, e);
+        Settings.LOGGER.log(Level.WARNING, "Invalid href: " + href, e);
       }
     }
 
@@ -109,7 +110,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
           subtitles.add(new SubtitleInfo(subtitleFields));
         }
       } catch (Exception e) {
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Cannot parse subtitle node", e);
+        Settings.LOGGER.log(Level.WARNING, "Cannot parse subtitle node", e);
       }
     }
 

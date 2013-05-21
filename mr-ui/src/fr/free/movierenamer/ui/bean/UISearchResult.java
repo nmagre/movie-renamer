@@ -18,8 +18,8 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
+import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -38,14 +38,14 @@ import javax.swing.Icon;
 public class UISearchResult extends Sorter.ISort implements IImage {
 
   private final Media searchResult;
-  private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
+  private final SearchScrapper<? extends Hyperlink> scrapper;
   private Icon icon = ImageUtils.LOAD_24;
 
   /**
    * @param searchResult
    * @param scrapper
    */
-  public UISearchResult(Media searchResult, MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
+  public UISearchResult(Media searchResult, SearchScrapper<? extends Hyperlink> scrapper) {
     this.searchResult = searchResult;
     this.scrapper = scrapper;
   }
@@ -55,7 +55,7 @@ public class UISearchResult extends Sorter.ISort implements IImage {
     return icon;
   }
 
-  public MediaScrapper<? extends Media, ? extends MediaInfo> getScrapper() {
+  public SearchScrapper<? extends Hyperlink> getScrapper() {
     return scrapper;
   }
 

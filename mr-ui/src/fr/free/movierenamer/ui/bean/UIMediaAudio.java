@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +29,7 @@ import javax.swing.Icon;
 public class UIMediaAudio implements IIconList {
 
   private MediaAudio maudio;
-  private UIImageLang image;
+  private UILang image;
 
   public UIMediaAudio(MediaAudio maudio) {
     this.maudio = maudio;

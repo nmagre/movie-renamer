@@ -37,6 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 
 import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
+import java.io.FilenameFilter;
 
 /**
  * Class FileUtils
@@ -45,14 +46,16 @@ import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
  * @author Simon QUÉMÉNEUR
  */
 public final class FileUtils {
+
   /**
    * Pattern used for matching file extensions.
    */
   private static final Pattern EXTENSION = Pattern.compile("(?<=.[.])\\p{Alnum}+$");
 
   public static String getExtension(File file) {
-    if (file.isDirectory())
+    if (file.isDirectory()) {
       return null;
+    }
 
     return getExtension(file.getName());
   }
@@ -69,25 +72,6 @@ public final class FileUtils {
     return null;
   }
 
-  public static boolean hasExtension(File file, String... extensions) {
-    return hasExtension(file.getName(), extensions) && !file.isDirectory();
-  }
-
-  public static boolean hasExtension(String filename, String... extensions) {
-    String extension = getExtension(filename);
-
-    if(extensions == null || extensions.length == 0) {
-      return true;
-    }
-
-    for (String value : extensions) {
-      if ((extension == null && value == null) || (extension != null && extension.equalsIgnoreCase(value)))
-        return true;
-    }
-
-    return false;
-  }
-
   public static String getNameWithoutExtension(String name) {
     Matcher matcher = EXTENSION.matcher(name);
 
@@ -100,8 +84,9 @@ public final class FileUtils {
   }
 
   public static String getName(File file) {
-    if (file.getName().isEmpty())
+    if (file.getName().isEmpty()) {
       return getFolderName(file);
+    }
 
     return getNameWithoutExtension(file.getName());
   }
@@ -109,8 +94,9 @@ public final class FileUtils {
   public static String getFolderName(File file) {
     String name = file.getName();
 
-    if (!name.isEmpty())
+    if (!name.isEmpty()) {
       return name;
+    }
 
     return replacePathSeparators(file.toString(), "");
   }
@@ -119,28 +105,41 @@ public final class FileUtils {
     return Pattern.compile("\\s*[\\\\/]+\\s*").matcher(path).replaceAll(replacement);
   }
 
-    /**
+  /**
    * Check if file have a good extension
    *
-   * @param fileName
-   *          File to check extension
+   * @param file
    * @return True if file extension is in array
    */
-  public static boolean checkFileExt(String fileName) {
-    return checkFileExt(fileName, NameCleaner.getCleanerProperty("file.extension").split("\\|"));
+  public static boolean checkFileExt(File file) {
+    return checkFileExt(file, NameCleaner.getCleanerProperty("file.extension").split("\\|"));// FIXME use setting
+  }
+
+  /**
+   * Check if file have a good extension
+   *
+   * @param file
+   * @param extensions
+   * Array of extensions
+   * @return True if file extension is in array
+   */
+  public static boolean checkFileExt(File file, String[] extensions) {
+    if (file.isHidden()) {
+      return false;
+    }
+    return checkFileExt(file.getName(), extensions);
   }
 
   /**
    * Check if file have a good extension
    *
    * @param fileName
-   *          File to check extension
+   * File to check extension
    * @param extensions
-   *          Array of extensions
+   * Array of extensions
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(String fileName, String[] extensions) {
-
     if (extensions == null | extensions.length == 0) {
       return false;
     }
@@ -162,7 +161,7 @@ public final class FileUtils {
    * Check if dir is a root directory
    *
    * @param dir
-   *          Directory
+   * Directory
    * @return True if it is a directory
    */
   public static boolean isRootDir(File dir) {
@@ -251,31 +250,63 @@ public final class FileUtils {
     return result2;
   }
 
+  public static class FolderFilter implements FilenameFilter {
+
+    @Override
+    public boolean accept(File dir, String name) {
+      return new File(dir.getAbsolutePath() + File.separator + name).isDirectory();
+    }
+  }
+
+  public static class FileAndFolderFilter implements FileFilter {
+
+    @Override
+    public boolean accept(File file) {
+      if (file.isHidden()) {
+        return false;
+      }
+
+      if (file.isFile() && !file.getName().contains(StringUtils.DOT)) {
+        return false;
+      }
+
+      return true;
+    }
+  }
+
   public static class ExtensionFileFilter implements FileFilter {
 
     private final String[] extensions;
+    private final boolean acceptDir;
 
     public ExtensionFileFilter(String... extensions) {
+      this(false, extensions);
+    }
+
+    public ExtensionFileFilter(boolean acceptDir, String... extensions) {
       this.extensions = extensions;
+      this.acceptDir = acceptDir;
     }
 
     public ExtensionFileFilter(Collection<String> extensions) {
+      this(false, extensions);
+    }
+
+    public ExtensionFileFilter(boolean acceptDir, Collection<String> extensions) {
       this.extensions = extensions.toArray(new String[0]);
+      this.acceptDir = acceptDir;
     }
 
     @Override
     public boolean accept(File file) {
-      return hasExtension(file, extensions);
-    }
-
-    public boolean accept(String name) {
-      return hasExtension(name, extensions);
+      return (acceptDir && file.isDirectory()) || checkFileExt(file, extensions);
     }
 
     public boolean acceptExtension(String extension) {
       for (String other : extensions) {
-        if (other.equalsIgnoreCase(extension))
+        if (other.equalsIgnoreCase(extension)) {
           return true;
+        }
       }
 
       return false;

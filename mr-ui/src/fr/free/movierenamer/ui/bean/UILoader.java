@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,17 +18,18 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.utils.LocaleUtils;
 import javax.swing.Icon;
 
 /**
  * Class UILoader
  *
  * @author Nicolas Magré
- * @author Simon QUÉMÉNEUR
  */
 public class UILoader implements IIconList {
 
   private final Icon icon = ImageUtils.LOAD_24;
+  private final String loading = LocaleUtils.i18nExt("loading");
 
   @Override
   public Icon getIcon() {
@@ -36,6 +38,6 @@ public class UILoader implements IIconList {
 
   @Override
   public String toString() {
-    return "Loading ...";// FIXME i18n
+    return loading;
   }
 }

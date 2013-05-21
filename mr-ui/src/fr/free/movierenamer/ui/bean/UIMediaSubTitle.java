@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +28,7 @@ import javax.swing.Icon;
 public class UIMediaSubTitle implements IIconList {
 
   private MediaSubTitle msubtitle;
-  private UIImageLang image;
+  private UILang image;
 
   public UIMediaSubTitle(MediaSubTitle msubtitle) {
     this.msubtitle = msubtitle;

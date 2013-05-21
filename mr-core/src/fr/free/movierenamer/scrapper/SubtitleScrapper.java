@@ -24,17 +24,18 @@ import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.searchinfo.Subtitle;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class SubtitleScrapper
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
-  
+
   protected SubtitleScrapper(AvailableLanguages... supportedLanguages) {
     super(supportedLanguages);
   }
@@ -44,7 +45,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
   }
 
   protected final List<SubtitleInfo> getSubtitles(Subtitle subtitle, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get subtitle info list for '%s' in '%s'", getName() , subtitle, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get subtitle info list for '%s' in '%s'", getName() , subtitle, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<SubtitleInfo> subtitleList = (cache != null) ? cache.getList(subtitle, language, SubtitleInfo.class) : null;
     if (subtitleList != null) {
@@ -53,7 +54,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
 
     // perform actual search
     subtitleList = fetchSubtitlesInfo(subtitle, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d subtitle(s) info for '%s' in '%s'", getName(), subtitleList.size(), subtitle, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d subtitle(s) info for '%s' in '%s'", getName(), subtitleList.size(), subtitle, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(subtitle, language, SubtitleInfo.class, subtitleList) : subtitleList;
@@ -63,7 +64,7 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
 
   @Override
   public final List<Subtitle> search(String query, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to search subtitles for '%s' in '%s'", getName() , query, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to search subtitles for '%s' in '%s'", getName() , query, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<Subtitle> results = (cache != null) ? cache.getList(query, language, Subtitle.class) : null;
     if (results != null) {
@@ -72,12 +73,12 @@ public abstract class SubtitleScrapper extends SearchScrapper<Subtitle> {
 
     // perform actual search
     results = searchSubtitles(query, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d subtitle(s) for '%s' in '%s'", getName(), results.size(), query, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d subtitle(s) for '%s' in '%s'", getName(), results.size(), query, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(query, language, Subtitle.class, results) : results;
   }
 
   protected abstract List<Subtitle> searchSubtitles(String query, Locale language) throws Exception;
-  
+
 }

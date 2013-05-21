@@ -17,9 +17,9 @@
  */
 package fr.free.movierenamer.scrapper.impl.image;
 
-import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.ImageScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
@@ -66,14 +66,14 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
     String id = movie.getId().toString();
-    switch(movie.getId().getIdType()) {
+    switch (movie.getId().getIdType()) {
       case IMDB:
         id = imdbIDLookUp(id);
         break;
       case TMDB:
         break;
       default:
-        throw new UnsupportedOperationException(movie.getId().getIdType().name() + " is not supported by tmsb image scrapper");
+        throw new UnsupportedOperationException(movie.getId().getIdType() + " is not supported by " + getName() + " image scrapper");
     }
 
     URL searchUrl = new URL("http", host, "/" + version + "/movie/" + id + "/images?api_key=" + apikey);
@@ -94,7 +94,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
         imageFields.put(ImageInfo.ImageProperty.urlTumb, TMDbScrapper.imageUrl + imageSize.getSmall() + file_path);
 
         String lang = JSONUtils.selectString("iso_639_1", jsonObj);
-        if(lang != null && !lang.equals("null")) {
+        if (lang != null && !lang.equals("null")) {
           imageFields.put(ImageInfo.ImageProperty.language, lang);
         }
         imageFields.put(ImageInfo.ImageProperty.width, JSONUtils.selectString("width", jsonObj));

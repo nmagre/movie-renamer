@@ -1,6 +1,6 @@
 /*
- * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Movie Renamer
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ public final class ImageUtils {
   public static final Icon UPDATE_24 = getIconFromJar("ui/24/update.png");
   public static final Icon OK_24 = getIconFromJar("ui/24/ok.png");
   public static final Icon HELP_24 = getIconFromJar("ui/24/help.png");
-  public static final Icon LOGS_24 = getIconFromJar("ui/24/logs.png");
+  public static final Icon INFO_24 = getIconFromJar("ui/24/info.png");
   public static final Icon LOAD_24 = new SpinningDial(24, 24);
   // 16 pixel icon
   public static final Icon CANCEL_16 = getIconFromJar("ui/16/cancel.png");
@@ -65,7 +65,6 @@ public final class ImageUtils {
   public static final Icon GROUPVIEW_16 = getIconFromJar("ui/16/groupview.png");
   public static final Icon IMAGE_ADD_16 = getIconFromJar("ui/16/image_add.png");
   public static final Icon IMAGE_16 = getIconFromJar("ui/16/image.png");
-  public static final Icon INFO_16 = getIconFromJar("ui/16/info.png");
   public static final Icon MEDIA_16 = getIconFromJar("ui/16/media.png");
   public static final Icon MEDIAWARN_16 = getIconFromJar("ui/16/media-warn.png");
   public static final Icon MINUS_16 = getIconFromJar("ui/16/minus.png");
@@ -79,17 +78,19 @@ public final class ImageUtils {
   public static final Icon FOLDERVIDEO_16 = getIconFromJar("ui/16/folder-video.png");
   public static final Icon UPDATE_16 = getIconFromJar("ui/16/update.png");
   public static final Icon APPLICATIONEXIT_16 = getIconFromJar("ui/16/application-exit.png");
-  public static final Icon LOGS_16 = getIconFromJar("ui/16/logs.png");
+  public static final Icon INFO_16 = getIconFromJar("ui/16/info.png");
   public static final Icon TEXTFILE_16 = getIconFromJar("ui/16/text.png");
   public static final Icon STAREMPTY_16 = getIconFromJar("ui/16/star-empty.png");
   public static final Icon STARHALF_16 = getIconFromJar("ui/16/star-half.png");
   public static final Icon STAR_16 = getIconFromJar("ui/16/star.png");
+  public static final Icon CLEAR_LIST_16 = getIconFromJar("ui/16/media_playlist_clear.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
   // Movie Renamer logo
   public static final Icon LOGO_22 = getIconFromJar("ui/icon-22.png");
   public static final Icon LOGO_32 = getIconFromJar("ui/icon-32.png");
   public static final Icon LOGO_48 = getIconFromJar("ui/icon-48.png");
   public static final Icon LOGO_72 = getIconFromJar("ui/icon-72.png");
+  public static final Icon BAN = getIconFromJar("ui/mr-ban.png");
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {
@@ -175,7 +176,7 @@ public final class ImageUtils {
 
   public static Icon getIcon(URI imagePth, Dimension dim, String defaultImage) {
     Cache cache = Cache.getCache("long");
-    java.awt.Image img;
+    Image img;
 
 
     if (imagePth != null) {
@@ -183,26 +184,32 @@ public final class ImageUtils {
       if (img == null) {
         try {
           InputStream is = URIRequest.getInputStream(imagePth);
-          img = ImageIO.read(is);
+          try {
+            img = ImageIO.read(is);
+          } finally {
+            is.close();
+          }
           if (cache != null) {
             cache.put(imagePth, new ImageIcon(img));
           }
         } catch (IOException ex) {
           img = null;
-          Settings.LOGGER.log(Level.SEVERE, "{0} {1}", new Object[]{ex.getMessage(), imagePth});
+          Settings.LOGGER.log(Level.SEVERE, String.format("%s %s", ex.getMessage(), imagePth));
         }
       }
     } else {
       img = null;
     }
+    
     if (img == null && defaultImage != null) {
       // load default image id necessary
       img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);
     }
     if (dim != null) {
       // let's resize
-      img = img.getScaledInstance(dim.width, dim.height, java.awt.Image.SCALE_DEFAULT);
+      img = img.getScaledInstance(dim.width, dim.height, Image.SCALE_DEFAULT);
     }
+
     Icon icon;
     if (img != null) {
       icon = new ImageIcon(img);
@@ -210,6 +217,11 @@ public final class ImageUtils {
       icon = null;
     }
     return icon;
+  }
+
+  public Icon resizeIcon(Icon icon, Dimension dim) {
+    Image img = iconToImage(icon);
+    return new ImageIcon(img.getScaledInstance(dim.width, dim.height, Image.SCALE_DEFAULT));
   }
 
   private ImageUtils() {

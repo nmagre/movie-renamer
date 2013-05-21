@@ -49,7 +49,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
   @Override
   protected final List<M> search(String query, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to search media for '%s' in '%s'", getName(), query, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to search media for '%s' in '%s'", getName(), query, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     @SuppressWarnings("unchecked")
     Class<M> genericClazz = (Class<M>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0]; // TODO put it in Utils !
@@ -83,7 +83,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   }
 
   protected final MI getInfo(M search, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get media info for '%s' in '%s'", getName(), search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get media info for '%s' in '%s'", getName(), search, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     @SuppressWarnings("unchecked")
     Class<MI> genericClazz = (Class<MI>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[1]; // TODO put it in Utils !
@@ -131,7 +131,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   }
 
   protected final List<CastingInfo> getCasting(M search, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get casting info list for '%s' in '%s'", getName(), search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get casting info list for '%s' in '%s'", getName(), search, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<CastingInfo> personsInfo = (cache != null) ? cache.getList(search, language, CastingInfo.class) : null;
     if (personsInfo != null) {

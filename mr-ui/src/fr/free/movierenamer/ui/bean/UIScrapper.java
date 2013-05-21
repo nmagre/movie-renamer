@@ -1,5 +1,5 @@
 /*
- * mr-ui
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,39 +17,42 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
-import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.net.URI;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
  * Class UIScrapper
+ *
  * @author Simon QUÉMÉNEUR
+ * @author Nicolas Magré
  */
 public class UIScrapper implements IIconList {
 
-  private final MediaScrapper<? extends Media, ? extends MediaInfo> scrapper;
+  private Icon icon;
+  private final SearchScrapper<? extends Hyperlink> scrapper;
 
-  public UIScrapper(MediaScrapper<? extends Media, ? extends MediaInfo> scrapper) {
+  public UIScrapper(SearchScrapper<? extends Hyperlink> scrapper) {
     this.scrapper = scrapper;
   }
 
   @Override
   public Icon getIcon() {
-    return new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scrapper.getName().toLowerCase())));
+    if (icon == null) {
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scrapper.getName().toLowerCase())));
+    }
+    return icon;
   }
 
-  public MediaScrapper<? extends Media, ? extends MediaInfo> getScrapper() {
+  public SearchScrapper<? extends Hyperlink> getScrapper() {
     return scrapper;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if(obj ==null || !(obj instanceof UIScrapper)) {
+    if (obj == null || !(obj instanceof UIScrapper)) {
       return false;
     }
     UIScrapper other = (UIScrapper) obj;
@@ -67,5 +70,4 @@ public class UIScrapper implements IIconList {
   public String toString() {
     return scrapper.getName();
   }
-
 }

@@ -232,7 +232,7 @@ public class AllocineScrapper extends MovieScrapper {
     Node retNode = XPathUtils.selectNode("//DIV[@class='oflow_a']/SPAN[@class='note']", dom);
     if (retNode != null) {
       Float rate = Float.parseFloat(retNode.getTextContent().trim().replace(",", "."));
-      fields.put(MovieProperty.rating, String.valueOf(rate * 2));
+      fields.put(MovieProperty.rating, String.valueOf(rate));
     }
 
     retNode = XPathUtils.selectNode("//SPAN[@itemprop='ratingCount']", dom);
@@ -342,7 +342,7 @@ public class AllocineScrapper extends MovieScrapper {
       }
 
     } catch (Exception ex) {// No casting
-      Settings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getClass().toString(), ex.getStackTrace()));
+      Settings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
     }
 
     return casting;

@@ -343,7 +343,7 @@ public final class StringUtils {
       md.update(str.getBytes());
       return md.digest();
     } catch (NoSuchAlgorithmException ex) {
-      Logger.getLogger(StringUtils.class.getName()).log(Level.SEVERE, null, ex);
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
     return null;
   }

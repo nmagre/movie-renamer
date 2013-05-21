@@ -152,7 +152,7 @@ public class TvShowPanel extends MediaPanel {
   }
 
   @Override
-  protected void clear() {
+  public void clear() {
     // TODO
     setMediaInfo(new TvShowInfo(null));
     // star1.setIcon(STAR_EMPTY);

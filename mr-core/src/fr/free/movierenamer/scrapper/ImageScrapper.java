@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
@@ -44,7 +45,7 @@ public abstract class ImageScrapper<M extends Media> extends Scrapper {
   }
 
   protected final List<ImageInfo> getImages(M media, Locale language) throws Exception {
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), media, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get image info list for '%s' in '%s'", getName(), media, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     List<ImageInfo> imageList = (cache != null) ? cache.getList(media, language, ImageInfo.class) : null;
     if (imageList != null) {
@@ -53,7 +54,7 @@ public abstract class ImageScrapper<M extends Media> extends Scrapper {
 
     // perform actual search
     imageList = fetchImagesInfo(media, language);
-    Logger.getLogger(SearchScrapper.class.getName()).log(Level.INFO, String.format("'%s' returns %d images for '%s' in '%s'", getName(), imageList.size(), media, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d images for '%s' in '%s'", getName(), imageList.size(), media, language.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
     return (cache != null) ? cache.putList(media, language, ImageInfo.class, imageList) : imageList;

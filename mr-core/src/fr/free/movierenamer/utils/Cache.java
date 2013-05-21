@@ -70,12 +70,12 @@ public final class Cache {
               try {
                 lock.release();
               } catch (Exception e) {
-                Logger.getLogger(Settings.class.getName()).log(Level.WARNING, e.toString());
+                Settings.LOGGER.log(Level.WARNING, e.toString());
               }
               try {
                 handle.close();
               } catch (Exception e) {
-                Logger.getLogger(Settings.class.getName()).log(Level.WARNING, e.toString());
+                Settings.LOGGER.log(Level.WARNING, e.toString());
               }
             }
           });
@@ -89,7 +89,7 @@ public final class Cache {
         handle.close();
       }
     } catch (Exception e) {
-      Logger.getLogger(Settings.class.getName()).log(Level.WARNING, e.toString(), e);
+      Settings.LOGGER.log(Level.WARNING, e.toString(), e);
     }
 
     // use cache root itself as fail-safe fallback
@@ -103,7 +103,7 @@ public final class Cache {
   public synchronized static void clearCache(String name) {
   	net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
   	if (cache != null) {
-      Logger.getLogger(Cache.class.getName()).log(Level.FINER, String.format("Clear cache %s", cache.getName()));
+      Settings.LOGGER.log(Level.FINER, String.format("Clear cache %s", cache.getName()));
   		cache.removeAll();
   	}
   }
@@ -122,11 +122,11 @@ public final class Cache {
 
   public synchronized void put(Object key, Object value) {
     try {
-      Logger.getLogger(Cache.class.getName()).log(Level.FINER, String.format("Add object to cache %s", cache.getName()));
+      Settings.LOGGER.log(Level.FINER, String.format("Add object to cache %s", cache.getName()));
       cache.put(new Element(key, value));
-      Logger.getLogger(Cache.class.getName()).log(Level.FINEST, String.format("Cache %s is now %s octets", cache.getName(), getSize()));
+      Settings.LOGGER.log(Level.FINEST, String.format("Cache %s is now %s octets", cache.getName(), getSize()));
     } catch (Throwable e) {
-      Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage());
+      Settings.LOGGER.log(Level.WARNING, e.getMessage());
       remove(key); // fail-safe
     }
   }
@@ -142,7 +142,7 @@ public final class Cache {
         return type.cast(element.getValue());
       }
     } catch (Exception e) {
-      Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage(), e);
+      Settings.LOGGER.log(Level.WARNING, e.getMessage(), e);
       remove(key); // fail-safe
     }
 
@@ -153,7 +153,7 @@ public final class Cache {
     try {
       cache.remove(key);
     } catch (Exception e) {
-      Logger.getLogger(Cache.class.getName()).log(Level.WARNING, e.getMessage(), e);
+      Settings.LOGGER.log(Level.WARNING, e.getMessage(), e);
     }
   }
 

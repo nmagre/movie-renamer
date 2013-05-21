@@ -23,7 +23,6 @@ import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class ImageInfo

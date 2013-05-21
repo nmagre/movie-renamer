@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +23,9 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
@@ -45,18 +49,28 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
     T result = null;
     try {
       result = executeInBackground();
-    } catch (InvalidUrlException e) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace("InvalidUrlException", e.getStackTrace()));
-      publish(String.format("InvalidUrlException %s failed", Worker.this.getClass().getSimpleName())); // FIXME i18n
+    } catch (InvalidUrlException ex) {
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+      publish(String.format("InvalidUrlException %s failed", getName())); // FIXME i18n
+    } catch (UnknownHostException ex) {
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+      publish(LocaleUtils.i18nExt("error.network.connection"));
+    } catch (SocketTimeoutException ex) {
+      UISettings.LOGGER.log(Level.WARNING, ex.getCause().toString());
+      publish(LocaleUtils.i18nExt("error.network.timeout"));
+    } catch (SocketException ex) {
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+      publish(LocaleUtils.i18nExt("error.network.connection") + "\n\n" + ex.getLocalizedMessage());
+      //publish(LocaleUtils.i18nExt("error.network.unavailable") + "\n\n" + LocaleUtils.i18nExt("error.network.report") + "\n\n" + ex.getLocalizedMessage());
     } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toString(), ex.getStackTrace()));
-      publish(String.format("worker %s failed", Worker.this.getClass().getSimpleName())); // FIXME i18n
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+      publish(String.format(LocaleUtils.i18nExt("error.worker.unknown") + " :\n\n%s", getName(), ex.getLocalizedMessage()));
     }
     return result;
   }
 
   @Override
   protected void process(List<String> v) {
-    WebOptionPane.showMessageDialog(null, LocaleUtils.i18n(v.get(0)), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);
+    WebOptionPane.showMessageDialog(mr, v.get(0) + "\n", LocaleUtils.i18nExt("error"), JOptionPane.ERROR_MESSAGE);
   }
 }

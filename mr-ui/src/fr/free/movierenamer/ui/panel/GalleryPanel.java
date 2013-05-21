@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,10 +17,11 @@
  */
 package fr.free.movierenamer.ui.panel;
 
+import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.UIImageLang;
+import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.SpinningDial;
@@ -59,7 +61,7 @@ public class GalleryPanel extends JDialog {
   private static final long serialVersionUID = 1L;
   private final CustomWebImageGallery thumbGallery;
   private List<UIMediaImage> images;
-  private List<UIImageLang> languages;
+  private List<UILang> languages;
   private final DefaultComboBoxModel languagesModel;
   private final ImageCategoryProperty property;
   private final MovieRenamer mr;
@@ -137,7 +139,7 @@ public class GalleryPanel extends JDialog {
     initComponents();
 
     propertyChange = new PropertyChangeSupport(previewLbl);
-    languages = new ArrayList<UIImageLang>();
+    languages = new ArrayList<UILang>();
     languagesModel = new DefaultComboBoxModel();
     languageCbb.setModel(languagesModel);
     languageCbb.setRenderer(UIUtils.iconListRenderer);
@@ -164,7 +166,7 @@ public class GalleryPanel extends JDialog {
       @Override
       public void itemStateChanged(ItemEvent event) {
         if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
-          Locale locale = ((UIImageLang) languagesModel.getSelectedItem()).getLang();
+          Locale locale = ((UILang) languagesModel.getSelectedItem()).getLang();
           thumbGallery.removeAllImages();
           previewLbl.setIcon(null);
           List<UIMediaImage> imageslang = getImageByLanguage(images, locale.getCountry());
@@ -186,6 +188,8 @@ public class GalleryPanel extends JDialog {
       public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("selectedImage")) {
           previewLbl.setIcon(loadingPreview);
+          previewLbl.setHorizontalAlignment(WebLabel.CENTER);
+
           UIMediaImage image = thumbGallery.getSelectedImage();
           if (image == null) {
             UISettings.LOGGER.log(Level.SEVERE, "UIMediaImage null");
@@ -194,6 +198,7 @@ public class GalleryPanel extends JDialog {
 
           if (ImageUtils.isInCache(image.getUri(ImageSize.medium))) {
             Icon icon = ImageUtils.getIcon(image.getUri(ImageSize.medium), null, null);
+            previewLbl.setHorizontalAlignment(WebLabel.TRAILING);
             previewLbl.setIcon(icon);
             GalleryPanel.this.propertyChange.firePropertyChange("updateThumb", null, icon);
             return;
@@ -249,13 +254,13 @@ public class GalleryPanel extends JDialog {
     if (gworker != null && !gworker.isDone()) {
       WorkerManager.stop(gworker);
     }
-    WorkerManager.fetchImages(this.getClass(), images, this, "ui/unknown.png", ics.getGalleryDim(), ImageSize.small);
+    WorkerManager.fetchImages(images, this, "ui/unknown.png", ics.getGalleryDim(), ImageSize.small);
   }
 
   public void addImages(List<UIMediaImage> images) {
     this.images.addAll(images);
     for (UIMediaImage image : this.images) {
-      UIImageLang imglang = image.getImagelang();
+      UILang imglang = image.getImagelang();
       image.setIcon(loadingGallery);
 
       if (!languages.contains(imglang)) {
@@ -298,7 +303,14 @@ public class GalleryPanel extends JDialog {
     images.clear();
     languagesModel.removeAllElements();
     languages.clear();
+    previewLbl.setIcon(null);
   }
+
+  @Override
+  public String toString() {
+    return property.name();
+  }
+
 
   /**
    * This method is called from within the constructor to
@@ -337,7 +349,7 @@ public class GalleryPanel extends JDialog {
         .addGroup(previewPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(previewLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(languageCbb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(0, 12, Short.MAX_VALUE))
+        .addGap(0, 15, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout galleryPnlLayout = new javax.swing.GroupLayout(galleryPnl);
@@ -357,7 +369,7 @@ public class GalleryPanel extends JDialog {
         .addContainerGap()
         .addComponent(previewPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(thumbGalleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+        .addComponent(thumbGalleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -365,13 +377,11 @@ public class GalleryPanel extends JDialog {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(galleryPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+      .addComponent(galleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(galleryPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
+      .addComponent(galleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
 
     pack();

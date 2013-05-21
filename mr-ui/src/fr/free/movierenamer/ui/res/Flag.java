@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,11 @@
  */
 package fr.free.movierenamer.ui.res;
 
-import fr.free.movierenamer.ui.bean.UIImageLang;
+import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.Locale;
 import java.util.logging.Level;
 import javax.swing.Icon;
@@ -125,9 +126,9 @@ public abstract class Flag {
     }
   }
 
-  public static UIImageLang getFlag(String code) {
-    if(code == null || code.length() == 0) {
-      return new UIImageLang(Locale.ROOT, Unknown);
+  public static UILang getFlag(String code) {
+    if (code == null || code.length() == 0) {
+      return new UILang(null, Unknown);
     }
 
     code = code.toLowerCase();
@@ -135,31 +136,35 @@ public abstract class Flag {
     Locale langLocal = LocaleUtils.findLanguage(code);
     Locale countryLocale = LocaleUtils.findCountry(code);
 
-    if (langLocal != null || countryLocale != null) {
-      for (FlagsIcon lFlag : FlagsIcon.values()) {
+    try {
+      if (langLocal != null || countryLocale != null) {
+        for (FlagsIcon lFlag : FlagsIcon.values()) {
 
-        if(lFlag.name().equals(code)) {
-          return new UIImageLang(new Locale("", lFlag.name()), lFlag.getFlagIcon());
-        }
-
-        if (langLocal != null) {
-          String language = langLocal.getLanguage();
-          if (language.equals("ar")) {
-            language = "ara";
+          if (lFlag.name().equals(code)) {
+            return new UILang(LocaleUtils.AvailableLanguages.valueOf(code), lFlag.getFlagIcon());
           }
 
-          if (language.equalsIgnoreCase(lFlag.name())) {
-            return new UIImageLang(new Locale("", lFlag.name()), lFlag.getFlagIcon());
-          }
-        }
+          if (langLocal != null) {
+            String language = langLocal.getLanguage();
+            if (language.equals("ar")) {
+              language = "ara";
+            }
 
-        if (countryLocale != null && langLocal.getCountry().equalsIgnoreCase(lFlag.name())) {
-          return new UIImageLang(new Locale("", lFlag.name()), lFlag.getFlagIcon());
+            if (language.equalsIgnoreCase(lFlag.name())) {
+              return new UILang(LocaleUtils.AvailableLanguages.valueOf(code), lFlag.getFlagIcon());
+            }
+          }
+
+          if (countryLocale != null && langLocal.getCountry().equalsIgnoreCase(lFlag.name())) {
+            return new UILang(LocaleUtils.AvailableLanguages.valueOf(code), lFlag.getFlagIcon());
+          }
         }
       }
+    } catch (IllegalArgumentException ex) {
+      // No flag image :(
     }
 
     UISettings.LOGGER.log(Level.WARNING, String.format("Flag not found : %s", code));
-    return new UIImageLang(Locale.ROOT, Unknown);
+    return new UILang(null, Unknown);
   }
 }

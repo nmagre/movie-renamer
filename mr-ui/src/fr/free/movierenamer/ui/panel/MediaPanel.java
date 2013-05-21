@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,30 +21,18 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
-import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
+import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.UIMediaImage;
-import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Color;
+import fr.free.movierenamer.ui.worker.WorkerManager;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import javax.swing.Icon;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.LineBorder;
 
 /**
  * class MediaPanel
@@ -56,14 +44,10 @@ public abstract class MediaPanel extends WebPanel {
   private final int nbStar = 5;
   private final WebPanel starPanel;
   private final List<WebLabel> stars;
-  private final Map<ImageCategoryProperty, GalleryPanel> galleryPanels;
-  private final Map<ImageCategoryProperty, WebLabel> thumbLabel;
   protected MovieRenamer mr;
 
-  protected MediaPanel(MovieRenamer mr, ImageCategoryProperty... supportedImages) {
+  protected MediaPanel(MovieRenamer mr) {
     this.mr = mr;
-    galleryPanels = new EnumMap<ImageCategoryProperty, GalleryPanel>(ImageCategoryProperty.class);
-    thumbLabel = new EnumMap<ImageCategoryProperty, WebLabel>(ImageCategoryProperty.class);
 
     starPanel = new WebPanel();
     starPanel.setMargin(0);
@@ -76,39 +60,6 @@ public abstract class MediaPanel extends WebPanel {
       starPanel.add(stars.get(i));
     }
 
-    for (ImageCategoryProperty property : supportedImages) {
-      final GalleryPanel galleryPanel = new GalleryPanel(mr, property);
-      PropertyChangeSupport support = galleryPanel.getPropertyChange();
-      support.addPropertyChangeListener(new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-          if (evt.getPropertyName().equals("updateThumb")) {
-            if (evt.getNewValue() != null) {
-              thumbLabel.get(galleryPanel.getImageProperty()).setIcon((Icon) evt.getNewValue());
-            }
-          }
-        }
-      });
-
-      WebLabel thumbLbl = new WebLabel();
-      thumbLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
-      thumbLbl.setHorizontalAlignment(SwingConstants.CENTER);
-      thumbLbl.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseReleased(MouseEvent evt) {
-
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              galleryPanel.setVisible(true);
-            }
-          });
-        }
-      });
-      galleryPanels.put(property, galleryPanel);
-      thumbLabel.put(property, new WebLabel());
-    }
-
     clearStars();
   }
 
@@ -118,86 +69,20 @@ public abstract class MediaPanel extends WebPanel {
     return Collections.unmodifiableList(stars);
   }
 
-  public GalleryPanel getGallery(ImageCategoryProperty key) {
-    if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
-      return null;
-    }
-    return galleryPanels.get(key);
-  }
-
-  public WebLabel getThumbLabel(ImageCategoryProperty key) {
-    if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
-      return null;
-    }
-    return thumbLabel.get(key);
-  }
-
-  public void addImages(List<UIMediaImage> image, ImageCategoryProperty key) {
-    if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("Panel %s does not support image type : %s", getPanelName(), key.name()));
-      return;
-    }
-
-    thumbLabel.get(key).setIcon(null);
-    galleryPanels.get(key).clear();
-    galleryPanels.get(key).addImages(image);
-  }
-
-  private void showGalleryPanel(final ImageCategoryProperty key) {
-    if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
-      return;
-    }
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        galleryPanels.get(key).setVisible(true);
-      }
-    });
-  }
-
-  public void clearPanel() {
-    clear();
-    clearStars();
-
-    for (GalleryPanel gpnl : galleryPanels.values()) {
-      gpnl.clear();
-    }
-
-    for (WebLabel thumbLbl : thumbLabel.values()) {
-      thumbLbl.setIcon(null);
-      if(thumbLbl.getMouseListeners().length > 0) {
-        thumbLbl.removeMouseListener(thumbLbl.getMouseListeners()[0]);
-      }
-    }
-  }
-
-  public boolean isSupportedImage(ImageCategoryProperty property) {
-    return galleryPanels.containsKey(property);
-  }
-
-  public List<ImageCategoryProperty> getSupportedImages() {
-    return new ArrayList<ImageCategoryProperty>(galleryPanels.keySet());
-  }
-
   /**
    * Clear media panel
    */
-  protected abstract void clear();
+  public abstract void clear();
 
   public void addMediaInfo(MediaInfo mediaInfo) {
     setMediaInfo(mediaInfo);
-    for (final ImageCategoryProperty property : thumbLabel.keySet()) {
-      thumbLabel.get(property).addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseReleased(MouseEvent evt) {
-          showGalleryPanel(property);
-        }
-      });
+
+    // Fetch actor images
+    List<UIPersonImage> cast = new ArrayList<UIPersonImage>();
+    for (CastingInfo info : mediaInfo.getCast()) {
+      cast.add(new UIPersonImage(info));
     }
+    WorkerManager.fetchImages(cast, getCastingModel(), new Dimension(45, 70), "ui/unknown.png");// FIXME dimension
   }
 
   protected abstract void setMediaInfo(MediaInfo mediaInfo);
@@ -242,4 +127,6 @@ public abstract class MediaPanel extends WebPanel {
       stars.get(n).setIcon(ImageUtils.STARHALF_16);
     }
   }
+
+
 }

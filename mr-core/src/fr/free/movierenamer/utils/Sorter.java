@@ -83,7 +83,7 @@ public class Sorter {
       case LANGUAGE:
         Collections.sort(list, new LanguageSort());
       default:
-        Settings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported", type.name());
+        Settings.LOGGER.log(Level.SEVERE, String.format("Sorter type %s is not supported", type.name()));
     }
   }
 
@@ -92,7 +92,7 @@ public class Sorter {
       sortYear(list, year, type.equals(SorterType.ALPHA_YEAR) ? new AlphabeticSort() : null);
       return;
     }
-    Settings.LOGGER.log(Level.SEVERE, "Sorter type {0} is not supported with year sort", type.name());
+    Settings.LOGGER.log(Level.SEVERE, String.format("Sorter type %s is not supported with year sort", type.name()));
   }
 
   public static void sort(List<? extends ISort> list, String search) {

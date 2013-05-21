@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * Class ClassUtils
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -56,15 +56,28 @@ public final class ClassUtils {
     }
     return classes;
   }
-  
+
   /**
    * Get stack trace message to string
-   * 
+   *
+   * @param ex
+   * @return String with stack trace
+   */
+  public static String getStackTrace(Exception ex) {
+    Throwable throwable = ex.getCause();
+    String exception = throwable != null ? throwable.getClass().getSimpleName() : ex.getClass().toString();
+    StackTraceElement[] ste = throwable != null ? throwable.getStackTrace() : ex.getStackTrace();
+    return getStackTrace(exception, ste);
+  }
+
+  /**
+   * Get stack trace message to string
+   *
    * @param exception String
    * @param ste Stack trace
    * @return String with stack trace
    */
-  public static String getStackTrace(String exception, StackTraceElement[] ste) {
+  private static String getStackTrace(String exception, StackTraceElement[] ste) {
     StringBuilder res = new StringBuilder(exception + "\n");
     for (int i = 0; i < ste.length; i++) {
       res.append("    ").append(ste[i].toString()).append("\n");

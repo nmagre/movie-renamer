@@ -58,7 +58,7 @@ public class TMDbScrapper extends MovieScrapper {
   public static final String imageUrl = "http://cf2.imgobject.com/t/p/";
 
   public TMDbScrapper() {
-    super(AvailableLanguages.en, AvailableLanguages.fr, AvailableLanguages.es, AvailableLanguages.it, AvailableLanguages.de, AvailableLanguages.zh);
+    super(AvailableLanguages.values());
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -114,7 +114,7 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey);
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage());
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);

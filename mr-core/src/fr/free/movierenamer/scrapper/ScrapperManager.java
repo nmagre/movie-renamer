@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.scrapper.impl;
+package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AnidbScrapper;
@@ -30,10 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.Scrapper;
-import fr.free.movierenamer.scrapper.SubtitleScrapper;
-import fr.free.movierenamer.scrapper.TvShowScrapper;
+import fr.free.movierenamer.scrapper.impl.OpenSubtitlesScrapper;
+import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.settings.Settings;
 
 /**
@@ -90,14 +88,14 @@ public class ScrapperManager {
   public static MovieScrapper getMovieScrapper() {
     Settings settings = Settings.getInstance();
     MovieScrapper scrapper = getScrapper(settings.getSearchMovieScrapper());
-    scrapper.setLanguage(settings.getSearchMovieScrapperLang());
+    scrapper.setLanguage(settings.getSearchScrapperLang().getLocale());
     return scrapper;
   }
 
   public static TvShowScrapper getTvShowScrapper() {
     Settings settings = Settings.getInstance();
     TvShowScrapper scrapper = getScrapper(settings.getSearchTvshowScrapper());
-    scrapper.setLanguage(settings.getSearchTvshowScrapperLang());
+    scrapper.setLanguage(settings.getSearchScrapperLang().getLocale());
     return scrapper;
   }
 

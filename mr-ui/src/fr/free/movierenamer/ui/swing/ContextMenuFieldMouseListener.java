@@ -51,7 +51,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   public ContextMenuFieldMouseListener() {
 
-    cut = new AbstractAction(LocaleUtils.i18nExt("cut")) {
+    cut = new AbstractAction(LocaleUtils.i18nExt("popup.cut")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -61,7 +61,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    copy = new AbstractAction(LocaleUtils.i18nExt("copy")) {
+    copy = new AbstractAction(LocaleUtils.i18nExt("popup.copy")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -71,7 +71,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    paste = new AbstractAction(LocaleUtils.i18nExt("paste")) {
+    paste = new AbstractAction(LocaleUtils.i18nExt("popup.paste")) {
 
       private static final long serialVersionUID = 1L;
 
@@ -81,7 +81,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    selectAll = new AbstractAction(LocaleUtils.i18nExt("selectAll")) {
+    selectAll = new AbstractAction(LocaleUtils.i18nExt("popup.selectAll")) {
 
       private static final long serialVersionUID = 1L;
 

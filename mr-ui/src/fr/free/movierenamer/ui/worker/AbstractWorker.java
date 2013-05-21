@@ -1,5 +1,5 @@
 /*
- * movie-renamer
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
     try {
       result = executeInBackground();
     } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getCause().toString(), ex.getStackTrace()));
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
     }
     return result;
   }
@@ -67,13 +67,15 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
         workerPending();
         break;
       case DONE:
+        WorkerManager.updateWorkerQueue();
+
         try {
           workerDone();
-        } catch (CancellationException e) {
-          // Worker canceled
+        } catch (CancellationException e) {// Worker canceled
           UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getName()));
+          workerCanceled();
         } catch (Exception ex) {
-          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getClass().getSimpleName(), ex.getStackTrace()));
+          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
         }
         break;
       default:
@@ -82,6 +84,10 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
   }
 
   protected abstract String getName();
+
+  protected void workerCanceled() {
+    // DO nothing
+  }
 
   protected void workerStarted() {
     // DO nothing

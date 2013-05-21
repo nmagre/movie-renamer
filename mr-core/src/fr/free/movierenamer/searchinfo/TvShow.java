@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ public class TvShow extends Media {
   }
 
   public TvShow(IdInfo id, String seriesName, URL thumb, int year) {
-    super(id, seriesName, null, thumb, year, null);
+    super(id, seriesName, null, thumb, year);
   }
 
   @Override

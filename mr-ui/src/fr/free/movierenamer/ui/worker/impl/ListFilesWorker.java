@@ -1,5 +1,5 @@
 /*
- * movie-renamer
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,21 +21,16 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
-import fr.free.movierenamer.info.FileInfo;
-import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
-import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.FileFilter;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
-import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -52,30 +47,6 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   private boolean subFolder;
   private final UISettings setting;
   private boolean paused = false;
-  private final FilenameFilter filaAndFolder = new FilenameFilter() {
-    @Override
-    public boolean accept(File dir, String name) {
-      if (dir.isDirectory()) {
-        return !dir.isHidden();
-      }
-
-      if (dir.isHidden()) {
-        return false;
-      }
-
-      if (dir.getName().contains(StringUtils.DOT)) {
-        //return true;
-      }
-
-      return false;
-    }
-  };
-  private final FilenameFilter folderFilter = new FilenameFilter() {
-    @Override
-    public boolean accept(File dir, String name) {
-      return new File(dir.getAbsolutePath() + File.separator + name).isDirectory();
-    }
-  };
 
   /**
    * Constructor arguments
@@ -108,29 +79,27 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
     }
 
     if (!subFolder && subFolder(files)) {
-      publish(LocaleUtils.i18n("scanSubFolder"));
+      publish(LocaleUtils.i18nExt("dialog.scanSubFolder"));
       pause();
     }
 
     try {
-      int count = files.size();
-      for (int i = 0; i < count; i++) {
+      for (File file : files) {
         if (isCancelled()) {
-          UISettings.LOGGER.log(Level.INFO, "ListFilesWorker Cancelled");
           return new ArrayList<UIFile>();
         }
 
-        if (files.get(i).isDirectory()) {
-          addFiles(medias, files.get(i));
+        if (file.isDirectory()) {
+          addFiles(medias, file);
         } else {
-          boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(files.get(i).getName());
+          boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(file);
           if (addfiletoUI) {
-            addUIfile(medias, files.get(i));
+            addUIfile(medias, file);
           }
         }
       }
     } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex.getClass().toString(), ex.getStackTrace()));
+      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
     }
 
     Sorter.sort(medias, Sorter.SorterType.ALPHABETIC);
@@ -146,7 +115,7 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   private boolean subFolder(List<File> files) {
     for (File file : files) {
       if (file.isDirectory()) {
-        File[] subDir = file.listFiles(folderFilter);
+        File[] subDir = file.listFiles(new FileUtils.FolderFilter());
         if (subDir != null && subDir.length > 0) {
           return true;
         }
@@ -163,20 +132,27 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
    */
   private void addFiles(List<UIFile> medias, File file) {
 
-    File[] listFiles = file.listFiles(new FileFilter());
+    if (isCancelled()) {
+      return;
+    }
+
+    FileFilter fileFilter = setting.isUseExtensionFilter() ? new FileUtils.ExtensionFileFilter(true, setting.coreInstance.getfileExtension())
+            : new FileUtils.FileAndFolderFilter();
+    File[] listFiles = file.listFiles(fileFilter);
+
     if (listFiles == null) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("Directory \"%s\" does not exist or is not a Directory", file.getName()));
       return;
     }
 
-    if (isCancelled()) {
-      return;
-    }
-
     for (int i = 0; i < listFiles.length; i++) {
+      if (isCancelled()) {
+        return;
+      }
+
       if (listFiles[i].isDirectory() && subFolder) {
         addFiles(medias, listFiles[i]);
-      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i].getName())) {
+      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i])) {
         addUIfile(medias, listFiles[i]);
       }
     }
@@ -184,15 +160,17 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
 
   private void addUIfile(List<UIFile> medias, File file) {
     String groupName = file.getName().trim().substring(0, 1);
-    switch (FileInfo.getMediaType(file)) {
-      case MOVIE:
-        break;
-      case TVSHOW:
-        TvShowNameMatcher nameMatcher = new TvShowNameMatcher(file, new ArrayList<String>());
-        TvShowEpisodeNumMatcher epMatch = new TvShowEpisodeNumMatcher(file);
-        groupName = nameMatcher.getName() + " " + LocaleUtils.i18nExt("season") + " " + epMatch.matchEpisode().seasonL0();
-        break;
-    }
+//    switch (FileInfo.getMediaType(file)) {
+//      case MOVIE:
+//        break;
+//      case TVSHOW:
+//       /* TvShowNameMatcher nameMatcher = new TvShowNameMatcher(file, new ArrayList<String>());
+//        TvShowEpisodeNumMatcher epMatch = new TvShowEpisodeNumMatcher(file);
+//        groupName = nameMatcher.getName() + " " + LocaleUtils.i18nExt("season") + " " + epMatch.matchEpisode().seasonL0();
+//        * */
+//        break;
+//    }
+
     medias.add(new UIFile(file, groupName));
   }
 
@@ -206,14 +184,26 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
     eventList.addAll(medias);
 
     if (eventList.isEmpty()) {
-      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noMediaFound"), LocaleUtils.i18n("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n
-    } else if (UISettings.getInstance().isSelectFirstMedia()) {
+      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("warning.noMediaFound"), LocaleUtils.i18nExt("warning"), WebOptionPane.WARNING_MESSAGE);
+      return;
+    }
+
+    if (UISettings.getInstance().isSelectFirstMedia()) {
       int index = 0;
       if (mr.getMediaFileListModel().getElementAt(index) instanceof SeparatorList.Separator) {
         index++;
       }
       list.setSelectedIndex(index);
     }
+
+    mr.setClearMediaFileListBtnEnabled();
+  }
+
+  @Override
+  protected void workerCanceled() {
+    WebList list = mr.getMediaList();
+    list.setModel(mr.getMediaFileListModel());
+    eventList.clear();
   }
 
   private void pause() {
@@ -238,6 +228,6 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
 
   @Override
   protected String getName() {
-    return "List Files";
+    return LocaleUtils.i18nExt("worker.listFile");
   }
 }

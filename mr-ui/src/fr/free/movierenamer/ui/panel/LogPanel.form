@@ -68,7 +68,9 @@
     </Container>
     <Component class="com.alee.laf.checkbox.WebCheckBox" name="webCheckBox1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Hide INFO"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="logs.showOnlyError" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="webCheckBox1ActionPerformed"/>
@@ -80,7 +82,7 @@
           <Connection code="ImageUtils.TEXTFILE_16" type="code"/>
         </Property>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="logfile" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
+          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="logs.saveLogFile" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
         </Property>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>

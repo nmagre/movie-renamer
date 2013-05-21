@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2012 Nicolas Magré
+ * Movie Renamer
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,19 +28,18 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.StringUtils;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import javax.swing.JComponent;
 
 /**
  * Class PanelGenerator
  *
  * @author Nicolas Magré
- * @author Simon QUÉMÉNEUR
  */
 public abstract class PanelGenerator extends WebPanel {
 
@@ -62,6 +62,8 @@ public abstract class PanelGenerator extends WebPanel {
   // Grid Y position
   private int gridy = 0;
   private boolean endGroup = true;
+  //
+  protected final String settingsi18n = "settings.";
 
   public enum Component {
 
@@ -192,7 +194,7 @@ public abstract class PanelGenerator extends WebPanel {
     Insets inset = (Insets) ((!endGroup) ? groupSeparationInsets.clone() : groupInsets.clone());
     inset.left *= level;
     GridBagConstraints groupConstraint = getGroupConstraint(inset, gridx, last, resize);
-    if(level == 0) {
+    if (level == 0) {
       groupConstraint.gridwidth = level;
       groupConstraint.anchor = GridBagConstraints.WEST;
     }
@@ -259,14 +261,7 @@ public abstract class PanelGenerator extends WebPanel {
    * @return WebToolBar
    */
   protected WebToolBar createTitle(String title) {
-    WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);
-    toolbar.setFloatable(false);
-    toolbar.setRollover(true);
-
-    WebLabel label = new WebLabel(LocaleUtils.i18nExt(title));
-    label.setFont(new Font(textFont, Font.BOLD, subTitleSize));
-    toolbar.add(label);
-    return toolbar;
+    return createTitle(title, null);
   }
 
   /**
@@ -278,32 +273,24 @@ public abstract class PanelGenerator extends WebPanel {
    */
   protected WebToolBar createTitle(String title, final String helpText) {
     WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);
+    toolbar.setMargin(new Insets(0, 5, 0, 5));
     toolbar.setFloatable(false);
     toolbar.setRollover(true);
 
-    WebLabel label = new WebLabel(LocaleUtils.i18nExt(title));
+    WebLabel label = new WebLabel(LocaleUtils.i18nExt(settingsi18n + title.toLowerCase()));
     label.setFont(new Font(textFont, Font.BOLD, subTitleSize));
     toolbar.add(label);
 
     if (helpText != null) {
       final WebButton button = new WebButton(ImageUtils.HELP_16);
       button.setMargin(0);
-      button.setUndecorated(true);
+      button.setFocusable(false);
+      button.setRolloverDarkBorderOnly(true);
+      button.setRolloverDecoratedOnly(true);
       button.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent ae) {
-          WebOptionPane.showMessageDialog(PanelGenerator.this, LocaleUtils.i18nExt(helpText), LocaleUtils.i18nExt("help"), WebOptionPane.PLAIN_MESSAGE);
-        }
-      });
-      button.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseEntered(java.awt.event.MouseEvent evt) {
-          //button.setIcon(UIUtils.HELPDISABLED);// FIXME
-        }
-
-        @Override
-        public void mouseExited(java.awt.event.MouseEvent evt) {
-          button.setIcon(ImageUtils.HELP_16);
+          WebOptionPane.showMessageDialog(PanelGenerator.this, LocaleUtils.i18nExt(settingsi18n + helpText), LocaleUtils.i18nExt("help"), WebOptionPane.PLAIN_MESSAGE);
         }
       });
       TooltipManager.setTooltip(button, LocaleUtils.i18nExt("help"), TooltipWay.down);
@@ -347,6 +334,7 @@ public abstract class PanelGenerator extends WebPanel {
    */
   protected JComponent createComponent(Component settingComponent, String title, String tooltip, int typeface) {
     JComponent component = null;
+    title = settingsi18n + title.toLowerCase();
     switch (settingComponent) {
       case BUTTON:
         component = new WebButton(LocaleUtils.i18nExt(title));

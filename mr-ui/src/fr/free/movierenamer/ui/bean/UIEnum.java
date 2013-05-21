@@ -15,55 +15,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing;
+package fr.free.movierenamer.ui.bean;
 
-import com.alee.extended.filefilter.DefaultFileFilter;
-import fr.free.movierenamer.renamer.NameCleaner;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.io.File;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
- * Class FileFilter
- *
+ * Class UIEnum
  * @author Nicolas Magré
  */
-public class FileFilter extends DefaultFileFilter {
+public class UIEnum implements IIconList {
 
-  private final UISettings settings = UISettings.getInstance();
+  private Enum<?> enumValue;
+  private Icon icon;
+  private String imgFolder;
 
-  public FileFilter() {
-    super();
+  public UIEnum(Enum<?> enumValue, String imgFolder) {
+    this.enumValue = enumValue;
+    this.imgFolder = imgFolder;
+  }
+
+  public Enum<?> getValue() {
+    return enumValue;
   }
 
   @Override
-  public boolean accept(File file) {
-
-    if(file.isHidden()) {
-      return false;
+  public Icon getIcon() {
+    if (icon == null && imgFolder != null) {
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format(imgFolder + "/%s.png", enumValue.name().toLowerCase())));
     }
-
-    if (!settings.isUseExtensionFilter()) {
-      return true;
-    }
-
-    if (file.isDirectory()) {
-      return true;
-    }
-
-    return FileUtils.hasExtension(file, NameCleaner.getCleanerProperty("file.extension").split("|"));
+    return icon;
   }
 
   @Override
-  public String getDescription() {
-    return LocaleUtils.i18n("media");
-  }
-
-  @Override
-  public ImageIcon getIcon() {
-    return (ImageIcon) ImageUtils.LOGO_32;
+  public String toString() {
+    return LocaleUtils.i18nExt("settings." + enumValue.name().toLowerCase());
   }
 }

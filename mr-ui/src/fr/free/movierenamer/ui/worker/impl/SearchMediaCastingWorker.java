@@ -86,7 +86,7 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
     castingList.setModel(castingModel);
     if (infos != null) {
       castingModel.addElements(infos);
-      WorkerManager.fetchImages(this.getClass(), infos, castingModel, actorListDim, "ui/unknown.png");
+      WorkerManager.fetchImages(infos, castingModel, actorListDim, "ui/unknown.png");
     }
   }
 

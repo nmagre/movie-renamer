@@ -17,12 +17,12 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import com.alee.laf.button.WebButton;
 import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
-import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
+import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -36,7 +36,6 @@ import fr.free.movierenamer.utils.Sorter;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 
@@ -49,10 +48,8 @@ import javax.swing.JOptionPane;
 public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
   private final UIFile media;
-  private final MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper;
+  private final SearchScrapper<? extends Hyperlink> scrapper;
   private final WebList searchResultList;
-  private final WebButton searchBtn;
-  private final WebTextField searchField;
   private final DefaultListModel searchResultModel;
   private final Dimension searchListDim = new Dimension(45, 65);
 
@@ -61,35 +58,28 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
    *
    * @param mr
    * @param media
-   * @param scrapper
-   * @param searchResultList
-   * @param searchBtn
-   * @param searchField
-   * @param searchResultModel
    */
-  public SearchMediaWorker(MovieRenamer mr, UIFile media, MediaScrapper<? extends SearchResult, ? extends MediaInfo> scrapper, WebList searchResultList, WebButton searchBtn, WebTextField searchField, DefaultListModel searchResultModel) {
+  public SearchMediaWorker(MovieRenamer mr, UIFile media) {
     super(mr);
     this.media = media;
-    this.scrapper = scrapper;
-    this.searchResultList = searchResultList;
-    this.searchBtn = searchBtn;
-    this.searchField = searchField;
-    this.searchResultModel = searchResultModel;
+    this.scrapper = mr.getScrapper().getScrapper();
+    this.searchResultList = mr.getSearchResultList();
+    this.searchResultModel = mr.getSearchResultListModel();
   }
 
   @Override
+  @SuppressWarnings("unchecked")// FIXME
   public List<UISearchResult> executeInBackground() throws Exception {
     List<UISearchResult> results = new ArrayList<UISearchResult>();
     List<? extends Media> res;
 
     if (media != null && scrapper != null) {
       String search = media.getSearch();
-      res = (List<? extends Media>) scrapper.search(search);
+      res = (List<? extends Media>) scrapper.search(search);// FIXME
       int count = res.size();
 
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          UISettings.LOGGER.log(Level.INFO, "SearchMediaWorker Cancelled");
           return new ArrayList<UISearchResult>();
         }
 
@@ -102,61 +92,61 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
   @Override
   protected void workerDone() throws Exception {
-    // Remove loader
-    searchResultModel.removeAllElements();
 
-    try {
-      List<UISearchResult> results = get();
-      if (results == null) {
-        return;
-      }
+    searchResultList.setModel(searchResultModel);
 
-      // Sort search results
-      Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
-      UISettings.LOGGER.log(Level.INFO, String.format("Sort type %s, year %s , search %s", type.name(), media.getYear(), media.getSearch()));
-      switch (type) {
-        case ALPHABETIC:
-        case LENGTH:
-        case YEAR:
-          Sorter.sort(results, type);
-          break;
-        case YEAR_ROUND:
-        case ALPHA_YEAR:
-          Sorter.sort(results, type, media.getYear());
-          break;
-        case SIMMETRICS:
-          UISettings.LOGGER.log(Level.INFO, "Sort SIMMETRICS");
-          Sorter.sort(results, media.getSearch());
-          break;
-        case LEVEN_YEAR:
-          Sorter.sort(results, media.getYear(), media.getSearch());
-          break;
-        default:
-          // Do nothing
-      }
+    List<UISearchResult> results = get();
 
-      searchResultModel.addElements(results);
-
-      if (searchResultModel.isEmpty()) {
-        JOptionPane.showMessageDialog(mr, LocaleUtils.i18n("noResult"), LocaleUtils.i18n("error"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog + i18n
-      } else {
-        if (UISettings.getInstance().isSelectFirstResult()) {
-          searchResultList.setSelectedIndex(0);
-        }
-        WorkerManager.fetchImages(this.getClass(), results, searchResultModel, searchListDim, "ui/nothumb.png");
-      }
-
-    } catch (CancellationException e) {// ???? Really useful ?
-      // Worker canceled
-      UISettings.LOGGER.log(Level.INFO, String.format("%s Cancelled", getName()));
-    } finally {
-      searchBtn.setEnabled(true);
-      searchField.setEnabled(true);
+    if (results == null) {
+      mr.setSearchEnabled();
+      return;
     }
+
+    // Sort search results
+    Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
+    UISettings.LOGGER.log(Level.INFO, String.format("Sort type %s, year %s , search %s", type.name(), media.getYear(), media.getSearch()));
+    switch (type) {
+      case ALPHABETIC:
+      case LENGTH:
+      case YEAR:
+        Sorter.sort(results, type);
+        break;
+      case YEAR_ROUND:
+      case ALPHA_YEAR:
+        Sorter.sort(results, type, media.getYear());
+        break;
+      case SIMMETRICS:
+        UISettings.LOGGER.log(Level.INFO, "Sort SIMMETRICS");
+        Sorter.sort(results, media.getSearch());
+        break;
+      case LEVEN_YEAR:
+        Sorter.sort(results, media.getYear(), media.getSearch());
+        break;
+      default:
+      // Do nothing
+      }
+
+    searchResultModel.addElements(results);
+
+    if (searchResultModel.isEmpty()) {
+      JOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("noResult"), LocaleUtils.i18nExt("warning"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog + i18n
+    } else {
+      if (UISettings.getInstance().isSelectFirstResult()) {
+        searchResultList.setSelectedIndex(0);
+      }
+      WorkerManager.fetchImages(results, searchResultModel, searchListDim, "ui/nothumb.png");
+    }
+
+    mr.setSearchEnabled();
+  }
+
+  @Override
+  protected void workerCanceled() {
+    mr.setSearchEnabled();
   }
 
   @Override
   protected String getName() {
-    return "Search Media";
+    return LocaleUtils.i18nExt("worker.searchMedia");
   }
 }

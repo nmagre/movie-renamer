@@ -41,17 +41,23 @@ import com.sun.jna.Platform;
 import fr.free.movierenamer.info.NfoInfo;
 
 import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
+import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
+import fr.free.movierenamer.scrapper.impl.OpenSubtitlesScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class Settings , Movie Renamer settings
@@ -80,8 +86,11 @@ public final class Settings {
   public static final String APPNAME;
   public static final String APPMODULE;
   public static final String VERSION;
+  public static final boolean LINUX = Platform.isLinux();
   public static final File appFolder;
   private static final String appName_nospace;
+  //JNA
+  public static Boolean MEDIAINFO;
   // files
   private static final String configFileName;
   private static final String logFileName;
@@ -96,6 +105,34 @@ public final class Settings {
   private final Node settingsNode;
   private boolean autosave = true;
 
+  public enum SettingsType {
+    GENERAL,
+    RENAME,
+    SEARCH,
+    INTERFACE,
+    IMAGE,
+    EXTENSION,
+    NETWORK
+  }
+
+  public enum SettingsSubType {
+    GENERAL,
+    NFO,
+    UPDATE,
+    CACHE,
+    LANGUAGE,
+    SCRAPPER,
+    INTERFACE,
+    MOVIEFILENAME,
+    MOVIEDIR,
+    TVSHOWFILENAME,
+    TVSHOWDIR,
+    SORT,
+    THUMB,
+    FANART,
+    PROXY
+  }
+
   public interface IProperty {
 
     public Class<?> getVclass();
@@ -104,62 +141,72 @@ public final class Settings {
 
     public String getValue();
 
+    public String name();
+
+    public SettingsType getType();
+
+    public SettingsSubType getSubType();
+
     public void setValue(Object value) throws IOException;
   }
 
   public enum SettingsProperty implements IProperty {
-    // app lang
 
-    appLanguage(Locale.ENGLISH), // (Locale.ENGLISH.toString()),
-    reservedCharacter(Boolean.TRUE),
+    appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),
+    reservedCharacter(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     // movie filename
-    movieFilenameFormat("<t> (<y>)"), // ("<t> (<y>)"),
-    movieFilenameSeparator(", "), // (", "),
-    movieFilenameLimit(3), // (Integer.decode("3").toString()),
-    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLA.name()), // (StringUtils.CaseConversionType.FIRSTLA.name()),
-    movieFilenameTrim(Boolean.TRUE), // (Boolean.TRUE.toString()),
-    movieFilenameRmDupSpace(Boolean.TRUE), // (Boolean.TRUE.toString()),
-    movieFilenameCreateDirectory(Boolean.FALSE), // (Boolean.FALSE.toString()),
+    movieFilenameFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // ("<t> (<y>)"),
+    movieFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (", "),
+    movieFilenameLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Integer.decode("3").toString()),
+    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLA, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (StringUtils.CaseConversionType.FIRSTLA.name()),
+    movieFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
+    movieFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
+    movieFilenameCreateDirectory(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.FALSE.toString()),
     // movie folder
-    movieFolderFormat("<t> (<y>)"), // ("<t> (<y>)"),
-    movieFolderSeparator(", "), // (", "),
-    movieFolderLimit(3), // (Integer.decode("3").toString()),
-    movieFolderCase(""), // (""),
-    movieFolderTrim(Boolean.TRUE), // (Boolean.TRUE.toString()),
-    movieFolderRmDupSpace(Boolean.TRUE), // (Boolean.TRUE.toString()),
+    movieFolderFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // ("<t> (<y>)"),
+    movieFolderSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (", "),
+    movieFolderLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Integer.decode("3").toString()),
+    movieFolderCase("", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (""),
+    movieFolderTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.TRUE.toString()),
+    movieFolderRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.TRUE.toString()),
     // movie NFO
-    movieNfoType(NfoInfo.NFOtype.XBMC.name()), // (NfoInfo.NFOtype.XBMC)
+    movieNfoType(NfoInfo.NFOtype.XBMC, SettingsType.GENERAL, SettingsSubType.NFO), // (NfoInfo.NFOtype.XBMC)
     // tvShow
-    tvShowFilenameFormat("<st> S<s>E<e> <et>"), // ("<st> S<s>E<e> <et>"),
-    tvShowFilenameSeparator(", "), // (", "),
-    tvShowFilenameLimit(3), // (Integer.decode("3").toString()),
-    tvShowFilenameCase(""), // (""),
-    tvShowFilenameTrim(Boolean.TRUE), // (Boolean.TRUE.toString()),
-    tvShowFilenameRmDupSpace(Boolean.TRUE), // (Boolean.TRUE.toString()),
+    tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
+    tvShowFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (", "),
+    tvShowFilenameLimit(3, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Integer.decode("3").toString()),
+    tvShowFilenameCase("", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (""),
+    tvShowFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
+    tvShowFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
     // Cache
-    cacheClear(Boolean.FALSE), // (Boolean.FALSE.toString()),
+    cacheClear(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.CACHE), // (Boolean.FALSE.toString()),
     // Search
-    searchMovieScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),
-    searchTvshowScrapper(TheTVDBScrapper.class), // (TheTVDBScrapper.class.toString()),
-    searchSubtitleScrapper(IMDbScrapper.class), // (IMDbScrapper.class.toString()),// FIXME
-    searchMovieScrapperLang(Locale.ENGLISH),// (Locale.ENGLISH.toString()),
-    searchTvshowScrapperLang(Locale.ENGLISH),// (Locale.ENGLISH.toString()),
-    searchSort(Sorter.SorterType.LEVEN_YEAR), // (Boolean.TRUE.toString()),
-    searchNbResult(2), // (Integer.decode("2").toString()),
-    searchDisplayApproximateResult(Boolean.FALSE), // (Boolean.FALSE.toString()),
-    // Proxy
-    proxyIsOn(Boolean.FALSE), // (Boolean.FALSE.toString()),
-    proxyUrl(""), // (""), // "10.2.1.10"
-    proxyPort(0), // (Integer.decode("0").toString()), // 3128
+    searchMovieScrapper(IMDbScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),
+    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
+    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
+    searchScrapperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.LANGUAGE),// (Locale.ENGLISH.toString()),
+    searchSort(Sorter.SorterType.LEVEN_YEAR, SettingsType.SEARCH, SettingsSubType.SORT), // (Boolean.TRUE.toString()),
+    searchNbResult(2, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Integer.decode("2").toString()),
+    searchDisplayApproximateResult(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.FALSE.toString()),
     // http param
-    httpRequestTimeOut(30), // (Integer.decode("30").toString()),
-    httpCustomUserAgent(""); // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+    httpRequestTimeOut(30, SettingsType.NETWORK, SettingsSubType.GENERAL), // (Integer.decode("30").toString()),
+    httpCustomUserAgent("", SettingsType.NETWORK, SettingsSubType.GENERAL), // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+    // Proxy
+    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY), // (Boolean.FALSE.toString()),
+    proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY), // (""), // "10.2.1.10"
+    proxyPort(0, SettingsType.NETWORK, SettingsSubType.PROXY), // (Integer.decode("0").toString()), // 3128
+    // Extension
+    fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL);
     private Class<?> vclass;
     private Object defaultValue;
+    private SettingsType type;
+    private SettingsSubType subType;
 
-    private SettingsProperty(Object defaultValue) {
+    private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
       this.vclass = defaultValue.getClass();
       this.defaultValue = defaultValue;
+      this.type = type;
+      this.subType = subType;
     }
 
     @Override
@@ -180,6 +227,16 @@ public final class Settings {
     @Override
     public void setValue(Object value) {
       instance.set(this, value);
+    }
+
+    @Override
+    public SettingsType getType() {
+      return type;
+    }
+
+    @Override
+    public SettingsSubType getSubType() {
+      return subType;
     }
   }
 
@@ -209,6 +266,9 @@ public final class Settings {
     } catch (IOException e) {
       LOGGER.log(Level.SEVERE, e.getMessage());
     }
+
+    // Lib mediaInfo
+    MEDIAINFO = libMediaInfo();
 
     // settingsDocument init
     Document settingsDocument;
@@ -294,7 +354,7 @@ public final class Settings {
   }
 
   public synchronized void clear() {
-    Logger.getLogger(Settings.class.getName()).log(Level.INFO, String.format("Clear Settings"));
+    Settings.LOGGER.log(Level.INFO, String.format("Clear Settings"));
     NodeList list = settingsNode.getChildNodes();
     for (int i = 0; i < list.getLength(); i++) {
       settingsNode.removeChild(list.item(i));
@@ -304,8 +364,8 @@ public final class Settings {
     }
   }
 
-  public Locale getAppLanguage() {
-    return new Locale(get(SettingsProperty.appLanguage));
+  public AppLanguages getAppLanguage() {
+    return AppLanguages.valueOf(get(SettingsProperty.appLanguage));
   }
 
   public boolean isReservedCharacter() {
@@ -423,12 +483,8 @@ public final class Settings {
     }
   }
 
-  public Locale getSearchMovieScrapperLang() {
-    return new Locale(get(SettingsProperty.searchMovieScrapperLang));
-  }
-
-  public Locale getSearchTvshowScrapperLang() {
-    return new Locale(get(SettingsProperty.searchTvshowScrapperLang));
+  public AvailableLanguages getSearchScrapperLang() {
+    return AvailableLanguages.valueOf(get(SettingsProperty.searchScrapperLang));
   }
 
   public Sorter.SorterType getSearchSorter() {
@@ -463,6 +519,12 @@ public final class Settings {
     return get(SettingsProperty.httpCustomUserAgent);
   }
 
+  public List<String> getfileExtension() {
+    String ext = get(SettingsProperty.fileExtension);
+    ext = ext.substring(1, ext.length() - 1);
+    return Arrays.asList(ext.split(", "));
+  }
+
   public boolean isAutosave() {
     return autosave;
   }
@@ -479,7 +541,7 @@ public final class Settings {
   private synchronized boolean saveSetting() {
     boolean saveSuccess;
     try {
-      LOGGER.log(Level.INFO, "Save configuration to {0}", configFileName);
+      LOGGER.log(Level.INFO, String.format("Save configuration to %s", configFileName));
       File confRoot = new File(Settings.appFolder, "conf");
       if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
         throw new IOException("Failed to create conf dir: " + confRoot);
@@ -512,7 +574,7 @@ public final class Settings {
     return ResourceBundle.getBundle(Settings.class.getName(), Locale.ROOT).getString(key);
   }
 
-  public static File getApplicationFolder()  {
+  public static File getApplicationFolder() {
     String applicationDirPath = System.getProperty("application.dir");
     String userHome = System.getProperty("user.home");
     String userDir = System.getProperty("user.dir");
@@ -536,21 +598,17 @@ public final class Settings {
 
     return applicationFolder;
   }
-  private static boolean libzen = false;
-  private volatile static Boolean mediainfo = null;
 
   /**
    * Check if lib media info is installed
    *
    * @return True if lib media info is installed, otherwhise false
    */
-  public static boolean libMediaInfo() {
-    if (mediainfo != null) {
-      return mediainfo;
-    }
+  private static boolean libMediaInfo() {
+    Boolean mediaInfo = null;
+    boolean libzen = false;
 
-    boolean linux = Platform.isLinux();
-    if (linux) {
+    if (LINUX) {
       try {
         NativeLibrary.getInstance("zen");
         libzen = true;
@@ -558,17 +616,20 @@ public final class Settings {
         Settings.LOGGER.log(Level.WARNING, "Failed to preload libzen");
       }
     }
-    if ((linux && libzen) || !linux) {
+
+    if ((LINUX && libzen) || !LINUX) {
       try {
         MediaInfoLibrary.INSTANCE.New();
-        mediainfo = Boolean.TRUE;
+        mediaInfo = Boolean.TRUE;
       } catch (LinkageError e) {
-        mediainfo = Boolean.FALSE;
+        mediaInfo = Boolean.FALSE;
       }
     }
-    if (mediainfo == null) {
-      mediainfo = Boolean.FALSE;
+
+    if (mediaInfo == null) {
+      mediaInfo = Boolean.FALSE;
     }
-    return mediainfo.equals(Boolean.TRUE);
+
+    return mediaInfo.equals(Boolean.TRUE);
   }
 }

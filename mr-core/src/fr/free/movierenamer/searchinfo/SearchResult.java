@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.searchinfo;
 
-import fr.free.movierenamer.utils.StringUtils;
 import java.io.Serializable;
 
 /**
@@ -28,31 +27,17 @@ import java.io.Serializable;
  */
 public abstract class SearchResult implements Serializable {
 
-  public static enum SearchResultType {
-    NONE,
-    EXACT,
-    POPULAR,
-    PARTIAL,
-    APPROXIMATE;
-
-    @Override
-    public String toString() {
-      // FIXME use internationalization
-      return StringUtils.capitalizedLetter(super.toString(), true);
-    }
-  }
-
   private static final long serialVersionUID = 1L;
   protected String title;
-  protected SearchResultType type;
+  protected String originalTitle;
 
   protected SearchResult() {
     // used by serializer
   }
 
-  public SearchResult(String title, SearchResultType type) {
-    this.title = (title == null) ? "" : title;
-    this.type = (type == null) ? SearchResultType.NONE : type;
+  public SearchResult(String title, String originalTitle) {
+    this.title = title;
+    this.originalTitle = (originalTitle == null) ? title : originalTitle;
   }
 
   public String getName() {
@@ -60,19 +45,11 @@ public abstract class SearchResult implements Serializable {
   }
 
   public String getOriginalTitle() {
-    return title;
-  }
-
-  public SearchResultType getType() {
-    return type;
+    return originalTitle;
   }
 
   @Override
   public String toString() {
-    if (type == null || type == SearchResultType.NONE) {
-      return title;
-    }
-
-    return String.format("%s : %s)", title, type);
+    return title;
   }
 }

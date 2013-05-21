@@ -37,7 +37,7 @@ public class MediaTag {
 
   private MediaInfo mediaInfo;
   private final File mediaFile;
-  public final boolean libMediaInfo = Settings.libMediaInfo();
+  public final boolean libMediaInfo = Settings.MEDIAINFO;
 
   public enum TagType {
 

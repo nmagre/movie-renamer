@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,7 +53,6 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
     int count = 0;
     Icon res = null;
     for (T image : images) {
-
       if (isCancelled()) {
         UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getName()));
         break;

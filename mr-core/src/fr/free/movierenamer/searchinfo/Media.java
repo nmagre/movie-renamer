@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ import java.net.URL;
 public abstract class Media extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
-  protected String originalTitle;
   protected int year;
   protected IdInfo idInfo;
 
@@ -37,9 +36,8 @@ public abstract class Media extends Hyperlink {
     // used by serializer
   }
 
-  public Media(IdInfo id, String title, String originalTitle, URL thumb, int year, SearchResultType type) {
-    super(title, thumb, type);
-    this.originalTitle = originalTitle;
+  public Media(IdInfo id, String title, String originalTitle, URL thumb, int year) {
+    super(title, originalTitle, thumb);
     this.year = year;
     this.idInfo = id;
   }

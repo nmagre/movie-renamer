@@ -1,4 +1,5 @@
 /*
+ * Movie Renamer
  * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,13 +42,15 @@ public class ListTooltip extends MouseAdapter {
   private int lastIndex;
   private Timer timer;
   private int time;
+  private boolean onlyLoading;
 
   public ListTooltip() {
-    this(1200);
+    this(1200, false);
   }
 
-  public ListTooltip(int time) {
+  public ListTooltip(int time, boolean onlyLoading) {
     this.time = time;
+    this.onlyLoading = onlyLoading;
     lastIndex = -1;
   }
 
@@ -64,23 +67,25 @@ public class ListTooltip extends MouseAdapter {
         final Rectangle rect = list.getCellBounds(index, index);
 
         if (obj instanceof IIconList) {
-          final String str = obj instanceof UILoader ? LocaleUtils.i18nExt("clickToCancel") : obj.toString();// FIXME i18n
-          if (timer != null) {
-            timer.stop();
-          }
-
-          timer = new Timer(time, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              TooltipManager.showOneTimeTooltip(list, new Point(list.getParent().getWidth(), rect.getLocation().y + rect.height / 2), str, TooltipWay.right);
+          if ((onlyLoading && obj instanceof UILoader) || !onlyLoading) {
+            final String str = obj instanceof UILoader ? LocaleUtils.i18nExt("tooltip.clickToCancel") : obj.toString();// FIXME i18n
+            if (timer != null) {
               timer.stop();
             }
-          });
 
-          timer.start();
-          lastIndex = index;
-        } else {
-          reset();
+            timer = new Timer(time, new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                TooltipManager.showOneTimeTooltip(list, new Point(list.getParent().getWidth(), rect.getLocation().y + rect.height / 2), str, TooltipWay.right);
+                timer.stop();
+              }
+            });
+
+            timer.start();
+            lastIndex = index;
+          } else {
+            reset();
+          }
         }
       }
     } else {
