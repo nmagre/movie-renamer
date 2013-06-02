@@ -115,7 +115,7 @@ public class IMDbScrapper extends MovieScrapper {
         URL thumb;
         try {
           String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("TD[@class='primary_photo']/A/IMG", node));
-          if (imgPath.contains("nopicture")) {
+          if (!imgPath.contains("nopicture")) {
             thumb = new URL(createImgPath(imgPath));
           } else {
             thumb = null;
@@ -202,6 +202,14 @@ public class IMDbScrapper extends MovieScrapper {
       }
     }
 
+    String overview = XPathUtils.selectString("//DIV[@class='info']/H5[contains(., 'Plot')]/parent::node()//DIV/text()", dom);
+    if (!overview.equals("")) {
+      if(overview.endsWith("|")) {
+        overview = overview.substring(0, overview.length() - 2).trim();
+      }
+      fields.put(MovieProperty.overview, StringUtils.unEscapeXML(overview, CHARSET));
+    }
+
     List<Node> ngenres = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'Genres')]", dom);
     for (Node genre : ngenres) {
       genres.add(StringUtils.unEscapeXML(XPathUtils.selectString("text()", genre), CHARSET));
@@ -234,7 +242,11 @@ public class IMDbScrapper extends MovieScrapper {
     if (plot != null) {
       searchUrl = new URL("http", host, String.format("/title/%s/plotsummary", movie.getMediaId()));
       dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
-      String overview = XPathUtils.selectString("//P[@class='plotpar']/text()", dom);
+      List<Node> nodes = XPathUtils.selectNodes("//P[@class='plotpar'][1]/descendant::text()[not(ancestor::I) and . != '\n']", dom);
+      overview = "";
+      for (Node pnode : nodes) {
+        overview += pnode.getTextContent().trim();
+      }
       fields.put(MovieProperty.overview, StringUtils.unEscapeXML(overview, CHARSET));
     }
 
