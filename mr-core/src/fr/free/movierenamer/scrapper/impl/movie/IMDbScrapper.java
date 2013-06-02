@@ -249,11 +249,7 @@ public class IMDbScrapper extends MovieScrapper {
       }
       fields.put(MovieProperty.overview, StringUtils.unEscapeXML(overview, CHARSET));
     }
-
-    for (String str : fields.values()) {
-      System.out.println(str);
-    }
-
+    
     /*
      // Thumb
      searchMatcher = ImdbInfoPattern.THUMB.getPattern().matcher(moviePage);
