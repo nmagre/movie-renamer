@@ -1,6 +1,6 @@
 /*
  * mr-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@ import java.util.Map;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class FileInfo {
+public class FileInfo extends Info {
 
   private static final long minMovieFileSize = 450000;
+  private static final long serialVersionUID = 1L;
   private File file;
   private final MediaType type;
-  private String firstSearch;
   private String search;
   private Integer year;
   private final Map<FileProperty, String> fileProperty;
@@ -61,7 +61,7 @@ public class FileInfo {
     this.file = file;
     this.type = getMediaType(file);
     fileProperty = NameMatcher.getProperty(file, type);
-    setSearch(fileProperty.get(FileProperty.name));
+    search = fileProperty.get(FileProperty.name);
     try {
       this.year = Integer.parseInt(fileProperty.get(FileProperty.year));
     } catch (Exception ex) {
@@ -70,7 +70,7 @@ public class FileInfo {
     this.mtag = new MediaTag(file);
   }
 
-  private static MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
+  private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
     String filename = file.getName();
 
     if (file.length() < minMovieFileSize) {
@@ -80,9 +80,8 @@ public class FileInfo {
     return MediaType.MOVIE;
   }
 
-  public static String getSearch(File file) {
-    Map<FileProperty, String> fileProperty = NameMatcher.getProperty(file, getMediaType(file));
-    return fileProperty.get(FileProperty.name);
+  public String getSearch() {
+    return search;
   }
 
   public Integer getYear() {
@@ -102,9 +101,6 @@ public class FileInfo {
   }
 
   public final void setSearch(String search) {
-    if (firstSearch == null) {
-      firstSearch = search;
-    }
     this.search = search;
   }
 

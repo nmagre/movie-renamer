@@ -53,7 +53,7 @@ public class Movie extends Media {
         return true;
       }
 
-      //return title.equalsIgnoreCase(other.title);
+      return title.equalsIgnoreCase(other.title);
     }
 
     return false;
@@ -62,7 +62,7 @@ public class Movie extends Media {
   @Override
   public int hashCode() {
     return Arrays.hashCode(new Object[] {
-        title.toLowerCase(), year
+        title, year
     });
   }
 

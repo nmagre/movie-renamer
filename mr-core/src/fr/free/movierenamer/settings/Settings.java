@@ -127,7 +127,6 @@ public final class Settings {
     MOVIEDIR,
     TVSHOWFILENAME,
     TVSHOWDIR,
-    SORT,
     THUMB,
     FANART,
     PROXY
@@ -147,26 +146,27 @@ public final class Settings {
 
     public SettingsSubType getSubType();
 
+    public boolean hasChild();
+
     public void setValue(Object value) throws IOException;
   }
 
   public enum SettingsProperty implements IProperty {
 
-    appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),
     reservedCharacter(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     // movie filename
     movieFilenameFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // ("<t> (<y>)"),
     movieFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (", "),
     movieFilenameLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Integer.decode("3").toString()),
-    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLA, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (StringUtils.CaseConversionType.FIRSTLA.name()),
+    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (StringUtils.CaseConversionType.FIRSTLA.name()),
     movieFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
     movieFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
-    movieFilenameCreateDirectory(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.FALSE.toString()),
+    movieFilenameCreateDirectory(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.MOVIEDIR, true), // (Boolean.FALSE.toString()),
     // movie folder
     movieFolderFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // ("<t> (<y>)"),
     movieFolderSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (", "),
     movieFolderLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Integer.decode("3").toString()),
-    movieFolderCase("", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (""),
+    movieFolderCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (""),
     movieFolderTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.TRUE.toString()),
     movieFolderRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.TRUE.toString()),
     // movie NFO
@@ -175,38 +175,53 @@ public final class Settings {
     tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
     tvShowFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (", "),
     tvShowFilenameLimit(3, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Integer.decode("3").toString()),
-    tvShowFilenameCase("", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (""),
+    tvShowFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (""),
     tvShowFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
     tvShowFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
     // Cache
     cacheClear(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.CACHE), // (Boolean.FALSE.toString()),
     // Search
+    searchNbResult(2, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Integer.decode("2").toString()),
+    searchDisplayApproximateResult(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.FALSE.toString()),
     searchMovieScrapper(IMDbScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),
     searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
     searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
     searchScrapperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.LANGUAGE),// (Locale.ENGLISH.toString()),
-    searchSort(Sorter.SorterType.LEVEN_YEAR, SettingsType.SEARCH, SettingsSubType.SORT), // (Boolean.TRUE.toString()),
-    searchNbResult(2, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Integer.decode("2").toString()),
-    searchDisplayApproximateResult(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.FALSE.toString()),
+    searchSort(Sorter.SorterType.LEVEN_YEAR, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.TRUE.toString()),
     // http param
     httpRequestTimeOut(30, SettingsType.NETWORK, SettingsSubType.GENERAL), // (Integer.decode("30").toString()),
     httpCustomUserAgent("", SettingsType.NETWORK, SettingsSubType.GENERAL), // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
     // Proxy
-    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY), // (Boolean.FALSE.toString()),
+    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, true), // (Boolean.FALSE.toString()),
     proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY), // (""), // "10.2.1.10"
-    proxyPort(0, SettingsType.NETWORK, SettingsSubType.PROXY), // (Integer.decode("0").toString()), // 3128
+    proxyPort(80, SettingsType.NETWORK, SettingsSubType.PROXY), // (Integer.decode("0").toString()), // 3128
     // Extension
-    fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL);
+    fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL),
+    //app lang
+    appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE);
     private Class<?> vclass;
     private Object defaultValue;
     private SettingsType type;
     private SettingsSubType subType;
+    private boolean haschild;
+
+    private SettingsProperty(Object defaultValue) {
+      this(defaultValue, null, null);
+    }
 
     private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
+      this(defaultValue, type, subType, false);
+    }
+
+    private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType, boolean haschild) {
       this.vclass = defaultValue.getClass();
       this.defaultValue = defaultValue;
       this.type = type;
       this.subType = subType;
+      this.haschild = haschild;
+      if(!(defaultValue instanceof Boolean) && haschild) {
+        throw new UnsupportedOperationException("Only boolean value can have a child");
+      }
     }
 
     @Override
@@ -237,6 +252,11 @@ public final class Settings {
     @Override
     public SettingsSubType getSubType() {
       return subType;
+    }
+
+    @Override
+    public boolean hasChild() {
+      return haschild;
     }
   }
 

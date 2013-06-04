@@ -17,15 +17,6 @@
  */
 package fr.free.movierenamer.scrapper.impl.movie;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.CastingInfo.PersonProperty;
 import fr.free.movierenamer.info.IdInfo;
@@ -40,6 +31,14 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.TmdbImageSize;
 import fr.free.movierenamer.utils.URIRequest;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
 import org.json.simple.JSONObject;
 
 /**
@@ -58,7 +57,7 @@ public class TMDbScrapper extends MovieScrapper {
   public static final String imageUrl = "http://cf2.imgobject.com/t/p/";
 
   public TMDbScrapper() {
-    super(AvailableLanguages.values());
+    super(AvailableLanguages.ar);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");

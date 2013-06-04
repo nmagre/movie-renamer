@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,26 @@ public final class FileUtils {
 
     // no extension
     return null;
+  }
+
+  public static boolean hasExtension(File file, String... extensions) {
+    return hasExtension(file.getName(), extensions) && !file.isDirectory();
+  }
+
+  public static boolean hasExtension(String filename, String... extensions) {
+    String extension = getExtension(filename);
+
+    if (extensions == null || extensions.length == 0) {
+      return true;
+    }
+
+    for (String value : extensions) {
+      if ((extension == null && value == null) || (extension != null && extension.equalsIgnoreCase(value))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public static String getNameWithoutExtension(String name) {

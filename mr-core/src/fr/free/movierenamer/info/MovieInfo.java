@@ -50,12 +50,27 @@ public class MovieInfo extends MediaInfo {
     overview,
     releasedDate,
     rating,
+    tagline,
+    mpaa,
+    mpaaCode,
     votes,
     budget,
     posterPath,
     collection,
     runtime
   }
+  /*
+   * @see http://en.wikipedia.org/wiki/Motion_picture_rating_system
+   */
+  public static enum MotionPictureRating {
+    USA("G", "PG", "PG-13", "R", "NC-17"),
+    FRANCE("U", "-10", "-12", "-16", "-18"),
+    UK("U", "PG", "12", "15", "18");
+    private MotionPictureRating(String all, String children, String pre_teenager, String teenager, String adult) {
+      
+    }
+  }
+  
   protected final Map<MovieProperty, String> fields;
   protected final IdInfo[] ids;
   protected final String[] genres;
