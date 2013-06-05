@@ -21,7 +21,12 @@ import java.util.List;
 import java.util.Locale;
 
 import fr.free.movierenamer.searchinfo.SearchResult;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.logging.Level;
 
 /**
  * Class SearchScrapper
@@ -31,8 +36,45 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
  */
 public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
 
+  private final List<AvailableLanguages> supportedLanguages;
+  private Locale language;
+
   protected SearchScrapper(AvailableLanguages... supportedLanguages) {
-    super(supportedLanguages);
+    if (supportedLanguages == null || supportedLanguages.length == 0 || supportedLanguages[0] == null) {
+      throw new NullPointerException("defaultLanguage must not be null");
+    } else {
+      this.supportedLanguages = Arrays.asList(supportedLanguages);
+    }
+  }
+
+  protected abstract Locale getDefaultLanguage();
+
+  public final List<AvailableLanguages> getSupportedLanguages() {
+    return Collections.unmodifiableList(supportedLanguages);
+  }
+
+  protected final Locale getLanguage() {
+    if (language != null) {
+      return language;
+    } else {
+      return getDefaultLanguage();
+    }
+  }
+
+  public final void setLanguage(Locale language) {
+
+    this.language = null;
+    for (LocaleUtils.Language lang : supportedLanguages) {
+      if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
+        this.language = lang.getLocale();
+        break;
+      }
+    }
+
+    if (this.language == null) {
+      this.language = getDefaultLanguage();
+      Settings.LOGGER.log(Level.WARNING, String.format("Try to set Language (%s) to scrapper (%s) which has no support for it ! : ", language, getName()));
+    }
   }
 
   public final List<SR> search(String query) throws Exception {
@@ -45,5 +87,4 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
   protected final String getCacheName() {
     return "short";
   }
-
 }

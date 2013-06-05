@@ -113,16 +113,16 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   protected abstract MI fetchMediaInfo(M searchResult, Locale language) throws Exception;
 
   public final List<ImageInfo> getImages(M search) throws Exception {
-    List<ImageInfo> imagesInfo = fetchImagesInfo(search, getLanguage());
+    List<ImageInfo> imagesInfo = fetchImagesInfo(search);
     if(imagesInfo.isEmpty()) {
-      imagesInfo = getScrapperImages(search, getLanguage());
+      imagesInfo = getScrapperImages(search);
     }
     return imagesInfo != null ? imagesInfo : new ArrayList<ImageInfo>();
   }
 
-  protected abstract List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception;
+  protected abstract List<ImageInfo> fetchImagesInfo(M media) throws Exception;
 
-  protected List<ImageInfo> getScrapperImages(M searchResult, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(M searchResult) throws Exception {
     return null;
   }
 

@@ -61,9 +61,9 @@ import java.util.Arrays;
  * @author Simon QUÉMÉNEUR
  */
 public class TheTVDBScrapper extends TvShowScrapper {
+
   private static final String host = "www.thetvdb.com";
   private static final String name = "TheTVDB";
-
   /**
    * @see http://thetvdb.com/?tab=apiregister
    */
@@ -101,6 +101,11 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
+  }
+
+  @Override
   protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + language.getLanguage());
     return searchMedia(searchUrl, language);
@@ -131,7 +136,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.getLanguage() + ".xml");
-        System.out.println(url);
+    System.out.println(url);
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
     Node node = XPathUtils.selectNode("//Series", dom);
@@ -217,7 +222,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<ImageInfo> getScrapperImages(TvShow tvShow, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(TvShow tvShow) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/banners.xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
@@ -287,5 +292,4 @@ public class TheTVDBScrapper extends TvShowScrapper {
       throw new IllegalArgumentException(String.format("TvShow record not found: %s [%s]: %s", tvShow.getName(), languageCode, tvShowRecord));
     }
   }
-
 }

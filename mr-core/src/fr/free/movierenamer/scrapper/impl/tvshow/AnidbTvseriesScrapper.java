@@ -56,6 +56,11 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
+  }
+
+  @Override
   protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
@@ -87,12 +92,10 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
 //    throw new UnsupportedOperationException("Not supported yet.");
 //    // return null;
 //  }
-
   @Override
   protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
-
 }

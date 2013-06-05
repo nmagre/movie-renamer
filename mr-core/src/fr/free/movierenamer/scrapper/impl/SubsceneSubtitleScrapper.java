@@ -117,4 +117,9 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
     return subtitles;
   }
 
+  @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
+  }
+
 }

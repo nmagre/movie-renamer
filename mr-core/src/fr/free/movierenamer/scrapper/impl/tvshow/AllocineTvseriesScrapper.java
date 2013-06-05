@@ -42,7 +42,6 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   private static final String host = "api.allocine.fr";
   private static final String name = "Allocine";
   private static final String version = "3";
-
   private final String apikey;
 
   public AllocineTvseriesScrapper() {
@@ -62,6 +61,11 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   @Override
   protected String getHost() {
     return host;
+  }
+
+  @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.FRENCH;
   }
 
   @Override
@@ -98,12 +102,10 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
 //    throw new UnsupportedOperationException("Not supported yet.");
 //    // return null;
 //  }
-
   @Override
   protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
-
 }

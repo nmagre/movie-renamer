@@ -28,6 +28,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.TmdbImageSize;
 import fr.free.movierenamer.utils.URIRequest;
@@ -57,7 +58,7 @@ public class TMDbScrapper extends MovieScrapper {
   public static final String imageUrl = "http://cf2.imgobject.com/t/p/";
 
   public TMDbScrapper() {
-    super(AvailableLanguages.ar);
+    super(AvailableLanguages.values());
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -73,6 +74,11 @@ public class TMDbScrapper extends MovieScrapper {
   @Override
   protected String getHost() {
     return host;
+  }
+
+  @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
   }
 
   @Override
@@ -103,8 +109,23 @@ public class TMDbScrapper extends MovieScrapper {
         Settings.LOGGER.log(Level.WARNING, "Invalid image: " + imageNode, e);
       }
 
+      Integer year = null;
+      String syear = JSONUtils.selectString("release_date", node);
+      if (syear != null && !syear.equals("")) {
+        if (syear.contains("-")) {
+          syear = syear.substring(0, syear.indexOf("-"));
+        }
+        if (NumberUtils.isNumeric(syear)) {
+          year = Integer.parseInt(syear);
+        }
+      }
+
+      if (year == null) {
+        year = -1;
+      }
+
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, originalTitle, thumb, getReleaseDate(node)));
+        resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, originalTitle, thumb, year));
       }
     }
 
@@ -113,7 +134,7 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage());
+    URL searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
@@ -121,18 +142,26 @@ public class TMDbScrapper extends MovieScrapper {
     fields.put(MovieProperty.rating, JSONUtils.selectString("vote_average", json));
     fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
     fields.put(MovieProperty.originalTitle, JSONUtils.selectString("original_title", json));
-    fields.put(MovieProperty.releasedDate, "" + getReleaseDate(json));
+    fields.put(MovieProperty.releasedDate, JSONUtils.selectString("release_date", json));
     fields.put(MovieProperty.overview, JSONUtils.selectString("overview", json));
     fields.put(MovieProperty.runtime, JSONUtils.selectString("runtime", json));
     fields.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
+    fields.put(MovieProperty.tagline, JSONUtils.selectString("tagline", json));
     JSONObject collection = JSONUtils.selectObject("belongs_to_collection", json);
     fields.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection) : "");
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.TMDB));
     String imdbId = JSONUtils.selectString("imdb_id", json);
-    if(imdbId != null) {
+    if (imdbId != null) {
       ids.add(new IdInfo(Integer.parseInt(imdbId.substring(2)), ScrapperUtils.AvailableApiIds.IMDB));
+    }
+
+    for (JSONObject jsonObj : JSONUtils.selectList("countries", json)) {
+      if (JSONUtils.selectString("iso_3166_1", jsonObj).equals("US")) {
+        fields.put(MovieProperty.mpaaCode, JSONUtils.selectString("certification", json));
+        break;
+      }
     }
 
     List<String> genres = new ArrayList<String>();
@@ -149,6 +178,8 @@ public class TMDbScrapper extends MovieScrapper {
     for (JSONObject jsonObj : JSONUtils.selectList("production_companies", json)) {
       studios.add(JSONUtils.selectString("name", jsonObj));
     }
+
+    searchUrl = new URL("http", host, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage());
 
     MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
     return movieInfo;
@@ -184,14 +215,5 @@ public class TMDbScrapper extends MovieScrapper {
     }
 
     return casting;
-  }
-
-  private int getReleaseDate(JSONObject node) {
-    String date = JSONUtils.selectString("release_date", node);
-    Date released = null;
-    if (date != null) {
-      released = Date.parse(date, "yyyy-MM-dd");
-    }
-    return released != null ? released.getYear() : -1;
   }
 }

@@ -76,6 +76,11 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
+  }
+
+  @Override
   protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/feeds/search.php?show=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
@@ -183,7 +188,7 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<ImageInfo> getScrapperImages(TvShow tvShow, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(TvShow tvShow) throws Exception {
     return null;
   }
 
@@ -219,5 +224,4 @@ public class TvRageScrapper extends TvShowScrapper {
     }
     return posterURL;
   }
-
 }

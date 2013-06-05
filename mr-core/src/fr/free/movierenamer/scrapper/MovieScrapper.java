@@ -41,7 +41,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
   }
 
   @Override
-  protected final List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
+  protected final List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
 
     List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
     List<ImageInfo> tmpImagesInfo;
@@ -62,7 +62,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
     try {
       // Try to get images from fanart.tv
       FanartTVImagesScrapper fanartImagesSc = new FanartTVImagesScrapper();
-      tmpImagesInfo = fanartImagesSc.getImages(movie, language);
+      tmpImagesInfo = fanartImagesSc.getImages(movie);
       if (tmpImagesInfo != null) {
         imagesInfo.addAll(tmpImagesInfo);
       }
@@ -74,7 +74,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
 
     // use scrapper default get image
     if (imagesInfo.isEmpty()) {
-      tmpImagesInfo = getScrapperImages(movie, language);
+      tmpImagesInfo = getScrapperImages(movie);
       if (tmpImagesInfo != null) {
         imagesInfo.addAll(tmpImagesInfo);
       }

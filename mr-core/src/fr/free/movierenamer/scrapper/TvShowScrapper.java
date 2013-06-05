@@ -67,7 +67,7 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
   }
 
   @Override
-  protected final List<ImageInfo> fetchImagesInfo(TvShow tvshow, Locale language) throws Exception {
+  protected final List<ImageInfo> fetchImagesInfo(TvShow tvshow) throws Exception {
 
     List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
 
@@ -75,24 +75,19 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
 
     // Try to get images from fanart.tv
     FanartTVshowImagesScrapper fanartImagesSc = new FanartTVshowImagesScrapper();
-    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages(tvshow, language);
+    List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages(tvshow);
     if (tmpImagesInfo != null) {
       imagesInfo.addAll(tmpImagesInfo);
     }
 
     // use scrapper default get image
     if (imagesInfo.isEmpty()) {
-      tmpImagesInfo = getScrapperImages(tvshow, language);
+      tmpImagesInfo = getScrapperImages(tvshow);
       if (tmpImagesInfo != null) {
         imagesInfo.addAll(tmpImagesInfo);
       }
     }
 
     return imagesInfo;
-  }
-
-  @Override
-  protected List<ImageInfo> getScrapperImages(TvShow movie, Locale language) throws Exception {
-    return null;
   }
 }

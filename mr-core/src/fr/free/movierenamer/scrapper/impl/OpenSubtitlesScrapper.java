@@ -74,4 +74,9 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
     // return null;
   }
 
+  @Override
+  protected Locale getDefaultLanguage() {// TODO
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
 }

@@ -74,6 +74,11 @@ public class IMDbScrapper extends MovieScrapper {
     return host;
   }
 
+  @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
+  }
+
   private String createImgPath(String imgPath) {
     return imgPath.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY70_SX100.jpg");
   }
@@ -198,7 +203,7 @@ public class IMDbScrapper extends MovieScrapper {
       fields.put(MovieProperty.votes, votes.replaceAll(" .*", ""));
     }
 
-    String runtime = XPathUtils.selectString("//DIV[@class='info']/H5[contains(., 'Runtime')]/parent::node()//DIV", dom);
+    String runtime = getH5Content(dom, "Runtime", null);
     if (!runtime.equals("")) {
       Pattern pattern = Pattern.compile("(\\d{2,3}) min");
       Matcher matcher = pattern.matcher(runtime);
@@ -207,7 +212,7 @@ public class IMDbScrapper extends MovieScrapper {
       }
     }
 
-    String mpaa = XPathUtils.selectString("//DIV[@class='info']/H5[contains(., 'MPAA')]/parent::node()//DIV", dom);
+    String mpaa = getH5Content(dom, "MPAA", null);
     if (!mpaa.equals("")) {
       fields.put(MovieProperty.mpaa, mpaa);
       Matcher matcher = mpaaCodePattern.matcher(mpaa);
@@ -226,12 +231,12 @@ public class IMDbScrapper extends MovieScrapper {
       }
     }
 
-    String tagline = XPathUtils.selectString("//DIV[@class='info']/H5[contains(., 'Tagline')]/parent::node()//DIV/text()", dom);
+    String tagline = getH5Content(dom, "Tagline", "/text()");
     if (!tagline.equals("")) {
       fields.put(MovieProperty.tagline, tagline);
     }
 
-    String overview = XPathUtils.selectString("//DIV[@class='info']/H5[contains(., 'Plot')]/parent::node()//DIV/text()", dom);
+    String overview = getH5Content(dom, "Plot", "/text()");
     if (!overview.equals("")) {
       if (overview.endsWith("|")) {
         overview = overview.substring(0, overview.length() - 2).trim();
@@ -295,6 +300,10 @@ public class IMDbScrapper extends MovieScrapper {
     return movieInfo;
   }
 
+  private String getH5Content(Node dom, String text, String path) {
+    return XPathUtils.selectString("//DIV[@class='info']/H5[contains(., '" + text + "')]/parent::node()//DIV" + (path != null ? path : ""), dom);
+  }
+
   protected int findImdbId(String source) {
     Matcher matcher = Pattern.compile("tt(\\d+{7})").matcher(source);
 
@@ -320,21 +329,22 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<ImageInfo> getScrapperImages(Movie movie, Locale language) throws Exception {
+  protected List<ImageInfo> getScrapperImages(Movie movie) throws Exception {
     URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getMediaId()));
-    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(getDefaultLanguage()));
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
 
     Node node = XPathUtils.selectNode("//A[@href = '?refine=poster']", dom);
     if (node != null) {
       images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=poster", movie.getMediaId())),
-              ImageCategoryProperty.thumb, language));
+              ImageCategoryProperty.thumb, getDefaultLanguage()));
     }
+
     node = XPathUtils.selectNode("//A[@href = '?refine=still_frame']", dom);
     if (node != null) {
       images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=still_frame", movie.getMediaId())),
-              ImageCategoryProperty.fanart, language));
+              ImageCategoryProperty.fanart, getDefaultLanguage()));
     }
 
     return images;
@@ -343,7 +353,7 @@ public class IMDbScrapper extends MovieScrapper {
   private List<ImageInfo> getImages(URL url, ImageCategoryProperty imgtype, Locale language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(url.toURI(), getRequestProperties(language));
     List<ImageInfo> images = new ArrayList<ImageInfo>();
-    List<Node> nodes = XPathUtils.selectNodes("//DIV[@id = 'thumb_list']//img", dom);
+    List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='thumb_list']//IMG", dom);
     for (Node inode : nodes) {
       Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
       String imgUrl = XPathUtils.getAttribute("src", inode).replaceAll("CR[\\d,]+_SS\\d+", "SY214_SX314");

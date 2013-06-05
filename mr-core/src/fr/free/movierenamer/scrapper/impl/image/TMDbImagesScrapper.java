@@ -49,7 +49,6 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
   private final String apikey;
 
   public TMDbImagesScrapper() {
-    super(LocaleUtils.AvailableLanguages.en, LocaleUtils.AvailableLanguages.fr, LocaleUtils.AvailableLanguages.es, LocaleUtils.AvailableLanguages.it, LocaleUtils.AvailableLanguages.de);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("themoviedb.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -64,7 +63,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
   }
 
   @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie, Locale language) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
     String id = movie.getId().toString();
     switch (movie.getId().getIdType()) {
       case IMDB:

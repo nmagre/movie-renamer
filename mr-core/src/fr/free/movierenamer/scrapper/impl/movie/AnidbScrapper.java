@@ -56,6 +56,11 @@ public class AnidbScrapper extends MovieScrapper {
   }
 
   @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.ENGLISH;
+  }
+
+  @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
@@ -80,12 +85,10 @@ public class AnidbScrapper extends MovieScrapper {
 //    throw new UnsupportedOperationException("Not supported yet.");
 //    // return null;
 //  }
-
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
   }
-
 }

@@ -36,31 +36,23 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
  */
 public abstract class PersonScrapper<SR extends SearchResult> extends Scrapper {
 
-  protected PersonScrapper(AvailableLanguages... supportedLanguages) {
-    super(supportedLanguages);
-  }
-
   public final List<PersonInfo> getPersons(SR search) throws Exception {
-    return getPersons(search, getLanguage());
-  }
-
-  protected final List<PersonInfo> getPersons(SR search, Locale language) throws Exception {
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get person info list for '%s' in '%s'", getName() , search, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get person info list for '%s'", getName() , search));
     CacheObject cache = getCache();
-    List<PersonInfo> personList = (cache != null) ? cache.getList(search, language, PersonInfo.class) : null;
+    List<PersonInfo> personList = (cache != null) ? cache.getList(search, Locale.ROOT, PersonInfo.class) : null;
     if (personList != null) {
       return personList;
     }
 
     // perform actual search
-    personList = fetchPersonsInfo(search, language);
-    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s' in '%s'", getName(), personList.size(), search, language.getDisplayLanguage(Locale.ENGLISH)));
+    personList = fetchPersonsInfo(search);
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d person(s) info for '%s'", getName(), personList.size(), search));
 
     // cache results and return
-    return (cache != null) ? cache.putList(search, language, PersonInfo.class, personList) : personList;
+    return (cache != null) ? cache.putList(search, Locale.ROOT, PersonInfo.class, personList) : personList;
   }
 
-  protected abstract List<PersonInfo> fetchPersonsInfo(SR search, Locale language) throws Exception;
+  protected abstract List<PersonInfo> fetchPersonsInfo(SR search) throws Exception;
 
   @Override
   protected final String getCacheName() {

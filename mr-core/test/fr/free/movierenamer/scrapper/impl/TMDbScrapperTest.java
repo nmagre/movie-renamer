@@ -55,7 +55,6 @@ public class TMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals("低俗小说", movie.getName());
     Assert.assertNotNull(movie.getURL());
     Assert.assertEquals(1994, movie.getYear());
-   // Assert.assertEquals(110912, movie.getImdbId());
     Assert.assertEquals(680, movie.getMediaId().getId());
   }
 
@@ -65,10 +64,10 @@ public class TMDbScrapperTest extends MovieScrapperTest {
     MovieInfo movie = tmdb.getInfo(new Movie(new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
 
     Assert.assertEquals(Integer.valueOf(1858), movie.getId(ScrapperUtils.AvailableApiIds.TMDB));
-    Assert.assertEquals(Integer.valueOf(418279), movie.getImdbId());
+    Assert.assertEquals(Integer.valueOf(418279), movie.getId(ScrapperUtils.AvailableApiIds.IMDB));
     Assert.assertEquals("Transformers", movie.getTitle());
-    Assert.assertEquals("2007-07-03", movie.getReleasedDate().toString());
-    Assert.assertEquals("[Abenteuer, Action, Thriller, Science Fiction]", movie.getGenres().toString());
+    Assert.assertEquals("2007-07-02", movie.getReleasedDate().toString());
+    Assert.assertEquals("[Action, Abenteuer, Science Fiction, Thriller]", movie.getGenres().toString());
 
   }
 

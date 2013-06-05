@@ -36,19 +36,6 @@ import java.util.logging.Level;
  */
 public abstract class Scrapper {
 
-  private final Locale defaultLanguage;
-  private final List<AvailableLanguages> supportedLanguages;
-  private Locale language;
-
-  protected Scrapper(AvailableLanguages... supportedLanguages) {
-    if (supportedLanguages == null || supportedLanguages.length == 0 || supportedLanguages[0] == null) {
-      throw new NullPointerException("defaultLanguage must not be null");
-    } else {
-      this.defaultLanguage = supportedLanguages[0].getLocale();
-      this.supportedLanguages = Arrays.asList(supportedLanguages);
-    }
-  }
-
   public abstract String getName();
 
   protected abstract String getHost();
@@ -65,42 +52,6 @@ public abstract class Scrapper {
 
   protected String getCacheName() {
     return null;
-  }
-
-  public final List<AvailableLanguages> getSupportedLanguages() {
-    return supportedLanguages;
-  }
-
-  protected final Locale getLanguage() {
-    if (hasLanguageSupport() && language != null) {
-      return language;
-    } else {
-      return defaultLanguage;
-    }
-  }
-
-  public final boolean hasLanguageSupport() {
-    return supportedLanguages != null && supportedLanguages.size() > 1;
-  }
-
-  public final void setLanguage(Locale language) {
-    // 2013-03-08:EV:if no language support, choose the supported one.
-    if (!hasLanguageSupport()) {
-      for (Language lang : getSupportedLanguages()) { this.language = lang.getLocale();break; }
-      Settings.LOGGER.log(Level.WARNING, String.format("Try to set Language (%s) to scrapper (%s) which has no language support ! Select default language (%s)", language, getName(), this.language));
-    }
-    else {
-        this.language = null;
-        for (Language lang : getSupportedLanguages()) {
-            if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
-                this.language = lang.getLocale();
-                break;
-            }
-        }
-        if (this.language == null) {
-            throw new NullPointerException("Try to set Language ("+language+") to scrapper ("+getName()+") which has no support for it ! : ");
-        }
-    }
   }
 
   @Override

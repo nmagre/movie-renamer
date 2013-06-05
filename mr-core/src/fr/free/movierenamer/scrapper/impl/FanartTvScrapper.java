@@ -46,7 +46,6 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
   protected final String apikey;
 
   protected FanartTvScrapper() {
-    super(LocaleUtils.AvailableLanguages.en);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("fanarttv.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -55,7 +54,7 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
   }
 
   @Override
-  protected final List<ImageInfo> fetchImagesInfo(M media, Locale language) throws Exception {
+  protected final List<ImageInfo> fetchImagesInfo(M media) throws Exception {
 
     switch (media.getMediaId().getIdType()) {
       case IMDB:

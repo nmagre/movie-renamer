@@ -94,6 +94,11 @@ public class AllocineScrapper extends MovieScrapper {
   }
 
   @Override
+  protected Locale getDefaultLanguage() {
+    return Locale.FRENCH;
+  }
+
+  @Override
   protected List<Movie> searchMedia(String query, Locale language) throws Exception {
     URL searchUrl = new URL("http", host, "/recherche/1/?q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
