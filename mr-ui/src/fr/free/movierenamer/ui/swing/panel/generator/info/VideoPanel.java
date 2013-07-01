@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.panel.info;
+package fr.free.movierenamer.ui.swing.panel.generator.info;
 
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
 import java.util.Arrays;
 
 /**

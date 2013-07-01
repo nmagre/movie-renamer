@@ -23,7 +23,7 @@ import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.swing.panel.info.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.generator.info.MediaPanel;
 import fr.free.movierenamer.ui.worker.Worker;
 
 /**

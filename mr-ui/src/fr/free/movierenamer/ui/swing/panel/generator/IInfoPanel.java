@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.panel.info;
+package fr.free.movierenamer.ui.swing.panel.generator;
 
 import fr.free.movierenamer.info.Info;
-import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
-import javax.swing.Icon;
 
 /**
- * Class InfoPanel
- *
+ * Interface IInfoPanel
  * @author Nicolas Magré
  */
-public abstract class InfoPanel<T extends Info> extends PanelGenerator implements IInfoPanel<T> {
+public interface IInfoPanel<T extends Info> {
 
-  public abstract Icon getIcon();
+  public void clear();
 
-  public abstract String getPanelName();
+  public void setInfo(T info);
+  
+  public T getInfo();
 }
