@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.swing.panel.generator.info;
 import fr.free.movierenamer.info.MovieInfo;
 
 /**
+ * Class MoviePanel
  *
  * @author Nicolas Magré
  */
@@ -27,10 +28,25 @@ public class MoviePanel extends VideoPanel<MovieInfo> {
 
   @SuppressWarnings("unchecked")
   public MoviePanel() {
-    super(new MovieInfoPanel());
+    super(new MovieInfoPanel(), new CastingInfoPanel<MovieInfo>());
   }
 
   @Override
   public void clearPanel() {
+    // Nothing to clear
+  }
+
+  @Override
+  protected String getTitle(MovieInfo info) {
+    String title = info.getTitle();
+    if (info.getYear() != null) {
+      title += " (" + info.getYear() + ")";
+    }
+    return title;
+  }
+
+  @Override
+  protected Double getRate(MovieInfo info) {
+    return info.getRating();
   }
 }

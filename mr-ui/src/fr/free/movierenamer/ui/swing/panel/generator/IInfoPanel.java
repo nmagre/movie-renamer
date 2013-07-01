@@ -24,7 +24,7 @@ import fr.free.movierenamer.info.Info;
  * @author Nicolas Magré
  */
 public interface IInfoPanel<T extends Info> {
-
+  
   public void clear();
 
   public void setInfo(T info);

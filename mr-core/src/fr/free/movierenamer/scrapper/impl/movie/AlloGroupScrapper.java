@@ -28,6 +28,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.io.IOException;
@@ -313,11 +314,17 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
       String url = XPathUtils.getAttribute("src", retNode);
       fields.put(MovieInfo.MovieProperty.posterPath, url.replaceAll(".*\\/medias", "http://" + getImageHost() + "/medias"));
     }
+    
+    List<String> tags = new ArrayList<String>();
+    nodes = XPathUtils.selectNodes("//DIV[@class='box_right_col']/DIV[@class='titlebar_01']/SPAN[contains(., 'Tags')]/parent::node()/parent::node()/UL/LI", dom);
+    for (Node node : nodes) {
+      tags.add(StringUtils.capitalizedLetter(XPathUtils.selectString("SPAN", node), true));
+    }
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getId());
 
-    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
+    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios, tags);
     return movieInfo;
   }
 
@@ -337,7 +344,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
         try {
           tag = JobTag.valueOf(job);
         } catch (Exception ex) {
-          continue;
+          tag = JobTag.actors;
         }
 
         Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<CastingInfo.PersonProperty, String>(CastingInfo.PersonProperty.class);
@@ -346,8 +353,8 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
           personFields.put(CastingInfo.PersonProperty.picturePath, img);
         }
 
-        personFields.put(CastingInfo.PersonProperty.name, XPathUtils.selectString("P/A[@itemprop='url']/SPAN", node).trim());
-        String url = XPathUtils.getAttribute("href", XPathUtils.selectNode("P/A[@itemprop='url']", node));
+        personFields.put(CastingInfo.PersonProperty.name, XPathUtils.selectString("P/A", node).trim());
+        String url = XPathUtils.getAttribute("href", XPathUtils.selectNode("P/A", node));
         Matcher m = getPersonIdPattern().matcher(url);
         if (m.find()) {
           personFields.put(CastingInfo.PersonProperty.id, m.group(1));

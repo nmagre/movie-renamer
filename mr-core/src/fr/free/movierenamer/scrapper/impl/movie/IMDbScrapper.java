@@ -169,6 +169,7 @@ public class IMDbScrapper extends MovieScrapper {
     List<String> genres = new ArrayList<String>();
     List<Locale> countries = new ArrayList<Locale>();
     List<String> studios = new ArrayList<String>();
+    List<String> tags = new ArrayList<String>();
 
     Node node = XPathUtils.selectNode("//H1", dom);
     if (movie.getName() == null) {
@@ -253,6 +254,11 @@ public class IMDbScrapper extends MovieScrapper {
     for (Node country : ncountries) {
       countries.add(LocaleUtils.findCountry(country.getTextContent(), language));
     }
+    
+    List<Node> ntags = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
+    for (Node ntag : ntags) {
+      tags.add(ntag.getTextContent());
+    }
 
     Node nstudios = XPathUtils.selectNode("//DIV[@id='tn15content']//B[@class='blackcatheader' and contains(., 'Production Companies')]", dom);
     if (nstudios != null) {
@@ -296,7 +302,7 @@ public class IMDbScrapper extends MovieScrapper {
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getId());
 
-    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
+    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios, tags);
     return movieInfo;
   }
 

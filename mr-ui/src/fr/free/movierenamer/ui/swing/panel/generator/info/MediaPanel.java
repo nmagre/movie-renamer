@@ -17,17 +17,20 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator.info;
 
-import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
-import fr.free.movierenamer.ui.swing.panel.generator.IInfoPanel;
 import com.alee.extended.breadcrumb.WebBreadcrumb;
 import com.alee.extended.breadcrumb.WebBreadcrumbToggleButton;
 import com.alee.extended.transition.ComponentTransition;
 import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.SwingUtils;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.Info;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.swing.panel.generator.IInfoPanel;
+import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -35,6 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 /**
  * Class MediaPanel
@@ -44,12 +48,11 @@ import javax.swing.JScrollPane;
  */
 public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator implements IInfoPanel<T> {
 
-  private List<InfoPanel<T>> panels;
-  private WebBreadcrumb infoPanelBc;
   private ComponentTransition transitionPanel;
   private WebPanel mediaPanel;
   private final FileInfoPanel fileInfoPanel;
-  private T info;
+  protected List<InfoPanel<T>> panels;
+  protected WebBreadcrumb infoPanelBc;
 
   protected MediaPanel() {
     super();
@@ -68,7 +71,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     int pos = 0;
     infoPanelBc = new WebBreadcrumb();
     infoPanelBc.setFocusable(false);
-    for (InfoPanel<? extends Info> panel : panels) {
+    for (InfoPanel<T> panel : panels) {
       WebBreadcrumbToggleButton bcButton = createbuttonPanel(panel);
       if (pos == 0) {
         bcButton.setSelected(true);
@@ -77,7 +80,9 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     }
 
     infoPanelBc.add(createbuttonPanel(fileInfoPanel));
+
     SwingUtils.groupButtons(infoPanelBc);// Group breadcrumb button
+    SwingUtils.setEnabledRecursively(infoPanelBc, false);
 
     mediaPanel.add(infoPanelBc, getGroupConstraint(0, true, false));
 
@@ -104,7 +109,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
   private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<? extends Info> panel) {
     WebBreadcrumbToggleButton bcButton = new WebBreadcrumbToggleButton();
     bcButton.setIcon(panel.getIcon());
-    bcButton.setText(panel.getPanelName());
+    //bcButton.setText(panel.getPanelName());
     bcButton.setFocusable(false);
     bcButton.addActionListener(new ActionListener() {
       @Override
@@ -112,20 +117,8 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
         transitionPanel.performTransition(panel);
       }
     });
+    TooltipManager.setTooltip(bcButton, new WebLabel(panel.getPanelName(), panel.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
     return bcButton;
-  }
-
-  @Override
-  public T getInfo() {
-    return info;
-  }
-
-  @Override
-  public void setInfo(T info) {
-    this.info = info;
-    for (InfoPanel<T> panel : panels) {
-      panel.setInfo(info);
-    }
   }
 
   public abstract void clearPanel();
@@ -138,17 +131,18 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
   public void clearfileInfoPanel() {
     fileInfoPanel.clear();
   }
-  
+
   public FileInfo getFileInfo() {
     return fileInfoPanel.getInfo();
   }
 
   @Override
   public void clear() {
-    info = null;
-    for (InfoPanel<T> panel : panels) {
+    for (InfoPanel<? extends Info> panel : panels) {
       panel.clear();
     }
+
+    SwingUtils.setEnabledRecursively(infoPanelBc, false);
     clearPanel();
   }
 }

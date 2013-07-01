@@ -74,7 +74,7 @@ public class AllocineScrapperTest extends MovieScrapperTest {
         dir = true;
       }
       
-      if(!actor&&info.isActor()) {
+      if(!actor && info.isActor()) {
         Assert.assertEquals("Jim Carrey", info.getName());
         actor = true;
       }

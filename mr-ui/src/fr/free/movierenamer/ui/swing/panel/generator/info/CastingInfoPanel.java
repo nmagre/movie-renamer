@@ -17,23 +17,23 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator.info;
 
-import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import javax.swing.Icon;
 
 /**
- *
+ * Class CastingInfoPane
  * @author Nicolas Magré
  */
-public class MovieInfoPanel extends InfoPanel<MovieInfo> {
+public class CastingInfoPanel<T extends MediaInfo> extends InfoPanel<T> {
 
-  private MovieInfo info;
+  private T info;
   
   /**
-   * Creates new form MovieInfoPanel
+   * Creates new form CastingInfoPanel
    */
-  public MovieInfoPanel() {
+  public CastingInfoPanel() {
     initComponents();
   }
 
@@ -62,27 +62,27 @@ public class MovieInfoPanel extends InfoPanel<MovieInfo> {
   // End of variables declaration//GEN-END:variables
 
   @Override
+  public Icon getIcon() {
+    return ImageUtils.CASTING_16;
+  }
+
+  @Override
+  public String getPanelName() {
+    return "casting";
+  }
+
+  @Override
   public void clear() {
     info = null;
   }
 
   @Override
-  public Icon getIcon() {
-    return ImageUtils.MOVIE_16;
-  }
-
-  @Override
-  public String getPanelName() { // TODO
-    return "movie info";
-  }
-
-  @Override
-  public void setInfo(MovieInfo info) {
+  public void setInfo(T info) {
     this.info = info;
   }
 
   @Override
-  public MovieInfo getInfo() {
+  public T getInfo() {
     return info;
   }
 }

@@ -255,7 +255,7 @@ public class GalleryPanel extends JDialog {
     if (gworker != null && !gworker.isDone()) {
       WorkerManager.stop(gworker);
     }
-    WorkerManager.fetchImages(images, this, "ui/unknown.png", ics.getGalleryDim(), ImageSize.small);
+    gworker = (GalleryWorker) WorkerManager.fetchImages(images, this, "ui/unknown.png", ics.getGalleryDim(), ImageSize.small);
   }
 
   public void addImages(List<UIMediaImage> images) {
@@ -275,8 +275,15 @@ public class GalleryPanel extends JDialog {
     }
   }
 
-  public synchronized void addThumbPreview(Icon icon, int index) {
-    thumbGallery.setImage(icon, index);
+  public void addThumbPreview(Icon icon, int id) {
+    int pos = 0;
+    for (UIMediaImage image : thumbGallery.getImages()) {
+      if (image.getId() == id) {
+        thumbGallery.setImage(icon, pos);
+        break;
+      }
+      pos++;
+    }
   }
 
   private List<UIMediaImage> getImageByLanguage(List<UIMediaImage> uiimages, String country) {
@@ -311,7 +318,6 @@ public class GalleryPanel extends JDialog {
   public String toString() {
     return property.name();
   }
-
 
   /**
    * This method is called from within the constructor to

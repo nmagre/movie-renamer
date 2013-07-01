@@ -76,18 +76,14 @@ public class MovieInfo extends MediaInfo {
     private MotionPictureRating(String... rates) {
       this.rates = rates;
     }
-
-    public String getRate(String code) {
-      return getRate(code, MotionPictureRating.USA);
-    }
     
     public String[] getRates() {
       return rates;
     }
 
-    public String getRate(String code, MotionPictureRating scale) {
+    public String getRate(String code) {
       int pos = 0;
-      for (String rate : scale.rates) {
+      for (String rate : USA.getRates()) {
         if (code.equals(rate)) {
           return rates[pos];
         }
@@ -117,6 +113,7 @@ public class MovieInfo extends MediaInfo {
   protected final String[] genres;
   protected final Locale[] countries;
   protected final String[] studios;
+  protected final String[] tags;
 
   protected MovieInfo() {
     // used by serializer
@@ -125,14 +122,16 @@ public class MovieInfo extends MediaInfo {
     this.genres = null;
     this.countries = null;
     this.studios = null;
+    this.tags = null;
   }
 
-  public MovieInfo(Map<MovieProperty, String> fields, List<IdInfo> ids, List<String> genres, List<Locale> countries, List<String> studios) {
+  public MovieInfo(Map<MovieProperty, String> fields, List<IdInfo> ids, List<String> genres, List<Locale> countries, List<String> studios, List<String> tags) {
     this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
     this.ids = (ids != null) ? ids.toArray(new IdInfo[0]) : new IdInfo[0];
     this.genres = (genres != null) ? genres.toArray(new String[0]) : new String[0];
     this.countries = (countries != null) ? countries.toArray(new Locale[0]) : new Locale[0];
     this.studios = (studios != null) ? studios.toArray(new String[0]) : new String[0];
+    this.tags = (tags != null) ? tags.toArray(new String[0]) : new String[0];
   }
 
   public String get(MovieProperty key) {
@@ -228,21 +227,25 @@ public class MovieInfo extends MediaInfo {
   public String getCertification(MotionPictureRating type) {
     String code = get(MovieProperty.certificationCode);
     if (code != null && code.length() > 0) {
-      return type.getRate(code, type);
+      return type.getRate(code);
     }
     return null;
   }
 
   public List<String> getGenres() {
-    return unmodifiableList(asList(genres));
+    return asList(genres);
   }
 
   public List<Locale> getCountries() {
-    return unmodifiableList(asList(countries));
+    return asList(countries);
   }
 
   public List<String> getStudios() {
-    return unmodifiableList(asList(studios));
+    return asList(studios);
+  }
+  
+  public List<String> getTags() {
+    return asList(tags);
   }
 
   @Override

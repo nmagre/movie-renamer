@@ -49,7 +49,7 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
 
       Icon icon = chunk.getIcon();
       int index = chunk.getId();
-
+      System.out.println(index);
       panel.addThumbPreview(icon, index);
     }
   }

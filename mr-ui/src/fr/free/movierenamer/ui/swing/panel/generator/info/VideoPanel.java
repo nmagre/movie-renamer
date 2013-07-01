@@ -17,9 +17,17 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator.info;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.utils.SwingUtils;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class VideoPanel
@@ -27,6 +35,11 @@ import java.util.Arrays;
  * @author Nicolas Magré
  */
 public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
+
+  private final int nbStar = 5;
+  private final WebPanel starPanel;
+  private final List<WebLabel> stars;
+  private T info;
 
   /**
    * Creates new form VideoPanel
@@ -36,7 +49,84 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
   public VideoPanel(InfoPanel<T>... panels) {
     super();
     initComponents();
+
+    starPanel = new WebPanel();
+    starPanel.setMargin(0);
+    starPanel.setLayout(new FlowLayout());
+    stars = new ArrayList<WebLabel>();
+    for (int i = 0; i < nbStar; i++) {
+      WebLabel label = new WebLabel();
+      label.setMargin(new Insets(-3, 0, 0, 0));
+      stars.add(label);
+      starPanel.add(stars.get(i));
+    }
+
+    mainTb.addToEnd(starPanel);
     createPanel(infoPanels, Arrays.asList(panels));
+
+    clearStars();
+  }
+
+  @Override
+  public T getInfo() {
+    return info;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void setInfo(T info) {
+    this.info = info;
+    for (InfoPanel<T> panel : panels) {
+      panel.setInfo(info);
+    }
+    
+    SwingUtils.setEnabledRecursively(infoPanelBc, true);
+    
+    mediaTitleLbl.setText(getTitle(info));
+    setRate(getRate(info));
+  }
+
+  protected abstract String getTitle(T info);
+
+  protected abstract Double getRate(T info);
+
+  /**
+   * Set star compared with rate
+   *
+   * @param rate
+   */
+  private void setRate(Double rate) {
+    Double value = rate;
+    if (value == null || value < 0.00) {
+      return;
+    }
+
+    if (value > 5) {
+      value /= (10 / nbStar);
+    }
+
+    int n = value.intValue();
+    for (int i = 0; i < n; i++) {
+      stars.get(i).setIcon(ImageUtils.STAR_16);
+    }
+
+    if ((rate - rate.intValue()) >= 0.50 && n < nbStar) {
+      stars.get(n).setIcon(ImageUtils.STARHALF_16);
+    }
+  }
+
+  private void clearStars() {
+    for (int i = 0; i < nbStar; i++) {
+      stars.get(i).setIcon(ImageUtils.STAREMPTY_16);
+    }
+  }
+
+  @Override
+  public final void clear() {
+    super.clear();
+    info = null;
+    clearStars();
+    mediaTitleLbl.setText("");
   }
 
   /**

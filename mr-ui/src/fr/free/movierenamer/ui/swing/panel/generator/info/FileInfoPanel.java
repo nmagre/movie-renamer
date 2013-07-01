@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator.info;
 
-import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.FileInfo;
@@ -25,6 +24,8 @@ import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -107,7 +108,7 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
 
   @Override
   public Icon getIcon() {
-    return null;
+    return ImageUtils.MEDIA_16;
   }
 
   @Override

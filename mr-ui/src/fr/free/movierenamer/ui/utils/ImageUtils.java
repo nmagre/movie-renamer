@@ -84,6 +84,7 @@ public final class ImageUtils {
   public static final Icon STARHALF_16 = getIconFromJar("ui/16/star-half.png");
   public static final Icon STAR_16 = getIconFromJar("ui/16/star.png");
   public static final Icon CLEAR_LIST_16 = getIconFromJar("ui/16/media_playlist_clear.png");
+  public static final Icon CASTING_16 = getIconFromJar("ui/16/casting.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
   // Movie Renamer logo
   public static final Icon LOGO_22 = getIconFromJar("ui/icon-22.png");

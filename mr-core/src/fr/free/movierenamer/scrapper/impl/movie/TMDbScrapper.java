@@ -176,7 +176,7 @@ public class TMDbScrapper extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases");
+    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases,keywords");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
@@ -220,10 +220,15 @@ public class TMDbScrapper extends MovieScrapper {
     for (JSONObject jsonObj : JSONUtils.selectList("production_companies", json)) {
       studios.add(JSONUtils.selectString("name", jsonObj));
     }
+    
+    List<String> tags = new ArrayList<String>();
+    for (JSONObject jsonObj : JSONUtils.selectList("keywords", json)) {
+      tags.add(JSONUtils.selectString("name", jsonObj));
+    }
 
     searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage());
 
-    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios);
+    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios, tags);
     return movieInfo;
   }
 
