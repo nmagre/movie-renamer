@@ -119,4 +119,9 @@ public class UISearchResult extends Sorter.ISort implements IImage {
 
     return toString;
   }
+
+  @Override
+  public int getId() {
+    return searchResult.getMediaId().getId();
+  }
 }

@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.worker.impl;
 import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.IImage;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
 import java.awt.Dimension;
 import java.util.List;
@@ -33,13 +34,13 @@ import javax.swing.Icon;
  */
 public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
-  private final DefaultListModel model;
+  private final ImageListModel<T> model;
 
-  public ImageWorker(List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
+  public ImageWorker(List<T> images, ImageListModel<T> model, Dimension imageSize, String defaultImage) {
     this(images, model, ImageInfo.ImageSize.small, imageSize, defaultImage);
   }
 
-  public ImageWorker(List<T> images, DefaultListModel model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
+  public ImageWorker(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
     super(images, imageSize, size, defaultImage);
     this.model = model;
   }
@@ -53,16 +54,13 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
     for (AbstractImageWorker<T>.ImageChunk chunk : chunks) {
 
       Icon icon = chunk.getIcon();
-      int index = chunk.getIndex();
-      if (index >= model.size()) {
-        continue;
+      int id = chunk.getId();
+      
+      T obj = model.getElementById(id);
+      if(obj != null) {
+        obj.setIcon(icon);
+        model.setElement(obj);
       }
-
-      @SuppressWarnings("unchecked")
-      T obj = (T) model.get(index);
-
-      obj.setIcon(icon);
-      model.setElementAt(obj, index);
     }
   }
 

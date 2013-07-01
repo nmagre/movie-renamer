@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper;
 
+import fr.free.movierenamer.info.IdInfo;
 import java.util.List;
 import java.util.Locale;
 

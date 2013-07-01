@@ -87,29 +87,6 @@ public final class UISettings {
     SMALL;
   }
 
-  public static enum ThumbName {
-
-    FILENAME,
-    POSTER,
-    THUMB;
-  }
-
-  public static enum ThumbExt {
-
-    JPG,
-    PNG,
-    TBN;
-  }
-
-  public static enum FanartName {
-
-    FILENAME_FANART,
-    FOLDERNAME_FANART,
-    FOLDERNAME,
-    FANART,
-    BACKDROP;
-  }
-
   public enum UISettingsProperty implements Settings.IProperty {
 
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
@@ -135,31 +112,40 @@ public final class UISettings {
     generateFanart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateBanner(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateSubtitles(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    imageThumbName(ThumbName.FILENAME, SettingsType.IMAGE, SettingsSubType.THUMB),
-    imageThumbExt(ThumbExt.JPG, SettingsType.IMAGE, SettingsSubType.THUMB),
-    imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbName("<fileName>.tbn", SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB, true),
     imageThumbSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.THUMB),
     imageThumbWidth(720, SettingsType.IMAGE, SettingsSubType.THUMB),
-    imageFanartName(FanartName.FILENAME_FANART, SettingsType.IMAGE, SettingsSubType.FANART),
-    imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartName("<fileName>-fanart.jpg", SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART, true),
     imageFanartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.FANART),
     imageFanartWidth(1080, SettingsType.IMAGE, SettingsSubType.FANART),
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
-    fileChooserPath(userFolder, null, null),
-    showAdvancedSettings(Boolean.FALSE, null, null),
     groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL);
+    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    //
+    fileChooserPath(userFolder);
     private Class<?> vclass;
     private Object defaultValue;
     private SettingsType type;
     private SettingsSubType subType;
+    private boolean hasChild;
+
+    private UISettingsProperty(Object defaultValue) {
+      this(defaultValue, null, null);
+    }
 
     private UISettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
+      this(defaultValue, type, subType, false);
+    }
+
+    private UISettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType, boolean hasChild) {
       this.vclass = defaultValue.getClass();
       this.defaultValue = defaultValue;
       this.type = type;
       this.subType = subType;
+      this.hasChild = hasChild;
     }
 
     @Override
@@ -190,6 +176,11 @@ public final class UISettings {
     @Override
     public SettingsSubType getSubType() {
       return subType;
+    }
+
+    @Override
+    public boolean hasChild() {
+      return hasChild;
     }
   }
 
@@ -418,12 +409,8 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.generateSubtitles));
   }
 
-  public ThumbName getImageThumbName() {
-    return ThumbName.valueOf(get(UISettingsProperty.imageThumbName));
-  }
-
-  public ThumbExt getImageThumbExt() {
-    return ThumbExt.valueOf(get(UISettingsProperty.imageThumbExt));
+  public String getImageThumbName() {
+    return get(UISettingsProperty.imageThumbName);
   }
 
   public boolean isImageThumbResize() {
@@ -438,8 +425,8 @@ public final class UISettings {
     return Integer.parseInt(get(UISettingsProperty.imageThumbWidth));
   }
 
-  public FanartName getImageFanartName() {
-    return FanartName.valueOf(get(UISettingsProperty.imageFanartName));
+  public String getImageFanartName() {
+    return get(UISettingsProperty.imageFanartName);
   }
 
   public boolean isImageFanartResize() {
@@ -460,10 +447,6 @@ public final class UISettings {
 
   public String getFileChooserPath() {
     return get(UISettingsProperty.fileChooserPath);
-  }
-
-  public boolean isShowAdvancedSettings() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showAdvancedSettings));
   }
 
   public boolean isGroupMediaList() {

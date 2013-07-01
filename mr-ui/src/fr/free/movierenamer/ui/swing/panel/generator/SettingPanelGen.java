@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.panel.generator;
+package fr.free.movierenamer.ui.swing.panel.generator;
 
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
@@ -23,8 +23,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.info.NfoInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
@@ -41,9 +39,11 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +65,7 @@ public class SettingPanelGen extends PanelGenerator {
   private Map<IProperty, WebCheckBox> checkboxs;
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebComboBox> comboboxs;
+  private final String settingsi18n = "settings.";
 
   public SettingPanelGen() {
     super();
@@ -83,53 +84,57 @@ public class SettingPanelGen extends PanelGenerator {
       int level = 1;
       WebPanel panel = null;
 
+      String type = group.get(0).getType().name();
+      String subtype = group.get(0).getSubType().name();
       if (group.get(0).getType().equals(Settings.SettingsType.RENAME) && !group.get(0).getSubType().equals(Settings.SettingsSubType.GENERAL)) {
         panel = new WebPanel();
         panel.setLayout(new GridBagLayout());
         if (tabbedPane.getTabCount() == 0) {
-          add(createTitle(group.get(0).getType().name(), null), getTitleConstraint());
+          add(createTitle(settingsi18n + type, settingsi18n + type + "." + subtype, true), getTitleConstraint());
         }
       } else {
-        add(createTitle(group.get(0).getSubType().name(), null), getTitleConstraint());
+        add(createTitle(settingsi18n + subtype, settingsi18n + type + "." + subtype, true), getTitleConstraint());
       }
+
+      boolean hasChild = false;
+      boolean isEnabled = false;
+      final List<JComponent> childs = new ArrayList<JComponent>();
 
       for (IProperty property : group) {
         GridBagConstraints constraint = getGroupConstraint(level);
-        JComponent component;
+        final JComponent component;
         String title = LocaleUtils.i18nExt(settingsi18n + property.name().toLowerCase());
 
         if (property.getVclass().equals(Boolean.class)) {
+
           // Create checkbox for boolean value
-          component = new WebCheckBox(title);
-          ((WebCheckBox) component).setSelected(Boolean.parseBoolean(property.getValue()));
-          TooltipManager.setTooltip(component, LocaleUtils.i18nExt(settingsi18n + property.name().toLowerCase() + "tt"), TooltipWay.down);
+          component = createComponent(Component.CHECKBOX, title);
+          isEnabled = Boolean.parseBoolean(property.getValue());
+          ((WebCheckBox) component).setSelected(isEnabled);
           checkboxs.put(property, (WebCheckBox) component);
 
-          if (property.getSubType().equals(Settings.SettingsSubType.PROXY) || property.getSubType().equals(Settings.SettingsSubType.MOVIEDIR)) {
-            level++;
-          }
         } else if (property.getVclass().equals(String.class) || property.getDefaultValue() instanceof Number) {
+
           // Create text field for String and number value
-          WebLabel label = new WebLabel(title);
-          component = new WebTextField(property.getValue());
-          label.setFont(new Font(textFont, Font.BOLD, textSize));
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+          component = createComponent(Component.FIELD, null);
+          ((WebTextField) component).setText(property.getValue());
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
           } else {
             add(label, getGroupConstraint(0, false, false, level));
           }
-
           constraint = getGroupConstraint(1, true, true, level);
           fields.put(property, (WebTextField) component);
-        } else if (property.getVclass().isEnum()) {
-          // Enum
-          WebLabel label = new WebLabel(title);
-          component = new WebComboBox();
-          component.setPreferredSize(comboboxDim);
-          DefaultComboBoxModel model = new DefaultComboBoxModel();
 
-          label.setFont(new Font(textFont, Font.BOLD, textSize));
+        } else if (property.getVclass().isEnum()) {
+
+          // Enum
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+          component = new WebComboBox();
+          //component.setPreferredSize(comboboxDim);
+          DefaultComboBoxModel model = new DefaultComboBoxModel();
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
@@ -137,7 +142,7 @@ public class SettingPanelGen extends PanelGenerator {
             add(label, getGroupConstraint(0, false, false, level));
           }
 
-          constraint = getGroupConstraint(1, true, false, level);
+          constraint = getGroupConstraint(1, true, /*false*/ true, level);
 
           @SuppressWarnings("unchecked")
           Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) property.getVclass();
@@ -165,14 +170,13 @@ public class SettingPanelGen extends PanelGenerator {
           ((WebComboBox) component).setRenderer(UIUtils.iconListRenderer);
           ((WebComboBox) component).setModel(model);
           comboboxs.put(property, ((WebComboBox) component));
+
         } else if (property.getDefaultValue() instanceof Class) {
           // Class (Scrapper)
-          WebLabel label = new WebLabel(title);
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
-          component.setPreferredSize(comboboxDim);
+          //component.setPreferredSize(comboboxDim);
           DefaultComboBoxModel model = new DefaultComboBoxModel();
-
-          label.setFont(new Font(textFont, Font.BOLD, textSize));
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
@@ -180,7 +184,7 @@ public class SettingPanelGen extends PanelGenerator {
             add(label, getGroupConstraint(0, false, false, level));
           }
 
-          constraint = getGroupConstraint(1, true, false, level);
+          constraint = getGroupConstraint(1, true, /*false*/ true, level);
 
           if (MovieScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
@@ -208,6 +212,25 @@ public class SettingPanelGen extends PanelGenerator {
         } else {
           UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getVclass()));
           continue;
+        }
+
+        if (hasChild) {
+          component.setEnabled(isEnabled);
+          childs.add(component);
+        } else {
+          hasChild = property.hasChild();
+          if (hasChild) {
+            level++;
+            ((WebCheckBox) component).addActionListener(new ActionListener() {
+              @Override
+              public void actionPerformed(ActionEvent ae) {
+                boolean enabled = ((WebCheckBox) ae.getSource()).isSelected();
+                for (JComponent child : childs) {
+                  child.setEnabled(enabled);
+                }
+              }
+            });
+          }
         }
 
         if (tabbed && panel != null) {

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.info.IdInfo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -120,6 +121,11 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   @Override
   protected Locale getDefaultLanguage() {
     return Locale.ENGLISH;
+  }
+
+  @Override
+  protected List<Subtitle> searchSubtitlesById(IdInfo id, Locale language) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 }

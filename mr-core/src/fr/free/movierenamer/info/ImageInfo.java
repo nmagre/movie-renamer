@@ -65,8 +65,10 @@ public class ImageInfo extends Info {
   }
   protected Map<ImageProperty, String> fields;
   protected ImageCategoryProperty category;
+  protected int id;
 
-  public ImageInfo(Map<ImageProperty, String> fields, ImageCategoryProperty category) {
+  public ImageInfo(int id, Map<ImageProperty, String> fields, ImageCategoryProperty category) {
+    this.id = id;
     this.fields = new EnumMap<ImageProperty, String>(fields);
     if (category == null) {
       this.category = ImageCategoryProperty.unknown;
@@ -136,6 +138,10 @@ public class ImageInfo extends Info {
 
   public String getDescription() {
     return get(ImageProperty.desc);
+  }
+  
+  public int getId() {
+    return id;
   }
 
   @Override

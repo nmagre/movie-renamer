@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.FileInfo;
-import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
@@ -50,10 +49,12 @@ public class UIFile extends Sorter.ISort implements IIconList {
     this.icon = ImageUtils.MEDIA_16;
 
     fileInfo = null;
-    search = NameCleaner.extractName(file.getName(), false);
   }
 
   public FileInfo getFileInfo() {
+    if(fileInfo == null) {
+      fileInfo = new FileInfo(file);
+    }
     return fileInfo;
   }
 
@@ -62,11 +63,18 @@ public class UIFile extends Sorter.ISort implements IIconList {
   }
 
   public String getSearch() {
+    if(search == null) {
+      search = getFileInfo().getSearch();
+    }
     return search;
+  }
+  
+  public String getDefaultSearch() {
+    return getFileInfo().getSearch();
   }
 
   public void setSearch(String search) {
-    //this.search = search;
+    this.search = search;
   }
 
   /**
@@ -80,8 +88,12 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
   @Override
   public int getYear() {
-    return -1; //FIXME
+    return getFileInfo().getYear();
   }
+  
+/*  public IdInfo getIdInfo() {
+    return getFileInfo().getImdbId();
+  }*/
 
   /**
    * Get media icon to display in list

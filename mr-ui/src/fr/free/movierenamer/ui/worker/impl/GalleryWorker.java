@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
-import fr.free.movierenamer.ui.panel.GalleryPanel;
+import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
 import java.awt.Dimension;
 import java.util.List;
@@ -48,7 +48,7 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
     for (AbstractImageWorker<UIMediaImage>.ImageChunk chunk : chunks) {
 
       Icon icon = chunk.getIcon();
-      int index = chunk.getIndex();
+      int index = chunk.getId();
 
       panel.addThumbPreview(icon, index);
     }

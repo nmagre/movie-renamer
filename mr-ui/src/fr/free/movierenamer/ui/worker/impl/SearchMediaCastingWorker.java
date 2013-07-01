@@ -24,6 +24,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
@@ -42,7 +43,7 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
   private final MediaInfo info;
   private final WebList castingList;
   private final Dimension actorListDim = new Dimension(30, 53);
-  private final DefaultListModel castingModel;
+  private final ImageListModel<UIPersonImage> castingModel;
 
   /**
    * Constructor arguments
@@ -52,7 +53,7 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
    * @param castingList
    * @param castingModel
    */
-  public SearchMediaCastingWorker(MovieRenamer mr, MediaInfo info, WebList castingList, DefaultListModel castingModel) {
+  public SearchMediaCastingWorker(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> castingModel) {
     super(mr);
     this.info = info;
     this.castingList = castingList;
@@ -85,7 +86,7 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
     List<UIPersonImage> infos = get();
     castingList.setModel(castingModel);
     if (infos != null) {
-      castingModel.addElements(infos);
+      castingModel.addAll(infos);
       WorkerManager.fetchImages(infos, castingModel, actorListDim, "ui/unknown.png");
     }
   }

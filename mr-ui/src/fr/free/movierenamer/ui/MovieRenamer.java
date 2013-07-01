@@ -62,20 +62,20 @@ import fr.free.movierenamer.ui.bean.UILoader;
 import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UIScrapper;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.panel.ImagePanel;
-import fr.free.movierenamer.ui.panel.Loading;
-import fr.free.movierenamer.ui.panel.LogPanel;
-import fr.free.movierenamer.ui.panel.MediaPanel;
-import fr.free.movierenamer.ui.panel.MoviePanel;
-import fr.free.movierenamer.ui.panel.SettingPanel;
-import fr.free.movierenamer.ui.panel.TvShowPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.DragAndDrop;
 import fr.free.movierenamer.ui.swing.IconListRenderer;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.ListTooltip;
 import fr.free.movierenamer.ui.swing.MediaListRenderer;
 import fr.free.movierenamer.ui.swing.SearchResultListRenderer;
+import fr.free.movierenamer.ui.swing.panel.ImagePanel;
+import fr.free.movierenamer.ui.swing.panel.Loading;
+import fr.free.movierenamer.ui.swing.panel.LogPanel;
+import fr.free.movierenamer.ui.swing.panel.SettingPanel;
+import fr.free.movierenamer.ui.swing.panel.info.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.info.MoviePanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -116,8 +116,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   // Scrapper
   private UIScrapper currentScrapper;
   // Media Panel
+  private MediaPanel<? extends MediaInfo> mediaPanel;
   private final MoviePanel moviePnl;
-  private final TvShowPanel tvShowPanel;
+//  private final TvShowPanel tvShowPanel;
   private final ComponentTransition containerTransitionMediaPanel;// Media Panel container
   // Log Panel
   private final LogPanel logPanel = new LogPanel();
@@ -128,7 +129,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final boolean CLEAR_SEARCHRESULTLIST = true;
   // Model
   private EventList<UIFile> mediaFileEventList = new BasicEventList<UIFile>();
-  private final DefaultListModel searchResultModel = new DefaultListModel();
+  private final ImageListModel<UISearchResult> searchResultModel = new ImageListModel<UISearchResult>();
   private final DefaultComboBoxModel movieScrapperModel = new DefaultComboBoxModel();
   private final DefaultComboBoxModel tvshowScrapperModel = new DefaultComboBoxModel();
   private final EventListModel<UIFile> mediaFileSeparatorModel;
@@ -151,7 +152,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   public static final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
   //
   private final ListSelectionListener mediaFileListListener = createMediaFileListListener();
-  private final ImagePanel imgpnl;
+  private final ImagePanel imgPnl;
 
   public MovieRenamer(List<File> files) {
     super();
@@ -160,8 +161,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     Cache.clearAllCache();//FIXME remove !!!
 
-    moviePnl = new MoviePanel(this);
-    tvShowPanel = new TvShowPanel(this);
+    moviePnl = new MoviePanel();
+//    tvShowPanel = new TvShowPanel(this);
 
     // Add Movie Renamer logger to log panel
     UISettings.LOGGER.addHandler(logPanel.getHandler());
@@ -180,15 +181,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     remove(containerTransition);
     containerTransition.setTransitionEffect(new FadeTransitionEffect());
 
-
-
-
-    imgpnl = new ImagePanel(this);
-    centerPanel.add(imgpnl, BorderLayout.EAST);
-
-
-
-
+    imgPnl = new ImagePanel(this);
+    JScrollPane imgPanelScrollPane = new JScrollPane(imgPnl);
+    imgPanelScrollPane.setBorder(null);
+    centerPanel.add(imgPanelScrollPane, BorderLayout.EAST);
 
     // List option
     showIconMediaListChk = createShowIconChk(mediaFileList, setting.isShowIconMediaList(), "popup.menu.showIcon");
@@ -223,7 +219,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     appearanceTransition.addAncestorListener(new AncestorAdapter() {
       @Override
       public void ancestorAdded(AncestorEvent event) {
-        appearanceTransition.delayTransition(800, containerTransition);
+        appearanceTransition.delayTransition(500, containerTransition);
       }
     });
 
@@ -449,6 +445,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
           currentMedia = mediaFile;
           searchField.setText(currentMedia.getSearch());
+          mediaPanel.clearfileInfoPanel();
 
           searchMedia();
           WorkerManager.getFileInfo(MovieRenamer.this, currentMedia);// We start get file info after otherwise "searchmedia" will stop it
@@ -510,16 +507,17 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     tvShowModeBtn.setEnabled(false);
     switch (currentMode) {
       case MOVIEMODE:
+        mediaPanel = moviePnl;
         containerTransitionMediaPanel.performTransition(moviePnl);
         tvShowModeBtn.setEnabled(true);
         scrapperCb.setModel(movieScrapperModel);
         fileFormatField.setText(setting.coreInstance.getMovieFilenameFormat());//FIXME user change
         break;
       case TVSHOWMODE:
-        containerTransitionMediaPanel.performTransition(tvShowPanel);
-        movieModeBtn.setEnabled(true);
-        scrapperCb.setModel(tvshowScrapperModel);
-        fileFormatField.setText(setting.coreInstance.getTvShowFilenameFormat());//FIXME user change
+//        containerTransitionMediaPanel.performTransition(tvShowPanel);
+//        movieModeBtn.setEnabled(true);
+//        scrapperCb.setModel(tvshowScrapperModel);
+//        fileFormatField.setText(setting.coreInstance.getTvShowFilenameFormat());//FIXME user change
         break;
     }
 
@@ -563,38 +561,36 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     WorkerManager.searchImage(this, searchResult);
   }
 
-  public EventListModel<UIFile> getMediaFileListModel() {
+  public final EventListModel<UIFile> getMediaFileListModel() {
     return groupFile ? mediaFileSeparatorModel : mediaFileModel;
   }
 
-  public DefaultListModel getSearchResultListModel() {
+  public final ImageListModel<UISearchResult> getSearchResultListModel() {
     return searchResultModel;
   }
 
-  public WebList getMediaList() {
+  public final WebList getMediaList() {
     return mediaFileList;
   }
 
-  public WebList getSearchResultList() {
+  public final WebList getSearchResultList() {
     return searchResultList;
   }
 
-  public UIScrapper getScrapper() {
+  public final UIScrapper getScrapper() {
     return currentScrapper;
   }
 
-  public final MediaPanel getMediaPanel() {
-    MediaPanel current = null;
-    switch (currentMode) {
-      case MOVIEMODE:
-        current = moviePnl;
-        break;
-      case TVSHOWMODE:
-        current = tvShowPanel;
-        break;
-      default:
-    }
-    return current;
+  public final UIFile getFile() {
+    return currentMedia;
+  }
+
+  public final ImagePanel getImagePanel() {
+    return imgPnl;
+  }
+
+  public final MediaPanel<? extends MediaInfo> getMediaPanel() {
+    return mediaPanel;
   }
 
   /**
@@ -650,12 +646,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }
 
   public void updateRenamedTitle() {// TODO
-    MediaInfo mediaInfo = getMediaPanel().getMediaInfo();
-    if (mediaInfo != null) {
-      renameField.setText(mediaInfo.getRenamedTitle(fileFormatField.getText()));
-    } else {
-      renameField.setText(null);
-    }
+ /*   MediaInfo mediaInfo = getMediaPanel().getMediaInfo();
+     if (mediaInfo != null) {
+     renameField.setText(mediaInfo.getRenamedTitle(fileFormatField.getText()));
+     } else {
+     renameField.setText(null);
+     }*/
   }
 
   /**
@@ -675,19 +671,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     if (clearSearchResultList) {
       searchBtn.setEnabled(false);
       searchField.setEnabled(false);
-      searchResultModel.removeAllElements();
+      searchResultModel.clear();
     }
 
-    imgpnl.clearPanel();
+    imgPnl.clearPanel();
     moviePnl.clear();
     updateRenamedTitle();
 
     // Stop all running workers
     WorkerManager.stop();
-  }
-
-  public ImagePanel getImagePanel() {
-    return imgpnl;
   }
 
   /**
@@ -1035,8 +1027,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }//GEN-LAST:event_movieModeBtnActionPerformed
 
   private void tvShowModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_tvShowModeBtnActionPerformed
-    currentMode = UIMode.TVSHOWMODE;
-    loadMediaPanel();
+    WebOptionPane.showMessageDialog(MovieRenamer.this, "Tv show is not available for the moment but will be added soon.", "Unavailable", JOptionPane.INFORMATION_MESSAGE);
+//    currentMode = UIMode.TVSHOWMODE;
+//    loadMediaPanel();
   }//GEN-LAST:event_tvShowModeBtnActionPerformed
 
   private void exitBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed

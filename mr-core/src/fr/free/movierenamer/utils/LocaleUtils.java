@@ -470,7 +470,7 @@ public final class LocaleUtils {
     if (lBundle != null && lBundle.containsKey(bundleKey)) {
       return lBundle.getString(bundleKey);
     } else {
-      /*if (localBundleExt == lBundle) {
+      if (localBundleExt == lBundle) {
 
         try {// FIXME remove !!!!
           PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Settings.appFolder + File.separator + "i18n_missing.properties", true)));
@@ -478,7 +478,7 @@ public final class LocaleUtils {
           out.close();
         } catch (IOException e) {
         }
-      }*/
+      }
       Settings.LOGGER.log(Level.CONFIG, String.format("No internationlization found for %s, use default value", bundleKey));
       return defaultValue;
     }

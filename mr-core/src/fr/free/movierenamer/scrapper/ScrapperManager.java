@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,11 @@ import java.util.logging.Level;
 
 import fr.free.movierenamer.scrapper.impl.OpenSubtitlesScrapper;
 import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.Filmstarts;
+import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.settings.Settings;
 
 /**
@@ -50,6 +55,11 @@ public class ScrapperManager {
   static {
     // movie
     getScrapper(AllocineScrapper.class);
+    getScrapper(AdorocinemaScrapper.class);
+    getScrapper(BeyazperdeScrapper.class);
+    getScrapper(Filmstarts.class);
+    getScrapper(ScreenRushScrapper.class);
+    getScrapper(SensacineScrapper.class);
     getScrapper(IMDbScrapper.class);
     getScrapper(TMDbScrapper.class);
     // tvshow
@@ -107,9 +117,11 @@ public class ScrapperManager {
   }
 
   public static List<MovieScrapper> getMovieScrapperList() {
+    Settings settings = Settings.getInstance();
     List<MovieScrapper> toRet = new ArrayList<MovieScrapper>();
     for (Class<?> clazz : map.keySet()) {
       if (MovieScrapper.class.isAssignableFrom(clazz)) {
+        ((MovieScrapper) map.get(clazz)).setLanguage(settings.getSearchScrapperLang().getLocale());
         toRet.add((MovieScrapper) map.get(clazz));
       }
     }
@@ -151,7 +163,6 @@ public class ScrapperManager {
   // }
   // return toRet;
   // }
-
   private ScrapperManager() {
     throw new UnsupportedOperationException();
   }

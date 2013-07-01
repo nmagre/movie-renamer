@@ -17,18 +17,15 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
-import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.scrapper.SearchScrapper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -50,7 +47,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   private final UIFile media;
   private final SearchScrapper<? extends Hyperlink> scrapper;
   private final WebList searchResultList;
-  private final DefaultListModel searchResultModel;
+  private final ImageListModel<UISearchResult> searchResultModel;
   private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
@@ -126,7 +123,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
       // Do nothing
       }
 
-    searchResultModel.addElements(results);
+    searchResultModel.addAll(results);
 
     if (searchResultModel.isEmpty()) {
       JOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("noResult"), LocaleUtils.i18nExt("warning"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog + i18n

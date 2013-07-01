@@ -21,6 +21,7 @@ import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.namematcher.NameMatcher;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import java.io.File;
 import java.net.URI;
 import java.util.Map;
@@ -38,7 +39,6 @@ public class FileInfo extends Info {
   private File file;
   private final MediaType type;
   private String search;
-  private Integer year;
   private final Map<FileProperty, String> fileProperty;
   private final MediaTag mtag;
 
@@ -62,12 +62,35 @@ public class FileInfo extends Info {
     this.type = getMediaType(file);
     fileProperty = NameMatcher.getProperty(file, type);
     search = fileProperty.get(FileProperty.name);
-    try {
-      this.year = Integer.parseInt(fileProperty.get(FileProperty.year));
-    } catch (Exception ex) {
-      this.year = -1;
-    }
     this.mtag = new MediaTag(file);
+  }
+
+  public IdInfo getImdbId() {
+    String id = get(FileProperty.imdbId);
+    if(id != null && id.length() > 0) {
+      return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.IMDB);
+    }
+    return null;
+  }
+
+  public Integer getSeason() {
+    try {
+      return new Integer(get(FileProperty.season));
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public Integer getEpisode() {
+    try {
+      return new Integer(get(FileProperty.episode));
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String get(FileProperty property) {
+    return fileProperty.get(property);
   }
 
   private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
@@ -85,7 +108,11 @@ public class FileInfo extends Info {
   }
 
   public Integer getYear() {
-    return year == null ? -1 : year;
+    try {
+      return Integer.parseInt(fileProperty.get(FileProperty.year));
+    } catch (Exception ex) {
+      return -1;
+    }
   }
 
   public boolean wasRenamed() {

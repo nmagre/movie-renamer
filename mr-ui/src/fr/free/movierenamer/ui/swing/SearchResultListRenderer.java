@@ -63,6 +63,9 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
       if (Property.showOrigTitle.isEnabled()) {
         text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
       }
+      else {
+        text = "<html><b>" + text + "</b></html>";
+      }
       label.setText(text);
     }
 

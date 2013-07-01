@@ -23,13 +23,11 @@ import fr.free.movierenamer.scrapper.ImageScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import org.json.simple.JSONObject;
 
@@ -83,10 +81,11 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
 
       for (JSONObject image : images) {
         Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+        int id = JSONUtils.selectInteger("id", image);
         imageFields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("url", image));
         imageFields.put(ImageInfo.ImageProperty.language, JSONUtils.selectString("lang", image));
         ImageInfo.ImageCategoryProperty category = getCategory(tag);
-        imagesInfos.add(new ImageInfo(imageFields, category));
+        imagesInfos.add(new ImageInfo(id, imageFields, category));
       }
     }
 

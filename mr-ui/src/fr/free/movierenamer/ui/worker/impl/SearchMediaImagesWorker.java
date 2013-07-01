@@ -24,8 +24,8 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.panel.ImagePanel;
-import fr.free.movierenamer.ui.panel.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.ImagePanel;
+import fr.free.movierenamer.ui.swing.panel.AbstractMediaPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.worker.Worker;
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
 
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
-  private final MediaPanel mediapanel;
 
   /**
    * Constructor arguments
@@ -53,7 +52,6 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
   @SuppressWarnings("unchecked")
   public SearchMediaImagesWorker(MovieRenamer mr, UISearchResult searchResult) {
     super(mr);
-    mediapanel = mr.getMediaPanel();
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
   }

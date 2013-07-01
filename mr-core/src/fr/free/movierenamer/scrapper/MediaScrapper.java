@@ -22,7 +22,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
@@ -51,8 +50,15 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   protected final List<M> search(String query, Locale language) throws Exception {
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to search media for '%s' in '%s'", getName(), query, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
+
     @SuppressWarnings("unchecked")
-    Class<M> genericClazz = (Class<M>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0]; // TODO put it in Utils !
+    Class<M> genericClazz;
+    try {
+      genericClazz = (Class<M>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0]; // TODO put it in Utils !
+    } catch (Exception ex) {
+      genericClazz = (Class<M>) ((ParameterizedType) getClass().getSuperclass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
     List<M> results = (cache != null) ? cache.getList(query, language, genericClazz) : null;
     if (results != null) {
       return results;
@@ -61,8 +67,8 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     // perform actual search
     try {
       URL url = new URL(query);
-      if (!url.getHost().equals(getHost())) {
-        throw new InvalidUrlException(query);
+      if (!url.getHost().replace("www.", "").equals(getHost().replace("www.", ""))) {
+        throw new InvalidUrlException(getName() + " does not support url from " + url.getHost());
       }
       results = searchMedia(url, language);
     } catch (MalformedURLException ex) {
@@ -86,7 +92,13 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get media info for '%s' in '%s'", getName(), search, language.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
     @SuppressWarnings("unchecked")
-    Class<MI> genericClazz = (Class<MI>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[1]; // TODO put it in Utils !
+    Class<MI> genericClazz;
+    try {
+      genericClazz = (Class<MI>) ((ParameterizedType) getClass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[1]; // TODO put it in Utils !
+    } catch (Exception ex) {
+      genericClazz = (Class<MI>) ((ParameterizedType) getClass().getSuperclass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[1];
+    }
+    
     MI info = (cache != null) ? cache.getData(search, language, genericClazz) : null;
     if (info != null) {
       return info;
@@ -114,7 +126,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
   public final List<ImageInfo> getImages(M search) throws Exception {
     List<ImageInfo> imagesInfo = fetchImagesInfo(search);
-    if(imagesInfo.isEmpty()) {
+    if (imagesInfo.isEmpty()) {
       imagesInfo = getScrapperImages(search);
     }
     return imagesInfo != null ? imagesInfo : new ArrayList<ImageInfo>();

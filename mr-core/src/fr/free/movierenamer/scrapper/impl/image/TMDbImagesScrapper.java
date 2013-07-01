@@ -23,14 +23,12 @@ import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.TmdbImageSize;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import org.json.simple.JSONObject;
 
@@ -84,6 +82,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
             }) {
       List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
       TmdbImageSize imageSize = section.equals("backdrops") ? TmdbImageSize.backdrop : TmdbImageSize.poster;
+      int count = 0;
       for (JSONObject jsonObj : jsonObjs) {
         Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
         String file_path = JSONUtils.selectString("file_path", jsonObj);
@@ -99,7 +98,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
         imageFields.put(ImageInfo.ImageProperty.width, JSONUtils.selectString("width", jsonObj));
         imageFields.put(ImageInfo.ImageProperty.height, JSONUtils.selectString("height", jsonObj));
 
-        images.add(new ImageInfo(imageFields, section.equals("posters") ? ImageInfo.ImageCategoryProperty.thumb : ImageInfo.ImageCategoryProperty.fanart));
+        images.add(new ImageInfo(count++, imageFields, section.equals("posters") ? ImageInfo.ImageCategoryProperty.thumb : ImageInfo.ImageCategoryProperty.fanart));
       }
     }
 

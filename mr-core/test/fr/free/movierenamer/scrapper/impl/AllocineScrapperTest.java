@@ -68,11 +68,12 @@ public class AllocineScrapperTest extends MovieScrapperTest {
     List<CastingInfo> cast = allocine.getCasting(new Movie(new IdInfo(40191, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
     boolean dir = false, actor = false;
     for(CastingInfo info : cast) {
-      System.out.println(info);
+
       if(!dir && info.isDirector()) {
         Assert.assertEquals("Michel Gondry", info.getName());
         dir = true;
       }
+      
       if(!actor&&info.isActor()) {
         Assert.assertEquals("Jim Carrey", info.getName());
         actor = true;
@@ -85,7 +86,7 @@ public class AllocineScrapperTest extends MovieScrapperTest {
   };
 
   @Override
-  public void getImages() throws Exception {
+  public void getImages() throws Exception {// TODO
     /*List<ImageInfo> images = allocine.getImages(new Movie(new IdInfo(61282, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
     Assert.assertEquals(ImageCategoryProperty.thumb, images.get(0).getCategory());
     Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());// FIXME

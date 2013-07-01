@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.panel;
+package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
@@ -30,6 +30,7 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
@@ -326,6 +327,8 @@ public class GalleryPanel extends JDialog {
     thumbGalleryPnl = new com.alee.laf.panel.WebPanel();
     previewPnl = new com.alee.laf.panel.WebPanel();
     previewLbl = new com.alee.laf.label.WebLabel();
+    webToolBar1 = new com.alee.laf.toolbar.WebToolBar();
+    webLabel1 = new com.alee.laf.label.WebLabel();
     languageCbb = new javax.swing.JComboBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -337,19 +340,15 @@ public class GalleryPanel extends JDialog {
     previewPnlLayout.setHorizontalGroup(
       previewPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, previewPnlLayout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(languageCbb, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+        .addContainerGap(285, Short.MAX_VALUE)
         .addComponent(previewLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(280, 280, 280))
     );
     previewPnlLayout.setVerticalGroup(
       previewPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(previewPnlLayout.createSequentialGroup()
-        .addGroup(previewPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(previewLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(languageCbb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(0, 15, Short.MAX_VALUE))
+        .addComponent(previewLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGap(0, 0, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout galleryPnlLayout = new javax.swing.GroupLayout(galleryPnl);
@@ -366,23 +365,24 @@ public class GalleryPanel extends JDialog {
     galleryPnlLayout.setVerticalGroup(
       galleryPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, galleryPnlLayout.createSequentialGroup()
-        .addContainerGap()
+        .addGap(55, 55, 55)
         .addComponent(previewPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(thumbGalleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
         .addContainerGap())
     );
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(galleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(galleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-    );
+    getContentPane().add(galleryPnl, java.awt.BorderLayout.CENTER);
+
+    webToolBar1.setFloatable(false);
+    webToolBar1.setRollover(true);
+
+    webLabel1.setText(LocaleUtils.i18nExt("settings.language")); // NOI18N
+    webToolBar1.add(webLabel1);
+
+    webToolBar1.add(languageCbb);
+
+    getContentPane().add(webToolBar1, java.awt.BorderLayout.PAGE_START);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -392,5 +392,7 @@ public class GalleryPanel extends JDialog {
   private com.alee.laf.label.WebLabel previewLbl;
   private com.alee.laf.panel.WebPanel previewPnl;
   private com.alee.laf.panel.WebPanel thumbGalleryPnl;
+  private com.alee.laf.label.WebLabel webLabel1;
+  private com.alee.laf.toolbar.WebToolBar webToolBar1;
   // End of variables declaration//GEN-END:variables
 }

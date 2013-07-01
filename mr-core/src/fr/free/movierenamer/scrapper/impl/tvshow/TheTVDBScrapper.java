@@ -52,7 +52,6 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
-import java.util.Arrays;
 
 /**
  * Class TheTVDBScrapper : search tvshow on TheTVDB
@@ -136,7 +135,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   @Override
   protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.getLanguage() + ".xml");
-    System.out.println(url);
+
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
     Node node = XPathUtils.selectNode("//Series", dom);
@@ -231,6 +230,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
     List<Node> nodes = XPathUtils.selectNodes("//Banner", dom);
     for (Node node : nodes) {
       Map<ImageProperty, String> fields = new EnumMap<ImageProperty, String>(ImageProperty.class);
+      int id = Integer.parseInt(XPathUtils.getTextContent("id", node));
       ImageCategoryProperty category;
       try {
         category = ImageCategoryProperty.valueOf(XPathUtils.getTextContent("BannerType", node));
@@ -241,7 +241,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
       fields.put(ImageProperty.language, XPathUtils.getTextContent("Language", node));
       fields.put(ImageProperty.width, XPathUtils.getTextContent("BannerType2", node).replaceAll("x\\d+", ""));
       fields.put(ImageProperty.height, XPathUtils.getTextContent("BannerType2", node).replaceAll("\\d+x", ""));
-      images.add(new ImageInfo(fields, category));
+      images.add(new ImageInfo(id, fields, category));
     }
     return images;
   }

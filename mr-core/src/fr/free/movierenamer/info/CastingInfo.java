@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Class CastingInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -33,17 +33,16 @@ public class CastingInfo extends Info {
   private static final long serialVersionUID = 1L;
 
   public static enum PersonProperty {
+
     id,
     name,
     character,
     job,
     picturePath
   }
-  
   public static final String ACTOR = "Actor";
   public static final String DIRECTOR = "Director";
   public static final String WRITER = "Writer";
-  
   protected Map<PersonProperty, String> fields;
 
   protected CastingInfo() {
@@ -58,12 +57,12 @@ public class CastingInfo extends Info {
     return fields.get(key);
   }
 
-  public Integer getId() {
+  public int getId() {
     try {
       return new Integer(get(PersonProperty.id));
     } catch (Exception e) {
-      return null;
     }
+    return -1;
   }
 
   public String getName() {

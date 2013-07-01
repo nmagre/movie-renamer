@@ -315,7 +315,6 @@ public class MediaTag {
     res += "  Video scan type : " + video.getScanType() + " \n";
     res += "  Video aspect ratio : " + video.getAspectRatio() + " \n";
     res += "  Video frame count : " + video.getFrameCount() + " \n";
-    res += "  Video frame count : " + video.getFrameCount() + " \n";
     res += "  Video width : " + video.getWidth() + " \n";
     res += "  Video height : " + video.getHeight() + " \n";
     res += "  Video resolution : " + video.getVideoResolution() + " \n";

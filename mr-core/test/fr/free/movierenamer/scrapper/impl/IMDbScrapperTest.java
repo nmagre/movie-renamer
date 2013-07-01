@@ -82,7 +82,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals("C'era una volta il West", movie.getTitle());
     Assert.assertEquals(Integer.valueOf(175), Integer.valueOf(movie.getRuntime()));
     Assert.assertEquals("There were three men in her life. One to take her... one to love her... and one to kill her.", movie.getTagline());
-    Assert.assertEquals("Rated PG-13 for western violence and brief sensuality (Mpaa re-rating) (2003)", movie.getMpaa());
+    Assert.assertEquals("Rated PG-13 for western violence and brief sensuality (Mpaa re-rating) (2003)", movie.getCertification());
     Assert.assertEquals("-12", movie.getCertification(MovieInfo.MotionPictureRating.FRANCE));
   }
 

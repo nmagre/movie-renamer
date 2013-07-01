@@ -30,4 +30,6 @@ public interface IImage extends IIconList {
   public void setIcon(Icon icon);
 
   public URI getUri(ImageInfo.ImageSize size);
+  
+  public int getId();
 }

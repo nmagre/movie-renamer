@@ -50,7 +50,6 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   @Override
   @SuppressWarnings("unchecked")
   protected Icon executeInBackground() {
-    int count = 0;
     Icon res = null;
     for (T image : images) {
       if (isCancelled()) {
@@ -59,7 +58,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
       }
 
       res = ImageUtils.getIcon(image.getUri(size), imageSize, defaultImage);
-      publish(new ImageChunk(res, count++));
+      publish(new ImageChunk(res, image.getId()));
     }
 
     return res;
@@ -72,16 +71,16 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
 
   public class ImageChunk {
 
-    private int index;
+    private int id;
     private Icon icon;
 
-    public ImageChunk(Icon icon, int index) {
+    public ImageChunk(Icon icon, int id) {
       this.icon = icon;
-      this.index = index;
+      this.id = id;
     }
 
-    public int getIndex() {
-      return index;
+    public int getId() {
+      return id;
     }
 
     public Icon getIcon() {

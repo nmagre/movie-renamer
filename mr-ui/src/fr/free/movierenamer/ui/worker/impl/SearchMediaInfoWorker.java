@@ -17,12 +17,13 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
+import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.panel.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.info.MediaPanel;
 import fr.free.movierenamer.ui.worker.Worker;
 
 /**
@@ -55,7 +56,12 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
       info = scrapper.getInfo(media);
-      //info.setMediaTag(file.getMediaTag());
+      FileInfo fileInfo = mr.getMediaPanel().getFileInfo();
+      // If GetFileInfoWorker is not done, we get file info in this thread
+      if(fileInfo == null) {
+        fileInfo = new FileInfo(mr.getFile().getFile());
+      }
+      info.setMediaTag(fileInfo.getMediaTag());
     }
     return info;
   }
@@ -63,11 +69,18 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
   @Override
   protected void workerDone() throws Exception {
     MediaInfo info = get();
-    if (info != null) {
-      MediaPanel mediaPanel = mr.getMediaPanel();
-      mediaPanel.addMediaInfo(info);
-      mr.updateRenamedTitle();
+
+    // Search info failed, we let the user try again by clearing selection
+    if (info == null) {
+      mr.getSearchResultList().clearSelection();
+      return;
     }
+
+    @SuppressWarnings("unchecked")
+    MediaPanel<MediaInfo> mediaPanel = (MediaPanel<MediaInfo>) mr.getMediaPanel();
+    mediaPanel.setInfo(info);
+    
+    mr.updateRenamedTitle();
   }
 
   @Override

@@ -214,10 +214,10 @@ public class IMDbScrapper extends MovieScrapper {
 
     String mpaa = getH5Content(dom, "MPAA", null);
     if (!mpaa.equals("")) {
-      fields.put(MovieProperty.mpaa, mpaa);
+      fields.put(MovieProperty.certification, mpaa);
       Matcher matcher = mpaaCodePattern.matcher(mpaa);
       if (matcher.find()) {
-        fields.put(MovieProperty.mpaaCode, matcher.group(1));
+        fields.put(MovieProperty.certificationCode, matcher.group(1));
       }
     } else {
       List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='info']/H5[contains(., 'Certification')]/parent::node()//DIV/descendant::text()"
@@ -225,7 +225,7 @@ public class IMDbScrapper extends MovieScrapper {
       for (Node pnode : nodes) {
         String cert = pnode.getTextContent();
         if (cert.contains("USA")) {
-          fields.put(MovieProperty.mpaaCode, cert.split(":")[1]);
+          fields.put(MovieProperty.certificationCode, cert.split(":")[1]);
           break;
         }
       }
@@ -312,8 +312,7 @@ public class IMDbScrapper extends MovieScrapper {
     }
 
     // not found
-    // throw new IllegalArgumentException(String.format("Cannot find imdb id: %s", source));
-    return 0;
+    throw new IllegalArgumentException(String.format("Cannot find imdb id: %s", source));
   }
 
   protected int findCastImdbId(String source) {
@@ -354,13 +353,15 @@ public class IMDbScrapper extends MovieScrapper {
     Document dom = URIRequest.getHtmlDocument(url.toURI(), getRequestProperties(language));
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='thumb_list']//IMG", dom);
+    
+    int count = 0;
     for (Node inode : nodes) {
       Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
       String imgUrl = XPathUtils.getAttribute("src", inode).replaceAll("CR[\\d,]+_SS\\d+", "SY214_SX314");
       imageFields.put(ImageProperty.url, imgUrl.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY_SX.jpg"));
       imageFields.put(ImageProperty.urlMid, imgUrl);
       imageFields.put(ImageProperty.urlTumb, createImgPath(imgUrl));
-      images.add(new ImageInfo(imageFields, imgtype));
+      images.add(new ImageInfo(count++, imageFields, imgtype));
     }
     return images;
   }

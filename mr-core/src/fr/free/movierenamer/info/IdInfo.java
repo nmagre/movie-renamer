@@ -29,9 +29,15 @@ public class IdInfo extends Info {
   private static final long serialVersionUID = 1L;
   private int id;
   private AvailableApiIds idType;
+  private String longId;
 
   public IdInfo(int id, AvailableApiIds idType) {
+    this(id, null, idType);
+  }
+
+  public IdInfo(int id, String longId, AvailableApiIds idType) {
     this.id = id;
+    this.longId = longId;
     this.idType = idType;
   }
 
@@ -41,6 +47,10 @@ public class IdInfo extends Info {
 
   public AvailableApiIds getIdType() {
     return idType;
+  }
+
+  public String getLongId() {
+    return longId;
   }
 
   @Override

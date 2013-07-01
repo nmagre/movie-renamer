@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.worker;
 
 import ca.odell.glazedlists.EventList;
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
@@ -27,9 +26,11 @@ import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.panel.GalleryPanel;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFileInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
@@ -84,17 +85,17 @@ public final class WorkerManager {
     start(imagesWorker, searchResult);
   }
 
-  public static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, DefaultListModel model) {
+  public static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
     start(castingWorker, "");
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, DefaultListModel model, Dimension imageSize, String defaultImage) {
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension imageSize, String defaultImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, imageSize, defaultImage);
     start(imagesWorker, "[" + images.size() + "]");
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, DefaultListModel model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, size, imageSize, defaultImage);
     start(imagesWorker, "[" + images.size() + "]");
   }

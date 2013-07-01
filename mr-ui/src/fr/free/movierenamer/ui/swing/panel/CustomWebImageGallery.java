@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with WebLookAndFeel library.  If not, see <http://www.gnu.org/licenses/>.*/
-package fr.free.movierenamer.ui.panel;
+package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.StyleConstants;
 import com.alee.laf.scroll.WebScrollBarUI;

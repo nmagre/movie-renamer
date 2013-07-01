@@ -15,16 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.panel;
+package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
@@ -35,18 +36,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * class MediaPanel
+ * class AbstractMediaPanel
  *
  * @author Nicolas Magré
  */
-public abstract class MediaPanel extends WebPanel {
+public abstract class AbstractMediaPanel extends WebPanel {
 
   private final int nbStar = 5;
   private final WebPanel starPanel;
   private final List<WebLabel> stars;
   protected MovieRenamer mr;
 
-  protected MediaPanel(MovieRenamer mr) {
+  protected AbstractMediaPanel(MovieRenamer mr) {
     this.mr = mr;
 
     starPanel = new WebPanel();
@@ -84,14 +85,14 @@ public abstract class MediaPanel extends WebPanel {
     }
     WorkerManager.fetchImages(cast, getCastingModel(), new Dimension(45, 70), "ui/unknown.png");// FIXME dimension
   }
-
+  
   protected abstract void setMediaInfo(MediaInfo mediaInfo);
 
   public abstract MediaInfo getMediaInfo();
 
   public abstract WebList getCastingList();
 
-  public abstract DefaultListModel getCastingModel();
+  public abstract ImageListModel<UIPersonImage> getCastingModel();
 
   protected WebPanel getStarPanel() {
     return starPanel;

@@ -81,16 +81,6 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
   }
 
   @Override
-  public URI getUri(ImageSize size) {
-    try {
-      return getUrl(size).toURI();
-    } catch (URISyntaxException ex) {
-      UISettings.LOGGER.log(Level.WARNING, null, ex);
-    }
-    return null;
-  }
-
-  @Override
   protected String getName() {
     return getUrl(ImageSize.small).toString();
   }
@@ -105,4 +95,18 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
     return (info != null) ? info.getDescription() : type.name();
   }
 
+  @Override
+  public int getId() {
+    return info.getId();
+  }
+
+  @Override
+  public URI getUri(ImageInfo.ImageSize size) {
+    try {
+      return getUrl(size).toURI();
+    } catch (URISyntaxException ex) {
+      UISettings.LOGGER.log(Level.WARNING, null, ex);
+    }
+    return null;
+  }
 }

@@ -81,7 +81,7 @@ public class LogsTableModel extends AbstractTableModel {
     }
   }
 
-  public void addRecord(LogRecord record) {
+  public synchronized void addRecord(LogRecord record) {
     logs.add(record);
     fireTableRowsInserted(logs.size() - 1, logs.size() - 1);
   }

@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,8 @@ public class MovieInfo extends MediaInfo {
     releasedDate,
     rating,
     tagline,
-    mpaa,
-    mpaaCode,
+    certification,
+    certificationCode,
     votes,
     budget,
     posterPath,
@@ -62,15 +62,56 @@ public class MovieInfo extends MediaInfo {
   /*
    * @see http://en.wikipedia.org/wiki/Motion_picture_rating_system
    */
-  public static enum MotionPictureRating {
+
+  public static enum MotionPictureRating {// TODO
+
     USA("G", "PG", "PG-13", "R", "NC-17"),
     FRANCE("U", "-10", "-12", "-16", "-18"),
-    UK("U", "PG", "12", "15", "18");
-    private MotionPictureRating(String all, String children, String pre_teenager, String teenager, String adult) {
+    UK("U", "PG", "12", "15", "18"),
+    SPAIN("APTA", "7", "13", "16", "18"),
+    PORTUGAL("M/4", "M/6", "M/12", "M/16", "M/18"),
+    GERMANY("FSK 0", "FSK 6", "FSK 12", "FSK 16", "FSK 18");
+    private String[] rates;
+
+    private MotionPictureRating(String... rates) {
+      this.rates = rates;
+    }
+
+    public String getRate(String code) {
+      return getRate(code, MotionPictureRating.USA);
+    }
+    
+    public String[] getRates() {
+      return rates;
+    }
+
+    public String getRate(String code, MotionPictureRating scale) {
+      int pos = 0;
+      for (String rate : scale.rates) {
+        if (code.equals(rate)) {
+          return rates[pos];
+        }
+        pos++;
+      }
+      return null;
+    }
+
+    public static String getMpaaCode(String code, MotionPictureRating scale) {
       
+      if(scale.equals(MotionPictureRating.USA)) {
+        return code;
+      }
+      
+      int pos = 0;
+      for (String rate : scale.getRates()) {
+        if (code.equals(rate)) {
+          return USA.getRates()[pos];
+        }
+        pos++;
+      }
+      return null;
     }
   }
-  
   protected final Map<MovieProperty, String> fields;
   protected final IdInfo[] ids;
   protected final String[] genres;
@@ -94,7 +135,7 @@ public class MovieInfo extends MediaInfo {
     this.studios = (studios != null) ? studios.toArray(new String[0]) : new String[0];
   }
 
-  private String get(MovieProperty key) {
+  public String get(MovieProperty key) {
     return (fields != null) ? fields.get(key) : null;
   }
 
@@ -122,10 +163,6 @@ public class MovieInfo extends MediaInfo {
     }
 
     return null;
-  }
-
-  public Integer getImdbId() {
-    return getId(AvailableApiIds.IMDB);
   }
 
   public URI getPosterPath() {
@@ -178,6 +215,22 @@ public class MovieInfo extends MediaInfo {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public String getTagline() {
+    return get(MovieProperty.tagline);
+  }
+
+  public String getCertification() {
+    return get(MovieProperty.certification);
+  }
+
+  public String getCertification(MotionPictureRating type) {
+    String code = get(MovieProperty.certificationCode);
+    if (code != null && code.length() > 0) {
+      return type.getRate(code, type);
+    }
+    return null;
   }
 
   public List<String> getGenres() {

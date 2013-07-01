@@ -222,7 +222,10 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
 
   @Override
   public final void process(List<String> v) {
-    super.process(v);
+    int res = WebOptionPane.showConfirmDialog(mr, v.get(0), LocaleUtils.i18nExt("dialog.question"), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
+    if(res == WebOptionPane.YES_OPTION) {
+      subFolder = true;
+    }
     resume();
   }
 

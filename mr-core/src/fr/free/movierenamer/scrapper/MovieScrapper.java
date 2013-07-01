@@ -41,7 +41,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
   }
 
   @Override
-  protected final List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
+  protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
 
     List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
     List<ImageInfo> tmpImagesInfo;

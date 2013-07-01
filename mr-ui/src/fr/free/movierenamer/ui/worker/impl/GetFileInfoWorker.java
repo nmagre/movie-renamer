@@ -46,6 +46,7 @@ public class GetFileInfoWorker extends Worker<FileInfo> {
   protected void workerDone() throws Exception {
     FileInfo fileInfo = get();
     file.setFileInfo(fileInfo);
+    mr.getMediaPanel().setFileInfo(fileInfo);
   }
 
 

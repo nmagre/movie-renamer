@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.panel;
+package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.rootpane.WebDialog;
@@ -58,7 +58,6 @@ public class Loading extends WebDialog {
     logoLbl = new com.alee.laf.label.WebLabel();
 
     setAlwaysOnTop(true);
-    setPreferredSize(new java.awt.Dimension(290, 90));
 
     webLabel1.setIcon(new SpinningDial(24, 43));
     webLabel1.setText(LocaleUtils.i18nExt("loading")); // NOI18N

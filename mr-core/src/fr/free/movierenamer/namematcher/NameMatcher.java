@@ -58,11 +58,11 @@ public abstract class NameMatcher {// TODO
 
   private static Map<FileProperty, String> getMovieProperty(File file) {
     Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
-    properties.put(FileProperty.name, extractName(file.getName()));
-    /*Integer imdbId = getImdbId(file);// FIXME i'am crashing :(
+    properties.put(FileProperty.name, NameCleaner.extractName(file.getName(), false));
+    Integer imdbId = getImdbId(file);
     if(imdbId != null) {
       properties.put(FileProperty.imdbId, "" + imdbId);
-    }*/
+    }
 
     return properties;
   }
@@ -93,7 +93,7 @@ public abstract class NameMatcher {// TODO
       return Integer.parseInt(imdbIdMatch.group(1));
     }
 
-    List<File> nfoFiles = Arrays.asList(file.listFiles(new FilenameFilter() {
+    List<File> nfoFiles = Arrays.asList(file.getParentFile().listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
         if (fileName.equalsIgnoreCase(FileUtils.getNameWithoutExtension(name)) || dir.getName().equalsIgnoreCase(name)) {
@@ -114,7 +114,7 @@ public abstract class NameMatcher {// TODO
         if (imdbIdMatch.find()) {
           return Integer.parseInt(imdbIdMatch.group(1));
         }
-      } catch (FileNotFoundException ex) {
+      } catch (Exception ex) {
         //
       }
     }

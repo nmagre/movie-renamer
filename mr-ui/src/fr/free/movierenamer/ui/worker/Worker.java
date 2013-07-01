@@ -61,7 +61,6 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
     } catch (SocketException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
       publish(LocaleUtils.i18nExt("error.network.connection") + "\n\n" + ex.getLocalizedMessage());
-      //publish(LocaleUtils.i18nExt("error.network.unavailable") + "\n\n" + LocaleUtils.i18nExt("error.network.report") + "\n\n" + ex.getLocalizedMessage());
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
       publish(String.format(LocaleUtils.i18nExt("error.worker.unknown") + " :\n\n%s", getName(), ex.getLocalizedMessage()));

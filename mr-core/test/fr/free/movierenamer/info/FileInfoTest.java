@@ -38,7 +38,7 @@ public class FileInfoTest {
     String randomName = StringUtils.generateRandomString(10);
     FileInfo fi = new FileInfo(new File(randomName + ".avi"));
     Assert.assertEquals(MediaType.MOVIE, fi.getType());
-    Assert.assertEquals(randomName, fi.getSearch(new File(randomName + ".avi")));
+    Assert.assertEquals(randomName, fi.getSearch());
     Assert.assertEquals(null, fi.getYear());
     Assert.assertEquals(Boolean.FALSE.booleanValue(), fi.wasRenamed());
   }

@@ -65,4 +65,9 @@ public class UIPersonImage implements IImage {
     this.icon = icon;
   }
 
+  @Override
+  public int getId() {// TODO
+    return (person != null) ? person.getId() : -1;
+  }
+
 }

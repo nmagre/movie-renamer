@@ -272,30 +272,6 @@ public final class StringUtils {
     return stringBuffer.toString();
   }
 
-  /**
-   * Unescape XML special character
-   *
-   * @param str
-   * String
-   * @param encode
-   * Encode type
-   * @return Unescape string
-   */
-  public static String unEscapeXML(String str, String encode) {
-    if (str == null) {
-      return StringUtils.EMPTY;
-    }
-
-    try {
-      str = str.replace("+", "%2B");// Fixed "+" charater with url decoder
-      str = str.replaceAll("&#x(\\w\\w);", "%$1");
-      str = URLDecoder.decode(str.replaceAll("% ", "%25 "), encode);
-    } catch (UnsupportedEncodingException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-    return str;
-  }
-
   public static String replaceLast(String text, String regex, String replacement) {
     return text.replaceFirst("(?s)" + regex + "(?!.*?" + regex + ")", replacement);
   }
