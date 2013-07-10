@@ -27,6 +27,7 @@ import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -110,9 +111,14 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
     }
     panel.enabledListener();
   }
+  
+  @Override
+  public String getParam() {
+    return String.format("[%s]", searchResult);
+  }
 
   @Override
-  protected String getName() {
-    return "Search Media Images";
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.searchImages");
   }
 }

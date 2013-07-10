@@ -25,10 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class Filmstarts
+ * Class FilmstartsScrapper
  * @author Nicolas Magré
  */
-public class Filmstarts extends AlloGroupScrapper {
+public class FilmstartsScrapper extends AlloGroupScrapper {
 
   private static final String host = "www.filmstarts.de";
   private static final String imageHost = "images.allocine.fr";
@@ -64,7 +64,7 @@ public class Filmstarts extends AlloGroupScrapper {
     }
   }
 
-  public Filmstarts() {
+  public FilmstartsScrapper() {
     super(LocaleUtils.AvailableLanguages.de);
   }
 

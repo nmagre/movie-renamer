@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.extended.filechooser.WebFileChooser;
-import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.LogsTableModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -247,7 +247,7 @@ public class LogPanel extends JDialog {
       try {
         text.close();
       } catch (IOException ex) {
-        Settings.LOGGER.log(Level.SEVERE, null, ex);
+        UISettings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }
   }

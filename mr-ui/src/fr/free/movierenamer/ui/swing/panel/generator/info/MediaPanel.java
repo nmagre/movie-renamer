@@ -21,6 +21,7 @@ import com.alee.extended.breadcrumb.WebBreadcrumb;
 import com.alee.extended.breadcrumb.WebBreadcrumbToggleButton;
 import com.alee.extended.transition.ComponentTransition;
 import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
+import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
@@ -29,9 +30,12 @@ import com.alee.utils.SwingUtils;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.Info;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.ui.swing.panel.generator.IInfoPanel;
-import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
+import fr.free.movierenamer.ui.bean.IEventInfo;
+import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -51,19 +55,22 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
   private ComponentTransition transitionPanel;
   private WebPanel mediaPanel;
   private final FileInfoPanel fileInfoPanel;
+  private WebToggleButton editButton;
+  private WebBreadcrumb infoPanelBc;
+  private WebLabel loadingLbl;
   protected List<InfoPanel<T>> panels;
-  protected WebBreadcrumb infoPanelBc;
 
   protected MediaPanel() {
     super();
     fileInfoPanel = new FileInfoPanel();
+    UIEvent.addEventListener(this.getClass(), this);
   }
 
   protected void createPanel(List<InfoPanel<T>> panels) {
     createPanel(null, panels);
   }
 
-  protected void createPanel(WebPanel mpanel, List<InfoPanel<T>> panels) {
+  protected void createPanel(WebPanel mpanel, final List<InfoPanel<T>> panels) {
 
     mediaPanel = mpanel != null ? mpanel : this;
 
@@ -84,7 +91,29 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     SwingUtils.groupButtons(infoPanelBc);// Group breadcrumb button
     SwingUtils.setEnabledRecursively(infoPanelBc, false);
 
-    mediaPanel.add(infoPanelBc, getGroupConstraint(0, true, false));
+    boolean addEditButton = addEditButton();
+
+    mediaPanel.add(infoPanelBc, getGroupConstraint(0, false, false));
+
+    loadingLbl = new WebLabel();
+    mediaPanel.add(loadingLbl, getGroupConstraint(1, !addEditButton, false));
+
+    if (addEditButton) {
+      editButton = new WebToggleButton(ImageUtils.EDIT_16);
+      editButton.setRolloverDarkBorderOnly(true);
+      editButton.setRolloverDecoratedOnly(true);
+      editButton.setRolloverShadeOnly(true);
+      editButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          UIEvent.fireUIEvent(UIEvent.Event.EDIT, InfoPanel.class);// Fire event on all info panel (wich are register to UI event)
+        }
+      });
+      editButton.setEnabled(true);// FIXME false;
+
+      TooltipManager.setTooltip(editButton, new WebLabel("mediapanel.edit", editButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
+      mediaPanel.add(editButton, getGroupConstraint(2, true, false, true, 1));
+    }
 
     transitionPanel = new ComponentTransition(panels.get(0));
     transitionPanel.setTransitionEffect(new FadeTransitionEffect());
@@ -98,9 +127,9 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     gbc.weightx = 1;
     gbc.weighty = 1;
     gbc.gridheight = 1;
-    gbc.gridwidth = 1;
+    gbc.gridwidth = addEditButton ? 3 : 1;
 
-    // Fixed random scroll when resize
+    // Fixe random scroll when resize
     scrollpane.setPreferredSize(new Dimension(1, 1));
 
     mediaPanel.add(scrollpane, gbc);
@@ -121,10 +150,33 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     return bcButton;
   }
 
+  protected void setLoading(boolean loading) {
+    loadingLbl.setIcon(loading ? ImageUtils.LOAD_16 : null);
+  }
+
+  @Override
+  public final void UIEventHandler(UIEvent.Event event, IEventInfo info, Object param) {
+    UISettings.LOGGER.finer(String.format("%s receive event %s %s", getClass().getSimpleName(), event, (info != null ? info : "")));
+
+    switch (event) {
+      case WORKER_STARTED:
+        if (info.getClass().equals(SearchMediaInfoWorker.class)) {
+          setLoading(true);
+        }
+        break;
+      case WORKER_DONE:
+        if (info.getClass().equals(SearchMediaInfoWorker.class)) {
+          setLoading(false);
+        }
+        break;
+    }
+  }
+
   public abstract void clearPanel();
 
+  protected abstract boolean addEditButton();
+
   public void setFileInfo(FileInfo info) {
-    clearfileInfoPanel();
     fileInfoPanel.setInfo(info);
   }
 
@@ -137,12 +189,27 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
   }
 
   @Override
+  public void setInfo(T info) {
+    addInfo(info);
+
+    SwingUtils.setEnabledRecursively(infoPanelBc, true);
+    if (addEditButton()) {
+      editButton.setEnabled(true);
+    }
+  }
+
+  protected abstract void addInfo(T info);
+
+  @Override
   public void clear() {
     for (InfoPanel<? extends Info> panel : panels) {
       panel.clear();
     }
 
     SwingUtils.setEnabledRecursively(infoPanelBc, false);
+    if (addEditButton()) {
+      editButton.setEnabled(false);
+    }
     clearPanel();
   }
 }

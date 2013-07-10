@@ -95,7 +95,7 @@ public class TMDbScrapper extends MovieScrapper {
   protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
-    
+
     try {
       List<JSONObject> jsonObj = JSONUtils.selectList("results", json);
 
@@ -133,11 +133,10 @@ public class TMDbScrapper extends MovieScrapper {
         }
       }
     } catch (Exception ex) {
-      if(!searchUrl.toString().startsWith("www." + host)) {// It's not a movie url therefore this is a bug
+      if (!searchUrl.toString().startsWith("www." + host)) {// It's not a movie url therefore this is a bug
         throw ex;
       }
     }
-
 
     // movie page ?
     if (resultSet.isEmpty()) {
@@ -180,6 +179,7 @@ public class TMDbScrapper extends MovieScrapper {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
+    Map<MovieInfo.MovieMultipleProperty, List<?>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<?>>(MovieInfo.MovieMultipleProperty.class);
     fields.put(MovieProperty.title, JSONUtils.selectString("title", json));
     fields.put(MovieProperty.rating, JSONUtils.selectString("vote_average", json));
     fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
@@ -201,7 +201,7 @@ public class TMDbScrapper extends MovieScrapper {
 
     for (JSONObject jsonObj : JSONUtils.selectList("countries", json)) {
       if (JSONUtils.selectString("iso_3166_1", jsonObj).equals("US")) {
-        fields.put(MovieProperty.certificationCode, JSONUtils.selectString("certification", json));
+        fields.put(MovieProperty.certificationCode, JSONUtils.selectString("certification", jsonObj));
         break;
       }
     }
@@ -220,15 +220,22 @@ public class TMDbScrapper extends MovieScrapper {
     for (JSONObject jsonObj : JSONUtils.selectList("production_companies", json)) {
       studios.add(JSONUtils.selectString("name", jsonObj));
     }
-    
+
     List<String> tags = new ArrayList<String>();
-    for (JSONObject jsonObj : JSONUtils.selectList("keywords", json)) {
-      tags.add(JSONUtils.selectString("name", jsonObj));
+    JSONObject keywords = JSONUtils.selectObject("keywords", json);
+    if (keywords != null) {
+      for (JSONObject jsonObj : JSONUtils.selectList("keywords", keywords)) {
+        tags.add(JSONUtils.selectString("name", jsonObj));
+      }
     }
 
-    searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage());
+    multipleFields.put(MovieInfo.MovieMultipleProperty.ids, ids);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios, tags);
+    MovieInfo movieInfo = new MovieInfo(fields, multipleFields);
     return movieInfo;
   }
 

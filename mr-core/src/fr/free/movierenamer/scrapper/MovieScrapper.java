@@ -26,7 +26,6 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Class MovieScrapper

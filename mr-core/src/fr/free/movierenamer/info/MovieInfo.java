@@ -29,7 +29,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,21 +42,65 @@ public class MovieInfo extends MediaInfo {
 
   private static final long serialVersionUID = 1L;
 
-  public static enum MovieProperty {
+  public interface InfoProperty {
 
+    public boolean isLanguageDepends();
+  }
+
+  public static enum MovieProperty implements InfoProperty {
+
+    title(true),
     originalTitle,
-    title,
-    overview,
-    releasedDate,
+    sortTitle,
+    overview(true),
+    releasedDate,// Obviously language dependent, but we don't care about for the moment
     rating,
-    tagline,
-    certification,
-    certificationCode,
+    tagline(true),
+    certification(true),
+    certificationCode,// MotionPictureRating can transfrom it
     votes,
     budget,
     posterPath,
     collection,
-    runtime
+    runtime;
+    private boolean languageDepends;
+
+    
+    private MovieProperty() {
+      languageDepends = false;
+    }
+    
+    private MovieProperty(boolean languageDepends) {
+      this.languageDepends = languageDepends;
+    }
+
+    @Override
+    public boolean isLanguageDepends() {
+      return languageDepends;
+    }
+  }
+
+  public static enum MovieMultipleProperty implements InfoProperty {
+
+    ids,
+    genres(true),
+    countries,
+    studios,
+    tags;// Obviously language dependent, but we don't care about for the moment
+    private boolean languageDepends;
+
+    private MovieMultipleProperty() {
+      languageDepends = false;
+    }
+    
+    private MovieMultipleProperty(boolean languageDepends) {
+      this.languageDepends = languageDepends;
+    }
+
+    @Override
+    public boolean isLanguageDepends() {
+      return languageDepends;
+    }
   }
   /*
    * @see http://en.wikipedia.org/wiki/Motion_picture_rating_system
@@ -76,7 +119,7 @@ public class MovieInfo extends MediaInfo {
     private MotionPictureRating(String... rates) {
       this.rates = rates;
     }
-    
+
     public String[] getRates() {
       return rates;
     }
@@ -93,11 +136,11 @@ public class MovieInfo extends MediaInfo {
     }
 
     public static String getMpaaCode(String code, MotionPictureRating scale) {
-      
-      if(scale.equals(MotionPictureRating.USA)) {
+
+      if (scale.equals(MotionPictureRating.USA)) {
         return code;
       }
-      
+
       int pos = 0;
       for (String rate : scale.getRates()) {
         if (code.equals(rate)) {
@@ -109,33 +152,31 @@ public class MovieInfo extends MediaInfo {
     }
   }
   protected final Map<MovieProperty, String> fields;
-  protected final IdInfo[] ids;
-  protected final String[] genres;
-  protected final Locale[] countries;
-  protected final String[] studios;
-  protected final String[] tags;
+  protected final Map<MovieMultipleProperty, List<?>> multipleFields;
 
   protected MovieInfo() {
     // used by serializer
     this.fields = null;
-    this.ids = null;
-    this.genres = null;
-    this.countries = null;
-    this.studios = null;
-    this.tags = null;
+    this.multipleFields = null;
   }
 
-  public MovieInfo(Map<MovieProperty, String> fields, List<IdInfo> ids, List<String> genres, List<Locale> countries, List<String> studios, List<String> tags) {
-    this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
-    this.ids = (ids != null) ? ids.toArray(new IdInfo[0]) : new IdInfo[0];
-    this.genres = (genres != null) ? genres.toArray(new String[0]) : new String[0];
-    this.countries = (countries != null) ? countries.toArray(new Locale[0]) : new Locale[0];
-    this.studios = (studios != null) ? studios.toArray(new String[0]) : new String[0];
-    this.tags = (tags != null) ? tags.toArray(new String[0]) : new String[0];
+  public MovieInfo(Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<?>> multipleFields) {
+    this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieProperty, String>(MovieProperty.class);
+    this.multipleFields = (multipleFields != null) ? new EnumMap<MovieMultipleProperty, List<?>>(multipleFields) : new EnumMap<MovieMultipleProperty, List<?>>(MovieMultipleProperty.class);
+//    this.ids = (ids != null) ? ids.toArray(new IdInfo[0]) : new IdInfo[0];
+//    this.genres = (genres != null) ? genres.toArray(new String[0]) : new String[0];
+//    this.countries = (countries != null) ? countries.toArray(new Locale[0]) : new Locale[0];
+//    this.studios = (studios != null) ? studios.toArray(new String[0]) : new String[0];
+//    this.tags = (tags != null) ? tags.toArray(new String[0]) : new String[0];
   }
 
   public String get(MovieProperty key) {
     return (fields != null) ? fields.get(key) : null;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> List<T> get(MovieMultipleProperty key) {
+    return (List<T>) ((multipleFields != null) ? multipleFields.get(key) : null);
   }
 
   public String getOriginalTitle() {
@@ -155,6 +196,11 @@ public class MovieInfo extends MediaInfo {
   }
 
   public Integer getId(AvailableApiIds idType) {
+    List<IdInfo> ids = get(MovieMultipleProperty.ids);
+    if(ids == null) {
+      return null;
+    }
+    
     for (IdInfo id : ids) {
       if (id.getIdType().equals(idType)) {
         return id.getId();
@@ -233,19 +279,23 @@ public class MovieInfo extends MediaInfo {
   }
 
   public List<String> getGenres() {
-    return asList(genres);
+    List<String> genres = get(MovieMultipleProperty.genres);
+    return genres != null ? genres : new ArrayList<String>();
   }
 
   public List<Locale> getCountries() {
-    return asList(countries);
+    List<Locale> countries = get(MovieMultipleProperty.countries);
+    return countries != null ? countries : new ArrayList<Locale>();
   }
 
   public List<String> getStudios() {
-    return asList(studios);
+    List<String> studios = get(MovieMultipleProperty.studios);
+    return studios != null ? studios : new ArrayList<String>();
   }
-  
+
   public List<String> getTags() {
-    return asList(tags);
+    List<String> tags = get(MovieMultipleProperty.tags);
+    return tags != null ? tags : new ArrayList<String>();
   }
 
   @Override

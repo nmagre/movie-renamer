@@ -19,9 +19,7 @@ package fr.free.movierenamer.ui.swing.panel.generator.info;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.utils.SwingUtils;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.FlowLayout;
 import java.awt.Insets;
@@ -46,7 +44,7 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
    *
    * @param panels
    */
-  public VideoPanel(InfoPanel<T>... panels) {
+  protected VideoPanel(InfoPanel<T>... panels) {
     super();
     initComponents();
 
@@ -68,20 +66,23 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
   }
 
   @Override
+  protected void setLoading(boolean loading) {
+    super.setLoading(loading);
+    mediaTitleLbl.setIcon(loading ? ImageUtils.LOAD_16 : null);
+  }
+
+  @Override
   public T getInfo() {
     return info;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public void setInfo(T info) {
+  public void addInfo(T info) {
     this.info = info;
     for (InfoPanel<T> panel : panels) {
       panel.setInfo(info);
     }
-    
-    SwingUtils.setEnabledRecursively(infoPanelBc, true);
-    
+
     mediaTitleLbl.setText(getTitle(info));
     setRate(getRate(info));
   }
@@ -90,11 +91,6 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
 
   protected abstract Double getRate(T info);
 
-  /**
-   * Set star compared with rate
-   *
-   * @param rate
-   */
   private void setRate(Double rate) {
     Double value = rate;
     if (value == null || value < 0.00) {

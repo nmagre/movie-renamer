@@ -22,6 +22,7 @@ import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +76,12 @@ public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
   }
 
   @Override
-  protected String getName() {
-    return "Search Media Subtitles";
+  public String getParam() {
+    return String.format("[%s]", media);
+  }
+
+  @Override
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.searchSubtitle");
   }
 }

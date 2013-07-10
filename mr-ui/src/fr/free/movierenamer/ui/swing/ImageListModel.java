@@ -25,7 +25,7 @@ import java.util.Map;
 import javax.swing.AbstractListModel;
 
 /**
- *
+ * Class ImageListModel
  * @author Nicolas Magré
  */
 public class ImageListModel<T extends IImage> extends AbstractListModel {

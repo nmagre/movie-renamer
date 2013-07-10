@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker;
 
+import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import java.beans.PropertyChangeEvent;
@@ -33,7 +34,7 @@ import javax.swing.SwingWorker;
  * @author Magré Nicolas
  * @author QUÉMÉNEUR Simon
  */
-public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener {
+public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener, IEventInfo {
 
   protected AbstractWorker() {
     addPropertyChangeListener(this);
@@ -72,7 +73,7 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
         try {
           workerDone();
         } catch (CancellationException e) {// Worker canceled
-          UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getName()));
+          UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getClass().getSimpleName()));
           workerCanceled();
         } catch (Exception ex) {
           UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
@@ -82,8 +83,6 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
         break;
     }
   }
-
-  protected abstract String getName();
 
   protected void workerCanceled() {
     // DO nothing

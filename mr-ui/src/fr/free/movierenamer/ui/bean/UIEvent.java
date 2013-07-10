@@ -17,9 +17,11 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.settings.UISettings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.swing.SwingUtilities;
 
 /**
  * Class UIEvent
@@ -39,10 +41,12 @@ public final class UIEvent {
 
   public enum Event {
 
-    WORKER_DONE,// All workers done
+    WORKER_DONE,
+    WORKER_ALL_DONE,// All workers done
     WORKER_STARTED,
     WORKER_RUNNING,
-    SETTINGS;
+    SETTINGS,
+    EDIT
   }
 
   public static void addEventListener(Class<? extends IEventListener> clazz, IEventListener listener) {
@@ -61,31 +65,47 @@ public final class UIEvent {
     fireUIEvent(event, FireType.CLASS, clazz, null, null, null);
   }
 
-  public static void fireUIEvent(Event event, Class<? extends IEventListener> clazz, Object param) {
-    fireUIEvent(event, FireType.ALL, clazz, param, null, null);
+  public static void fireUIEvent(Event event, IEventInfo info) {
+    fireUIEvent(event, FireType.ALL, null, info, null, null);
   }
 
-  public static void fireUIEvent(Event event, Object param, Object oldObj, Object newObj) {
-    fireUIEvent(event, FireType.ALL, null, param, oldObj, newObj);
+  public static void fireUIEvent(Event event, Class<? extends IEventListener> clazz, IEventInfo info) {
+    fireUIEvent(event, FireType.CLASS, clazz, info, null, null);
   }
 
-  public static void fireUIEvent(Event event, Class<? extends IEventListener> clazz, Object param, Object oldObj, Object newObj) {
-    fireUIEvent(event, FireType.CLASS, clazz, param, oldObj, newObj);
+  public static void fireUIEvent(Event event, Object oldObj, Object newObj) {
+    fireUIEvent(event, FireType.ALL, null, null, oldObj, newObj);
   }
 
-  private static void fireUIEvent(Event event, FireType type, Class<? extends IEventListener> clazz, Object param, Object oldObj, Object newObj) {
+  public static void fireUIEvent(Event event, IEventInfo info, Object oldObj, Object newObj) {
+    fireUIEvent(event, FireType.ALL, null, info, oldObj, newObj);
+  }
+
+  public static void fireUIEvent(Event event, Class<? extends IEventListener> clazz, IEventInfo info, Object oldObj, Object newObj) {
+    fireUIEvent(event, FireType.CLASS, clazz, info, oldObj, newObj);
+  }
+
+  private static void fireUIEvent(Event event, FireType type, Class<? extends IEventListener> clazz, IEventInfo info, Object oldObj, Object newObj) {
     if (oldObj != null && newObj != null && oldObj.equals(newObj)) {
       return;
     }
 
+    if (!SwingUtilities.isEventDispatchThread()) {
+      UISettings.LOGGER.severe(String.format("UIEvent must run in EDT, event %s : Target %s", event,
+              (type.equals(FireType.CLASS) ? clazz : FireType.ALL)));
+    }
+
+    UISettings.LOGGER.info(String.format("Send event %s%s to %s", event, (info != null ? " " + info.getClass().getSimpleName() + " " + info.getParam() : ""),
+            (type.equals(FireType.ALL) ? FireType.ALL : clazz.getSimpleName())));
+
     for (Entry<Class<? extends IEventListener>, IEventListener> key : listenerList.entrySet()) {
       switch (type) {
         case ALL:
-          key.getValue().UIEventHandler(event, param);
+          key.getValue().UIEventHandler(event, info, newObj);
           break;
         case CLASS:
-          if (key.getKey().equals(clazz)) {
-            key.getValue().UIEventHandler(event, param);
+          if (key.getKey().equals(clazz) || clazz.isAssignableFrom(key.getKey())) {
+            key.getValue().UIEventHandler(event, info, newObj);
           }
           break;
       }

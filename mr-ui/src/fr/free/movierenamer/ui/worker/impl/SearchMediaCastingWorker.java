@@ -27,6 +27,7 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,6 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
       int count = infos.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          UISettings.LOGGER.log(Level.INFO, "SearchMediaCastingWorker Cancelled");
           return new ArrayList<UIPersonImage>();
         }
 
@@ -92,7 +92,12 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
   }
 
   @Override
-  protected String getName() {
-    return "Search Media Casting";
+  public String getParam() {
+    return "";
+  }
+
+  @Override
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.searchCasting");
   }
 }

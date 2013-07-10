@@ -51,7 +51,7 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
       result = executeInBackground();
     } catch (InvalidUrlException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(String.format("InvalidUrlException %s failed\n%s", getName(), ex.getLocalizedMessage())); // FIXME i18n
+      publish(String.format("InvalidUrlException %s failed\n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
     } catch (UnknownHostException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
       publish(LocaleUtils.i18nExt("error.network.connection"));
@@ -63,7 +63,7 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
       publish(LocaleUtils.i18nExt("error.network.connection") + "\n\n" + ex.getLocalizedMessage());
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(String.format(LocaleUtils.i18nExt("error.worker.unknown") + " :\n\n%s", getName(), ex.getLocalizedMessage()));
+      publish(String.format(LocaleUtils.i18nExt("error.worker.unknown") + " :\n\n%s", getClass().getSimpleName(), ex.getLocalizedMessage()));
     }
     return result;
   }

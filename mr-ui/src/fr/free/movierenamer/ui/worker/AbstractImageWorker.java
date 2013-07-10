@@ -19,11 +19,9 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.IImage;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.awt.Dimension;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.Icon;
 
 /**
@@ -53,7 +51,6 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
     Icon res = null;
     for (T image : images) {
       if (isCancelled()) {
-        UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getName()));
         break;
       }
 

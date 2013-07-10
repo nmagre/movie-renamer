@@ -26,13 +26,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.swing.Icon;
 
 import fr.free.movierenamer.utils.Date;
 
 /**
  * Class TvShowInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -41,6 +40,7 @@ public class TvShowInfo extends MediaInfo {
   private static final long serialVersionUID = 1L;
 
   public static enum TvShowProperty {
+
     id,
     IMDB_ID,
     firstAired,
@@ -54,7 +54,6 @@ public class TvShowInfo extends MediaInfo {
     status,
     posterPath
   }
-
   protected final Map<TvShowProperty, String> fields;
 
   protected TvShowInfo() {
@@ -160,7 +159,7 @@ public class TvShowInfo extends MediaInfo {
     // TODO Auto-generated method stub
     return getName();
   }
-  
+
   @Override
   public String toString() {
     return fields.toString();

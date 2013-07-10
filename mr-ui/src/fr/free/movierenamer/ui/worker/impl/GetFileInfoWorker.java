@@ -22,9 +22,11 @@ import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.utils.LocaleUtils;
 
 /**
  * Class GetFileInfoWorker
+ *
  * @author Nicolas Magré
  */
 public class GetFileInfoWorker extends Worker<FileInfo> {
@@ -49,9 +51,13 @@ public class GetFileInfoWorker extends Worker<FileInfo> {
     mr.getMediaPanel().setFileInfo(fileInfo);
   }
 
+  @Override
+  public String getParam() {
+    return String.format("%s", file);
+  }
 
   @Override
-  protected String getName() {
-    return "Get File Info";
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.fileinfo");
   }
 }

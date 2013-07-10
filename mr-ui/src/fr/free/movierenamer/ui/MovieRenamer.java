@@ -54,6 +54,7 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.IEventListener;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEvent;
@@ -165,8 +166,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 //    tvShowPanel = new TvShowPanel(this);
 
     // Add Movie Renamer logger to log panel
-    UISettings.LOGGER.addHandler(logPanel.getHandler());
-    Settings.LOGGER.addHandler(logPanel.getHandler());
+   /* UISettings.LOGGER.addHandler(logPanel.getHandler());
+     Settings.LOGGER.addHandler(logPanel.getHandler());*/
 
     mediaFileSeparatorModel = new EventListModel<UIFile>(mediaFileSeparator);
 
@@ -393,20 +394,19 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }
 
   @Override
-  public void UIEventHandler(UIEvent.Event event, Object param) {
+  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object param) {
+
+    UISettings.LOGGER.finer(String.format("%s receive event %s %s", getClass().getSimpleName(), event, (info != null ? info : "")));
+
     switch (event) {
       case WORKER_STARTED:
-        if (param instanceof String) {
-          statusLbl.setText(param.toString());
-          statusLbl.setIcon(ImageUtils.LOAD_24);
-        }
+        statusLbl.setText(info.getDisplayName());
+        statusLbl.setIcon(ImageUtils.LOAD_24);
         break;
       case WORKER_RUNNING:
-        if (param instanceof String) {
-          statusLbl.setText(param.toString());
-        }
+        statusLbl.setText(info.getDisplayName());
         break;
-      case WORKER_DONE:
+      case WORKER_ALL_DONE:
         statusLbl.setText("");
         statusLbl.setIcon(null);
         break;
@@ -556,6 +556,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     if (searchResult == null || currentMedia == null) {
       return;
     }
+    
+    clearInterface(!CLEAR_MEDIALIST, !CLEAR_SEARCHRESULTLIST);
 
     WorkerManager.searchInfo(this, searchResult);
     WorkerManager.searchImage(this, searchResult);
@@ -675,7 +677,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     }
 
     imgPnl.clearPanel();
-    moviePnl.clear();
+    mediaPanel.clear();
     updateRenamedTitle();
 
     // Stop all running workers

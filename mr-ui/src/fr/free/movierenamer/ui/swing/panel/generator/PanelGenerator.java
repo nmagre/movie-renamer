@@ -62,6 +62,7 @@ public abstract class PanelGenerator extends WebPanel {
   private final GridBagConstraints dummyPanelConstraint = new GridBagConstraints();
   // Grid Y position
   private int gridy = 0;
+  private int maxgridx = 0;
   private boolean endGroup = true;
 
   protected enum Component {
@@ -206,6 +207,8 @@ public abstract class PanelGenerator extends WebPanel {
       endGroup = true;
     }
 
+    maxgridx = Math.max(maxgridx, gridx);
+
     return groupConstraint;
   }
 
@@ -231,6 +234,11 @@ public abstract class PanelGenerator extends WebPanel {
     return getGroupConstraint(groupSeparationInsets, gridx, false, resize);
   }
 
+  protected GridBagConstraints getGroupSeparationConstraint(int gridx, boolean resize, boolean last) {
+    endGroup = last;
+    return getGroupConstraint(groupSeparationInsets, gridx, last, resize);
+  }
+
   /**
    * Get constraint for group and horizontal group
    *
@@ -246,6 +254,16 @@ public abstract class PanelGenerator extends WebPanel {
     defaultConstraint.gridx = gridx;
     defaultConstraint.weightx = 0;
     defaultConstraint.gridwidth = 1;
+
+    if (resize) {
+      defaultConstraint.weightx = 1.0;
+      if (gridx == 0) {
+        defaultConstraint.gridwidth = maxgridx;
+      }
+    }
+
+    maxgridx = Math.max(maxgridx, gridx);
+
     defaultConstraint.fill = resize ? GridBagConstraints.HORIZONTAL : GridBagConstraints.NONE;
     if (last) {
       gridy++;

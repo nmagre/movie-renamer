@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -98,9 +98,9 @@ public abstract class DragAndDrop implements DropTargetListener {
       getFiles(files);
 
     } catch (UnsupportedFlavorException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
     } finally {
       evt.dropComplete(true);
       mr.setCursor(MovieRenamer.normalCursor);

@@ -25,7 +25,6 @@ import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
@@ -213,6 +212,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
     List<Locale> countries = new ArrayList<Locale>();
     List<String> studios = new ArrayList<String>();
     Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
+    Map<MovieInfo.MovieMultipleProperty, List<?>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<?>>(MovieInfo.MovieMultipleProperty.class);
 
     fields.put(MovieInfo.MovieProperty.title, XPathUtils.selectString("//DIV[@id='title']//SPAN", dom).trim());
 
@@ -314,7 +314,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
       String url = XPathUtils.getAttribute("src", retNode);
       fields.put(MovieInfo.MovieProperty.posterPath, url.replaceAll(".*\\/medias", "http://" + getImageHost() + "/medias"));
     }
-    
+
     List<String> tags = new ArrayList<String>();
     nodes = XPathUtils.selectNodes("//DIV[@class='box_right_col']/DIV[@class='titlebar_01']/SPAN[contains(., 'Tags')]/parent::node()/parent::node()/UL/LI", dom);
     for (Node node : nodes) {
@@ -323,8 +323,14 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getId());
+    
+    multipleFields.put(MovieInfo.MovieMultipleProperty.ids, ids);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios, tags);
+    MovieInfo movieInfo = new MovieInfo(fields, multipleFields);
     return movieInfo;
   }
 
@@ -333,49 +339,45 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
 
     URL searchUrl = new URL("http", getHost(), getCastingPageString(movie.getMediaId()));
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
-    try {
-      Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
-      List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='media_list_02 media_list_hl margin_10b']/UL/LI", dom);
-      for (Node node : nodes) {
-        String job = XPathUtils.getAttribute("itemprop", node);
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
-        JobTag tag;
-        try {
-          tag = JobTag.valueOf(job);
-        } catch (Exception ex) {
-          tag = JobTag.actors;
-        }
+    List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='media_list_02 media_list_hl margin_10b']/UL/LI", dom);
+    for (Node node : nodes) {
+      String job = XPathUtils.getAttribute("itemprop", node);
 
-        Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<CastingInfo.PersonProperty, String>(CastingInfo.PersonProperty.class);
-        String img = XPathUtils.getAttribute("src", XPathUtils.selectNode("SPAN/IMG", node));
-        if (!img.contains("empty_photo")) {
-          personFields.put(CastingInfo.PersonProperty.picturePath, img);
-        }
-
-        personFields.put(CastingInfo.PersonProperty.name, XPathUtils.selectString("P/A", node).trim());
-        String url = XPathUtils.getAttribute("href", XPathUtils.selectNode("P/A", node));
-        Matcher m = getPersonIdPattern().matcher(url);
-        if (m.find()) {
-          personFields.put(CastingInfo.PersonProperty.id, m.group(1));
-        }
-
-        switch (tag) {
-          case actors:
-            String character = XPathUtils.selectString("P[@class='fs11 lighten_hl']", node);
-            character = character.replaceAll(".*:", "").trim();
-            personFields.put(CastingInfo.PersonProperty.character, character);
-            personFields.put(CastingInfo.PersonProperty.job, CastingInfo.ACTOR);
-            break;
-          case director:
-            personFields.put(CastingInfo.PersonProperty.job, CastingInfo.DIRECTOR);
-            break;
-        }
-        casting.add(new CastingInfo(personFields));
+      JobTag tag;
+      try {
+        tag = JobTag.valueOf(job);
+      } catch (Exception ex) {
+        tag = JobTag.actors;
       }
 
-    } catch (Exception ex) {// No casting
-      Settings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+      Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<CastingInfo.PersonProperty, String>(CastingInfo.PersonProperty.class);
+      String img = XPathUtils.getAttribute("src", XPathUtils.selectNode("SPAN/IMG", node));
+      if (!img.contains("empty_photo")) {
+        personFields.put(CastingInfo.PersonProperty.picturePath, img);
+      }
+
+      personFields.put(CastingInfo.PersonProperty.name, XPathUtils.selectString("P/A", node).trim());
+      String url = XPathUtils.getAttribute("href", XPathUtils.selectNode("P/A", node));
+      Matcher m = getPersonIdPattern().matcher(url);
+      if (m.find()) {
+        personFields.put(CastingInfo.PersonProperty.id, m.group(1));
+      }
+
+      switch (tag) {
+        case actors:
+          String character = XPathUtils.selectString("P[@class='fs11 lighten_hl']", node);
+          character = character.replaceAll(".*:", "").trim();
+          personFields.put(CastingInfo.PersonProperty.character, character);
+          personFields.put(CastingInfo.PersonProperty.job, CastingInfo.ACTOR);
+          break;
+        case director:
+          personFields.put(CastingInfo.PersonProperty.job, CastingInfo.DIRECTOR);
+          break;
+      }
+      casting.add(new CastingInfo(personFields));
     }
 
     return casting;
@@ -385,7 +387,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     IdInfo imdbId = imdbIdLookup(movie.getId());
-    if(imdbId != null) {
+    if (imdbId != null) {
       return super.fetchImagesInfo(new Movie(imdbId, movie.getName(), movie.getOriginalTitle(), movie.getURL(), movie.getYear()));
     }
 
@@ -427,13 +429,17 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   private IdInfo imdbIdLookup(IdInfo alloId) {
     try {
       Document dom = URIRequest.getHtmlDocument(new URL("http", imdbIdLookupHost, "/scraper/index2.php?Page=ViewMovie&ID=" + alloId.getId()).toURI());
-      String id = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A[contains(@href, 'imdb.com/')]", dom));
+      try {
+        String id = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A[contains(@href, 'imdb.com/')]", dom));
 
-      if (id != null && !id.equals("")) {
-        Matcher matcher = imdbIdPattern.matcher(id);
-        if (matcher.find()) {
-          return new IdInfo(Integer.parseInt(matcher.group(1)), ScrapperUtils.AvailableApiIds.IMDB);
+        if (id != null && !id.equals("")) {
+          Matcher matcher = imdbIdPattern.matcher(id);
+          if (matcher.find()) {
+            return new IdInfo(Integer.parseInt(matcher.group(1)), ScrapperUtils.AvailableApiIds.IMDB);
+          }
         }
+      } catch (NullPointerException Ex) {
+        // Imdb id not found
       }
     } catch (URISyntaxException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);

@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.utils;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.SpinningDial;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.URIRequest;
@@ -85,6 +86,7 @@ public final class ImageUtils {
   public static final Icon STAR_16 = getIconFromJar("ui/16/star.png");
   public static final Icon CLEAR_LIST_16 = getIconFromJar("ui/16/media_playlist_clear.png");
   public static final Icon CASTING_16 = getIconFromJar("ui/16/casting.png");
+  public static final Icon EDIT_16 = getIconFromJar("ui/16/edit.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
   // Movie Renamer logo
   public static final Icon LOGO_22 = getIconFromJar("ui/icon-22.png");
@@ -136,14 +138,14 @@ public final class ImageUtils {
       image = toolkit.createImage(thanksToNetscape);
 
     } catch (Exception ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
     } finally {
       try {
         if (in != null) {
           in.close();
         }
       } catch (IOException ex) {
-        Settings.LOGGER.log(Level.SEVERE, null, ex);
+        UISettings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }
     return image;

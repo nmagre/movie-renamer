@@ -28,7 +28,6 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
@@ -45,7 +44,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.logging.Level;
 
 /**
  * Class WorkerManager
@@ -62,86 +60,93 @@ public final class WorkerManager {
 
   public static void getFileInfo(MovieRenamer mr, UIFile file) {
     GetFileInfoWorker getFileInfoWorker = new GetFileInfoWorker(mr, file);
-    start(getFileInfoWorker, file);
+    start(getFileInfoWorker);
   }
 
   public static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
     ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList);
-    start(listFileWorker, files);
+    start(listFileWorker);
   }
 
   public static void search(MovieRenamer mr, UIFile media) {
     SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media);
-    start(searchWorker, media);
+    start(searchWorker);
   }
 
   public static void searchInfo(MovieRenamer mr, UISearchResult searchResult) {
     SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(mr, searchResult);
-    start(infoWorker, searchResult);
+    start(infoWorker);
   }
 
   public static void searchImage(MovieRenamer mr, UISearchResult searchResult) {
     SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
-    start(imagesWorker, searchResult);
+    start(imagesWorker);
   }
 
   public static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
-    start(castingWorker, "");
+    start(castingWorker);
   }
 
   public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension imageSize, String defaultImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, imageSize, defaultImage);
-    start(imagesWorker, "[" + images.size() + "]");
+    start(imagesWorker);
   }
 
   public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, size, imageSize, defaultImage);
-    start(imagesWorker, "[" + images.size() + "]");
+    start(imagesWorker);
   }
 
   public static AbstractImageWorker<UIMediaImage> fetchImages(List<UIMediaImage> images, GalleryPanel gallery, String defaultImage, Dimension imageSize, ImageInfo.ImageSize size) {
     AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, imageSize, defaultImage);
-    start(GalleryWorker, gallery + " [" + images.size() + "]");
+    start(GalleryWorker);
     return GalleryWorker;
   }
 
   public static void updateWorkerQueue() {
     synchronized (workerQueue) {
+      boolean isEmpty = workerQueue.isEmpty();
       Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
       while (iterator.hasNext()) {
         AbstractWorker<?, ?> worker = iterator.next();
         if (worker.isDone()) {
           iterator.remove();
+          UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, worker);
         }
       }
 
       if (workerQueue.isEmpty()) {
-        UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, MovieRenamer.class);
+        if (!isEmpty) {
+          UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
+        }
       } else {
-        UIEvent.fireUIEvent(UIEvent.Event.WORKER_RUNNING, MovieRenamer.class, workerQueue.peek().getName());
+        UIEvent.fireUIEvent(UIEvent.Event.WORKER_RUNNING, MovieRenamer.class, workerQueue.peek());
       }
     }
   }
 
-  private static void start(AbstractWorker<?, ?> worker, Object obj) {
-    UISettings.LOGGER.log(Level.INFO, String.format("%s %s", worker.getName(), obj.toString()));
+  private static void start(AbstractWorker<?, ?> worker) {
     synchronized (workerQueue) {
       workerQueue.add(worker);
-      UIEvent.fireUIEvent(UIEvent.Event.WORKER_STARTED, MovieRenamer.class, workerQueue.peek().getName());
+      UIEvent.fireUIEvent(UIEvent.Event.WORKER_STARTED, worker);
     }
     worker.execute();
   }
 
   public static void stop() {
     synchronized (workerQueue) {
+      boolean isEmpty = workerQueue.isEmpty();
       AbstractWorker<?, ?> worker = workerQueue.poll();
       while (worker != null) {
         if (!worker.isDone()) {
-          UISettings.LOGGER.log(Level.INFO, worker.getName());
           worker.cancel(true);
         }
         worker = workerQueue.poll();
+      }
+      
+      if (!isEmpty) {
+        UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
       }
     }
   }
@@ -153,11 +158,11 @@ public final class WorkerManager {
         AbstractWorker<?, ?> rworker = iterator.next();
         if (rworker == worker) {
           if (!worker.isDone()) {
-            UISettings.LOGGER.log(Level.INFO, worker.getName());
             worker.cancel(true);
+            UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, rworker);
           }
+          workerQueue.remove(rworker);
         }
-        workerQueue.remove(rworker);
       }
     }
   }

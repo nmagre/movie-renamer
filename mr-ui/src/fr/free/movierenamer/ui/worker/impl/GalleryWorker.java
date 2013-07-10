@@ -21,6 +21,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.util.List;
 import javax.swing.Icon;
@@ -48,14 +49,19 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
     for (AbstractImageWorker<UIMediaImage>.ImageChunk chunk : chunks) {
 
       Icon icon = chunk.getIcon();
-      int index = chunk.getId();
-      System.out.println(index);
-      panel.addThumbPreview(icon, index);
+      int id = chunk.getId();
+
+      panel.addThumbPreview(icon, id);
     }
   }
 
   @Override
-  protected String getName() {
-    return "Gallery";
+  public String getParam() {
+    return String.format("%s [%s images]", panel.getImageProperty().name(), images.size());
+  }
+
+  @Override
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.gallery");
   }
 }

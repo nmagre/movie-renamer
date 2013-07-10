@@ -33,7 +33,6 @@ import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIScrapper;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
-import fr.free.movierenamer.ui.swing.panel.generator.SettingPanelGen;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.NumberUtils;
@@ -232,7 +231,7 @@ public class SettingPanel extends JDialog {
           IProperty property = checkbox.getKey();
           String olValue = property.getValue();
           property.setValue(checkbox.getValue().isSelected());
-          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, property, olValue, property.getValue());
+          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, olValue, property.getValue());
         } catch (IOException ex) {
           UISettings.LOGGER.log(Level.SEVERE, null, ex);
           WebOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("settings.saveSettingsFailed"), LocaleUtils.i18nExt("error"), JOptionPane.ERROR_MESSAGE);
@@ -253,7 +252,7 @@ public class SettingPanel extends JDialog {
           }
 
           property.setValue(field.getValue().getText());
-          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, property, olValue, property.getValue());
+          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, olValue, property.getValue());
         } catch (IOException ex) {
           UISettings.LOGGER.log(Level.SEVERE, null, ex);
           WebOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("settings.saveSettingsFailed"), LocaleUtils.i18nExt("error"), JOptionPane.ERROR_MESSAGE);
@@ -273,12 +272,12 @@ public class SettingPanel extends JDialog {
               property.setValue(((UIEnum) combobox.getValue().getSelectedItem()).getValue());
             }
 
-            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, property, oldValue, property.getValue());
+            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue, property.getValue());
           } else if (combobox.getValue().getSelectedItem() instanceof UIScrapper) {
             UIScrapper scrapper = (UIScrapper) combobox.getValue().getSelectedItem();
             Class<?> clazz = Class.forName(property.getValue().replace("class ", ""));
             settings.coreInstance.set((SettingsProperty) property, scrapper.getScrapper().getClass());
-            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, property, clazz, scrapper.getScrapper().getClass());
+            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz, scrapper.getScrapper().getClass());
           } else {
             UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown property %s : Class %s", property.name(), property.getDefaultValue()));
             continue;

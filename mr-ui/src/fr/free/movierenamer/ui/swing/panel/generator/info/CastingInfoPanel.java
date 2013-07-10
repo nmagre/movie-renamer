@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.swing.panel.generator.info;
 
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import javax.swing.Icon;
 

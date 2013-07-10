@@ -17,11 +17,11 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import com.alee.laf.list.DefaultListModel;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
+import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.util.List;
 import javax.swing.Icon;
@@ -65,7 +65,12 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
   }
 
   @Override
-  protected String getName() {
-    return "Image";
+  public String getParam() {
+    return String.format("%s [%s %s images]", getClass().getGenericSuperclass(), size.name(), images.size());
+  }
+
+  @Override
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.image");
   }
 }

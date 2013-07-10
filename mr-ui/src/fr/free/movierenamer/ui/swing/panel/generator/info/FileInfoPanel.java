@@ -23,8 +23,7 @@ import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.swing.panel.generator.InfoPanel;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.beans.IntrospectionException;
@@ -57,7 +56,7 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
     try {
       createFields(mvideo, level);
     } catch (IntrospectionException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
     List<MediaAudio> audios = mtag.getMediaAudios();
@@ -71,7 +70,7 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
       try {
         createFields(audio, 2);
       } catch (IntrospectionException ex) {
-        Settings.LOGGER.log(Level.SEVERE, null, ex);
+        UISettings.LOGGER.log(Level.SEVERE, null, ex);
       }
     }
 
@@ -90,11 +89,11 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
           field.setText(pd.getReadMethod().invoke(object).toString());
           add(field, getGroupConstraint(1, true, true, level));
         } catch (IllegalAccessException ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+          UISettings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+          UISettings.LOGGER.log(Level.SEVERE, null, ex);
         } catch (InvocationTargetException ex) {
-          Settings.LOGGER.log(Level.SEVERE, null, ex);
+          UISettings.LOGGER.log(Level.SEVERE, null, ex);
         }
       }
     }

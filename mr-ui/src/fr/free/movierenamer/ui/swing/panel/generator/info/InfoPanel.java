@@ -17,41 +17,34 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator.info;
 
-import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.Info;
+import fr.free.movierenamer.ui.bean.IEventInfo;
+import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
+import javax.swing.Icon;
 
 /**
- * Class MoviePanel
+ * Class InfoPanel
  *
  * @author Nicolas Magré
  */
-public class MoviePanel extends VideoPanel<MovieInfo> {
+public abstract class InfoPanel<T extends Info> extends PanelGenerator implements IInfoPanel<T> {
 
-  @SuppressWarnings("unchecked")
-  public MoviePanel() {
-    super(new MovieInfoPanel(), new CastingInfoPanel<MovieInfo>());
+  public abstract Icon getIcon();
+
+  public abstract String getPanelName();
+
+  protected void regiterUIEvent() {
+    UIEvent.addEventListener(this.getClass(), this);
+  }
+
+  protected void unregiterUIEvent() {
+    UIEvent.removeEventListener(this.getClass());
   }
 
   @Override
-  public void clearPanel() {
-    // Nothing to clear
-  }
-
-  @Override
-  protected String getTitle(MovieInfo info) {
-    String title = info.getTitle();
-    if (info.getYear() != null) {
-      title += " (" + info.getYear() + ")";
-    }
-    return title;
-  }
-
-  @Override
-  protected Double getRate(MovieInfo info) {
-    return info.getRating();
-  }
-
-  @Override
-  protected boolean addEditButton() {
-    return true;
+  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object param) {
+    System.out.println("Receive event");
+    // Do nothing
   }
 }

@@ -166,6 +166,7 @@ public class IMDbScrapper extends MovieScrapper {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
+    Map<MovieInfo.MovieMultipleProperty, List<?>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<?>>(MovieInfo.MovieMultipleProperty.class);
     List<String> genres = new ArrayList<String>();
     List<Locale> countries = new ArrayList<Locale>();
     List<String> studios = new ArrayList<String>();
@@ -254,7 +255,7 @@ public class IMDbScrapper extends MovieScrapper {
     for (Node country : ncountries) {
       countries.add(LocaleUtils.findCountry(country.getTextContent(), language));
     }
-    
+
     List<Node> ntags = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
     for (Node ntag : ntags) {
       tags.add(ntag.getTextContent());
@@ -302,7 +303,13 @@ public class IMDbScrapper extends MovieScrapper {
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getId());
 
-    MovieInfo movieInfo = new MovieInfo(fields, ids, genres, countries, studios, tags);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.ids, ids);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
+    multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
+
+    MovieInfo movieInfo = new MovieInfo(fields, multipleFields);
     return movieInfo;
   }
 
@@ -359,7 +366,7 @@ public class IMDbScrapper extends MovieScrapper {
     Document dom = URIRequest.getHtmlDocument(url.toURI(), getRequestProperties(language));
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='thumb_list']//IMG", dom);
-    
+
     int count = 0;
     for (Node inode : nodes) {
       Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);

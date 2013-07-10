@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javax.swing.SwingUtilities;
 
 /**
@@ -50,7 +48,7 @@ public class Main {
     }
 
     List<File> files = new ArrayList<File>();
-    for(String arg : args) {
+    for (String arg : args) {
       files.add(new File(arg));
     }
 
@@ -59,10 +57,6 @@ public class Main {
 
     // Set UI locale file
     LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
-
-    // Set logger level
-    UISettings.LOGGER.setLevel(Level.INFO);
-    Settings.LOGGER.setLevel(Level.INFO);
 
     // Install look and feel
     WebLookAndFeel.install();
@@ -76,6 +70,7 @@ public class Main {
         break;
       }
     }
+    LanguageManager.setLanguage(lcode);
 
 //    new Thread(new Runnable() {
 //      @Override
@@ -98,13 +93,12 @@ public class Main {
 //          try {
 //            Thread.sleep(20000);
 //          } catch (InterruptedException ex) {
-//            Settings.LOGGER.log(Level.SEVERE, null, ex);
+//            UISettings.LOGGER.log(Level.SEVERE, null, ex);
 //          }
 //        }
 //      }
 //    }).start();
 
-    LanguageManager.setLanguage(lcode);
     mr = new MovieRenamer(files);
 
     SwingUtilities.invokeLater(new Runnable() {

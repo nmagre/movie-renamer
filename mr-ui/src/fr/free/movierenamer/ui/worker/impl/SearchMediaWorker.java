@@ -141,9 +141,14 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   protected void workerCanceled() {
     mr.setSearchEnabled();
   }
+  
+  @Override
+  public String getParam() {
+    return String.format("[%s]", media);
+  }
 
   @Override
-  protected String getName() {
+  public String getDisplayName() {
     return LocaleUtils.i18nExt("worker.searchMedia");
   }
 }

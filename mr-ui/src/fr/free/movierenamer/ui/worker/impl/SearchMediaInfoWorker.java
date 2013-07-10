@@ -25,6 +25,7 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.generator.info.MediaPanel;
 import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.utils.LocaleUtils;
 
 /**
  * Class SearchMediaInfosWorker
@@ -84,7 +85,12 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
   }
 
   @Override
-  protected String getName() {
-    return "Search Media Info";
+  public String getParam() {
+    return String.format("[%s]", searchResult);
+  }
+
+  @Override
+  public String getDisplayName() {
+    return LocaleUtils.i18nExt("worker.searchMediaInfo");
   }
 }

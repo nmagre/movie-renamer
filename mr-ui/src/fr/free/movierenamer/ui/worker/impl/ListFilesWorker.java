@@ -230,7 +230,12 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   }
 
   @Override
-  protected String getName() {
+  public String getParam() {
+    return String.format("%s", files);
+  }
+
+  @Override
+  public String getDisplayName() {
     return LocaleUtils.i18nExt("worker.listFile");
   }
 }

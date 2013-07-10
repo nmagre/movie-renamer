@@ -54,6 +54,10 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
     return Collections.unmodifiableList(supportedLanguages);
   }
 
+  public final boolean hasSupportedLanguage(AvailableLanguages language) {
+    return supportedLanguages.contains(language);
+  }
+  
   protected final Locale getLanguage() {
     if (language != null) {
       return language;

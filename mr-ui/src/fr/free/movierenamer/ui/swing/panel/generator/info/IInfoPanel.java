@@ -15,15 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.panel.generator;
+package fr.free.movierenamer.ui.swing.panel.generator.info;
 
 import fr.free.movierenamer.info.Info;
+import fr.free.movierenamer.ui.bean.IEventListener;
 
 /**
  * Interface IInfoPanel
  * @author Nicolas Magré
  */
-public interface IInfoPanel<T extends Info> {
+public interface IInfoPanel<T extends Info> extends IEventListener {
   
   public void clear();
 

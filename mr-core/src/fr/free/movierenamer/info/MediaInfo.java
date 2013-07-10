@@ -38,7 +38,7 @@ public abstract class MediaInfo extends Info {
 //  protected ImageInfo[] images;
 
   protected MediaTag mtag;
-
+  
   public List<CastingInfo> getPersons() {
     return Collections.unmodifiableList(Arrays.asList(casting));
   }

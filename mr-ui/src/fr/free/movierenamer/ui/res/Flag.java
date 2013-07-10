@@ -21,7 +21,6 @@ import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
-import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.Locale;
 import java.util.logging.Level;
 import javax.swing.Icon;
@@ -127,7 +126,7 @@ public abstract class Flag {
   }
 
   public static UILang getFlag(String code) {
-    if (code == null || code.length() == 0) {
+    if (code == null || code.length() == 0 || code.equals("xx")) {// tmdb return xx if there is no language
       return new UILang(null, Unknown);
     }
 
