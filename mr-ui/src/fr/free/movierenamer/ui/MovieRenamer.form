@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
@@ -289,7 +289,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="mediaFileTb" max="32767" attributes="0"/>
+                      <Component id="mediaFileTb" pref="140" max="32767" attributes="0"/>
                       <Component id="mediaFileScp" pref="140" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
@@ -401,9 +401,9 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="searchTb" max="32767" attributes="0"/>
+                              <Component id="searchTb" pref="602" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="searchField" max="32767" attributes="0"/>
+                                  <Component id="searchField" pref="423" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="scrapperCb" min="-2" pref="143" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
@@ -511,6 +511,7 @@
                           </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="(JComboBox) new WebComboBox()"/>
+                            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value=""/>
                           </AuxValues>
                         </Component>
                       </SubComponents>

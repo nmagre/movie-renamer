@@ -40,6 +40,7 @@ import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaWorker;
 import java.awt.Dimension;
 import java.io.File;
+import java.lang.reflect.ParameterizedType;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,7 +145,7 @@ public final class WorkerManager {
         }
         worker = workerQueue.poll();
       }
-      
+
       if (!isEmpty) {
         UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
       }
@@ -159,11 +160,31 @@ public final class WorkerManager {
         if (rworker == worker) {
           if (!worker.isDone()) {
             worker.cancel(true);
-            UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, rworker);
           }
-          workerQueue.remove(rworker);
         }
       }
     }
+    updateWorkerQueue();
+  }
+
+  public static void stopExcept(Class clazz, Class genSuperClazz) {
+    synchronized (workerQueue) {
+      Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
+      while (iterator.hasNext()) {
+        AbstractWorker<?, ?> rworker = iterator.next();
+        if (rworker.getClass().equals(clazz)) {
+          if (genSuperClazz != null && clazz.getGenericSuperclass() != null) {
+            if (!genSuperClazz.equals(rworker.getClass().getEnclosingClass())) {
+              if (!rworker.isDone()) {
+                rworker.cancel(true);
+              }
+            }
+          } else if (rworker.isDone()) {
+            rworker.cancel(true);
+          }
+        }
+      }
+    }
+    updateWorkerQueue();
   }
 }

@@ -95,7 +95,7 @@ public final class UIEvent {
               (type.equals(FireType.CLASS) ? clazz : FireType.ALL)));
     }
 
-    UISettings.LOGGER.info(String.format("Send event %s%s to %s", event, (info != null ? " " + info.getClass().getSimpleName() + " " + info.getParam() : ""),
+    UISettings.LOGGER.fine(String.format("Send event %s%s to %s", event, (info != null ? " " + info.getClass().getSimpleName() + " " + info.getParam() : ""),
             (type.equals(FireType.ALL) ? FireType.ALL : clazz.getSimpleName())));
 
     for (Entry<Class<? extends IEventListener>, IEventListener> key : listenerList.entrySet()) {

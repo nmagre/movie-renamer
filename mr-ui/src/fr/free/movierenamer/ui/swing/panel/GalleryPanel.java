@@ -63,7 +63,7 @@ public class GalleryPanel extends JDialog {
   private final CustomWebImageGallery thumbGallery;
   private List<UIMediaImage> images;
   private List<UILang> languages;
-  private final DefaultComboBoxModel languagesModel;
+  private final DefaultComboBoxModel<UILang> languagesModel;
   private final ImageCategoryProperty property;
   private final MovieRenamer mr;
   private final PropertyChangeSupport propertyChange;
@@ -141,7 +141,7 @@ public class GalleryPanel extends JDialog {
 
     propertyChange = new PropertyChangeSupport(previewLbl);
     languages = new ArrayList<UILang>();
-    languagesModel = new DefaultComboBoxModel();
+    languagesModel = new DefaultComboBoxModel<UILang>();
     languageCbb.setModel(languagesModel);
     languageCbb.setRenderer(UIUtils.iconListRenderer);
 
@@ -164,6 +164,7 @@ public class GalleryPanel extends JDialog {
 
     languageCbb.setVisible(useLanguage);
     languageActionPerformed = new ItemListener() {
+
       @Override
       public void itemStateChanged(ItemEvent event) {
         if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
@@ -185,6 +186,7 @@ public class GalleryPanel extends JDialog {
 
     PropertyChangeSupport changePreview = thumbGallery.getPropertyChange();
     changePreview.addPropertyChangeListener(new PropertyChangeListener() {
+
       @Override
       public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("selectedImage")) {
@@ -207,6 +209,7 @@ public class GalleryPanel extends JDialog {
 
           final ImageWorker<UIMediaImage> imgWorker = new ImageWorker<UIMediaImage>(Arrays.asList(new UIMediaImage[]{image}), null, ImageSize.medium, ics.getPreviewDim(), "");// FIXME
           PropertyChangeListener propertyChange = new PropertyChangeListener() {//FIXME
+
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
               if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {

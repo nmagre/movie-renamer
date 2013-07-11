@@ -90,12 +90,12 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   @Override
   protected void workerDone() throws Exception {
 
+    mr.setSearchEnabled();
     searchResultList.setModel(searchResultModel);
 
     List<UISearchResult> results = get();
 
     if (results == null) {
-      mr.setSearchEnabled();
       return;
     }
 
@@ -121,7 +121,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
         break;
       default:
       // Do nothing
-      }
+    }
 
     searchResultModel.addAll(results);
 
@@ -133,15 +133,13 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
       }
       WorkerManager.fetchImages(results, searchResultModel, searchListDim, "ui/nothumb.png");
     }
-
-    mr.setSearchEnabled();
   }
 
   @Override
   protected void workerCanceled() {
     mr.setSearchEnabled();
   }
-  
+
   @Override
   public String getParam() {
     return String.format("[%s]", media);

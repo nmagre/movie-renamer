@@ -17,13 +17,11 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import com.alee.laf.list.DefaultListModel;
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -31,7 +29,6 @@ import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Class SearchMediaCastingWorker

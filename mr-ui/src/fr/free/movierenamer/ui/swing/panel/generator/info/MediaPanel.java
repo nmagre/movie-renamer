@@ -199,7 +199,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
   }
 
   protected abstract void addInfo(T info);
-
+  
   @Override
   public void clear() {
     for (InfoPanel<? extends Info> panel : panels) {

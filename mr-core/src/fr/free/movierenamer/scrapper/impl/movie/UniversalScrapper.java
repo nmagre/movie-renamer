@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @author Nicolas Magré
  */
-public class UniversalScrapper extends MovieScrapper {
+public class UniversalScrapper extends MovieScrapper {// TODO
 
   private static final String host = "www.imdb.com";
   private static final String name = "Universal";
@@ -67,12 +67,13 @@ public class UniversalScrapper extends MovieScrapper {
     List<MovieScrapper> scrappers = ScrapperManager.getMovieScrapperList(lang);
     List<MovieInfo> infos = new ArrayList<MovieInfo>();
     for (MovieScrapper scrapper : scrappers) {
-      if (scrapper.getName().equals(getName())) {
+      if (scrapper.getName().equals(getName()) || AlloGroupScrapper.class.isAssignableFrom(scrapper.getClass())) {
         continue;
       }
       MovieInfo info = scrapper.getInfo(searchResult);
 
       // Merge info
+      // TODO
       for (MovieInfo.MovieProperty property : MovieInfo.MovieProperty.values()) {
         if (scrapper.getClass() == IMDbScrapper.class) {
           if (!property.isLanguageDepends()) {
