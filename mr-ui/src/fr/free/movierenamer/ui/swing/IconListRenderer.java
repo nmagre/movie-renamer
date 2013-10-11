@@ -46,6 +46,7 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   }
 
   public IconListRenderer() {
+    super();
     showIcon = true;
   }
 
@@ -73,8 +74,6 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     } catch (ClassCastException e) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("IconListRenderer ClassCastException : IIconList != %s", value.getClass().getSimpleName()));
     }
-
-    label.setOpaque(true);
 
     return getListCellRendererComponent(list, label, value, index);
   }

@@ -111,7 +111,7 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
     }
     panel.enabledListener();
   }
-  
+
   @Override
   public String getParam() {
     return String.format("[%s]", searchResult);
@@ -119,6 +119,6 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.searchImages");
+    return ("worker.searchImages");// FIXME i18n
   }
 }

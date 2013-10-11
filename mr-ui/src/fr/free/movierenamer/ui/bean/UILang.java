@@ -23,6 +23,7 @@ import javax.swing.Icon;
 
 /**
  * Class UILang
+ *
  * @author Nicolas Magré
  */
 public class UILang implements IIconList {
@@ -73,5 +74,10 @@ public class UILang implements IIconList {
     hash = 59 * hash + (this.icon != null ? this.icon.hashCode() : 0);
     hash = 59 * hash + (this.lang != null ? this.lang.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public String getName() {
+    return lang.getLocale().getLanguage();
   }
 }

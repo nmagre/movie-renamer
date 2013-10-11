@@ -25,6 +25,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
@@ -65,11 +66,10 @@ public class MovieInfo extends MediaInfo {
     runtime;
     private boolean languageDepends;
 
-    
     private MovieProperty() {
       languageDepends = false;
     }
-    
+
     private MovieProperty(boolean languageDepends) {
       this.languageDepends = languageDepends;
     }
@@ -92,7 +92,7 @@ public class MovieInfo extends MediaInfo {
     private MovieMultipleProperty() {
       languageDepends = false;
     }
-    
+
     private MovieMultipleProperty(boolean languageDepends) {
       this.languageDepends = languageDepends;
     }
@@ -197,10 +197,10 @@ public class MovieInfo extends MediaInfo {
 
   public Integer getId(AvailableApiIds idType) {
     List<IdInfo> ids = get(MovieMultipleProperty.ids);
-    if(ids == null) {
+    if (ids == null) {
       return null;
     }
-    
+
     for (IdInfo id : ids) {
       if (id.getIdType().equals(idType)) {
         return id.getId();
@@ -463,7 +463,9 @@ public class MovieInfo extends MediaInfo {
 
     if (settings.isReservedCharacter()) {
       for (String c : reservedCharacterList) {
-        format = format.replace(c, "");
+        if (!c.toString().equals(File.separator)) {
+          format = format.replace(c, "");
+        }
       }
     }
     return format;

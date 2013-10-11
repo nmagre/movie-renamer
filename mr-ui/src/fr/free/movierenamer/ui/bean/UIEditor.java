@@ -19,16 +19,17 @@ package fr.free.movierenamer.ui.bean;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.list.DefaultListModel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.swing.ContextMenuFieldMouseListener;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
@@ -76,11 +77,10 @@ public class UIEditor {
 
     if (!multipleValue) {
       createCancelListener();
-    }
-    else {
+    } else {
       // TODO
     }
-    
+
     if (isTextComponent) {
       ((JTextComponent) component).setEditable(false);
       ((JTextComponent) component).addMouseListener(new ContextMenuFieldMouseListener());
@@ -120,7 +120,9 @@ public class UIEditor {
     textComponent.setFont(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedFont : defaultFont);
     cancelButton.setEnabled(!textComponent.getText().equals(defaultValue != null ? defaultValue : ""));
     if (cancelButton.isEnabled()) {
-      TooltipManager.setTooltip(cancelButton, new WebLabel(LocaleUtils.i18nExt("cancel"), ImageUtils.CANCEL_16, SwingConstants.TRAILING), TooltipWay.down);
+      WebLabel label = new WebLabel("", ImageUtils.CANCEL_16, SwingConstants.TRAILING);
+      label.setLanguage(UIUtils.i18n.getLanguageKey("cancel", false));
+      TooltipManager.setTooltip(cancelButton, label, TooltipWay.down);
     } else {
       TooltipManager.removeTooltips(component);
     }
@@ -159,7 +161,7 @@ public class UIEditor {
       ((JTextComponent) component).setEditable(editable);
     }
   }
-  
+
   public void setEnabled(boolean enabled) {
     component.setEnabled(enabled);
   }

@@ -53,8 +53,10 @@ public final class UISettings {
     CORE_VERSION = Settings.VERSION;
     userFolder = System.getProperty("user.home");
     appFolder = Settings.getApplicationFolder();
+    languagePrefix = "mrui";
     configFile = appNameNospace + ".conf";
     renamedFile = "renamed.xml";
+    languageFile = "language.xml";
     logFile = appNameNospace + ".log";
     LOGGER = Logger.getLogger("UI");
     appSettingsNodeName = appNameNospace;
@@ -65,10 +67,12 @@ public final class UISettings {
   public static final String CORE_VERSION;
   public static final File appFolder;
   private static final String userFolder;
+  public static final String languagePrefix;
   // files
   public static final String configFile;
   public static final String renamedFile;
   private static final String logFile;
+  public static final String languageFile;
   // Logger
   public static final Logger LOGGER;
   // Settings instance
@@ -92,7 +96,6 @@ public final class UISettings {
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
-    checkUpdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
     showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showThumb(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
@@ -112,6 +115,7 @@ public final class UISettings {
     generateFanart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateBanner(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateSubtitles(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    moveFileOneByOne(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     imageThumbName("<fileName>.tbn", SettingsType.IMAGE, SettingsSubType.THUMB),
     imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB, true),
     imageThumbSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.THUMB),
@@ -124,6 +128,7 @@ public final class UISettings {
     groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     //
     fileChooserPath(userFolder);
     private Class<?> vclass;
@@ -345,10 +350,6 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.scanSubfolder));
   }
 
-  public boolean isCheckUpdate() {
-    return Boolean.parseBoolean(get(UISettingsProperty.checkUpdate));
-  }
-
   public boolean isShowActorImage() {
     return Boolean.parseBoolean(get(UISettingsProperty.showActorImage));
   }
@@ -409,6 +410,10 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.generateSubtitles));
   }
 
+  public boolean isMoveFileOneByOne() {
+    return Boolean.parseBoolean(get(UISettingsProperty.moveFileOneByOne));
+  }
+
   public String getImageThumbName() {
     return get(UISettingsProperty.imageThumbName);
   }
@@ -461,8 +466,8 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.showFormatField));
   }
 
-  public String getVersion() {
-    return VERSION;
+  public boolean isShowStartupAnim() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showStartupAnim));
   }
 
   private static String getApplicationProperty(String key) {

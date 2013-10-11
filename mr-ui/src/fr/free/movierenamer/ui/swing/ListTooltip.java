@@ -22,6 +22,7 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UILoader;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -60,15 +61,17 @@ public class ListTooltip extends MouseAdapter {
     ListModel model = list.getModel();
     int index = list.locationToIndex(e.getPoint());
 
-    if (index > -1) {
+
+    final Rectangle rect = list.getCellBounds(index, index);
+
+    if (index > -1 && rect.contains(e.getPoint())) {
       if (lastIndex != index) {
         TooltipManager.hideAllTooltips();
         Object obj = model.getElementAt(index);
-        final Rectangle rect = list.getCellBounds(index, index);
 
         if (obj instanceof IIconList) {
           if ((onlyLoading && obj instanceof UILoader) || !onlyLoading) {
-            final String str = obj instanceof UILoader ? LocaleUtils.i18nExt("tooltip.clickToCancel") : obj.toString();// FIXME i18n
+            final String str = obj instanceof UILoader ? UIUtils.i18n.getLanguage("clickToCancel", true) : obj.toString();// FIXME i18n
             if (timer != null) {
               timer.stop();
             }

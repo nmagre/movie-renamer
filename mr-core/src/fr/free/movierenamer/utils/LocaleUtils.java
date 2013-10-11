@@ -197,7 +197,7 @@ public final class LocaleUtils {
 
     @Override
     public String getDisplayName() {
-      return name != null ?  i18n(name) : StringUtils.capitalizedLetter(locale.getDisplayLanguage(Settings.getInstance().getAppLanguage().getLocale()), true);
+      return name != null ? i18n(name) : StringUtils.capitalizedLetter(locale.getDisplayLanguage(Settings.getInstance().getAppLanguage().getLocale()), true);
     }
 
     @Override
@@ -260,12 +260,11 @@ public final class LocaleUtils {
     }
   }
   private static final ResourceBundle localBundle = ResourceBundle.getBundle("fr/free/movierenamer/i18n/Bundle");
-  public static ResourceBundle localBundleExt = null;
 
   public static Locale[] getSupportedDisplayLocales() {
     return new Locale[]{
-              Locale.ENGLISH, Locale.FRENCH
-            };
+      Locale.ENGLISH, Locale.FRENCH
+    };
   }
 
   public static Locale findLanguage(String languageName, Locale... supportedDisplayLocales) {
@@ -441,16 +440,11 @@ public final class LocaleUtils {
   /**
    * Get string in i18n files
    *
-   * @param bundleKey
-   * CacheKey to find
+   * @param bundleKey CacheKey to find
    * @return String depends on locale
    */
   public static String i18n(String bundleKey) {
     return i18n(bundleKey, bundleKey, localBundle);
-  }
-
-  public static String i18nExt(String bundleKey) {
-    return i18n(bundleKey, bundleKey, localBundleExt);
   }
 
   public static String i18n(String bundleKey, ResourceBundle lBundle) {
@@ -460,28 +454,17 @@ public final class LocaleUtils {
   /**
    * Get string in i18n files
    *
-   * @param bundleKey
-   * CacheKey to find
-   * @param defaultValue
-   * Default value
-   * @return String depends on locale or default value if key dos not exist
+   * @param bundleKey CacheKey to find
+   * @param defaultValue Default value
+   * @return String depends on locale or default value if key does not exist
    */
   public static String i18n(String bundleKey, String defaultValue, ResourceBundle lBundle) {
     if (lBundle != null && lBundle.containsKey(bundleKey)) {
       return lBundle.getString(bundleKey);
-    } else {
-      if (localBundleExt == lBundle) {
-
-        try {// FIXME remove !!!!
-          PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Settings.appFolder + File.separator + "i18n_missing.properties", true)));
-          out.println(bundleKey + "=");
-          out.close();
-        } catch (IOException e) {
-        }
-      }
-      Settings.LOGGER.log(Level.CONFIG, String.format("No internationlization found for %s, use default value", bundleKey));
-      return defaultValue;
     }
+
+    Settings.LOGGER.log(Level.CONFIG, String.format("No internationlization found for %s, use default value", bundleKey));
+    return defaultValue;
   }
 
   private LocaleUtils() {

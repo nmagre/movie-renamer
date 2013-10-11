@@ -22,7 +22,6 @@ import fr.free.movierenamer.info.FileInfo.MediaType;
 import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.utils.FileUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -51,7 +50,7 @@ public abstract class NameMatcher {// TODO
         properties = getTvShowProperty(file);
         break;
     }
-    
+
     properties.put(FileProperty.year, "" + NameCleaner.extractYear(file.getName()));
     return properties;
   }
@@ -60,7 +59,7 @@ public abstract class NameMatcher {// TODO
     Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
     properties.put(FileProperty.name, NameCleaner.extractName(file.getName(), false));
     Integer imdbId = getImdbId(file);
-    if(imdbId != null) {
+    if (imdbId != null) {
       properties.put(FileProperty.imdbId, "" + imdbId);
     }
 
@@ -71,7 +70,7 @@ public abstract class NameMatcher {// TODO
     String extractedName = NameCleaner.extractName(fileName, false);
     // Try to extract name from String without spacing
     String[] names = extractedName.split(" ");
-    if(names.length < 3 && names[0].length() > 15) {
+    if (names.length < 3 && names[0].length() > 15) {
       extractedName = names[0].replaceAll("(\\p{Lower})(\\p{Upper})", "$1 $2");
       extractedName = NameCleaner.extractName(extractedName, false);
     }
@@ -89,7 +88,7 @@ public abstract class NameMatcher {// TODO
     Pattern imdbIdPattern = Pattern.compile("tt(\\d{7})");
     Matcher imdbIdMatch = imdbIdPattern.matcher(fileName);
 
-    if(imdbIdMatch.find()) {
+    if (imdbIdMatch.find()) {
       return Integer.parseInt(imdbIdMatch.group(1));
     }
 

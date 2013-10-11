@@ -21,6 +21,7 @@ import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.exception.InvalidUrlException;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.net.SocketException;
@@ -54,22 +55,22 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
       publish(String.format("InvalidUrlException %s failed\n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
     } catch (UnknownHostException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(LocaleUtils.i18nExt("error.network.connection"));
+      publish(UIUtils.i18n.getLanguage("error.network.connection", false));
     } catch (SocketTimeoutException ex) {
       UISettings.LOGGER.log(Level.WARNING, ex.getCause().toString());
-      publish(LocaleUtils.i18nExt("error.network.timeout"));
+      publish(UIUtils.i18n.getLanguage("error.network.timeout", false));
     } catch (SocketException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(LocaleUtils.i18nExt("error.network.connection") + "\n\n" + ex.getLocalizedMessage());
+      publish(UIUtils.i18n.getLanguage("error.network.connection", false) + "\n\n" + ex.getLocalizedMessage());
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(String.format(LocaleUtils.i18nExt("error.worker.unknown") + " :\n\n%s", getClass().getSimpleName(), ex.getLocalizedMessage()));
+      publish(UIUtils.i18n.getLanguage("error.unknown", false, getClass().getSimpleName(), ex.getLocalizedMessage()));
     }
     return result;
   }
 
   @Override
   protected void process(List<String> v) {
-    WebOptionPane.showMessageDialog(mr, v.get(0) + "\n", LocaleUtils.i18nExt("error"), JOptionPane.ERROR_MESSAGE);
+    WebOptionPane.showMessageDialog(mr, v.get(0) + "\n", UIUtils.i18n.getLanguage("error.error", false), JOptionPane.ERROR_MESSAGE);
   }
 }

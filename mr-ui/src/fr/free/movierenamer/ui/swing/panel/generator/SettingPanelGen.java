@@ -33,7 +33,7 @@ import fr.free.movierenamer.settings.Settings.IProperty;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UIScrapper;
-import fr.free.movierenamer.ui.res.Flag;
+import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
@@ -103,14 +103,12 @@ public class SettingPanelGen extends PanelGenerator {
       for (IProperty property : group) {
         GridBagConstraints constraint = getGroupConstraint(level);
         final JComponent component;
-        String title = LocaleUtils.i18nExt(settingsi18n + property.name().toLowerCase());
+        String title = (settingsi18n + property.name().toLowerCase());// FIXME i18n
 
         if (property.getVclass().equals(Boolean.class)) {
 
           // Create checkbox for boolean value
           component = createComponent(Component.CHECKBOX, title);
-          isEnabled = Boolean.parseBoolean(property.getValue());
-          ((WebCheckBox) component).setSelected(isEnabled);
           checkboxs.put(property, (WebCheckBox) component);
 
         } else if (property.getVclass().equals(String.class) || property.getDefaultValue() instanceof Number) {
@@ -118,7 +116,6 @@ public class SettingPanelGen extends PanelGenerator {
           // Create text field for String and number value
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = createComponent(Component.FIELD, null);
-          ((WebTextField) component).setText(property.getValue());
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
@@ -150,7 +147,7 @@ public class SettingPanelGen extends PanelGenerator {
           for (Enum<?> e : clazz.getEnumConstants()) {
             IIconList iicon;
             if (property.getDefaultValue() instanceof LocaleUtils.Language) {
-              iicon = Flag.getFlag(e.name());
+              iicon = FlagUtils.getFlag(e.name());
             } else {
               String imgfolder = null;
               if (property.getDefaultValue() instanceof NfoInfo.NFOtype) {
@@ -190,17 +187,14 @@ public class SettingPanelGen extends PanelGenerator {
             for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
               model.addElement(new UIScrapper(scrapper));
             }
-            model.setSelectedItem(new UIScrapper(ScrapperManager.getMovieScrapper()));
           } else if (TvShowScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
               model.addElement(new UIScrapper(scrapper));
             }
-            model.setSelectedItem(new UIScrapper(ScrapperManager.getTvShowScrapper()));
           } else if (SubtitleScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (SubtitleScrapper scrapper : ScrapperManager.getSubtitleScrapperList()) {
               model.addElement(new UIScrapper(scrapper));
             }
-            model.setSelectedItem(new UIScrapper(ScrapperManager.getSubtitleScrapper()));
           } else {
             UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getDefaultValue()));
             continue;
@@ -241,7 +235,7 @@ public class SettingPanelGen extends PanelGenerator {
       }
 
       if (tabbed && panel != null) {
-        tabbedPane.add(LocaleUtils.i18nExt(settingsi18n + group.get(0).getSubType().name().toLowerCase()), panel);
+        tabbedPane.add((settingsi18n + group.get(0).getSubType().name().toLowerCase()), panel);// FIXME i18n
       }
     }
 
@@ -252,6 +246,42 @@ public class SettingPanelGen extends PanelGenerator {
 
     repaint();
     validate();
+  }
+
+  public void reset() {
+    for (Map.Entry<IProperty, WebCheckBox> checkbox : checkboxs.entrySet()) {
+      IProperty property = checkbox.getKey();
+      WebCheckBox cb = checkbox.getValue();
+      boolean isSelected = Boolean.parseBoolean(property.getValue());
+      boolean changed = cb.isSelected() != isSelected;
+      cb.setSelected(isSelected);
+
+      // Call listener to enabled/disabled childs
+      if (property.hasChild() && changed) {
+        for (ActionListener listener : cb.getActionListeners()) {
+          listener.actionPerformed(new ActionEvent(cb, ActionEvent.ACTION_PERFORMED, ""));
+        }
+      }
+    }
+
+    for (Map.Entry<IProperty, WebTextField> textfield : fields.entrySet()) {
+      IProperty property = textfield.getKey();
+      textfield.getValue().setText(property.getValue());
+    }
+
+    for (Map.Entry<IProperty, WebComboBox> combobox : comboboxs.entrySet()) {
+      IProperty property = combobox.getKey();
+      WebComboBox cb = combobox.getValue();
+      for (int i = 0; i < cb.getItemCount(); i++) {
+
+        IIconList iconlist = (IIconList) cb.getItemAt(i);
+        String name = property.getValue();
+        if (iconlist.getName().equals(name)) {
+          cb.setSelectedIndex(i);
+          break;
+        }
+      }
+    }
   }
 
   public Map<IProperty, WebCheckBox> getCheckbox() {

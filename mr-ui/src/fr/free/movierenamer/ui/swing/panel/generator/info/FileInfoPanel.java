@@ -48,7 +48,7 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
   @Override
   public void setInfo(FileInfo info) {
     this.info = info;
-    
+
     MediaTag mtag = info.getMediaTag();
 
     MediaVideo mvideo = mtag.getMediaVideo();
@@ -66,7 +66,7 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
 
     int count = 1;
     for (MediaAudio audio : audios) {
-      add(createTitle(LocaleUtils.i18nExt("fileinfo.audio") + " #" + count++, false), getGroupConstraint(2));
+      add(createTitle(("fileinfo.audio") + " #" + count++, false), getGroupConstraint(2));// FIXME i18n
       try {
         createFields(audio, 2);
       } catch (IntrospectionException ex) {

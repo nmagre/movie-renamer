@@ -20,7 +20,7 @@ package fr.free.movierenamer.ui.bean;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
-import fr.free.movierenamer.ui.res.Flag;
+import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -46,7 +46,7 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
   public UIMediaImage(ImageInfo info) {
     this.info = info;
     this.type = info.getCategory();
-    imglang = Flag.getFlag(info.getLanguage());
+    imglang = FlagUtils.getFlag(info.getLanguage());
   }
 
   @Override
@@ -81,7 +81,7 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
   }
 
   @Override
-  protected String getName() {
+  public String getName() {
     return getUrl(ImageSize.small).toString();
   }
 

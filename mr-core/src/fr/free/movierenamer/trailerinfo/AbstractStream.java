@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.trailer;
+package fr.free.movierenamer.trailerinfo;
 
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
 import java.net.URL;
-import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -54,7 +53,7 @@ public abstract class AbstractStream {
     if (links != null) {
       return getLink(links, quality);
     }
-    
+
     try {
       links = getLinks(url);
     } catch (Exception ex) {
@@ -74,7 +73,7 @@ public abstract class AbstractStream {
       if (links.containsKey(quality)) {
         return links.get(quality);
       }
-      
+
       int ordinal = quality.ordinal() - 1;
       while (ordinal > 0) {
         if (links.containsKey(Quality.values()[ordinal])) {

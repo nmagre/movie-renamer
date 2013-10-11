@@ -88,6 +88,9 @@ public final class ImageUtils {
   public static final Icon CASTING_16 = getIconFromJar("ui/16/casting.png");
   public static final Icon EDIT_16 = getIconFromJar("ui/16/edit.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
+  // 8 pixel icon
+  public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
+  public static final Icon LOAD_8 = new SpinningDial(8, 8);
   // Movie Renamer logo
   public static final Icon LOGO_22 = getIconFromJar("ui/icon-22.png");
   public static final Icon LOGO_32 = getIconFromJar("ui/icon-32.png");
@@ -203,7 +206,7 @@ public final class ImageUtils {
     } else {
       img = null;
     }
-    
+
     if (img == null && defaultImage != null) {
       // load default image id necessary
       img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);

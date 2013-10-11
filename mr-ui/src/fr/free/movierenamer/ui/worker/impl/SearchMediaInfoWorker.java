@@ -59,7 +59,7 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
       info = scrapper.getInfo(media);
       FileInfo fileInfo = mr.getMediaPanel().getFileInfo();
       // If GetFileInfoWorker is not done, we get file info in this thread
-      if(fileInfo == null) {
+      if (fileInfo == null) {
         fileInfo = new FileInfo(mr.getFile().getFile());
       }
       info.setMediaTag(fileInfo.getMediaTag());
@@ -80,8 +80,9 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
     @SuppressWarnings("unchecked")
     MediaPanel<MediaInfo> mediaPanel = (MediaPanel<MediaInfo>) mr.getMediaPanel();
     mediaPanel.setInfo(info);
-    
+
     mr.updateRenamedTitle();
+    mr.setRenameEnabled();
   }
 
   @Override
@@ -91,6 +92,6 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.searchMediaInfo");
+    return ("worker.searchMediaInfo");// FIXME i18n
   }
 }

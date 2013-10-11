@@ -23,6 +23,7 @@ import javax.swing.Icon;
 
 /**
  * Class UINfo
+ *
  * @author Nicolas Magré
  */
 public class UINfo implements IIconList {// TODO
@@ -43,5 +44,10 @@ public class UINfo implements IIconList {// TODO
   @Override
   public String toString() {
     return type.name();
+  }
+
+  @Override
+  public String getName() {
+    return toString();
   }
 }

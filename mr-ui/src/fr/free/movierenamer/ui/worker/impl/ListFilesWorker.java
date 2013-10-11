@@ -64,7 +64,7 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   }
 
   /**
-   * Retreive all media files in a folder and subfolder
+   * Retrieve all media files in a folder and subfolder
    *
    * @return List of UIfile
    * @throws InterruptedException
@@ -79,7 +79,7 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
     }
 
     if (!subFolder && subFolder(files)) {
-      publish(LocaleUtils.i18nExt("dialog.scanSubFolder"));
+      publish(("dialog.scanSubFolder"));// FIXME i18n
       pause();
     }
 
@@ -184,7 +184,7 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
     eventList.addAll(medias);
 
     if (eventList.isEmpty()) {
-      WebOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("warning.noMediaFound"), LocaleUtils.i18nExt("warning"), WebOptionPane.WARNING_MESSAGE);
+      WebOptionPane.showMessageDialog(mr, ("warning.noMediaFound"), ("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n + tooltip
       return;
     }
 
@@ -222,8 +222,8 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
 
   @Override
   public final void process(List<String> v) {
-    int res = WebOptionPane.showConfirmDialog(mr, v.get(0), LocaleUtils.i18nExt("dialog.question"), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
-    if(res == WebOptionPane.YES_OPTION) {
+    int res = WebOptionPane.showConfirmDialog(mr, v.get(0), ("dialog.question"), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);// FIXME i18n
+    if (res == WebOptionPane.YES_OPTION) {
       subFolder = true;
     }
     resume();
@@ -236,6 +236,6 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.listFile");
+    return ("worker.listFile");// FIXME i18n
   }
 }

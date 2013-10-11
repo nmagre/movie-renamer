@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.trailer;
+package fr.free.movierenamer.trailerinfo;
 
 import fr.free.movierenamer.settings.Settings;
 import java.lang.reflect.Modifier;

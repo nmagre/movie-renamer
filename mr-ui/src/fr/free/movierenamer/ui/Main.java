@@ -19,13 +19,12 @@ package fr.free.movierenamer.ui;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
+import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.swing.SwingUtilities;
 
 /**
@@ -52,14 +51,19 @@ public class Main {
       files.add(new File(arg));
     }
 
+    // Install look and feel
+    WebLookAndFeel.install();
+
     // Set locale
     Locale.setDefault(setting.coreInstance.getAppLanguage().getLocale());
 
     // Set UI locale file
-    LocaleUtils.localBundleExt = ResourceBundle.getBundle("fr/free/movierenamer/ui/i18n/Bundle");
-
-    // Install look and feel
-    WebLookAndFeel.install();
+    File languageFile = new File(UISettings.appFolder, UISettings.languageFile);
+    if (languageFile.exists()) {
+      LanguageManager.addDictionary(languageFile);
+    } else {
+      LanguageManager.addDictionary(Main.class, "i18n/" + UISettings.languageFile);
+    }
 
     // Set look and feel locale
     String lcode = "en";
@@ -71,6 +75,8 @@ public class Main {
       }
     }
     LanguageManager.setLanguage(lcode);
+
+    TooltipManager.setDefaultDelay(1000);
 
 //    new Thread(new Runnable() {
 //      @Override

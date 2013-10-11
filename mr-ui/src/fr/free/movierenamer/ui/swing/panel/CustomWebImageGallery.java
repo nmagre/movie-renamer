@@ -21,7 +21,6 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.utils.ImageUtils;
 import com.alee.utils.LafUtils;
 import com.alee.utils.SwingUtils;
-import com.alee.utils.swing.Timer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.swing.SpinningDial;
 import java.awt.AlphaComposite;
@@ -53,6 +52,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  * User: mgarin Date: 05.09.11 Time: 15:45
@@ -240,7 +240,7 @@ public class CustomWebImageGallery extends JComponent {
     }
 
     progress = 0f;
-    reflectionMover = new Timer("CustomWebImageGallery.reflectionMoveTimer", StyleConstants.fastAnimationDelay, new ActionListener() {
+    reflectionMover = new Timer(StyleConstants.fastAnimationDelay, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (progress < 1f) {

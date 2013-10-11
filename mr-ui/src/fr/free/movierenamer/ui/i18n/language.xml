@@ -1,0 +1,231 @@
+<!--
+  Internalization file
+
+   Rules :
+     - Case sensitivity MUST be preserved
+     - %s mean that it will be replace by one or more words by the software. You must keep it.
+       Same thing for \n
+
+    Movie Renamer is able to read this file outside of jar file.
+    If you want to try your translation copie this file (with your translation) in your HOMe folder (user folder)
+    in Movie Renamer folder (".Movie_Renamer" for Unix/Mac Os , "Movie_Renamer" for windows)
+
+    Ex :
+
+      /home/My_User/.Movie_Renamer/language.xml
+
+      Or
+
+      C:\User\My_User\Movie_Renamer/language.xml
+
+-->
+<Dictionary name="Movie Renamer UI language" prefix="mrui">
+
+  <record key="cancel">
+    <value lang="en">Cancel</value>
+    <value lang="fr">Annuler</value>
+  </record>
+
+  <record key="loading">
+    <value lang="en">Loading</value>
+    <value lang="fr">Chargement</value>
+  </record>
+
+  <Dictionary name="Right click menu" prefix="rmenu">
+
+    <record key="cut">
+      <value lang="en">Cut</value>
+      <value lang="fr">Couper</value>
+    </record>
+
+    <record key="copy">
+      <value lang="en">Copy</value>
+      <value lang="fr">Copier</value>
+    </record>
+
+    <record key="paste">
+      <value lang="en">Paste</value>
+      <value lang="fr">Coller</value>
+    </record>
+
+    <record key="selectAll">
+      <value lang="en">Select all</value>
+      <value lang="fr">Tout sélectionner</value>
+    </record>
+  </Dictionary><!-- END rmenu -->
+
+  <Dictionary name="Movie Renamer Main Frame" prefix="main">
+
+    <record key="title">
+      <value lang="en">%s-%s</value>
+      <value lang="fr">%s-%s</value>
+    </record>
+
+    <record key="image">
+      <value lang="en">Image</value>
+      <value lang="fr">Image</value>
+    </record>
+
+    <record key="clickToCancel">
+      <value lang="en">Click to cancel</value>
+      <value lang="fr">Cliquer pour annuler</value>
+    </record>
+
+    <Dictionary name="Top toolbar" prefix="toptb">
+      <record key="open">
+        <value lang="en">Open</value>
+        <value lang="fr">Ouvrir</value>
+      </record>
+
+      <record key="movieMode">
+        <value lang="en">Mode movie</value>
+        <value lang="fr">Mode film</value>
+      </record>
+
+      <record key="tvshowMode">
+        <value lang="en">Mode tvshow</value>
+        <value lang="fr">Mode série</value>
+      </record>
+
+      <record key="update">
+        <value lang="en">Update</value>
+        <value lang="fr">Mise à jour</value>
+      </record>
+
+      <record key="settings">
+        <value lang="en">Settings</value>
+        <value lang="fr">Options</value>
+      </record>
+
+      <record key="quit">
+        <value lang="en">Quit</value>
+        <value lang="fr">Quitter</value>
+      </record>
+
+      <record key="logs">
+        <value lang="en">Logs</value>
+        <value lang="fr">Logs</value>
+      </record>
+
+      <record key="movieMode">
+        <value lang="en">Movie Mode</value>
+        <value lang="fr">Mode Film</value>
+      </record>
+
+      <record key="tvshowMode">
+        <value lang="en">TvShow Mode</value>
+        <value lang="fr">Mode Série</value>
+      </record>
+    </Dictionary><!-- END toptb -->
+
+    <Dictionary name="Media File List Toolbar" prefix="mediatb">
+      <record key="media">
+        <value lang="en">Media</value>
+        <value lang="fr">Média</value>
+      </record>
+
+      <record key="clear">
+        <value lang="en">Clear</value>
+        <value lang="fr">Effacer</value>
+      </record>
+
+      <Dictionary name="Settings popup" prefix="settingspopup">
+        <record key="group">
+          <value lang="en">Group</value>
+          <value lang="fr">Grouper</value>
+        </record>
+
+      </Dictionary><!-- END settingspopup -->
+
+    </Dictionary><!-- END mediatb -->
+
+    <Dictionary name="Search Toolbar" prefix="searchtb">
+      <record key="search">
+        <value lang="en">Search</value>
+        <value lang="fr">Recherche</value>
+      </record>
+
+    </Dictionary><!-- END searchtb -->
+
+    <Dictionary name="Rename Toolbar" prefix="renametb">
+
+      <record key="rename">
+        <value lang="en">Rename</value>
+        <value lang="fr">Renommer</value>
+      </record>
+
+      <Dictionary name="Settings popup" prefix="settingspopup">
+        <record key="thumb">
+          <value lang="en">Thumbnail</value>
+          <value lang="fr">Jaquette</value>
+        </record>
+
+        <record key="fanart">
+          <value lang="en">Fanart</value>
+          <value lang="fr">Fanart</value>
+        </record>
+
+        <record key="nfo">
+          <value lang="en">NFO</value>
+          <value lang="fr">NFO</value>
+        </record>
+
+      </Dictionary><!-- END settingspopup -->
+
+    </Dictionary><!-- END renametb -->
+
+  </Dictionary><!-- END main -->
+
+  <Dictionary name="Dialog (question/information)" prefix="dialog">
+    <record key="question">
+      <value lang="en">Question</value>
+      <value lang="fr">Question</value>
+    </record>
+
+    <record key="information">
+      <value lang="en">Information</value>
+      <value lang="fr">Information</value>
+    </record>
+
+    <record key="wantrestart">
+      <value lang="en">Some processes are running.\n\nAre you sure you want to quit %s ?</value>
+      <value lang="fr">Des processus sont en cours d'exécution.\n\nEtes-vous sûr de vouloir quitter %s ?</value>
+    </record>
+  </Dictionary><!-- END dialog -->
+
+  <Dictionary name="Movie Renamer Error" prefix="error">
+    <record key="error">
+      <value lang="en">Error</value>
+      <value lang="fr">Erreur</value>
+    </record>
+
+    <record key="failSaveFolderPath">
+      <value lang="en">Unable to save folder path.</value>
+      <value lang="fr">Impossible de sauvegarder le chemin du dossier.</value>
+    </record>
+
+    <record key="unknown">
+      <value lang="en">Unknown Error: %s\n\n %s</value>
+      <value lang="fr">Erreur inconnue: %s\n\n %s</value>
+    </record>
+
+    <Dictionary name="Network Error" prefix="network">
+      <record key="connection">
+        <value lang="en">Unable to contact server.\nPlease check your network settings.</value>
+        <value lang="fr">Impossible de contecter le serveur.\nS'il vous plaît vérifier vos paramètres réseau.</value>
+      </record>
+
+      <record key="timeout">
+        <value lang="en">Connection timed out.\nYou can increase timeout in settings/network.</value>
+        <value lang="fr">Délai de connexion dépassé.\nVous pouvez augmenter timeout dans Paramètres/Connexions réseau.</value>
+      </record>
+
+      <record key="unavailable">
+        <value lang="en">Service unavailable.\nWait a few moments and then retry.</value>
+        <value lang="fr">Service non disponible.\nAttendez quelques instants, puis réessayez.</value>
+      </record>
+
+    </Dictionary><!-- END network -->
+
+  </Dictionary><!-- END error -->
+</Dictionary><!-- END mrui -->

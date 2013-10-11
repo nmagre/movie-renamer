@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import javax.swing.Icon;
 
 /**
@@ -29,7 +29,7 @@ import javax.swing.Icon;
 public class UILoader implements IIconList {
 
   private final Icon icon = ImageUtils.LOAD_24;
-  private final String loading = LocaleUtils.i18nExt("loading");
+  private final String loading = UIUtils.i18n.getLanguage("loading", false);
 
   @Override
   public Icon getIcon() {
@@ -39,5 +39,10 @@ public class UILoader implements IIconList {
   @Override
   public String toString() {
     return loading;
+  }
+
+  @Override
+  public String getName() {
+    return "loading";
   }
 }

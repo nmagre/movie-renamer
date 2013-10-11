@@ -62,6 +62,6 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.gallery");
+    return ("worker.gallery");// FIXME i18n
   }
 }

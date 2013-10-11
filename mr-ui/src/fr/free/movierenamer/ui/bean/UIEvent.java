@@ -46,7 +46,9 @@ public final class UIEvent {
     WORKER_STARTED,
     WORKER_RUNNING,
     SETTINGS,
-    EDIT
+    EDIT,
+    RENAME_FILE,
+    RENAME_FILE_DONE
   }
 
   public static void addEventListener(Class<? extends IEventListener> clazz, IEventListener listener) {

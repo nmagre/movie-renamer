@@ -296,7 +296,7 @@ public abstract class PanelGenerator extends WebPanel {
     toolbar.setFloatable(false);
     toolbar.setRollover(true);
 
-    WebLabel label = new WebLabel(i18n ? LocaleUtils.i18nExt(title.toLowerCase()) : title);
+    WebLabel label = new WebLabel(i18n ? title.toLowerCase() : title);// FIXME i18n
     label.setFont(new Font(textFont, Font.BOLD, subTitleSize));
     toolbar.add(label);
 
@@ -309,10 +309,10 @@ public abstract class PanelGenerator extends WebPanel {
       button.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent ae) {
-          WebOptionPane.showMessageDialog(PanelGenerator.this, i18n ? LocaleUtils.i18nExt(helpText.toLowerCase()) : helpText, LocaleUtils.i18nExt("help"), WebOptionPane.PLAIN_MESSAGE);
+          WebOptionPane.showMessageDialog(PanelGenerator.this, i18n ? helpText.toLowerCase() : helpText, "help", WebOptionPane.PLAIN_MESSAGE);// FIXME i18n
         }
       });
-      TooltipManager.setTooltip(button, LocaleUtils.i18nExt("help"), TooltipWay.down);
+      TooltipManager.setTooltip(button, "help", TooltipWay.down);// FIXME i18n
       toolbar.addToEnd(button);
     }
 
@@ -356,20 +356,20 @@ public abstract class PanelGenerator extends WebPanel {
 
     switch (settingComponent) {
       case BUTTON:
-        component = new WebButton(LocaleUtils.i18nExt(title));
+        component = new WebButton((title));// FIXME i18n
         break;
       case CHECKBOX:
-        component = new WebCheckBox(LocaleUtils.i18nExt(title));
+        component = new WebCheckBox((title));// FIXME i18n
         break;
       case FIELD:
         component = new WebTextField();
         typeface = Font.PLAIN;
         break;
       case TOOLBAR:
-        component = new WebToolBar(LocaleUtils.i18nExt(title));
+        component = new WebToolBar((title));// FIXME i18n
         break;
       case LABEL:
-        component = new WebLabel(LocaleUtils.i18nExt(title));
+        component = new WebLabel((title));// FIXME i18n
         break;
       default:
         break;
@@ -380,7 +380,7 @@ public abstract class PanelGenerator extends WebPanel {
     }
 
     if (tooltip != null) {
-      TooltipManager.setTooltip(component, LocaleUtils.i18nExt(tooltip), TooltipWay.down);
+      TooltipManager.setTooltip(component, (tooltip), TooltipWay.down);// FIXME i18n
     }
     component.setFont(new Font(textFont, typeface, textSize));
     return component;

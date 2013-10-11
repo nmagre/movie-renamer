@@ -29,13 +29,14 @@ import java.util.regex.Pattern;
 
 import fr.free.movierenamer.utils.NumberUtils;
 
-
 /**
  * Class TvShowEpisodeNumMatcher
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public class TvShowEpisodeNumMatcher {
+
   public static final Pattern seasonPattern = Pattern.compile("(?:(?:season)|(?:saison)|(?:s))\\W?([0-9]{1,2})");
   public static final Pattern episodePattern = Pattern.compile("(?:(?:(?:[eé]p)|(?:[eé]pisode)) ([0-9]{1,2}))|(?:(?:^| )([0-9]{1,2})[ -_])");
 
@@ -63,7 +64,7 @@ public class TvShowEpisodeNumMatcher {
 
   public TvShowEpisodeNumMatcher(File episodeFile) {
     this.episodeName = normalize(episodeFile.getName());
-    this.parentFolder = (episodeFile.getParent()!=null)?episodeFile.getParent().toLowerCase():null;
+    this.parentFolder = (episodeFile.getParent() != null) ? episodeFile.getParent().toLowerCase() : null;
     String episodeName = episodeFile.getParent() + File.separator + episodeFile.getName();
     if (episodeName.contains(File.separator)) {
       parentFolder = episodeName.substring(0, episodeName.lastIndexOf(File.separator)).toLowerCase();
@@ -94,7 +95,7 @@ public class TvShowEpisodeNumMatcher {
     for (TvShowEpisodeNumMatcher.TvShowNumPattern patternToTest : TvShowEpisodeNumMatcher.TvShowNumPattern.values()) {
       if ((sxe = match(patternToTest)) != null) {
         SxEs.add(sxe);
-       // System.out.println("  Matcher " + patternToTest.name() + " Match : " + sxe);
+        // System.out.println("  Matcher " + patternToTest.name() + " Match : " + sxe);
       }
     }
 
@@ -113,14 +114,15 @@ public class TvShowEpisodeNumMatcher {
         sxe.setEpisode(NumberUtils.isDigit(episode) ? Integer.parseInt(episode) : 1);
       }
 
-      if(!sxe.isValid()){
-        return new SxE(1,1);
+      if (!sxe.isValid()) {
+        return new SxE(1, 1);
       }
 
       if (sxe.isPartial()) {
         if (sxe.getSeason() < 0) {
           sxe.setSeason(1);
         }
+
         if (sxe.getEpisode() < 0) {
           sxe.setEpisode(1);
         }
@@ -292,5 +294,4 @@ public class TvShowEpisodeNumMatcher {
     str = str.replaceAll("\\s+", " ");// Remove duplicate space character
     return str.toLowerCase();
   }
-
 }

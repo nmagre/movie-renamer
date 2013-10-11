@@ -126,7 +126,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
     searchResultModel.addAll(results);
 
     if (searchResultModel.isEmpty()) {
-      JOptionPane.showMessageDialog(mr, LocaleUtils.i18nExt("noResult"), LocaleUtils.i18nExt("warning"), JOptionPane.ERROR_MESSAGE);// FIXME web dialog + i18n
+      JOptionPane.showMessageDialog(mr, ("noResult"), ("warning"), JOptionPane.ERROR_MESSAGE);// FIXME tooltip + i18n
     } else {
       if (UISettings.getInstance().isSelectFirstResult()) {
         searchResultList.setSelectedIndex(0);
@@ -147,6 +147,6 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.searchMedia");
+    return ("worker.searchMedia");// FIXME i18n
   }
 }

@@ -37,7 +37,14 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 
 import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class FileUtils
@@ -139,8 +146,7 @@ public final class FileUtils {
    * Check if file have a good extension
    *
    * @param file
-   * @param extensions
-   * Array of extensions
+   * @param extensions Array of extensions
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(File file, String[] extensions) {
@@ -153,10 +159,8 @@ public final class FileUtils {
   /**
    * Check if file have a good extension
    *
-   * @param fileName
-   * File to check extension
-   * @param extensions
-   * Array of extensions
+   * @param fileName File to check extension
+   * @param extensions Array of extensions
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(String fileName, String[] extensions) {
@@ -180,8 +184,7 @@ public final class FileUtils {
   /**
    * Check if dir is a root directory
    *
-   * @param dir
-   * Directory
+   * @param dir Directory
    * @return True if it is a directory
    */
   public static boolean isRootDir(File dir) {
@@ -223,15 +226,11 @@ public final class FileUtils {
       if (destFile.toURI().getScheme().equals("file")) {
         if (currentFile.renameTo(destFile)) {
           return destFile;
-        } else {
-          return currentFile;
         }
-      } else {
-        return currentFile;
       }
     } catch (Exception ex) {
-      return currentFile;
     }
+    return currentFile;
   }
 
   public static String getFileChecksum(File file) {

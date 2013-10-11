@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -29,13 +29,12 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.text.JTextComponent;
 
-
 /**
  * Class ContextMenuFieldMouseListener
  *
  * @author Nicolas Magré
  */
-public class ContextMenuFieldMouseListener extends MouseAdapter {
+public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
 
   private JPopupMenu popup = new JPopupMenu();
   private Action cut;
@@ -51,8 +50,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   public ContextMenuFieldMouseListener() {
 
-    cut = new AbstractAction(LocaleUtils.i18nExt("popup.cut")) {
-
+    cut = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.cut", false)) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -61,8 +59,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    copy = new AbstractAction(LocaleUtils.i18nExt("popup.copy")) {
-
+    copy = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.copy", false)) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -71,8 +68,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    paste = new AbstractAction(LocaleUtils.i18nExt("popup.paste")) {
-
+    paste = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.paste", false)) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -81,8 +77,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       }
     };
 
-    selectAll = new AbstractAction(LocaleUtils.i18nExt("popup.selectAll")) {
-
+    selectAll = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.selectAll", false)) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -127,5 +122,4 @@ public class ContextMenuFieldMouseListener extends MouseAdapter {
       popup.show(e.getComponent(), x, y);
     }
   }
-
 }

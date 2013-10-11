@@ -28,19 +28,20 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFileInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
+import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaWorker;
 import java.awt.Dimension;
 import java.io.File;
-import java.lang.reflect.ParameterizedType;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +60,11 @@ public final class WorkerManager {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   *
+   * @param mr
+   * @param file
+   */
   public static void getFileInfo(MovieRenamer mr, UIFile file) {
     GetFileInfoWorker getFileInfoWorker = new GetFileInfoWorker(mr, file);
     start(getFileInfoWorker);
@@ -105,6 +111,18 @@ public final class WorkerManager {
     return GalleryWorker;
   }
 
+  public static void rename(File source, String RenamedTitle) {
+    RenamerWorker renameworker = new RenamerWorker(source, RenamedTitle);
+    if (!UISettings.getInstance().isMoveFileOneByOne()) {
+      start(renameworker, false, UIEvent.Event.RENAME_FILE);
+    } else {
+      UIEvent.fireUIEvent(UIEvent.Event.RENAME_FILE, renameworker);
+    }
+  }
+
+  /**
+   * Update worker queue
+   */
   public static void updateWorkerQueue() {
     synchronized (workerQueue) {
       boolean isEmpty = workerQueue.isEmpty();
@@ -127,14 +145,33 @@ public final class WorkerManager {
     }
   }
 
+  /**
+   * Start worker
+   *
+   * @param worker Worker to start
+   */
   private static void start(AbstractWorker<?, ?> worker) {
+    start(worker, true, UIEvent.Event.WORKER_STARTED);
+  }
+
+  /**
+   * Start worker
+   *
+   * @param worker Worker to start
+   */
+  private static void start(AbstractWorker<?, ?> worker, boolean addQueue, UIEvent.Event event) {
     synchronized (workerQueue) {
-      workerQueue.add(worker);
-      UIEvent.fireUIEvent(UIEvent.Event.WORKER_STARTED, worker);
+      if (addQueue) {
+        workerQueue.add(worker);
+      }
+      UIEvent.fireUIEvent(event, worker);
     }
     worker.execute();
   }
 
+  /**
+   * Stop all running worker
+   */
   public static void stop() {
     synchronized (workerQueue) {
       boolean isEmpty = workerQueue.isEmpty();
@@ -152,6 +189,11 @@ public final class WorkerManager {
     }
   }
 
+  /**
+   * Stop running worker
+   *
+   * @param worker Worker to stop
+   */
   public static void stop(AbstractImageWorker<?> worker) {
     synchronized (workerQueue) {
       Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
@@ -167,6 +209,13 @@ public final class WorkerManager {
     updateWorkerQueue();
   }
 
+  /**
+   * Stop all running workers except worker with class "clazz" and generic super
+   * class "genSuperClazz"
+   *
+   * @param clazz Worker class to keep running
+   * @param genSuperClazz Generic super class (object class)
+   */
   public static void stopExcept(Class clazz, Class genSuperClazz) {
     synchronized (workerQueue) {
       Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();

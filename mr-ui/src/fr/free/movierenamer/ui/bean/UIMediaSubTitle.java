@@ -18,11 +18,12 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.mediainfo.MediaSubTitle;
-import fr.free.movierenamer.ui.res.Flag;
+import fr.free.movierenamer.ui.utils.FlagUtils;
 import javax.swing.Icon;
 
 /**
  * Class UIMediaSubTitle
+ *
  * @author Nicolas Magré
  */
 public class UIMediaSubTitle implements IIconList {
@@ -36,8 +37,8 @@ public class UIMediaSubTitle implements IIconList {
 
   @Override
   public Icon getIcon() {
-    if(image == null) {
-      image = Flag.getFlag(msubtitle.getLanguage().getLanguage());
+    if (image == null) {
+      image = FlagUtils.getFlag(msubtitle.getLanguage().getLanguage());
     }
     return image.getIcon();
   }
@@ -47,4 +48,8 @@ public class UIMediaSubTitle implements IIconList {
     return msubtitle.getTitle();
   }
 
+  @Override
+  public String getName() {
+    return toString();
+  }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.free.movierenamer.trailer;
+package fr.free.movierenamer.trailerinfo;
 
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;

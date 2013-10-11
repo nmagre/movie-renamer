@@ -47,7 +47,7 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
   @Override
   public final void process(List<AbstractImageWorker<T>.ImageChunk> chunks) {
-    if(model == null) {
+    if (model == null) {
       return;
     }
 
@@ -55,9 +55,9 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
       Icon icon = chunk.getIcon();
       int id = chunk.getId();
-      
+
       T obj = model.getElementById(id);
-      if(obj != null) {
+      if (obj != null) {
         obj.setIcon(icon);
         model.setElement(obj);
       }
@@ -71,6 +71,6 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.image");
+    return ("worker.image");// FIXME i18n
   }
 }

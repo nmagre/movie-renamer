@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.renamer;
 
+import fr.free.movierenamer.utils.FileUtils;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.UNICODE_CASE;
 import static java.util.regex.Pattern.compile;
@@ -36,12 +37,12 @@ import java.util.regex.Pattern;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Class NameCleaner
  *
  * @author Simon QUÉMÉNEUR
+ * @author Nicolas Magré
  */
 public class NameCleaner {
 
@@ -85,9 +86,11 @@ public class NameCleaner {
         stoplist = new Pattern[]{
           languageTag, videoSource, videoFormat, resolution, languageSuffix, extensions
         };
+
         cleanlist = new Pattern[]{
           extensions, bracket, releaseGroup, languageTag, videoSource, videoFormat, resolution, languageSuffix, blacklist, customBlacklist
         };
+
         mstoplist.put(strict, stoplist);
         mcleanlist.put(strict, cleanlist);
       }
@@ -103,9 +106,11 @@ public class NameCleaner {
     if (year != null && output.length() > 7 && year > 0) {
       // ensure the output contains something else ;)
       int index = output.lastIndexOf(Integer.toString(year));
-      if(index != -1 && index < output.length())
+      if (index != -1 && index < output.length()) {
         output = output.substring(0, index);
-      else output = StringUtils.replaceLast(output, Integer.toString(year), "");
+      } else {
+        output = StringUtils.replaceLast(output, Integer.toString(year), "");
+      }
     }
     //reclean to be sure ;)
     output = clean(output, cleanlist);
@@ -116,6 +121,11 @@ public class NameCleaner {
   public static Integer extractYear(String item) {
     Matcher matcher = yearPattern.matcher(item);
     Integer year = null;
+
+    if (FileUtils.getNameWithoutExtension(item).trim().length() <= 4) {
+      return year;
+    }
+
     while (matcher.find()) {
       // assuming year is the last ;)
       String syear = matcher.group(1);

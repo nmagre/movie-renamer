@@ -23,13 +23,14 @@ import org.junit.Test;
 
 /**
  * Class NameCleanerTest
+ *
  * @author Simon QUÉMÉNEUR
  */
 public class NameCleanerTest {
 
   @Test
   public void extractYear() {
-    Assert.assertEquals(Integer.valueOf(2012), NameCleaner.extractYear("2012.avi"));// It should return "null", because there is no year
+    Assert.assertEquals(null, NameCleaner.extractYear("2012.avi"));// It should return "null", because there is no year
     Assert.assertEquals(Integer.valueOf(2009), NameCleaner.extractYear("2012 (2009).avi"));
     Assert.assertEquals(Integer.valueOf(2009), NameCleaner.extractYear("12 Rounds 2009.avi"));
     Assert.assertEquals(Integer.valueOf(2009), NameCleaner.extractYear("12 Rounds (2009).avi"));

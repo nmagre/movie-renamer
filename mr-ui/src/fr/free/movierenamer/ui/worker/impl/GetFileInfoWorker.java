@@ -58,6 +58,6 @@ public class GetFileInfoWorker extends Worker<FileInfo> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.fileinfo");
+    return ("worker.fileinfo");// FIXME i18n
   }
 }

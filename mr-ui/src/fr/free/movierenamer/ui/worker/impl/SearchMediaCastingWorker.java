@@ -95,6 +95,6 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.searchCasting");
+    return ("worker.searchCasting");// FIXME i18n
   }
 }

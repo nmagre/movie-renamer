@@ -62,7 +62,7 @@
               <Component id="webLabel3" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="logoLbl" min="-2" pref="87" max="-2" attributes="0"/>
-              <EmptySpace pref="26" max="32767" attributes="0"/>
+              <EmptySpace pref="48" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -82,13 +82,13 @@
       <SubComponents>
         <Component class="com.alee.laf.label.WebLabel" name="imageLbl">
           <Properties>
-            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="image" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-            </Property>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Ubuntu" size="13" style="1"/>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="imageLbl.setLanguage(UIUtils.i18n.getLanguageKey(&quot;image&quot;));"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import javax.swing.ImageIcon;
 
@@ -30,9 +31,8 @@ import javax.swing.ImageIcon;
  */
 public enum UIMode {
 
-  MOVIEMODE(LocaleUtils.i18nExt("movie"), LocaleUtils.i18nExt("movieMode"), FileInfo.MediaType.MOVIE, "ui/24/movie.png"),// FIXME i18n
-  TVSHOWMODE(LocaleUtils.i18nExt("tvshow"), LocaleUtils.i18nExt("tvshowMode"), FileInfo.MediaType.TVSHOW, "ui/24/tv.png");
-
+  MOVIEMODE(UIUtils.i18n.getLanguageKey("movieMode"), "movieMode", FileInfo.MediaType.MOVIE, "ui/24/movie.png"),// FIXME i18n
+  TVSHOWMODE(UIUtils.i18n.getLanguageKey("tvshowMode"), "tvshowMode", FileInfo.MediaType.TVSHOW, "ui/24/tv.png");
   private FileInfo.MediaType mediaType;
   private String title;
   private String titleMode;
@@ -49,7 +49,7 @@ public enum UIMode {
     return title;
   }
 
-  public String getTitleMode(){
+  public String getTitleMode() {
     return titleMode;
   }
 

@@ -18,12 +18,14 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
  * Class UIEnum
+ *
  * @author Nicolas Magré
  */
 public class UIEnum implements IIconList {
@@ -51,6 +53,11 @@ public class UIEnum implements IIconList {
 
   @Override
   public String toString() {
-    return LocaleUtils.i18nExt("settings." + enumValue.name().toLowerCase());
+    return UIUtils.i18n.getLanguage("settings." + enumValue.name().toLowerCase(), false);
+  }
+
+  @Override
+  public String getName() {
+    return enumValue.name();
   }
 }

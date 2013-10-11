@@ -1,46 +1,33 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Component class="com.alee.laf.button.WebButton" name="updateBtn">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="ImageUtils.UPDATE_24" type="code"/>
-        </Property>
-        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
-      </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateBtnActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.update&quot;), ImageUtils.UPDATE_24, ImageUtils.UPDATE_16)"/>
+      </AuxValues>
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="settingBtn">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="ImageUtils.SETTING_24" type="code"/>
-        </Property>
-        <Property name="horizontalTextPosition" type="int" value="0"/>
-        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
-        <Property name="verticalTextPosition" type="int" value="3"/>
-      </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="settingBtnActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.settings&quot;), ImageUtils.SETTING_24, ImageUtils.SETTING_16, MovieRenamer.this, Hotkey.CTRL_S)"/>
+      </AuxValues>
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="exitBtn">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="ImageUtils.APPLICATIONEXIT_24" type="code"/>
-        </Property>
-        <Property name="horizontalTextPosition" type="int" value="0"/>
-        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
         <Property name="verticalTextPosition" type="int" value="3"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitBtnActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.quit&quot;), ImageUtils.APPLICATIONEXIT_24, ImageUtils.APPLICATIONEXIT_16, MovieRenamer.this, Hotkey.CTRL_Q)"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JTextField" name="renameField">
       <Properties>
@@ -48,33 +35,25 @@
       </Properties>
     </Component>
     <Component class="com.alee.laf.checkbox.WebCheckBox" name="thumbChk">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="thumb" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="thumbChk.setLanguage(i18n.getLanguageKey(&quot;renametb.settingspopup.thumb&quot;));"/>
+      </AuxValues>
     </Component>
     <Component class="com.alee.laf.checkbox.WebCheckBox" name="fanartChk">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="fanart" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="fanartChk.setLanguage(i18n.getLanguageKey(&quot;renametb.settingspopup.fanart&quot;));"/>
+      </AuxValues>
     </Component>
     <Component class="com.alee.laf.checkbox.WebCheckBox" name="nfoChk">
-      <Properties>
-        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="xbmcNfo" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="nfoChk.setLanguage(i18n.getLanguageKey(&quot;renametb.settingspopup.nfo&quot;));// FIXME XBMC, ..."/>
+      </AuxValues>
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="toggleGroup">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="ImageUtils.FILEVIEW_16" type="code"/>
         </Property>
-        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
       </Properties>
     </Component>
     <Component class="com.alee.laf.text.WebTextField" name="fileFormatField">
@@ -92,30 +71,26 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="ImageUtils.INFO_24" type="code"/>
         </Property>
-        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logsBtnActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.logs&quot;), ImageUtils.INFO_24, ImageUtils.INFO_16)"/>
+      </AuxValues>
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="clearMediaFileListBtn">
       <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/image/ui/16/media_playlist_clear.png"/>
-        </Property>
         <Property name="alignmentY" type="float" value="0.0"/>
         <Property name="enabled" type="boolean" value="false"/>
         <Property name="focusPainted" type="boolean" value="true"/>
-        <Property name="innerShadeWidth" type="int" value="0"/>
-        <Property name="leftRightSpacing" type="int" value="1"/>
-        <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-        <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
-        <Property name="round" type="int" value="2"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearMediaFileListBtnActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;mediatb.clear&quot;), ImageUtils.CLEAR_LIST_16)"/>
+      </AuxValues>
     </Component>
   </NonVisualComponents>
   <Properties>
@@ -126,6 +101,7 @@
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -169,90 +145,32 @@
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
           <SubComponents>
             <Component class="com.alee.laf.button.WebButton" name="openBtn">
-              <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="ImageUtils.FOLDERVIDEO_24" type="code"/>
-                </Property>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-                <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
-                <Property name="rolloverShadeOnly" type="boolean" value="true"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openBtnActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(&quot;toptb.open&quot;, ImageUtils.FOLDERVIDEO_24, ImageUtils.FOLDERVIDEO_16, MovieRenamer.this, Hotkey.CTRL_O)"/>
+              </AuxValues>
             </Component>
-            <Component class="com.alee.laf.separator.WebSeparator" name="openSep">
-              <Properties>
-                <Property name="focusable" type="boolean" value="true"/>
-              </Properties>
+            <Component class="javax.swing.JToolBar$Separator" name="openSep">
             </Component>
             <Component class="com.alee.laf.button.WebButton" name="movieModeBtn">
-              <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="ImageUtils.MOVIE_24" type="code"/>
-                </Property>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-                <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="movieModeBtnActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(&quot;toptb.movieMode&quot;, ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, MovieRenamer.this, Hotkey.CTRL_F)"/>
+              </AuxValues>
             </Component>
             <Component class="com.alee.laf.button.WebButton" name="tvShowModeBtn">
-              <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="ImageUtils.TV_24" type="code"/>
-                </Property>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
-                <Property name="rolloverDarkBorderOnly" type="boolean" value="true"/>
-                <Property name="rolloverDecoratedOnly" type="boolean" value="true"/>
-                <Property name="verticalTextPosition" type="int" value="3"/>
-              </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tvShowModeBtnActionPerformed"/>
               </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(&quot;toptb.tvshowMode&quot;, ImageUtils.TV_24, ImageUtils.TV_16, MovieRenamer.this, Hotkey.CTRL_T)"/>
+              </AuxValues>
             </Component>
             <Component class="javax.swing.JToolBar$Separator" name="modeSep">
-            </Component>
-            <Component class="com.alee.laf.label.WebLabel" name="statusLbl">
-            </Component>
-          </SubComponents>
-        </Container>
-        <Container class="com.alee.laf.toolbar.WebToolBar" name="renameTb">
-          <Properties>
-            <Property name="floatable" type="boolean" value="false"/>
-            <Property name="rollover" type="boolean" value="true"/>
-            <Property name="round" type="int" value="10"/>
-          </Properties>
-          <Constraints>
-            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-              <BorderConstraints direction="Last"/>
-            </Constraint>
-          </Constraints>
-
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
-          <SubComponents>
-            <Component class="com.alee.laf.button.WebButton" name="renameBtn">
-              <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="ImageUtils.OK_24" type="code"/>
-                </Property>
-                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="rename" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-                </Property>
-                <Property name="enabled" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="renameBtnActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="renameTb.add(fileFormatField);&#xa;//Add rename text field&#xa;renameTb.add(renameField, ToolbarLayout.FILL);"/>
-              </AuxValues>
             </Component>
           </SubComponents>
         </Container>
@@ -289,7 +207,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="mediaFileTb" pref="140" max="32767" attributes="0"/>
+                      <Component id="mediaFileTb" max="32767" attributes="0"/>
                       <Component id="mediaFileScp" pref="140" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
@@ -298,7 +216,7 @@
                       <Group type="102" attributes="0">
                           <Component id="mediaFileTb" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="mediaFileScp" pref="680" max="32767" attributes="0"/>
+                          <Component id="mediaFileScp" pref="690" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -307,7 +225,6 @@
                 <Container class="com.alee.laf.toolbar.WebToolBar" name="mediaFileTb">
                   <Properties>
                     <Property name="floatable" type="boolean" value="false"/>
-                    <Property name="rollover" type="boolean" value="true"/>
                     <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                       <Insets value="[0, 5, 0, 5]"/>
                     </Property>
@@ -321,13 +238,13 @@
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                           <Connection code="ImageUtils.MEDIA_16" type="code"/>
                         </Property>
-                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="media" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-                        </Property>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                           <Font name="Ubuntu" size="13" style="1"/>
                         </Property>
                       </Properties>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="mediaLbl.setLanguage(i18n.getLanguageKey(&quot;mediatb.media&quot;));"/>
+                      </AuxValues>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -404,9 +321,9 @@
                               <Component id="searchTb" pref="602" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="searchField" pref="423" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="scrapperCb" min="-2" pref="143" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="searchBtn" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Component id="searchResultListSp" alignment="1" pref="602" max="32767" attributes="0"/>
@@ -416,16 +333,14 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="searchTb" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="searchField" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="scrapperCb" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                                      <Component id="searchField" min="-2" max="-2" attributes="0"/>
                                       <Component id="searchBtn" min="-2" max="-2" attributes="0"/>
+                                      <Component id="scrapperCb" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="searchResultListSp" pref="87" max="32767" attributes="0"/>
+                                  <Component id="searchResultListSp" pref="103" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -449,13 +364,13 @@
                                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                                   <Connection code="ImageUtils.SEARCH_16" type="code"/>
                                 </Property>
-                                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="fr/free/movierenamer/ui/i18n/Bundle.properties" key="search" replaceFormat="LocaleUtils.i18nExt(&quot;{key}&quot;)"/>
-                                </Property>
                                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                                   <Font name="Ubuntu" size="13" style="1"/>
                                 </Property>
                               </Properties>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="searchLbl.setLanguage(i18n.getLanguageKey(&quot;searchtb.search&quot;));"/>
+                              </AuxValues>
                             </Component>
                           </SubComponents>
                         </Container>
@@ -500,17 +415,11 @@
                             </Component>
                           </SubComponents>
                         </Container>
-                        <Component class="javax.swing.JComboBox" name="scrapperCb">
-                          <Properties>
-                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                              <StringArray count="0"/>
-                            </Property>
-                          </Properties>
+                        <Component class="com.alee.laf.combobox.WebComboBox" name="scrapperCb">
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="scrapperCbActionPerformed"/>
                           </Events>
                           <AuxValues>
-                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="(JComboBox) new WebComboBox()"/>
                             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value=""/>
                           </AuxValues>
                         </Component>
@@ -520,6 +429,70 @@
                 </Container>
               </SubComponents>
             </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Container class="com.alee.laf.panel.WebPanel" name="webPanel1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="South"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+      <SubComponents>
+        <Container class="com.alee.laf.toolbar.WebToolBar" name="renameTb">
+          <Properties>
+            <Property name="floatable" type="boolean" value="false"/>
+            <Property name="rollover" type="boolean" value="true"/>
+            <Property name="round" type="int" value="10"/>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+              <BorderConstraints direction="North"/>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+          <SubComponents>
+            <Component class="com.alee.laf.button.WebButton" name="renameBtn">
+              <Properties>
+                <Property name="enabled" type="boolean" value="false"/>
+                <Property name="focusable" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="renameBtnActionPerformed"/>
+              </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="renameTb.add(fileFormatField);&#xa;//Add rename text field&#xa;renameTb.add(renameField, ToolbarLayout.FILL);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="renameBtn.setLanguage(i18n.getLanguageKey(&quot;renametb.rename&quot;));&#xa;        &#xa;renameBtn.setIcon(ImageUtils.OK_16);"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="com.alee.extended.statusbar.WebStatusBar" name="statusBar">
+          <Properties>
+            <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+              <Insets value="[2, 10, 2, 10]"/>
+            </Property>
+          </Properties>
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+              <BorderConstraints direction="South"/>
+            </Constraint>
+          </Constraints>
+          <SubComponents>
+            <Component class="com.alee.laf.label.WebLabel" name="webLabel1">
+              <Properties>
+                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                  <Image iconType="3" name="/image/ui/16/media-warn.png"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Media info is not installed"/>
+              </Properties>
+            </Component>
+            <Component class="com.alee.laf.label.WebLabel" name="statusLbl">
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>

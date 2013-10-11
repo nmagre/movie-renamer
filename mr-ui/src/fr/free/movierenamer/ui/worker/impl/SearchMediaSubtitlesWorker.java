@@ -82,6 +82,6 @@ public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
 
   @Override
   public String getDisplayName() {
-    return LocaleUtils.i18nExt("worker.searchSubtitle");
+    return ("worker.searchSubtitle");// FIXME i18n
   }
 }

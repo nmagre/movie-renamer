@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.res;
+package fr.free.movierenamer.ui.utils;
 
 import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -30,7 +29,7 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public abstract class Flag {
+public abstract class FlagUtils {
 
   //Unknown flag
   private static final Icon Unknown = ImageUtils.getIconFromJar("country/unknown.png");

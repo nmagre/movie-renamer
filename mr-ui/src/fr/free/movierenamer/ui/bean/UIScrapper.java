@@ -70,4 +70,9 @@ public class UIScrapper implements IIconList {
   public String toString() {
     return scrapper.getName();
   }
+
+  @Override
+  public String getName() {
+    return scrapper.getClass().toString();
+  }
 }
