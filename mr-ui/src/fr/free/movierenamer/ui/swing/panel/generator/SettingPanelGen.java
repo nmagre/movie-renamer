@@ -131,7 +131,7 @@ public class SettingPanelGen extends PanelGenerator {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
           //component.setPreferredSize(comboboxDim);
-          DefaultComboBoxModel<IIconList> model = new DefaultComboBoxModel<IIconList>();
+          DefaultComboBoxModel model = new DefaultComboBoxModel();
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
@@ -173,7 +173,7 @@ public class SettingPanelGen extends PanelGenerator {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
           //component.setPreferredSize(comboboxDim);
-          DefaultComboBoxModel<UIScrapper> model = new DefaultComboBoxModel<UIScrapper>();
+          DefaultComboBoxModel model = new DefaultComboBoxModel();
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));

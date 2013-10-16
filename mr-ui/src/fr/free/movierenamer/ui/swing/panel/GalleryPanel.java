@@ -17,306 +17,249 @@
  */
 package fr.free.movierenamer.ui.swing.panel;
 
-import com.alee.laf.label.WebLabel;
-import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
-import fr.free.movierenamer.info.ImageInfo.ImageSize;
+import com.alee.laf.rootpane.WebDialog;
+import fr.free.movierenamer.info.ImageInfo;
+import static fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.SpinningDial;
+import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.panel.ImagePanel.SupportedImages;
+import fr.free.movierenamer.ui.swing.renderer.ZoomListRenderer;
+import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
-import fr.free.movierenamer.ui.worker.impl.ImageWorker;
-import fr.free.movierenamer.utils.LocaleUtils;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
-import javax.swing.JDialog;
-import javax.swing.SwingWorker;
+import javax.swing.ImageIcon;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Class GalleryPanel
  *
  * @author Nicolas Magré
  */
-public class GalleryPanel extends JDialog {
+public class GalleryPanel extends WebDialog {
 
-  private final static int LOADING_WIDTH = 32;
-  private final static int THUMB_WIDTH = 100;
-  private final static int THUMB_HEIGHT = 150;
-  private static final long serialVersionUID = 1L;
-  private final CustomWebImageGallery thumbGallery;
+  private final MovieRenamer mr;
+  private final ImageInfo.ImageCategoryProperty property;
+  private final ImageListModel<UIMediaImage> imageListModel;
+  private final ZoomListRenderer zoomListRenderer;
+  private final DefaultComboBoxModel languagesModel;
+  private boolean useLanguage;
+  private GalleryWorker gworker;
   private List<UIMediaImage> images;
   private List<UILang> languages;
-  private final DefaultComboBoxModel<UILang> languagesModel;
-  private final ImageCategoryProperty property;
-  private final MovieRenamer mr;
-  private final PropertyChangeSupport propertyChange;
-  private final SpinningDial loadingGallery;
-  private final SpinningDial loadingPreview;
-  private GalleryWorker gworker;
-  private final ItemListener languageActionPerformed;
-  private final ImageCategorySize ics;
-
-  private enum ImageCategorySize {
-
-    actor(new Dimension(THUMB_WIDTH, THUMB_HEIGHT), new Dimension(THUMB_WIDTH * 2, THUMB_HEIGHT * 2)),
-    thumb(new Dimension(THUMB_WIDTH, THUMB_HEIGHT), new Dimension(THUMB_WIDTH * 2, THUMB_HEIGHT * 2)),
-    fanart(new Dimension(THUMB_HEIGHT, THUMB_WIDTH), new Dimension(THUMB_HEIGHT * 2, THUMB_WIDTH * 2)),
-    logo(new Dimension(THUMB_HEIGHT, THUMB_WIDTH), new Dimension(THUMB_HEIGHT * 2, THUMB_WIDTH * 2)),
-    banner(new Dimension(THUMB_HEIGHT, THUMB_WIDTH), new Dimension(THUMB_HEIGHT * 2, THUMB_WIDTH * 2)),
-    cdart(new Dimension(THUMB_HEIGHT, THUMB_HEIGHT), new Dimension(THUMB_HEIGHT * 2, THUMB_HEIGHT * 2)),
-    clearart(new Dimension(THUMB_HEIGHT, THUMB_WIDTH), new Dimension(THUMB_HEIGHT * 2, THUMB_WIDTH * 2));
-    private final Dimension gallery, preview;
-    private final SpinningDial loadingGallery;
-    private final SpinningDial loadingPreview;
-
-    private ImageCategorySize(Dimension gallery, Dimension preview) {
-      this.gallery = gallery;
-      this.preview = preview;
-      this.loadingGallery = new SpinningDial(LOADING_WIDTH, gallery.height);
-      this.loadingPreview = new SpinningDial(LOADING_WIDTH, preview.height);
+  private SupportedImages supportedImage;
+  private final ItemListener languageChangeListener = new ItemListener() {
+    @Override
+    public void itemStateChanged(ItemEvent event) {
+      if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
+        Locale locale = ((UILang) languagesModel.getSelectedItem()).getLang();
+        imageListModel.clear();
+        fetchImages(getImageByLanguage((UILang) languagesModel.getSelectedItem()));
+      }
     }
+  };
 
-    /**
-     * @return the gallery
-     */
-    public Dimension getGalleryDim() {
-      return gallery;
-    }
-
-    /**
-     * @return the preview
-     */
-    public Dimension getPreviewDim() {
-      return preview;
-    }
-
-    /**
-     * @return the loadingGallery
-     */
-    public SpinningDial getLoadingGallery() {
-      return loadingGallery;
-    }
-
-    /**
-     * @return the loadingPreview
-     */
-    public SpinningDial getLoadingPreview() {
-      return loadingPreview;
-    }
-  }
-
-  /**
-   * Creates new form GalleryPanel
-   *
-   * @param mr
-   * @param property
-   */
-  public GalleryPanel(MovieRenamer mr, ImageCategoryProperty property) {
+  public GalleryPanel(MovieRenamer mr, SupportedImages supportedImage) {
     this.mr = mr;
-    this.property = property;
-
-    ics = ImageCategorySize.valueOf(ImageCategorySize.class, property.name());
-
-    loadingGallery = ics.getLoadingGallery();
-    loadingPreview = ics.getLoadingPreview();
+    this.supportedImage = supportedImage;
+    this.property = supportedImage.getCategoryProperty();
+    float defaultRatio = supportedImage.getRatio();
+    useLanguage = true;
+    imageListModel = new ImageListModel<UIMediaImage>();
+    languagesModel = new DefaultComboBoxModel();
+    images = new ArrayList<UIMediaImage>();
+    languages = new ArrayList<UILang>();
 
     initComponents();
 
-    propertyChange = new PropertyChangeSupport(previewLbl);
-    languages = new ArrayList<UILang>();
-    languagesModel = new DefaultComboBoxModel<UILang>();
+    int imgSize;
+    switch (property) {
+      case banner:
+        imgSize = 300;
+        break;
+      case cdart:
+        imgSize = 80;
+        break;
+      case clearart:
+        imgSize = 200;
+        useLanguage = false;
+        break;
+      case logo:
+        imgSize = 250;
+        break;
+      case thumb:
+        imgSize = 70;
+        break;
+      case fanart:
+        imgSize = 200;
+        useLanguage = false;
+        break;
+      default:
+        imgSize = 70;
+        defaultRatio = 0.75F;
+    }
+
+    zoomListRenderer = new ZoomListRenderer(imgSize, defaultRatio);
+
+    languageCbb.setVisible(useLanguage);
     languageCbb.setModel(languagesModel);
     languageCbb.setRenderer(UIUtils.iconListRenderer);
 
-    boolean useLanguage = false;
-    switch (property) {
-      case thumb:
-      case banner:
-      case cdart:
-      case logo:
-        useLanguage = true;
-        break;
-      case actor:
-      case clearart:
-      case fanart:
-      case unknown:
-        useLanguage = false;
-        break;
-    }
-    previewLbl.setPreferredSize(ics.getPreviewDim());
+    imageList.setCellRenderer(zoomListRenderer);
+    imageList.setModel(imageListModel);
+    imageList.setVisibleRowCount(0);
 
-    languageCbb.setVisible(useLanguage);
-    languageActionPerformed = new ItemListener() {
+    zoomSlider.setMinimum(0);
+    zoomSlider.setMaximum(100);
+    zoomSlider.setMinorTickSpacing(5);
+    zoomSlider.setMajorTickSpacing(10);
+    zoomSlider.addChangeListener(new ChangeListener() {
       @Override
-      public void itemStateChanged(ItemEvent event) {
-        if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
-          Locale locale = ((UILang) languagesModel.getSelectedItem()).getLang();
-          thumbGallery.removeAllImages();
-          previewLbl.setIcon(null);
-          List<UIMediaImage> imageslang = getImageByLanguage(images, locale.getCountry());
-          thumbGallery.addImages(imageslang);
-          getTumbPreview(imageslang);
-        }
-      }
-    };
-    languageCbb.addItemListener(languageActionPerformed);
-
-    thumbGallery = new CustomWebImageGallery(useLanguage, ics.getGalleryDim());
-    thumbGalleryPnl.setLayout(new BorderLayout());
-    thumbGallery.setOpaque(false);
-    images = new ArrayList<UIMediaImage>();
-
-    PropertyChangeSupport changePreview = thumbGallery.getPropertyChange();
-    changePreview.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("selectedImage")) {
-          previewLbl.setIcon(loadingPreview);
-          previewLbl.setHorizontalAlignment(WebLabel.CENTER);
-
-          UIMediaImage image = thumbGallery.getSelectedImage();
-          if (image == null) {
-            UISettings.LOGGER.log(Level.SEVERE, "UIMediaImage null");
-            return;
-          }
-
-          if (ImageUtils.isInCache(image.getUri(ImageSize.medium))) {
-            Icon icon = ImageUtils.getIcon(image.getUri(ImageSize.medium), null, null);
-            previewLbl.setHorizontalAlignment(WebLabel.TRAILING);
-            previewLbl.setIcon(icon);
-            GalleryPanel.this.propertyChange.firePropertyChange("updateThumb", null, icon);
-            return;
-          }
-
-          final ImageWorker<UIMediaImage> imgWorker = new ImageWorker<UIMediaImage>(Arrays.asList(new UIMediaImage[]{image}), null, ImageSize.medium, ics.getPreviewDim(), "");// FIXME
-          PropertyChangeListener propertyChange = new PropertyChangeListener() {//FIXME
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-              if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
-                return;
-              }
-
-              if (((SwingWorker.StateValue) evt.getNewValue()).equals(SwingWorker.StateValue.DONE)) {
-                try {
-                  Icon icon = imgWorker.get();
-                  if (icon != null) {
-                    previewLbl.setIcon(icon);
-                    GalleryPanel.this.propertyChange.firePropertyChange("updateThumb", null, icon);
-                  } else {
-                    // TODO
-                  }
-                } catch (InterruptedException ex) {
-                  UISettings.LOGGER.log(Level.SEVERE, null, ex);
-                } catch (ExecutionException ex) {
-                  UISettings.LOGGER.log(Level.SEVERE, null, ex);
-                }
-              }
-            }
-          };
-          imgWorker.addPropertyChangeListener(propertyChange);//FIXME
-          imgWorker.execute();//FIXME
-
-        }
+      public void stateChanged(ChangeEvent e) {
+        int zoomPercent = zoomSlider.getValue();
+        float r = zoomPercent / 50.00F;
+        zoomListRenderer.setScale(1 + r);
+        imageListModel.update();
       }
     });
 
-    thumbGalleryPnl.add(thumbGallery.getView(false), BorderLayout.CENTER);
+    setPreferredSize(new Dimension(400, 550));
+    pack();
+
+    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
+    setLanguage(UIUtils.i18n.getLanguageKey("title"), UISettings.APPNAME, "Gallery");
 
     setLocationRelativeTo(mr);
-    setModal(true);
-  }
-
-  public ImageCategoryProperty getImageProperty() {
-    return property;
-  }
-
-  public PropertyChangeSupport getPropertyChange() {
-    return propertyChange;
-  }
-
-  private void getTumbPreview(List<UIMediaImage> images) {
-    if (gworker != null && !gworker.isDone()) {
-      WorkerManager.stop(gworker);
-    }
-    gworker = (GalleryWorker) WorkerManager.fetchImages(images, this, "ui/unknown.png", ics.getGalleryDim(), ImageSize.small);
   }
 
   public void addImages(List<UIMediaImage> images) {
-    this.images.addAll(images);
-    for (UIMediaImage image : this.images) {
-      UILang imglang = image.getImagelang();
-      image.setIcon(loadingGallery);
+    UILang imglang = null;
+    this.images = images;
 
-      if (!languages.contains(imglang)) {
-        languages.add(imglang);
-        languagesModel.addElement(imglang);
+    if (useLanguage) {
+      ItemListener[] itemListeners = languageCbb.getItemListeners();
+      if (itemListeners.length > 0) {
+        for (ItemListener itemListener : itemListeners) {
+          languageCbb.removeItemListener(itemListener);
+        }
       }
+
+      for (UIMediaImage image : this.images) {
+        UILang lng = image.getImagelang();
+        if (!languages.contains(lng)) {
+          languages.add(lng);
+          languagesModel.addElement(lng);
+          if (lng.getLang().getLanguage().equals(UISettings.getInstance().coreInstance.getSearchScrapperLang().getLocale().getLanguage())) {
+            languagesModel.setSelectedItem(lng);
+            imglang = lng;
+          }
+
+          // Select English images, if search scrapper language is not found
+          if (imglang == null && lng.getLang().getLanguage().equals("en")) {
+            languagesModel.setSelectedItem(lng);
+            imglang = lng;
+          }
+        }
+      }
+
+      if (languagesModel.getSize() == 0) {
+        languagesModel.addElement(FlagUtils.getFlag(null));
+      }
+
+      if (imglang == null && languages.size() > 0) {
+        imglang = (UILang) languagesModel.getSelectedItem();
+      }
+
+      languageCbb.addItemListener(languageChangeListener);
     }
 
-    if (languages.size() > 0) {
-      languagesModel.setSelectedItem(languages.get(0));
+    fetchImages(getImageByLanguage(imglang));
+  }
+
+  public void addImage(UIMediaImage image) {
+    images.add(image);
+    imageListModel.add(image);
+  }
+
+  private void fetchImages(List<UIMediaImage> imgs) {
+    imageListModel.addAll(imgs);
+    if (gworker != null && !gworker.isDone()) {
+      WorkerManager.stop(gworker);
+    }
+
+    if (!imgs.isEmpty()) {
+      supportedImage.getLabel().setIcon(ImageUtils.LOAD_24);
+      gworker = (GalleryWorker) WorkerManager.fetchImages(imgs, this, "ui/unknown.png", ImageInfo.ImageSize.medium);
     }
   }
 
-  public void addThumbPreview(Icon icon, int id) {
-    int pos = 0;
-    for (UIMediaImage image : thumbGallery.getImages()) {
-      if (image.getId() == id) {
-        thumbGallery.setImage(icon, pos);
-        break;
-      }
-      pos++;
-    }
-  }
-
-  private List<UIMediaImage> getImageByLanguage(List<UIMediaImage> uiimages, String country) {
+  private List<UIMediaImage> getImageByLanguage(UILang lang) {
     List<UIMediaImage> limages = new ArrayList<UIMediaImage>();
 
-    for (UIMediaImage image : uiimages) {
+    if (lang == null) {
+      return images;
+    }
+
+    for (UIMediaImage image : images) {
       Locale uiimagelang = image.getImagelang().getLang();
 
-      if (country.replace("_", "").equalsIgnoreCase(uiimagelang.getCountry())) {
-        limages.add(0, image);
+      if (lang.isKnown()) {
+        if (lang.getLang().getCountry().replace("_", "").equalsIgnoreCase(uiimagelang.getCountry())) {
+          limages.add(0, image);
+        }
       }
     }
 
     return limages;
   }
 
-  public void setSelectedIndex(int index) {
-    if (index > 0) {
-      thumbGallery.setSelectedIndex(index);
+  public void setImage(Icon icon, int id) {
+
+    for (UIMediaImage image : images) {
+      if (image.getId() == id) {
+        image.setIcon(icon);
+        imageListModel.setElement(image);
+        break;
+      }
+    }
+
+    if (!imageListModel.isEmpty()) {
+      int fid = imageListModel.firstElement().getId();
+      if (fid == id) {
+        Image img = ((ImageIcon) icon).getImage();
+        Image newimg = img.getScaledInstance(ImagePanel.pwidth, (int) (ImagePanel.pwidth / supportedImage.getRatio()), java.awt.Image.SCALE_SMOOTH);
+        supportedImage.getLabel().setIcon(new ImageIcon(newimg));
+      }
     }
   }
 
+  public ImageCategoryProperty getImageProperty() {
+    return property;
+  }
+
   public void clear() {
-    thumbGallery.removeAllImages();
+    if (gworker != null && !gworker.isDone()) {
+      WorkerManager.stop(gworker);
+    }
+    supportedImage.getLabel().setIcon(null);
+    languageCbb.removeItemListener(languageChangeListener);
     images.clear();
     languagesModel.removeAllElements();
     languages.clear();
-    previewLbl.setIcon(null);
-  }
-
-  @Override
-  public String toString() {
-    return property.name();
   }
 
   /**
@@ -328,76 +271,58 @@ public class GalleryPanel extends JDialog {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    galleryPnl = new com.alee.laf.panel.WebPanel();
-    thumbGalleryPnl = new com.alee.laf.panel.WebPanel();
-    previewPnl = new com.alee.laf.panel.WebPanel();
-    previewLbl = new com.alee.laf.label.WebLabel();
-    webToolBar1 = new com.alee.laf.toolbar.WebToolBar();
-    webLabel1 = new com.alee.laf.label.WebLabel();
-    languageCbb = new javax.swing.JComboBox();
+    topTb = new com.alee.laf.toolbar.WebToolBar();
+    languageCbb = new com.alee.laf.combobox.WebComboBox();
+    bottomTb = new com.alee.laf.toolbar.WebToolBar();
+    zoomoutLbl = new com.alee.laf.label.WebLabel();
+    zoomSlider = new com.alee.laf.slider.WebSlider();
+    zoominLbl = new com.alee.laf.label.WebLabel();
+    imagePnl = new com.alee.laf.panel.WebPanel();
+    imageListSp = new javax.swing.JScrollPane();
+    imageList = new com.alee.laf.list.WebList();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-    thumbGalleryPnl.setFocusable(false);
+    topTb.setFloatable(false);
+    topTb.setRollover(true);
+    topTb.add(languageCbb);
 
-    javax.swing.GroupLayout previewPnlLayout = new javax.swing.GroupLayout(previewPnl);
-    previewPnl.setLayout(previewPnlLayout);
-    previewPnlLayout.setHorizontalGroup(
-      previewPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, previewPnlLayout.createSequentialGroup()
-        .addContainerGap(297, Short.MAX_VALUE)
-        .addComponent(previewLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(280, 280, 280))
-    );
-    previewPnlLayout.setVerticalGroup(
-      previewPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(previewPnlLayout.createSequentialGroup()
-        .addComponent(previewLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(0, 2, Short.MAX_VALUE))
-    );
+    getContentPane().add(topTb, java.awt.BorderLayout.PAGE_START);
 
-    javax.swing.GroupLayout galleryPnlLayout = new javax.swing.GroupLayout(galleryPnl);
-    galleryPnl.setLayout(galleryPnlLayout);
-    galleryPnlLayout.setHorizontalGroup(
-      galleryPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(galleryPnlLayout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(galleryPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(previewPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(thumbGalleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap())
-    );
-    galleryPnlLayout.setVerticalGroup(
-      galleryPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, galleryPnlLayout.createSequentialGroup()
-        .addGap(55, 55, 55)
-        .addComponent(previewPnl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(thumbGalleryPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-        .addContainerGap())
-    );
+    bottomTb.setFloatable(false);
+    bottomTb.setRollover(true);
 
-    getContentPane().add(galleryPnl, java.awt.BorderLayout.CENTER);
+    zoomoutLbl.setIcon(ImageUtils.ZOOMOUT_16);
+    bottomTb.add(zoomoutLbl);
+    bottomTb.add(zoomSlider);
 
-    webToolBar1.setFloatable(false);
-    webToolBar1.setRollover(true);
+    zoominLbl.setIcon(ImageUtils.ZOOMIN_16);
+    bottomTb.add(zoominLbl);
 
-    webLabel1.setText("settings.language");
-    webToolBar1.add(webLabel1);
+    getContentPane().add(bottomTb, java.awt.BorderLayout.PAGE_END);
 
-    webToolBar1.add(languageCbb);
+    imageListSp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-    getContentPane().add(webToolBar1, java.awt.BorderLayout.PAGE_START);
+    imageList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    imageList.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
+    imageList.setVisibleRowCount(2);
+    imageListSp.setViewportView(imageList);
+
+    imagePnl.add(imageListSp, java.awt.BorderLayout.CENTER);
+
+    getContentPane().add(imagePnl, java.awt.BorderLayout.CENTER);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.alee.laf.panel.WebPanel galleryPnl;
-  private javax.swing.JComboBox languageCbb;
-  private com.alee.laf.label.WebLabel previewLbl;
-  private com.alee.laf.panel.WebPanel previewPnl;
-  private com.alee.laf.panel.WebPanel thumbGalleryPnl;
-  private com.alee.laf.label.WebLabel webLabel1;
-  private com.alee.laf.toolbar.WebToolBar webToolBar1;
+  private com.alee.laf.toolbar.WebToolBar bottomTb;
+  private com.alee.laf.list.WebList imageList;
+  private javax.swing.JScrollPane imageListSp;
+  private com.alee.laf.panel.WebPanel imagePnl;
+  private com.alee.laf.combobox.WebComboBox languageCbb;
+  private com.alee.laf.toolbar.WebToolBar topTb;
+  private com.alee.laf.slider.WebSlider zoomSlider;
+  private com.alee.laf.label.WebLabel zoominLbl;
+  private com.alee.laf.label.WebLabel zoomoutLbl;
   // End of variables declaration//GEN-END:variables
 }

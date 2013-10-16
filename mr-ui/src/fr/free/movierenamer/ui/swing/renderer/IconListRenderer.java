@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing;
+package fr.free.movierenamer.ui.swing.renderer;
 
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
@@ -41,7 +41,9 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   private boolean showIcon;
 
   public interface IRendererProperty {
+
     public boolean isEnabled();
+
     public void setEnabled(boolean value);
   }
 
@@ -61,10 +63,10 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
     label.setFont(label.getFont().deriveFont(Font.PLAIN));
     label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
 
-    IIconList obj;
+    T obj;
     try {
       if (!(value instanceof SeparatorList.Separator)) {
-        obj = (IIconList) value;
+        obj = (T) value;
         Icon icon = obj.getIcon();
 
         if (icon != null && showIcon) {
@@ -81,5 +83,4 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
     return label;
   }
-
 }

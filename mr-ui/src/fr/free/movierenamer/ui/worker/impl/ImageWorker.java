@@ -21,8 +21,6 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
-import fr.free.movierenamer.utils.LocaleUtils;
-import java.awt.Dimension;
 import java.util.List;
 import javax.swing.Icon;
 
@@ -36,12 +34,12 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
   private final ImageListModel<T> model;
 
-  public ImageWorker(List<T> images, ImageListModel<T> model, Dimension imageSize, String defaultImage) {
-    this(images, model, ImageInfo.ImageSize.small, imageSize, defaultImage);
+  public ImageWorker(List<T> images, ImageListModel<T> model, String defaultImage) {
+    this(images, model, ImageInfo.ImageSize.small, defaultImage);
   }
 
-  public ImageWorker(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
-    super(images, imageSize, size, defaultImage);
+  public ImageWorker(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, String defaultImage) {
+    super(images, size, defaultImage);
     this.model = model;
   }
 

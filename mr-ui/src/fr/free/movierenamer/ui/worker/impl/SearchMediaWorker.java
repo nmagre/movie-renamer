@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.worker.impl;
 
 import com.alee.laf.list.WebList;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.SearchScrapper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
@@ -28,7 +29,6 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -131,7 +131,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
       if (UISettings.getInstance().isSelectFirstResult()) {
         searchResultList.setSelectedIndex(0);
       }
-      WorkerManager.fetchImages(results, searchResultModel, searchListDim, "ui/nothumb.png");
+      WorkerManager.fetchImages(results, searchResultModel, /*searchListDim*/ ImageInfo.ImageSize.small, "ui/nothumb.png");
     }
   }
 

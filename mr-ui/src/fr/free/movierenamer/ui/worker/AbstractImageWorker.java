@@ -20,7 +20,6 @@ package fr.free.movierenamer.ui.worker;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
 import java.util.List;
 import javax.swing.Icon;
 
@@ -34,13 +33,11 @@ import javax.swing.Icon;
 public abstract class AbstractImageWorker<T extends IImage> extends AbstractWorker<Icon, AbstractImageWorker<T>.ImageChunk> {
 
   protected final List<T> images;
-  protected final Dimension imageSize;
   protected final String defaultImage;
   protected final ImageInfo.ImageSize size;
 
-  public AbstractImageWorker(List<T> images, Dimension imageSize, ImageInfo.ImageSize size, String defaultImage) {
+  public AbstractImageWorker(List<T> images, ImageInfo.ImageSize size, String defaultImage) {
     this.images = images;
-    this.imageSize = imageSize;
     this.defaultImage = defaultImage;
     this.size = size;
   }
@@ -54,7 +51,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
         break;
       }
 
-      res = ImageUtils.getIcon(image.getUri(size), imageSize, defaultImage);
+      res = ImageUtils.getIcon(image.getUri(size), null, defaultImage);
       publish(new ImageChunk(res, image.getId()));
     }
 

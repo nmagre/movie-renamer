@@ -19,8 +19,6 @@ package fr.free.movierenamer.utils;
 
 import static java.util.Arrays.asList;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,7 +29,6 @@ import java.util.regex.Pattern;
 import fr.free.movierenamer.settings.Settings;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Logger;
 
 /**
  * Class StringUtils
@@ -93,8 +90,7 @@ public final class StringUtils {
   /**
    * Rotate string by 13 places
    *
-   * @param text
-   * String
+   * @param text String
    * @return String rotate
    */
   public static String rot13(String text) {
@@ -114,10 +110,8 @@ public final class StringUtils {
   /**
    * Capitalized first letter for each words or only first one
    *
-   * @param str
-   * String
-   * @param onlyFirst
-   * Only first word letter capitalized
+   * @param str String
+   * @param onlyFirst Only first word letter capitalized
    * @return String capitalized
    */
   public static String capitalizedLetter(String str, boolean onlyFirst) {
@@ -152,7 +146,8 @@ public final class StringUtils {
    * Check if string is uppercase
    *
    * @param str
-   * @return True if all letter are uppercase except I,II,III,..., false otherwise
+   * @return True if all letter are uppercase except I,II,III,..., false
+   * otherwise
    */
   public static boolean isUpperCase(String str) {
     String[] romanNumber = new String[]{
@@ -175,10 +170,8 @@ public final class StringUtils {
   /**
    * Get an array from a string separated by movieFilenameSeparator
    *
-   * @param str
-   * String
-   * @param separator
-   * Separator
+   * @param str String
+   * @param separator Separator
    * @return An array of strings
    */
   public static List<String> stringToArray(String str, String separator) {
@@ -195,14 +188,12 @@ public final class StringUtils {
   }
 
   /**
-   * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
+   * Get a string from an array separated by movieFilenameSeparator and limited
+   * to movieFilenameLimit
    *
-   * @param array
-   * Object array
-   * @param separator
-   * Separator
-   * @param limit
-   * Limit
+   * @param array Object array
+   * @param separator Separator
+   * @param limit Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(Object[] array, String separator, int limit) {
@@ -227,14 +218,12 @@ public final class StringUtils {
   }
 
   /**
-   * Get a string from an array separated by movieFilenameSeparator and limited to movieFilenameLimit
+   * Get a string from an array separated by movieFilenameSeparator and limited
+   * to movieFilenameLimit
    *
-   * @param array
-   * ArrayList
-   * @param separator
-   * Separator
-   * @param limit
-   * Limit
+   * @param array ArrayList
+   * @param separator Separator
+   * @param limit Limit
    * @return String separated by movieFilenameSeparator or empty
    */
   public static String arrayToString(List<?> array, String separator, int limit) {
@@ -249,8 +238,7 @@ public final class StringUtils {
   /**
    * Escape XML special character
    *
-   * @param str
-   * String to escape
+   * @param str String to escape
    * @return String escaped
    */
   public static String escapeXML(String str) {

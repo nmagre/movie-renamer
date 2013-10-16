@@ -87,6 +87,13 @@ public final class ImageUtils {
   public static final Icon CLEAR_LIST_16 = getIconFromJar("ui/16/media_playlist_clear.png");
   public static final Icon CASTING_16 = getIconFromJar("ui/16/casting.png");
   public static final Icon EDIT_16 = getIconFromJar("ui/16/edit.png");
+  public static final Icon COPY_16 = getIconFromJar("ui/16/copy.png");
+  public static final Icon PASTE_16 = getIconFromJar("ui/16/paste.png");
+  public static final Icon CUT_16 = getIconFromJar("ui/16/cut.png");
+  public static final Icon DELETE_16 = getIconFromJar("ui/16/delete.png");
+  public static final Icon SELECTALL_16 = getIconFromJar("ui/16/selectall.png");
+  public static final Icon ZOOMIN_16 = getIconFromJar("ui/16/zoom_in.png");
+  public static final Icon ZOOMOUT_16 = getIconFromJar("ui/16/zoom_out.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");

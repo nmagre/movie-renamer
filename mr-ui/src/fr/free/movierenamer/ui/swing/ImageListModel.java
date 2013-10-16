@@ -26,6 +26,7 @@ import javax.swing.AbstractListModel;
 
 /**
  * Class ImageListModel
+ *
  * @author Nicolas Magré
  */
 public class ImageListModel<T extends IImage> extends AbstractListModel {
@@ -40,7 +41,7 @@ public class ImageListModel<T extends IImage> extends AbstractListModel {
   public ImageListModel(Collection<T> data) {
     addAll(data);
   }
-  
+
   public ImageListModel(T elements[]) {
     addAll(elements);
   }
@@ -60,7 +61,7 @@ public class ImageListModel<T extends IImage> extends AbstractListModel {
       model.put(value.getId(), value);
     }
   }
-  
+
   public boolean isEmpty() {
     return model.isEmpty();
   }
@@ -73,7 +74,7 @@ public class ImageListModel<T extends IImage> extends AbstractListModel {
   public boolean contains(T element) {
     return model.containsKey(element.getId());
   }
-  
+
   public boolean contains(int id) {
     return model.containsKey(id);
   }
@@ -122,10 +123,14 @@ public class ImageListModel<T extends IImage> extends AbstractListModel {
 
     return null;
   }
-  
+
+  public void update() {
+    fireContentsChanged(this, 0, getSize());
+  }
+
   public void setElement(T element) {
     int id = element.getId();
-    if(contains(id)) {
+    if (contains(id)) {
       model.put(id, element);
       fireContentsChanged(this, 0, getSize());
     }

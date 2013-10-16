@@ -23,7 +23,6 @@ import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UILoader;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -44,6 +43,7 @@ public class ListTooltip extends MouseAdapter {
   private Timer timer;
   private int time;
   private boolean onlyLoading;
+  private TooltipWay tooltipWay;
 
   public ListTooltip() {
     this(1200, false);
@@ -53,6 +53,11 @@ public class ListTooltip extends MouseAdapter {
     this.time = time;
     this.onlyLoading = onlyLoading;
     lastIndex = -1;
+    tooltipWay = TooltipWay.right;
+  }
+
+  public void setTooltipWay(TooltipWay tooltipWay) {
+    this.tooltipWay = tooltipWay;
   }
 
   @Override
@@ -79,7 +84,9 @@ public class ListTooltip extends MouseAdapter {
             timer = new Timer(time, new ActionListener() {
               @Override
               public void actionPerformed(ActionEvent e) {
-                TooltipManager.showOneTimeTooltip(list, new Point(list.getParent().getWidth(), rect.getLocation().y + rect.height / 2), str, TooltipWay.right);
+                int px = tooltipWay == TooltipWay.right ? list.getParent().getWidth() : list.getParent().getWidth() / 2;
+                int py = tooltipWay == TooltipWay.right ? rect.getLocation().y + rect.height / 2 : rect.getLocation().y + rect.height;
+                TooltipManager.showOneTimeTooltip(list, new Point(px, py), str, tooltipWay);
                 timer.stop();
               }
             });

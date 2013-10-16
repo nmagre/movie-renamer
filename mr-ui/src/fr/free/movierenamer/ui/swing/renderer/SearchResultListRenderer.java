@@ -15,29 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing;
+package fr.free.movierenamer.ui.swing.renderer;
 
-import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
-import fr.free.movierenamer.ui.bean.UIFile;
+import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import java.awt.Font;
-import javax.swing.BorderFactory;
 import javax.swing.JList;
 
 /**
- * Class MediaListRenderer
+ * Class SearchResultListRenderer
  *
  * @author Nicolas Magré
  */
-public class MediaListRenderer extends IconListRenderer<UIFile> {
+public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
 
   private static final long serialVersionUID = 1L;
   private static final UISettings settings = UISettings.getInstance();
 
   public enum Property implements IRendererProperty {
 
-    showGroup(settings.isGroupMediaList());
+    showId(settings.isShowId()),
+    showYear(settings.isShowYear()),
+    showOrigTitle(settings.isShowOrigTitle());
     private boolean value = true;
 
     private Property(boolean value) {
@@ -57,15 +56,16 @@ public class MediaListRenderer extends IconListRenderer<UIFile> {
 
   @Override
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
-    // Media list separator
-    if (value instanceof SeparatorList.Separator && Property.showGroup.isEnabled()) {
-      SeparatorList.Separator separator = (SeparatorList.Separator) value;
-      UIFile file = (UIFile) separator.getGroup().get(0);
-      label.setText(file.getGroupName());
 
-      label.setFont(label.getFont().deriveFont(Font.BOLD));
-      label.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
-      return label;
+    if (value instanceof UISearchResult) {
+      UISearchResult sres = (UISearchResult) value;
+      String text = sres.print(Property.showId.isEnabled(), Property.showYear.isEnabled());
+      if (Property.showOrigTitle.isEnabled()) {
+        text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
+      } else {
+        text = "<html><b>" + text + "</b></html>";
+      }
+      label.setText(text);
     }
 
     return label;

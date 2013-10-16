@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing;
 
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -34,13 +35,14 @@ import javax.swing.text.JTextComponent;
  *
  * @author Nicolas Magré
  */
-public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
+public class ContextMenuFieldMouseListener extends MouseAdapter {
 
   private JPopupMenu popup = new JPopupMenu();
   private Action cut;
   private Action copy;
   private Action paste;
   private Action selectAll;
+  private Action delete;
   private JTextComponent textComponent;
 
   private enum Actions {
@@ -50,7 +52,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
 
   public ContextMenuFieldMouseListener() {
 
-    cut = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.cut", false)) {
+    cut = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.cut", false), ImageUtils.CUT_16) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -59,7 +61,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
       }
     };
 
-    copy = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.copy", false)) {
+    copy = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.copy", false), ImageUtils.COPY_16) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -68,7 +70,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
       }
     };
 
-    paste = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.paste", false)) {
+    paste = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.paste", false), ImageUtils.PASTE_16) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -77,7 +79,16 @@ public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
       }
     };
 
-    selectAll = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.selectAll", false)) {
+    delete = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.delete", false), ImageUtils.DELETE_16) {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        textComponent.setText("");
+      }
+    };
+
+    selectAll = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.selectAll", false), ImageUtils.SELECTALL_16) {
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -89,6 +100,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
     popup.add(copy);
     popup.add(cut);
     popup.add(paste);
+    popup.add(delete);
     popup.addSeparator();
     popup.add(selectAll);
   }
@@ -113,6 +125,7 @@ public class ContextMenuFieldMouseListener extends MouseAdapter { // TODO
       cut.setEnabled(enabled && editable && marked);
       copy.setEnabled(enabled && marked);
       paste.setEnabled(enabled && editable && pasteAvailable);
+      delete.setEnabled(enabled && editable && nonempty);
       selectAll.setEnabled(enabled && nonempty);
 
       int x, y;

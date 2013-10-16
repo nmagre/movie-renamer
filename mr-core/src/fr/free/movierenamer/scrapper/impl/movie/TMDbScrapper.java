@@ -100,6 +100,10 @@ public class TMDbScrapper extends MovieScrapper {
       List<JSONObject> jsonObj = JSONUtils.selectList("results", json);
 
       for (JSONObject node : jsonObj) {
+        if (node == null) {
+          continue;
+        }
+
         int id = JSONUtils.selectInteger("id", node);
         String title = JSONUtils.selectString("title", node);
         String originalTitle = JSONUtils.selectString("original_title", node);
@@ -247,8 +251,8 @@ public class TMDbScrapper extends MovieScrapper {
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
 
     for (String section : new String[]{
-              "cast", "crew"
-            }) {
+      "cast", "crew"
+    }) {
       List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
       for (JSONObject jsonObj : jsonObjs) {
         Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);

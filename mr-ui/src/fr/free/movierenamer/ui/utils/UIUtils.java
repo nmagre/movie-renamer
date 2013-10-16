@@ -26,14 +26,16 @@ import com.alee.managers.hotkey.ButtonHotkeyRunnable;
 import com.alee.managers.hotkey.HotkeyData;
 import com.alee.managers.hotkey.HotkeyManager;
 import com.alee.managers.popup.PopupWay;
+import static com.alee.managers.popup.PopupWay.upCenter;
+import static com.alee.managers.popup.PopupWay.upLeft;
+import static com.alee.managers.popup.PopupWay.upRight;
 import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.i18n.I18n;
-import fr.free.movierenamer.ui.swing.IconListRenderer;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -118,15 +120,18 @@ public final class UIUtils {
     button.setFocusable(false);
     button.setRound(2);
 
-    createPopup(button, way, components);
     TooltipWay ttway = TooltipWay.down;
-    switch (way) {
-      case upCenter:
-      case upLeft:
-      case upRight:
-        ttway = TooltipWay.up;
-        break;
+    if (way != null) {
+      createPopup(button, way, components);
+      switch (way) {
+        case upCenter:
+        case upLeft:
+        case upRight:
+          ttway = TooltipWay.up;
+          break;
+      }
     }
+
     TooltipManager.setTooltip(button, new WebLabel(("tooltip.settings"), ImageUtils.SETTING_16, SwingConstants.TRAILING), ttway);// FIXME i18n
     return button;
   }

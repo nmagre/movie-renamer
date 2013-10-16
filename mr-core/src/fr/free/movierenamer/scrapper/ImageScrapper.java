@@ -20,13 +20,11 @@ package fr.free.movierenamer.scrapper;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
-import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class ImageScrapper

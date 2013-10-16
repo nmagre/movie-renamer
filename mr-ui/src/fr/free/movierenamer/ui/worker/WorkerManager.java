@@ -40,7 +40,6 @@ import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaWorker;
-import java.awt.Dimension;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -60,11 +59,6 @@ public final class WorkerManager {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   *
-   * @param mr
-   * @param file
-   */
   public static void getFileInfo(MovieRenamer mr, UIFile file) {
     GetFileInfoWorker getFileInfoWorker = new GetFileInfoWorker(mr, file);
     start(getFileInfoWorker);
@@ -95,18 +89,18 @@ public final class WorkerManager {
     start(castingWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension imageSize, String defaultImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, imageSize, defaultImage);
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, String defaultImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, defaultImage);
     start(imagesWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension imageSize, String defaultImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, size, imageSize, defaultImage);
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, String defaultImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, size, defaultImage);
     start(imagesWorker);
   }
 
-  public static AbstractImageWorker<UIMediaImage> fetchImages(List<UIMediaImage> images, GalleryPanel gallery, String defaultImage, Dimension imageSize, ImageInfo.ImageSize size) {
-    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, imageSize, defaultImage);
+  public static AbstractImageWorker<UIMediaImage> fetchImages(List<UIMediaImage> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
+    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, defaultImage);
     start(GalleryWorker);
     return GalleryWorker;
   }

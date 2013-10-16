@@ -46,6 +46,7 @@ import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.hotkey.Hotkey;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.popup.PopupWay;
+import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.AncestorAdapter;
@@ -65,11 +66,12 @@ import fr.free.movierenamer.ui.bean.UIScrapper;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
+import fr.free.movierenamer.ui.swing.ContextMenuFieldMouseListener;
 import fr.free.movierenamer.ui.swing.DragAndDrop;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.ListTooltip;
-import fr.free.movierenamer.ui.swing.MediaListRenderer;
-import fr.free.movierenamer.ui.swing.SearchResultListRenderer;
+import fr.free.movierenamer.ui.swing.renderer.MediaListRenderer;
+import fr.free.movierenamer.ui.swing.renderer.SearchResultListRenderer;
 import fr.free.movierenamer.ui.swing.TaskPopup;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.Loading;
@@ -83,6 +85,7 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
+import fr.free.movierenamer.utils.Cache;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
@@ -129,6 +132,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final MoviePanel moviePnl;
 //  private final TvShowPanel tvShowPanel;
   private final ComponentTransition containerTransitionMediaPanel;// Media Panel container
+  private final ComponentTransition containerTransitionCenterPanel;// Center Panel container
   // Log Panel
   private final LogPanel logPanel = new LogPanel();
   //Settings panel
@@ -141,14 +145,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   // Model
   private EventList<UIFile> mediaFileEventList = new BasicEventList<UIFile>();
   private final ImageListModel<UISearchResult> searchResultModel = new ImageListModel<UISearchResult>();
-  private final DefaultComboBoxModel<UIScrapper> movieScrapperModel = new DefaultComboBoxModel<UIScrapper>();
-  private final DefaultComboBoxModel<UIScrapper> tvshowScrapperModel = new DefaultComboBoxModel<UIScrapper>();
+  private final DefaultComboBoxModel movieScrapperModel = new DefaultComboBoxModel();
+  private final DefaultComboBoxModel tvshowScrapperModel = new DefaultComboBoxModel();
   private final EventListModel<UIFile> mediaFileSeparatorModel;
   private final EventListModel<UIFile> mediaFileModel = new EventListModel<UIFile>(mediaFileEventList);
   private final MediaListRenderer mediaFileListRenderer = new MediaListRenderer();
   private final SearchResultListRenderer searchResultListRenderer = new SearchResultListRenderer();
   //
-  private final DefaultListModel<UILoader> loaderModel = new DefaultListModel<UILoader>();
+  private final DefaultListModel loaderModel = new DefaultListModel();
   // Separator
   private final SeparatorList<UIFile> mediaFileSeparator = new SeparatorList<UIFile>(mediaFileEventList, UIUtils.groupFileComparator, 1, 1000);
   // List option checkbox
@@ -158,6 +162,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final WebCheckBox showYearResultListChk;
   private final WebCheckBox showOrigTitleResultListChk;
   private final WebCheckBox showFormatFieldChk;
+  private final WebCheckBox showMediaPanelChk;
   // UI tools
   public static final Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   public static final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -165,9 +170,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final Queue<RenamerWorker> renamerWorkerQueue = new LinkedList<RenamerWorker>();
   // Task popup
   private final TaskPopup taskPopup = new TaskPopup(this);
-  //
+  // List tooltip listener
+  private final ListTooltip mediaFileTooltip = new ListTooltip();
+  private final ListTooltip searchResultTooltip = new ListTooltip(1200, true);
+  // Misc
   private final ListSelectionListener mediaFileListListener = createMediaFileListListener();
+  private final ContextMenuFieldMouseListener contextMenuFieldMouseListener = new ContextMenuFieldMouseListener();
   private final ImagePanel imgPnl;
+  private final WebSplitPane listSpmini = new WebSplitPane();
+  private WebButtonPopup mediaFileListsettingBtn;
 
   public MovieRenamer(List<File> files) {
     super();
@@ -175,7 +186,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     Loading loading = new Loading();
 
     //Cache.clearAllCache();//FIXME remove !!!
-
 
     mediaFileSeparatorModel = new EventListModel<UIFile>(mediaFileSeparator);
 
@@ -197,9 +207,24 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     containerTransitionMediaPanel = new ComponentTransition(moviePnl);
     containerTransitionMediaPanel.setTransitionEffect(new FadeTransitionEffect());
 
+    FadeTransitionEffect fadeTransition = new FadeTransitionEffect();
+    fadeTransition.setSpeed(0.05F);// Slow down transition (default : 0.1)
+    containerTransition.remove(listSp);// FIXME
+    containerTransitionCenterPanel = new ComponentTransition(listSp);
+    containerTransitionCenterPanel.setTransitionEffect(fadeTransition);
+    containerTransition.add(containerTransitionCenterPanel);// FIXME
+
     // Setting popup options
     showIconMediaListChk = UIUtils.createShowIconChk(mediaFileList, setting.isShowIconMediaList(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
     showIconResultListChk = UIUtils.createShowIconChk(searchResultList, setting.isShowThumb(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
+    showMediaPanelChk = new WebCheckBox(UIUtils.i18n.getLanguageKey("showMediaPanel", "popupmenu"));
+    showMediaPanelChk.setSelected(setting.isShowMediaPanel());
+    showMediaPanelChk.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        setMediaPanel(showMediaPanelChk.isSelected());
+      }
+    });
 
     showIdResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showId, setting.isShowId(), UIUtils.i18n.getLanguageKey("showId", "popupmenu"));
     showYearResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showYear, setting.isShowYear(), UIUtils.i18n.getLanguageKey("showYear", "popupmenu"));
@@ -235,6 +260,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     });
     updateTimer.setRepeats(false);
     updateTimer.start();
+
   }
 
   private void init() {
@@ -249,8 +275,13 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mainTb.addToEnd(settingBtn);
     mainTb.addToEnd(exitBtn);
 
+    WebButton button = UIUtils.createSettingButton(null);
+    mediaFileListsettingBtn = UIUtils.createPopup(button, PopupWay.downRight, toggleGroup, showIconMediaListChk);
+
     // Add media panel container to media split pane
     mediaSp.setBottomComponent(containerTransitionMediaPanel);
+    listSpmini.setOrientation(WebSplitPane.VERTICAL_SPLIT);
+    setMediaPanel(setting.isShowMediaPanel());
 
     // Init Movie Scrapper model
     for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
@@ -266,10 +297,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     setSelectedScrapper();
 
     loadMediaPanel();
-
-    // List tooltip listener
-    ListTooltip mediaFileTooltip = new ListTooltip();
-    ListTooltip searchResultTooltip = new ListTooltip(1200, true);
 
     mediaFileList.addListSelectionListener(mediaFileListListener);
     addDragAndDropListener(mediaFileList);//Add drag and drop listener on mediaFileList
@@ -294,8 +321,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     // Add settings button in toolbar
     renameTb.addToEnd(UIUtils.createSettingButton(PopupWay.upLeft, thumbChk, fanartChk, nfoChk, showFormatFieldChk));
-    mediaFileTb.addToEnd(UIUtils.createSettingButton(PopupWay.downRight, toggleGroup, showIconMediaListChk));
-    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, showIconResultListChk, showIdResultListChk, showYearResultListChk, showOrigTitleResultListChk));
+    mediaFileTb.addToEnd(button);
+    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, showIconResultListChk, showIdResultListChk, showYearResultListChk, showOrigTitleResultListChk, showMediaPanelChk));
+
+    // Add context menu on textfield (right click menu)
+    searchField.addMouseListener(contextMenuFieldMouseListener);
+    renameField.addMouseListener(contextMenuFieldMouseListener);
+    fileFormatField.addMouseListener(contextMenuFieldMouseListener);
+
 
     // add mouse listener on status bar for task popup
     statusBar.addMouseListener(new MouseAdapter() {
@@ -397,14 +430,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     UISettings.LOGGER.info(String.format("%s receive event %s %s [%s]", getClass().getSimpleName(), event, (info != null ? info : ""), param));
 
     switch (event) {
-      case WORKER_STARTED:
+      case WORKER_STARTED:// FIXME
         statusLbl.setText(info.getDisplayName());
         statusLbl.setIcon(ImageUtils.LOAD_8);
         break;
-      case WORKER_RUNNING:
+      case WORKER_RUNNING:// FIXME
         statusLbl.setText(info.getDisplayName());
         break;
-      case WORKER_ALL_DONE:
+      case WORKER_ALL_DONE:// FIXME
         statusLbl.setText("");
         statusLbl.setIcon(null);
         break;
@@ -418,7 +451,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
               if (cmp instanceof TaskPanel) {
                 hasRenamerWorker = true;
                 if (renamerWorkerQueue.size() > 0) {
-                  ((TaskPanel) cmp).setStatus(renamerWorkerQueue.size() + " More");
+                  ((TaskPanel) cmp).setStatus(renamerWorkerQueue.size() + " More");// FIXME i18n
                 }
                 break;
               }
@@ -430,7 +463,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
               RenamerWorker rworker = renamerWorkerQueue.poll();
               TaskPanel tpanel = rworker.getTaskPanel();
               if (renamerWorkerQueue.size() > 0) {
-                tpanel.setStatus(renamerWorkerQueue.size() + " More");
+                tpanel.setStatus(renamerWorkerQueue.size() + " More");// FIXME i18n
               }
               statusBar.addToEnd(tpanel);
               statusBar.revalidate();
@@ -459,7 +492,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
               tpanel = rworker.getTaskPanel();
               if (renamerWorkerQueue.size() > 0) {
-                tpanel.setStatus(renamerWorkerQueue.size() + " More");
+                tpanel.setStatus(renamerWorkerQueue.size() + " More");// FIXME i18n
               }
               statusBar.addToEnd(tpanel);
               statusBar.revalidate();
@@ -469,7 +502,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
           taskPopup.update();
         }
         break;
-      case SETTINGS:
+      case SETTINGS:// TODO
         if (param instanceof Settings.IProperty) {
           if (param instanceof Settings.SettingsProperty) {
             Settings.SettingsProperty sproperty = (Settings.SettingsProperty) param;
@@ -689,7 +722,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     WorkerManager.stopExcept(ImageWorker.class, UISearchResult.class);
 
     WorkerManager.searchInfo(this, searchResult);
-    WorkerManager.searchImage(this, searchResult);
+    if (showMediaPanelChk.isSelected()) {
+      WorkerManager.searchImage(this, searchResult);
+    }
   }
 
   /**
@@ -843,6 +878,31 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   public void setRenameEnabled() {
     renameBtn.setEnabled(true);
     renameField.setEnabled(true);
+  }
+
+  private void setMediaPanel(boolean show) {
+    if (show) {
+      listSp.setTopComponent(mediaFilePnl);
+      listSp.setBottomComponent(centerPanel);
+      mediaSp.setTopComponent(searchPnl);
+      containerTransitionCenterPanel.performTransition(listSp);
+      searchResultTooltip.setTooltipWay(TooltipWay.right);
+      mediaFileTooltip.setTooltipWay(TooltipWay.right);
+      UISearchResult searchResult = getSelectedSearchResult();
+      if (searchResult != null) {// FIXME check if searchImage was launched before (not important, the cache will be used)
+        WorkerManager.searchImage(this, searchResult);
+      }
+
+      mediaFileListsettingBtn.setPopupWay(PopupWay.downRight);
+    } else {
+      listSpmini.setTopComponent(mediaFilePnl);
+      listSpmini.setBottomComponent(searchPnl);
+      containerTransitionCenterPanel.performTransition(listSpmini);
+      searchResultTooltip.setTooltipWay(TooltipWay.down);
+      mediaFileTooltip.setTooltipWay(TooltipWay.down);
+
+      mediaFileListsettingBtn.setPopupWay(PopupWay.downLeft);
+    }
   }
 
   /**

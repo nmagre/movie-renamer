@@ -27,7 +27,6 @@ import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.worker.Worker;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

@@ -64,7 +64,7 @@ public abstract class DragAndDrop implements DropTargetListener {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void drop(DropTargetDropEvent evt) {
+  public void drop(DropTargetDropEvent evt) {// FIXME put this in a thread
 
     // We block the UI thread (EDT) during file process to avoid any other operation
     // This is the only case where it's acceptable to do that
@@ -79,17 +79,19 @@ public abstract class DragAndDrop implements DropTargetListener {
 
 
       Transferable data = evt.getTransferable();
-      if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) { // Unix
+      if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) { // Unix/Remote files
 
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
 
-        for (int i = 0; i < res.length; i++) {// TODO add remote file
-          if (res[i].startsWith("file://")) {// Local file
-            String file = URLDecoder.decode(res[i].replace("file://", "").replace("\n", ""), "UTF-8");
+        for (int i = 0; i < res.length; i++) {
+          String file = res[i];
+          if (file.startsWith("file://")) {// Local file
+            file = URLDecoder.decode(file.replace("file://", "").replace("\n", ""), "UTF-8");
             file = file.substring(0, file.length() - 1);
-            files.add(new File(file));
+
           }
+          files.add(new File(file));
         }
       } else if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {// Windows
         files.addAll((List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
@@ -108,5 +110,4 @@ public abstract class DragAndDrop implements DropTargetListener {
   }
 
   public abstract void getFiles(List<File> files);
-
 }

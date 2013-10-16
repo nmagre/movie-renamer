@@ -27,7 +27,6 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
 import java.io.FileFilter;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * Class listFilesWorker ,get List of media files in files list
+ * Class listFilesWorker
  *
  * @author Nicolas Magré
  */

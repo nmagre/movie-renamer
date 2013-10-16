@@ -54,6 +54,10 @@ public class UILang implements IIconList {
     return lang != null ? lang.getDisplayName() : "????";
   }
 
+  public boolean isKnown() {
+    return lang != null;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof UILang)) {

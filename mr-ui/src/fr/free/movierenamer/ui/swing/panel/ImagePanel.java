@@ -20,26 +20,35 @@ package fr.free.movierenamer.ui.swing.panel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.popup.PopupWay;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.IEventInfo;
+import fr.free.movierenamer.ui.bean.IEventListener;
+import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.DragAndDrop;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.dnd.DropTarget;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -50,12 +59,57 @@ import javax.swing.border.LineBorder;
  *
  * @author Nicolas Magré
  */
-public class ImagePanel extends WebPanel {
+public class ImagePanel extends WebPanel implements IEventListener {
 
   private final Map<ImageCategoryProperty, GalleryPanel> galleryPanels;
-  private final Map<ImageCategoryProperty, LabelListener> thumbLabel;
-  private final ImageCategoryProperty[] supportedImages = new ImageCategoryProperty[]{ImageCategoryProperty.thumb, ImageCategoryProperty.fanart, ImageCategoryProperty.logo, ImageCategoryProperty.cdart};
+  private final Map<ImageCategoryProperty, LabelListener> imageLabels;
   private final MovieRenamer mr;
+  public final static int pwidth = 120;
+
+  public enum SupportedImages {
+
+    thumb(ImageCategoryProperty.thumb, "image.thumb", 0.75F),
+    fanart(ImageCategoryProperty.fanart, "image.fanart", 1.77F),
+    logo(ImageCategoryProperty.logo, "image.logo", 2.58F),
+    cdart(ImageCategoryProperty.cdart, "image.cdart", 1.0F),
+    clearart(ImageCategoryProperty.clearart, "image.clearart", 1.77F),
+    banner(ImageCategoryProperty.banner, "image.banner", 5.4F);
+    private ImageCategoryProperty categoryProperty;
+    private String i18nKey;
+    private WebLabel label = new WebLabel(SwingConstants.LEFT);
+    private LabelListener imageLabel;
+    private float ratio;
+    private DropTarget dt;
+
+    private SupportedImages(ImageCategoryProperty categoryProperty, String i18nKey, float ratio) {
+      this.categoryProperty = categoryProperty;
+      this.i18nKey = i18nKey;
+      this.ratio = ratio;
+
+      int height = (int) (pwidth / ratio);
+      label.setMinimumSize(new Dimension(pwidth, height));
+      label.setPreferredSize(new Dimension(pwidth, height));
+      label.setMaximumSize(new Dimension(pwidth, height));
+      label.setFont(label.getFont().deriveFont(Font.BOLD));
+      label.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
+    }
+
+    public ImageCategoryProperty getCategoryProperty() {
+      return this.categoryProperty;
+    }
+
+    public float getRatio() {
+      return ratio;
+    }
+
+    public String getI18nKey() {
+      return i18nKey;
+    }
+
+    public WebLabel getLabel() {
+      return label;
+    }
+  }
 
   /**
    * Creates new form ImagePanel
@@ -67,64 +121,50 @@ public class ImagePanel extends WebPanel {
     imageTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft));
 
     galleryPanels = new EnumMap<ImageCategoryProperty, GalleryPanel>(ImageCategoryProperty.class);
-    thumbLabel = new EnumMap<ImageCategoryProperty, LabelListener>(ImageCategoryProperty.class);
+    imageLabels = new EnumMap<ImageCategoryProperty, LabelListener>(ImageCategoryProperty.class);
 
-    for (ImageCategoryProperty property : supportedImages) {
-      final GalleryPanel galleryPanel = new GalleryPanel(mr, property);
-      PropertyChangeSupport support = galleryPanel.getPropertyChange();
-      support.addPropertyChangeListener(new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-          if (evt.getPropertyName().equals("updateThumb")) {
-            if (evt.getNewValue() != null) {
-              thumbLabel.get(galleryPanel.getImageProperty()).setIcon((Icon) evt.getNewValue());
-            }
-          }
-        }
-      });
+    for (SupportedImages property : SupportedImages.values()) {
+      imagePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+      WebLabel label = new WebLabel(SwingConstants.LEFT);
+      label.setVerticalAlignment(SwingConstants.TOP);
+      label.setLanguage(property.getI18nKey());
+      imagePanel.add(label);
+      imagePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-      WebLabel thumbLbl = new WebLabel();
-      thumbLbl.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
-      thumbLbl.setHorizontalAlignment(SwingConstants.CENTER);
-
-      galleryPanels.put(property, galleryPanel);
-      WebLabel label = new WebLabel();
-      switch (property) {
-        case thumb:
-          label = this.thumbLbl;
-          break;
-        case fanart:
-          label = fanartLbl;
-          break;
-        case cdart:
-          label = cdartLbl;
-          break;
-        case logo:
-          label = logoLbl;
-          break;
-      }
-      thumbLabel.put(property, new LabelListener(label, property));
+      GalleryPanel galleryPanel = new GalleryPanel(mr, property);
+      galleryPanels.put(property.getCategoryProperty(), galleryPanel);
+      LabelListener imglbl = new LabelListener(property.getLabel(), property.getCategoryProperty());
+      imageLabels.put(property.getCategoryProperty(), imglbl);
+      imagePanel.add(property.getLabel());
     }
+
+    imagePanel.revalidate();
+
+    // Add ImagePanel to UIEvent receiver
+    UIEvent.addEventListener(ImagePanel.class, this);
   }
 
-  public boolean isSupportedImage(ImageCategoryProperty property) {
-    return galleryPanels.containsKey(property);
+  public boolean isSupportedImage(ImageCategoryProperty key) {
+    return galleryPanels.containsKey(key);
+  }
+
+  private SupportedImages getSupportedImages(ImageCategoryProperty key) {
+
+    for (SupportedImages simage : SupportedImages.values()) {
+      if (simage.getCategoryProperty() == key) {
+        return simage;
+      }
+    }
+    return null;
   }
 
   public GalleryPanel getGallery(ImageCategoryProperty key) {
+
     if (!isSupportedImage(key)) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
       return null;
     }
     return galleryPanels.get(key);
-  }
-
-  public WebLabel getThumbLabel(ImageCategoryProperty key) {
-    if (!isSupportedImage(key)) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
-      return null;
-    }
-    return thumbLabel.get(key).getLabel();
   }
 
   private void showGalleryPanel(final ImageCategoryProperty key) {
@@ -147,31 +187,41 @@ public class ImagePanel extends WebPanel {
       return;
     }
 
-    thumbLabel.get(key).setIcon(null);
     galleryPanels.get(key).clear();
     galleryPanels.get(key).addImages(image);
   }
 
   public void enabledListener() {
-    for (ImageCategoryProperty property : thumbLabel.keySet()) {
-      thumbLabel.get(property).setListenerEnabled(true);
+    for (ImageCategoryProperty property : imageLabels.keySet()) {
+      imageLabels.get(property).setListenerEnabled(true);
     }
   }
 
   public void clearPanel() {
+    clearGallery();
 
-    for (GalleryPanel gpnl : galleryPanels.values()) {
-      gpnl.clear();
-    }
-
-    for (LabelListener thumbLbl : thumbLabel.values()) {
+    for (LabelListener thumbLbl : imageLabels.values()) {
       thumbLbl.setIcon(null);
       thumbLbl.setListenerEnabled(false);
     }
   }
 
+  private void clearGallery() {
+    for (GalleryPanel gpnl : galleryPanels.values()) {
+      gpnl.clear();
+    }
+  }
+
   public List<ImageCategoryProperty> getSupportedImages() {
     return new ArrayList<ImageCategoryProperty>(galleryPanels.keySet());
+  }
+
+  @Override
+  public void UIEventHandler(UIEvent.Event event, IEventInfo param, Object newObject) {
+    switch (event) {
+      case WORKER_STARTED:
+        break;
+    }
   }
 
   private class LabelListener {
@@ -182,16 +232,41 @@ public class ImagePanel extends WebPanel {
     private boolean listenerEnabled;
     private ImageCategoryProperty key;
 
-    public LabelListener(WebLabel label, ImageCategoryProperty key) {
+    public LabelListener(WebLabel label, final ImageCategoryProperty key) {
       this.label = label;
       this.key = key;
       this.listenerEnabled = false;
       DragAndDrop dropFile = new DragAndDrop(ImagePanel.this.mr) {
         @Override
         public void getFiles(List<File> files) {
-          // TODO
-          for (File file : files) {
-            System.out.println(file.getName());
+          for (File file : files) {// FIXME ? need to be improved ?
+            String mimetype = new MimetypesFileTypeMap().getContentType(file);
+            if (mimetype.contains("/")) {
+              String type = mimetype.split("/")[0];
+              if (type.equals("image")) {
+                BufferedImage readImage = null;
+                Integer h;
+                Integer w;
+                try {
+                  readImage = ImageIO.read(file);
+                  h = readImage.getHeight();
+                  w = readImage.getWidth();
+                } catch (Exception e) {
+                  h = null;
+                  w = null;
+                }
+                Map<ImageInfo.ImageProperty, String> fields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+                try {
+                  fields.put(ImageInfo.ImageProperty.url, file.toURI().toURL().toExternalForm());
+                  fields.put(ImageInfo.ImageProperty.height, "" + h);
+                  fields.put(ImageInfo.ImageProperty.width, "" + w);
+
+                  galleryPanels.get(key).addImage(new UIMediaImage(new ImageInfo(-1, fields, key)));
+                } catch (MalformedURLException ex) {
+                  UISettings.LOGGER.log(Level.SEVERE, null, ex);
+                }
+              }
+            }
           }
         }
       };
@@ -234,17 +309,7 @@ public class ImagePanel extends WebPanel {
 
     imageTb = new com.alee.laf.toolbar.WebToolBar();
     imageLbl = new com.alee.laf.label.WebLabel();
-    thumbnailLbl = new com.alee.laf.label.WebLabel();
-    thumbLbl = new com.alee.laf.label.WebLabel();
-    fanartLbl = new com.alee.laf.label.WebLabel();
-    fanarttLbl = new com.alee.laf.label.WebLabel();
-    webLabel1 = new com.alee.laf.label.WebLabel();
-    cdartLbl = new com.alee.laf.label.WebLabel();
-    webLabel3 = new com.alee.laf.label.WebLabel();
-    logoLbl = new com.alee.laf.label.WebLabel();
-
-    setMinimumSize(new java.awt.Dimension(150, 500));
-    setPreferredSize(new java.awt.Dimension(150, 700));
+    imagePanel = new com.alee.laf.panel.WebPanel();
 
     imageTb.setFloatable(false);
     imageTb.setRollover(true);
@@ -255,43 +320,18 @@ public class ImagePanel extends WebPanel {
     imageLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
     imageTb.add(imageLbl);
 
-    thumbnailLbl.setText("Thumbnail");
-    thumbnailLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-
-    thumbLbl.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-    thumbLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
-    fanartLbl.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-    fanartLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
-    fanarttLbl.setText("Fanart");
-    fanarttLbl.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-
-    webLabel1.setText("Cdart");
-    webLabel1.setFont(new java.awt.Font("Ubuntu", 1, 12)); // NOI18N
-
-    cdartLbl.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-
-    webLabel3.setText("Logo");
-
-    logoLbl.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
+    imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.PAGE_AXIS));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(logoLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(cdartLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(imageTb, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(thumbLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(fanartLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(thumbnailLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(fanarttLbl, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(webLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(webLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+      .addGroup(layout.createSequentialGroup()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(imageTb, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -300,34 +340,13 @@ public class ImagePanel extends WebPanel {
         .addContainerGap()
         .addComponent(imageTb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(thumbnailLbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(thumbLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(fanarttLbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(fanartLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(cdartLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(webLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(18, 18, 18)
-        .addComponent(logoLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(48, Short.MAX_VALUE))
+        .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+        .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.alee.laf.label.WebLabel cdartLbl;
-  private com.alee.laf.label.WebLabel fanartLbl;
-  private com.alee.laf.label.WebLabel fanarttLbl;
   private com.alee.laf.label.WebLabel imageLbl;
+  private com.alee.laf.panel.WebPanel imagePanel;
   private com.alee.laf.toolbar.WebToolBar imageTb;
-  private com.alee.laf.label.WebLabel logoLbl;
-  private com.alee.laf.label.WebLabel thumbLbl;
-  private com.alee.laf.label.WebLabel thumbnailLbl;
-  private com.alee.laf.label.WebLabel webLabel1;
-  private com.alee.laf.label.WebLabel webLabel3;
   // End of variables declaration//GEN-END:variables
 }

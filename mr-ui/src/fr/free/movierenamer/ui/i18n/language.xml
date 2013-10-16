@@ -48,6 +48,11 @@
       <value lang="fr">Coller</value>
     </record>
 
+    <record key="delete">
+      <value lang="en">Delete</value>
+      <value lang="fr">Supprimer</value>
+    </record>
+
     <record key="selectAll">
       <value lang="en">Select all</value>
       <value lang="fr">Tout sélectionner</value>

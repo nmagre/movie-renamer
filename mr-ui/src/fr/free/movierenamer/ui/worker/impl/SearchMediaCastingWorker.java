@@ -25,7 +25,6 @@ import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +83,7 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
     castingList.setModel(castingModel);
     if (infos != null) {
       castingModel.addAll(infos);
-      WorkerManager.fetchImages(infos, castingModel, actorListDim, "ui/unknown.png");
+      WorkerManager.fetchImages(infos, castingModel, /*actorListDim,*/ "ui/unknown.png");
     }
   }
 
