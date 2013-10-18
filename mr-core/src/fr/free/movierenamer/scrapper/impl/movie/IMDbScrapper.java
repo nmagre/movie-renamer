@@ -61,7 +61,7 @@ public class IMDbScrapper extends MovieScrapper {
   private final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
 
   public IMDbScrapper() {
-    super(AvailableLanguages.values());
+    super(AvailableLanguages.en);
   }
 
   @Override

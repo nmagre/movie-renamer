@@ -54,7 +54,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
     this.apikey = key;
   }
 
-  private String imdbIDLookUp(String imdbId) throws Exception {
+  private String tmdbIDLookUp(String imdbId) throws Exception {
     URL searchUrl = new URL("http", host, "/" + version + "/movie/" + imdbId + "?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     return JSONUtils.selectString("id", json);
@@ -65,7 +65,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
     String id = movie.getId().toString();
     switch (movie.getId().getIdType()) {
       case IMDB:
-        id = imdbIDLookUp(id);
+        id = tmdbIDLookUp(id);
         break;
       case TMDB:
         break;
@@ -78,8 +78,8 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     for (String section : new String[]{
-              "backdrops", "posters"
-            }) {
+      "backdrops", "posters"
+    }) {
       List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
       TmdbImageSize imageSize = section.equals("backdrops") ? TmdbImageSize.backdrop : TmdbImageSize.poster;
       int count = 0;
@@ -95,6 +95,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
         if (lang != null && !lang.equals("null")) {
           imageFields.put(ImageInfo.ImageProperty.language, lang);
         }
+
         imageFields.put(ImageInfo.ImageProperty.width, JSONUtils.selectString("width", jsonObj));
         imageFields.put(ImageInfo.ImageProperty.height, JSONUtils.selectString("height", jsonObj));
 

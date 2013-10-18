@@ -23,8 +23,10 @@ import fr.free.movierenamer.ui.swing.SpinningDial;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.URIRequest;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,7 +105,10 @@ public final class ImageUtils {
   public static final Icon LOGO_32 = getIconFromJar("ui/icon-32.png");
   public static final Icon LOGO_48 = getIconFromJar("ui/icon-48.png");
   public static final Icon LOGO_72 = getIconFromJar("ui/icon-72.png");
+  // Misc
   public static final Icon BAN = getIconFromJar("ui/mr-ban.png");
+  public static final Icon NO_IMAGE = getIconFromJar("ui/nothumb.png");
+  public static final Icon NO_IMAGE_H = flipImageHorizontally(NO_IMAGE);
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {
@@ -235,6 +240,26 @@ public final class ImageUtils {
   public Icon resizeIcon(Icon icon, Dimension dim) {
     Image img = iconToImage(icon);
     return new ImageIcon(img.getScaledInstance(dim.width, dim.height, Image.SCALE_DEFAULT));
+  }
+
+  public static Icon flipImageHorizontally(Icon icon) {
+    return flipIcon(icon, 90);
+  }
+
+  public static Icon flipIcon(Icon icon, int angle) {
+    int w = icon.getIconWidth();
+    int h = icon.getIconHeight();
+    int type = BufferedImage.TYPE_INT_RGB;  // other options, see api
+    BufferedImage image = new BufferedImage(h, w, type);
+    Graphics2D g2 = image.createGraphics();
+    double x = (h - w) / 2.0;
+    double y = (w - h) / 2.0;
+    AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+    at.rotate(Math.toRadians(90), w / 2.0, h / 2.0);
+    g2.drawImage(iconToImage(icon), at, null);
+    g2.dispose();
+    icon = new ImageIcon(image);
+    return icon;
   }
 
   private ImageUtils() {

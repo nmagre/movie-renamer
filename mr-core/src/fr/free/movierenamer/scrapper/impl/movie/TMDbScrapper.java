@@ -29,6 +29,7 @@ import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.ScrapperUtils.TmdbImageSize;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
@@ -156,9 +157,9 @@ public class TMDbScrapper extends MovieScrapper {
         }
         Movie movie = new Movie(id, info.getTitle(), info.getOriginalTitle(),
                 thumb, info.getYear());
-        if (movie != null) {
-          resultSet.put(tmdbid, movie);
-        }
+
+        resultSet.put(tmdbid, movie);
+
       } catch (Exception e) {
         // ignore, can't find movie
       }
@@ -177,9 +178,21 @@ public class TMDbScrapper extends MovieScrapper {
     throw new IllegalArgumentException(String.format("Cannot find tmdb id: %s", source));
   }
 
+  private String tmdbIDLookUp(String imdbId) throws Exception {
+    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + imdbId + "?api_key=" + apikey);
+    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+    return JSONUtils.selectString("id", json);
+  }
+
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getId() + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases,keywords");
+
+    String id = movie.getId().toString();
+    if (movie.getId().getIdType() == AvailableApiIds.IMDB) {
+      id = tmdbIDLookUp(id);
+    }
+
+    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases,keywords");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);

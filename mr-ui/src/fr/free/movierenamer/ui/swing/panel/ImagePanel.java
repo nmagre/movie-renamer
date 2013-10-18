@@ -59,7 +59,7 @@ import javax.swing.border.LineBorder;
  *
  * @author Nicolas Magré
  */
-public class ImagePanel extends WebPanel implements IEventListener {
+public class ImagePanel extends WebPanel {
 
   private final Map<ImageCategoryProperty, GalleryPanel> galleryPanels;
   private final Map<ImageCategoryProperty, LabelListener> imageLabels;
@@ -76,7 +76,7 @@ public class ImagePanel extends WebPanel implements IEventListener {
     banner(ImageCategoryProperty.banner, "image.banner", 5.4F);
     private ImageCategoryProperty categoryProperty;
     private String i18nKey;
-    private WebLabel label = new WebLabel(SwingConstants.LEFT);
+    private WebLabel label;
     private LabelListener imageLabel;
     private float ratio;
     private DropTarget dt;
@@ -87,6 +87,7 @@ public class ImagePanel extends WebPanel implements IEventListener {
       this.ratio = ratio;
 
       int height = (int) (pwidth / ratio);
+      label = new WebLabel(SwingConstants.CENTER);
       label.setMinimumSize(new Dimension(pwidth, height));
       label.setPreferredSize(new Dimension(pwidth, height));
       label.setMaximumSize(new Dimension(pwidth, height));
@@ -125,23 +126,21 @@ public class ImagePanel extends WebPanel implements IEventListener {
 
     for (SupportedImages property : SupportedImages.values()) {
       imagePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-      WebLabel label = new WebLabel(SwingConstants.LEFT);
+      WebLabel label = new WebLabel(SwingConstants.CENTER);
       label.setVerticalAlignment(SwingConstants.TOP);
       label.setLanguage(property.getI18nKey());
+      label.setFont(label.getFont().deriveFont(Font.BOLD));
       imagePanel.add(label);
       imagePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
       GalleryPanel galleryPanel = new GalleryPanel(mr, property);
       galleryPanels.put(property.getCategoryProperty(), galleryPanel);
+
       LabelListener imglbl = new LabelListener(property.getLabel(), property.getCategoryProperty());
       imageLabels.put(property.getCategoryProperty(), imglbl);
       imagePanel.add(property.getLabel());
     }
 
-    imagePanel.revalidate();
-
-    // Add ImagePanel to UIEvent receiver
-    UIEvent.addEventListener(ImagePanel.class, this);
   }
 
   public boolean isSupportedImage(ImageCategoryProperty key) {
@@ -216,14 +215,6 @@ public class ImagePanel extends WebPanel implements IEventListener {
     return new ArrayList<ImageCategoryProperty>(galleryPanels.keySet());
   }
 
-  @Override
-  public void UIEventHandler(UIEvent.Event event, IEventInfo param, Object newObject) {
-    switch (event) {
-      case WORKER_STARTED:
-        break;
-    }
-  }
-
   private class LabelListener {
 
     private WebLabel label;
@@ -244,23 +235,10 @@ public class ImagePanel extends WebPanel implements IEventListener {
             if (mimetype.contains("/")) {
               String type = mimetype.split("/")[0];
               if (type.equals("image")) {
-                BufferedImage readImage = null;
-                Integer h;
-                Integer w;
-                try {
-                  readImage = ImageIO.read(file);
-                  h = readImage.getHeight();
-                  w = readImage.getWidth();
-                } catch (Exception e) {
-                  h = null;
-                  w = null;
-                }
+
                 Map<ImageInfo.ImageProperty, String> fields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
                 try {
                   fields.put(ImageInfo.ImageProperty.url, file.toURI().toURL().toExternalForm());
-                  fields.put(ImageInfo.ImageProperty.height, "" + h);
-                  fields.put(ImageInfo.ImageProperty.width, "" + w);
-
                   galleryPanels.get(key).addImage(new UIMediaImage(new ImageInfo(-1, fields, key)));
                 } catch (MalformedURLException ex) {
                   UISettings.LOGGER.log(Level.SEVERE, null, ex);

@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import fr.free.movierenamer.settings.Settings;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.Normalizer;
 
 /**
  * Class StringUtils
@@ -288,6 +289,17 @@ public final class StringUtils {
   public static String removeTrailingBrackets(String name) {
     // remove trailing braces, e.g. Doctor Who (2005) -> Doctor Who
     return trailingParentheses.matcher(name).replaceAll("").trim();
+  }
+
+  public static String normalise(String str) {
+    String string = Normalizer.normalize(str, Normalizer.Form.NFD);
+    return string.replaceAll("[^\\p{ASCII}]", "");
+  }
+
+  public static String normaliseClean(String str) {
+    String string = removeBrackets(str);
+    string = removePunctuation(string);
+    return normalise(string);
   }
 
   public static String generateRandomString(int length) {

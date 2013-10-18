@@ -24,6 +24,7 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
+import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -123,5 +124,10 @@ public class UISearchResult extends Sorter.ISort implements IImage {
   @Override
   public int getId() {
     return searchResult.getMediaId().getId();
+  }
+
+  @Override
+  public Dimension getResize() {
+    return new Dimension(45, 70);
   }
 }

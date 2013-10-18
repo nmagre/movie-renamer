@@ -130,7 +130,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   // Media Panel
   private MediaPanel<? extends MediaInfo> mediaPanel;
   private final MoviePanel moviePnl;
-//  private final TvShowPanel tvShowPanel;
+  //  private final TvShowPanel tvShowPanel;
   private final ComponentTransition containerTransitionMediaPanel;// Media Panel container
   private final ComponentTransition containerTransitionCenterPanel;// Center Panel container
   // Log Panel
@@ -185,7 +185,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     Loading loading = new Loading();
 
-    //Cache.clearAllCache();//FIXME remove !!!
+    Cache.clearAllCache();// FIXME remove !!!
 
     mediaFileSeparatorModel = new EventListModel<UIFile>(mediaFileSeparator);
 
@@ -714,12 +714,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       return;
     }
 
-    imgPnl.clearPanel();
-    mediaPanel.clear();
-    updateRenamedTitle();
-
     // Stop all running workers except search result list image worker (thumbnail in result list)
-    WorkerManager.stopExcept(ImageWorker.class, UISearchResult.class);
+    clearInterface(!CLEAR_MEDIALIST, !CLEAR_SEARCHRESULTLIST, ImageWorker.class, UISearchResult.class);
 
     WorkerManager.searchInfo(this, searchResult);
     if (showMediaPanelChk.isSelected()) {
@@ -733,7 +729,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    * @param mediaList Clear media list
    * @param searchList Clear search list
    */
-  private void clearInterface(boolean clearMediaList, boolean clearSearchResultList) {
+  private void clearInterface(boolean clearMediaList, boolean clearSearchResultList, Class... clazz) {
 
     if (clearMediaList) {
       searchField.setText(null);
@@ -752,6 +748,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     updateRenamedTitle();
     renameBtn.setEnabled(false);
     renameField.setEnabled(false);
+
+    if (clazz.length == 2) {
+      WorkerManager.stopExcept(clazz[0], clazz[1]);
+      return;
+    }
 
     // Stop all running workers
     WorkerManager.stop();

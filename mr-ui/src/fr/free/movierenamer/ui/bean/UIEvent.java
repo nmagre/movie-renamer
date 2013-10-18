@@ -48,8 +48,7 @@ public final class UIEvent {
     SETTINGS,
     EDIT,
     RENAME_FILE,
-    RENAME_FILE_DONE,
-    IMAGE_READY
+    RENAME_FILE_DONE
   }
 
   public static void addEventListener(Class<? extends IEventListener> clazz, IEventListener listener) {

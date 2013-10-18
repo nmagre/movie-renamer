@@ -39,7 +39,6 @@ import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**

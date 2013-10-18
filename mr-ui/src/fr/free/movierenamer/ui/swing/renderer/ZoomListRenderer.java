@@ -56,7 +56,11 @@ public class ZoomListRenderer extends WebListCellRenderer {
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
     UIMediaImage uimedia = (UIMediaImage) value;
-    ZoomImageLbl zlabel = new ZoomImageLbl(uimedia.getInfo().getWidth() + "x" + uimedia.getInfo().getHeight(), uimedia.getIcon(), SwingConstants.CENTER);
+    Icon icon = uimedia.getIcon();
+    String width = uimedia.getInfo().getWidth() != null ? "" + uimedia.getInfo().getWidth() : "" + icon.getIconWidth();
+    String height = uimedia.getInfo().getHeight() != null ? "" + uimedia.getInfo().getWidth() : "" + icon.getIconHeight();
+
+    ZoomImageLbl zlabel = new ZoomImageLbl(width + "x" + height, icon, SwingConstants.CENTER);
     zlabel.setVerticalAlignment(SwingConstants.BOTTOM);
     zlabel.setFont(zlabel.getFont().deriveFont(Font.BOLD));
     zlabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));

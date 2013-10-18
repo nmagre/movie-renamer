@@ -46,12 +46,12 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   @SuppressWarnings("unchecked")
   protected Icon executeInBackground() {
     Icon res = null;
-    for (T image : images) {
+    for (T image : images) {// FIXME ConcurrentModificationException . I don't know why :( (do not impact the software but means that there is a bad behaviour somewhere)
       if (isCancelled()) {
         break;
       }
 
-      res = ImageUtils.getIcon(image.getUri(size), null, defaultImage);
+      res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
       publish(new ImageChunk(res, image.getId()));
     }
 

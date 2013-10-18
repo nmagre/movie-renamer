@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.bean;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.awt.Dimension;
 import java.net.URI;
 import javax.swing.Icon;
 
@@ -30,6 +31,7 @@ import javax.swing.Icon;
  * @author Simon QUÉMÉNEUR
  */
 public class UIPersonImage implements IImage {
+
   private final CastingInfo person;
   private Icon icon = ImageUtils.LOAD_24;
 
@@ -70,4 +72,8 @@ public class UIPersonImage implements IImage {
     return (person != null) ? person.getId() : -1;
   }
 
+  @Override
+  public Dimension getResize() {
+    return new Dimension(45, 70);
+  }
 }

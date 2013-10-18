@@ -24,14 +24,11 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,12 +36,10 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 /**
  * Class AlloGroupScrapper
@@ -55,8 +50,6 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
 
   private final Pattern yearPattern = Pattern.compile("\\d{4}");
   private final Pattern runtimePattern = Pattern.compile("(\\d+)h (\\d+)min");
-  private final Pattern imdbIdPattern = Pattern.compile("tt(\\d+{7})");
-  private final String imdbIdLookupHost = "passion-xbmc.org";
 
   protected interface ITag {
 
@@ -167,7 +160,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
       String year = XPathUtils.selectNode("SPAN/BR[1]/preceding-sibling::text()", infoNode).getTextContent().trim();
 
       originalTitle = originalTitle.replace("(", "").replace(")", "");
-      originalTitle = originalTitle.equals("") ? null : originalTitle;
+      originalTitle = originalTitle.equals("") ? title : originalTitle;
 
       m = yearPattern.matcher(year);
       if (!m.find()) {
@@ -190,11 +183,10 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
         } catch (Exception ex) {
           thumb = null;
         }
-        Movie movie = new Movie(id, info.getTitle(), info.getOriginalTitle(),
-                thumb, info.getYear());
-        if (movie != null) {
-          results.add(movie);
-        }
+        Movie movie = new Movie(id, info.getTitle(), info.getOriginalTitle(), thumb, info.getYear());
+
+        results.add(movie);
+
       } catch (Exception e) {
         // ignore, can't find movie
       }
@@ -323,7 +315,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getId());
-    
+
     multipleFields.put(MovieInfo.MovieMultipleProperty.ids, ids);
     multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
     multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
@@ -386,7 +378,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
     List<ImageInfo> images = new ArrayList<ImageInfo>();
-    IdInfo imdbId = imdbIdLookup(movie.getId());
+    IdInfo imdbId = ScrapperUtils.imdbIdLookup(movie.getId(), movie);
     if (imdbId != null) {
       return super.fetchImagesInfo(new Movie(imdbId, movie.getName(), movie.getOriginalTitle(), movie.getURL(), movie.getYear()));
     }
@@ -424,34 +416,6 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
      }*/
 
     return images;
-  }
-
-  private IdInfo imdbIdLookup(IdInfo alloId) {
-    try {
-      Document dom = URIRequest.getHtmlDocument(new URL("http", imdbIdLookupHost, "/scraper/index2.php?Page=ViewMovie&ID=" + alloId.getId()).toURI());
-      try {
-        String id = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A[contains(@href, 'imdb.com/')]", dom));
-
-        if (id != null && !id.equals("")) {
-          Matcher matcher = imdbIdPattern.matcher(id);
-          if (matcher.find()) {
-            return new IdInfo(Integer.parseInt(matcher.group(1)), ScrapperUtils.AvailableApiIds.IMDB);
-          }
-        }
-      } catch (NullPointerException Ex) {
-        // Imdb id not found
-      }
-    } catch (URISyntaxException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (Exception ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    }
-
-    return null;
   }
 
   private String[] explodeValue(String value) {

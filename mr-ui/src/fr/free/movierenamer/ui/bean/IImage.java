@@ -18,18 +18,22 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.ImageInfo;
+import java.awt.Dimension;
 import java.net.URI;
 import javax.swing.Icon;
 
 /**
  * Interface IImage
- * @author Nicolas MAgré
+ *
+ * @author Nicolas Magré
  */
 public interface IImage extends IIconList {
 
   public void setIcon(Icon icon);
 
   public URI getUri(ImageInfo.ImageSize size);
-  
+
   public int getId();
+
+  public Dimension getResize();
 }

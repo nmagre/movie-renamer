@@ -23,6 +23,7 @@ import static fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel.SupportedImages;
@@ -44,6 +45,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * Class GalleryPanel
@@ -122,6 +125,7 @@ public class GalleryPanel extends WebDialog {
     imageList.setCellRenderer(zoomListRenderer);
     imageList.setModel(imageListModel);
     imageList.setVisibleRowCount(0);
+    imageList.addListSelectionListener(createImageListListener());
 
     zoomSlider.setMinimum(0);
     zoomSlider.setMaximum(100);
@@ -137,13 +141,26 @@ public class GalleryPanel extends WebDialog {
       }
     });
 
-    setPreferredSize(new Dimension(400, 550));
+    bottomTb.addToEnd(nbImagesLbl);
+
+    setPreferredSize(new Dimension(600, 550));
     pack();
 
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
     setLanguage(UIUtils.i18n.getLanguageKey("title"), UISettings.APPNAME, "Gallery");
 
     setLocationRelativeTo(mr);
+  }
+
+  private ListSelectionListener createImageListListener() {
+    return new ListSelectionListener() {
+      @Override
+      public void valueChanged(ListSelectionEvent lse) {
+        if (!lse.getValueIsAdjusting()) {
+          setThumb();
+        }
+      }
+    };
   }
 
   public void addImages(List<UIMediaImage> images) {
@@ -188,6 +205,7 @@ public class GalleryPanel extends WebDialog {
     }
 
     fetchImages(getImageByLanguage(imglang));
+    imageList.setSelectedIndex(0);
   }
 
   public void addImage(UIMediaImage image) {
@@ -201,8 +219,10 @@ public class GalleryPanel extends WebDialog {
       WorkerManager.stop(gworker);
     }
 
+
+    supportedImage.getLabel().setIcon(!imgs.isEmpty() ? ImageUtils.LOAD_24 : supportedImage.getRatio() > 1 ? ImageUtils.NO_IMAGE_H : ImageUtils.NO_IMAGE);
+
     if (!imgs.isEmpty()) {
-      supportedImage.getLabel().setIcon(ImageUtils.LOAD_24);
       gworker = (GalleryWorker) WorkerManager.fetchImages(imgs, this, "ui/unknown.png", ImageInfo.ImageSize.medium);
     }
   }
@@ -219,8 +239,10 @@ public class GalleryPanel extends WebDialog {
 
       if (lang.isKnown()) {
         if (lang.getLang().getCountry().replace("_", "").equalsIgnoreCase(uiimagelang.getCountry())) {
-          limages.add(0, image);
+          limages.add(image);
         }
+      } else if (uiimagelang.equals(Locale.ROOT)) {
+        limages.add(image);
       }
     }
 
@@ -238,12 +260,18 @@ public class GalleryPanel extends WebDialog {
     }
 
     if (!imageListModel.isEmpty()) {
-      int fid = imageListModel.firstElement().getId();
-      if (fid == id) {
-        Image img = ((ImageIcon) icon).getImage();
-        Image newimg = img.getScaledInstance(ImagePanel.pwidth, (int) (ImagePanel.pwidth / supportedImage.getRatio()), java.awt.Image.SCALE_SMOOTH);
-        supportedImage.getLabel().setIcon(new ImageIcon(newimg));
+      if (!(supportedImage.getLabel().getIcon() instanceof ImageIcon)) {
+        setThumb();
       }
+    }
+  }
+
+  private void setThumb() {
+    Icon icon = ((UIMediaImage) imageList.getSelectedValue()).getIcon();
+    if (icon instanceof ImageIcon) {
+      Image img = ((ImageIcon) icon).getImage();
+      Image newimg = img.getScaledInstance(ImagePanel.pwidth, (int) (ImagePanel.pwidth / supportedImage.getRatio()), java.awt.Image.SCALE_SMOOTH);
+      supportedImage.getLabel().setIcon(new ImageIcon(newimg));
     }
   }
 
@@ -255,11 +283,13 @@ public class GalleryPanel extends WebDialog {
     if (gworker != null && !gworker.isDone()) {
       WorkerManager.stop(gworker);
     }
-    supportedImage.getLabel().setIcon(null);
+
     languageCbb.removeItemListener(languageChangeListener);
     images.clear();
+    imageListModel.clear();
     languagesModel.removeAllElements();
     languages.clear();
+    nbImagesLbl.setText(null);
   }
 
   /**
@@ -271,6 +301,7 @@ public class GalleryPanel extends WebDialog {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    nbImagesLbl = new com.alee.laf.label.WebLabel();
     topTb = new com.alee.laf.toolbar.WebToolBar();
     languageCbb = new com.alee.laf.combobox.WebComboBox();
     bottomTb = new com.alee.laf.toolbar.WebToolBar();
@@ -280,6 +311,8 @@ public class GalleryPanel extends WebDialog {
     imagePnl = new com.alee.laf.panel.WebPanel();
     imageListSp = new javax.swing.JScrollPane();
     imageList = new com.alee.laf.list.WebList();
+
+    nbImagesLbl.setText("webLabel1");
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -320,6 +353,7 @@ public class GalleryPanel extends WebDialog {
   private javax.swing.JScrollPane imageListSp;
   private com.alee.laf.panel.WebPanel imagePnl;
   private com.alee.laf.combobox.WebComboBox languageCbb;
+  private com.alee.laf.label.WebLabel nbImagesLbl;
   private com.alee.laf.toolbar.WebToolBar topTb;
   private com.alee.laf.slider.WebSlider zoomSlider;
   private com.alee.laf.label.WebLabel zoominLbl;
