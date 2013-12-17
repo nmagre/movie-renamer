@@ -30,7 +30,7 @@ import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
-import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
+import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFileInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
@@ -39,12 +39,13 @@ import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
+import fr.free.movierenamer.ui.worker.impl.SearchMediaTrailerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaWorker;
 import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Class WorkerManager
@@ -53,7 +54,7 @@ import java.util.Queue;
  */
 public final class WorkerManager {
 
-  private static final Queue<AbstractWorker<?, ?>> workerQueue = new LinkedList<AbstractWorker<?, ?>>();
+  private static final Queue<AbstractWorker<?, ?>> workerQueue = new ConcurrentLinkedQueue<>();
 
   private WorkerManager() {
     throw new UnsupportedOperationException();
@@ -84,25 +85,29 @@ public final class WorkerManager {
     start(imagesWorker);
   }
 
-  public static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {
+  public static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {// not used
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
     start(castingWorker);
   }
 
+  public static void searchTrailer(MovieRenamer mr, UISearchResult searchResult) {
+    SearchMediaTrailerWorker trailerWorker = new SearchMediaTrailerWorker(mr, searchResult);
+    start(trailerWorker);
+  }
+
   public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, String defaultImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, defaultImage);
+    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, defaultImage);
     start(imagesWorker);
   }
 
   public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, String defaultImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<T>(images, model, size, defaultImage);
+    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, defaultImage);
     start(imagesWorker);
   }
 
-  public static AbstractImageWorker<UIMediaImage> fetchImages(List<UIMediaImage> images, GalleryPanel gallery, String defaultImage, ImageInfo.ImageSize size) {
+  public static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, String defaultImage, ImageInfo.ImageSize size) {
     AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, defaultImage);
     start(GalleryWorker);
-    return GalleryWorker;
   }
 
   public static void rename(File source, String RenamedTitle) {
@@ -117,25 +122,23 @@ public final class WorkerManager {
   /**
    * Update worker queue
    */
-  public static void updateWorkerQueue() {
-    synchronized (workerQueue) {
-      boolean isEmpty = workerQueue.isEmpty();
-      Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
-      while (iterator.hasNext()) {
-        AbstractWorker<?, ?> worker = iterator.next();
-        if (worker.isDone()) {
-          iterator.remove();
-          UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, worker);
-        }
+  public static synchronized void updateWorkerQueue() {
+    boolean isEmpty = workerQueue.isEmpty();
+    Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
+    while (iterator.hasNext()) {
+      AbstractWorker<?, ?> worker = iterator.next();
+      if (worker.isDone()) {
+        iterator.remove();
+        UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, worker);
       }
+    }
 
-      if (workerQueue.isEmpty()) {
-        if (!isEmpty) {
-          UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
-        }
-      } else {
-        UIEvent.fireUIEvent(UIEvent.Event.WORKER_RUNNING, MovieRenamer.class, workerQueue.peek());
+    if (workerQueue.isEmpty()) {
+      if (!isEmpty) {
+        UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
       }
+    } else {
+      UIEvent.fireUIEvent(UIEvent.Event.WORKER_RUNNING, MovieRenamer.class, workerQueue.peek());
     }
   }
 
@@ -153,9 +156,9 @@ public final class WorkerManager {
    *
    * @param worker Worker to start
    */
-  private static void start(AbstractWorker<?, ?> worker, boolean addQueue, UIEvent.Event event) {
-    synchronized (workerQueue) {
-      if (addQueue) {
+  private static void start(AbstractWorker<?, ?> worker, boolean addToQueue, UIEvent.Event event) {
+    synchronized (WorkerManager.class) {
+      if (addToQueue) {
         workerQueue.add(worker);
       }
       UIEvent.fireUIEvent(event, worker);
@@ -167,7 +170,7 @@ public final class WorkerManager {
    * Stop all running worker
    */
   public static void stop() {
-    synchronized (workerQueue) {
+    synchronized (WorkerManager.class) {
       boolean isEmpty = workerQueue.isEmpty();
       AbstractWorker<?, ?> worker = workerQueue.poll();
       while (worker != null) {
@@ -184,26 +187,6 @@ public final class WorkerManager {
   }
 
   /**
-   * Stop running worker
-   *
-   * @param worker Worker to stop
-   */
-  public static void stop(AbstractImageWorker<?> worker) {
-    synchronized (workerQueue) {
-      Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
-      while (iterator.hasNext()) {
-        AbstractWorker<?, ?> rworker = iterator.next();
-        if (rworker == worker) {
-          if (!worker.isDone()) {
-            worker.cancel(true);
-          }
-        }
-      }
-    }
-    updateWorkerQueue();
-  }
-
-  /**
    * Stop all running workers except worker with class "clazz" and generic super
    * class "genSuperClazz"
    *
@@ -211,7 +194,7 @@ public final class WorkerManager {
    * @param genSuperClazz Generic super class (object class)
    */
   public static void stopExcept(Class clazz, Class genSuperClazz) {
-    synchronized (workerQueue) {
+    synchronized (WorkerManager.class) {
       Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
       while (iterator.hasNext()) {
         AbstractWorker<?, ?> rworker = iterator.next();

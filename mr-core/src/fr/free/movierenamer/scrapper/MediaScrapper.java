@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     } catch (Exception ex) {
       genericClazz = (Class<MI>) ((ParameterizedType) getClass().getSuperclass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
-    
+
     MI info = (cache != null) ? cache.getData(search, language, genericClazz) : null;
     if (info != null) {
       return info;
@@ -116,7 +116,6 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
       casting = null;
     }
     info.setCasting(casting);
-    // info.setImages(getImages(searchResult, language));
 
     // cache results and return
     return (cache != null) ? cache.putData(search, language, info) : info;

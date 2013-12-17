@@ -1,6 +1,19 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * movie-renamer-core
+ * Copyright (C) 2012-2013 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.free.movierenamer.scrapper.impl;
 
@@ -10,11 +23,13 @@ import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
 /**
+ * Class SubtitleSeekerScrapper
  *
  * @author Nicolas Magré
  */
@@ -34,23 +49,25 @@ public class SubtitleSeekerScrapper extends SubtitleScrapper {// TODO
 
   @Override
   protected List<Subtitle> searchSubtitles(String query, Locale language) throws Exception {//TODO
-    //URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
+    // http://api.subtitleseeker.com/search/
+    URL searchUrl = new URL("http", host, "/search/?api_key=" + apikey.trim() + "&search_in=movie_titles&return_type=json&q=" + URIRequest.encode(query));
+    System.out.println(searchUrl);
     return null;
   }
 
   @Override
   protected List<Subtitle> searchSubtitlesById(IdInfo id, Locale language) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return null;
   }
 
   @Override
   protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale language) throws Exception {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return null;
   }
 
   @Override
   protected Locale getDefaultLanguage() {
-    throw new UnsupportedOperationException("Not supported yet.");
+    return Locale.ENGLISH;
   }
 
   @Override

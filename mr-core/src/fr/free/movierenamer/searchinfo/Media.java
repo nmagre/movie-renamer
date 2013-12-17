@@ -31,15 +31,25 @@ public abstract class Media extends Hyperlink {
   private static final long serialVersionUID = 1L;
   protected int year;
   protected IdInfo idInfo;
+  protected IdInfo imdbIdInfo;
 
   protected Media() {
     // used by serializer
   }
 
-  public Media(IdInfo id, String title, String originalTitle, URL thumb, int year) {
+  public Media(IdInfo imdbIdInfo, IdInfo id, String title, String originalTitle, URL thumb, int year) {
     super(title, originalTitle, thumb);
-    this.year = year;
+    this.imdbIdInfo = imdbIdInfo;
     this.idInfo = id;
+    this.year = year;
+  }
+
+  public IdInfo getImdbId() {
+    return imdbIdInfo;
+  }
+
+  public void setImdbId(IdInfo imdbId) {
+    this.imdbIdInfo = imdbId;
   }
 
   public IdInfo getMediaId() {
@@ -62,15 +72,16 @@ public abstract class Media extends Hyperlink {
 
   @Override
   public String toString() {
+    IdInfo id = idInfo != null ? idInfo : imdbIdInfo;
     if (year > 0) {
-      if (idInfo.getId() > 0) {
-        return super.toString() + String.format(" (%04d) (id:%d)", year, idInfo.getId());
+      if (id.getId() > 0) {
+        return super.toString() + String.format(" (%04d) (id:%d)", year, id.getId());
       } else {
         return super.toString() + String.format(" (%04d)", year);
       }
     } else {
-      if (idInfo.getId() > 0) {
-        return super.toString() + String.format(" (id:%d)", idInfo.getId());
+      if (id.getId() > 0) {
+        return super.toString() + String.format(" (id:%d)", id.getId());
       } else {
         return super.toString();
       }

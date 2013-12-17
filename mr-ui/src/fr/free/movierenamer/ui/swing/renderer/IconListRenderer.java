@@ -57,6 +57,7 @@ public class IconListRenderer<T extends IIconList> extends WebListCellRenderer {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 

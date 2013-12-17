@@ -33,11 +33,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 
 import fr.free.movierenamer.settings.Settings;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Class LocaleUtils
@@ -55,47 +50,47 @@ public final class LocaleUtils {
   // Only most common country for video media
   private static enum Countries implements Country {
 
-    ARGENTINA(new Locale("", "AR"), "Argentine", "Argentinien"),
-    AUSTRALIA(new Locale("", "AU"), "Australie", "Australien"),
-    AUSTRIA(new Locale("", "AT"), "Autriche", "Österreich"),
-    BELGIUM(new Locale("", "BE"), "Belgique", "Belgien", "Belgio", "Bélgica"),
-    BRAZIL(new Locale("", "BR"), "Brésil", "Brasilien", "Brasile", "Brasil"),
-    BULGARIA(new Locale("", "BG"), "Bulgarie", "Bulgarien"),
-    CANADA(new Locale("", "CA"), "Kanada", "Canadá"),
-    CHINA(new Locale("", "CN"), "Chine"),
-    COLOMBIA(new Locale("", "CO"), "Colombie", "Kolumbien"),
-    COSTA_RICA(new Locale("", "CR"), "Costarica"),
-    CZECH_REPUBLIC(new Locale("", "CZ"), "République tchèque", "Tschechische Republik", "Repubblica Ceca", "República Checa"),
-    DENMARK(new Locale("", "DK"), "Danemark", "Dänemark", "Danimarca", "Dinamarca"),
-    FINLAND(new Locale("", "FI"), "Finlande", "Finnland", "Finlandia"),
-    FRANCE(new Locale("", "FR"), "Frankreich", "Francia"),
-    GERMANY(new Locale("", "DE"), "Allemagne", "Deutschland", "Germania", "Alemania"),
-    GREECE(new Locale("", "GR"), "Grèce", "Griechenland", "Grecia"),
+    ARGENTINA(new Locale("", "AR")),
+    AUSTRALIA(new Locale("", "AU")),
+    AUSTRIA(new Locale("", "AT")),
+    BELGIUM(new Locale("", "BE")),
+    BRAZIL(new Locale("", "BR")),
+    BULGARIA(new Locale("", "BG")),
+    CANADA(new Locale("", "CA")),
+    CHINA(new Locale("", "CN")),
+    COLOMBIA(new Locale("", "CO")),
+    COSTA_RICA(new Locale("", "CR")),
+    CZECH_REPUBLIC(new Locale("", "CZ")),
+    DENMARK(new Locale("", "DK")),
+    FINLAND(new Locale("", "FI")),
+    FRANCE(new Locale("", "FR")),
+    GERMANY(new Locale("", "DE")),
+    GREECE(new Locale("", "GR")),
     HONG_KONG(new Locale("", "HK"), "Hong-Kong", "Hongkong", "Hong kong"),
-    HUNGARY(new Locale("", "HU"), "Hongrie", "Ungarn", "Ungheria", "Hungría"),
-    ICELAND(new Locale("", "IS"), "Islande", "Island", "Islanda", "Islandia"),
-    INDIA(new Locale("", "IN"), "Inde", "Indien"),
-    IRAN(new Locale("", "IR"), "Irán"),
-    IRELAND(new Locale("", "IE"), "Irlande", "Irland", "Irlanda"),
-    ITALY(new Locale("", "IT"), "Italie", "Italien", "Italia"),
-    JAPAN(new Locale("", "JP"), "Japon", "Giappone", "Japón"),
-    MALAYSIA(new Locale("", "MY"), "Malaisie", "Malasia"),
-    MEXICO(new Locale("", "MX"), "Mexique", "Mexiko", "Messico", "México"),
-    NETHERLANDS(new Locale("", "NL"), "Pays-Bas", "Niederlande", "Paesi Bassi", "Países Bajos"),
-    NEW_ZEALAND(new Locale("", "NZ"), "Nouvelle-Zélande", "Neozelandese", "Nueva Zelandia"),
-    PAKISTAN(new Locale("", "PK"), "Pakistán"),
-    POLAND(new Locale("", "PL"), "Pologne", "Polen", "Polonia"),
-    PORTUGAL(new Locale("", "PT"), "Portogallo"),
-    ROMANIA(new Locale("", "RO"), "Roumanie", "Rumänien", "Rumania"),
+    HUNGARY(new Locale("", "HU")),
+    ICELAND(new Locale("", "IS")),
+    INDIA(new Locale("", "IN")),
+    IRAN(new Locale("", "IR")),
+    IRELAND(new Locale("", "IE")),
+    ITALY(new Locale("", "IT")),
+    JAPAN(new Locale("", "JP")),
+    MALAYSIA(new Locale("", "MY")),
+    MEXICO(new Locale("", "MX")),
+    NETHERLANDS(new Locale("", "NL")),
+    NEW_ZEALAND(new Locale("", "NZ")),
+    PAKISTAN(new Locale("", "PK")),
+    POLAND(new Locale("", "PL")),
+    PORTUGAL(new Locale("", "PT")),
+    ROMANIA(new Locale("", "RO")),
     RUSSIAN_FEDERATION(new Locale("", "RU"), "Fédération de Russie", "Russia", "Russie", "Federazione Russa", "Federación de Rusia"),
-    SINGAPORE(new Locale("", "SG"), "Singapour", "Singapur", "Singapore"),
-    SOUTH_AFRICA(new Locale("", "ZA"), "Afrique du Sud", "Südafrika", "Sudafrica", "Sudáfrica"),
-    SPAIN(new Locale("", "ES"), "Espagne", "Spanien", "Spagna", "España"),
-    SWEDEN(new Locale("", "SE"), "Suède", "Schweden", "Svezia", "Suecia"),
-    SWITZERLAND(new Locale("", "CH"), "Suisse", "Schweiz", "Svizzera", "Suiza"),
-    THAILAND(new Locale("", "TH"), "Thaïlande", "Thailand", "Thailandia", "Tailandia"),
-    UNITED_KINGDOM(new Locale("", "GB"), "Royaume-Uni", "UK", "England", "Angleterre", "Grande-Bretagne", "Vereinigtes Königreich", "Regno Unito", "Reino Unido"),
-    UNITED_STATES(new Locale("", "US"), "United States of America", "USA", "U.S.A.", "États-Unis d'Amérique", "États-Unis", "Vereinigte Staaten", "Stati Uniti", "Estados Unidos");
+    SINGAPORE(new Locale("", "SG")),
+    SOUTH_AFRICA(new Locale("", "ZA")),
+    SPAIN(new Locale("", "ES")),
+    SWEDEN(new Locale("", "SE")),
+    SWITZERLAND(new Locale("", "CH")),
+    THAILAND(new Locale("", "TH")),
+    UNITED_KINGDOM(new Locale("", "GB"), "Royaume-Uni", "UK", "England", "Angleterre", "Grande-Bretagne"),
+    UNITED_STATES(new Locale("", "US"), "United States of America", "USA", "U.S.A.", "États-Unis d'Amérique", "États-Unis");
     private List<String> identifier;
     private final Locale locale;
 
@@ -103,6 +98,8 @@ public final class LocaleUtils {
       this.locale = locale;
       identifier = new ArrayList<String>();
       identifier.addAll(Arrays.asList(countries));
+      String ident = getLocaleProperty("country." + locale.getCountry());
+      identifier.addAll(Arrays.asList(ident.split("\\|")));
     }
 
     public List<String> getIdentifier() {
@@ -142,6 +139,7 @@ public final class LocaleUtils {
       this.name = name;
     }
 
+    @Override
     public String getDisplayName() {
       return name;
     }
@@ -210,39 +208,40 @@ public final class LocaleUtils {
   // @see http://www.roseindia.net/tutorials/i18n/locales-list.shtml
   private static enum Languages implements Language {
 
-    Arabic(new Locale("ar", ""), "Arabe", "Arabisch", "Arabo", "árabe"),
-    Bulgarian(new Locale("bg", ""), "Bulgare", "Bulgarisch", "Bulgarian", "Búlgaro"),
-    Chinese(new Locale("zh", ""), "Chinois", "Cinese", "Chino"),
-    Croatian(new Locale("hr", ""), "Croate", "kroatisch", "Croato", "Croata"),
-    Dutch(new Locale("nl", ""), "Néerlandais", "Holländer", "Olandese", "Holandés"),
-    English(new Locale("en", ""), "Anglais", "Englisch", "Inglese", "Inglés"),
-    Finnish(new Locale("fi", ""), "Finlandais", "Finnisch", "Finlandese", "Finlandés"),
-    French(new Locale("fr", ""), "Français", "Französisch", "Francese"),
-    German(new Locale("de", ""), "Allemand", "Deutsch", "Tedesco", "Alemán"),
-    Greek(new Locale("el", ""), "Grecque", "Griechisch", "Greco", "Griego"),
+    Arabic(new Locale("ar", "")),
+    Bulgarian(new Locale("bg", "")),
+    Chinese(new Locale("zh", "")),
+    Croatian(new Locale("hr", "")),
+    Dutch(new Locale("nl", "")),
+    English(new Locale("en", "")),
+    Finnish(new Locale("fi", "")),
+    French(new Locale("fr", "")),
+    German(new Locale("de", "")),
+    Greek(new Locale("el", "")),
     Hebrew(new Locale("iw", ""), "Hébreu", "Hebräisch", "Ebraico", "Hebreo"),
-    Hungarian(new Locale("hu", ""), "Hongrois", "Ungarisch", "Ungherese", "Húngaro"),
-    Icelandic(new Locale("is", ""), "Islandais", "Isländisch", "Islandese", "Islandés"),
-    Italian(new Locale("it", ""), "Italien", "Italienisch", "italiano"),
-    Japanese(new Locale("ja", ""), "Japonais", "Japanisch", "Giapponese", "Japonés"),
-    Korean(new Locale("ko", ""), "Coréen", "Koreanisch", "Coreano"),
-    Norwegian(new Locale("no", ""), "Norvégien", "Norwegisch", "Norvegese", "Noruego"),
-    Polish(new Locale("pl", ""), "Polonais", "Polnisch", "Polacco", "Polaco"),
-    Portuguese(new Locale("pt", ""), "Portugais", "Portugiesisch", "Portoghese", "Portugués"),
-    Romanian(new Locale("ro", ""), "Roumain", "Rumänisch", "Rumeno", "Rumano"),
-    Russian(new Locale("ru", ""), "Russe", "Russisch", "Russo", "Ruso"),
-    Spanish(new Locale("es", ""), "Espagnol", "Spanisch", "Spagnolo", "Español"),
-    Swedish(new Locale("sv", ""), "Suédois", "Schwedisch", "Svedese", "Sueco"),
-    Turkish(new Locale("tr", ""), "Turc", "Türkisch", "Turco"),
-    Ukrainian(new Locale("uk", ""), "Ukrainien", "Ukrainisch", "Ucraino", "Ucranio"),
-    Unknown(Locale.ROOT);
-    private List<String> identifier;
+    Hungarian(new Locale("hu", "")),
+    Icelandic(new Locale("is", "")),
+    Italian(new Locale("it", "")),
+    Japanese(new Locale("ja", "")),
+    Korean(new Locale("ko", "")),
+    Norwegian(new Locale("no", "")),
+    Polish(new Locale("pl", "")),
+    Portuguese(new Locale("pt", "")),
+    Romanian(new Locale("ro", "")),
+    Russian(new Locale("ru", "")),
+    Spanish(new Locale("es", "")),
+    Swedish(new Locale("sv", "")),
+    Turkish(new Locale("tr", "")),
+    Ukrainian(new Locale("uk", ""));
+    private final List<String> identifier;
     private final Locale locale;
 
     Languages(Locale locale, String... langs) {
       this.locale = locale;
       identifier = new ArrayList<String>();
       identifier.addAll(Arrays.asList(langs));
+      String ident = getLocaleProperty("language." + locale.getLanguage());
+      identifier.addAll(Arrays.asList(ident.split("\\|")));
     }
 
     public List<String> getIdentifier() {
@@ -456,6 +455,7 @@ public final class LocaleUtils {
    *
    * @param bundleKey CacheKey to find
    * @param defaultValue Default value
+   * @param lBundle
    * @return String depends on locale or default value if key does not exist
    */
   public static String i18n(String bundleKey, String defaultValue, ResourceBundle lBundle) {
@@ -465,6 +465,10 @@ public final class LocaleUtils {
 
     Settings.LOGGER.log(Level.CONFIG, String.format("No internationlization found for %s, use default value", bundleKey));
     return defaultValue;
+  }
+
+  private static String getLocaleProperty(String key) {
+    return ResourceBundle.getBundle(LocaleUtils.class.getName(), Locale.ROOT).getString(key);
   }
 
   private LocaleUtils() {

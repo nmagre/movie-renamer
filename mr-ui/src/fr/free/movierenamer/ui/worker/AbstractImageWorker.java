@@ -19,8 +19,11 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.IImage;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.utils.ClassUtils;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.Icon;
 
 /**
@@ -46,17 +49,24 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   @SuppressWarnings("unchecked")
   protected Icon executeInBackground() {
     Icon res = null;
-    for (T image : images) {// FIXME ConcurrentModificationException . I don't know why :( (do not impact the software but means that there is a bad behaviour somewhere)
-      if (isCancelled()) {
-        break;
-      }
+    try {
 
-      res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
-      publish(new ImageChunk(res, image.getId()));
+      for (T image : images) {
+        if (isCancelled()) {
+          break;
+        }
+
+        res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
+        publish(new ImageChunk(res, image.getId()));
+      }
+    } catch (Exception ex) {
+      UISettings.LOGGER.log(Level.SEVERE, getName() + "\n\n" + ClassUtils.getStackTrace(ex));
     }
 
     return res;
   }
+
+  protected abstract String getName();
 
   @Override
   protected void workerDone() throws Exception {

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.free.movierenamer.ui.utils;
 
@@ -32,91 +32,81 @@ import javax.swing.Icon;
 public abstract class FlagUtils {
 
   //Unknown flag
-  private static final Icon Unknown = ImageUtils.getIconFromJar("country/unknown.png");
+  public static final Icon Unknown = ImageUtils.getIconFromJar("country/unknown.png");
 
   // Only most common flag for video media
   private enum FlagsIcon {
 
-    ara(ImageUtils.getIconFromJar("country/ara.png")),
-    ar(ImageUtils.getIconFromJar("country/ar.png")),
-    at(ImageUtils.getIconFromJar("country/at.png")),
-    au(ImageUtils.getIconFromJar("country/au.png")),
-    az(ImageUtils.getIconFromJar("country/tr.png")),
-    be(ImageUtils.getIconFromJar("country/be.png")),
-    bg(ImageUtils.getIconFromJar("country/bg.png")),
-    br(ImageUtils.getIconFromJar("country/br.png")),
-    ca(ImageUtils.getIconFromJar("country/ca.png")),
-    ch(ImageUtils.getIconFromJar("country/ch.png")),
-    cn(ImageUtils.getIconFromJar("country/cn.png")),
-    co(ImageUtils.getIconFromJar("country/co.png")),
-    cr(ImageUtils.getIconFromJar("country/cr.png")),
-    cs(ImageUtils.getIconFromJar("country/cs.png")),
-    cz(ImageUtils.getIconFromJar("country/cz.png")),
-    da(ImageUtils.getIconFromJar("country/da.png")),
-    de(ImageUtils.getIconFromJar("country/de.png")),
-    dk(ImageUtils.getIconFromJar("country/dk.png")),
-    el(ImageUtils.getIconFromJar("country/el.png")),
-    en(ImageUtils.getIconFromJar("country/gb.png")),
-    es(ImageUtils.getIconFromJar("country/es.png")),
-    et(ImageUtils.getIconFromJar("country/et.png")),
-    fa(ImageUtils.getIconFromJar("country/fa.png")),
-    fi(ImageUtils.getIconFromJar("country/fi.png")),
-    fr(ImageUtils.getIconFromJar("country/fr.png")),
-    gb(ImageUtils.getIconFromJar("country/gb.png")),
-    gr(ImageUtils.getIconFromJar("country/gr.png")),
-    he(ImageUtils.getIconFromJar("country/he.png")),
-    hi(ImageUtils.getIconFromJar("country/hi.png")),
-    hk(ImageUtils.getIconFromJar("country/hk.png")),
-    hr(ImageUtils.getIconFromJar("country/hr.png")),
-    hu(ImageUtils.getIconFromJar("country/hu.png")),
-    hy(ImageUtils.getIconFromJar("country/hy.png")),
-    id(ImageUtils.getIconFromJar("country/id.png")),
-    ie(ImageUtils.getIconFromJar("country/ie.png")),
-    in(ImageUtils.getIconFromJar("country/in.png")),
-    ir(ImageUtils.getIconFromJar("country/ir.png")),
-    is(ImageUtils.getIconFromJar("country/is.png")),
-    it(ImageUtils.getIconFromJar("country/it.png")),
-    iw(ImageUtils.getIconFromJar("country/iw.png")),
-    ja(ImageUtils.getIconFromJar("country/ja.png")),
-    jp(ImageUtils.getIconFromJar("country/jp.png")),
-    ko(ImageUtils.getIconFromJar("country/ko.png")),
-    la(ImageUtils.getIconFromJar("country/la.png")),
-    lt(ImageUtils.getIconFromJar("country/lt.png")),
-    lv(ImageUtils.getIconFromJar("country/lv.png")),
-    mc(ImageUtils.getIconFromJar("country/mc.png")),
-    mk(ImageUtils.getIconFromJar("country/mk.png")),
-    ms(ImageUtils.getIconFromJar("country/ms.png")),
-    mx(ImageUtils.getIconFromJar("country/mx.png")),
-    my(ImageUtils.getIconFromJar("country/my.png")),
-    nl(ImageUtils.getIconFromJar("country/nl.png")),
-    no(ImageUtils.getIconFromJar("country/no.png")),
-    nz(ImageUtils.getIconFromJar("country/nz.png")),
-    pb(ImageUtils.getIconFromJar("country/pb.png")),
-    pk(ImageUtils.getIconFromJar("country/pk.png")),
-    pl(ImageUtils.getIconFromJar("country/pl.png")),
-    pr(ImageUtils.getIconFromJar("country/pr.png")),
-    pt(ImageUtils.getIconFromJar("country/pt.png")),
-    ro(ImageUtils.getIconFromJar("country/ro.png")),
-    ru(ImageUtils.getIconFromJar("country/ru.png")),
-    se(ImageUtils.getIconFromJar("country/se.png")),
-    sg(ImageUtils.getIconFromJar("country/sg.png")),
-    sk(ImageUtils.getIconFromJar("country/sk.png")),
-    sl(ImageUtils.getIconFromJar("country/sl.png")),
-    sq(ImageUtils.getIconFromJar("country/sq.png")),
-    sr(ImageUtils.getIconFromJar("country/sr.png")),
-    sv(ImageUtils.getIconFromJar("country/sv.png")),
-    th(ImageUtils.getIconFromJar("country/th.png")),
-    tr(ImageUtils.getIconFromJar("country/tr.png")),
-    uk(ImageUtils.getIconFromJar("country/uk.png")),
-    unknown(ImageUtils.getIconFromJar("country/unknown.png")),
-    us(ImageUtils.getIconFromJar("country/us.png")),
-    vi(ImageUtils.getIconFromJar("country/vi.png")),
-    za(ImageUtils.getIconFromJar("country/za.png")),
-    zh(ImageUtils.getIconFromJar("country/zh.png"));
-    private final Icon flag;
+    AR("es", ImageUtils.getIconFromJar("country/ar.png")),
+    AU("en", ImageUtils.getIconFromJar("country/au.png")),
+    AT("de", ImageUtils.getIconFromJar("country/at.png")),
+    BE("fr", ImageUtils.getIconFromJar("country/be.png")),
+    BR("pt", ImageUtils.getIconFromJar("country/br.png")),
+    BG("bg", ImageUtils.getIconFromJar("country/bg.png"), true),
+    CA("en", ImageUtils.getIconFromJar("country/ca.png")),
+    CN("zh", ImageUtils.getIconFromJar("country/cn.png"), true),
+    CO("es", ImageUtils.getIconFromJar("country/co.png")),
+    CR("es", ImageUtils.getIconFromJar("country/cr.png")),
+    CZ("cs", ImageUtils.getIconFromJar("country/cz.png"), true),
+    DK("da", ImageUtils.getIconFromJar("country/dk.png"), true),
+    FI("fi", ImageUtils.getIconFromJar("country/fi.png"), true),
+    FR("fr", ImageUtils.getIconFromJar("country/fr.png"), true),
+    DE("de", ImageUtils.getIconFromJar("country/de.png"), true),
+    GR("el", ImageUtils.getIconFromJar("country/gr.png"), true),
+    HK("zh", ImageUtils.getIconFromJar("country/hk.png")),
+    HU("hu", ImageUtils.getIconFromJar("country/hu.png"), true),
+    IS("is", ImageUtils.getIconFromJar("country/is.png"), true),
+    IN("hi", ImageUtils.getIconFromJar("country/in.png"), true),
+    IR("fa", ImageUtils.getIconFromJar("country/ir.png"), true),
+    IE("ga", ImageUtils.getIconFromJar("country/ie.png"), true),
+    IT("it", ImageUtils.getIconFromJar("country/it.png"), true),
+    JP("ja", ImageUtils.getIconFromJar("country/jp.png"), true),
+    MY("ms", ImageUtils.getIconFromJar("country/my.png"), true),
+    MX("es", ImageUtils.getIconFromJar("country/mx.png")),
+    NL("nl", ImageUtils.getIconFromJar("country/nl.png"), true),
+    NZ("en", ImageUtils.getIconFromJar("country/nz.png")),
+    PK("ur", ImageUtils.getIconFromJar("country/pk.png"), true),
+    PL("pl", ImageUtils.getIconFromJar("country/pl.png"), true),
+    PT("pt", ImageUtils.getIconFromJar("country/pt.png"), true),
+    RO("ro", ImageUtils.getIconFromJar("country/ro.png"), true),
+    RU("ru", ImageUtils.getIconFromJar("country/ru.png"), true),
+    SG("zh", ImageUtils.getIconFromJar("country/sg.png")),
+    ZA("en", ImageUtils.getIconFromJar("country/za.png")),
+    ES("es", ImageUtils.getIconFromJar("country/es.png"), true),
+    SE("sv", ImageUtils.getIconFromJar("country/se.png"), true),
+    CH("fr", ImageUtils.getIconFromJar("country/ch.png")),
+    TH("th", ImageUtils.getIconFromJar("country/th.png"), true),
+    GB("en", ImageUtils.getIconFromJar("country/gb.png"), true),
+    US("en", ImageUtils.getIconFromJar("country/us.png")),
+    UA("uk", ImageUtils.getIconFromJar("country/ua.png"), true),
+    TR("tr", ImageUtils.getIconFromJar("country/tr.png"), true),
+    HR("hr", ImageUtils.getIconFromJar("country/hr.png"), true),
+    IL("iw", ImageUtils.getIconFromJar("country/il.png"), true),
+    KR("ko", ImageUtils.getIconFromJar("country/kr.png"), true),
+    NO("no", ImageUtils.getIconFromJar("country/no.png"), true),
+    SI("sl", ImageUtils.getIconFromJar("country/si.png"), true),
+    MA("ar", ImageUtils.getIconFromJar("country/ma.png"), true);
 
-    private FlagsIcon(Icon flag) {
+    private final Icon flag;
+    private final String language;
+    private final boolean defaultFlag;
+
+    private FlagsIcon(String language, Icon flag) {
+      this(language, flag, false);
+    }
+
+    private FlagsIcon(String language, Icon flag, boolean defaultFlag) {
+      this.language = language;
       this.flag = flag;
+      this.defaultFlag = defaultFlag;
+    }
+
+    public boolean isDefaultFlag() {
+      return defaultFlag;
+    }
+
+    public String getLanguage() {
+      return language;
     }
 
     public Icon getFlagIcon() {
@@ -124,7 +114,7 @@ public abstract class FlagUtils {
     }
   }
 
-  public static UILang getFlag(String code) {
+  public static UILang getFlagByLang(String code) {
     if (code == null || code.length() == 0 || code.equals("xx")) {// tmdb return xx if there is no language
       return new UILang(null, Unknown);
     }
@@ -135,34 +125,62 @@ public abstract class FlagUtils {
     Locale countryLocale = LocaleUtils.findCountry(code);
 
     try {
-      if (langLocal != null || countryLocale != null) {
-        for (FlagsIcon lFlag : FlagsIcon.values()) {
 
-          if (lFlag.name().equals(code)) {
-            return new UILang(LocaleUtils.AvailableLanguages.valueOf(code), lFlag.getFlagIcon());
-          }
+      for (FlagsIcon lFlag : FlagsIcon.values()) {
 
-          if (langLocal != null) {
-            String language = langLocal.getLanguage();
-            if (language.equals("ar")) {
-              language = "ara";
-            }
+        if (lFlag.isDefaultFlag() && lFlag.getLanguage().equalsIgnoreCase(code)) {
+          return new UILang(LocaleUtils.AvailableLanguages.valueOf(lFlag.getLanguage()), lFlag.getFlagIcon());
+        }
 
-            if (language.equalsIgnoreCase(lFlag.name())) {
-              return new UILang(LocaleUtils.AvailableLanguages.valueOf(code), lFlag.getFlagIcon());
-            }
-          }
+        if (langLocal != null) {
 
-          if (countryLocale != null && langLocal.getCountry().equalsIgnoreCase(lFlag.name())) {
-            return new UILang(LocaleUtils.AvailableLanguages.valueOf(code), lFlag.getFlagIcon());
+          if (lFlag.isDefaultFlag() && lFlag.getLanguage().equalsIgnoreCase(langLocal.getLanguage())) {
+            return new UILang(LocaleUtils.AvailableLanguages.valueOf(lFlag.getLanguage()), lFlag.getFlagIcon());
           }
         }
+      }
+
+    } catch (IllegalArgumentException ex) {
+      // No flag image :(
+    }
+
+    UISettings.LOGGER.log(Level.WARNING, String.format("Flag not found : %s", code));
+
+    return new UILang(null, Unknown);
+  }
+
+  public static Icon getFlagByCountry(String code) {
+    if (code == null || code.length() == 0 || code.equals("xx")) {// tmdb return xx if there is no language
+      return Unknown;
+    }
+
+    code = code.toLowerCase().trim();
+
+    Locale langLocal = LocaleUtils.findLanguage(code);
+    Locale countryLocale = LocaleUtils.findCountry(code);
+
+    try {
+
+      for (FlagsIcon lFlag : FlagsIcon.values()) {
+
+        if (lFlag.name().equalsIgnoreCase(code)) {
+          return lFlag.getFlagIcon();
+        }
+
+        if (countryLocale != null) {
+          if (countryLocale.getCountry().equalsIgnoreCase(lFlag.name())) {
+            return lFlag.getFlagIcon();
+          }
+        }
+
       }
     } catch (IllegalArgumentException ex) {
       // No flag image :(
     }
 
     UISettings.LOGGER.log(Level.WARNING, String.format("Flag not found : %s", code));
-    return new UILang(null, Unknown);
+
+    return Unknown;
   }
+
 }

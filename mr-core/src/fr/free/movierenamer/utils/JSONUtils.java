@@ -18,6 +18,7 @@
 package fr.free.movierenamer.utils;
 
 import java.util.AbstractList;
+import java.util.Iterator;
 import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,7 +47,29 @@ public final class JSONUtils {
   public static JSONObject selectFirstObject(final JSONObject rootObject) {
     try {
       JSONObject toSearch = rootObject;
-      return (JSONObject) toSearch.get(toSearch.keySet().iterator().next());
+      Iterator<String> it = toSearch.keySet().iterator();
+      while (it.hasNext()) {
+        String key = it.next();
+        if (key != null) {
+          // If key is empty we try to get next one (empty key is a bug in API)
+          if (key.equals("")) {
+            continue;
+          }
+          return (JSONObject) toSearch.get(key);
+        }
+
+        break;
+      }
+    } catch (Exception e) {
+      //
+    }
+    return null;
+  }
+
+  public static JSONObject selectNextObject(final JSONObject rootObject) {
+    try {
+      JSONObject toSearch = rootObject;
+      return (JSONObject) toSearch.get(toSearch.entrySet().iterator().next());
     } catch (Exception e) {
       //
     }
@@ -97,13 +120,17 @@ public final class JSONUtils {
 
       @Override
       public JSONObject get(int index) {
-        if(array == null) return null;
+        if (array == null) {
+          return null;
+        }
         return (JSONObject) ((JSONArray) array).get(index);
       }
 
       @Override
       public int size() {
-        if(array == null) return 0;
+        if (array == null) {
+          return 0;
+        }
         return ((JSONArray) array).size();
       }
     };

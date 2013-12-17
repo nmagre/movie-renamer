@@ -67,7 +67,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   @Override
   @SuppressWarnings("unchecked")// FIXME
   public List<UISearchResult> executeInBackground() throws Exception {
-    List<UISearchResult> results = new ArrayList<UISearchResult>();
+    List<UISearchResult> results = new ArrayList<>();
     List<? extends Media> res;
 
     if (media != null && scrapper != null) {
@@ -77,7 +77,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return new ArrayList<UISearchResult>();
+          return new ArrayList<>();
         }
 
         results.add(new UISearchResult(res.get(i), scrapper));
@@ -88,6 +88,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected void workerDone() throws Exception {
 
     mr.setSearchEnabled();

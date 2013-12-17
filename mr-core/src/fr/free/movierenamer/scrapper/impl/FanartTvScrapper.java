@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl;
 
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.scrapper.ImageScrapper;
@@ -53,17 +54,21 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
 
   @Override
   protected final List<ImageInfo> fetchImagesInfo(M media) throws Exception {
+    IdInfo mid = media.getMediaId();
+    if (media.getImdbId() != null) {
+      mid = media.getImdbId();
+    }
 
-    switch (media.getMediaId().getIdType()) {
+    switch (mid.getIdType()) {
       case IMDB:
         break;
       case TMDB:
         break;
       default:
-        throw new UnsupportedOperationException(media.getMediaId().getIdType() + " is not supported by " + getName() + " image scrapper");
+        throw new UnsupportedOperationException(mid.getIdType() + " is not supported by " + getName() + " image scrapper");
     }
 
-    URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + media.getMediaId() + "/");// Last slash is required
+    URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + mid + "/");// Last slash is required
 
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     JSONObject jmedia = JSONUtils.selectFirstObject(json);

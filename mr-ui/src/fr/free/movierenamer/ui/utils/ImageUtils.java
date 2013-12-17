@@ -83,9 +83,9 @@ public final class ImageUtils {
   public static final Icon APPLICATIONEXIT_16 = getIconFromJar("ui/16/application-exit.png");
   public static final Icon INFO_16 = getIconFromJar("ui/16/info.png");
   public static final Icon TEXTFILE_16 = getIconFromJar("ui/16/text.png");
-  public static final Icon STAREMPTY_16 = getIconFromJar("ui/16/star-empty.png");
-  public static final Icon STARHALF_16 = getIconFromJar("ui/16/star-half.png");
-  public static final Icon STAR_16 = getIconFromJar("ui/16/star.png");
+  public static final Icon STAREMPTY_16 = getIcon((URL) null, new Dimension(12, 12), "ui/16/star-empty.png");
+  public static final Icon STARHALF_16 = getIcon((URL) null, new Dimension(12, 12), "ui/16/star-half.png");
+  public static final Icon STAR_16 = getIcon((URL) null, new Dimension(12, 12), "ui/16/star.png");
   public static final Icon CLEAR_LIST_16 = getIconFromJar("ui/16/media_playlist_clear.png");
   public static final Icon CASTING_16 = getIconFromJar("ui/16/casting.png");
   public static final Icon EDIT_16 = getIconFromJar("ui/16/edit.png");
@@ -97,6 +97,7 @@ public final class ImageUtils {
   public static final Icon ZOOMIN_16 = getIconFromJar("ui/16/zoom_in.png");
   public static final Icon ZOOMOUT_16 = getIconFromJar("ui/16/zoom_out.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
+  public static final Icon SUBTITLE_16 = getIconFromJar("ui/16/srt.png");
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
   public static final Icon LOAD_8 = new SpinningDial(8, 8);
@@ -195,7 +196,6 @@ public final class ImageUtils {
   public static Icon getIcon(URI imagePth, Dimension dim, String defaultImage) {
     Cache cache = Cache.getCache("long");
     Image img;
-
 
     if (imagePth != null) {
       img = isInCache(imagePth) ? cache.get(imagePth, ImageIcon.class).getImage() : null;

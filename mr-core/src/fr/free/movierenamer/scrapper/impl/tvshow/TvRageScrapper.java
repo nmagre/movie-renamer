@@ -99,7 +99,7 @@ public class TvRageScrapper extends TvShowScrapper {
       URL url = getPosterURL(XPathUtils.getTextContent("link", node));
       int year = XPathUtils.getIntegerContent("started", node);
 
-      searchResults.add(new TvShow(new IdInfo(showid, ScrapperUtils.AvailableApiIds.TVDB), name, url, year));
+      searchResults.add(new TvShow(null, new IdInfo(showid, ScrapperUtils.AvailableApiIds.TVDB), name, url, year));
     }
 
     return searchResults;

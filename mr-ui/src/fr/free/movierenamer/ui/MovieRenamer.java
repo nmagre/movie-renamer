@@ -50,7 +50,10 @@ import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.AncestorAdapter;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
@@ -74,18 +77,18 @@ import fr.free.movierenamer.ui.swing.renderer.MediaListRenderer;
 import fr.free.movierenamer.ui.swing.renderer.SearchResultListRenderer;
 import fr.free.movierenamer.ui.swing.TaskPopup;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
-import fr.free.movierenamer.ui.swing.panel.Loading;
-import fr.free.movierenamer.ui.swing.panel.LogPanel;
+import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
+import fr.free.movierenamer.ui.swing.dialog.LogDialog;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
-import fr.free.movierenamer.ui.swing.panel.generator.SettingPanel;
-import fr.free.movierenamer.ui.swing.panel.generator.info.MediaPanel;
-import fr.free.movierenamer.ui.swing.panel.generator.info.MoviePanel;
+import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
+import fr.free.movierenamer.ui.swing.panel.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.MoviePanel;
+import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
-import fr.free.movierenamer.utils.Cache;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
@@ -108,6 +111,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.utils.Cache;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Class MovieRenamer
@@ -122,39 +129,37 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   // Current variables
   private UIMode currentMode;
   private UIFile currentMedia;
+  private UIScrapper currentScrapper;
   private boolean groupFile;
   private String movieFileFormat = setting.coreInstance.getMovieFilenameFormat();
-  private String tvshowFileFormat = setting.coreInstance.getTvShowFilenameFormat();
-  // Scrapper
-  private UIScrapper currentScrapper;
-  // Media Panel
+//  private String tvshowFileFormat = setting.coreInstance.getTvShowFilenameFormat();
+  // Panel
   private MediaPanel<? extends MediaInfo> mediaPanel;
   private final MoviePanel moviePnl;
+  private final WebPanel mainPanelNoImage;
+  private final WebPanel mainPanelMini;
+  private final WebPanel mainPanelMiniWithImage;
   //  private final TvShowPanel tvShowPanel;
   private final ComponentTransition containerTransitionMediaPanel;// Media Panel container
-  private final ComponentTransition containerTransitionCenterPanel;// Center Panel container
-  // Log Panel
-  private final LogPanel logPanel = new LogPanel();
-  //Settings panel
-  private final SettingPanel settingsDialog;
-  // File chooser
+  // Dialog
+  private final LogDialog logPanel = new LogDialog();
+  private final SettingDialog settingsDialog;
   private final WebFileChooser fileChooser = new WebFileChooser();
   // Clear interface
   private final boolean CLEAR_MEDIALIST = true;
   private final boolean CLEAR_SEARCHRESULTLIST = true;
   // Model
-  private EventList<UIFile> mediaFileEventList = new BasicEventList<UIFile>();
-  private final ImageListModel<UISearchResult> searchResultModel = new ImageListModel<UISearchResult>();
-  private final DefaultComboBoxModel movieScrapperModel = new DefaultComboBoxModel();
-  private final DefaultComboBoxModel tvshowScrapperModel = new DefaultComboBoxModel();
+  private final EventList<UIFile> mediaFileEventList = new BasicEventList<>();
+  private final ImageListModel<UISearchResult> searchResultModel = new ImageListModel<>();
+  private final DefaultComboBoxModel<UIScrapper> movieScrapperModel = new DefaultComboBoxModel<>();
+  private final DefaultComboBoxModel<UIScrapper> tvshowScrapperModel = new DefaultComboBoxModel<>();
   private final EventListModel<UIFile> mediaFileSeparatorModel;
-  private final EventListModel<UIFile> mediaFileModel = new EventListModel<UIFile>(mediaFileEventList);
+  private final EventListModel<UIFile> mediaFileModel = new EventListModel<>(mediaFileEventList);
   private final MediaListRenderer mediaFileListRenderer = new MediaListRenderer();
   private final SearchResultListRenderer searchResultListRenderer = new SearchResultListRenderer();
-  //
-  private final DefaultListModel loaderModel = new DefaultListModel();
+  private final DefaultListModel<UILoader> loaderModel = new DefaultListModel<>();
   // Separator
-  private final SeparatorList<UIFile> mediaFileSeparator = new SeparatorList<UIFile>(mediaFileEventList, UIUtils.groupFileComparator, 1, 1000);
+  private final SeparatorList<UIFile> mediaFileSeparator = new SeparatorList<>(mediaFileEventList, UIUtils.groupFileComparator, 1, 1000);
   // List option checkbox
   private final WebCheckBox showIconMediaListChk;
   private final WebCheckBox showIconResultListChk;
@@ -163,11 +168,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final WebCheckBox showOrigTitleResultListChk;
   private final WebCheckBox showFormatFieldChk;
   private final WebCheckBox showMediaPanelChk;
+  private final WebCheckBox showImagePanelChk;
   // UI tools
   public static final Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   public static final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
   // Renamer worker queue
-  private final Queue<RenamerWorker> renamerWorkerQueue = new LinkedList<RenamerWorker>();
+  private final Queue<RenamerWorker> renamerWorkerQueue = new LinkedList<>();
   // Task popup
   private final TaskPopup taskPopup = new TaskPopup(this);
   // List tooltip listener
@@ -179,52 +185,51 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final ImagePanel imgPnl;
   private final WebSplitPane listSpmini = new WebSplitPane();
   private WebButtonPopup mediaFileListsettingBtn;
+  private List<ImageInfo> images;
 
   public MovieRenamer(List<File> files) {
     super();
 
-    Loading loading = new Loading();
+    LoadingDialog loading = new LoadingDialog();
 
     Cache.clearAllCache();// FIXME remove !!!
-
-    mediaFileSeparatorModel = new EventListModel<UIFile>(mediaFileSeparator);
+    mediaFileSeparatorModel = new EventListModel<>(mediaFileSeparator);
 
     // Set Movie Renamer mode
     currentMode = UIMode.MOVIEMODE;
 
+    // Main panel , we use several panels to keep animation when interface change
+    mainPanelNoImage = new WebPanel(new BorderLayout());
+    mainPanelMini = new WebPanel(new BorderLayout());
+    mainPanelMiniWithImage = new WebPanel(new BorderLayout());
+
     initComponents();
 
     // Panels
-    moviePnl = new MoviePanel();
-    settingsDialog = new SettingPanel(this);
-
+    moviePnl = new MoviePanel(this);
+    settingsDialog = new SettingDialog(this);
     imgPnl = new ImagePanel(this);
-    JScrollPane imgPanelScrollPane = new JScrollPane(imgPnl);
-    imgPanelScrollPane.setBorder(null);
-    centerPanel.add(imgPanelScrollPane, BorderLayout.EAST);
+    mainPanel.add(imgPnl, BorderLayout.EAST);
 
     // Create media panel container and set transition effect
     containerTransitionMediaPanel = new ComponentTransition(moviePnl);
     containerTransitionMediaPanel.setTransitionEffect(new FadeTransitionEffect());
 
+    mainContainerTransition.setTransitionEffect(new FadeTransitionEffect());
+
     FadeTransitionEffect fadeTransition = new FadeTransitionEffect();
     fadeTransition.setSpeed(0.05F);// Slow down transition (default : 0.1)
-    containerTransition.remove(listSp);// FIXME
-    containerTransitionCenterPanel = new ComponentTransition(listSp);
-    containerTransitionCenterPanel.setTransitionEffect(fadeTransition);
-    containerTransition.add(containerTransitionCenterPanel);// FIXME
 
     // Setting popup options
     showIconMediaListChk = UIUtils.createShowIconChk(mediaFileList, setting.isShowIconMediaList(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
     showIconResultListChk = UIUtils.createShowIconChk(searchResultList, setting.isShowThumb(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
     showMediaPanelChk = new WebCheckBox(UIUtils.i18n.getLanguageKey("showMediaPanel", "popupmenu"));
     showMediaPanelChk.setSelected(setting.isShowMediaPanel());
-    showMediaPanelChk.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setMediaPanel(showMediaPanelChk.isSelected());
-      }
-    });
+    showMediaPanelChk.addActionListener(createShowPanelListerner());
+
+    showImagePanelChk = new WebCheckBox(UIUtils.i18n.getLanguageKey("showImagePanel", "popupmenu"));
+    showImagePanelChk.setSelected(setting.isShowImagePanel());
+    showImagePanelChk.addActionListener(createShowPanelListerner());
 
     showIdResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showId, setting.isShowId(), UIUtils.i18n.getLanguageKey("showId", "popupmenu"));
     showYearResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showYear, setting.isShowYear(), UIUtils.i18n.getLanguageKey("showYear", "popupmenu"));
@@ -250,6 +255,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     }
 
     loading.setVisible(false);
+    statusBar.setVisible(false);
 
     // Check for Movie Renamer update
     Timer updateTimer = new Timer(3000, new ActionListener() {
@@ -263,6 +269,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
   }
 
+  @SuppressWarnings("unchecked")// Weblaf is in java 6, and combobox, .. use generic type now. We must unchecked on setRenderer, .. method :(
   private void init() {
 
     // List loading model
@@ -276,12 +283,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mainTb.addToEnd(exitBtn);
 
     WebButton button = UIUtils.createSettingButton(null);
-    mediaFileListsettingBtn = UIUtils.createPopup(button, PopupWay.downRight, toggleGroup, showIconMediaListChk);
+    mediaFileListsettingBtn = UIUtils.createPopup(button, PopupWay.downRight, toggleGroup, showIconMediaListChk, showMediaPanelChk, showImagePanelChk);
 
     // Add media panel container to media split pane
-    mediaSp.setBottomComponent(containerTransitionMediaPanel);
     listSpmini.setOrientation(WebSplitPane.VERTICAL_SPLIT);
-    setMediaPanel(setting.isShowMediaPanel());
 
     // Init Movie Scrapper model
     for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
@@ -293,7 +298,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       tvshowScrapperModel.addElement(new UIScrapper(scrapper));
     }
 
-    scrapperCb.setRenderer(UIUtils.iconListRenderer);
+    scrapperCb.setRenderer(new IconComboRenderer<>(scrapperCb));
     setSelectedScrapper();
 
     loadMediaPanel();
@@ -322,13 +327,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     // Add settings button in toolbar
     renameTb.addToEnd(UIUtils.createSettingButton(PopupWay.upLeft, thumbChk, fanartChk, nfoChk, showFormatFieldChk));
     mediaFileTb.addToEnd(button);
-    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, showIconResultListChk, showIdResultListChk, showYearResultListChk, showOrigTitleResultListChk, showMediaPanelChk));
+    searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, showIconResultListChk, showIdResultListChk, showYearResultListChk, showOrigTitleResultListChk));
 
     // Add context menu on textfield (right click menu)
     searchField.addMouseListener(contextMenuFieldMouseListener);
     renameField.addMouseListener(contextMenuFieldMouseListener);
     fileFormatField.addMouseListener(contextMenuFieldMouseListener);
-
 
     // add mouse listener on status bar for task popup
     statusBar.addMouseListener(new MouseAdapter() {
@@ -381,6 +385,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       add(appearanceTransition, BorderLayout.CENTER);
     }
 
+    // Set panel
+    setMediaPanel();
+
     // Add MovieRenamer (Main UI) to UIEvent receiver
     UIEvent.addEventListener(MovieRenamer.class, this);
   }
@@ -422,24 +429,28 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    *
    * @param event
    * @param info
+   * @param object
    * @param param
    */
   @Override
-  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object param) {
+  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object object, Object param) {
 
-    UISettings.LOGGER.info(String.format("%s receive event %s %s [%s]", getClass().getSimpleName(), event, (info != null ? info : ""), param));
+    UISettings.LOGGER.fine(String.format("%s receive event %s %s [%s]", getClass().getSimpleName(), event, (info != null ? info : ""), param));
 
     switch (event) {
       case WORKER_STARTED:// FIXME
         statusLbl.setText(info.getDisplayName());
         statusLbl.setIcon(ImageUtils.LOAD_8);
+        statusBar.setVisible(true);
         break;
       case WORKER_RUNNING:// FIXME
         statusLbl.setText(info.getDisplayName());
+        statusBar.setVisible(true);
         break;
       case WORKER_ALL_DONE:// FIXME
         statusLbl.setText("");
         statusLbl.setIcon(null);
+        statusBar.setVisible(false);
         break;
       case RENAME_FILE:
         if (info instanceof RenamerWorker) {
@@ -509,7 +520,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
             System.out.println(sproperty.name() + " changed to " + sproperty.getValue());
             switch (sproperty) {
               case movieFilenameCase:
-              case movieFilenameCreateDirectory:
               case movieFilenameFormat:
               case movieFilenameRmDupSpace:
               case movieFilenameLimit:
@@ -522,7 +532,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
                 updateRenamedTitle();
                 break;
               case searchMovieScrapper:
-              case searchTvshowScrapper:
+                //case searchTvshowScrapper:
                 setSelectedScrapper();
                 break;
               case appLanguage:
@@ -533,18 +543,30 @@ public class MovieRenamer extends WebFrame implements IEventListener {
           }
 
           if (param instanceof UISettings.UISettingsProperty) {
+            boolean updatePanel = false;
             UISettings.UISettingsProperty uisproperty = (UISettings.UISettingsProperty) param;
-            System.out.println(uisproperty.name() + " changed to " + uisproperty.getValue());
+            System.out.println(uisproperty.name() + " changed to " + uisproperty.getValue());// FIXME remove
             switch (uisproperty) {
-
+              case showMediaPanel:
+                showMediaPanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
+                updatePanel = true;
+                break;
+              case showImagePanel:
+                showImagePanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
+                updatePanel = true;
+                break;
             }
 
+            if (updatePanel) {
+              setMediaPanel();
+            }
           }
         }
         break;
     }
   }
 
+  @SuppressWarnings("unchecked")
   private ActionListener createToggleGroupListener() {
     return new ActionListener() {
       @Override
@@ -582,6 +604,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
           }
 
           if (mediaFile == null) {
+            UISettings.LOGGER.log(Level.SEVERE, "Media file is null for : {0}", lse.toString());
             return;
           }
 
@@ -630,6 +653,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     dt.setActive(true);
   }
 
+  private ActionListener createShowPanelListerner() {
+    return new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        setMediaPanel();
+      }
+    };
+  }
+
   /**
    *******************************
    *
@@ -642,6 +674,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    *
    * @param files
    */
+  @SuppressWarnings("unchecked")
   private void loadFiles(List<File> files) {
     clearMediaFileListBtn.setEnabled(false);
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
@@ -652,6 +685,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   /*
    * Load media panel with fade effect
    */
+  @SuppressWarnings("unchecked")
   private void loadMediaPanel() {
     movieModeBtn.setEnabled(false);
     tvShowModeBtn.setEnabled(false);
@@ -683,6 +717,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   /**
    * Search media on web
    */
+  @SuppressWarnings("unchecked")
   private void searchMedia() {
 
     if (currentMedia == null) {
@@ -756,6 +791,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     // Stop all running workers
     WorkerManager.stop();
+    System.gc();
   }
 
   /**
@@ -764,6 +800,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    * GETTER
    *
    ********************************
+   */
+  /**
+   *
+   * @return
    */
   public final EventListModel<UIFile> getMediaFileListModel() {
     return groupFile ? mediaFileSeparatorModel : mediaFileModel;
@@ -795,6 +835,52 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
   public final MediaPanel<? extends MediaInfo> getMediaPanel() {
     return mediaPanel;
+  }
+
+  private WebPanel getMainPanel(boolean showMediaPanel, boolean showImagePanel) {
+
+    mainPanel.removeAll();
+    mainPanelNoImage.removeAll();
+    mainPanelMini.removeAll();
+    mainPanelMiniWithImage.removeAll();
+    mediaSp.remove(searchPnl);
+    mediaSp.setTopComponent(null);
+    centerPanel.removeAll();
+
+    listSp.setOrientation(showMediaPanel ? WebSplitPane.HORIZONTAL_SPLIT : WebSplitPane.VERTICAL_SPLIT);
+
+    int display = 0;
+    if (showMediaPanel) {
+      display |= 0x1;
+      mediaSp.setTopComponent(searchPnl);
+      mediaSp.setBottomComponent(containerTransitionMediaPanel);
+      centerPanel.add(mediaSp, BorderLayout.CENTER);
+    } else {
+      centerPanel.add(searchPnl, BorderLayout.CENTER);
+    }
+
+    if (showImagePanel) {
+      display |= 0x2;
+    }
+
+    switch (display) {
+      case 0:// main panel mini (Media list + search)
+        mainPanelMini.add(listSp, BorderLayout.CENTER);
+        return mainPanelMini;
+      case 1:// main panel without image
+        mainPanelNoImage.add(listSp, BorderLayout.CENTER);
+        return mainPanelNoImage;
+      case 2:// main panel mini (Media list + search) + image
+        mainPanelMiniWithImage.add(listSp, BorderLayout.CENTER);
+        mainPanelMiniWithImage.add(imgPnl, BorderLayout.EAST);
+        return mainPanelMiniWithImage;
+      case 3:// main panel (normal, with all panels)
+        mainPanel.add(listSp, BorderLayout.CENTER);
+        mainPanel.add(imgPnl, BorderLayout.EAST);
+        return mainPanel;
+    }
+
+    return mainPanel;
   }
 
   /**
@@ -849,7 +935,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    */
   private void setSelectedScrapper() {
     movieScrapperModel.setSelectedItem(new UIScrapper(ScrapperManager.getMovieScrapper()));
-    tvshowScrapperModel.setSelectedItem(new UIScrapper(ScrapperManager.getTvShowScrapper()));
+    //tvshowScrapperModel.setSelectedItem(new UIScrapper(ScrapperManager.getTvShowScrapper()));
     currentScrapper = (UIScrapper) (currentMode.equals(UIMode.MOVIEMODE) ? movieScrapperModel.getSelectedItem() : tvshowScrapperModel.getSelectedItem());
   }
 
@@ -876,17 +962,32 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     }
   }
 
-  public void setRenameEnabled() {
-    renameBtn.setEnabled(true);
+  public void setRenameFieldEnabled() {
     renameField.setEnabled(true);
   }
 
-  private void setMediaPanel(boolean show) {
-    if (show) {
-      listSp.setTopComponent(mediaFilePnl);
-      listSp.setBottomComponent(centerPanel);
-      mediaSp.setTopComponent(searchPnl);
-      containerTransitionCenterPanel.performTransition(listSp);
+  public synchronized void setRenamebuttonEnabled() {
+    // We need to wait for searchMediaWorker and searchimageWorker
+    // FIXME
+    MediaInfo mediaInfo = getMediaPanel().getInfo();
+    if (mediaInfo != null && images != null) {
+      renameBtn.setEnabled(true);
+      Nfo nfo = new Nfo((MovieInfo) mediaInfo, images);
+      try {
+        nfo.writeNFO();
+      } catch (ParserConfigurationException ex) {
+        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+  }
+
+  public void setImageInfo(List<ImageInfo> images) {
+    this.images = images;
+  }
+
+  private void setMediaPanel() {
+    mediaFileListsettingBtn.hidePopup();
+    if (showMediaPanelChk.isSelected()) {
       searchResultTooltip.setTooltipWay(TooltipWay.right);
       mediaFileTooltip.setTooltipWay(TooltipWay.right);
       UISearchResult searchResult = getSelectedSearchResult();
@@ -896,14 +997,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
       mediaFileListsettingBtn.setPopupWay(PopupWay.downRight);
     } else {
-      listSpmini.setTopComponent(mediaFilePnl);
-      listSpmini.setBottomComponent(searchPnl);
-      containerTransitionCenterPanel.performTransition(listSpmini);
       searchResultTooltip.setTooltipWay(TooltipWay.down);
       mediaFileTooltip.setTooltipWay(TooltipWay.down);
-
       mediaFileListsettingBtn.setPopupWay(PopupWay.downLeft);
     }
+
+    mainContainerTransition.performTransition(getMainPanel(showMediaPanelChk.isSelected(), showImagePanelChk.isSelected()));
   }
 
   /**
@@ -915,24 +1014,26 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    updateBtn = UIUtils.createButton(UIUtils.i18n.getLanguageKey("toptb.update"), ImageUtils.UPDATE_24, ImageUtils.UPDATE_16);
-    settingBtn = UIUtils.createButton(UIUtils.i18n.getLanguageKey("toptb.settings"), ImageUtils.SETTING_24, ImageUtils.SETTING_16, MovieRenamer.this, Hotkey.CTRL_S);
-    exitBtn = UIUtils.createButton(UIUtils.i18n.getLanguageKey("toptb.quit"), ImageUtils.APPLICATIONEXIT_24, ImageUtils.APPLICATIONEXIT_16, MovieRenamer.this, Hotkey.CTRL_Q);
+    updateBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.update"), ImageUtils.UPDATE_24, ImageUtils.UPDATE_16);
+    settingBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.settings"), ImageUtils.SETTING_24, ImageUtils.SETTING_16, Hotkey.CTRL_S, MovieRenamer.this);
+    exitBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.quit"), ImageUtils.APPLICATIONEXIT_24, ImageUtils.APPLICATIONEXIT_16, Hotkey.CTRL_Q, MovieRenamer.this);
     renameField = new JTextField();
     thumbChk = new WebCheckBox();
     fanartChk = new WebCheckBox();
     nfoChk = new WebCheckBox();
     toggleGroup = new WebButton();
     fileFormatField = new WebTextField();
-    logsBtn = UIUtils.createButton(UIUtils.i18n.getLanguageKey("toptb.logs"), ImageUtils.INFO_24, ImageUtils.INFO_16);
-    clearMediaFileListBtn = UIUtils.createButton(UIUtils.i18n.getLanguageKey("mediatb.clear"), ImageUtils.CLEAR_LIST_16);
+    logsBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.logs"), ImageUtils.INFO_24, ImageUtils.INFO_16);
+    clearMediaFileListBtn = UIUtils.createButton(i18n.getLanguageKey("mediatb.clear"), ImageUtils.CLEAR_LIST_16, ImageUtils.CLEAR_LIST_16);
     containerTransition = new ComponentTransition();
     mainTb = new WebToolBar();
-    openBtn = UIUtils.createButton("toptb.open", ImageUtils.FOLDERVIDEO_24, ImageUtils.FOLDERVIDEO_16, MovieRenamer.this, Hotkey.CTRL_O);
+    openBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.open"), ImageUtils.FOLDERVIDEO_24, ImageUtils.FOLDERVIDEO_16, Hotkey.CTRL_O, MovieRenamer.this);
     openSep = new Separator();
-    movieModeBtn = UIUtils.createButton("toptb.movieMode", ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, MovieRenamer.this, Hotkey.CTRL_F);
-    tvShowModeBtn = UIUtils.createButton("toptb.tvshowMode", ImageUtils.TV_24, ImageUtils.TV_16, MovieRenamer.this, Hotkey.CTRL_T);
+    movieModeBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.movieMode"), ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, Hotkey.CTRL_F, MovieRenamer.this);
+    tvShowModeBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.tvshowMode"), ImageUtils.TV_24, ImageUtils.TV_16, Hotkey.CTRL_T, MovieRenamer.this);
     modeSep = new Separator();
+    mainContainerTransition = new ComponentTransition();
+    mainPanel = new WebPanel();
     listSp = new WebSplitPane();
     mediaFilePnl = new WebPanel();
     mediaFileTb = new WebToolBar();
@@ -944,12 +1045,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchPnl = new WebPanel();
     searchTb = new WebToolBar();
     searchLbl = new WebLabel();
-    searchBtn = new WebButton();
+    searchBtn = UIUtils.createButton(i18n.getLanguageKey("searchtb.search"), ImageUtils.SEARCH_16, true, ImageUtils.SEARCH_16);
     searchField = new WebTextField();
     searchResultListSp = new JScrollPane();
     searchResultList = new WebList();
     scrapperCb = new WebComboBox();
-    webPanel1 = new WebPanel();
+    renamePnl = new WebPanel();
     renameTb = new WebToolBar();
     renameBtn = new WebButton();
     statusBar = new WebStatusBar();
@@ -977,11 +1078,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     renameField.setEnabled(false);
 
-    thumbChk.setLanguage(UIUtils.i18n.getLanguageKey("renametb.settingspopup.thumb"));
+    thumbChk.setLanguage(i18n.getLanguageKey("renametb.settingspopup.thumb"));
 
-    fanartChk.setLanguage(UIUtils.i18n.getLanguageKey("renametb.settingspopup.fanart"));
+    fanartChk.setLanguage(i18n.getLanguageKey("renametb.settingspopup.fanart"));
 
-    nfoChk.setLanguage(UIUtils.i18n.getLanguageKey("renametb.settingspopup.nfo"));// FIXME XBMC, ...
+    nfoChk.setLanguage(i18n.getLanguageKey("renametb.settingspopup.nfo"));// FIXME XBMC, ...
 
     toggleGroup.setIcon(ImageUtils.FILEVIEW_16);
 
@@ -1015,7 +1116,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     mainTb.setFloatable(false);
     mainTb.setRollover(true);
-    mainTb.setMargin(new Insets(4, 4, 4, 4));
+    mainTb.setMargin(new Insets(1, 4, 1, 4));
     mainTb.setRound(10);
 
     openBtn.addActionListener(new ActionListener() {
@@ -1043,17 +1144,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     containerTransition.add(mainTb, BorderLayout.PAGE_START);
 
-    mediaFilePnl.setMargin(new Insets(10, 10, 10, 10));
-    mediaFilePnl.setMinimumSize(new Dimension(160, 50));
-    mediaFilePnl.setPreferredSize(new Dimension(160, 200));
+    mediaFilePnl.setMargin(new Insets(4, 5, 4, 5));
 
     mediaFileTb.setFloatable(false);
-    mediaFileTb.setMargin(new Insets(0, 5, 0, 5));
+    mediaFileTb.setMargin(new Insets(0, 4, 0, 4));
     mediaFileTb.setRound(5);
 
-    mediaLbl.setLanguage(UIUtils.i18n.getLanguageKey("mediatb.media"));
+    mediaLbl.setLanguage(i18n.getLanguageKey("mediatb.media"));
     mediaLbl.setIcon(ImageUtils.MEDIA_16);
-    mediaLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    mediaLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
     mediaFileTb.add(mediaLbl);
 
     mediaFileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -1065,14 +1164,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mediaFilePnlLayout.setHorizontalGroup(
       mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
       .addComponent(mediaFileTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+      .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
     );
     mediaFilePnlLayout.setVerticalGroup(
       mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(mediaFilePnlLayout.createSequentialGroup()
         .addComponent(mediaFileTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE))
+        .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE))
     );
 
     listSp.setLeftComponent(mediaFilePnl);
@@ -1084,20 +1183,20 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mediaSp.setPreferredSize(new Dimension(300, 500));
     mediaSp.setContinuousLayout(true);
 
-    searchPnl.setMargin(new Insets(10, 10, 10, 10));
-    searchPnl.setPreferredSize(new Dimension(300, 180));
+    searchPnl.setMargin(new Insets(4, 5, 4, 5));
+    searchPnl.setMinimumSize(new Dimension(0, 200));
+    searchPnl.setPreferredSize(new Dimension(300, 200));
 
     searchTb.setFloatable(false);
     searchTb.setRollover(true);
-    searchTb.setMargin(new Insets(1, 5, 1, 5));
+    searchTb.setMargin(new Insets(0, 4, 0, 4));
     searchTb.setRound(5);
 
-    searchLbl.setLanguage(UIUtils.i18n.getLanguageKey("searchtb.search"));
+    searchLbl.setLanguage(i18n.getLanguageKey("searchtb.search"));
     searchLbl.setIcon(ImageUtils.SEARCH_16);
-    searchLbl.setFont(new Font("Ubuntu", 1, 13)); // NOI18N
+    searchLbl.setFont(new Font("DialogInput", 1, 12)); // NOI18N
     searchTb.add(searchLbl);
 
-    searchBtn.setIcon(ImageUtils.SEARCH_16);
     searchBtn.setEnabled(false);
     searchBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
@@ -1112,11 +1211,16 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       }
     });
 
+    searchResultListSp.setMinimumSize(new Dimension(80, 25));
+
     searchResultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     searchResultList.setFixedCellHeight(75);
     searchResultList.setFocusable(false);
     searchResultListSp.setViewportView(searchResultList);
 
+    scrapperCb.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
+    scrapperCb.setDrawFocus(false);
+    scrapperCb.setFont(new Font("Ubuntu Light", 0, 12)); // NOI18N
     scrapperCb.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         scrapperCbActionPerformed(evt);
@@ -1127,27 +1231,26 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchPnl.setLayout(searchPnlLayout);
     searchPnlLayout.setHorizontalGroup(
       searchPnlLayout.createParallelGroup(Alignment.LEADING)
-      .addComponent(searchTb, GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
+      .addComponent(searchTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       .addGroup(searchPnlLayout.createSequentialGroup()
-        .addComponent(searchField, GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
+        .addComponent(searchField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(scrapperCb, GroupLayout.PREFERRED_SIZE, 143, GroupLayout.PREFERRED_SIZE)
+        .addComponent(scrapperCb, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-      .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
+      .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
     );
     searchPnlLayout.setVerticalGroup(
       searchPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(searchPnlLayout.createSequentialGroup()
         .addComponent(searchTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addGroup(searchPnlLayout.createParallelGroup(Alignment.TRAILING)
-          .addComponent(searchField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addComponent(scrapperCb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(searchResultListSp, GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
-        .addContainerGap())
+        .addGroup(searchPnlLayout.createParallelGroup(Alignment.LEADING)
+          .addComponent(searchField, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addComponent(searchBtn, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+          .addComponent(scrapperCb, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(ComponentPlacement.UNRELATED)
+        .addComponent(searchResultListSp, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))
     );
 
     searchField.setLeadingComponent(new JLabel(ImageUtils.SEARCH_16));
@@ -1160,7 +1263,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     listSp.setContinuousLayout(true);
 
-    containerTransition.add(listSp, BorderLayout.CENTER);
+    mainPanel.add(listSp, BorderLayout.CENTER);
+
+    mainContainerTransition.add(mainPanel);
+
+    containerTransition.add(mainContainerTransition, BorderLayout.CENTER);
 
     getContentPane().add(containerTransition, BorderLayout.CENTER);
 
@@ -1168,7 +1275,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     renameTb.setRollover(true);
     renameTb.setRound(10);
 
-    renameBtn.setLanguage(UIUtils.i18n.getLanguageKey("renametb.rename"));
+    renameBtn.setLanguage(i18n.getLanguageKey("renametb.rename"));
 
     renameBtn.setIcon(ImageUtils.OK_16);
     renameBtn.setEnabled(false);
@@ -1183,7 +1290,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     //Add rename text field
     renameTb.add(renameField, ToolbarLayout.FILL);
 
-    webPanel1.add(renameTb, BorderLayout.NORTH);
+    renamePnl.add(renameTb, BorderLayout.NORTH);
 
     statusBar.setMargin(new Insets(2, 10, 2, 10));
 
@@ -1192,9 +1299,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     statusBar.add(webLabel1);
     statusBar.add(statusLbl);
 
-    webPanel1.add(statusBar, BorderLayout.SOUTH);
+    renamePnl.add(statusBar, BorderLayout.SOUTH);
 
-    getContentPane().add(webPanel1, BorderLayout.SOUTH);
+    getContentPane().add(renamePnl, BorderLayout.SOUTH);
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
@@ -1287,7 +1394,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         movieFileFormat = fileFormatField.getText();
         break;
       case TVSHOWMODE:
-        tvshowFileFormat = fileFormatField.getText();
+//        tvshowFileFormat = fileFormatField.getText();
         break;
     }
   }//GEN-LAST:event_fileFormatFieldKeyReleased
@@ -1319,6 +1426,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private WebTextField fileFormatField;
   private WebSplitPane listSp;
   private WebButton logsBtn;
+  private ComponentTransition mainContainerTransition;
+  private WebPanel mainPanel;
   private WebToolBar mainTb;
   private WebList mediaFileList;
   private WebPanel mediaFilePnl;
@@ -1333,6 +1442,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private Separator openSep;
   private WebButton renameBtn;
   private JTextField renameField;
+  private WebPanel renamePnl;
   private WebToolBar renameTb;
   private WebComboBox scrapperCb;
   private WebButton searchBtn;
@@ -1350,6 +1460,5 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private WebButton tvShowModeBtn;
   private WebButton updateBtn;
   private WebLabel webLabel1;
-  private WebPanel webPanel1;
   // End of variables declaration//GEN-END:variables
 }

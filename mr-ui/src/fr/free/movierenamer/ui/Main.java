@@ -20,10 +20,7 @@ package fr.free.movierenamer.ui;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.tooltip.TooltipManager;
-import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +37,7 @@ public class Main {
 // vm option : -Xmx256m -verbose:gc
 
   private static MovieRenamer mr;
-  private static UISettings setting = UISettings.getInstance();
+  private static final UISettings setting = UISettings.getInstance();
 
   public static void main(String args[]) {
 
@@ -49,7 +46,7 @@ public class Main {
       System.setProperty("jna.nosys", "true");
     }
 
-    List<File> files = new ArrayList<File>();
+    List<File> files = new ArrayList<>();
     for (String arg : args) {
       files.add(new File(arg));
     }
@@ -79,7 +76,7 @@ public class Main {
     }
     LanguageManager.setLanguage(lcode);
 
-    TooltipManager.setDefaultDelay(1000);
+    TooltipManager.setDefaultDelay(1500);
 
 //    new Thread(new Runnable() {
 //      @Override
@@ -107,7 +104,6 @@ public class Main {
 //        }
 //      }
 //    }).start();
-
     mr = new MovieRenamer(files);
 
     SwingUtilities.invokeLater(new Runnable() {

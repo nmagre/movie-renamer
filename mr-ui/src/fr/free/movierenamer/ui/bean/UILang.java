@@ -28,7 +28,7 @@ import javax.swing.Icon;
  */
 public class UILang implements IIconList {
 
-  private Icon icon;
+  private final Icon icon;
   private final Language lang;
 
   public UILang(Language lang, Icon icon) {
@@ -65,11 +65,8 @@ public class UILang implements IIconList {
     }
 
     UILang imgLang = (UILang) obj;
-    if (imgLang.getIcon().equals(this.icon) && imgLang.getLang().equals(this.getLang())) {
-      return true;
-    }
 
-    return false;
+    return imgLang.getIcon().equals(this.icon) && imgLang.getLang().equals(this.getLang());
   }
 
   @Override
@@ -82,6 +79,6 @@ public class UILang implements IIconList {
 
   @Override
   public String getName() {
-    return lang.getLocale().getLanguage();
+    return lang != null ? lang.getLocale().getLanguage() : Locale.ROOT.getLanguage();
   }
 }

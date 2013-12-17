@@ -97,6 +97,7 @@ public final class UISettings {
     selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showThumb(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showFanart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
@@ -360,6 +361,10 @@ public final class UISettings {
 
   public boolean isShowMediaPanel() {
     return Boolean.parseBoolean(get(UISettingsProperty.showMediaPanel));
+  }
+
+  public boolean isShowImagePanel() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showImagePanel));
   }
 
   public boolean isShowFanart() {

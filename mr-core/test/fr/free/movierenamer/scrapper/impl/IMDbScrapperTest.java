@@ -40,6 +40,7 @@ import fr.free.movierenamer.utils.ScrapperUtils;
  * @author Simon QUÉMÉNEUR
  */
 public class IMDbScrapperTest extends MovieScrapperTest {
+
   private IMDbScrapper imdb = null;
 
   @Override
@@ -77,7 +78,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getMovieInfo() throws Exception {
     imdb.setLanguage(LocaleUtils.AvailableLanguages.it.getLocale());
-    MovieInfo movie = imdb.getInfo(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, -1));
+    MovieInfo movie = imdb.getInfo(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1));
 
     Assert.assertEquals("C'era una volta il West", movie.getTitle());
     Assert.assertEquals(Integer.valueOf(175), Integer.valueOf(movie.getRuntime()));
@@ -89,9 +90,9 @@ public class IMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getCasting() throws Exception {
     boolean success = false;
-    List<CastingInfo> cast = imdb.getCasting(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, -1));
-    for(CastingInfo info : cast) {
-      if(info.isDirector()) {
+    List<CastingInfo> cast = imdb.getCasting(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1));
+    for (CastingInfo info : cast) {
+      if (info.isDirector()) {
         success = "Sergio Leone".equals(info.getName());
       }
     }
@@ -101,7 +102,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = imdb.getImages(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, -1));
+    List<ImageInfo> images = imdb.getImages(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1));
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
     Assert.assertEquals("http://cf2.imgobject.com/t/p/original/sNaQWTsQFfdhjKweXbgjSHKZ8YS.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());
   }

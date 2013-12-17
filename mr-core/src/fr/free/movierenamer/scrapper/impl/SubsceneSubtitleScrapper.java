@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
@@ -48,6 +47,7 @@ import fr.free.movierenamer.utils.XPathUtils;
  * @author Simon QUÉMÉNEUR
  */
 public class SubsceneSubtitleScrapper extends SubtitleScrapper {
+
   private static final String host = "subscene.com";
   private static final String name = "Subscene";
 

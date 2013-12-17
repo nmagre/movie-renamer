@@ -38,7 +38,7 @@ import org.w3c.dom.NodeList;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
-import fr.free.movierenamer.info.NfoInfo;
+import fr.free.movierenamer.renamer.Nfo;
 
 import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
 import fr.free.movierenamer.renamer.NameCleaner;
@@ -48,6 +48,7 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.scrapper.impl.OpenSubtitlesScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
 import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
@@ -106,6 +107,7 @@ public final class Settings {
   private boolean autosave = true;
 
   public enum SettingsType {
+
     GENERAL,
     RENAME,
     SEARCH,
@@ -116,6 +118,7 @@ public final class Settings {
   }
 
   public enum SettingsSubType {
+
     GENERAL,
     NFO,
     UPDATE,
@@ -161,32 +164,23 @@ public final class Settings {
     movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (StringUtils.CaseConversionType.FIRSTLA.name()),
     movieFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
     movieFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
-    movieFilenameCreateDirectory(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.MOVIEDIR, true), // (Boolean.FALSE.toString()),
-    // movie folder
-    movieFolderFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // ("<t> (<y>)"),
-    movieFolderSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (", "),
-    movieFolderLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Integer.decode("3").toString()),
-    movieFolderCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (""),
-    movieFolderTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.TRUE.toString()),
-    movieFolderRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEDIR), // (Boolean.TRUE.toString()),
     // movie NFO
-    movieNfoType(NfoInfo.NFOtype.XBMC, SettingsType.GENERAL, SettingsSubType.NFO), // (NfoInfo.NFOtype.XBMC)
+    movieNfoType(Nfo.NFOtype.XBMC, SettingsType.GENERAL, SettingsSubType.NFO), // (NfoInfo.NFOtype.XBMC)
     // tvShow
-    tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
-    tvShowFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (", "),
-    tvShowFilenameLimit(3, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Integer.decode("3").toString()),
-    tvShowFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (""),
-    tvShowFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
-    tvShowFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
+    //    tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
+    //    tvShowFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (", "),
+    //    tvShowFilenameLimit(3, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Integer.decode("3").toString()),
+    //    tvShowFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (""),
+    //    tvShowFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
+    //    tvShowFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
     // Cache
     cacheClear(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.CACHE), // (Boolean.FALSE.toString()),
     // Search
-    searchNbResult(2, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Integer.decode("2").toString()),
-    searchDisplayApproximateResult(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.FALSE.toString()),
-    searchMovieScrapper(IMDbScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),
-    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
-    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
-    searchScrapperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.LANGUAGE),// (Locale.ENGLISH.toString()),
+    //searchNbResult(2, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Integer.decode("2").toString()),
+    searchMovieScrapper(UniversalScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),
+    //    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
+    //    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
+    searchScrapperLang(AvailableLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),// (Locale.ENGLISH.toString()),
     searchSort(Sorter.SorterType.LEVEN_YEAR, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.TRUE.toString()),
     // http param
     httpRequestTimeOut(30, SettingsType.NETWORK, SettingsSubType.GENERAL), // (Integer.decode("30").toString()),
@@ -219,7 +213,7 @@ public final class Settings {
       this.type = type;
       this.subType = subType;
       this.haschild = haschild;
-      if(!(defaultValue instanceof Boolean) && haschild) {
+      if (!(defaultValue instanceof Boolean) && haschild) {
         throw new UnsupportedOperationException("Only boolean value can have a child");
       }
     }
@@ -416,62 +410,33 @@ public final class Settings {
     return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRmDupSpace));
   }
 
-  public boolean isMovieFilenameCreateDirectory() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameCreateDirectory));
+  public Nfo.NFOtype getMovieNfoType() {
+    return Nfo.NFOtype.valueOf(get(SettingsProperty.movieNfoType));
   }
 
-  public String getMovieFolderFormat() {
-    return get(SettingsProperty.movieFolderFormat);
-  }
-
-  public String getMovieFolderSeparator() {
-    return get(SettingsProperty.movieFolderSeparator);
-  }
-
-  public int getMovieFolderLimit() {
-    return Integer.parseInt(get(SettingsProperty.movieFolderLimit));
-  }
-
-  public String getMovieFolderCase() {
-    return get(SettingsProperty.movieFolderCase);
-  }
-
-  public boolean isMovieFolderTrim() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFolderTrim));
-  }
-
-  public boolean isMovieFolderRmDupSpace() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFolderRmDupSpace));
-  }
-
-  public NfoInfo.NFOtype getMovieNfoType() {
-    return NfoInfo.NFOtype.valueOf(get(SettingsProperty.movieNfoType));
-  }
-
-  public String getTvShowFilenameFormat() {
-    return get(SettingsProperty.tvShowFilenameFormat);
-  }
-
-  public String getTvShowFilenameSeparator() {
-    return get(SettingsProperty.tvShowFilenameSeparator);
-  }
-
-  public int getTvShowFilenameLimit() {
-    return Integer.parseInt(get(SettingsProperty.tvShowFilenameLimit));
-  }
-
-  public String getTvShowFilenameCase() {
-    return get(SettingsProperty.tvShowFilenameCase);
-  }
-
-  public boolean isTvShowFilenameTrim() {
-    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameTrim));
-  }
-
-  public boolean isTvShowFilenameRmDupSpace() {
-    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
-  }
-
+//  public String getTvShowFilenameFormat() {
+//    return get(SettingsProperty.tvShowFilenameFormat);
+//  }
+//
+//  public String getTvShowFilenameSeparator() {
+//    return get(SettingsProperty.tvShowFilenameSeparator);
+//  }
+//
+//  public int getTvShowFilenameLimit() {
+//    return Integer.parseInt(get(SettingsProperty.tvShowFilenameLimit));
+//  }
+//
+//  public String getTvShowFilenameCase() {
+//    return get(SettingsProperty.tvShowFilenameCase);
+//  }
+//
+//  public boolean isTvShowFilenameTrim() {
+//    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameTrim));
+//  }
+//
+//  public boolean isTvShowFilenameRmDupSpace() {
+//    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
+//  }
   public boolean isCacheClear() {
     return Boolean.parseBoolean(get(SettingsProperty.cacheClear));
   }
@@ -485,38 +450,29 @@ public final class Settings {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public Class<? extends TvShowScrapper> getSearchTvshowScrapper() {
-    try {
-      return (Class<TvShowScrapper>) Class.forName(get(SettingsProperty.searchTvshowScrapper).replace("class ", ""));
-    } catch (Exception ex) {
-      return TheTVDBScrapper.class;
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public Class<? extends SubtitleScrapper> getSearchSubtitleScrapper() {
-    try {
-      return (Class<SubtitleScrapper>) Class.forName(get(SettingsProperty.searchSubtitleScrapper).replace("class ", ""));
-    } catch (Exception ex) {
-      return SubsceneSubtitleScrapper.class;
-    }
-  }
-
+//  @SuppressWarnings("unchecked")
+//  public Class<? extends TvShowScrapper> getSearchTvshowScrapper() {
+//    try {
+//      return (Class<TvShowScrapper>) Class.forName(get(SettingsProperty.searchTvshowScrapper).replace("class ", ""));
+//    } catch (Exception ex) {
+//      return TheTVDBScrapper.class;
+//    }
+//  }
+//
+//  @SuppressWarnings("unchecked")
+//  public Class<? extends SubtitleScrapper> getSearchSubtitleScrapper() {
+//    try {
+//      return (Class<SubtitleScrapper>) Class.forName(get(SettingsProperty.searchSubtitleScrapper).replace("class ", ""));
+//    } catch (Exception ex) {
+//      return SubsceneSubtitleScrapper.class;
+//    }
+//  }
   public AvailableLanguages getSearchScrapperLang() {
     return AvailableLanguages.valueOf(get(SettingsProperty.searchScrapperLang));
   }
 
   public Sorter.SorterType getSearchSorter() {
     return Sorter.SorterType.valueOf(get(SettingsProperty.searchSort));
-  }
-
-  public int getSearchNbResult() {
-    return Integer.parseInt(get(SettingsProperty.searchNbResult));
-  }
-
-  public boolean isSearchDisplayApproximateResult() {
-    return Boolean.parseBoolean(get(SettingsProperty.searchDisplayApproximateResult));
   }
 
   public boolean isProxyIsOn() {

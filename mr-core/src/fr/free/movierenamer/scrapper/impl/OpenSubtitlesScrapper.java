@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
   private static final String name = "OpenSubtitles";
 
 //  private final OpenSubtitlesXmlRpc xmlrpc;
-
   public OpenSubtitlesScrapper() {
     super(AvailableLanguages.en);
 //    String useragent = Settings.getApplicationProperty("opensubtitles.useragent");

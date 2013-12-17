@@ -21,8 +21,10 @@ import java.util.EventListener;
 
 /**
  * Interface IEventListener
+ *
  * @author Nicolas Magré
  */
 public interface IEventListener extends EventListener {
-  public void UIEventHandler(UIEvent.Event event, IEventInfo param, Object newObject);
+
+  public void UIEventHandler(UIEvent.Event event, IEventInfo param, Object object, Object newObject);
 }

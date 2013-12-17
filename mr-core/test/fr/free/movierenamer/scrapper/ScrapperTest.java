@@ -25,18 +25,22 @@ import fr.free.movierenamer.utils.Cache;
 
 /**
  * Class ScrapperTest
- * 
+ *
  * @author Simon QUÉMÉNEUR
  */
 public abstract class ScrapperTest {
 
   @Before
-  public void initSettings() throws Exception
-  {
+  public void initSettings() throws Exception {
+    // Fixe JNA crash under 64 bit unix system
+    if (System.getProperty("jna.nosys") == null) {
+      System.setProperty("jna.nosys", "true");
+    }
+
     Settings.getInstance();
     Cache.clearAllCache();
   }
-  
+
   @Before
-  public abstract void init() throws Exception ;
+  public abstract void init() throws Exception;
 }

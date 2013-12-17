@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,8 @@
  */
 package fr.free.movierenamer.scrapper;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
-import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.LocaleUtils.Language;
-import java.util.logging.Level;
 
 /**
  * Class Scrapper
@@ -45,9 +37,9 @@ public abstract class Scrapper {
     String cacheName = getCacheName();
     if (host != null && cacheName != null) {
       return new CacheObject(host, Cache.getCache(cacheName));
-    } else {
-      return null;
     }
+
+    return null;
   }
 
   protected String getCacheName() {

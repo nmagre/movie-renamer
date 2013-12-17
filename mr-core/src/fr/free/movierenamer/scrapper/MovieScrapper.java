@@ -22,10 +22,13 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.impl.image.FanartTVImagesScrapper;
 import fr.free.movierenamer.scrapper.impl.image.TMDbImagesScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils.InfoQuality;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Class MovieScrapper
@@ -54,6 +57,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
       }
     } catch (UnsupportedOperationException ex) {
       // Images scrapper do not support this id type
+      Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
     } catch (FileNotFoundException ex) {
       // No images for this movie
     }
@@ -67,11 +71,12 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
       }
     } catch (UnsupportedOperationException ex) {
       // Images scrapper do not support this id type
+      Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
     } catch (FileNotFoundException ex) {
       // No images for this movie
     }
 
-    // use scrapper default get image
+    // use scrapper to get image
     if (imagesInfo.isEmpty()) {
       tmpImagesInfo = getScrapperImages(movie);
       if (tmpImagesInfo != null) {
@@ -81,4 +86,6 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
 
     return imagesInfo;
   }
+
+  public abstract InfoQuality getInfoQuality();
 }

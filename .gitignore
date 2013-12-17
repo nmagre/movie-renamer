@@ -1,9 +1,7 @@
 /mr-ui/Izpack/MacOS/Contents/Resources/Java/
-/mr-ui/nbproject/private/private.xml
-/mr-ui/nbproject/private/private.properties
+/mr-ui/nbproject/private/
 /mr-ui/dist
 /mr-ui/build/
-/mr-ui/nbproject/private/ant-swe.xml
 /mr-core/build/
 /mr-core/javadoc/
 /mr-core/lib/Mr-core.jar

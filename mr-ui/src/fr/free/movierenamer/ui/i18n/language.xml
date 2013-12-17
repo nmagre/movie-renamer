@@ -21,6 +21,31 @@
 -->
 <Dictionary name="Movie Renamer UI language" prefix="mrui">
 
+  <record key="ok">
+    <value lang="en">Ok</value>
+    <value lang="fr">Ok</value>
+  </record>
+
+  <record key="apply">
+    <value lang="en">Apply</value>
+    <value lang="fr">Appliquer</value>
+  </record>
+
+  <record key="save">
+    <value lang="en">Save</value>
+    <value lang="fr">Sauvegarder</value>
+  </record>
+
+  <record key="remove">
+    <value lang="en">Remove</value>
+    <value lang="fr">Supprimer</value>
+  </record>
+
+  <record key="add">
+    <value lang="en">Add</value>
+    <value lang="fr">Ajouter</value>
+  </record>
+
   <record key="cancel">
     <value lang="en">Cancel</value>
     <value lang="fr">Annuler</value>
@@ -131,7 +156,7 @@
 
       <record key="clear">
         <value lang="en">Clear</value>
-        <value lang="fr">Effacer</value>
+        <value lang="fr">Vider</value>
       </record>
 
       <Dictionary name="Settings popup" prefix="settingspopup">
@@ -149,6 +174,100 @@
         <value lang="en">Search</value>
         <value lang="fr">Recherche</value>
       </record>
+
+    </Dictionary><!-- END searchtb -->
+
+    <Dictionary name="Movies panel" prefix="moviepnl">
+
+      <Dictionary name="Movie info panel" prefix="info">
+
+        <record key="title">
+          <value lang="en">Title</value>
+          <value lang="fr">Titre</value>
+        </record>
+
+        <record key="originalTitle">
+          <value lang="en">Original title</value>
+          <value lang="fr">Titre original</value>
+        </record>
+
+        <record key="sortTitle">
+          <value lang="en">Sort title</value>
+          <value lang="fr">Titre de tri</value>
+        </record>
+
+        <record key="tagline">
+          <value lang="en">Tagline</value>
+          <value lang="fr">Slogan</value>
+        </record>
+
+        <record key="collection">
+          <value lang="en">Collection</value>
+          <value lang="fr">Collection</value>
+        </record>
+
+        <record key="genres">
+          <value lang="en">Genre</value>
+          <value lang="fr">Genre</value>
+        </record>
+
+        <record key="studios">
+          <value lang="en">Studio</value>
+          <value lang="fr">Studio</value>
+        </record>
+
+        <record key="tags">
+          <value lang="en">Tag</value>
+          <value lang="fr">Tag</value>
+        </record>
+
+        <record key="countries">
+          <value lang="en">Country</value>
+          <value lang="fr">Pays</value>
+        </record>
+
+        <record key="releasedDate">
+          <value lang="en">Year</value>
+          <value lang="fr">Année</value>
+        </record>
+
+        <record key="runtime">
+          <value lang="en">Runtime</value>
+          <value lang="fr">Durée</value>
+        </record>
+
+        <record key="certification">
+          <value lang="en">Certification</value>
+          <value lang="fr">Certification</value>
+        </record>
+
+        <record key="certificationCode">
+          <value lang="en">MPAA</value>
+          <value lang="fr">MPAA</value>
+        </record>
+
+        <record key="rating">
+          <value lang="en">Rating</value>
+          <value lang="fr">Note</value>
+        </record>
+
+        <record key="votes">
+          <value lang="en">Vote</value>
+          <value lang="fr">Vote</value>
+        </record>
+
+        <record key="budget">
+          <value lang="en">Budget</value>
+          <value lang="fr">Budget</value>
+        </record>
+
+        <record key="overview">
+          <value lang="en">Synopsis</value>
+          <value lang="fr">Synopsis</value>
+        </record>
+
+      </Dictionary><!-- END searchtb -->
+
 
     </Dictionary><!-- END searchtb -->
 
@@ -196,6 +315,7 @@
       <value lang="en">Some processes are running.\n\nAre you sure you want to quit %s ?</value>
       <value lang="fr">Des processus sont en cours d'exécution.\n\nEtes-vous sûr de vouloir quitter %s ?</value>
     </record>
+
   </Dictionary><!-- END dialog -->
 
   <Dictionary name="Movie Renamer Error" prefix="error">

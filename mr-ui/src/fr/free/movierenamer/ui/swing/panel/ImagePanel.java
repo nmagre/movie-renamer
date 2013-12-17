@@ -17,18 +17,17 @@
  */
 package fr.free.movierenamer.ui.swing.panel;
 
+import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.popup.PopupWay;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IEventInfo;
-import fr.free.movierenamer.ui.bean.IEventListener;
-import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.DragAndDrop;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -36,20 +35,18 @@ import java.awt.Font;
 import java.awt.dnd.DropTarget;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.Icon;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
@@ -61,7 +58,7 @@ import javax.swing.border.LineBorder;
  */
 public class ImagePanel extends WebPanel {
 
-  private final Map<ImageCategoryProperty, GalleryPanel> galleryPanels;
+  private final Map<ImageCategoryProperty, GalleryDialog> galleryPanels;
   private final Map<ImageCategoryProperty, LabelListener> imageLabels;
   private final MovieRenamer mr;
   public final static int pwidth = 120;
@@ -74,11 +71,11 @@ public class ImagePanel extends WebPanel {
     cdart(ImageCategoryProperty.cdart, "image.cdart", 1.0F),
     clearart(ImageCategoryProperty.clearart, "image.clearart", 1.77F),
     banner(ImageCategoryProperty.banner, "image.banner", 5.4F);
-    private ImageCategoryProperty categoryProperty;
-    private String i18nKey;
-    private WebLabel label;
+    private final ImageCategoryProperty categoryProperty;
+    private final String i18nKey;
+    private final WebLabel label;
     private LabelListener imageLabel;
-    private float ratio;
+    private final float ratio;
     private DropTarget dt;
 
     private SupportedImages(ImageCategoryProperty categoryProperty, String i18nKey, float ratio) {
@@ -114,6 +111,8 @@ public class ImagePanel extends WebPanel {
 
   /**
    * Creates new form ImagePanel
+   *
+   * @param mr
    */
   public ImagePanel(MovieRenamer mr) {
     this.mr = mr;
@@ -121,8 +120,8 @@ public class ImagePanel extends WebPanel {
 
     imageTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft));
 
-    galleryPanels = new EnumMap<ImageCategoryProperty, GalleryPanel>(ImageCategoryProperty.class);
-    imageLabels = new EnumMap<ImageCategoryProperty, LabelListener>(ImageCategoryProperty.class);
+    galleryPanels = new EnumMap<>(ImageCategoryProperty.class);
+    imageLabels = new EnumMap<>(ImageCategoryProperty.class);
 
     for (SupportedImages property : SupportedImages.values()) {
       imagePanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -133,7 +132,7 @@ public class ImagePanel extends WebPanel {
       imagePanel.add(label);
       imagePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-      GalleryPanel galleryPanel = new GalleryPanel(mr, property);
+      GalleryDialog galleryPanel = new GalleryDialog(mr, property);
       galleryPanels.put(property.getCategoryProperty(), galleryPanel);
 
       LabelListener imglbl = new LabelListener(property.getLabel(), property.getCategoryProperty());
@@ -157,7 +156,7 @@ public class ImagePanel extends WebPanel {
     return null;
   }
 
-  public GalleryPanel getGallery(ImageCategoryProperty key) {
+  public GalleryDialog getGallery(ImageCategoryProperty key) {
 
     if (!isSupportedImage(key)) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("Image %s is not supported by this panel", key.name()));
@@ -206,20 +205,20 @@ public class ImagePanel extends WebPanel {
   }
 
   private void clearGallery() {
-    for (GalleryPanel gpnl : galleryPanels.values()) {
+    for (GalleryDialog gpnl : galleryPanels.values()) {
       gpnl.clear();
     }
   }
 
   public List<ImageCategoryProperty> getSupportedImages() {
-    return new ArrayList<ImageCategoryProperty>(galleryPanels.keySet());
+    return new ArrayList<>(galleryPanels.keySet());
   }
 
   private class LabelListener {
 
-    private WebLabel label;
-    private DropTarget dt;
-    private MouseAdapter mouseAdapter;
+    private final WebLabel label;
+    private final DropTarget dt;
+    private final MouseAdapter mouseAdapter;
     private boolean listenerEnabled;
     private ImageCategoryProperty key;
 
@@ -230,20 +229,21 @@ public class ImagePanel extends WebPanel {
       DragAndDrop dropFile = new DragAndDrop(ImagePanel.this.mr) {
         @Override
         public void getFiles(List<File> files) {
-          for (File file : files) {// FIXME ? need to be improved ?
-            String mimetype = new MimetypesFileTypeMap().getContentType(file);
-            if (mimetype.contains("/")) {
-              String type = mimetype.split("/")[0];
-              if (type.equals("image")) {
+          for (File file : files) {// FIXME need to be improved ?
+            MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
+            mtftp.addMimeTypes("image png tif jpg jpeg bmp");
+            String mimetype = mtftp.getContentType(file);
+            if (mimetype.contains("image")) {
+              Map<ImageInfo.ImageProperty, String> fields = new EnumMap<>(ImageInfo.ImageProperty.class);
 
-                Map<ImageInfo.ImageProperty, String> fields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
-                try {
-                  fields.put(ImageInfo.ImageProperty.url, file.toURI().toURL().toExternalForm());
-                  galleryPanels.get(key).addImage(new UIMediaImage(new ImageInfo(-1, fields, key)));
-                } catch (MalformedURLException ex) {
-                  UISettings.LOGGER.log(Level.SEVERE, null, ex);
-                }
+              fields.put(ImageInfo.ImageProperty.url, file.toURI().toString());
+              UIMediaImage image = new UIMediaImage(new ImageInfo(-1, fields, key));
+              try {
+                image.setIcon(ImageUtils.getIcon(file.toURI().toURL(), null, null));
+              } catch (MalformedURLException ex) {
+                Logger.getLogger(ImagePanel.class.getName()).log(Level.SEVERE, null, ex);
               }
+              galleryPanels.get(key).addImage(image);
             }
           }
         }
@@ -287,44 +287,49 @@ public class ImagePanel extends WebPanel {
 
     imageTb = new com.alee.laf.toolbar.WebToolBar();
     imageLbl = new com.alee.laf.label.WebLabel();
+    jScrollPane1 = new javax.swing.JScrollPane();
     imagePanel = new com.alee.laf.panel.WebPanel();
+
+    setMargin(new java.awt.Insets(4, 0, 4, 0));
 
     imageTb.setFloatable(false);
     imageTb.setRollover(true);
-    imageTb.setMargin(new java.awt.Insets(1, 5, 1, 5));
+    imageTb.setMargin(new java.awt.Insets(0, 4, 0, 4));
     imageTb.setRound(5);
 
     imageLbl.setLanguage(UIUtils.i18n.getLanguageKey("image"));
     imageLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
     imageTb.add(imageLbl);
 
+    jScrollPane1.setBorder(null);
+    jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
     imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.PAGE_AXIS));
+    jScrollPane1.setViewportView(imagePanel);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(imageTb, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addGroup(layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap())
+        .addContainerGap()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(imageTb, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+          .addComponent(jScrollPane1))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
         .addComponent(imageTb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-        .addContainerGap())
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.alee.laf.label.WebLabel imageLbl;
   private com.alee.laf.panel.WebPanel imagePanel;
   private com.alee.laf.toolbar.WebToolBar imageTb;
+  private javax.swing.JScrollPane jScrollPane1;
   // End of variables declaration//GEN-END:variables
 }

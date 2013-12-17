@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ package fr.free.movierenamer.scrapper;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.ImageInfo;
@@ -72,7 +71,6 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
     List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
 
     // TODO tvdb images
-
     // Try to get images from fanart.tv
     FanartTVshowImagesScrapper fanartImagesSc = new FanartTVshowImagesScrapper();
     List<ImageInfo> tmpImagesInfo = fanartImagesSc.getImages(tvshow);

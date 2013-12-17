@@ -41,6 +41,7 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
 
   private final UISearchResult searchResult;
   private final MediaScrapper<Media, MediaInfo> scrapper;
+  private List<ImageInfo> infos;
 
   /**
    * Constructor arguments
@@ -58,8 +59,7 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
   @Override
   public List<UIMediaImage> executeInBackground() throws Exception {
 
-    List<ImageInfo> infos;
-    List<UIMediaImage> mediaImages = new ArrayList<UIMediaImage>();
+    List<UIMediaImage> mediaImages = new ArrayList<>();
 
     if (searchResult == null) {
       return mediaImages;
@@ -73,7 +73,7 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
         for (int i = 0; i < count; i++) {
           if (isCancelled()) {
             UISettings.LOGGER.log(Level.INFO, "SearchMediaImagesWorker Cancelled");
-            return new ArrayList<UIMediaImage>();
+            return new ArrayList<>();
           }
 
           mediaImages.add(new UIMediaImage(infos.get(i)));
@@ -85,7 +85,7 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
   }
 
   private List<UIMediaImage> getImagesByType(List<UIMediaImage> images, ImageInfo.ImageCategoryProperty property) {
-    List<UIMediaImage> res = new ArrayList<UIMediaImage>();
+    List<UIMediaImage> res = new ArrayList<>();
     for (UIMediaImage image : images) {
       if (image.getType().equals(property)) {
         res.add(image);
@@ -109,6 +109,12 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
       panel.addImages(mimages, key);
     }
     panel.enabledListener();
+
+    if (infos != null) {
+      mr.setImageInfo(infos);
+    }
+
+    mr.setRenamebuttonEnabled();
   }
 
   @Override

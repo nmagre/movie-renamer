@@ -44,6 +44,7 @@ public class UIPersonImage implements IImage {
     return icon;
   }
 
+  @Override
   public String getName() {
     return person.getName();
   }

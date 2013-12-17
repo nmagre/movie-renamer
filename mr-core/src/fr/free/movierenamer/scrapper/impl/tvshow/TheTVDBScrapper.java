@@ -125,7 +125,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
 
       if (!resultSet.containsKey(sid)) {
         // search can have multiple times the result (fr, en, ...)
-        resultSet.put(sid, new TvShow(new IdInfo(sid, ScrapperUtils.AvailableApiIds.TVDB), seriesName, banner, year));
+        resultSet.put(sid, new TvShow(null, new IdInfo(sid, ScrapperUtils.AvailableApiIds.TVDB), seriesName, banner, year));
       }
     }
 

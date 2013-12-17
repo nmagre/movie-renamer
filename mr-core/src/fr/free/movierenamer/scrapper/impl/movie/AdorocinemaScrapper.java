@@ -25,9 +25,10 @@ import java.util.regex.Pattern;
 
 /**
  * Class AdorocinemaScrapper
+ *
  * @author Nicolas Magré
  */
-public final class AdorocinemaScrapper  extends AlloGroupScrapper {
+public final class AdorocinemaScrapper extends AlloGroupScrapper {
 
   private static final String host = "www.adorocinema.com";
   private static final String imageHost = "images.allocine.fr";
@@ -42,11 +43,11 @@ public final class AdorocinemaScrapper  extends AlloGroupScrapper {
     Dirigido_por(InfoTag.Réalisé_par),
     Gênero(InfoTag.Genre),
     Nacionalidade(InfoTag.Nationalité),
-    Usuários (InfoTag.Spectateurs),
+    Usuários(InfoTag.Spectateurs),
     Título_original(InfoTag.Titre_original),
     Orçamento(InfoTag.Budget),
     Distribuidor(InfoTag.Distributeur);
-    private InfoTag infotag;
+    private final InfoTag infotag;
 
     private Tag(InfoTag infotag) {
       this.infotag = infotag;

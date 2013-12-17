@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class FilmstartsScrapper
+ *
  * @author Nicolas Magré
  */
 public class FilmstartsScrapper extends AlloGroupScrapper {
@@ -49,7 +50,7 @@ public class FilmstartsScrapper extends AlloGroupScrapper {
     Originaltitel(InfoTag.Titre_original),
     Budget(InfoTag.Budget),
     Verleiher(InfoTag.Distributeur);
-    private InfoTag infotag;
+    private final InfoTag infotag;
 
     private Tag(InfoTag infotag) {
       this.infotag = infotag;
@@ -58,9 +59,9 @@ public class FilmstartsScrapper extends AlloGroupScrapper {
     public InfoTag getInfoTag() {
       return infotag;
     }
-    
+
     public static void test() {
-      
+
     }
   }
 

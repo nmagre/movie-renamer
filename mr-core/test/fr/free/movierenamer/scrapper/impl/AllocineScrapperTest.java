@@ -35,6 +35,7 @@ import fr.free.movierenamer.utils.ScrapperUtils;
  * @author Simon QUÉMÉNEUR
  */
 public class AllocineScrapperTest extends MovieScrapperTest {
+
   private AllocineScrapper allocine = null;
 
   @Override
@@ -55,41 +56,44 @@ public class AllocineScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getMovieInfo() throws Exception {
-    MovieInfo movie = allocine.getInfo(new Movie(new IdInfo(40191, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
+    MovieInfo movie = allocine.getInfo(new Movie(null, new IdInfo(40191, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
 
     Assert.assertEquals("Eternal Sunshine of the Spotless Mind", movie.getTitle());
     Assert.assertEquals("108", movie.getRuntime().toString());
     Assert.assertEquals("2004-10-06", movie.getReleasedDate().toString());
     Assert.assertEquals("[Comédie dramatique, Science fiction]", movie.getGenres().toString());
+    Assert.assertEquals("[USA]", movie.getCountries().toString());
   }
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = allocine.getCasting(new Movie(new IdInfo(40191, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
+    List<CastingInfo> cast = allocine.getCasting(new Movie(null, new IdInfo(40191, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
     boolean dir = false, actor = false;
-    for(CastingInfo info : cast) {
+    for (CastingInfo info : cast) {
 
-      if(!dir && info.isDirector()) {
+      if (!dir && info.isDirector()) {
         Assert.assertEquals("Michel Gondry", info.getName());
         dir = true;
       }
-      
-      if(!actor && info.isActor()) {
+
+      if (!actor && info.isActor()) {
         Assert.assertEquals("Jim Carrey", info.getName());
         actor = true;
       }
     }
 
-    if(!dir || !actor) {
+    if (!dir || !actor) {
       Assert.fail();
     }
-  };
+  }
+
+  ;
 
   @Override
   public void getImages() throws Exception {// TODO
     /*List<ImageInfo> images = allocine.getImages(new Movie(new IdInfo(61282, ScrapperUtils.AvailableApiIds.ALLOCINE), null, null, null, -1));
-    Assert.assertEquals(ImageCategoryProperty.thumb, images.get(0).getCategory());
-    Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());// FIXME
-    */
+     Assert.assertEquals(ImageCategoryProperty.thumb, images.get(0).getCategory());
+     Assert.assertEquals("http://images.allocine.fr/medias/nmedia/18/64/43/65/19211318.jpg", images.get(1).getHref(ImageInfo.ImageSize.big).toExternalForm());// FIXME
+     */
   }
 }

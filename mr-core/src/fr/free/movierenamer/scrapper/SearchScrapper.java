@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,11 @@
  */
 package fr.free.movierenamer.scrapper;
 
-import fr.free.movierenamer.info.IdInfo;
 import java.util.List;
 import java.util.Locale;
 
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,7 +55,7 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
   public final boolean hasSupportedLanguage(AvailableLanguages language) {
     return supportedLanguages.contains(language);
   }
-  
+
   protected final Locale getLanguage() {
     if (language != null) {
       return language;
@@ -66,15 +64,15 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
     }
   }
 
-  public final void setLanguage(Locale language) {
+  public final void setLanguage(Locale language) {// FIXME
 
-    this.language = null;
-    for (LocaleUtils.Language lang : supportedLanguages) {
-      if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
-        this.language = lang.getLocale();
-        break;
-      }
-    }
+    this.language = language;
+//    for (LocaleUtils.Language lang : supportedLanguages) {
+//      //if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
+//      this.language = lang.getLocale();
+//      break;
+//      //}
+//    }
 
     if (this.language == null) {
       this.language = getDefaultLanguage();

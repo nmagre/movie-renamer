@@ -28,7 +28,7 @@ import javax.swing.Icon;
  */
 public class UIMediaAudio implements IIconList {
 
-  private MediaAudio maudio;
+  private final MediaAudio maudio;
   private UILang image;
 
   public UIMediaAudio(MediaAudio maudio) {
@@ -38,7 +38,7 @@ public class UIMediaAudio implements IIconList {
   @Override
   public Icon getIcon() {
     if (image == null) {
-      image = FlagUtils.getFlag(maudio.getLanguage().getLanguage());
+      image = FlagUtils.getFlagByLang(maudio.getLanguage().getLanguage());
     }
     return image.getIcon();
   }

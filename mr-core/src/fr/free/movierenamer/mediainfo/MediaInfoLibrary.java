@@ -1,3 +1,4 @@
+// FIXME It comes from where ?
 package fr.free.movierenamer.mediainfo;
 
 import com.sun.jna.*;
@@ -23,7 +24,8 @@ public interface MediaInfoLibrary extends Library {
   Pointer New();
 
   /**
-   * Open a file and collect information about it (technical information and tags).
+   * Open a file and collect information about it (technical information and
+   * tags).
    *
    * @param handle
    * @param file full name of the file to open
@@ -37,7 +39,8 @@ public interface MediaInfoLibrary extends Library {
    * @param handle
    * @param option The name of option
    * @param value The value of option
-   * @return Depends on the option: by default "" (nothing) means No, other means Yes
+   * @return Depends on the option: by default "" (nothing) means No, other
+   * means Yes
    */
   WString Option(Pointer handle, WString option, WString value);
 
@@ -55,10 +58,13 @@ public interface MediaInfoLibrary extends Library {
    * @param handle
    * @param streamKind Kind of stream (general, video, audio...)
    * @param streamNumber Stream number in Kind of stream (first, second...)
-   * @param parameter Parameter you are looking for in the stream (Codec, width, bitrate...), in string format ("Codec", "Width"...)
-   * @param infoKind Kind of information you want about the parameter (the text, the measure, the help...)
+   * @param parameter Parameter you are looking for in the stream (Codec, width,
+   * bitrate...), in string format ("Codec", "Width"...)
+   * @param infoKind Kind of information you want about the parameter (the text,
+   * the measure, the help...)
    * @param searchKind Where to look for the parameter
-   * @return a string about information you search, an empty string if there is a problem
+   * @return a string about information you search, an empty string if there is
+   * a problem
    */
   WString Get(Pointer handle, int streamKind, int streamNumber, WString parameter, int infoKind, int searchKind);
 
@@ -68,14 +74,19 @@ public interface MediaInfoLibrary extends Library {
    * @param handle
    * @param streamKind Kind of stream (general, video, audio...)
    * @param streamNumber Stream number in Kind of stream (first, second...)
-   * @param parameterIndex Parameter you are looking for in the stream (Codec, width, bitrate...), in integer format (first parameter, second parameter...)
-   * @param infoKind Kind of information you want about the parameter (the text, the measure, the help...)
-   * @return a string about information you search, an empty string if there is a problem
+   * @param parameterIndex Parameter you are looking for in the stream (Codec,
+   * width, bitrate...), in integer format (first parameter, second
+   * parameter...)
+   * @param infoKind Kind of information you want about the parameter (the text,
+   * the measure, the help...)
+   * @return a string about information you search, an empty string if there is
+   * a problem
    */
   WString GetI(Pointer handle, int streamKind, int streamNumber, int parameterIndex, int infoKind);
 
   /**
-   * Count of streams of a stream kind (StreamNumber not filled), or count of piece of information in this stream.
+   * Count of streams of a stream kind (StreamNumber not filled), or count of
+   * piece of information in this stream.
    *
    * @param handle
    * @param streamKind Kind of stream (general, video, audio...)

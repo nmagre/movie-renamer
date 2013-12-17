@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
-import fr.free.movierenamer.ui.swing.panel.GalleryPanel;
+import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
 import java.util.List;
 import javax.swing.Icon;
@@ -31,13 +31,13 @@ import javax.swing.Icon;
  */
 public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
 
-  private final GalleryPanel panel;
+  private final GalleryDialog panel;
 
-  public GalleryWorker(List<UIMediaImage> images, GalleryPanel panel, String defaultImage) {
+  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, String defaultImage) {
     this(images, panel, ImageInfo.ImageSize.medium, defaultImage);
   }
 
-  public GalleryWorker(List<UIMediaImage> images, GalleryPanel panel, ImageInfo.ImageSize size, String defaultImage) {
+  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, ImageInfo.ImageSize size, String defaultImage) {
     super(images, size, defaultImage);
     this.panel = panel;
   }
@@ -61,5 +61,10 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
   @Override
   public String getDisplayName() {
     return ("worker.gallery");// FIXME i18n
+  }
+
+  @Override
+  protected String getName() {
+    return "Gallery : " + panel.getName();
   }
 }

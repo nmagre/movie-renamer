@@ -52,7 +52,7 @@ import javax.swing.SwingConstants;
 public final class UIUtils {
 
   public static final I18n i18n = new I18n("main");
-  public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<IIconList>();
+  public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<>();
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
     @Override
     public int compare(UIFile stringOne, UIFile stringTwo) {
@@ -60,43 +60,69 @@ public final class UIUtils {
     }
   };
 
-  public static WebButton createButton(String language, Icon icon) {
-    return createButton(language, icon, icon, TooltipWay.down);
+  /**
+   * Create a decorated button without icon and tooltip
+   *
+   * @param language I18n key
+   * @return Button
+   */
+  public static WebButton createButtons(String language) {
+    return createButton(language, null);
   }
 
+  /**
+   * Create a decorated button with an icon and without tooltip
+   *
+   * @param language I18n key
+   * @param icon Button icon
+   * @return Button
+   */
+  public static WebButton createButton(String language, Icon icon) {
+    return createButton(language, icon, true);
+  }
+
+  public static WebButton createButton(String language, Icon icon, boolean decorated) {
+    return createButton(language, icon, decorated, decorated);
+  }
+
+  public static WebButton createButton(String language, Icon icon, boolean decorated, boolean addString) {
+    if (addString) {
+      return createButton(language, icon, decorated, addString, null, null, null, null);
+    }
+    return createButton(language, icon, decorated, icon);
+  }
+
+  /*
+   Button with tooltip
+   */
   public static WebButton createButton(String language, Icon icon, Icon smallIcon) {
     return createButton(language, icon, smallIcon, TooltipWay.down);
   }
 
-  public static WebButton createButton(String language, Icon icon, Icon smallIcon, boolean addString) {
-    return createButton(language, icon, smallIcon, null, null, addString, true, TooltipWay.down);
+  public static WebButton createButton(String language, Icon icon, boolean decorated, Icon smallIcon) {
+    return createButton(language, icon, decorated, false, smallIcon, null, null, null);
   }
 
   public static WebButton createButton(String language, Icon icon, Icon smallIcon, TooltipWay way) {
-    return createButton(language, icon, smallIcon, null, null, false, true, way);
+    return createButton(language, icon, smallIcon, way, null, null);
   }
 
-  public static WebButton createButton(String language, Icon icon, Icon smallIcon, Component cmpnt, HotkeyData hd) {
-    return createButton(language, icon, smallIcon, cmpnt, hd, false, true, TooltipWay.down);
+  public static WebButton createButton(String language, Icon icon, Icon smallIcon, HotkeyData hd, Component cmpnt) {
+    return createButton(language, icon, smallIcon, TooltipWay.down, hd, cmpnt);
   }
 
-  public static WebButton createButton(String language, Icon icon, Icon smallIcon, Component cmpnt, HotkeyData hd, TooltipWay way) {
-    return createButton(language, icon, smallIcon, cmpnt, hd, false, true, way);
+  public static WebButton createButton(String language, Icon icon, Icon smallIcon, TooltipWay way, HotkeyData hd, Component cmpnt) {
+    return createButton(language, icon, false, false, smallIcon, way, hd, cmpnt);
   }
 
-  public static WebButton createButton(String language, Icon icon, Icon smallIcon, Component cmpnt, HotkeyData hd,
-          boolean addString, boolean addTooltip, TooltipWay way) {
+  public static WebButton createButton(String language, Icon icon, boolean decorated, boolean addString,
+          Icon smallIcon, TooltipWay way, HotkeyData hd, Component cmpnt) {
 
     WebButton button = new WebButton();
     button.setIcon(icon);
     if (addString) {
       button.setLanguage(language);
-    }
-
-    button.setRolloverDecoratedOnly(true);
-    button.setFocusable(false);
-
-    if (addTooltip) {
+    } else {
       if (cmpnt != null && hd != null) {
         HotkeyManager.registerHotkey(cmpnt, button, hd, new ButtonHotkeyRunnable(button), way);
       }
@@ -106,13 +132,20 @@ public final class UIUtils {
       TooltipManager.setTooltip(button, label, way);
     }
 
+    if (!decorated) {
+      button.setRolloverDecoratedOnly(true);
+    }
+    button.setFocusable(false);
+    button.setInnerShadeWidth(0);
+    button.setRound(2);
+    button.setAlignmentY(0.0F);
+
     return button;
   }
 
   public static WebButton createSettingButton(PopupWay way, JComponent... components) {
     WebButton button = new WebButton();
     button.setIcon(ImageUtils.SETTING_16);
-    //button.setMargin(0, 0, 0, 0);
     button.setAlignmentY(0.0F);
     button.setInnerShadeWidth(0);
     button.setLeftRightSpacing(1);
@@ -132,7 +165,10 @@ public final class UIUtils {
       }
     }
 
-    TooltipManager.setTooltip(button, new WebLabel(("tooltip.settings"), ImageUtils.SETTING_16, SwingConstants.TRAILING), ttway);// FIXME i18n
+    WebLabel tooltipLbl = new WebLabel(ImageUtils.SETTING_16, SwingConstants.TRAILING);
+    tooltipLbl.setLanguage(i18n.getLanguageKey("toptb.settings"));
+
+    TooltipManager.setTooltip(button, tooltipLbl, ttway);
     return button;
   }
 

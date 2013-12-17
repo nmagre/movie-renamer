@@ -35,7 +35,7 @@ import java.util.List;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
+public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {// Not used
 
   private final MediaInfo info;
   private final WebList castingList;
@@ -59,15 +59,15 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
 
   @Override
   public List<UIPersonImage> executeInBackground() throws Exception {
-    List<UIPersonImage> persons = new ArrayList<UIPersonImage>();
+    List<UIPersonImage> persons = new ArrayList<>();
     List<CastingInfo> infos;
 
     if (info != null) {
-      infos = info.getCast();
+      infos = info.getCasting();
       int count = infos.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {
-          return new ArrayList<UIPersonImage>();
+          return new ArrayList<>();
         }
 
         persons.add(new UIPersonImage(infos.get(i)));
@@ -78,6 +78,7 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected void workerDone() throws Exception {
     List<UIPersonImage> infos = get();
     castingList.setModel(castingModel);

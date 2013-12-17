@@ -23,7 +23,7 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
-import fr.free.movierenamer.info.NfoInfo;
+import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
@@ -72,15 +72,15 @@ public class SettingPanelGen extends PanelGenerator {
     setLayout(new GridBagLayout());
   }
 
+  @SuppressWarnings("unchecked")
   public void addSettings(List<List<IProperty>> settingsDef, boolean tabbed) {
 
-    checkboxs = new HashMap<IProperty, WebCheckBox>();
-    fields = new HashMap<IProperty, WebTextField>();
-    comboboxs = new HashMap<IProperty, WebComboBox>();
+    checkboxs = new HashMap<>();
+    fields = new HashMap<>();
+    comboboxs = new HashMap<>();
     WebTabbedPane tabbedPane = new WebTabbedPane();
 
     for (List<IProperty> group : settingsDef) {
-
       int level = 1;
       WebPanel panel = null;
 
@@ -98,7 +98,7 @@ public class SettingPanelGen extends PanelGenerator {
 
       boolean hasChild = false;
       boolean isEnabled = false;
-      final List<JComponent> childs = new ArrayList<JComponent>();
+      final List<JComponent> childs = new ArrayList<>();
 
       for (IProperty property : group) {
         GridBagConstraints constraint = getGroupConstraint(level);
@@ -131,7 +131,7 @@ public class SettingPanelGen extends PanelGenerator {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
           //component.setPreferredSize(comboboxDim);
-          DefaultComboBoxModel model = new DefaultComboBoxModel();
+          DefaultComboBoxModel<IIconList> model = new DefaultComboBoxModel<>();
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
@@ -147,10 +147,10 @@ public class SettingPanelGen extends PanelGenerator {
           for (Enum<?> e : clazz.getEnumConstants()) {
             IIconList iicon;
             if (property.getDefaultValue() instanceof LocaleUtils.Language) {
-              iicon = FlagUtils.getFlag(e.name());
+              iicon = FlagUtils.getFlagByLang(e.name());
             } else {
               String imgfolder = null;
-              if (property.getDefaultValue() instanceof NfoInfo.NFOtype) {
+              if (property.getDefaultValue() instanceof Nfo.NFOtype) {
                 imgfolder = "mediacenter";
               } else if (property.getDefaultValue() instanceof CaseConversionType) {
                 imgfolder = "case";
@@ -173,7 +173,7 @@ public class SettingPanelGen extends PanelGenerator {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
           //component.setPreferredSize(comboboxDim);
-          DefaultComboBoxModel model = new DefaultComboBoxModel();
+          DefaultComboBoxModel<UIScrapper> model = new DefaultComboBoxModel<>();
 
           if (tabbed && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));

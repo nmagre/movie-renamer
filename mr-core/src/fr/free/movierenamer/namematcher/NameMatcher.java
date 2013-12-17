@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  */
 public abstract class NameMatcher {// TODO
 
-  private static List<String> fileExts = Arrays.asList(new String[]{"nfo", "xml"});
+  private static final List<String> fileExts = Arrays.asList(new String[]{"nfo", "xml"});
 
   public static Map<FileProperty, String> getProperty(File file, MediaType type) {
     Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);

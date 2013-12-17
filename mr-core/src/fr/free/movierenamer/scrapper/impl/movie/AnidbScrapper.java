@@ -21,12 +21,11 @@ import java.util.List;
 import java.util.Locale;
 
 import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import java.net.URL;
 
 /**
@@ -90,5 +89,10 @@ public class AnidbScrapper extends MovieScrapper {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
+  }
+
+  @Override
+  public ScrapperUtils.InfoQuality getInfoQuality() {
+    return ScrapperUtils.InfoQuality.GREAT;
   }
 }

@@ -18,17 +18,25 @@
 package fr.free.movierenamer.utils;
 
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.scrapper.MovieScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
+import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.Document;
@@ -43,6 +51,8 @@ public final class ScrapperUtils {
 
   private static final String imdbIdLookupHost = "passion-xbmc.org";
   private static final Pattern imdbIdPattern = Pattern.compile("tt(\\d+{7})");
+  private static final Pattern imdbIdUrlPattern = Pattern.compile("www\\.imdb\\.com\\/title\\/tt(\\d+{7})");
+  private static final Pattern alloIdUrlPattern = Pattern.compile("www\\.allocine\\.fr\\/film\\/fichefilm_gen_cfilm\\=(\\d+)\\.html");
 
   public static enum TmdbImageSize {
 
@@ -72,13 +82,15 @@ public final class ScrapperUtils {
     }
   }
 
-  public static enum AvailableApiIds {
+  public static enum AvailableApiIds implements Serializable {
 
     IMDB("tt"),
     ALLOCINE(),
     TMDB(),
     TVDB(),
-    TVRAGE;
+    TVRAGE,
+    ROTTEN,
+    KINOPOISK;
     private String prefix;
 
     private AvailableApiIds() {
@@ -94,29 +106,63 @@ public final class ScrapperUtils {
     }
   }
 
-  public static IdInfo alloIdLookup(Movie searchResult) {
+  public static enum InfoQuality {
 
-    IdInfo idinfo = searchResult.getId();
+    AWESOME,
+    GREAT,
+    AVERAGE,
+    POOR
+  }
 
-    if (idinfo.getIdType() == AvailableApiIds.ALLOCINE) {
-      return idinfo;
+  public static IdInfo imdbIdLookup(IdInfo id, Movie searchResult) {
+
+    if (searchResult != null) {
+      if (searchResult.getImdbId() != null) {
+        return searchResult.getImdbId();
+      }
     }
 
-    if (searchResult.getOriginalTitle() == null || searchResult.getOriginalTitle().equals("")) {
-      return null;
+    return idLookup(AvailableApiIds.IMDB, id, searchResult);
+  }
+
+  public static IdInfo alloIdLookup(IdInfo id, Movie searchResult) {
+    return idLookup(AvailableApiIds.ALLOCINE, id, searchResult);
+  }
+
+  private static IdInfo idLookup(AvailableApiIds lookupType, IdInfo id, Movie searchResult) {
+    List<IdInfo> ids = new ArrayList<IdInfo>();
+    if (searchResult != null) {
+      IdInfo mid = searchResult.getMediaId();
+      if (mid != null) {
+        ids.add(mid);
+      }
     }
 
+    if (id != null) {
+      ids.add(id);
+    }
 
-    String searchTitle = StringUtils.normaliseClean(searchResult.getOriginalTitle());
+    switch (lookupType) {
+      case IMDB:
+        return getImdbId(ids, searchResult);
+      case ALLOCINE:
+        return getAlloId(ids, searchResult);
+    }
 
+    return null;
+  }
+
+  private static IdInfo getIdBySearch(MovieScrapper scrapper, Movie searchResult) {
     try {
-      AllocineScrapper alloScrapper = new AllocineScrapper();
-      List<Movie> results = alloScrapper.search(searchTitle);
+      String searchTitle = StringUtils.normaliseClean(searchResult.getOriginalTitle());
+      List<Movie> results;
+      results = scrapper.search(searchTitle);
       for (Movie result : results) {
-
-        if (searchTitle.equalsIgnoreCase(StringUtils.normaliseClean(result.getOriginalTitle())) && searchResult.getYear() == result.getYear()) {
+        if (searchTitle.equalsIgnoreCase(StringUtils.normaliseClean(result.getOriginalTitle())) || searchTitle.equalsIgnoreCase(StringUtils.normaliseClean(result.getName()))) {
           if (searchResult.getYear() > 1900) {
-            return result.getId();
+            if (searchResult.getYear() == result.getYear()) {
+              return result.getImdbId() != null ? result.getImdbId() : result.getMediaId();
+            }
           }
         }
       }
@@ -125,51 +171,192 @@ public final class ScrapperUtils {
     }
 
     return null;
-
   }
 
-  public static IdInfo imdbIdLookup(IdInfo alloId, Movie searchResult) {
+  private static IdInfo getImdbId(List<IdInfo> ids, Movie searchResult) {
+    IdInfo imdbid = null;
+    for (IdInfo id : ids) {
+      switch (id.getIdType()) {
+        case IMDB:
+          return id;
+        case ALLOCINE:
+          if (searchResult != null) {
+            imdbid = imdbIdLookupByAlloId(id, searchResult.getOriginalTitle());
+          }
+          break;
+        case ROTTEN:
+          imdbid = RottenTomatoes.imdbIdLookup(id);
+          break;
+        case TMDB:
+          imdbid = TMDbScrapper.imdbIdLookup(id);
+          break;
+      }
 
-    if (alloId.getIdType() != AvailableApiIds.ALLOCINE) {
-      return null;
+      if (imdbid != null) {
+        return imdbid;
+      }
     }
 
-    try {
-      Document dom = URIRequest.getHtmlDocument(new URL("http", imdbIdLookupHost, "/scraper/index2.php?Page=ViewMovie&ID=" + alloId.getId()).toURI());
-      try {
-        String id = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A[contains(@href, 'imdb.com/')]", dom));
+    if (searchResult != null) {
+      // ty to find imdb id with imdb scrapper
+      imdbid = getIdBySearch(new IMDbScrapper(), searchResult);
+    }
 
-        if (id != null && !id.equals("")) {
-          Matcher matcher = imdbIdPattern.matcher(id);
-          if (matcher.find()) {
-            return new IdInfo(Integer.parseInt(matcher.group(1)), ScrapperUtils.AvailableApiIds.IMDB);
+    return imdbid;
+  }
+
+  private static IdInfo getAlloId(List<IdInfo> ids, Movie searchResult) {
+    IdInfo alloId = null;
+    for (IdInfo id : ids) {
+      switch (id.getIdType()) {
+        case IMDB:
+          if (searchResult != null) {
+            alloId = alloIdLookupByImdbId(id, searchResult.getOriginalTitle());
           }
-        }
-      } catch (NullPointerException Ex) {
-        // Imdb id not found
+          break;
+        case ALLOCINE:
+          return id;
       }
 
-      if (searchResult != null) {
-        String searchTitle = StringUtils.normaliseClean(searchResult.getOriginalTitle());
-        IMDbScrapper imdbScrapper = new IMDbScrapper();
-        List<Movie> results = imdbScrapper.search(searchTitle);
-        for (Movie result : results) {
+      if (alloId != null) {
+        return alloId;
+      }
+    }
 
-          if (searchTitle.equalsIgnoreCase(StringUtils.normaliseClean(result.getOriginalTitle())) && searchResult.getYear() == result.getYear()) {
-            if (searchResult.getYear() > 1900) {
-              return result.getId();
+    if (searchResult != null) {
+      alloId = searchAlloId(searchResult);
+    }
+
+    return alloId;
+  }
+
+  private static IdInfo searchAlloId(Movie searchResult) {
+    IdInfo alloId = null;
+    MovieScrapper scrapper = null;
+    switch (Settings.getInstance().getSearchScrapperLang()) {
+      case pt:
+        scrapper = new AdorocinemaScrapper();
+        break;
+      case fr:
+        scrapper = new AllocineScrapper();
+        break;
+      case tr:
+        scrapper = new BeyazperdeScrapper();
+        break;
+      case de:
+        scrapper = new FilmstartsScrapper();
+        break;
+      case en:
+        scrapper = new ScreenRushScrapper();
+        break;
+      case es:
+        scrapper = new SensacineScrapper();
+    }
+
+    if (scrapper != null) {
+      // ty to find allo id with allogroup scrapper
+      alloId = getIdBySearch(scrapper, searchResult);
+    }
+
+    return alloId;
+  }
+
+  private static IdInfo imdbIdLookupByAlloId(IdInfo alloId, String title) {
+    IdInfo imdbId = null;
+    try {
+      if (alloId.getIdType() == AvailableApiIds.ALLOCINE) {
+
+        Document dom = URIRequest.getHtmlDocument(new URL("http", imdbIdLookupHost, "/scraper/index2.php?Page=ViewMovie&ID=" + alloId.getId()).toURI());
+        try {
+          String id = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A[contains(@href, 'imdb.com/')]", dom));
+
+          if (id != null && !id.equals("")) {
+            Matcher matcher = imdbIdPattern.matcher(id);
+            if (matcher.find()) {
+              return new IdInfo(Integer.parseInt(matcher.group(1)), ScrapperUtils.AvailableApiIds.IMDB);
             }
           }
+        } catch (NullPointerException Ex) {
+          // Imdb id not found
+        }
+
+        if (title != null && !title.isEmpty()) {
+          imdbId = idInfoGoogleLookup(AvailableApiIds.IMDB, alloId, title);
+          if (imdbId != null) {
+            return imdbId;
+          }
         }
       }
 
-    } catch (URISyntaxException ex) {
+    } catch (Exception ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    return imdbId;
+  }
+
+  private static IdInfo alloIdLookupByImdbId(IdInfo imdbId, String title) {// TODO need to be improved
+    try {
+      IdInfo id = idInfoGoogleLookup(AvailableApiIds.ALLOCINE, imdbId, title);
+      if (id != null) {
+        return id;
+      }
+    } catch (Exception ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    return null;
+  }
+
+  private static IdInfo idInfoGoogleLookup(AvailableApiIds lookupType, IdInfo info, String title) {
+    try {
+      String json = URIRequest.getDocumentContent(new URL("http://www.google.fr/search?q=" + URIRequest.encode(StringUtils.normaliseClean(title)) + "&bav=on.2,or.r_qf.&fp=1").toURI());
+      Pattern pattern = alloIdUrlPattern;
+      Pattern lookupPattern = imdbIdUrlPattern;
+      switch (lookupType) {
+        case ALLOCINE:
+          pattern = imdbIdUrlPattern;
+          lookupPattern = alloIdUrlPattern;
+          break;
+        case IMDB:
+          break;
+        default:
+          throw new UnsupportedOperationException(lookupType.name() + " is not supported by IdInfoGoogleLookup");
+      }
+
+      Matcher matcher = pattern.matcher(json);
+      if (matcher.find()) {
+        String id = matcher.group(1);
+        if (!NumberUtils.isDigit(id)) {
+          return null;
+        }
+
+        matcher = lookupPattern.matcher(json);
+        if (matcher.find()) {
+          String lid = matcher.group(1);
+          if (!NumberUtils.isDigit(lid)) {
+            return null;
+          }
+
+          switch (lookupType) {
+            case ALLOCINE:
+              if (info == null || info.getId() == Integer.parseInt(id)) {
+                return new IdInfo(Integer.parseInt(lid), AvailableApiIds.ALLOCINE);
+              }
+
+            case IMDB:
+              if (info == null || info.getId() == Integer.parseInt(id)) {
+                return new IdInfo(Integer.parseInt(id), "tt" + lid, AvailableApiIds.IMDB);
+              }
+          }
+
+        }
+      }
+    } catch (SAXException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (SAXException ex) {
-      Settings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (Exception ex) {
+    } catch (URISyntaxException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
 

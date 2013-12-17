@@ -115,8 +115,9 @@ public class Sorter {
   }
 
   /**
-   * Sort list by YEAR, first exact YEAR then YEAR + 1 , YEAR - 1
-   * If search is not null group of YEAR are sorted by COMPARATOR (only for YEAR, YEAR + 1, YEAR -1)
+   * Sort list by YEAR, first exact YEAR then YEAR + 1 , YEAR - 1 If search is
+   * not null group of YEAR are sorted by COMPARATOR (only for YEAR, YEAR + 1,
+   * YEAR -1)
    *
    * @param <T>
    * @param list List to sort
@@ -141,7 +142,7 @@ public class Sorter {
 
   private static class SimmetricsSort implements Comparator<ISort> {
 
-    private String search;
+    private final String search;
     private final Float accuracy;
 
     public SimmetricsSort(String search) {

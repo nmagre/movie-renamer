@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing;
 
+import static fr.free.movierenamer.info.ImageInfo.ImageProperty.url;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.datatransfer.DataFlavor;
@@ -28,6 +29,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,12 +67,11 @@ public abstract class DragAndDrop implements DropTargetListener {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void drop(DropTargetDropEvent evt) {// FIXME put this in a thread
+  public void drop(DropTargetDropEvent evt) {// FIXME put this in a thread and do not block EDT
 
     // We block the UI thread (EDT) during file process to avoid any other operation
     // This is the only case where it's acceptable to do that
-
-    List<File> files = new ArrayList<File>();
+    List<File> files = new ArrayList<>();
 
     try {
       mr.setCursor(MovieRenamer.hourglassCursor);
@@ -77,21 +79,28 @@ public abstract class DragAndDrop implements DropTargetListener {
       int action = evt.getDropAction();
       evt.acceptDrop(action);
 
-
       Transferable data = evt.getTransferable();
       if (data.isDataFlavorSupported(DataFlavor.stringFlavor)) { // Unix/Remote files
 
         String dropedFile = (String) data.getTransferData(DataFlavor.stringFlavor);
         String[] res = dropedFile.split("\n");
-
-        for (int i = 0; i < res.length; i++) {
-          String file = res[i];
+        for (String file : res) {
           if (file.startsWith("file://")) {// Local file
             file = URLDecoder.decode(file.replace("file://", "").replace("\n", ""), "UTF-8");
             file = file.substring(0, file.length() - 1);
+            files.add(new File(file));
+          } else if (file.startsWith("http") || file.startsWith("www")) {
+            File f;
+            try {
+              URL url = new URL(file);
+              f = new File(url.toExternalForm());
+              files.add(f);
+            } catch (Exception e) {
+
+            }
 
           }
-          files.add(new File(file));
+
         }
       } else if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {// Windows
         files.addAll((List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
@@ -99,9 +108,7 @@ public abstract class DragAndDrop implements DropTargetListener {
 
       getFiles(files);
 
-    } catch (UnsupportedFlavorException ex) {
-      UISettings.LOGGER.log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
+    } catch (UnsupportedFlavorException | IOException ex) {
       UISettings.LOGGER.log(Level.SEVERE, null, ex);
     } finally {
       evt.dropComplete(true);

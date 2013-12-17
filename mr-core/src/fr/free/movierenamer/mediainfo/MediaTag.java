@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -33,7 +34,7 @@ import java.util.Scanner;
  *
  * @author Nicolas Magré
  */
-public class MediaTag {
+public class MediaTag implements Serializable {
 
   private MediaInfo mediaInfo;
   private final File mediaFile;
@@ -68,8 +69,8 @@ public class MediaTag {
     TextStreamCount(StreamKind.Text, Integer.class, "StreamCount"),
     TextTitle(StreamKind.Text, "Title"),
     TextLanguage(StreamKind.Text, "Language/String3");
-    private StreamKind kind;
-    private String[] keys;
+    private final StreamKind kind;
+    private final String[] keys;
     private boolean getFirst = false;
     private Class<?> clazz = String.class;
 

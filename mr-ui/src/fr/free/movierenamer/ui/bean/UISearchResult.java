@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.SearchScrapper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
@@ -115,7 +116,11 @@ public class UISearchResult extends Sorter.ISort implements IImage {
     }
 
     if (showId) {
-      toString += " (id:" + searchResult.getMediaId() + ")";
+      IdInfo id = searchResult.getMediaId();
+      if (id == null) {
+        id = searchResult.getImdbId();
+      }
+      toString += " (id:" + id + ")";
     }
 
     return toString;
@@ -123,7 +128,17 @@ public class UISearchResult extends Sorter.ISort implements IImage {
 
   @Override
   public int getId() {
-    return searchResult.getMediaId().getId();
+    IdInfo id = searchResult.getMediaId();
+    if (id != null) {
+      return id.getId();
+    }
+
+    id = searchResult.getImdbId();
+    if (id != null) {
+      return id.getId();
+    }
+
+    return -1;
   }
 
   @Override

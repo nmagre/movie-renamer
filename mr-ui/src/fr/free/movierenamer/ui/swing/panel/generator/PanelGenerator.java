@@ -27,7 +27,7 @@ import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -58,7 +58,7 @@ public abstract class PanelGenerator extends WebPanel {
   protected final Insets groupInsets = new Insets(smallMargin, mediumMargin, smallMargin, mediumMargin);
   protected final Insets groupSeparationInsets = new Insets(mediumMargin, mediumMargin, smallMargin, mediumMargin);
   // Constraints
-  private GridBagConstraints constraint = new GridBagConstraints();
+  private final GridBagConstraints constraint = new GridBagConstraints();
   private final GridBagConstraints dummyPanelConstraint = new GridBagConstraints();
   // Grid Y position
   private int gridy = 0;
@@ -301,18 +301,13 @@ public abstract class PanelGenerator extends WebPanel {
     toolbar.add(label);
 
     if (helpText != null) {
-      final WebButton button = new WebButton(ImageUtils.HELP_16);
-      button.setMargin(0);
-      button.setFocusable(false);
-      button.setRolloverDarkBorderOnly(true);
-      button.setRolloverDecoratedOnly(true);
+      final WebButton button = UIUtils.createButton("setting.help", ImageUtils.HELP_16, false, false);// FIXME i18n
       button.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent ae) {
           WebOptionPane.showMessageDialog(PanelGenerator.this, i18n ? helpText.toLowerCase() : helpText, "help", WebOptionPane.PLAIN_MESSAGE);// FIXME i18n
         }
       });
-      TooltipManager.setTooltip(button, "help", TooltipWay.down);// FIXME i18n
       toolbar.addToEnd(button);
     }
 
@@ -356,20 +351,23 @@ public abstract class PanelGenerator extends WebPanel {
 
     switch (settingComponent) {
       case BUTTON:
-        component = new WebButton((title));// FIXME i18n
+        component = new WebButton();
+        ((WebButton) component).setLanguage(title);
         break;
       case CHECKBOX:
-        component = new WebCheckBox((title));// FIXME i18n
+        component = new WebCheckBox();
+        ((WebCheckBox) component).setLanguage(title);
         break;
       case FIELD:
         component = new WebTextField();
         typeface = Font.PLAIN;
         break;
       case TOOLBAR:
-        component = new WebToolBar((title));// FIXME i18n
+        component = new WebToolBar();
         break;
       case LABEL:
-        component = new WebLabel((title));// FIXME i18n
+        component = new WebLabel();
+        ((WebLabel) component).setLanguage(title);
         break;
       default:
         break;

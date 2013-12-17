@@ -28,7 +28,7 @@ import javax.swing.Icon;
  */
 public class UIMediaSubTitle implements IIconList {
 
-  private MediaSubTitle msubtitle;
+  private final MediaSubTitle msubtitle;
   private UILang image;
 
   public UIMediaSubTitle(MediaSubTitle msubtitle) {
@@ -38,7 +38,7 @@ public class UIMediaSubTitle implements IIconList {
   @Override
   public Icon getIcon() {
     if (image == null) {
-      image = FlagUtils.getFlag(msubtitle.getLanguage().getLanguage());
+      image = FlagUtils.getFlagByLang(msubtitle.getLanguage().getLanguage());
     }
     return image.getIcon();
   }

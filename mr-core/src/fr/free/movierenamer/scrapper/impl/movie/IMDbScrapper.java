@@ -39,7 +39,6 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
@@ -57,7 +56,6 @@ public class IMDbScrapper extends MovieScrapper {
 
   private static final String host = "www.imdb.com";
   private static final String name = "IMDb";
-  private static final String CHARSET = URIRequest.ISO;
   private final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
 
   public IMDbScrapper() {
@@ -92,7 +90,7 @@ public class IMDbScrapper extends MovieScrapper {
     // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
     // Only title -> ref_=fn_tt
     // Only movie -> ref_=fn_ft
-    URL searchUrl = new URL("http", host, "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
+    URL searchUrl = new URL("http", host, "/find?s=tt&ref_=fn_ft&q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
@@ -130,7 +128,7 @@ public class IMDbScrapper extends MovieScrapper {
           thumb = null;
         }
 
-        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), title, null, thumb, Integer.parseInt(year)));
+        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, title, null, thumb, Integer.parseInt(year)));
       } catch (Exception e) {
         // ignore
       }
@@ -140,7 +138,7 @@ public class IMDbScrapper extends MovieScrapper {
     if (results.isEmpty()) {
       try {
         int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
-        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, -1), language);
+        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1), language);
         URL thumb;
         try {
           String imgPath = info.getPosterPath().toURL().toExternalForm();
@@ -148,10 +146,10 @@ public class IMDbScrapper extends MovieScrapper {
         } catch (Exception ex) {
           thumb = null;
         }
-        Movie movie = new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), info.getTitle(), null, thumb, info.getYear());
-        if (movie != null) {
-          results.add(movie);
-        }
+
+        Movie movie = new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, info.getTitle(), null, thumb, info.getYear());
+        results.add(movie);
+
       } catch (Exception e) {
         // ignore, can't find movie
       }
@@ -162,13 +160,13 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, String.format("/title/%s/combined", movie.getMediaId()));
+    URL searchUrl = new URL("http", host, String.format("/title/%s/combined", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    Map<MovieInfo.MovieMultipleProperty, List<?>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<?>>(MovieInfo.MovieMultipleProperty.class);
+    Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
     List<String> genres = new ArrayList<String>();
-    List<Locale> countries = new ArrayList<Locale>();
+    List<String> countries = new ArrayList<String>();
     List<String> studios = new ArrayList<String>();
     List<String> tags = new ArrayList<String>();
 
@@ -253,7 +251,7 @@ public class IMDbScrapper extends MovieScrapper {
 
     List<Node> ncountries = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'country')]", dom);
     for (Node country : ncountries) {
-      countries.add(LocaleUtils.findCountry(country.getTextContent(), language));
+      countries.add(country.getTextContent());
     }
 
     List<Node> ntags = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
@@ -279,16 +277,19 @@ public class IMDbScrapper extends MovieScrapper {
       // No thumb
     }
 
-    Node plot = XPathUtils.selectNode(String.format("//A[@href='/title/%s/plotsummary']", movie.getMediaId()), dom);
+    Node plot = XPathUtils.selectNode(String.format("//A[@href='/title/%s/plotsummary']", movie.getImdbId()), dom);
     if (plot != null) {
-      searchUrl = new URL("http", host, String.format("/title/%s/plotsummary", movie.getMediaId()));
+      searchUrl = new URL("http", host, String.format("/title/%s/plotsummary", movie.getImdbId()));
       dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
-      List<Node> nodes = XPathUtils.selectNodes("//P[@class='plotpar'][1]/descendant::text()[not(ancestor::I) and . != '\n']", dom);
+      node = XPathUtils.selectNode("//DIV[@id='main']//LI/P", dom);
       overview = "";
-      for (Node pnode : nodes) {
-        overview += pnode.getTextContent().trim();
+      if (node != null) {
+        overview = node.getTextContent().trim();
       }
-      fields.put(MovieProperty.overview, overview);
+
+      if (!overview.isEmpty()) {
+        fields.put(MovieProperty.overview, overview);
+      }
     }
 
     /*
@@ -299,17 +300,15 @@ public class IMDbScrapper extends MovieScrapper {
      fields.put(MovieProperty.posterPath, imdbThumb);
      }
      */
-
     List<IdInfo> ids = new ArrayList<IdInfo>();
-    ids.add(movie.getId());
+    ids.add(movie.getImdbId());
 
-    multipleFields.put(MovieInfo.MovieMultipleProperty.ids, ids);
     multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
     multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
     multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
     multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(fields, multipleFields);
+    MovieInfo movieInfo = new MovieInfo(ids, fields, multipleFields);
     return movieInfo;
   }
 
@@ -342,20 +341,20 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<ImageInfo> getScrapperImages(Movie movie) throws Exception {
-    URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getMediaId()));
+    URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(getDefaultLanguage()));
 
     List<ImageInfo> images = new ArrayList<ImageInfo>();
 
     Node node = XPathUtils.selectNode("//A[@href = '?refine=poster']", dom);
     if (node != null) {
-      images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=poster", movie.getMediaId())),
+      images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=poster", movie.getImdbId())),
               ImageCategoryProperty.thumb, getDefaultLanguage()));
     }
 
     node = XPathUtils.selectNode("//A[@href = '?refine=still_frame']", dom);
     if (node != null) {
-      images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=still_frame", movie.getMediaId())),
+      images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=still_frame", movie.getImdbId())),
               ImageCategoryProperty.fanart, getDefaultLanguage()));
     }
 
@@ -381,7 +380,7 @@ public class IMDbScrapper extends MovieScrapper {
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", movie.getMediaId()));
+    URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
@@ -446,5 +445,10 @@ public class IMDbScrapper extends MovieScrapper {
       }
     }
     return null;
+  }
+
+  @Override
+  public ScrapperUtils.InfoQuality getInfoQuality() {
+    return ScrapperUtils.InfoQuality.AWESOME;
   }
 }

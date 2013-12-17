@@ -17,15 +17,20 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
+import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.swing.panel.generator.info.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.MediaPanel;
+import fr.free.movierenamer.ui.swing.panel.info.CastingInfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.worker.Worker;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.ui.worker.WorkerManager;
+import java.util.List;
 
 /**
  * Class SearchMediaInfosWorker
@@ -81,8 +86,18 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
     MediaPanel<MediaInfo> mediaPanel = (MediaPanel<MediaInfo>) mr.getMediaPanel();
     mediaPanel.setInfo(info);
 
+    List<CastingInfo> casting = info.getCasting();
+    if (!casting.isEmpty()) {
+      CastingInfoPanel<?> castingPanel = (CastingInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.CASTING_INFO);
+      if (castingPanel != null) {
+        WorkerManager.fetchImages(castingPanel.getActors(), castingPanel.getActorListModel(), ImageInfo.ImageSize.small, "ui/unknown.png");
+        WorkerManager.fetchImages(castingPanel.getDirectors(), castingPanel.getDirectorListModel(), ImageInfo.ImageSize.small, "ui/unknown.png");
+      }
+    }
+
     mr.updateRenamedTitle();
-    mr.setRenameEnabled();
+    mr.setRenameFieldEnabled();
+    mr.setRenamebuttonEnabled();
   }
 
   @Override

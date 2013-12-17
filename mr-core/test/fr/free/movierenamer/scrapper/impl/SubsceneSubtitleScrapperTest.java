@@ -29,18 +29,19 @@ import fr.free.movierenamer.searchinfo.Subtitle;
 
 /**
  * Class SubsceneSubtitleScrapperTest
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
+
   private SubsceneSubtitleScrapper subscene = null;
 
   @Override
   public void init() {
     subscene = new SubsceneSubtitleScrapper();
   }
-  
+
   @Override
   public void search() throws Exception {
     List<Subtitle> subtitles = subscene.search("Avatar");
@@ -49,7 +50,7 @@ public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
     Subtitle subtitle = subtitles.get(0);
     Assert.assertEquals("Avatar (2009)", subtitle.getName());
   }
-  
+
   @Override
   public void getSubtitleInfo() throws Exception {
     subscene.setLanguage(Locale.FRENCH);
@@ -59,6 +60,9 @@ public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
     SubtitleInfo subtitle = subtitles.get(0);
     Assert.assertTrue(subtitle.getName().contains("Avatar"));
     Assert.assertEquals(Locale.FRENCH.getDisplayLanguage(Locale.ENGLISH), subtitle.getLanguage());
+    for (SubtitleInfo sub : subtitles) {
+      System.out.println(sub.toString());
+    }
   }
-  
+
 }

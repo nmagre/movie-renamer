@@ -49,6 +49,8 @@ import org.xml.sax.SAXException;
 
 import fr.free.movierenamer.settings.Settings;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class URIRequest
@@ -60,6 +62,13 @@ public final class URIRequest {
 
   public static final String UTF = "UTF-8";
   public static final String ISO = "ISO-8859-1";
+  private static final Map<String, String> tokens = new HashMap<String, String>();
+
+  static {
+    // Replace &#133; by &hellip;
+    tokens.put("133", "&hellip;");
+    tokens.put("151", "&mdash;");
+  }
 
   public static String getDocumentContent(URI uri, RequestProperty... properties) throws SAXException, IOException {
     return getDocumentContent(openConnection(uri, properties));
@@ -95,7 +104,8 @@ public final class URIRequest {
   private static Document getHtmlDocument(Reader reader) throws SAXException, IOException {
     DOMParser parser = new DOMParser();
     parser.setFeature("http://xml.org/sax/features/namespaces", false);
-    parser.parse(new InputSource(reader));
+
+    parser.parse(new InputSource(new TokenReplacingReader(tokens, reader, "&#", ";")));
 
     return parser.getDocument();
   }
@@ -217,7 +227,6 @@ public final class URIRequest {
 
   private static Reader getReaderNoSync(URLConnection connection) throws IOException {
     Charset charset = getCharset(connection.getContentType());
-
     return new InputStreamReader(getInputStreamNoSync(connection), charset);
   }
 

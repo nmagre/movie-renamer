@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 /**
  * Class BeyazperdeScrapper
+ *
  * @author Nicolas Magré
  */
 public final class BeyazperdeScrapper extends AlloGroupScrapper {
@@ -47,7 +48,7 @@ public final class BeyazperdeScrapper extends AlloGroupScrapper {
     Orijinal_adı(AlloGroupScrapper.InfoTag.Titre_original),
     Bütçe(AlloGroupScrapper.InfoTag.Budget),
     Dağıtımcı(AlloGroupScrapper.InfoTag.Distributeur);
-    private AlloGroupScrapper.InfoTag infotag;
+    private final AlloGroupScrapper.InfoTag infotag;
 
     private Tag(AlloGroupScrapper.InfoTag infotag) {
       this.infotag = infotag;

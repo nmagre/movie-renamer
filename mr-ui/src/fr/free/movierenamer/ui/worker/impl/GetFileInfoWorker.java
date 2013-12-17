@@ -22,7 +22,6 @@ import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.worker.Worker;
-import fr.free.movierenamer.utils.LocaleUtils;
 
 /**
  * Class GetFileInfoWorker

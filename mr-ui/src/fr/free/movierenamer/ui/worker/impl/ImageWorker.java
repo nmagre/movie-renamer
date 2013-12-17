@@ -71,4 +71,9 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
   public String getDisplayName() {
     return ("worker.image");// FIXME i18n
   }
+
+  @Override
+  protected String getName() {
+    return "ImageWorker : " + defaultImage;
+  }
 }

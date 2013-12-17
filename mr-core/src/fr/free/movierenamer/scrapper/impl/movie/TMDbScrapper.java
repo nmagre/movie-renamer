@@ -29,9 +29,11 @@ import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.ScrapperUtils.TmdbImageSize;
 import fr.free.movierenamer.utils.URIRequest;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
@@ -57,7 +60,7 @@ public class TMDbScrapper extends MovieScrapper {
   private static final String apiHost = "api." + host;
   private static final String name = "TheMovieDb";
   private static final String version = "3";
-  private final String apikey;
+  private static String apikey;
   public static final String imageUrl = "http://cf2.imgobject.com/t/p/";
 
   public TMDbScrapper() {
@@ -134,7 +137,7 @@ public class TMDbScrapper extends MovieScrapper {
         }
 
         if (!resultSet.containsKey(id)) {
-          resultSet.put(id, new Movie(new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, originalTitle, thumb, year));
+          resultSet.put(id, new Movie(null, new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, originalTitle, thumb, year));
         }
       }
     } catch (Exception ex) {
@@ -148,14 +151,15 @@ public class TMDbScrapper extends MovieScrapper {
       try {
         int tmdbid = findTmdbId(searchUrl.toString());
         IdInfo id = new IdInfo(tmdbid, ScrapperUtils.AvailableApiIds.TMDB);
-        MovieInfo info = fetchMediaInfo(new Movie(id, null, null, null, -1), language);
+        MovieInfo info = fetchMediaInfo(new Movie(null, id, null, null, null, -1), language);
         URL thumb;
         try {
           thumb = new URL(info.getPosterPath().toURL().toExternalForm());
-        } catch (Exception ex) {
+        } catch (MalformedURLException ex) {
           thumb = null;
         }
-        Movie movie = new Movie(id, info.getTitle(), info.getOriginalTitle(),
+
+        Movie movie = new Movie(null, id, info.getTitle(), info.getOriginalTitle(),
                 thumb, info.getYear());
 
         resultSet.put(tmdbid, movie);
@@ -178,25 +182,52 @@ public class TMDbScrapper extends MovieScrapper {
     throw new IllegalArgumentException(String.format("Cannot find tmdb id: %s", source));
   }
 
-  private String tmdbIDLookUp(String imdbId) throws Exception {
+  private IdInfo tmdbIDLookUp(IdInfo imdbId) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + imdbId + "?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    return JSONUtils.selectString("id", json);
+    String id = JSONUtils.selectString("id", json);
+    if (id != null && !id.isEmpty()) {
+      return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.TMDB);
+    }
+
+    return null;
+  }
+
+  public static IdInfo imdbIdLookup(IdInfo tmdbId) {
+    try {
+      URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + tmdbId + "?api_key=" + apikey);
+      JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+      String simdbId = JSONUtils.selectString("imdb_id", json);
+      if (simdbId != null) {
+        return new IdInfo(Integer.parseInt(simdbId.substring(2)), ScrapperUtils.AvailableApiIds.IMDB);
+      }
+    } catch (MalformedURLException ex) {
+      Logger.getLogger(TMDbScrapper.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(TMDbScrapper.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException ex) {
+      Logger.getLogger(TMDbScrapper.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
   }
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
 
-    String id = movie.getId().toString();
-    if (movie.getId().getIdType() == AvailableApiIds.IMDB) {
-      id = tmdbIDLookUp(id);
+    IdInfo id = movie.getMediaId();
+    if (id == null) {
+      id = tmdbIDLookUp(movie.getImdbId());
+      if (id == null) {
+        throw new Exception("Tmdb id not found for imdb id : " + movie.getImdbId());
+      }
     }
 
     URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases,keywords");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    Map<MovieInfo.MovieMultipleProperty, List<?>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<?>>(MovieInfo.MovieMultipleProperty.class);
+    Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
     fields.put(MovieProperty.title, JSONUtils.selectString("title", json));
     fields.put(MovieProperty.rating, JSONUtils.selectString("vote_average", json));
     fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
@@ -211,9 +242,10 @@ public class TMDbScrapper extends MovieScrapper {
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.TMDB));
-    String imdbId = JSONUtils.selectString("imdb_id", json);
-    if (imdbId != null) {
-      ids.add(new IdInfo(Integer.parseInt(imdbId.substring(2)), ScrapperUtils.AvailableApiIds.IMDB));
+    String simdbId = JSONUtils.selectString("imdb_id", json);
+    if (simdbId != null) {
+      IdInfo imdbId = new IdInfo(Integer.parseInt(simdbId.substring(2)), ScrapperUtils.AvailableApiIds.IMDB);
+      ids.add(imdbId);
     }
 
     for (JSONObject jsonObj : JSONUtils.selectList("countries", json)) {
@@ -228,9 +260,9 @@ public class TMDbScrapper extends MovieScrapper {
       genres.add(JSONUtils.selectString("name", jsonObj));
     }
 
-    List<Locale> countries = new ArrayList<Locale>();
+    List<String> countries = new ArrayList<String>();
     for (JSONObject jsonObj : JSONUtils.selectList("production_countries", json)) {
-      countries.add(new Locale("", JSONUtils.selectString("iso_3166_1", jsonObj)));
+      countries.add(JSONUtils.selectString("name", jsonObj));
     }
 
     List<String> studios = new ArrayList<String>();
@@ -246,19 +278,18 @@ public class TMDbScrapper extends MovieScrapper {
       }
     }
 
-    multipleFields.put(MovieInfo.MovieMultipleProperty.ids, ids);
     multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
     multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
     multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
     multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(fields, multipleFields);
+    MovieInfo movieInfo = new MovieInfo(ids, fields, multipleFields);
     return movieInfo;
   }
 
   @Override
   protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
-    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getId() + "/casts?api_key=" + apikey);
+    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getMediaId() + "/casts?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
@@ -286,5 +317,10 @@ public class TMDbScrapper extends MovieScrapper {
     }
 
     return casting;
+  }
+
+  @Override
+  public ScrapperUtils.InfoQuality getInfoQuality() {
+    return ScrapperUtils.InfoQuality.GREAT;
   }
 }

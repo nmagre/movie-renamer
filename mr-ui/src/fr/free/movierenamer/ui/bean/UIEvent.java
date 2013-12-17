@@ -31,7 +31,7 @@ import javax.swing.SwingUtilities;
 public final class UIEvent {
 
   private static final long serialVersionUID = 1L;
-  private static volatile Map<Class<? extends IEventListener>, IEventListener> listenerList = new HashMap<Class<? extends IEventListener>, IEventListener>();
+  private static volatile Map<Class<? extends IEventListener>, IEventListener> listenerList = new HashMap<>();
 
   private enum FireType {
 
@@ -47,6 +47,7 @@ public final class UIEvent {
     WORKER_RUNNING,
     SETTINGS,
     EDIT,
+    EDITED,
     RENAME_FILE,
     RENAME_FILE_DONE
   }
@@ -103,11 +104,11 @@ public final class UIEvent {
     for (Entry<Class<? extends IEventListener>, IEventListener> key : listenerList.entrySet()) {
       switch (type) {
         case ALL:
-          key.getValue().UIEventHandler(event, info, newObj);
+          key.getValue().UIEventHandler(event, info, oldObj, newObj);
           break;
         case CLASS:
           if (key.getKey().equals(clazz) || clazz.isAssignableFrom(key.getKey())) {
-            key.getValue().UIEventHandler(event, info, newObj);
+            key.getValue().UIEventHandler(event, info, oldObj, newObj);
           }
           break;
       }

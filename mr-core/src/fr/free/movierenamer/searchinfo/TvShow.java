@@ -31,11 +31,11 @@ public class TvShow extends Media {
   private static final long serialVersionUID = 1L;
 
   protected TvShow() {
- // used by serializer
+    // used by serializer
   }
 
-  public TvShow(IdInfo id, String seriesName, URL thumb, int year) {
-    super(id, seriesName, null, thumb, year);
+  public TvShow(IdInfo imdbId, IdInfo id, String seriesName, URL thumb, int year) {
+    super(imdbId, id, seriesName, null, thumb, year);
   }
 
   @Override
@@ -55,7 +55,7 @@ public class TvShow extends Media {
 
   @Override
   public String toString() {
-     return super.toString();
+    return super.toString();
   }
 
 }

@@ -30,26 +30,25 @@ import java.util.Arrays;
 public class Movie extends Media {
 
   private static final long serialVersionUID = 1L;
-  protected IdInfo id;
+  protected IdInfo imdbId;
 
   protected Movie() {
     // used by serializer
   }
 
-  public Movie(IdInfo id, String title, String originalTitle, URL thumb, int year) {
-    super(id, title, originalTitle, thumb, year);
-    this.id = id;
-  }
-
-  public IdInfo getId() {
-    return id;
+  public Movie(IdInfo imdbId, IdInfo id, String title, String originalTitle, URL thumb, int year) {
+    super(imdbId, id, title, originalTitle, thumb, year);
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof Movie) {
       Movie other = (Movie) object;
-      if (id.equals(other.getMediaId())) {
+      if (idInfo != null && idInfo.equals(other.getMediaId())) {
+        return true;
+      }
+
+      if (imdbId != null && imdbId.equals(other.getImdbId())) {
         return true;
       }
 
@@ -61,15 +60,19 @@ public class Movie extends Media {
 
   @Override
   public int hashCode() {
-    return Arrays.hashCode(new Object[] {
-        title, year
+    return Arrays.hashCode(new Object[]{
+      title, year
     });
   }
 
   @Override
   public String toString() {
-    if (id.getId() > 0) {
-      return super.toString() + String.format(" (%s:%d)", id.getIdType().name(), id.getId());
+    if (idInfo != null && idInfo.getId() > 0) {
+      return super.toString() + String.format(" (%s:%d)", idInfo.getIdType().name(), idInfo.getId());
+    }
+
+    if (imdbId != null && imdbId.getId() > 0) {
+      return super.toString() + String.format(" (%s:%d)", imdbId.getIdType().name(), imdbId.getId());
     }
     return super.toString();
   }

@@ -35,6 +35,8 @@ import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.Kinopoisk;
+import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
 import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
@@ -65,6 +67,8 @@ public class ScrapperManager {
     getScrapper(IMDbScrapper.class);
     getScrapper(TMDbScrapper.class);
     getScrapper(UniversalScrapper.class);
+    getScrapper(RottenTomatoes.class);
+    getScrapper(Kinopoisk.class);
     // tvshow
     getScrapper(TheTVDBScrapper.class);
     getScrapper(TvRageScrapper.class);
@@ -105,20 +109,19 @@ public class ScrapperManager {
     return scrapper;
   }
 
-  public static TvShowScrapper getTvShowScrapper() {
-    Settings settings = Settings.getInstance();
-    TvShowScrapper scrapper = getScrapper(settings.getSearchTvshowScrapper());
-    scrapper.setLanguage(settings.getSearchScrapperLang().getLocale());
-    return scrapper;
-  }
-
-  public static SubtitleScrapper getSubtitleScrapper() {
-    Settings settings = Settings.getInstance();
-    SubtitleScrapper scrapper = getScrapper(settings.getSearchSubtitleScrapper());
-    //scrapper.setLocale(settings.getSearchScrapperLang());// FIXME
-    return scrapper;
-  }
-
+//  public static TvShowScrapper getTvShowScrapper() {
+//    Settings settings = Settings.getInstance();
+//    TvShowScrapper scrapper = getScrapper(settings.getSearchTvshowScrapper());
+//    scrapper.setLanguage(settings.getSearchScrapperLang().getLocale());
+//    return scrapper;
+//  }
+//
+//  public static SubtitleScrapper getSubtitleScrapper() {
+//    Settings settings = Settings.getInstance();
+//    SubtitleScrapper scrapper = getScrapper(settings.getSearchSubtitleScrapper());
+//    //scrapper.setLocale(settings.getSearchScrapperLang());// FIXME
+//    return scrapper;
+//  }
   public static List<MovieScrapper> getMovieScrapperList() {
     Settings settings = Settings.getInstance();
     List<MovieScrapper> toRet = new ArrayList<MovieScrapper>();

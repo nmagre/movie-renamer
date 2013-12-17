@@ -144,6 +144,35 @@ public final class StringUtils {
   }
 
   /**
+   * Apply case on string
+   *
+   * @param str String
+   * @param renameCase Case type
+   * @return String
+   */
+  public static String applyCase(String str, StringUtils.CaseConversionType renameCase) {
+    String res;
+    switch (renameCase) {
+      case UPPER:
+        res = str.toUpperCase();
+        break;
+      case LOWER:
+        res = str.toLowerCase();
+        break;
+      case FIRSTLO:
+        res = StringUtils.capitalizedLetter(str, true);
+        break;
+      case FIRSTLA:
+        res = StringUtils.capitalizedLetter(str, false);
+        break;
+      default:
+        res = str;
+        break;
+    }
+    return res;
+  }
+
+  /**
    * Check if string is uppercase
    *
    * @param str
@@ -169,7 +198,7 @@ public final class StringUtils {
   }
 
   /**
-   * Get an array from a string separated by movieFilenameSeparator
+   * Get an array from a string separated by separator
    *
    * @param str String
    * @param separator Separator
@@ -189,8 +218,7 @@ public final class StringUtils {
   }
 
   /**
-   * Get a string from an array separated by movieFilenameSeparator and limited
-   * to movieFilenameLimit
+   * Get a string from an array separated by separator and limited to limit
    *
    * @param array Object array
    * @param separator Separator
@@ -219,8 +247,7 @@ public final class StringUtils {
   }
 
   /**
-   * Get a string from an array separated by movieFilenameSeparator and limited
-   * to movieFilenameLimit
+   * Get a string from an array separated by separator and limited to limit
    *
    * @param array ArrayList
    * @param separator Separator

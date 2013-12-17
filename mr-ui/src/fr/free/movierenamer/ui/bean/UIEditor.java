@@ -19,19 +19,26 @@ package fr.free.movierenamer.ui.bean;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.swing.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.ui.swing.dialog.MultipleValueEditorDialog;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -57,14 +64,22 @@ public class UIEditor {
   private boolean editable = false;
   private final boolean multipleValue;
   private final WebButton button;
+  private final MovieRenamer mr;
+  private final MovieMultipleProperty property;
 
-  public UIEditor(JComponent component, boolean multipleValue) {
+  public UIEditor(MovieRenamer mr, JComponent component) {
+    this(mr, component, null);
+  }
+
+  public UIEditor(MovieRenamer mr, JComponent component, MovieMultipleProperty property) {
     if (!(component instanceof JTextComponent) && !(component instanceof JList)) {
       throw new UnsupportedOperationException();
     }
 
+    this.mr = mr;
     this.component = component;
-    this.multipleValue = multipleValue;
+    this.multipleValue = property != null;
+    this.property = property;
     isTextComponent = component instanceof JTextComponent;
     defaultColor = component.getForeground();
     defaultFont = component.getFont();
@@ -72,19 +87,41 @@ public class UIEditor {
 
     button = multipleValue ? editButton : cancelButton;
 
-    button.setEnabled(multipleValue);
+    button.setEnabled(false);
     button.setVisible(false);
 
     if (!multipleValue) {
       createCancelListener();
     } else {
-      // TODO
+      createEditorListener();
     }
 
     if (isTextComponent) {
       ((JTextComponent) component).setEditable(false);
       ((JTextComponent) component).addMouseListener(new ContextMenuFieldMouseListener());
     }
+  }
+
+  private void createEditorListener() {
+    button.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent evt) {
+        List<Object> values = new ArrayList<>();
+        if (!isTextComponent) {
+          WebList list = (WebList) component;
+          ListModel model = list.getModel();
+          int size = model.getSize();
+          for (int i = 0; i < size; i++) {
+            values.add(model.getElementAt(i));
+          }
+        } else {
+          String value = ((JTextComponent) component).getText();
+          values.addAll(Arrays.asList(value.split(", ")));
+        }
+        MultipleValueEditorDialog mvdial = new MultipleValueEditorDialog(mr, values, property);
+        mvdial.setVisible(true);
+      }
+    });
   }
 
   private void createCancelListener() {
@@ -132,9 +169,26 @@ public class UIEditor {
     return component;
   }
 
+  @SuppressWarnings("unchecked")
   public void setValue(Object value) {
     this.defaultValue = value;
     if (isTextComponent) {
+      if (value instanceof List<?>) {
+        List<?> list = (List<?>) value;
+        String str = "";
+        int pos = 0;
+        for (Object obj : list) {
+          if (pos > 0) {
+            str += ", ";
+          }
+          str += obj.toString();
+          pos++;
+        }
+
+        ((JTextComponent) component).setText(str);
+        return;
+      }
+
       ((JTextComponent) component).setText(value != null ? value.toString() : "");
       ((JTextComponent) component).getDocument().addDocumentListener(docListener);
     } else {
@@ -145,6 +199,10 @@ public class UIEditor {
   public void setEditable() {
     editable = !editable;
     button.setVisible(editable);
+
+    if (multipleValue) {
+      button.setEnabled(editable);
+    }
 
     if (editable) {
       if (isTextComponent) {
@@ -164,6 +222,9 @@ public class UIEditor {
 
   public void setEnabled(boolean enabled) {
     component.setEnabled(enabled);
+    if (multipleValue) {
+      button.setEnabled(enabled);
+    }
   }
 
   public WebButton getButton() {

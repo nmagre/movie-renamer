@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,11 @@ package fr.free.movierenamer.scrapper;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.free.movierenamer.info.PersonInfo;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
-import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
 /**
  * Class PersonScrapper
@@ -37,7 +35,7 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 public abstract class PersonScrapper<SR extends SearchResult> extends Scrapper {
 
   public final List<PersonInfo> getPersons(SR search) throws Exception {
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get person info list for '%s'", getName() , search));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get person info list for '%s'", getName(), search));
     CacheObject cache = getCache();
     List<PersonInfo> personList = (cache != null) ? cache.getList(search, Locale.ROOT, PersonInfo.class) : null;
     if (personList != null) {

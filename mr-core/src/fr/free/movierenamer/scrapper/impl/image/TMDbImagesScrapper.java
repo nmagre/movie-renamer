@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper.impl.image;
 
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.ImageScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
@@ -62,15 +63,20 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
 
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
-    String id = movie.getId().toString();
-    switch (movie.getId().getIdType()) {
+    IdInfo mid = movie.getMediaId();
+    if (movie.getImdbId() != null) {
+      mid = movie.getImdbId();
+    }
+
+    String id = mid.toString();
+    switch (mid.getIdType()) {
       case IMDB:
         id = tmdbIDLookUp(id);
         break;
       case TMDB:
         break;
       default:
-        throw new UnsupportedOperationException(movie.getId().getIdType() + " is not supported by " + getName() + " image scrapper");
+        throw new UnsupportedOperationException(movie.getMediaId().getIdType() + " is not supported by " + getName() + " image scrapper");
     }
 
     URL searchUrl = new URL("http", host, "/" + version + "/movie/" + id + "/images?api_key=" + apikey);

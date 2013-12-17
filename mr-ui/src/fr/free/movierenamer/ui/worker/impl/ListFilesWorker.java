@@ -174,6 +174,7 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected void workerDone() throws Exception {
     List<UIFile> medias = get();
 
@@ -199,6 +200,7 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected void workerCanceled() {
     WebList list = mr.getMediaList();
     list.setModel(mr.getMediaFileListModel());

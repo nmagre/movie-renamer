@@ -41,13 +41,13 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
 
   private final ImageInfo info;
   private Icon icon = ImageUtils.LOAD_24;
-  private UILang imglang;
+  private final UILang imglang;
   private final ImageCategoryProperty type;
 
   public UIMediaImage(ImageInfo info) {
     this.info = info;
     this.type = info.getCategory();
-    imglang = FlagUtils.getFlag(info.getLanguage());
+    imglang = FlagUtils.getFlagByLang(info.getLanguage());
   }
 
   @Override

@@ -1,3 +1,4 @@
+// FIXME  It comes from where ?
 package fr.free.movierenamer.mediainfo;
 
 import com.sun.jna.Pointer;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MediaInfo implements Closeable {
-  
+
   private Pointer handle;
 
   public MediaInfo() {
@@ -161,7 +162,8 @@ public class MediaInfo implements Closeable {
      */
     Info,
     /**
-     * How this parameter is supported, could be N (No), B (Beta), R (Read only), W (Read/Write).
+     * How this parameter is supported, could be N (No), B (Beta), R (Read
+     * only), W (Read/Write).
      */
     HowTo,
     /**

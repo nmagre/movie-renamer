@@ -38,6 +38,7 @@ import fr.free.movierenamer.utils.ScrapperUtils;
  * @author Simon QUÉMÉNEUR
  */
 public class TMDbScrapperTest extends MovieScrapperTest {
+
   private TMDbScrapper tmdb = null;
 
   @Override
@@ -61,7 +62,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getMovieInfo() throws Exception {
     tmdb.setLanguage(Locale.GERMAN);
-    MovieInfo movie = tmdb.getInfo(new Movie(new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
+    MovieInfo movie = tmdb.getInfo(new Movie(null, new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
 
     Assert.assertEquals(Integer.valueOf(1858), movie.getId(ScrapperUtils.AvailableApiIds.TMDB));
     Assert.assertEquals(Integer.valueOf(418279), movie.getId(ScrapperUtils.AvailableApiIds.IMDB));
@@ -73,31 +74,32 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = tmdb.getCasting(new Movie(new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
+    List<CastingInfo> cast = tmdb.getCasting(new Movie(null, new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
     boolean dir = false, actor = false;
-    for(CastingInfo info : cast) {
-      if(!dir && info.isDirector()) {
+    for (CastingInfo info : cast) {
+      if (!dir && info.isDirector()) {
         Assert.assertEquals("Michael Bay", info.getName());
         dir = true;
       }
-      if(!actor&&info.isActor()) {
+      if (!actor && info.isActor()) {
         Assert.assertEquals("Shia LaBeouf", info.getName());
         actor = true;
       }
     }
 
-    if(!dir || !actor) {
+    if (!dir || !actor) {
       Assert.fail();
     }
-  };
+  }
+
+  ;
 
   @Override
   public void getImages() throws Exception {
-    List<ImageInfo> images = tmdb.getImages(new Movie(new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
+    List<ImageInfo> images = tmdb.getImages(new Movie(null, new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
 
     Assert.assertEquals(ImageCategoryProperty.fanart, images.get(0).getCategory());
     Assert.assertEquals(Integer.valueOf(1920), images.get(0).getWidth());
     Assert.assertEquals(Integer.valueOf(1080), images.get(0).getHeight());
   }
-
 }

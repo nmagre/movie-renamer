@@ -20,30 +20,32 @@ package fr.free.movierenamer.info;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Class MediaInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
 public abstract class MediaInfo extends Info {
 
   private static final long serialVersionUID = 1L;
-
   protected CastingInfo[] casting;
-
-//  protected ImageInfo[] images;
-
   protected MediaTag mtag;
-  
-  public List<CastingInfo> getPersons() {
-    return Collections.unmodifiableList(Arrays.asList(casting));
+
+  public interface InfoProperty {
+
+    public boolean isLanguageDepends();
+
+    public String name();
   }
 
-  public List<CastingInfo> getCast() {
+  public List<CastingInfo> getCasting() {
+    return casting != null ? Arrays.asList(casting) : new ArrayList<CastingInfo>();
+  }
+
+  public List<CastingInfo> getActors() {
     List<CastingInfo> actors = new ArrayList<CastingInfo>();
     if (casting != null) {
       for (CastingInfo castingInfo : casting) {
@@ -55,45 +57,34 @@ public abstract class MediaInfo extends Info {
     return actors;
   }
 
-  public List<String> getDirectors() {
-    List<String> directors = new ArrayList<String>();
+  public List<CastingInfo> getDirectors() {
+    List<CastingInfo> directors = new ArrayList<CastingInfo>();
     if (casting != null) {
       for (CastingInfo castingInfo : casting) {
-        if (castingInfo.isDirector())
-          directors.add(castingInfo.getName());
+        if (castingInfo.isDirector()) {
+          directors.add(castingInfo);
+        }
       }
     }
     return directors;
   }
 
-  public List<String> getActors() {
-    List<String> actors = new ArrayList<String>();
-    for (CastingInfo actor : getCast()) {
-      actors.add(actor.getName());
+  public List<CastingInfo> getWriters() {
+    List<CastingInfo> writers = new ArrayList<CastingInfo>();
+    if (casting != null) {
+      for (CastingInfo castingInfo : casting) {
+        if (castingInfo.isWriter()) {
+          writers.add(castingInfo);
+        }
+      }
     }
-    return actors;
+    return writers;
   }
 
-//  public List<ImageInfo> getImages() {
-//    return Collections.unmodifiableList(Arrays.asList(images));
-//  }
-
-//  public List<ImageInfo> getFanarts() {
-//    return Collections.unmodifiableList(Arrays.asList(images));
-//  }
-//
-//  public List<ImageInfo> getThumbs() {
-//    return Collections.unmodifiableList(Arrays.asList(images));
-//  }
-//
-//  public void setImages(List<ImageInfo> images) {
-//    this.images = (images == null) ? null : images.toArray(new ImageInfo[images.size()]);
-//  }
-  
   public MediaTag getMediaTag() {
     return mtag;
   }
-  
+
   public void setMediaTag(MediaTag mtag) {
     this.mtag = mtag;
   }
@@ -103,5 +94,4 @@ public abstract class MediaInfo extends Info {
   }
 
   public abstract String getRenamedTitle(String format);
-
 }

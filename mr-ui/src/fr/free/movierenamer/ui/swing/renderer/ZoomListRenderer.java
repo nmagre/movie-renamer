@@ -39,9 +39,9 @@ import javax.swing.SwingConstants;
  */
 public class ZoomListRenderer extends WebListCellRenderer {
 
-  private float defaultRatio;
+  private final float defaultRatio;
   private float scale = 2.0F;
-  private int minWidth;
+  private final int minWidth;
 
   public ZoomListRenderer(int minWidth, float defaultRatio) {
     this.minWidth = minWidth;
@@ -69,8 +69,8 @@ public class ZoomListRenderer extends WebListCellRenderer {
 
   private class ZoomImageLbl extends WebLabel {// Really dirty :(
 
-    private Image originalImage;
-    private int scaleWidth;
+    private final Image originalImage;
+    private final int scaleWidth;
     private int scaleheight;
 
     public ZoomImageLbl(String str, Icon icon, int alignment) {
