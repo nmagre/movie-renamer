@@ -48,7 +48,6 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
-import java.util.Arrays;
 
 /**
  * Class TvRageScrapper : search tvshow on TvRage
@@ -76,18 +75,18 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
+  protected List<TvShow> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/feeds/search.php?show=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected List<TvShow> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<TvShow> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Results/show", dom);
@@ -106,7 +105,7 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
     URL episodeListUrl = new URL("http", host, "/feeds/showinfo.php?sid=" + tvShow.getMediaId());
     Document dom = URIRequest.getXmlDocument(episodeListUrl.toURI());
 
@@ -144,7 +143,7 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
+  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, AvailableLanguages language) throws Exception {
     URL episodeListUrl = new URL("http", host, "/feeds/episode_list.php?sid=" + tvShow.getMediaId());
     Document dom = URIRequest.getXmlDocument(episodeListUrl.toURI());
 
@@ -193,7 +192,7 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
     return null;
   }
 

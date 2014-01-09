@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,22 +38,16 @@ import org.w3c.dom.NodeList;
 
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
+import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
 import fr.free.movierenamer.renamer.Nfo;
 
-import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
 import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.SubtitleScrapper;
-import fr.free.movierenamer.scrapper.TvShowScrapper;
-import fr.free.movierenamer.scrapper.impl.OpenSubtitlesScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
-import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
-import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
@@ -112,7 +106,9 @@ public final class Settings {
     RENAME,
     SEARCH,
     INTERFACE,
+    FORMAT,
     IMAGE,
+    NFO,
     EXTENSION,
     NETWORK
   }
@@ -132,7 +128,11 @@ public final class Settings {
     TVSHOWDIR,
     THUMB,
     FANART,
-    PROXY
+    PROXY,
+    SCREEN,
+    MEDIACENTER,
+    SIZE,
+    TIME
   }
 
   public interface IProperty {
@@ -158,14 +158,28 @@ public final class Settings {
 
     reservedCharacter(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     // movie filename
-    movieFilenameFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // ("<t> (<y>)"),
-    movieFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (", "),
-    movieFilenameLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Integer.decode("3").toString()),
-    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (StringUtils.CaseConversionType.FIRSTLA.name()),
-    movieFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
-    movieFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME), // (Boolean.TRUE.toString()),
+    movieFilenameFormat("<t> (<y>)", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    movieFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    movieFilenameLimit(3, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    movieFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    movieFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    movieFilenameRomanUpper(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.MOVIEFILENAME),
+    // format
+    stringSizeUnit(StringUtils.SizeFormat.BYTE, SettingsType.FORMAT, SettingsSubType.SIZE),
+    stringSizeSi(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.SIZE),
+    stringTimeHour("h ", SettingsType.FORMAT, SettingsSubType.TIME),
+    stringTimeMinute("min ", SettingsType.FORMAT, SettingsSubType.TIME),
+    stringTimeSeconde("s ", SettingsType.FORMAT, SettingsSubType.TIME),
+    stringTimeMilliSeconde("ms", SettingsType.FORMAT, SettingsSubType.TIME),
+    stringTimeShowSeconde(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.TIME),
+    stringTimeShowMillis(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.TIME),
     // movie NFO
-    movieNfoType(Nfo.NFOtype.XBMC, SettingsType.GENERAL, SettingsSubType.NFO), // (NfoInfo.NFOtype.XBMC)
+    movieNfoType(Nfo.NFOtype.XBMC, SettingsType.NFO, SettingsSubType.MEDIACENTER),
+    movieNFOFilename("<filename>.nfo", SettingsType.NFO, SettingsSubType.GENERAL),
+    movieNfoTag(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
+    movieNfoImage(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
+    movieNfoImdbId(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
     // tvShow
     //    tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
     //    tvShowFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (", "),
@@ -174,21 +188,23 @@ public final class Settings {
     //    tvShowFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
     //    tvShowFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
     // Cache
-    cacheClear(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.CACHE), // (Boolean.FALSE.toString()),
+    cacheClear(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.CACHE),
     // Search
-    //searchNbResult(2, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Integer.decode("2").toString()),
-    searchMovieScrapper(UniversalScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),
+    searchNbResult(15, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    searchTmdbTag(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    searchOrder(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL, true),
+    searchOrderThreshold(280, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    searchMovieScrapper(UniversalScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER),
     //    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
     //    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
     searchScrapperLang(AvailableLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),// (Locale.ENGLISH.toString()),
-    searchSort(Sorter.SorterType.LEVEN_YEAR, SettingsType.SEARCH, SettingsSubType.GENERAL), // (Boolean.TRUE.toString()),
     // http param
-    httpRequestTimeOut(30, SettingsType.NETWORK, SettingsSubType.GENERAL), // (Integer.decode("30").toString()),
-    httpCustomUserAgent("", SettingsType.NETWORK, SettingsSubType.GENERAL), // Mozilla/5.0 (Windows NT 5.1; rv:10.0.2) Gecko/20100101 Firefox/10.0.2
+    httpRequestTimeOut(30, SettingsType.NETWORK, SettingsSubType.GENERAL),
+    httpCustomUserAgent("", SettingsType.NETWORK, SettingsSubType.GENERAL),
     // Proxy
-    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, true), // (Boolean.FALSE.toString()),
-    proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY), // (""), // "10.2.1.10"
-    proxyPort(80, SettingsType.NETWORK, SettingsSubType.PROXY), // (Integer.decode("0").toString()), // 3128
+    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, true),
+    proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY),
+    proxyPort(80, SettingsType.NETWORK, SettingsSubType.PROXY),
     // Extension
     fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL),
     //app lang
@@ -410,8 +426,76 @@ public final class Settings {
     return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRmDupSpace));
   }
 
+  public boolean isMovieFilenameRomanUpper() {
+    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRomanUpper));
+  }
+
+  public StringUtils.SizeFormat getStringSizeUnit() {
+    return StringUtils.SizeFormat.valueOf(get(SettingsProperty.stringSizeUnit));
+  }
+
+  public boolean isStringSizeSi() {
+    return Boolean.parseBoolean(get(SettingsProperty.stringSizeSi));
+  }
+
+  public String getStringTimeHour() {
+    return get(SettingsProperty.stringTimeHour);
+  }
+
+  public String getStringTimeMinute() {
+    return get(SettingsProperty.stringTimeMinute);
+  }
+
+  public String getStringTimeSeconde() {
+    return get(SettingsProperty.stringTimeSeconde);
+  }
+
+  public String getStringTimeMilliSeconde() {
+    return get(SettingsProperty.stringTimeMilliSeconde);
+  }
+
+  public boolean isStringTimeShowSeconde() {
+    return Boolean.parseBoolean(get(SettingsProperty.stringTimeShowSeconde));
+  }
+
+  public boolean isStringTimeShowMillis() {
+    return Boolean.parseBoolean(get(SettingsProperty.stringTimeShowMillis));
+  }
+
   public Nfo.NFOtype getMovieNfoType() {
     return Nfo.NFOtype.valueOf(get(SettingsProperty.movieNfoType));
+  }
+
+  public String getNFOFileName() {
+    return get(SettingsProperty.movieNFOFilename);
+  }
+
+  public boolean isMovieNfoTag() {
+    return Boolean.parseBoolean(get(SettingsProperty.movieNfoTag));
+  }
+
+  public boolean isMovieNfoImage() {
+    return Boolean.parseBoolean(get(SettingsProperty.movieNfoImage));
+  }
+
+  public boolean isMovieImdbId() {
+    return Boolean.parseBoolean(get(SettingsProperty.movieNfoImdbId));
+  }
+
+  public int getSearchNbResult() {
+    return Integer.parseInt(get(SettingsProperty.searchNbResult));
+  }
+
+  public boolean isSearchTmdbTag() {
+    return Boolean.parseBoolean(get(SettingsProperty.searchTmdbTag));
+  }
+
+  public boolean isSearchOrder() {
+    return Boolean.parseBoolean(get(SettingsProperty.searchOrder));
+  }
+
+  public int getSearchOrderThreshold() {
+    return Integer.parseInt(get(SettingsProperty.searchOrderThreshold));
   }
 
 //  public String getTvShowFilenameFormat() {
@@ -469,10 +553,6 @@ public final class Settings {
 //  }
   public AvailableLanguages getSearchScrapperLang() {
     return AvailableLanguages.valueOf(get(SettingsProperty.searchScrapperLang));
-  }
-
-  public Sorter.SorterType getSearchSorter() {
-    return Sorter.SorterType.valueOf(get(SettingsProperty.searchSort));
   }
 
   public boolean isProxyIsOn() {
@@ -554,7 +634,7 @@ public final class Settings {
     String applicationDirPath = System.getProperty("application.dir");
     String userHome = System.getProperty("user.home");
     String userDir = System.getProperty("user.dir");
-    File applicationFolder = null;
+    File applicationFolder;
 
     if (applicationDirPath != null && applicationDirPath.length() > 0) {
       // use given path
@@ -569,7 +649,7 @@ public final class Settings {
 
     // create folder if necessary
     if (!applicationFolder.exists()) {
-      applicationFolder.mkdirs();// FIXME mkdirs can return false or thrown a SecurityException, user must be know about this case
+      applicationFolder.mkdirs();// FIXME mkdirs can return false or thrown a SecurityException
     }
 
     return applicationFolder;
@@ -578,7 +658,7 @@ public final class Settings {
   /**
    * Check if lib media info is installed
    *
-   * @return True if lib media info is installed, otherwhise false
+   * @return True if lib media info is installed, otherwise false
    */
   private static boolean libMediaInfo() {
     Boolean mediaInfo = null;

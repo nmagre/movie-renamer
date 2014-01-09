@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaccardSimilarity;
@@ -41,7 +43,13 @@ public class Sorter {
 
     protected abstract String getName();
 
-    protected abstract int getYear();
+    protected String getOriginalTitle() {
+      return getName();
+    }
+
+    protected int getYear() {
+      return -1;
+    }
 
     protected long getLength() {
       return 0;
@@ -49,6 +57,10 @@ public class Sorter {
 
     protected String getLanguage() {
       return "";
+    }
+
+    protected boolean hasImage() {
+      return false;
     }
   }
 
@@ -67,6 +79,78 @@ public class Sorter {
 
   private Sorter() {
     throw new UnsupportedOperationException();
+  }
+
+  public static <T extends ISort> void sortAccurate(List<T> list, String tocompare, int year, int threshold) {
+
+    tocompare = StringUtils.normaliseClean(tocompare);
+    Map<Integer, List<T>> values = new TreeMap<Integer, List<T>>(new IntegerDescending());
+    for (T object : list) {
+
+      // if year match we add a "bonus"
+      int bonus = 0;
+      if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {
+        final int oyear = object.getYear();
+        if (year == oyear) {
+          bonus = 75;
+        } else if (oyear == (year - 1) || oyear == (year + 1)) {
+          bonus = 50;
+        }
+      }
+
+      // if there is an image we add a "bonus"
+      if (object.hasImage()) {
+        bonus += 10;
+      }
+
+      // Get best similarity between title and orig title
+      int sim = simCompare(tocompare, object.getName(), bonus);
+      if (!object.getName().equals(object.getOriginalTitle())) {
+        sim = Math.max(sim, simCompare(tocompare, object.getName(), bonus));
+      }
+
+      // We use a list cause 2 (or more) can have the same "sim" number
+      List<T> listObj = values.get(sim);
+      if (listObj == null) {
+        listObj = new ArrayList<T>();
+      }
+
+      listObj.add(object);
+      values.put(sim, listObj);
+    }
+
+    // Get the best match sim number
+    int sim = 0;
+    for (Integer msim : values.keySet()) {
+      sim = msim;
+      break;
+    }
+
+    // If sim number is greater than threshold we sort list
+    if (sim >= threshold) {
+      list.clear();
+      for (List<T> olist : values.values()) {
+        for (T o : olist) {
+          list.add(o);
+        }
+      }
+    }
+  }
+
+  private static <T extends ISort> int simCompare(String search, String str, int bonus) {
+    str = StringUtils.normaliseClean(str);
+    AbstractStringMetric algorithm;
+    Float res = 0.0F;
+    algorithm = new Jaro();
+    res += algorithm.getSimilarity(search, str);
+    algorithm = new JaroWinkler();
+    res += algorithm.getSimilarity(search, str);
+    algorithm = new Levenshtein();
+    res += algorithm.getSimilarity(search, str);
+    algorithm = new JaccardSimilarity();
+    res += algorithm.getSimilarity(search, str);
+
+    return Math.round((res) * 100) + bonus;
   }
 
   public static void sort(List<? extends ISort> list, SorterType type) {
@@ -112,6 +196,14 @@ public class Sorter {
     }
     list.removeAll(res);
     return res;
+  }
+
+  private static class IntegerDescending implements Comparator<Integer> {
+
+    @Override
+    public int compare(Integer t, Integer t1) {
+      return t1.compareTo(t);
+    }
   }
 
   /**
@@ -160,10 +252,12 @@ public class Sorter {
       if (search == null) {
         return 0;
       }
-      return simCompare(search, t.getName()) - simCompare(search, t1.getName());
+
+      return simCompare(search, t1.getName()) - simCompare(search, t.getName());
     }
 
     private int simCompare(String str1, String str2) {
+      str2 = StringUtils.normaliseClean(str2);
       AbstractStringMetric algorithm;
       Float res = 0.0F;
       algorithm = new Jaro();
@@ -175,7 +269,7 @@ public class Sorter {
       algorithm = new JaccardSimilarity();
       res += algorithm.getSimilarity(str1, str2);
 
-      return Math.round(res - accuracy);
+      return Math.round((res) * 100);
     }
   }
 

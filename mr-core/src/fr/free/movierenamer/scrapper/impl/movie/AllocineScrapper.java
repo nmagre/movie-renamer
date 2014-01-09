@@ -115,8 +115,8 @@ public final class AllocineScrapper extends AlloGroupScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.FRENCH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.fr;
   }
 
   @Override

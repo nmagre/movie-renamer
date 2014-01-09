@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
  */
 package fr.free.movierenamer.info;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
@@ -53,14 +55,14 @@ public class CastingInfo extends Info {
     this.fields = new EnumMap<PersonProperty, String>(fields);
   }
 
-  private String get(PersonProperty key) {
+  private String get(final PersonProperty key) {
     return fields.get(key);
   }
 
   public int getId() {
     try {
-      return new Integer(get(PersonProperty.id));
-    } catch (Exception e) {
+      return Integer.valueOf(get(PersonProperty.id));
+    } catch (NumberFormatException e) {
     }
     return -1;
   }
@@ -80,9 +82,10 @@ public class CastingInfo extends Info {
   public URI getPicturePath() {
     try {
       return new URL(get(PersonProperty.picturePath)).toURI();
-    } catch (Exception e) {
-      return null;
+    } catch (MalformedURLException e) {
+    } catch (URISyntaxException e) {
     }
+    return null;
   }
 
   public boolean isActor() {

@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ public final class UISettings {
     String appNameNospace = appName.replace(' ', '_');
     APPNAME = appName;
     VERSION = getApplicationProperty("application.version");
+    HOST = getApplicationProperty("application.host");
     CORE_VERSION = Settings.VERSION;
     userFolder = System.getProperty("user.home");
     appFolder = Settings.getApplicationFolder();
@@ -64,6 +65,7 @@ public final class UISettings {
   }
   public static final String APPNAME;
   public static final String VERSION;
+  public static final String HOST;
   public static final String CORE_VERSION;
   public static final File appFolder;
   private static final String userFolder;
@@ -93,9 +95,13 @@ public final class UISettings {
 
   public enum UISettingsProperty implements Settings.IProperty {
 
+    // General
+    screenDevice(0, SettingsType.GENERAL, SettingsSubType.SCREEN),
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
+    // Interface
     showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
@@ -109,6 +115,12 @@ public final class UISettings {
     showId(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showYear(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showOrigTitle(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
+    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    // Rename
     generateThumb(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateCdart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateClearart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
@@ -117,6 +129,7 @@ public final class UISettings {
     generateBanner(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     generateSubtitles(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.GENERAL),
     moveFileOneByOne(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
+    // Image
     imageThumbName("<fileName>.tbn", SettingsType.IMAGE, SettingsSubType.THUMB),
     imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB, true),
     imageThumbSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.THUMB),
@@ -125,12 +138,9 @@ public final class UISettings {
     imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART, true),
     imageFanartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.FANART),
     imageFanartWidth(1080, SettingsType.IMAGE, SettingsSubType.FANART),
-    useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
-    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    //
+    // Search
+    useImdbIdInSearch(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    // Misc
     fileChooserPath(userFolder);
     private Class<?> vclass;
     private Object defaultValue;
@@ -254,6 +264,7 @@ public final class UISettings {
         settingsNode = null;
       }
     }
+
     this.settingsDocument = settingsDocument;
     this.settingsNode = settingsNode;
     try {
@@ -264,20 +275,18 @@ public final class UISettings {
   }
 
   private synchronized String get(UISettingsProperty key) {
-    String value;
+    String value = null;
     if (key != null) {
       Node found = XPathUtils.selectNode(key.name(), settingsNode);
       if (found != null) {
         value = XPathUtils.getTextContent(found);
-      } else {
-        value = null;
       }
-    } else {
-      value = null;
+
+      if (value == null) {
+        value = key.getDefaultValue().toString();
+      }
     }
-    if (value == null) {
-      value = key.getDefaultValue().toString();
-    }
+
     return value;
   }
 
@@ -339,6 +348,10 @@ public final class UISettings {
     return saveSuccess;
   }
 
+  public int getScreenDevice() {
+    return Integer.parseInt(get(UISettingsProperty.screenDevice));
+  }
+
   public boolean isSelectFirstMedia() {
     return Boolean.parseBoolean(get(UISettingsProperty.selectFirstMedia));
   }
@@ -349,6 +362,10 @@ public final class UISettings {
 
   public boolean isScanSubfolder() {
     return Boolean.parseBoolean(get(UISettingsProperty.scanSubfolder));
+  }
+
+  public boolean isCheckupdate() {
+    return Boolean.parseBoolean(get(UISettingsProperty.checkupdate));
   }
 
   public boolean isShowActorImage() {
@@ -477,5 +494,13 @@ public final class UISettings {
 
   private static String getApplicationProperty(String key) {
     return ResourceBundle.getBundle(UISettings.class.getName(), Locale.ROOT).getString(key);
+  }
+
+  public static String getApplicationVersionNumber() {
+    String version = VERSION;
+    if (version.contains("_")) {
+      version = version.substring(0, version.indexOf("_"));
+    }
+    return version;
   }
 }

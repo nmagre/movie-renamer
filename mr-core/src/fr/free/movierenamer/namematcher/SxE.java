@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ public class SxE {
 
   private int season;
   private int episode;
-  private String match;
+  private final String match;
 
   public SxE() {
     season = -1;
@@ -36,13 +36,13 @@ public class SxE {
     match = "";
   }
 
-  public SxE(int season, int episode) {
+  public SxE(final int season, final int episode) {
     this.season = season;
     this.episode = episode;
     this.match = "";
   }
 
-  public SxE(int season, int episode, String match) {
+  public SxE(final int season, final int episode, final String match) {
     this.season = season;
     this.episode = episode;
     this.match = match;
@@ -75,11 +75,11 @@ public class SxE {
     return season != -1 || episode != -1;
   }
 
-  public void setEpisode(int episode) {
+  public void setEpisode(final int episode) {
     this.episode = episode;
   }
 
-  public void setSeason(int season) {
+  public void setSeason(final int season) {
     this.season = season;
   }
 
@@ -88,9 +88,9 @@ public class SxE {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (obj instanceof SxE) {
-      SxE sxe = (SxE) obj;
+      final SxE sxe = (SxE) obj;
       return sxe.getEpisode() == episode && sxe.getSeason() == season;
     }
     return false;

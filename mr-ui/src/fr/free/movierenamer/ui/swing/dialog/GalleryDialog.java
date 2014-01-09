@@ -27,6 +27,7 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel.SupportedImages;
+import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
 import fr.free.movierenamer.ui.swing.renderer.ZoomListRenderer;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -119,7 +120,7 @@ public class GalleryDialog extends WebDialog {
 
     languageCbb.setVisible(useLanguage);
     languageCbb.setModel(languagesModel);
-    languageCbb.setRenderer(UIUtils.iconListRenderer);
+    languageCbb.setRenderer(new IconComboRenderer<>(languageCbb));
 
     imageList.setCellRenderer(zoomListRenderer);
     imageList.setModel(imageListModel);
@@ -148,7 +149,13 @@ public class GalleryDialog extends WebDialog {
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
     setLanguage(UIUtils.i18n.getLanguageKey("title"), UISettings.APPNAME, "Gallery");
     setName(property.name());
-    setLocationRelativeTo(mr);
+    UIUtils.showOnScreen(mr, this);
+  }
+
+  @Override
+  public void setVisible(boolean b) {
+    UIUtils.showOnScreen(mr, this);
+    super.setVisible(b);
   }
 
   private ListSelectionListener createImageListListener() {

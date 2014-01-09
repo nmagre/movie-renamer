@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * Class EpisodeInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -32,6 +32,7 @@ public class EpisodeInfo extends Info {
   private static final long serialVersionUID = 1L;
 
   public static enum EpisodeProperty {
+
     tvShowName,
     tvShowStartDate,
     season,
@@ -52,11 +53,11 @@ public class EpisodeInfo extends Info {
     this.fields = new EnumMap<EpisodeProperty, String>(fields);
   }
 
-  public String get(Object key) {
+  public String get(final Object key) {
     return fields.get(EpisodeProperty.valueOf(key.toString()));
   }
 
-  public String get(EpisodeProperty key) {
+  public String get(final EpisodeProperty key) {
     return fields.get(key);
   }
 
@@ -71,17 +72,17 @@ public class EpisodeInfo extends Info {
   public Integer getSeason() {
     try {
       return Integer.parseInt(get(EpisodeProperty.season));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Integer getEpisode() {
     try {
       return Integer.parseInt(get(EpisodeProperty.episode));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public String getName() {
@@ -91,17 +92,17 @@ public class EpisodeInfo extends Info {
   public Integer getAbsolute() {
     try {
       return Integer.parseInt(get(EpisodeProperty.absolute));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Integer getSpecial() {
     try {
       return Integer.parseInt(get(EpisodeProperty.special));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Date getAirdate() {

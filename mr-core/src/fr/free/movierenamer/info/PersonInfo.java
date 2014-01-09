@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@ package fr.free.movierenamer.info;
 
 /**
  * Class PersonInfo
- * 
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class PersonInfo extends Info {
+public abstract class PersonInfo extends Info {
 
   private static final long serialVersionUID = 1L;
 

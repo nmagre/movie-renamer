@@ -50,6 +50,7 @@ import org.xml.sax.SAXException;
 import fr.free.movierenamer.settings.Settings;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +64,7 @@ public final class URIRequest {
   public static final String UTF = "UTF-8";
   public static final String ISO = "ISO-8859-1";
   private static final Map<String, String> tokens = new HashMap<String, String>();
+  public static List<String> cookies;
 
   static {
     // Replace &#133; by &hellip;
@@ -175,6 +177,8 @@ public final class URIRequest {
         connection.addRequestProperty(property.getKey(), property.getValue());
       }
     }
+
+    cookies = connection.getHeaderFields().get("Set-Cookie");
 
     return connection;
   }

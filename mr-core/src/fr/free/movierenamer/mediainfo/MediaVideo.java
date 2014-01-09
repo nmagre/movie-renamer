@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public class MediaVideo {
     return codec;
   }
 
-  public void setCodec(String videoCodec) {
+  public void setCodec(final String videoCodec) {
     this.codec = videoCodec;
   }
 
@@ -54,7 +54,7 @@ public class MediaVideo {
     return frameRate;
   }
 
-  public void setFrameRate(Double frameRate) {
+  public void setFrameRate(final Double frameRate) {
     this.frameRate = frameRate;
   }
 
@@ -62,7 +62,7 @@ public class MediaVideo {
     return scanType;
   }
 
-  public void setScanType(String scanType) {
+  public void setScanType(final String scanType) {
     this.scanType = scanType;
   }
 
@@ -70,7 +70,7 @@ public class MediaVideo {
     return frameCount;
   }
 
-  public void setFrameCount(Long frameCount) {
+  public void setFrameCount(final Long frameCount) {
     this.frameCount = frameCount;
   }
 
@@ -78,7 +78,7 @@ public class MediaVideo {
     return height;
   }
 
-  public void setHeight(int height) {
+  public void setHeight(final int height) {
     this.height = height;
   }
 
@@ -86,7 +86,7 @@ public class MediaVideo {
     return width;
   }
 
-  public void setWidth(int width) {
+  public void setWidth(final int width) {
     this.width = width;
   }
 
@@ -94,7 +94,7 @@ public class MediaVideo {
     return aspectRatio;
   }
 
-  public void setAspectRatio(Float aspectRatio) {
+  public void setAspectRatio(final Float aspectRatio) {
     this.aspectRatio = aspectRatio;
   }
 

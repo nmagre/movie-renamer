@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,12 @@
 package fr.free.movierenamer.scrapper;
 
 import java.util.List;
-import java.util.Locale;
 
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.logging.Level;
 
 /**
  * Class SearchScrapper
@@ -36,7 +34,7 @@ import java.util.logging.Level;
 public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
 
   private final List<AvailableLanguages> supportedLanguages;
-  private Locale language;
+  private AvailableLanguages language;
 
   protected SearchScrapper(AvailableLanguages... supportedLanguages) {
     if (supportedLanguages == null || supportedLanguages.length == 0 || supportedLanguages[0] == null) {
@@ -46,7 +44,7 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
     }
   }
 
-  protected abstract Locale getDefaultLanguage();
+  protected abstract AvailableLanguages getDefaultLanguage();
 
   public final List<AvailableLanguages> getSupportedLanguages() {
     return Collections.unmodifiableList(supportedLanguages);
@@ -56,27 +54,20 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
     return supportedLanguages.contains(language);
   }
 
-  protected final Locale getLanguage() {
+  protected final AvailableLanguages getLanguage() {
     if (language != null) {
       return language;
-    } else {
-      return getDefaultLanguage();
     }
+
+    return Settings.getInstance().getSearchScrapperLang();
   }
 
-  public final void setLanguage(Locale language) {// FIXME
+  public final void setLanguage(AvailableLanguages language) {
 
     this.language = language;
-//    for (LocaleUtils.Language lang : supportedLanguages) {
-//      //if (lang.getLocale().getLanguage().equals(language.getLanguage())) {
-//      this.language = lang.getLocale();
-//      break;
-//      //}
-//    }
 
     if (this.language == null) {
       this.language = getDefaultLanguage();
-      Settings.LOGGER.log(Level.WARNING, String.format("Try to set Language (%s) to scrapper (%s) which has no support for it ! : ", language, getName()));
     }
   }
 
@@ -84,7 +75,7 @@ public abstract class SearchScrapper<SR extends SearchResult> extends Scrapper {
     return search(query, getLanguage());
   }
 
-  protected abstract List<SR> search(String query, Locale language) throws Exception;
+  protected abstract List<SR> search(String query, AvailableLanguages language) throws Exception;
 
   @Override
   protected final String getCacheName() {

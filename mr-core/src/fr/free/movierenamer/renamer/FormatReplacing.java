@@ -1,6 +1,6 @@
 /*
  * mr-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.renamer;
 
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +34,12 @@ public class FormatReplacing {
   private static final char tokenStart = '<';
   private static final char tokenEnd = '>';
   private static final String optionSeparator = ":";
+  private static final String equalsSeparator = "=";
   private static final Pattern valueIndex = Pattern.compile("(\\d+)");
-  private final Settings settings;
   private final Map<String, Object> replace;
+  private final StringUtils.CaseConversionType renameCase;
+  private final String filenameSeparator;
+  private final int filenameLimit;
   private StringBuilder tokenBuffer;
   private StringBuilder outputBuffer;
   private Integer tokenIndex;
@@ -53,16 +55,23 @@ public class FormatReplacing {
     f,// first letter upper
     w,// keep only word caracter
     d// keep only digit
+    // = show if equals
+    // != show if not equals
   }
 
   /**
    * Simple tag replace for naming scheme
    *
    * @param replace Map of tags and replace values
+   * @param renameCase
+   * @param filenameSeparator
+   * @param filenameLimit
    */
-  public FormatReplacing(Map<String, Object> replace) {
+  public FormatReplacing(Map<String, Object> replace, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit) {
     this.replace = replace;
-    settings = Settings.getInstance();
+    this.renameCase = renameCase;
+    this.filenameSeparator = filenameSeparator;
+    this.filenameLimit = filenameLimit;
   }
 
   /**
@@ -71,23 +80,29 @@ public class FormatReplacing {
    * @param format Naming scheme
    * @return Replaced string by values
    */
-  public String getReplacedString(String format) {
+  public String getReplacedString(final String format) {
     tokenIndex = null;
     tokenBuffer = new StringBuilder();
     outputBuffer = new StringBuilder();
 
+    char c;
+    List<Option> options;
+    List<String> opts;
+    List<String> equ;
+
     for (int i = 0; i < format.length(); i++) {
-      char c = format.charAt(i);
+      c = format.charAt(i);
 
       // Try to replace tag by its value
       if (c == tokenEnd && tokenIndex != null) {
         String tag = tokenBuffer.toString();
-        List<Option> options = new ArrayList<Option>();
+        options = new ArrayList<Option>();
         // Get options
         if (tag.contains(optionSeparator)) {
-          List<String> opts = StringUtils.stringToArray(tag, optionSeparator);
+          opts = StringUtils.stringToArray(tag, optionSeparator);
           tag = opts.get(0);
           opts.remove(0);
+
           for (String opt : opts) {
             try {
               options.add(Option.valueOf(opt));
@@ -96,8 +111,24 @@ public class FormatReplacing {
           }
         }
 
-        String value = getValue(tag + tokenEnd, options.toArray(new Option[options.size()]));
-        outputBuffer.append(value);
+        String equalsOption = null;
+        boolean equals = true;
+        // (not) Equals option
+        if (tag.contains(equalsSeparator)) {
+          if (tag.contains(StringUtils.EXCLA + equalsSeparator)) {
+            equals = false;
+            tag = tag.replace(StringUtils.EXCLA, "");
+          }
+
+          equ = StringUtils.stringToArray(tag, equalsSeparator);
+          tag = equ.get(0);
+
+          if (equ.size() > 1) {
+            equalsOption = equ.get(1);
+          }
+        }
+
+        outputBuffer.append(getValue(tag + tokenEnd, equalsOption, equals, options.toArray(new Option[options.size()])));
         tokenIndex = null;
         tokenBuffer = new StringBuilder();
         continue;
@@ -129,62 +160,73 @@ public class FormatReplacing {
    * Get tag value
    *
    * @param token Tag
+   * @param equalsValue
    * @param options Tag options
    * @return Value or token if tag is not found
    */
-  private String getValue(String token, Option... options) {
+  private String getValue(String token, final String equalsValue, final boolean equals, final Option... options) {
 
     int index = -1;
-    Matcher matcher = valueIndex.matcher(token);
+    final Matcher matcher = valueIndex.matcher(token);
+
     if (matcher.find()) {
       index = Integer.parseInt(matcher.group(1)) - 1;
       token = token.replaceAll("\\d+", "");
     }
 
-    Object obj = replace.get(token);
-    StringUtils.CaseConversionType renameCase = settings.getMovieFilenameCase();
+    final Object obj = replace.get(token);
     if (obj == null) {
       return StringUtils.applyCase(token, renameCase);
     }
 
     String value = obj.toString();
     if (obj instanceof List) {
-      List<?> list = (List<?>) obj;
+      final List<?> list = (List<?>) obj;
       value = "";
       if (index >= 0) {
         if (index < list.size()) {
           value = list.get(index).toString();
         }
       } else {
-        value = StringUtils.arrayToString(list, settings.getMovieFilenameSeparator(), settings.getMovieFilenameLimit());
+        value = StringUtils.arrayToString(list, filenameSeparator, filenameLimit);
       }
     }
 
+    if (equalsValue != null) {
+      if (value.equalsIgnoreCase(equalsValue)) {
+        if (!equals) {
+          value = "";
+        }
+      } else if (equals) {
+        value = "";
+      }
+    }
+
+    StringUtils.CaseConversionType scase = null;
     for (Option option : options) {
       switch (option) {
         case d:
           value = value.replaceAll("\\D", "");
           break;
         case f:
-          renameCase = StringUtils.CaseConversionType.FIRSTLA;
+          scase = StringUtils.CaseConversionType.FIRSTLA;
           break;
         case i:
-          renameCase = StringUtils.CaseConversionType.NONE;
+          scase = StringUtils.CaseConversionType.NONE;
           break;
         case l:
-          renameCase = StringUtils.CaseConversionType.LOWER;
+          scase = StringUtils.CaseConversionType.LOWER;
           break;
         case u:
-          renameCase = StringUtils.CaseConversionType.UPPER;
+          scase = StringUtils.CaseConversionType.UPPER;
           break;
         case w:
           value = value.replaceAll("(?:\\W|\\d)", "");
           break;
       }
-
     }
 
-    return StringUtils.applyCase(value, renameCase);
+    return StringUtils.applyCase(value, scase != null ? scase : renameCase);
   }
 
 }

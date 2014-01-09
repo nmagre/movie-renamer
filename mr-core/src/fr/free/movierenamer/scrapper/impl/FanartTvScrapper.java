@@ -68,8 +68,7 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
         throw new UnsupportedOperationException(mid.getIdType() + " is not supported by " + getName() + " image scrapper");
     }
 
-    URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + mid + "/");// Last slash is required
-
+    URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + mid.toString() + "/");// Last slash is required
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     JSONObject jmedia = JSONUtils.selectFirstObject(json);
 
@@ -79,6 +78,7 @@ public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M>
     }
 
     for (String tag : getTags()) {
+
       List<JSONObject> images = JSONUtils.selectList(tag, jmedia);
       if (images == null) {
         continue;

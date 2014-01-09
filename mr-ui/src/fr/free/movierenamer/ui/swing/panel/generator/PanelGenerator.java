@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,20 +20,15 @@ package fr.free.movierenamer.ui.swing.panel.generator;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JComponent;
 
 /**
@@ -44,17 +39,12 @@ import javax.swing.JComponent;
 public abstract class PanelGenerator extends WebPanel {
 
   private static final long serialVersionUID = 1L;
-  // Font
-  protected final int titleSize = 14;
-  protected final int subTitleSize = 13;
-  protected final int textSize = 12;
-  protected final String textFont = "Ubuntu";
   // Inset size
   protected final int smallMargin = 3;
   protected final int mediumMargin = 15;
 //  private final int bigMargin = 20;
   // Insets
-  protected final Insets titleInsets = new Insets(smallMargin, 0, mediumMargin, 0);
+  protected final Insets titleInsets = new Insets(smallMargin, 5, mediumMargin, 5);
   protected final Insets groupInsets = new Insets(smallMargin, mediumMargin, smallMargin, mediumMargin);
   protected final Insets groupSeparationInsets = new Insets(mediumMargin, mediumMargin, smallMargin, mediumMargin);
   // Constraints
@@ -78,7 +68,6 @@ public abstract class PanelGenerator extends WebPanel {
   protected PanelGenerator() {
     super();
     setLayout(new GridBagLayout());
-    setFont(new Font(textFont, Font.BOLD, titleSize));
   }
 
   /**
@@ -118,6 +107,7 @@ public abstract class PanelGenerator extends WebPanel {
    * @return constraint
    */
   protected GridBagConstraints getTitleConstraint() {
+    titleInsets.top = 10;
     if (gridy > 1) {
       titleInsets.top = mediumMargin;
     }
@@ -279,37 +269,14 @@ public abstract class PanelGenerator extends WebPanel {
    * @return WebToolBar
    */
   protected WebToolBar createTitle(String title, boolean i18n) {
-    return createTitle(title, null, i18n);
-  }
-
-  /**
-   * Create title toolbar with help button
-   *
-   * @param title
-   * @param helpText
-   * @param i18n
-   * @return WebToolBar
-   */
-  protected WebToolBar createTitle(String title, final String helpText, final boolean i18n) {
     WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);
     toolbar.setMargin(new Insets(0, 5, 0, 5));
     toolbar.setFloatable(false);
     toolbar.setRollover(true);
 
     WebLabel label = new WebLabel(i18n ? title.toLowerCase() : title);// FIXME i18n
-    label.setFont(new Font(textFont, Font.BOLD, subTitleSize));
+    label.setFont(UIUtils.boldFont);
     toolbar.add(label);
-
-    if (helpText != null) {
-      final WebButton button = UIUtils.createButton("setting.help", ImageUtils.HELP_16, false, false);// FIXME i18n
-      button.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-          WebOptionPane.showMessageDialog(PanelGenerator.this, i18n ? helpText.toLowerCase() : helpText, "help", WebOptionPane.PLAIN_MESSAGE);// FIXME i18n
-        }
-      });
-      toolbar.addToEnd(button);
-    }
 
     return toolbar;
   }
@@ -322,7 +289,7 @@ public abstract class PanelGenerator extends WebPanel {
    * @return Component
    */
   protected JComponent createComponent(Component settingComponent, String title) {
-    return createComponent(settingComponent, title, null, Font.BOLD);
+    return createComponent(settingComponent, title, null);
   }
 
   /**
@@ -334,19 +301,6 @@ public abstract class PanelGenerator extends WebPanel {
    * @return Component
    */
   protected JComponent createComponent(Component settingComponent, String title, String tooltip) {
-    return createComponent(settingComponent, title, tooltip, Font.BOLD);
-  }
-
-  /**
-   * Create weblookandfeel component
-   *
-   * @param settingComponent Component to create
-   * @param title Title to set
-   * @param tooltip Tooltip to set
-   * @param typeface Type face (Bold, plain,...)
-   * @return Component
-   */
-  protected JComponent createComponent(Component settingComponent, String title, String tooltip, int typeface) {
     JComponent component = null;
 
     switch (settingComponent) {
@@ -357,10 +311,10 @@ public abstract class PanelGenerator extends WebPanel {
       case CHECKBOX:
         component = new WebCheckBox();
         ((WebCheckBox) component).setLanguage(title);
+        ((WebCheckBox) component).setShadeWidth(2);
         break;
       case FIELD:
         component = new WebTextField();
-        typeface = Font.PLAIN;
         break;
       case TOOLBAR:
         component = new WebToolBar();
@@ -368,6 +322,7 @@ public abstract class PanelGenerator extends WebPanel {
       case LABEL:
         component = new WebLabel();
         ((WebLabel) component).setLanguage(title);
+        ((WebLabel) component).setDrawShade(true);
         break;
       default:
         break;
@@ -380,7 +335,7 @@ public abstract class PanelGenerator extends WebPanel {
     if (tooltip != null) {
       TooltipManager.setTooltip(component, (tooltip), TooltipWay.down);// FIXME i18n
     }
-    component.setFont(new Font(textFont, typeface, textSize));
+
     return component;
   }
 }

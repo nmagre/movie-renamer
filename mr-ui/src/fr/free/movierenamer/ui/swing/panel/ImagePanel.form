@@ -55,13 +55,8 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
         <Component class="com.alee.laf.label.WebLabel" name="imageLbl">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Ubuntu" size="13" style="1"/>
-            </Property>
-          </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="imageLbl.setLanguage(UIUtils.i18n.getLanguageKey(&quot;image&quot;));"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="imageLbl.setLanguage(UIUtils.i18n.getLanguageKey(&quot;image&quot;));&#xa;imageLbl.setIcon(ImageUtils.IMAGE_16);"/>
           </AuxValues>
         </Component>
       </SubComponents>

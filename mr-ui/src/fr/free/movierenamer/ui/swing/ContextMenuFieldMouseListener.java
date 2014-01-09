@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +37,12 @@ import javax.swing.text.JTextComponent;
  */
 public class ContextMenuFieldMouseListener extends MouseAdapter {
 
-  private JPopupMenu popup = new JPopupMenu();
-  private Action cut;
-  private Action copy;
-  private Action paste;
-  private Action selectAll;
-  private Action delete;
+  private final JPopupMenu popup = new JPopupMenu();
+  private final Action cut;
+  private final Action copy;
+  private final Action paste;
+  private final Action selectAll;
+  private final Action delete;
   private JTextComponent textComponent;
 
   private enum Actions {

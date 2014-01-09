@@ -71,7 +71,7 @@ public class MultipleValueEditorDialog extends JDialog {
       index = 0;
     }
 
-    setLocationRelativeTo(mr);
+    UIUtils.showOnScreen(mr, this);
     setModal(true);
   }
 
@@ -185,7 +185,7 @@ public class MultipleValueEditorDialog extends JDialog {
   }//GEN-LAST:event_removeBtnActionPerformed
 
   private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-    String s = (String) WebOptionPane.showInputDialog(this, "test", "test", JOptionPane.INFORMATION_MESSAGE, null, null, null);
+    String s = (String) WebOptionPane.showInputDialog(this, "test", "test", JOptionPane.INFORMATION_MESSAGE, null, null, null);// TODO
 
     if (s != null && s.length() > 0) {
       listModel.addElement(s);

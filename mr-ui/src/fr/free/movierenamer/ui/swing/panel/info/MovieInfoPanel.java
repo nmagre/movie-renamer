@@ -167,6 +167,18 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
 
   @Override
   public MovieInfo getInfo() {
+    for (MovieProperty property : MovieProperty.values()) {
+      if (map.containsKey(property)) {
+        info.set(property, map.get(property).getValue());
+      }
+    }
+
+    for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
+      if (map.containsKey(property)) {
+        info.set(property, map.get(property).getValue());
+      }
+    }
+
     return info;
   }
 
@@ -216,6 +228,6 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
 
   @Override
   public PanelType getType() {
-    return PanelType.MOVIE_INFO;
+    return PanelType.INFO;
   }
 }

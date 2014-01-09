@@ -21,7 +21,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +51,7 @@ import org.w3c.dom.NodeList;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class IMDbScrapper extends MovieScrapper {
+public class IMDbScrapper extends MovieScrapper {// TODO need to be cleaned
 
   private static final String host = "www.imdb.com";
   private static final String name = "IMDb";
@@ -73,20 +72,23 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   private String createImgPath(String imgPath) {
-    return imgPath.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY70_SX100.jpg");
+    if (imgPath == null) {
+      return StringUtils.EMPTY;
+    }
+    return imgPath.replaceAll("@@\\._.*?\\.jpg", "@@..jpg");
   }
 
-  private URIRequest.RequestProperty getRequestProperties(Locale language) {
-    return new URIRequest.RequestProperty("Accept-Language", String.format("%s-%s", language.getLanguage(), language.getCountry()));
+  private URIRequest.RequestProperty getRequestProperties(AvailableLanguages language) {
+    return new URIRequest.RequestProperty("Accept-Language", String.format("%s-%s", language.getLocale().getLanguage(), language.getLocale().getCountry()));
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
+  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
     // Only title -> ref_=fn_tt
     // Only movie -> ref_=fn_ft
@@ -95,7 +97,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     // select movie results
@@ -113,7 +115,7 @@ public class IMDbScrapper extends MovieScrapper {
         } else {
           year = "-1";
         }
-        // String year = retNode.getTextContent().replaceAll(title, "").replaceAll("\\D", "").replaceAll("[\\p{Punct}\\p{Space}]+", ""); // remove non-number characters //FIXME à refaire !
+
         String href = XPathUtils.getAttribute("href", XPathUtils.selectNode("A", retNode));
         int imdbid = findImdbId(href);
         URL thumb;
@@ -159,7 +161,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, String.format("/title/%s/combined", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
@@ -218,6 +220,7 @@ public class IMDbScrapper extends MovieScrapper {
       Matcher matcher = mpaaCodePattern.matcher(mpaa);
       if (matcher.find()) {
         fields.put(MovieProperty.certificationCode, matcher.group(1));
+        fields.put(MovieProperty.certification, mpaa);
       }
     } else {
       List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='info']/H5[contains(., 'Certification')]/parent::node()//DIV/descendant::text()"
@@ -229,34 +232,6 @@ public class IMDbScrapper extends MovieScrapper {
           break;
         }
       }
-    }
-
-    String tagline = getH5Content(dom, "Tagline", "/text()");
-    if (!tagline.equals("")) {
-      fields.put(MovieProperty.tagline, tagline);
-    }
-
-    String overview = getH5Content(dom, "Plot", "/text()");
-    if (!overview.equals("")) {
-      if (overview.endsWith("|")) {
-        overview = overview.substring(0, overview.length() - 2).trim();
-      }
-      fields.put(MovieProperty.overview, overview);
-    }
-
-    List<Node> ngenres = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'Genres')]", dom);
-    for (Node genre : ngenres) {
-      genres.add(genre.getTextContent());
-    }
-
-    List<Node> ncountries = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'country')]", dom);
-    for (Node country : ncountries) {
-      countries.add(country.getTextContent());
-    }
-
-    List<Node> ntags = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
-    for (Node ntag : ntags) {
-      tags.add(ntag.getTextContent());
     }
 
     Node nstudios = XPathUtils.selectNode("//DIV[@id='tn15content']//B[@class='blackcatheader' and contains(., 'Production Companies')]", dom);
@@ -277,29 +252,52 @@ public class IMDbScrapper extends MovieScrapper {
       // No thumb
     }
 
-    Node plot = XPathUtils.selectNode(String.format("//A[@href='/title/%s/plotsummary']", movie.getImdbId()), dom);
-    if (plot != null) {
-      searchUrl = new URL("http", host, String.format("/title/%s/plotsummary", movie.getImdbId()));
-      dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
-      node = XPathUtils.selectNode("//DIV[@id='main']//LI/P", dom);
-      overview = "";
-      if (node != null) {
-        overview = node.getTextContent().trim();
+    // If language is not supported we only return infomation no longuage dependant
+    if (hasSupportedLanguage(language)) {
+      String tagline = getH5Content(dom, "Tagline", "/text()");
+      if (!tagline.equals("")) {
+        fields.put(MovieProperty.tagline, tagline);
       }
 
-      if (!overview.isEmpty()) {
+      String overview = getH5Content(dom, "Plot", "/text()");
+      if (!overview.equals("")) {
+        if (overview.endsWith("|")) {
+          overview = overview.substring(0, overview.length() - 2).trim();
+        }
         fields.put(MovieProperty.overview, overview);
+      }
+
+      List<Node> ngenres = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'Genres')]", dom);
+      for (Node genre : ngenres) {
+        genres.add(genre.getTextContent());
+      }
+
+      List<Node> ncountries = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'country')]", dom);
+      for (Node country : ncountries) {
+        countries.add(country.getTextContent());
+      }
+
+      List<Node> ntags = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
+      for (Node ntag : ntags) {
+        tags.add(ntag.getTextContent());
+      }
+
+      Node plot = XPathUtils.selectNode(String.format("//A[@href='/title/%s/plotsummary']", movie.getImdbId()), dom);
+      if (plot != null) {
+        searchUrl = new URL("http", host, String.format("/title/%s/plotsummary", movie.getImdbId()));
+        dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
+        node = XPathUtils.selectNode("//DIV[@id='main']//LI/P", dom);
+        overview = "";
+        if (node != null) {
+          overview = node.getTextContent().trim();
+        }
+
+        if (!overview.isEmpty()) {
+          fields.put(MovieProperty.overview, overview);
+        }
       }
     }
 
-    /*
-     // Thumb
-     searchMatcher = ImdbInfoPattern.THUMB.getPattern().matcher(moviePage);
-     if (searchMatcher.find()) {
-     String imdbThumb = searchMatcher.group(1);
-     fields.put(MovieProperty.posterPath, imdbThumb);
-     }
-     */
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getImdbId());
 
@@ -340,7 +338,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<ImageInfo> getScrapperImages(Movie movie) throws Exception {
+  protected List<ImageInfo> getScrapperImages(Movie movie) throws Exception {// FIXMe we don't know image language
     URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(getDefaultLanguage()));
 
@@ -361,7 +359,7 @@ public class IMDbScrapper extends MovieScrapper {
     return images;
   }
 
-  private List<ImageInfo> getImages(URL url, ImageCategoryProperty imgtype, Locale language) throws Exception {
+  private List<ImageInfo> getImages(URL url, ImageCategoryProperty imgtype, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(url.toURI(), getRequestProperties(language));
     List<ImageInfo> images = new ArrayList<ImageInfo>();
     List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='thumb_list']//IMG", dom);
@@ -379,47 +377,61 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
 
-    List<Node> castNodes = XPathUtils.selectNodes("//TABLE[@class='cast']//TR", dom);
+    List<Node> castNodes = XPathUtils.selectNodes("//H4", dom);
     for (Node node : castNodes) {
-      Node actorNode = XPathUtils.selectNode("TD[@class='nm']", node);
-      if (actorNode != null) {
-        Node pictureNode = XPathUtils.selectNode("TD[@class='hs']//IMG", node);
-        Node characterNode = XPathUtils.selectNode("TD[@class='char']", node);
+      String type = node.getTextContent();
+      String cinfo = null;
 
-        Map<PersonProperty, String> personFields = fetchPersonIdAndName(actorNode);
-        if (personFields != null) {
-          String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("src", pictureNode)) : "";
-          if (picture.contains("no_photo")) {
+      if (type.contains("Directed")) {
+        cinfo = CastingInfo.DIRECTOR;
+      } else if (type.contains("Writing")) {
+        cinfo = CastingInfo.WRITER;
+      } else if (type.contains("Cast")) {
+        cinfo = CastingInfo.ACTOR;
+      }
+
+      if (cinfo == null) {
+        continue;
+      }
+
+      List<Node> nodes = XPathUtils.selectNodes("following-sibling::TABLE[1]//TR", node);
+      for (Node cnode : nodes) {
+        Map<PersonProperty, String> personFields = fetchPersonIdAndName(XPathUtils.selectNode("./TD[@class='name' or @class='itemprop']", cnode));
+        if (personFields == null) {
+          continue;
+        }
+
+        personFields.put(PersonProperty.job, cinfo);
+
+        if (cinfo.equals(CastingInfo.WRITER)) {
+          if (!cnode.getTextContent().contains("screenplay")) {
+            continue;
+          }
+        }
+
+        if (cinfo.equals(CastingInfo.ACTOR)) {
+          Node pictureNode = XPathUtils.selectNode("./TD[@class='primary_photo']/A/IMG", cnode);
+          String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("loadlate", pictureNode)) : "";
+          if (picture.contains("nopicture")) {
             picture = "";
           }
-          personFields.put(PersonProperty.job, CastingInfo.ACTOR);
-          personFields.put(PersonProperty.character, (characterNode != null) ? characterNode.getTextContent() : "");
+
+          Node characterNode = XPathUtils.selectNode("TD[@class='character']", cnode);
+          String character = "";
+          if (characterNode != null) {
+            character = characterNode.getTextContent().replace("\n", "").replace("\r", "").replace("(uncredited)", "").trim();
+          }
+
+          personFields.put(PersonProperty.character, character);
           personFields.put(PersonProperty.picturePath, picture);
-          casting.add(new CastingInfo(personFields));
         }
-      }
-    }
 
-    List<Node> directorNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='directors']]//TR", dom);
-    for (Node node : directorNodes) {
-      Map<PersonProperty, String> personFields = fetchPersonIdAndName(node);
-      if (personFields != null) {
-        personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
-        casting.add(new CastingInfo(personFields));
-      }
-    }
-
-    List<Node> writerNodes = XPathUtils.selectNodes("//TABLE[.//A[@name='writers']]//TR", dom);
-    for (Node node : writerNodes) {
-      Map<PersonProperty, String> personFields = fetchPersonIdAndName(node);
-      if (personFields != null) {
-        personFields.put(PersonProperty.job, CastingInfo.WRITER);
         casting.add(new CastingInfo(personFields));
       }
     }
@@ -437,7 +449,7 @@ public class IMDbScrapper extends MovieScrapper {
           if (imdbId != 0) {
             Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
             personFields.put(PersonProperty.id, Integer.toString(imdbId));
-            personFields.put(PersonProperty.name, pname);
+            personFields.put(PersonProperty.name, pname.trim());
 
             return personFields;
           }

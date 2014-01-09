@@ -26,8 +26,11 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils.InfoQuality;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -62,6 +65,24 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
       // No images for this movie
     }
 
+    // If there is no thumb and fanart we use "current" scraper to get image
+    if (imagesInfo.isEmpty()) {
+      tmpImagesInfo = getScrapperImages(movie);
+      if (tmpImagesInfo != null) {
+        imagesInfo.addAll(tmpImagesInfo);
+      }
+    }
+
+    // If there is no images, we try to add image from search
+    if (imagesInfo.isEmpty()) {
+      URL thumb = movie.getURL();
+      if (thumb != null) {
+        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+        imageFields.put(ImageInfo.ImageProperty.url, thumb.toString());
+        imagesInfo.add(new ImageInfo(0, imageFields, ImageInfo.ImageCategoryProperty.thumb));
+      }
+    }
+
     try {
       // Try to get images from fanart.tv
       FanartTVImagesScrapper fanartImagesSc = new FanartTVImagesScrapper();
@@ -74,14 +95,6 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
       Settings.LOGGER.log(Level.SEVERE, ex.getMessage());
     } catch (FileNotFoundException ex) {
       // No images for this movie
-    }
-
-    // use scrapper to get image
-    if (imagesInfo.isEmpty()) {
-      tmpImagesInfo = getScrapperImages(movie);
-      if (tmpImagesInfo != null) {
-        imagesInfo.addAll(tmpImagesInfo);
-      }
     }
 
     return imagesInfo;

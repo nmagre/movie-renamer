@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -30,9 +29,9 @@ import javax.swing.ImageIcon;
  */
 public class UIEnum implements IIconList {
 
-  private Enum<?> enumValue;
+  private final Enum<?> enumValue;
   private Icon icon;
-  private String imgFolder;
+  private final String imgFolder;
 
   public UIEnum(Enum<?> enumValue, String imgFolder) {
     this.enumValue = enumValue;

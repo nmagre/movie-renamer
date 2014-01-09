@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,14 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.language.LanguageManager;
+import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.mediainfo.MediaAudio;
+import fr.free.movierenamer.mediainfo.MediaSubTitle;
+import fr.free.movierenamer.mediainfo.MediaTag;
+import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.IProperty;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
@@ -31,20 +39,29 @@ import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIScrapper;
+import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
+import fr.free.movierenamer.ui.swing.ITestActionListener;
 import fr.free.movierenamer.ui.swing.panel.generator.SettingPanelGen;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.utils.NumberUtils;
+import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.StringUtils;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -57,9 +74,32 @@ public class SettingDialog extends JDialog {
 
   private static final long serialVersionUID = 1L;
   private final UISettings settings = UISettings.getInstance();
-  private final List<SettingPanelGen> panels;
+  private final Map<SettingsType, SettingPanelGen> panels;
   private final List<Settings.IProperty> properties;
   private final MovieRenamer mr;
+
+  private static enum mainTabIcon {
+
+    GENERALim(ImageUtils.SETTING_16),
+    RENAME(ImageUtils.RENAME_16),
+    SEARCH(ImageUtils.SSEARCH_16),
+    INTERFACE(ImageUtils.WINDOW_16),
+    FORMAT(ImageUtils.FORMAT_16),
+    IMAGE(ImageUtils.IMAGE_16),
+    NFO(ImageUtils.TEXTFILE_16),
+    EXTENSION(ImageUtils.OTHER_16),
+    NETWORK(ImageUtils.NETWORK_16);
+
+    private final Icon icon;
+
+    private mainTabIcon(Icon icon) {
+      this.icon = icon;
+    }
+
+    public Icon getIcon() {
+      return icon;
+    }
+  }
 
   /**
    * Creates new form Setting
@@ -68,64 +108,262 @@ public class SettingDialog extends JDialog {
    */
   public SettingDialog(MovieRenamer mr) {
     this.mr = mr;
-    panels = new ArrayList<SettingPanelGen>();
-    properties = new ArrayList<Settings.IProperty>();
+    panels = new LinkedHashMap<>();
+    properties = new ArrayList<>();
 
     initComponents();
 
     properties.addAll(Arrays.asList(UISettingsProperty.values()));
     properties.addAll(Arrays.asList(Settings.SettingsProperty.values()));
 
+    LanguageManager.registerComponent(mainTabbedPane, i18n.getLanguageKey("settings.maintab", false));
+    mainTabbedPane.setFont(UIUtils.titleFont);
+
     for (SettingsType settingType : SettingsType.values()) {
-      SettingPanelGen panel = new SettingPanelGen();
-      panel.addSettings(getSettingsType(settingType), settingType.equals(SettingsType.RENAME));
-      webTabbedPane1.add(("settings." + settingType.name().toLowerCase()), panel);// FIXME i18n
-      panels.add(panel);
+      final SettingPanelGen panel = new SettingPanelGen(mr);
+      panel.addSettings(settingType, getSettings(settingType), settingType.equals(SettingsType.RENAME));
+      panel.setName(settingType.name().toLowerCase());
+      mainTabbedPane.addTab("", getMainTabIcon(settingType.name()), panel);
+      panels.put(settingType, panel);
       panel.reset();// Set diplay value
     }
 
     pack();
     setModal(true);
-    setLocationRelativeTo(mr);
     setTitle(UISettings.APPNAME + " " + ("settings"));// FIXME i18n
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
   }
 
-  /**
-   * Get list of list of IProperty for a SettingsType
-   *
-   * @param type settings type
-   * @return list of list of IProperty
-   */
-  private List<List<IProperty>> getSettingsType(SettingsType type) {
-    List<List<IProperty>> res = new ArrayList<List<IProperty>>();
-    List<SettingsSubType> keys = getSettingsSubType(type);
-    for (SettingsSubType key : keys) {
-      List<IProperty> defKeys = new ArrayList<IProperty>();
-      for (IProperty definition : properties) {
-        if (key.equals(definition.getSubType()) && type.equals(definition.getType())) {
-          defKeys.add(definition);
-        }
-      }
-      res.add(defKeys);
+  @Override
+  public void setVisible(boolean b) {
+    UIUtils.showOnScreen(mr, this);
+    super.setVisible(b);
+  }
+
+  private Icon getMainTabIcon(String name) {
+
+    try {
+      return mainTabIcon.valueOf(name).getIcon();
+    } catch (Exception e) {
     }
-    return res;
+
+    return ImageUtils.SETTING_16;
   }
 
   /**
-   * Get list of SettingsSubType for a SettingsType
+   * Get all Settings of type "type"
    *
-   * @param subType settings subtype
-   * @return list of SettingsSubType
+   * @param type settings type
+   * @return Map of all settings of "type" by subtype
    */
-  private List<SettingsSubType> getSettingsSubType(SettingsType subType) {
-    List<SettingsSubType> defKeys = new ArrayList<SettingsSubType>();
+  private Map<SettingsSubType, List<IProperty>> getSettings(SettingsType type) {
+    List<List<IProperty>> res = new ArrayList<>();
+    Map<SettingsSubType, List<IProperty>> map = new LinkedHashMap<>();
+
     for (IProperty definition : properties) {
-      if (subType.equals(definition.getType()) && !defKeys.contains(definition.getSubType())) {
-        defKeys.add(definition.getSubType());
+      if (!type.equals(definition.getType())) {
+        continue;
       }
+
+      List<IProperty> tproperties = map.get(definition.getSubType());
+      if (tproperties == null) {
+        tproperties = new ArrayList<>();
+      }
+      tproperties.add(definition);
+      map.put(definition.getSubType(), tproperties);
     }
-    return defKeys;
+
+    return addTest(map, type);
+  }
+
+  /**
+   * Add UITestSettings if needed. UITestSettings is use to create "test" button
+   *
+   * @param map Map of all settings of a type by subtype
+   * @param type SettingsType
+   * @return Map of all settings of "type" by subtype + UITestSettings if needed
+   */
+  private Map<SettingsSubType, List<IProperty>> addTest(Map<SettingsSubType, List<IProperty>> map, final SettingsType type) {
+    switch (type) {
+      case FORMAT:
+        List<IProperty> tproperties = map.get(SettingsSubType.TIME);
+        tproperties.add(new UITestSettings(type, SettingsSubType.TIME) {
+          ITestActionListener listener;
+
+          @Override
+          public ITestActionListener getActionListener() {
+            if (listener == null) {
+              listener = new ITestActionListener() {
+                String result = "";
+
+                @Override
+                public String getResult() {
+                  return result;
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  Map<IProperty, WebTextField> fields = panels.get(type).getField();
+                  Map<IProperty, WebCheckBox> checkbox = panels.get(type).getCheckbox();
+                  result = StringUtils.humanReadableTime(6223334, fields.get(Settings.SettingsProperty.stringTimeHour).getText(),
+                          fields.get(Settings.SettingsProperty.stringTimeMinute).getText(),
+                          fields.get(Settings.SettingsProperty.stringTimeSeconde).getText(),
+                          fields.get(Settings.SettingsProperty.stringTimeMilliSeconde).getText(),
+                          checkbox.get(Settings.SettingsProperty.stringTimeShowSeconde).isSelected(),
+                          checkbox.get(Settings.SettingsProperty.stringTimeShowMillis).isSelected());
+                }
+              };
+            }
+
+            return listener;
+          }
+        });
+        map.put(SettingsSubType.TIME, tproperties);
+        break;
+
+      case RENAME:
+        tproperties = map.get(SettingsSubType.MOVIEFILENAME);
+        tproperties.add(new UITestSettings(type, SettingsSubType.MOVIEFILENAME) {
+          private ITestActionListener listener;
+          private MovieInfo info;
+
+          @Override
+          public ITestActionListener getActionListener() {
+            if (info == null) {
+              Map<MovieInfo.MovieProperty, String> fields = new HashMap<>();
+              fields.put(MovieInfo.MovieProperty.certificationCode, "R");
+              fields.put(MovieInfo.MovieProperty.originalTitle, "The Matrix");
+              fields.put(MovieInfo.MovieProperty.rating, "8.7");
+              fields.put(MovieInfo.MovieProperty.releasedDate, "1999");
+              fields.put(MovieInfo.MovieProperty.runtime, "136");
+              fields.put(MovieInfo.MovieProperty.title, "Matrix");
+
+              Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new HashMap<>();
+              List<String> genres = new ArrayList<>();
+              genres.add("Action");
+              genres.add("Adventure");
+              genres.add("Sci-Fi");
+              multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
+
+              List<String> countries = new ArrayList<>();
+              countries.add("USA");
+              countries.add("Australia");
+              multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
+
+              List<IdInfo> ids = new ArrayList<>();
+              ids.add(new IdInfo(133093, ScrapperUtils.AvailableApiIds.IMDB));
+              info = new MovieInfo(ids, fields, multipleFields);
+
+              List<MediaAudio> audios = new ArrayList<>();
+              MediaAudio audio = new MediaAudio(0);
+              MediaAudio audio1 = new MediaAudio(1);
+              audio.setBitRate(1509750);
+              audio1.setBitRate(754500);
+              audio.setBitRateMode("CBR");
+              audio1.setBitRateMode("CBR");
+              audio.setChannel("5.1");
+              audio1.setChannel("2.0");
+              audio.setCodec("DTS");
+              audio1.setCodec("MP3");
+              audio.setLanguage(Locale.ENGLISH);
+              audio1.setLanguage(Locale.FRENCH);
+              audio.setTitle("English DTS 1509kbps");
+              audio1.setTitle("French MP3");
+              audios.add(audio);
+              audios.add(audio1);
+
+              List<MediaSubTitle> subtitles = new ArrayList<>();
+              MediaSubTitle subtitle = new MediaSubTitle(0);
+              MediaSubTitle subtitle1 = new MediaSubTitle(1);
+              subtitle.setLanguage(Locale.ENGLISH);
+              subtitle.setTitle("English subforced");
+              subtitle1.setLanguage(Locale.FRENCH);
+              subtitle1.setTitle("French");
+              subtitles.add(subtitle);
+              subtitles.add(subtitle1);
+
+              MediaVideo mvideo = new MediaVideo();
+              mvideo.setAspectRatio(1.778F);
+              mvideo.setCodec("divx");
+              mvideo.setFrameCount(196072L);
+              mvideo.setFrameRate(23.976);
+              mvideo.setHeight(1080);
+              mvideo.setScanType("Progressive");
+              mvideo.setWidth(1920);
+
+              MediaTag mediaTag = new MediaTag(null);
+              mediaTag.setContainerFormat("Matroska");
+              mediaTag.setDuration(9701696L);
+              mediaTag.setMediaAudio(audios);
+              mediaTag.setMediaSubtitles(subtitles);
+              mediaTag.setMediaVideo(mvideo);
+              info.setMediaTag(mediaTag);
+
+              Map<CastingInfo.PersonProperty, String> d = new HashMap<>();
+              Map<CastingInfo.PersonProperty, String> d1 = new HashMap<>();
+              d.put(CastingInfo.PersonProperty.job, "DIRECTOR");
+              d.put(CastingInfo.PersonProperty.name, "Andy Wachowski");
+              d1.put(CastingInfo.PersonProperty.job, "DIRECTOR");
+              d1.put(CastingInfo.PersonProperty.name, "Lana Wachowski");
+
+              Map<CastingInfo.PersonProperty, String> a = new HashMap<>();
+              Map<CastingInfo.PersonProperty, String> a1 = new HashMap<>();
+              Map<CastingInfo.PersonProperty, String> a2 = new HashMap<>();
+              Map<CastingInfo.PersonProperty, String> a3 = new HashMap<>();
+              Map<CastingInfo.PersonProperty, String> a4 = new HashMap<>();
+              a.put(CastingInfo.PersonProperty.job, "ACTOR");
+              a1.put(CastingInfo.PersonProperty.job, "ACTOR");
+              a2.put(CastingInfo.PersonProperty.job, "ACTOR");
+              a3.put(CastingInfo.PersonProperty.job, "ACTOR");
+              a4.put(CastingInfo.PersonProperty.job, "ACTOR");
+              a.put(CastingInfo.PersonProperty.name, "Keanu Reeves");
+              a1.put(CastingInfo.PersonProperty.name, "Laurence Fishburne");
+              a2.put(CastingInfo.PersonProperty.name, "Carrie-Anne Moss");
+              a3.put(CastingInfo.PersonProperty.name, "Hugo Weaving");
+              a4.put(CastingInfo.PersonProperty.name, "Gloria Foster");
+
+              List<CastingInfo> persons = new ArrayList<>();
+              persons.add(new CastingInfo(d));
+              persons.add(new CastingInfo(d1));
+              persons.add(new CastingInfo(a));
+              persons.add(new CastingInfo(a1));
+              persons.add(new CastingInfo(a2));
+              persons.add(new CastingInfo(a3));
+              persons.add(new CastingInfo(a4));
+              info.setCasting(persons);
+            }
+
+            if (listener == null) {
+              listener = new ITestActionListener() {
+                String result = "";
+
+                @Override
+                public String getResult() {
+                  return result;
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  Map<IProperty, WebTextField> fields = panels.get(type).getField();
+                  Map<IProperty, WebCheckBox> checkbox = panels.get(type).getCheckbox();
+                  Map<IProperty, WebComboBox> combobox = panels.get(type).getCombobox();
+                  result = info.getRenamedTitle(fields.get(Settings.SettingsProperty.movieFilenameFormat).getText(),
+                          (StringUtils.CaseConversionType) ((UIEnum) combobox.get(Settings.SettingsProperty.movieFilenameCase).getSelectedItem()).getValue(),
+                          fields.get(Settings.SettingsProperty.movieFilenameSeparator).getText(),
+                          Integer.parseInt(fields.get(Settings.SettingsProperty.movieFilenameLimit).getText()),// FIXME check if it is an integer before
+                          checkbox.get(Settings.SettingsProperty.reservedCharacter).isSelected(),
+                          checkbox.get(Settings.SettingsProperty.movieFilenameRmDupSpace).isSelected(),
+                          checkbox.get(Settings.SettingsProperty.movieFilenameTrim).isSelected());
+                }
+              };
+            }
+
+            return listener;
+          }
+        });
+        break;
+    }
+    return map;
   }
 
   /**
@@ -138,39 +376,11 @@ public class SettingDialog extends JDialog {
   private void initComponents() {
 
     settingsGroup = new javax.swing.ButtonGroup();
-    webTabbedPane1 = new com.alee.laf.tabbedpane.WebTabbedPane();
-    webPanel1 = new com.alee.laf.panel.WebPanel();
-    resetBtn = new com.alee.laf.button.WebButton();
+    mainTabbedPane = new com.alee.laf.tabbedpane.WebTabbedPane();
     saveBtn = UIUtils.createButton(i18n.getLanguageKey("save", false), ImageUtils.OK_16);
     cancelBtn = UIUtils.createButton(i18n.getLanguageKey("cancel", false), ImageUtils.CANCEL_16);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-    resetBtn.setIcon(ImageUtils.CLEAR_LIST_16);
-    resetBtn.setText(("Reset"));
-    resetBtn.setFocusable(false);
-    resetBtn.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        resetBtnActionPerformed(evt);
-      }
-    });
-
-    javax.swing.GroupLayout webPanel1Layout = new javax.swing.GroupLayout(webPanel1);
-    webPanel1.setLayout(webPanel1Layout);
-    webPanel1Layout.setHorizontalGroup(
-      webPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(webPanel1Layout.createSequentialGroup()
-        .addContainerGap(513, Short.MAX_VALUE)
-        .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
-    );
-    webPanel1Layout.setVerticalGroup(
-      webPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(webPanel1Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(resetBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
 
     saveBtn.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -188,21 +398,18 @@ public class SettingDialog extends JDialog {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(webTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+      .addComponent(mainTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 391, Short.MAX_VALUE)
         .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
-      .addComponent(webPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(webPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(webTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
+        .addComponent(mainTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(cancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
@@ -213,14 +420,14 @@ public class SettingDialog extends JDialog {
 
   private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
     setVisible(false);
-    for (SettingPanelGen panel : panels) {
+    for (SettingPanelGen panel : panels.values()) {
       panel.reset();
     }
   }//GEN-LAST:event_cancelBtnActionPerformed
 
   @SuppressWarnings("unchecked")
   private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
-    for (SettingPanelGen panel : panels) {
+    for (SettingPanelGen panel : panels.values()) {
       Map<IProperty, WebCheckBox> checkboxs = panel.getCheckbox();
       Map<IProperty, WebTextField> fields = panel.getField();
       Map<IProperty, WebComboBox> comboboxs = panel.getCombobox();
@@ -247,7 +454,8 @@ public class SettingDialog extends JDialog {
           String oldValue = property.getValue();
           if (field.getKey().getDefaultValue() instanceof Number) {
             if (!NumberUtils.isNumeric(field.getValue().getText())) {
-              WebOptionPane.showMessageDialog(mr, String.format(("error.nan"), ("settings." + property.name().toLowerCase())), ("error"), JOptionPane.ERROR_MESSAGE);// FIXME i18n
+              WebOptionPane.showMessageDialog(mr, i18n.getLanguage("error.nan", false, i18n.getLanguage("settings." + property.name().toLowerCase(), false)),
+                      i18n.getLanguage("error.error", false), JOptionPane.ERROR_MESSAGE);
               return;
             }
           }
@@ -283,7 +491,6 @@ public class SettingDialog extends JDialog {
             UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scrapper.getScrapper().getClass()) ? property : null, property);
           } else {
             UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown property %s : Class %s", property.name(), property.getDefaultValue()));
-            continue;
           }
         } catch (ClassNotFoundException ex) {
           Logger.getLogger(SettingDialog.class.getName()).log(Level.SEVERE, null, ex);
@@ -306,21 +513,10 @@ public class SettingDialog extends JDialog {
     setVisible(false);
   }//GEN-LAST:event_saveBtnActionPerformed
 
-  private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed
-    // TODO confirm dialog
-    try {
-      settings.clear();
-    } catch (IOException ex) {
-      UISettings.LOGGER.log(Level.SEVERE, null, ex);
-      WebOptionPane.showMessageDialog(mr, ("settings.saveSettingsFailed"), ("error"), JOptionPane.ERROR_MESSAGE);// FIXME i18n
-    }
-  }//GEN-LAST:event_resetBtnActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.alee.laf.button.WebButton cancelBtn;
-  private com.alee.laf.button.WebButton resetBtn;
+  private com.alee.laf.tabbedpane.WebTabbedPane mainTabbedPane;
   private com.alee.laf.button.WebButton saveBtn;
   private javax.swing.ButtonGroup settingsGroup;
-  private com.alee.laf.panel.WebPanel webPanel1;
-  private com.alee.laf.tabbedpane.WebTabbedPane webTabbedPane1;
   // End of variables declaration//GEN-END:variables
 }

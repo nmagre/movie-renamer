@@ -30,13 +30,11 @@ import javax.swing.Timer;
 /**
  * Class SpinningDial
  *
- * Modified by Nicolas Magré
- * Note : This file is not under GPL licence (CPL)
+ * Modified by Nicolas Magré Note : This file is not under GPL licence (CPL)
  *
  * @author Timothy Wall
  * @see http://abbot.sourceforge.net/doc/overview.shtml
  */
-
 /**
  * Provides a spinning disk of hash marks.
  */
@@ -48,10 +46,10 @@ public class SpinningDial implements Icon {
   public static final int SPIN_INTERVAL = 1000 / SPOKES;
   private Timer timer;
   private int frame;
-  private int w;
-  private int h;
-  private Image[] frames;
-  private Set<RepaintArea> repaints = new HashSet<RepaintArea>();
+  private final int w;
+  private final int h;
+  private final Image[] frames;
+  private final Set<RepaintArea> repaints = new HashSet<>();
 
   public SpinningDial(int w, int h) {
     this.w = w;
@@ -90,8 +88,7 @@ public class SpinningDial implements Icon {
   }
 
   /**
-   * Trigger a repaint on all components on which we've previously been
-   * painted.
+   * Trigger a repaint on all components on which we've previously been painted.
    */
   protected synchronized void repaint() {
     for (Iterator<RepaintArea> i = repaints.iterator(); i.hasNext();) {
@@ -101,8 +98,8 @@ public class SpinningDial implements Icon {
   }
 
   /**
-   * Register repaint areas, which get get cleared once the repaint request
-   * has been queued.
+   * Register repaint areas, which get get cleared once the repaint request has
+   * been queued.
    *
    * @param c
    * @param x
@@ -172,7 +169,7 @@ public class SpinningDial implements Icon {
 
     public int x, y, w, h;
     public Component component;
-    private int hashCode;
+    private final int hashCode;
 
     public RepaintArea(Component c, int x, int y, int w, int h) {
       Component ancestor = findNonRendererAncestor(c);
@@ -237,10 +234,10 @@ public class SpinningDial implements Icon {
 
   private static class AnimationUpdater implements ActionListener {
 
-    private WeakReference<SpinningDial> ref;
+    private final WeakReference<SpinningDial> ref;
 
     public AnimationUpdater(SpinningDial icon) {
-      this.ref = new WeakReference<SpinningDial>(icon);
+      this.ref = new WeakReference<>(icon);
     }
 
     @Override

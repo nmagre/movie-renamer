@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
-import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.scroll.WebScrollPane;
@@ -65,6 +64,7 @@ public abstract class InfoEditorPanel<T extends Info> extends InfoPanel<T> {
 
   protected void createEditableField(String i18nkey, UIEditor editor, int gridWidth, int nbElement, boolean inline, boolean last) {
     WebLabel label = (WebLabel) createComponent(Component.LABEL, UIUtils.i18n.getLanguageKey(i18nkey));
+    label.setDrawShade(true);
 
     JComponent component = editor.getComponent();
     component.setEnabled(false);

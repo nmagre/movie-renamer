@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ import fr.free.movierenamer.ui.swing.dialog.MultipleValueEditorDialog;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -57,8 +56,6 @@ public class UIEditor {
   private final boolean isTextComponent;
   private final Color defaultColor;
   private final Color modifiedColor = new Color(29, 86, 171);
-  private final Font defaultFont;
-  private final Font modifiedFont = new Font("Ubuntu", Font.BOLD, 12);
   private DocumentListener docListener;
   private Object defaultValue;
   private boolean editable = false;
@@ -82,7 +79,6 @@ public class UIEditor {
     this.property = property;
     isTextComponent = component instanceof JTextComponent;
     defaultColor = component.getForeground();
-    defaultFont = component.getFont();
     defaultValue = null;
 
     button = multipleValue ? editButton : cancelButton;
@@ -152,9 +148,9 @@ public class UIEditor {
     };
   }
 
-  private void edited(JTextComponent textComponent) {
+  private void edited(JTextComponent textComponent) {// TODO font color and fixe modified value
     textComponent.setForeground(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedColor : defaultColor);
-    textComponent.setFont(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedFont : defaultFont);
+    //textComponent.setFont(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedFont : defaultFont);
     cancelButton.setEnabled(!textComponent.getText().equals(defaultValue != null ? defaultValue : ""));
     if (cancelButton.isEnabled()) {
       WebLabel label = new WebLabel("", ImageUtils.CANCEL_16, SwingConstants.TRAILING);
@@ -163,6 +159,8 @@ public class UIEditor {
     } else {
       TooltipManager.removeTooltips(component);
     }
+
+    mr.updateRenamedTitle();
   }
 
   public JComponent getComponent() {
@@ -194,6 +192,14 @@ public class UIEditor {
     } else {
       ((DefaultListModel) ((JList) component).getModel()).addElement(value);
     }
+  }
+
+  public String getValue() {
+    if (isTextComponent) {
+      return ((JTextComponent) component).getText();
+    }
+
+    return ((DefaultListModel) ((JList) component).getModel()).toString();
   }
 
   public void setEditable() {

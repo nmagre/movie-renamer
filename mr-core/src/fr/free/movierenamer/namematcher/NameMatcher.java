@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,60 +39,73 @@ import java.util.regex.Pattern;
 public abstract class NameMatcher {// TODO
 
   private static final List<String> fileExts = Arrays.asList(new String[]{"nfo", "xml"});
+  private static final Pattern imdbIdPattern = Pattern.compile("tt(\\d{7})");
 
-  public static Map<FileProperty, String> getProperty(File file, MediaType type) {
+  public static Map<FileProperty, String> getProperty(final File file, final MediaType type) {
     Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
     switch (type) {
       case MOVIE:
-        properties = getMovieProperty(file);
+        properties = getMovieFileProperty(file);
         break;
       case TVSHOW:
-        properties = getTvShowProperty(file);
+        properties = getTvShowFileProperty(file);
         break;
     }
 
-    properties.put(FileProperty.year, "" + NameCleaner.extractYear(file.getName()));
+    final Integer year = NameCleaner.extractYear(file.getName());
+    if (year != null) {
+      properties.put(FileProperty.year, String.valueOf(year));
+    }
+
+    System.out.println(properties);
+
     return properties;
   }
 
-  private static Map<FileProperty, String> getMovieProperty(File file) {
-    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
-    properties.put(FileProperty.name, NameCleaner.extractName(file.getName(), false));
-    Integer imdbId = getImdbId(file);
+  private static Map<FileProperty, String> getMovieFileProperty(final File file) {
+    final Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+    properties.put(FileProperty.name, extractName(file.getName()));
+
+    final Integer imdbId = getImdbId(file);
     if (imdbId != null) {
-      properties.put(FileProperty.imdbId, "" + imdbId);
+      properties.put(FileProperty.imdbId, String.valueOf(imdbId));
     }
 
     return properties;
   }
 
-  public static String extractName(String fileName) {
+  private static Map<FileProperty, String> getTvShowFileProperty(File file) {// TODO
+    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+
+    return properties;
+  }
+
+  public static String extractName(final String fileName) {
     String extractedName = NameCleaner.extractName(fileName, false);
     // Try to extract name from String without spacing
-    String[] names = extractedName.split(" ");
+    final String[] names = extractedName.split(" ");
     if (names.length < 3 && names[0].length() > 15) {
-      extractedName = names[0].replaceAll("(\\p{Lower})(\\p{Upper})", "$1 $2");
-      extractedName = NameCleaner.extractName(extractedName, false);
+      extractedName = names[0].replaceAll("(\\p{Lower})(\\p{Upper})", "$1 $2");// Add space between lowercase and uppercase letter
+      extractedName = NameCleaner.extractName(extractedName, false);// try to sxtract name with space added
     }
     return extractedName;
   }
 
-  private static Map<FileProperty, String> getTvShowProperty(File file) {// TODO
-    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
-
-    return properties;
-  }
-
-  private static Integer getImdbId(File file) {
+  /**
+   * Try to get Imdb id from filename or NFO file
+   *
+   * @param file File to get Imdb ID
+   * @return Imdb ID or null
+   */
+  private static Integer getImdbId(final File file) {
     final String fileName = FileUtils.getNameWithoutExtension(file.getName());
-    Pattern imdbIdPattern = Pattern.compile("tt(\\d{7})");
     Matcher imdbIdMatch = imdbIdPattern.matcher(fileName);
 
     if (imdbIdMatch.find()) {
       return Integer.parseInt(imdbIdMatch.group(1));
     }
 
-    List<File> nfoFiles = Arrays.asList(file.getParentFile().listFiles(new FilenameFilter() {
+    final List<File> nfoFiles = Arrays.asList(file.getParentFile().listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
         if (fileName.equalsIgnoreCase(FileUtils.getNameWithoutExtension(name)) || dir.getName().equalsIgnoreCase(name)) {
@@ -106,9 +119,10 @@ public abstract class NameMatcher {// TODO
       }
     }));
 
+    String str;
     for (File nfile : nfoFiles) {
       try {
-        String str = new Scanner(nfile).useDelimiter("\\A").next();
+        str = new Scanner(nfile).useDelimiter("\\A").next();
         imdbIdMatch = imdbIdPattern.matcher(str);
         if (imdbIdMatch.find()) {
           return Integer.parseInt(imdbIdMatch.group(1));

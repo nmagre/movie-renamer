@@ -63,7 +63,7 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
       Media media = searchResult.getSearchResult();
       info = scrapper.getInfo(media);
       FileInfo fileInfo = mr.getMediaPanel().getFileInfo();
-      // If GetFileInfoWorker is not done, we get file info in this thread
+
       if (fileInfo == null) {
         fileInfo = new FileInfo(mr.getFile().getFile());
       }

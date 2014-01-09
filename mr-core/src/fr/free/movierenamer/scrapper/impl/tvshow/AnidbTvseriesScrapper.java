@@ -22,10 +22,8 @@ import java.util.Locale;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
-import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.net.URL;
@@ -56,31 +54,31 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
+  protected List<TvShow> searchMedia(String query, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<TvShow> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<TvShow> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
+  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
@@ -93,7 +91,7 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
 //    // return null;
 //  }
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

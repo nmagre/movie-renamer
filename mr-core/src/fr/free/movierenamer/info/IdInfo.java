@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +31,11 @@ public class IdInfo extends Info {
   private AvailableApiIds idType;
   private String longId;
 
-  public IdInfo(int id, AvailableApiIds idType) {
+  public IdInfo(final int id, final AvailableApiIds idType) {
     this(id, null, idType);
   }
 
-  public IdInfo(int id, String longId, AvailableApiIds idType) {
+  public IdInfo(final int id, final String longId, final AvailableApiIds idType) {
     this.id = id;
     this.longId = longId;
     this.idType = idType;
@@ -54,9 +54,9 @@ public class IdInfo extends Info {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (obj instanceof IdInfo) {
-      IdInfo idinfo = (IdInfo) obj;
+      final IdInfo idinfo = (IdInfo) obj;
       if (idinfo.getId() == id && idinfo.getIdType() == idType) {
         return true;
       }

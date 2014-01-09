@@ -20,7 +20,7 @@ package fr.free.movierenamer.scrapper.impl;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
-import fr.free.movierenamer.scrapper.impl.movie.Kinopoisk;
+import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.ScrapperUtils;
 
@@ -31,11 +31,11 @@ import fr.free.movierenamer.utils.ScrapperUtils;
  */
 public class KinopoiskTest extends MovieScrapperTest {
 
-  private Kinopoisk kinopoist = null;
+  private KinopoiskScrapper kinopoist = null;
 
   @Override
   public void init() {
-    kinopoist = new Kinopoisk();
+    kinopoist = new KinopoiskScrapper();
   }
 
   @Override

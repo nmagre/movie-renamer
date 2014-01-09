@@ -21,7 +21,7 @@ import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
-import java.awt.Font;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import javax.swing.BorderFactory;
 import javax.swing.JList;
 
@@ -62,9 +62,8 @@ public class MediaListRenderer extends IconListRenderer<UIFile> {
       SeparatorList.Separator separator = (SeparatorList.Separator) value;
       UIFile file = (UIFile) separator.getGroup().get(0);
       label.setText(file.getGroupName());
-
-      label.setFont(label.getFont().deriveFont(Font.BOLD));
-      label.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 0));
+      label.setFont(UIUtils.titleFont);
+      label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       return label;
     }
 

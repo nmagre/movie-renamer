@@ -22,7 +22,6 @@ import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.Component;
-import java.awt.Font;
 import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -41,8 +40,6 @@ public class IconComboRenderer<T extends IIconList> extends WebComboBoxCellRende
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-    label.setFont(label.getFont().deriveFont(Font.PLAIN));
     label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
 
     T obj;

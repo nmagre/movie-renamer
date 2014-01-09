@@ -243,9 +243,6 @@
                                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                                   <Connection code="ImageUtils.MEDIA_16" type="code"/>
                                 </Property>
-                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                  <Font name="Ubuntu" size="12" style="1"/>
-                                </Property>
                               </Properties>
                               <AuxValues>
                                 <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="mediaLbl.setLanguage(i18n.getLanguageKey(&quot;mediatb.media&quot;));"/>
@@ -263,7 +260,6 @@
                                   <StringArray count="0"/>
                                 </Property>
                                 <Property name="selectionMode" type="int" value="0"/>
-                                <Property name="focusable" type="boolean" value="false"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -369,10 +365,7 @@
                                     <Component class="com.alee.laf.label.WebLabel" name="searchLbl">
                                       <Properties>
                                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                                          <Connection code="ImageUtils.SEARCH_16" type="code"/>
-                                        </Property>
-                                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                          <Font name="DialogInput" size="12" style="1"/>
+                                          <Connection code="ImageUtils.LOOK_16" type="code"/>
                                         </Property>
                                       </Properties>
                                       <AuxValues>
@@ -435,9 +428,6 @@
                                       </Border>
                                     </Property>
                                     <Property name="drawFocus" type="boolean" value="false"/>
-                                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                                      <Font name="Ubuntu Light" size="12" style="0"/>
-                                    </Property>
                                   </Properties>
                                   <Events>
                                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="scrapperCbActionPerformed"/>

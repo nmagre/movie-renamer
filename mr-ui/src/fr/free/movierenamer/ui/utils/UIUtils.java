@@ -25,6 +25,9 @@ import com.alee.laf.list.WebList;
 import com.alee.managers.hotkey.ButtonHotkeyRunnable;
 import com.alee.managers.hotkey.HotkeyData;
 import com.alee.managers.hotkey.HotkeyManager;
+import com.alee.managers.notification.NotificationManager;
+import com.alee.managers.notification.NotificationOption;
+import com.alee.managers.notification.WebNotificationPopup;
 import com.alee.managers.popup.PopupWay;
 import static com.alee.managers.popup.PopupWay.upCenter;
 import static com.alee.managers.popup.PopupWay.upLeft;
@@ -32,17 +35,27 @@ import static com.alee.managers.popup.PopupWay.upRight;
 import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.sun.jna.Platform;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.i18n.I18n;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 
 /**
  * Class UIUtils
@@ -51,6 +64,7 @@ import javax.swing.SwingConstants;
  */
 public final class UIUtils {
 
+  private static final int NOTIFICATION_DELAY = 3000;
   public static final I18n i18n = new I18n("main");
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<>();
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
@@ -59,6 +73,103 @@ public final class UIUtils {
       return stringOne.getGroupName().toLowerCase().compareTo(stringTwo.getGroupName().toLowerCase());
     }
   };
+  public static final String fontName;
+  public static final Font defaultFont;
+  public static final Font boldFont;
+  public static final Font titleFont;
+  public static final Font italicFont;
+
+  static {
+    fontName = Platform.isWindows() ? "Courier New" : "Lucida Typewriter";
+    defaultFont = getFont(11);
+    boldFont = getFont(Font.BOLD, 11);
+    titleFont = getFont(Font.BOLD, 12);
+    italicFont = getFont(Font.ITALIC, 11);
+  }
+
+  public static Font getFont(int size) {
+    return getFont(Font.PLAIN, size);
+  }
+
+  public static Font getFont(int style, int size) {
+    return new Font(fontName, style, size);
+  }
+
+  /**
+   * Show window on screen device N and centered/fullscreen (depends on
+   * settings)
+   *
+   * @param frame Window to move
+   */
+  public static void showOnScreen(Window frame) {
+    UISettings settings = UISettings.getInstance();
+    int screen = settings.getScreenDevice();
+    showOnScreen(frame, screen, false);
+  }
+
+  /**
+   * Move frame to screen "screen" centered/fullscreen
+   *
+   * @param frame Window to move
+   * @param screen Screen device to display Window
+   * @param fullscreen fullscreen or not
+   */
+  public static void showOnScreen(Window frame, int screen, boolean fullscreen) {
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice[] gd = ge.getScreenDevices();
+
+    if (screen > -1 && screen < gd.length) {
+      if (fullscreen) {
+        gd[screen].setFullScreenWindow(frame);
+      } else {
+        Rectangle bound = gd[screen].getDefaultConfiguration().getBounds();
+        int x = (int) bound.getCenterX() - frame.getWidth() / 2;
+        int y = (int) bound.getCenterY() - frame.getHeight() / 2;
+        frame.setLocation(x, y);
+      }
+    } else if (gd.length > 0) {
+      if (fullscreen) {
+        gd[0].setFullScreenWindow(frame);
+      } else {
+        Rectangle bound = gd[0].getDefaultConfiguration().getBounds();
+        int x = (int) bound.getCenterX() - frame.getWidth() / 2;
+        int y = (int) bound.getCenterY() - frame.getHeight() / 2;
+        frame.setLocation(x, y);
+      }
+    }
+  }
+
+  /**
+   * Move and center frameToMove to the screen of the mainFrame
+   *
+   * @param mainFrame Main Window
+   * @param frameToMove Window to move
+   */
+  public static void showOnScreen(Window mainFrame, Window frameToMove) {
+    showOnScreen(frameToMove, getScreen(mainFrame), false);
+  }
+
+  /**
+   * Get screen device number where the Window is displayed
+   *
+   * @param frame Window
+   * @return screen device number or 0
+   */
+  public static int getScreen(Window frame) {
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice[] gds = ge.getScreenDevices();
+    int i = 0;
+    for (GraphicsDevice gd : gds) {
+      Point p = frame.getLocation();
+      p.x += 1;
+      p.y += 1;
+      if (gd.getDefaultConfiguration().getBounds().contains(p)) {
+        return i;
+      }
+      i++;
+    }
+    return 0;
+  }
 
   /**
    * Create a decorated button without icon and tooltip
@@ -203,6 +314,49 @@ public final class UIUtils {
     });
     checkbox.setSelected(selected);
     return checkbox;
+  }
+
+  public static void showNoResultNotification(String search) {
+    shownotification(i18n.getLanguage("notification.noresult", false, search), ImageUtils.NORESULT_24, NOTIFICATION_DELAY);
+  }
+
+  public static void showErrorNotification(String str) {
+    shownotification(str, ImageUtils.ERROR_24, null, NotificationOption.accept);
+  }
+
+  public static void showWrongNotification(String str) {
+    shownotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
+  }
+
+  public static void showWarningNotification(String str) {
+    shownotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
+  }
+
+  private static void shownotification(String str, Icon icon, Integer delay, NotificationOption... options) {
+    final WebNotificationPopup notificationPopup = new WebNotificationPopup();
+    notificationPopup.setIcon(icon);
+    if (delay != null) {
+      notificationPopup.setDisplayTime(delay);
+    }
+    WebLabel label = new WebLabel("<html>" + str.replace("\\n", "<br>") + "</html>");
+    notificationPopup.setContent(label);
+    if (options != null) {
+      notificationPopup.setOptions(options);
+    }
+
+    NotificationManager.showNotification(notificationPopup);
+  }
+
+  public static void setUIFont() {
+    FontUIResource f = new FontUIResource(defaultFont);
+    java.util.Enumeration keys = UIManager.getDefaults().keys();
+    while (keys.hasMoreElements()) {
+      Object key = keys.nextElement();
+      Object value = UIManager.get(key);
+      if (value != null && value instanceof javax.swing.plaf.FontUIResource) {
+        UIManager.put(key, f);
+      }
+    }
   }
 
   private UIUtils() {

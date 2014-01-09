@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 Nicolas Magré
+ * Movie Renamer
+ * Copyright (C) 2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.worker.impl;
+package fr.free.movierenamer;
 
-import javax.swing.Timer;
+import java.net.URI;
 
 /**
- * Class UpdateWorker
+ * Class Message
  *
  * @author Nicolas Magré
  */
-public class UpdateWorker {
+public class UpdateFile {
+
+  private final URI url;
+  private final String path;
+  private final String md5;
+
+  public UpdateFile(URI url, String path, String md5) {
+    this.url = url;
+    this.path = path;
+    this.md5 = md5;
+  }
+
+  public URI getUrl() {
+    return url;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getMd5() {
+    return md5;
+  }
+
 }

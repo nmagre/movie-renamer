@@ -52,6 +52,7 @@ public class LoadingDialog extends WebDialog {
 
     webLabel1.setIcon(new SpinningDial(24, 43));
     webLabel1.setLanguage(UIUtils.i18n.getLanguageKey("loading", false));
+    webLabel1.setDrawShade(true);
 
     logoLbl.setIcon(ImageUtils.LOGO_72);
 

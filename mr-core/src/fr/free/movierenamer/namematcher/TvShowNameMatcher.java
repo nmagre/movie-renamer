@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Magré
  */
-public class TvShowNameMatcher {
+public class TvShowNameMatcher {// FIXME remove this file!!!
 
   private static final String SEASONFOLDERPATTERN = "(?i:season)|(?i:saison)|(?i:s).*\\d+";
   private static final String TVSHOWFOLDERPATTERN = ".*(?i:tvshwow)|(?i:tv)|(?i:serie)|(?i:série).*";

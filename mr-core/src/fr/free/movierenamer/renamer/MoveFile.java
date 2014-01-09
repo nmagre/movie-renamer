@@ -1,6 +1,6 @@
 /*
  * mr-core
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ public class MoveFile extends Thread {
 
   private boolean done;
   private int progress;
-  private File source, dest;
+  private final File source, dest;
   private boolean cancel;
 
   public MoveFile(File source, File dest) {
@@ -67,7 +67,7 @@ public class MoveFile extends Thread {
     try {
       input = new FileInputStream(source);
       output = new FileOutputStream(dest);
-      byte[] buf = new byte[1024];
+      final byte[] buf = new byte[1024];
       int bytesRead;
       long count = 0;
 
@@ -89,14 +89,14 @@ public class MoveFile extends Thread {
 
         if (cancel) {
           if (dest.exists()) {
-            dest.delete();
+            dest.delete();// FIXME check return
           }
         }
 
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.SEVERE, null, ex);
         if (dest.exists()) {
-          dest.delete();
+          dest.delete();// FIXME check return
         }
       }
     }

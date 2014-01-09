@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.JTabbedPaneLU;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,9 @@ public class Main {
     // Install look and feel
     WebLookAndFeel.install();
 
+    // Set font
+    UIUtils.setUIFont();
+
     // Set locale
     Locale.setDefault(setting.coreInstance.getAppLanguage().getLocale());
 
@@ -76,9 +81,12 @@ public class Main {
     }
     LanguageManager.setLanguage(lcode);
 
+    // Add language support to tabbedPane
+    LanguageManager.registerLanguageUpdater(new JTabbedPaneLU());
+
     TooltipManager.setDefaultDelay(1500);
 
-//    new Thread(new Runnable() {
+    //    new Thread(new Runnable() {
 //      @Override
 //      public void run() {
 //        while (true) {
@@ -113,4 +121,5 @@ public class Main {
       }
     });
   }
+
 }

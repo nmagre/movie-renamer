@@ -17,11 +17,9 @@ import fr.free.movierenamer.utils.ScrapperUtils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import static java.util.Collections.list;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -41,20 +39,24 @@ public class UniversalScrapper extends MovieScrapper {// TODO
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
+  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     //URL searchUrl = new URL("http", host, "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
     this.query = query;
     return searchMedia((URL) null, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     List<Movie> movies;
 
     MovieScrapper movieScrapper = ScrapperManager.getScrapper(IMDbScrapper.class);
     movieScrapper.setLanguage(language);
     // Search on imdb
-    movies = movieScrapper.search(query);
+    if (searchUrl != null) {
+      movies = movieScrapper.search(searchUrl.toString());
+    } else {
+      movies = movieScrapper.search(query);
+    }
 
     // Search on TMDB
     if (movies.isEmpty()) {
@@ -64,7 +66,7 @@ public class UniversalScrapper extends MovieScrapper {// TODO
     }
 
     if (movies.isEmpty()) {
-      List<MovieScrapper> scrappers = getScrappersByQuality(AvailableLanguages.valueOf(language.getLanguage()));
+      List<MovieScrapper> scrappers = getScrappersByQuality(language);
 
       // Search on any scrapper that support current language
       for (MovieScrapper scrapper : scrappers) {
@@ -83,15 +85,14 @@ public class UniversalScrapper extends MovieScrapper {// TODO
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie searchResult, Locale language) throws Exception {
-    AvailableLanguages lang = AvailableLanguages.valueOf(language.getLanguage());
-    Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
-    Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
+  protected MovieInfo fetchMediaInfo(Movie searchResult, AvailableLanguages language) throws Exception {
+    final Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
+    final Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
 
-    List<MovieScrapper> scrappers = getScrappersByQuality(lang);
-    List<MovieInfo> infos = new ArrayList<MovieInfo>();
+    final List<MovieScrapper> scrappers = getScrappersByQuality(language);
+    final List<MovieInfo> infos = new ArrayList<MovieInfo>();
 
-    List<IdInfo> idsInfo = new ArrayList<IdInfo>();
+    final List<IdInfo> idsInfo = new ArrayList<IdInfo>();
 
     IdInfo idInfo = searchResult.getMediaId();
     if (idInfo == null) {
@@ -99,15 +100,15 @@ public class UniversalScrapper extends MovieScrapper {// TODO
     }
     idsInfo.add(idInfo);
 
-    // Try to get imdb info
-    if (lang != AvailableLanguages.en) {
-      IdInfo imdbId = ScrapperUtils.imdbIdLookup(idInfo, searchResult);
+    // Try to get imdb ID
+    if (language != AvailableLanguages.en) {
+      final IdInfo imdbId = ScrapperUtils.imdbIdLookup(idInfo, searchResult);
       if (imdbId != null) {
         searchResult.setImdbId(imdbId);
-        MovieScrapper movieScrapper = ScrapperManager.getScrapper(IMDbScrapper.class);
+        final MovieScrapper movieScrapper = ScrapperManager.getScrapper(IMDbScrapper.class);
         movieScrapper.setLanguage(language);
 
-        MovieInfo info = movieScrapper.getInfo(searchResult);
+        final MovieInfo info = movieScrapper.getInfo(searchResult);
         for (MovieInfo.MovieProperty property : MovieInfo.MovieProperty.values()) {
           if (!property.isLanguageDepends()) {
             String cvalue = fields.get(property);
@@ -165,7 +166,19 @@ public class UniversalScrapper extends MovieScrapper {// TODO
             result = searchResult;
         }
 
+        // Try to found movie on kinopoisk
+        if (KinopoiskScrapper.class.isAssignableFrom(scrapper.getClass())) {
+          IdInfo kinopoiskId = ScrapperUtils.kinopoiskIdLookup(searchResult);
+          if (kinopoiskId == null) {
+            continue;
+          }
+          result = new Movie(result.getImdbId(), kinopoiskId, searchResult.getName(), searchResult.getOriginalTitle(), searchResult.getURL(), searchResult.getYear());
+        }
+
         MovieInfo info = scrapper.getInfo(result);
+        if (info == null) {
+          continue;
+        }
 
         // Merge info
         // TODO
@@ -193,13 +206,13 @@ public class UniversalScrapper extends MovieScrapper {// TODO
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie search, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie search, AvailableLanguages language) throws Exception {// TODO
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override

@@ -33,8 +33,8 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
   private final File file;
   private FileInfo fileInfo;
-  private String groupName;
-  private Icon icon;
+  private final String groupName;
+  private final Icon icon;
   private String search;
 
   /**
@@ -52,9 +52,10 @@ public class UIFile extends Sorter.ISort implements IIconList {
   }
 
   public FileInfo getFileInfo() {
-    if(fileInfo == null) {
+    if (fileInfo == null) {
       fileInfo = new FileInfo(file);
     }
+
     return fileInfo;
   }
 
@@ -63,14 +64,10 @@ public class UIFile extends Sorter.ISort implements IIconList {
   }
 
   public String getSearch() {
-    if(search == null) {
+    if (search == null || search.isEmpty()) {
       search = getFileInfo().getSearch();
     }
     return search;
-  }
-  
-  public String getDefaultSearch() {
-    return getFileInfo().getSearch();
   }
 
   public void setSearch(String search) {
@@ -90,35 +87,34 @@ public class UIFile extends Sorter.ISort implements IIconList {
   public int getYear() {
     return getFileInfo().getYear();
   }
-  
-/*  public IdInfo getIdInfo() {
-    return getFileInfo().getImdbId();
-  }*/
 
+  /*  public IdInfo getIdInfo() {
+   return getFileInfo().getImdbId();
+   }*/
   /**
    * Get media icon to display in list
    *
    * @return Icon
    */
   @Override
-  public Icon getIcon() {
+  public Icon getIcon() {// TODO
     /*if (wasRenamed()) {
-      return ImageUtils.LOGO_22;// FIXME change icon
-    }
+     return ImageUtils.LOGO_22;// FIXME change icon
+     }
 
-    if (fileInfo == null) {
-      getFileInfo();
-    }
+     if (fileInfo == null) {
+     getFileInfo();
+     }
 
-    switch (fileInfo.getType()) {
-      case MOVIE:
-        return ImageUtils.MOVIE_16;
-      case TVSHOW:
-        return ImageUtils.TV_16;
-    }
+     switch (fileInfo.getType()) {
+     case MOVIE:
+     return ImageUtils.MOVIE_16;
+     case TVSHOW:
+     return ImageUtils.TV_16;
+     }
 
-    //return ImageUtils.MEDIA;
-    * */
+     //return ImageUtils.MEDIA;
+     * */
     return icon; // FIXME
   }
 

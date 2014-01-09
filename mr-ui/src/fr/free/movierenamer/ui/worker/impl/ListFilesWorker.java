@@ -24,7 +24,7 @@ import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.ui.worker.ControlWorker;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -39,13 +39,12 @@ import java.util.logging.Level;
  *
  * @author Nicolas Magré
  */
-public class ListFilesWorker extends Worker<List<UIFile>> {
+public class ListFilesWorker extends ControlWorker<List<UIFile>> {
 
   private final List<File> files;
   private final EventList<UIFile> eventList;
   private boolean subFolder;
   private final UISettings setting;
-  private boolean paused = false;
 
   /**
    * Constructor arguments
@@ -71,21 +70,20 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
   @Override
   public List<UIFile> executeInBackground() throws InterruptedException {
 
-    List<UIFile> medias = new ArrayList<UIFile>();
+    List<UIFile> medias = new ArrayList<>();
 
     if (files == null || files.isEmpty()) {
       return medias;
     }
 
     if (!subFolder && subFolder(files)) {
-      publish(("dialog.scanSubFolder"));// FIXME i18n
-      pause();
+      publishPause(("dialog.scanSubFolder"));// FIXME i18n
     }
 
     try {
       for (File file : files) {
         if (isCancelled()) {
-          return new ArrayList<UIFile>();
+          return new ArrayList<>();
         }
 
         if (file.isDirectory()) {
@@ -144,15 +142,14 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
       return;
     }
 
-    for (int i = 0; i < listFiles.length; i++) {
+    for (File listFile : listFiles) {
       if (isCancelled()) {
         return;
       }
-
-      if (listFiles[i].isDirectory() && subFolder) {
-        addFiles(medias, listFiles[i]);
-      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFiles[i])) {
-        addUIfile(medias, listFiles[i]);
+      if (listFile.isDirectory() && subFolder) {
+        addFiles(medias, listFile);
+      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFile)) {
+        addUIfile(medias, listFile);
       }
     }
   }
@@ -207,27 +204,12 @@ public class ListFilesWorker extends Worker<List<UIFile>> {
     eventList.clear();
   }
 
-  private void pause() {
-    paused = true;
-    while (paused && !isCancelled()) {
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException ex) {
-      }
-    }
-  }
-
-  private void resume() {
-    paused = false;
-  }
-
   @Override
-  public final void process(List<String> v) {
+  public final void processPause(List<String> v) {
     int res = WebOptionPane.showConfirmDialog(mr, v.get(0), ("dialog.question"), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);// FIXME i18n
     if (res == WebOptionPane.YES_OPTION) {
       subFolder = true;
     }
-    resume();
   }
 
   @Override

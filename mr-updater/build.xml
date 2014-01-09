@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<project name="Movie_Renamer-updater" basedir=".." default="jar-updater">
+  <description>Build Movie Renamer updater</description>
+
+  <dirname property="imported.basedir" file="${ant.file.imported}"/>
+
+  <!-- set global properties for this build -->
+  <property name="dir-updater" location="${imported.basedir}/mr-updater" />
+  <property name="src-updater" location="${dir-updater}/src" relative="yes" />
+  <property name="lib-ui" location="${imported.basedir}/mr-ui/lib" relative="yes" />
+  <property name="build-updater" location="${dir-updater}/build" relative="yes" />
+  <property name="javadoc-updater" location="${dir-updater}/javadoc" relative="yes" />
+  <property name="jarfile-updater" location="${lib-ui}/Mr-updater.jar" relative="yes" />
+
+  <target name="init-javadoc-updater">
+    <mkdir dir="${javadoc-updater}" />
+  </target>
+
+  <target name="init-updater">
+    <mkdir dir="${build-updater}" />
+  </target>
+
+  <target name="clean">
+    <echo>Clean updater</echo>
+    <delete dir="${build-updater}" />
+    <delete file="${jarfile-updater}" />
+  </target>
+
+  <target name="check-change">
+    <uptodate property="no-change" targetfile="${jarfile-updater}">
+      <srcfiles dir="${src-updater}" includes="**/*.java" />
+      <srcfiles dir="${src-updater}" includes="**/*.properties" />
+    </uptodate>
+  </target>
+
+  <target name="compile-updater" depends="init-updater" description="compile the source">
+    <javac destdir="${build-updater}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+      <src path="${src-updater}" />
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+
+  <target name="jar-updater" depends="check-change,compile-updater" unless="no-change">
+    <echo>copying *.propertie files and misc ...</echo>
+    <copy todir="${build-updater}" overwrite="true">
+      <fileset dir="${src-updater}">
+        <include name="**/*.properties" />
+        <include name="**/*.xml" />
+        <include name="**/*.xsd" />
+        <include name="**/*.gif" />
+        <include name="**/*.png" />
+        <include name="**/*.ico" />
+        <include name="**/*.jpg" />
+      </fileset>
+    </copy>
+
+    <echo>packaging class files to Jar...</echo>
+    <delete file="${jarfile-updater}" />
+    <jar jarfile="${jarfile-updater}" basedir="${build-updater}">
+      <manifest>
+        <attribute name="Main-Class" value="fr.free.movierenamer.Main"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="javadoc" depends="init-javadoc-updater">
+    <javadoc author="true" charset="UTF-8" destdir="${javadoc-updater}" packagenames="fr.free.movierenamer.*" docencoding="UTF-8" failonerror="true" sourcepath="${src-updater}">
+      <classpath refid="classpath" />
+      <fileset dir="${src-updater}" excludes="*.java,${excludes}" includes="${includes}">
+        <filename name="**/*.java"/>
+      </fileset>
+    </javadoc>
+  </target>
+
+</project>

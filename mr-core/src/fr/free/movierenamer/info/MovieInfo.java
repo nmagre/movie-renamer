@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,11 @@ import fr.free.movierenamer.renamer.FormatReplacing;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
+import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -64,7 +67,7 @@ public class MovieInfo extends MediaInfo {
       languageDepends = false;
     }
 
-    private MovieProperty(boolean languageDepends) {
+    private MovieProperty(final boolean languageDepends) {
       this.languageDepends = languageDepends;
     }
 
@@ -86,7 +89,7 @@ public class MovieInfo extends MediaInfo {
       languageDepends = false;
     }
 
-    private MovieMultipleProperty(boolean languageDepends) {
+    private MovieMultipleProperty(final boolean languageDepends) {
       this.languageDepends = languageDepends;
     }
 
@@ -110,15 +113,15 @@ public class MovieInfo extends MediaInfo {
     RUSSIA("0+", "6+", "12+", "16+", "18+");
     private final String[] rates;
 
-    private MotionPictureRating(String... rates) {
+    private MotionPictureRating(final String... rates) {
       this.rates = rates;
     }
 
-    public String[] getRates() {
+    private String[] getRates() {
       return rates;
     }
 
-    public String getRate(String code) {
+    public String getRate(final String code) {
       int pos = 0;
       for (String rate : USA.getRates()) {
         if (code.equals(rate)) {
@@ -129,7 +132,7 @@ public class MovieInfo extends MediaInfo {
       return null;
     }
 
-    public static String getMpaaCode(String code, MotionPictureRating scale) {
+    public static String getMpaaCode(final String code, final MotionPictureRating scale) {
 
       if (scale.equals(MotionPictureRating.USA)) {
         return code;
@@ -160,12 +163,26 @@ public class MovieInfo extends MediaInfo {
     this.multipleFields = (multipleFields != null) ? new EnumMap<MovieMultipleProperty, List<String>>(multipleFields) : new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
   }
 
-  public String get(MovieProperty key) {
+  public String get(final MovieProperty key) {
     return (fields != null) ? fields.get(key) : null;
   }
 
-  public List<String> get(MovieMultipleProperty key) {
-    return (List<String>) ((multipleFields != null) ? multipleFields.get(key) : new ArrayList<String>());
+  public void set(final InfoProperty key, final String value) {
+
+    if (key instanceof MovieProperty) {
+      fields.put((MovieProperty) key, value);
+    } else if (key instanceof MovieMultipleProperty) {
+      multipleFields.put((MovieMultipleProperty) key, Arrays.asList(value.split(", ")));
+    }
+  }
+
+  @Override
+  public InfoType getInfoType() {
+    return InfoType.MOVIE;
+  }
+
+  public List<String> get(final MovieMultipleProperty key) {
+    return (List<String>) ((multipleFields != null && multipleFields.get(key) != null) ? multipleFields.get(key) : new ArrayList<String>());
   }
 
   public String getOriginalTitle() {
@@ -176,15 +193,15 @@ public class MovieInfo extends MediaInfo {
     return get(MovieProperty.title);
   }
 
-  public String getIdString(AvailableApiIds idType) {
-    Integer id = getId(idType);
+  public String getIdString(final AvailableApiIds idType) {
+    final Integer id = getId(idType);
     if (id != null) {
       return idType.getPrefix() + id;
     }
     return null;
   }
 
-  public Integer getId(AvailableApiIds idType) {
+  public Integer getId(final AvailableApiIds idType) {
 
     for (IdInfo id : idsInfo) {
       if (id.getIdType().equals(idType)) {
@@ -203,9 +220,10 @@ public class MovieInfo extends MediaInfo {
   public URI getPosterPath() {
     try {
       return new URL(get(MovieProperty.posterPath)).toURI();
-    } catch (Exception e) {
-      return null;
+    } catch (MalformedURLException e) {
+    } catch (URISyntaxException e) {
     }
+    return null;
   }
 
   public String getOverview() {
@@ -214,42 +232,42 @@ public class MovieInfo extends MediaInfo {
 
   public Integer getVotes() {
     try {
-      return new Integer(get(MovieProperty.votes));
-    } catch (Exception e) {
-      return null;
+      return Integer.valueOf(get(MovieProperty.votes));
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Double getRating() {
     try {
       return new Double(get(MovieProperty.rating));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Date getReleasedDate() {
     try {
       return Date.parse(get(MovieProperty.releasedDate), "yyyy-MM-dd");
     } catch (Exception e) {
-      return null;
     }
+    return null;
   }
 
   public Integer getYear() {
     try {
       return Date.parse(get(MovieProperty.releasedDate), "yyyy").getYear();
     } catch (Exception e) {
-      return null;
     }
+    return null;
   }
 
   public Integer getRuntime() {
     try {
-      return new Integer(get(MovieProperty.runtime));
-    } catch (Exception e) {
-      return null;
+      return Integer.valueOf(get(MovieProperty.runtime));
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public String getTagline() {
@@ -260,8 +278,8 @@ public class MovieInfo extends MediaInfo {
     return get(MovieProperty.certification);
   }
 
-  public String getCertification(MotionPictureRating type) {
-    String code = get(MovieProperty.certificationCode);
+  public String getCertification(final MotionPictureRating type) {
+    final String code = get(MovieProperty.certificationCode);
     if (code != null && code.length() > 0) {
       return type.getRate(code);
     }
@@ -269,30 +287,37 @@ public class MovieInfo extends MediaInfo {
   }
 
   public List<String> getGenres() {
-    List<String> genres = get(MovieMultipleProperty.genres);
+    final List<String> genres = get(MovieMultipleProperty.genres);
     return genres != null ? genres : new ArrayList<String>();
   }
 
   public List<String> getCountries() {
-    List<String> countries = get(MovieMultipleProperty.countries);
+    final List<String> countries = get(MovieMultipleProperty.countries);
     return countries != null ? countries : new ArrayList<String>();
   }
 
   public List<String> getStudios() {
-    List<String> studios = get(MovieMultipleProperty.studios);
+    final List<String> studios = get(MovieMultipleProperty.studios);
     return studios != null ? studios : new ArrayList<String>();
   }
 
   public List<String> getTags() {
-    List<String> tags = get(MovieMultipleProperty.tags);
+    final List<String> tags = get(MovieMultipleProperty.tags);
     return tags != null ? tags : new ArrayList<String>();
   }
 
   @Override
   public String getRenamedTitle(String format) {
+    final Settings settings = Settings.getInstance();
+    return getRenamedTitle(format, settings.getMovieFilenameCase(), settings.getMovieFilenameSeparator(), settings.getMovieFilenameLimit(),
+            settings.isReservedCharacter(), settings.isMovieFilenameRmDupSpace(), settings.isMovieFilenameTrim());
+  }
 
-    List<String> reservedCharacterList = Arrays.asList(new String[]{"<", ">", ":", "\"", "/", "\\", "|", "?", "*"});
-    Settings settings = Settings.getInstance();
+  @Override
+  public String getRenamedTitle(final String format, final StringUtils.CaseConversionType renameCase, final String filenameSeparator,
+          final int filenameLimit, final boolean reservedCharacter, final boolean rmDupSpace, final boolean trim) {
+
+    final List<String> reservedCharacterList = Arrays.asList(new String[]{"<", ">", ":", "\"", "/", "\\", "|", "?", "*"});
 
     String titlePrefix = "";
     String shortTitle = this.getTitle();
@@ -309,7 +334,7 @@ public class MovieInfo extends MediaInfo {
       }
     }
 
-    Map<String, Object> replace = new HashMap<String, Object>();
+    final Map<String, Object> replace = new HashMap<String, Object>();
     replace.put("<t>", this.getTitle());
     replace.put("<tp>", titlePrefix);
     replace.put("<st>", shortTitle);
@@ -322,22 +347,23 @@ public class MovieInfo extends MediaInfo {
     replace.put("<d>", this.getDirectors());
     replace.put("<g>", this.getGenres());
     replace.put("<c>", this.getCountries());
+    replace.put("<mpaa>", this.getCertification(MotionPictureRating.USA));
 
     // Media info
     if (mtag != null && mtag.libMediaInfo) {
-      MediaVideo video = mtag.getMediaVideo();
-      List<MediaAudio> audios = mtag.getMediaAudios();
-      List<MediaSubTitle> subTitles = mtag.getMediaSubTitles();
+      final MediaVideo video = mtag.getMediaVideo();
+      final List<MediaAudio> audios = mtag.getMediaAudios();
+      final List<MediaSubTitle> subTitles = mtag.getMediaSubTitles();
       // Audio
-      List<Integer> aChannels = new ArrayList<Integer>();
-      List<String> aCodecs = new ArrayList<String>();
-      List<String> aLanguages = new ArrayList<String>();
-      List<String> aTitles = new ArrayList<String>();
-      List<Integer> aBitrates = new ArrayList<Integer>();
-      List<String> aRatemodes = new ArrayList<String>();
+      final List<String> aChannels = new ArrayList<String>();
+      final List<String> aCodecs = new ArrayList<String>();
+      final List<String> aLanguages = new ArrayList<String>();
+      final List<String> aTitles = new ArrayList<String>();
+      final List<Integer> aBitrates = new ArrayList<Integer>();
+      final List<String> aRatemodes = new ArrayList<String>();
       // Subtitle
-      List<String> sTitles = new ArrayList<String>();
-      List<String> sLanguages = new ArrayList<String>();
+      final List<String> sTitles = new ArrayList<String>();
+      final List<String> sLanguages = new ArrayList<String>();
 
       for (MediaAudio audio : audios) {
         aChannels.add(audio.getChannel());
@@ -379,44 +405,26 @@ public class MovieInfo extends MediaInfo {
       replace.put("<stl>", sLanguages);
     }
 
-    FormatReplacing freplace = new FormatReplacing(replace);
-    format = freplace.getReplacedString(format);
+    final FormatReplacing freplace = new FormatReplacing(replace, renameCase, filenameSeparator, filenameLimit);
+    String res = freplace.getReplacedString(format);
 
-    // // extension
-    // String fileName = getFile().getName();
-    // String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
-    // switch (renameCase) {
-    // case UPPER:
-    // ext = "." + ext.toUpperCase();
-    // break;
-    // default:
-    // ext = "." + ext.toLowerCase();
-    // break;
-    // }
-    //
-    // // construct new file name
-    // res += ext;
-    //
-    // if (Utils.isWindows()) {
-    // res = res.replaceAll(":", "").replaceAll("/", "");
-    // }
-    if (settings.isReservedCharacter()) {
+    if (reservedCharacter) {
       for (String c : reservedCharacterList) {
         if (!c.equals(File.separator)) {
-          format = format.replace(c, "");
+          res = res.replace(c, "");
         }
       }
     }
 
-    if (settings.isMovieFilenameRmDupSpace()) {
-      format = format.replaceAll("\\s+", " ");
+    if (rmDupSpace) {
+      res = res.replaceAll("\\s+", " ");
     }
 
-    if (settings.isMovieFilenameTrim()) {
-      format = format.trim();
+    if (trim) {
+      res = res.trim();
     }
 
-    return format;
+    return res;
   }
 
   @Override

@@ -32,7 +32,7 @@ public abstract class InfoPanel<T extends Info> extends PanelGenerator implement
 
   public enum PanelType {
 
-    MOVIE_INFO,
+    INFO,
     CASTING_INFO,
     TRAILER_INFO,
     FILE_INFO

@@ -6,12 +6,12 @@ package fr.free.movierenamer.scrapper.impl.movie;
 
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
-import fr.free.movierenamer.utils.LocaleUtils;
-import java.util.Locale;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.regex.Pattern;
 
 /**
  * Class SensacineScrapper
+ *
  * @author Nicolas Magré
  */
 public class SensacineScrapper extends AlloGroupScrapper {
@@ -45,7 +45,7 @@ public class SensacineScrapper extends AlloGroupScrapper {
   }
 
   public SensacineScrapper() {
-    super(LocaleUtils.AvailableLanguages.es);
+    super(AvailableLanguages.es);
   }
 
   @Override
@@ -59,8 +59,8 @@ public class SensacineScrapper extends AlloGroupScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return LocaleUtils.AvailableLanguages.es.getLocale();
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.es;
   }
 
   @Override

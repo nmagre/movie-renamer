@@ -31,7 +31,6 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.dnd.DropTarget;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -65,12 +64,12 @@ public class ImagePanel extends WebPanel {
 
   public enum SupportedImages {
 
-    thumb(ImageCategoryProperty.thumb, "image.thumb", 0.75F),
-    fanart(ImageCategoryProperty.fanart, "image.fanart", 1.77F),
-    logo(ImageCategoryProperty.logo, "image.logo", 2.58F),
-    cdart(ImageCategoryProperty.cdart, "image.cdart", 1.0F),
-    clearart(ImageCategoryProperty.clearart, "image.clearart", 1.77F),
-    banner(ImageCategoryProperty.banner, "image.banner", 5.4F);
+    thumb(ImageCategoryProperty.thumb, "mrui.main.image.thumb", 0.75F),
+    fanart(ImageCategoryProperty.fanart, "mrui.main.image.fanart", 1.77F),
+    logo(ImageCategoryProperty.logo, "mrui.main.image.logo", 2.58F),
+    cdart(ImageCategoryProperty.cdart, "mrui.main.image.cdart", 1.0F),
+    clearart(ImageCategoryProperty.clearart, "mrui.main.image.clearart", 1.77F),
+    banner(ImageCategoryProperty.banner, "mrui.main.image.banner", 5.4F);
     private final ImageCategoryProperty categoryProperty;
     private final String i18nKey;
     private final WebLabel label;
@@ -88,7 +87,6 @@ public class ImagePanel extends WebPanel {
       label.setMinimumSize(new Dimension(pwidth, height));
       label.setPreferredSize(new Dimension(pwidth, height));
       label.setMaximumSize(new Dimension(pwidth, height));
-      label.setFont(label.getFont().deriveFont(Font.BOLD));
       label.setBorder(new LineBorder(new Color(204, 204, 204), 1, true));
     }
 
@@ -128,7 +126,8 @@ public class ImagePanel extends WebPanel {
       WebLabel label = new WebLabel(SwingConstants.CENTER);
       label.setVerticalAlignment(SwingConstants.TOP);
       label.setLanguage(property.getI18nKey());
-      label.setFont(label.getFont().deriveFont(Font.BOLD));
+      label.setDrawShade(true);
+
       imagePanel.add(label);
       imagePanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
@@ -140,6 +139,8 @@ public class ImagePanel extends WebPanel {
       imagePanel.add(property.getLabel());
     }
 
+    // Font
+    imageLbl.setFont(UIUtils.titleFont);
   }
 
   public boolean isSupportedImage(ImageCategoryProperty key) {
@@ -199,7 +200,7 @@ public class ImagePanel extends WebPanel {
     clearGallery();
 
     for (LabelListener thumbLbl : imageLabels.values()) {
-      thumbLbl.setIcon(null);
+      thumbLbl.setIcon(ImageUtils.getIconFromJar("ui/kview.png"));
       thumbLbl.setListenerEnabled(false);
     }
   }
@@ -298,7 +299,7 @@ public class ImagePanel extends WebPanel {
     imageTb.setRound(5);
 
     imageLbl.setLanguage(UIUtils.i18n.getLanguageKey("image"));
-    imageLbl.setFont(new java.awt.Font("Ubuntu", 1, 13)); // NOI18N
+    imageLbl.setIcon(ImageUtils.IMAGE_16);
     imageTb.add(imageLbl);
 
     jScrollPane1.setBorder(null);

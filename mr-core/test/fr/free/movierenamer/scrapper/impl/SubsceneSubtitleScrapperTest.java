@@ -26,6 +26,7 @@ import org.junit.Assert;
 import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.scrapper.SubtitleScrapperTest;
 import fr.free.movierenamer.searchinfo.Subtitle;
+import fr.free.movierenamer.utils.LocaleUtils;
 
 /**
  * Class SubsceneSubtitleScrapperTest
@@ -53,7 +54,7 @@ public class SubsceneSubtitleScrapperTest extends SubtitleScrapperTest {
 
   @Override
   public void getSubtitleInfo() throws Exception {
-    subscene.setLanguage(Locale.FRENCH);
+    subscene.setLanguage(LocaleUtils.AvailableLanguages.fr);
     List<SubtitleInfo> subtitles = subscene.getSubtitles(new Subtitle(null, null, new URL("http://subscene.com/subtitles/avatar")));
     Assert.assertTrue(subtitles.size() > 15);
 

@@ -66,7 +66,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   }
 
   @Override
-  protected List<Subtitle> searchSubtitles(String query, Locale language) throws Exception {
+  protected List<Subtitle> searchSubtitles(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/subtitles/title.aspx?q=" + URIRequest.encode(query));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
@@ -93,8 +93,8 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   }
 
   @Override
-  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale language) throws Exception {
-    Document dom = URIRequest.getHtmlDocument(subtitle.getURL().toURI(), new URIRequest.RequestProperty("Cookie", "Filter=" + language.getDisplayLanguage()));
+  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, AvailableLanguages language) throws Exception {
+    Document dom = URIRequest.getHtmlDocument(subtitle.getURL().toURI(), new URIRequest.RequestProperty("Cookie", "Filter=" + language.getLocale().getDisplayLanguage()));
 
     List<Node> rows = XPathUtils.selectNodes("//TD[@class='a1']", dom);
     List<SubtitleInfo> subtitles = new ArrayList<SubtitleInfo>();
@@ -102,7 +102,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
       try {
         List<Node> fields = XPathUtils.selectNodes(".//SPAN", row);
         String lang = XPathUtils.getTextContent(fields.get(0));
-        if (lang == null || lang.equalsIgnoreCase(language.getDisplayLanguage(Locale.ENGLISH))) {
+        if (lang == null || lang.equalsIgnoreCase(language.getLocale().getDisplayLanguage(Locale.ENGLISH))) {
           String href = XPathUtils.selectString(".//A/@href", row);
           Map<SubtitleProperty, String> subtitleFields = new EnumMap<SubtitleProperty, String>(SubtitleProperty.class);
           subtitleFields.put(SubtitleProperty.name, XPathUtils.getTextContent(fields.get(1)));
@@ -119,12 +119,12 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
-  protected List<Subtitle> searchSubtitlesById(IdInfo id, Locale language) {
+  protected List<Subtitle> searchSubtitlesById(IdInfo id, AvailableLanguages language) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

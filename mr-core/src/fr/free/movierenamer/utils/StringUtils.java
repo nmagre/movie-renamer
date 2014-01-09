@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ import fr.free.movierenamer.settings.Settings;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
 
 /**
  * Class StringUtils
@@ -47,10 +49,27 @@ public final class StringUtils {
     LOWER,
     NONE
   }
+
+  public enum SizeFormat {
+
+    OCTET("o"),
+    BYTE("B");
+    private final String format;
+
+    private SizeFormat(String format) {
+      this.format = format;
+    }
+
+    public String getFormat() {
+      return format;
+    }
+  }
   public static final String SPACE = " ";
   public static final String ENDLINE = System.getProperty("line.separator");
   public static final String EMPTY = "";
   public static final String DOT = ".";
+  public static final String EXCLA = "!";
+  public static final Pattern romanSymbol = Pattern.compile("(\\s+(?:M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})|[IDCXMLV]))", Pattern.CASE_INSENSITIVE);
   private static final Pattern apostrophe = Pattern.compile("['`´‘’ʻ]");
   private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:]]");
   private static final Pattern[] brackets = new Pattern[]{
@@ -150,7 +169,7 @@ public final class StringUtils {
    * @param renameCase Case type
    * @return String
    */
-  public static String applyCase(String str, StringUtils.CaseConversionType renameCase) {
+  public static String applyCase(String str, CaseConversionType renameCase) {
     String res;
     switch (renameCase) {
       case UPPER:
@@ -169,34 +188,47 @@ public final class StringUtils {
         res = str;
         break;
     }
+
+    if (Settings.getInstance().isMovieFilenameRomanUpper()) {// FIXME for TVshow
+      // Make sure that roman numerical are in uppercase
+      final Matcher matcher = romanSymbol.matcher(res);
+      final StringBuffer sb = new StringBuffer();
+
+      while (matcher.find()) {
+        matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+      }
+
+      matcher.appendTail(sb);
+      if (sb.length() > 0) {
+        res = sb.toString();
+      }
+    }
+
     return res;
   }
 
-  /**
-   * Check if string is uppercase
-   *
-   * @param str
-   * @return True if all letter are uppercase except I,II,III,..., false
-   * otherwise
-   */
-  public static boolean isUpperCase(String str) {
-    String[] romanNumber = new String[]{
-      "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"
-    };
-    for (String number : romanNumber) {
-      if (str.equals(number)) {
-        return false;
-      }
-    }
-    for (int i = 0; i < str.length(); i++) {
-      char ch = str.charAt(i);
-      if (ch < 32 || ch > 96) {
-        return false;
-      }
-    }
-    return true;
-  }
-
+//  /**
+//   * Check if string is uppercase
+//   *
+//   * @param str
+//   * @return True if all letter are uppercase except I,II,III,..., false
+//   * otherwise
+//   */
+//  private static boolean isUpperCase(String str) {
+//
+////    for (String number : romanNumber) {
+////      if (str.equals(number)) {
+////        return false;
+////      }
+////    }
+//    for (int i = 0; i < str.length(); i++) {
+//      char ch = str.charAt(i);
+//      if (ch < 32 || ch > 96) {
+//        return false;
+//      }
+//    }
+//    return true;
+//  }
   /**
    * Get an array from a string separated by separator
    *
@@ -325,7 +357,8 @@ public final class StringUtils {
 
   public static String normaliseClean(String str) {
     String string = removeBrackets(str);
-    string = removePunctuation(string);
+    string = removePunctuation(string).toLowerCase();
+    string = string.replace(" et ", "&").replace(" and ", "&").replaceAll("(?:^)|(?:\\s)the\\s", "");
     return normalise(string);
   }
 
@@ -354,12 +387,61 @@ public final class StringUtils {
   public static String bytesToHex(byte[] b) {
     char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
       '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for (int j = 0; j < b.length; j++) {
       buf.append(hexDigit[(b[j] >> 4) & 0x0f]);
       buf.append(hexDigit[b[j] & 0x0f]);
     }
     return buf.toString();
+  }
+
+  public static String humanReadableByteCount(long bytes) {
+    Settings settings = Settings.getInstance();
+    boolean si = settings.isStringSizeSi();
+    int unit = si ? 1000 : 1024;
+    if (bytes < unit) {
+      return bytes + " B";
+    }
+    int exp = (int) (Math.log(bytes) / Math.log(unit));
+    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
+    return String.format("%.1f %s" + settings.getStringSizeUnit().getFormat(), bytes / Math.pow(unit, exp), pre);
+  }
+
+  public static String humanReadableDate(long date) {// in ms
+    return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
+  }
+
+  public static String humanReadableTime(long time) {// in ms
+    Settings settings = Settings.getInstance();
+    return humanReadableTime(time, settings.getStringTimeHour(), settings.getStringTimeMinute(), settings.getStringTimeSeconde(),
+            settings.getStringTimeMilliSeconde(), settings.isStringTimeShowSeconde(), settings.isStringTimeShowMillis());
+  }
+
+  public static String humanReadableTime(long time, String hour, String minute, String seconde, String milli, boolean showSeconde, boolean showMilli) {// in ms
+    String format = "HH";
+    format = appendStringToTime(format, hour);
+    format += "mm";
+    format = appendStringToTime(format, minute);
+
+    if (showSeconde) {
+      format += "ss";
+      format = appendStringToTime(format, seconde);
+    }
+
+    if (showMilli) {
+      format += "SS";
+      format = appendStringToTime(format, milli);
+    }
+
+    format = format.trim();
+    return new SimpleDateFormat(format).format(time);
+  }
+
+  private static String appendStringToTime(String format, String append) {
+    if (!append.isEmpty()) {
+      format += "'" + append + "'";
+    }
+    return format;
   }
 
   private StringUtils() {

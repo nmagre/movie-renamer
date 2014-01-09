@@ -24,13 +24,17 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * Class LogsTableModel
+ *
  * @author Nicolas Magré
  */
 public class LogsTableModel extends AbstractTableModel {
+
   private static final long serialVersionUID = 1L;
 
   private final List<LogRecord> logs;
+
   private enum Tablefield {
+
     ID,
     Level,
     Thread_ID,
@@ -41,7 +45,7 @@ public class LogsTableModel extends AbstractTableModel {
   }
 
   public LogsTableModel() {
-    logs = new ArrayList<LogRecord>();
+    logs = new ArrayList<>();
   }
 
   @Override

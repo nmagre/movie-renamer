@@ -24,7 +24,7 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.URIRequest;
@@ -33,7 +33,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +44,7 @@ import org.w3c.dom.Node;
  *
  * @author Nicolas Magré
  */
-public class Kinopoisk extends MovieScrapper {
+public class KinopoiskScrapper extends MovieScrapper {
 
   private static final String host = "www.kinopoisk.ru";
   private static final String name = "Kinopoisk";
@@ -65,8 +64,8 @@ public class Kinopoisk extends MovieScrapper {
 
   }
 
-  public Kinopoisk() {
-    super(LocaleUtils.AvailableLanguages.ru);
+  public KinopoiskScrapper() {
+    super(AvailableLanguages.ru);
   }
 
   @Override
@@ -80,18 +79,18 @@ public class Kinopoisk extends MovieScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return LocaleUtils.AvailableLanguages.ru.getLocale();
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.ru;
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
+  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/s/type/film/list/1/find/" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
     // select movie results
     List< Node> nodes = XPathUtils.selectNodes("//DIV[@class='search_results search_results_last']//DIV[contains(@class,'element')]", dom);
@@ -115,8 +114,8 @@ public class Kinopoisk extends MovieScrapper {
       }
 
       int id = findKinopoiskId(XPathUtils.getAttribute("href", XPathUtils.selectNode("P/A", infoNode)));
-      // Impossible to get title (thera are two title) wich contains image src :(
-      URL thumb = new URL(imgHost + id + ".jpg");
+      // Impossible to get title (thera are two title attribute) which contains image src :(
+      URL thumb = new URL(imgHost + id + ".jpg");// FIXME trouver un moyen de by-passer ce prob pour pas avoir l'image "no image' de kinopoisk
 
       results.add(new Movie(null, new IdInfo(id, ScrapperUtils.AvailableApiIds.KINOPOISK), title, origtitle, thumb, year));
     }
@@ -125,7 +124,7 @@ public class Kinopoisk extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/film/" + movie.getMediaId());
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
@@ -136,14 +135,14 @@ public class Kinopoisk extends MovieScrapper {
     List<String> studios = new ArrayList<String>();
 
     Node titleNode = XPathUtils.selectNode("//H1[@class='moviename-big'][@itemprop='name']", dom);
-    if (movie.getName() == null) {
+    if (titleNode != null) {
       fields.put(MovieProperty.title, titleNode.getTextContent());
     } else {
       fields.put(MovieProperty.title, movie.getName());
     }
 
     titleNode = XPathUtils.selectNode("//SPAN[@itemprop='alternativeHeadline']", dom);
-    if (movie.getOriginalTitle() == null) {
+    if (titleNode != null) {
       fields.put(MovieProperty.originalTitle, titleNode.getTextContent());
     } else {
       fields.put(MovieProperty.title, movie.getOriginalTitle());
@@ -213,6 +212,11 @@ public class Kinopoisk extends MovieScrapper {
             fields.put(MovieProperty.certificationCode, XPathUtils.getAttribute("href", tmpaanode).replaceAll(".*rn/", "").replace("/", ""));
           }
 
+          tmpaanode = XPathUtils.selectNode("TD/SPAN", node);
+          if (tmpaanode != null) {
+            fields.put(MovieProperty.certification, tmpaanode.getTextContent().trim());
+          }
+
           break;
         case время:// runtime
           String runtime = XPathUtils.selectString("TD[@id='runtime']", node);
@@ -226,9 +230,38 @@ public class Kinopoisk extends MovieScrapper {
       }
     }
 
+    // Rating
+    Node rateNode = XPathUtils.selectNode("//SPAN[@class = 'rating_ball']", dom);
+    if (rateNode != null) {
+      String rate = rateNode.getTextContent().trim();
+      try {
+        double rating = Double.parseDouble(rate);
+        fields.put(MovieProperty.rating, "" + rating);
+      } catch (Exception ex) {
+      }
+    }
+
+    // vote
+    rateNode = XPathUtils.selectNode("//SPAN[@class = 'ratingCount']", dom);
+    if (rateNode != null) {
+      fields.put(MovieProperty.votes, rateNode.getTextContent());
+    }
+
     Node synopNode = XPathUtils.selectNode("//DIV[@class='brand_words'][@itemprop='description']", dom);
     if (synopNode != null) {
       fields.put(MovieProperty.overview, synopNode.getTextContent());
+    }
+
+    // Studios
+    try {
+      searchUrl = new URL("http", host, "/film/" + movie.getMediaId() + "/studio/");
+      dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+      nodes = XPathUtils.selectNodes("//TABLE//TR/TD/B[text() = \"Производство:\"]/../../..//TR/TD/A", dom);
+      for (Node node : nodes) {
+        studios.add(node.getTextContent().trim());
+      }
+    } catch (Exception ex) {
+
     }
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
@@ -243,7 +276,7 @@ public class Kinopoisk extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie search, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie search, AvailableLanguages language) throws Exception {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 

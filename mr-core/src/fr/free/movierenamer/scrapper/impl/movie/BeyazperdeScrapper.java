@@ -20,7 +20,7 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.utils.LocaleUtils;
-import java.util.Locale;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.regex.Pattern;
 
 /**
@@ -74,8 +74,8 @@ public final class BeyazperdeScrapper extends AlloGroupScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return LocaleUtils.AvailableLanguages.tr.getLocale();
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.tr;
   }
 
   @Override

@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,14 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.StringUtils;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * Class TvShowInfo
@@ -61,32 +62,37 @@ public class TvShowInfo extends MediaInfo {
     this.fields = null;
   }
 
-  public TvShowInfo(Map<TvShowProperty, String> fields) {
-    this.fields = (fields != null) ? new EnumMap<TvShowProperty, String>(fields) : new HashMap<TvShowInfo.TvShowProperty, String>();
+  public TvShowInfo(final Map<TvShowProperty, String> fields) {
+    this.fields = (fields != null) ? new EnumMap<TvShowProperty, String>(fields) : new EnumMap<TvShowProperty, String>(TvShowProperty.class);
   }
 
-  private String get(TvShowProperty key) {
+  private String get(final TvShowProperty key) {
     return (fields != null) ? fields.get(key) : null;
+  }
+
+  @Override
+  public InfoType getInfoType() {
+    return InfoType.TVSHOW;
   }
 
   public Integer getId() {
     try {
       return Integer.parseInt(get(TvShowProperty.id));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public List<String> getGenres() {
     return split(get(TvShowProperty.genre));
   }
 
-  protected List<String> split(String values) {
-    List<String> items = new ArrayList<String>();
+  protected List<String> split(final String values) {// FIXME ya pas déjà ça dans StringUtils ?
+    final List<String> items = new ArrayList<String>();
     if (values != null && values.length() > 0) {
       for (String it : values.split("[|]")) {
         it = it.trim();
-        if (it.length() > 0) {
+        if (!it.isEmpty()) {
           items.add(it);
         }
       }
@@ -101,17 +107,17 @@ public class TvShowInfo extends MediaInfo {
   public Integer getImdbId() {
     try {
       return Integer.parseInt(get(TvShowProperty.IMDB_ID).substring(2));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Locale getLanguage() {
     try {
       return new Locale(get(TvShowProperty.language));
     } catch (Exception e) {
-      return null;
     }
+    return null;
   }
 
   public String getOverview() {
@@ -121,17 +127,17 @@ public class TvShowInfo extends MediaInfo {
   public Double getRating() {
     try {
       return Double.parseDouble(get(TvShowProperty.rating));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Integer getVotes() {
     try {
       return Integer.parseInt(get(TvShowProperty.votes));
-    } catch (Exception e) {
-      return null;
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public String getRuntime() {
@@ -149,13 +155,20 @@ public class TvShowInfo extends MediaInfo {
   public URI getPosterPath() {
     try {
       return new URL(get(TvShowProperty.posterPath)).toURI();
-    } catch (Exception e) {
-      return null;
+    } catch (MalformedURLException e) {
+    } catch (URISyntaxException e) {
     }
+    return null;
   }
 
   @Override
-  public String getRenamedTitle(String format) {
+  public String getRenamedTitle(final String format) {// TODO
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public String getRenamedTitle(String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
+          boolean reservedCharacter, boolean rmDupSpace, boolean trim) {// TODO
     // TODO Auto-generated method stub
     return getName();
   }

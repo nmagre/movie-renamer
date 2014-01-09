@@ -17,12 +17,14 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator;
 
+import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
+import com.alee.laf.toolbar.WebToolBar;
 import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
@@ -30,25 +32,34 @@ import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.IProperty;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UIScrapper;
+import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.ITestActionListener;
+import fr.free.movierenamer.ui.swing.dialog.SettingsHelpDialog;
+import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -66,41 +77,80 @@ public class SettingPanelGen extends PanelGenerator {
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebComboBox> comboboxs;
   private final String settingsi18n = "settings.";
+  private final MovieRenamer mr;
 
-  public SettingPanelGen() {
+  public SettingPanelGen(MovieRenamer mr) {
     super();
+    this.mr = mr;
     setLayout(new GridBagLayout());
   }
 
   @SuppressWarnings("unchecked")
-  public void addSettings(List<List<IProperty>> settingsDef, boolean tabbed) {
+  public void addSettings(Settings.SettingsType type, Map<Settings.SettingsSubType, List<IProperty>> settingsDef, boolean tabbed) {
 
     checkboxs = new HashMap<>();
     fields = new HashMap<>();
     comboboxs = new HashMap<>();
     WebTabbedPane tabbedPane = new WebTabbedPane();
 
-    for (List<IProperty> group : settingsDef) {
+    for (List<IProperty> group : settingsDef.values()) {
       int level = 1;
       WebPanel panel = null;
-
-      String type = group.get(0).getType().name();
-      String subtype = group.get(0).getSubType().name();
-      if (group.get(0).getType().equals(Settings.SettingsType.RENAME) && !group.get(0).getSubType().equals(Settings.SettingsSubType.GENERAL)) {
-        panel = new WebPanel();
-        panel.setLayout(new GridBagLayout());
-        if (tabbedPane.getTabCount() == 0) {
-          add(createTitle(settingsi18n + type, settingsi18n + type + "." + subtype, true), getTitleConstraint());
-        }
-      } else {
-        add(createTitle(settingsi18n + subtype, settingsi18n + type + "." + subtype, true), getTitleConstraint());
-      }
-
       boolean hasChild = false;
       boolean isEnabled = false;
+      boolean createTitle = true;
       final List<JComponent> childs = new ArrayList<>();
 
-      for (IProperty property : group) {
+      for (final IProperty property : group) {
+        if (createTitle) {
+          Settings.SettingsSubType subType = property.getSubType();
+          String ssubType = subType.name();
+          if (type.equals(Settings.SettingsType.RENAME) && !subType.equals(Settings.SettingsSubType.GENERAL)) {
+            panel = new WebPanel();
+            panel.setLayout(new GridBagLayout());
+            if (tabbedPane.getTabCount() == 0) {
+              add(createTitle(settingsi18n + ssubType, true, type, subType), getTitleConstraint());
+            }
+          } else {
+            add(createTitle(settingsi18n + ssubType, true, type, subType), getTitleConstraint());
+          }
+          createTitle = false;
+        }
+
+        // Create settings test button + textfield
+        if (property instanceof UITestSettings) {
+          WebButton button = (WebButton) createComponent(Component.BUTTON, settingsi18n + "test");
+          final JComponent component = createComponent(Component.FIELD, null);
+          button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              UITestSettings testSettings = (UITestSettings) property;
+              ITestActionListener actionListener = testSettings.getActionListener();
+              actionListener.actionPerformed(e);
+              ((WebTextField) component).setText(actionListener.getResult());
+              ((WebTextField) component).setEditable(false);
+            }
+
+          });
+          GridBagConstraints ctr = getGroupConstraint(0, false, false, level);
+          ctr.insets.top += 25;
+          if (tabbed && panel != null) {
+            panel.add(button, ctr);
+          } else {
+            add(button, ctr);
+          }
+
+          ctr = getGroupConstraint(1, true, true, level);
+          ctr.insets.top += 25;
+          if (tabbed && panel != null) {
+            panel.add(component, ctr);
+          } else {
+            add(component, ctr);
+          }
+          continue;
+        }
+
         GridBagConstraints constraint = getGroupConstraint(level);
         final JComponent component;
         String title = (settingsi18n + property.name().toLowerCase());// FIXME i18n
@@ -108,7 +158,10 @@ public class SettingPanelGen extends PanelGenerator {
         if (property.getVclass().equals(Boolean.class)) {
 
           // Create checkbox for boolean value
-          component = createComponent(Component.CHECKBOX, title);
+          component = createComponent(Component.CHECKBOX, "");
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+          label.setMargin(0, 25, 0, 0);
+          ((WebCheckBox) component).add(label);
           checkboxs.put(property, (WebCheckBox) component);
 
         } else if (property.getVclass().equals(String.class) || property.getDefaultValue() instanceof Number) {
@@ -130,7 +183,7 @@ public class SettingPanelGen extends PanelGenerator {
           // Enum
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
-          //component.setPreferredSize(comboboxDim);
+
           DefaultComboBoxModel<IIconList> model = new DefaultComboBoxModel<>();
 
           if (tabbed && panel != null) {
@@ -164,7 +217,7 @@ public class SettingPanelGen extends PanelGenerator {
               model.setSelectedItem(iicon);
             }
           }
-          ((WebComboBox) component).setRenderer(UIUtils.iconListRenderer);
+          ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
           ((WebComboBox) component).setModel(model);
           comboboxs.put(property, ((WebComboBox) component));
 
@@ -201,7 +254,7 @@ public class SettingPanelGen extends PanelGenerator {
           }
 
           ((WebComboBox) component).setModel(model);
-          ((WebComboBox) component).setRenderer(UIUtils.iconListRenderer);
+          ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
           comboboxs.put(property, ((WebComboBox) component));
         } else {
           UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getVclass()));
@@ -242,10 +295,8 @@ public class SettingPanelGen extends PanelGenerator {
     if (tabbed) {
       add(tabbedPane, getGroupConstraint(0, true, true, 1));
     }
-    add(new JPanel(), getDummyPanelConstraint());
 
-    repaint();
-    validate();
+    add(new JPanel(), getDummyPanelConstraint());
   }
 
   public void reset() {
@@ -282,6 +333,54 @@ public class SettingPanelGen extends PanelGenerator {
         }
       }
     }
+  }
+
+  /**
+   * Create title toolbar with help button
+   *
+   * @param title
+   * @param i18n
+   * @param type
+   * @param subType
+   * @return WebToolBar
+   */
+  protected WebToolBar createTitle(String title, final boolean i18n, final Settings.SettingsType type, final Settings.SettingsSubType subType) {
+    WebToolBar toolbar = createTitle(title, i18n);
+
+    final WebButton button = UIUtils.createButton("setting.help", ImageUtils.HELP_16, false, false);// FIXME i18n
+    button.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        try {
+          SettingsHelpDialog dialog = new SettingsHelpDialog(mr, type, subType);
+          dialog.getHelp();
+          dialog.setVisible(true);
+        } catch (MalformedURLException ex) {
+          Logger.getLogger(SettingPanelGen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    });
+    toolbar.addToEnd(button);
+
+    return toolbar;
+  }
+
+  public void createTest(final ITestActionListener listener) {
+    int level = 1;
+    WebButton button = (WebButton) createComponent(Component.BUTTON, settingsi18n + "test");
+    final JComponent component = createComponent(Component.FIELD, null);
+    button.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        listener.actionPerformed(e);
+        ((WebTextField) component).setText(listener.getResult());
+      }
+
+    });
+    add(button, getGroupConstraint(0, false, false, level));
+
+    add(component, getGroupConstraint(1, true, true, level));
   }
 
   public Map<IProperty, WebCheckBox> getCheckbox() {

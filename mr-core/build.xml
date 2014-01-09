@@ -2,8 +2,10 @@
 <project name="Movie_Renamer-core" basedir=".." default="jar-core">
   <description>Build Movie Renamer core</description>
 
+  <dirname property="imported.basedir" file="${ant.file.imported}"/>
+
   <!-- set global properties for this build -->
-  <property name="dir-core" location="mr-core" />
+  <property name="dir-core" location="${imported.basedir}/mr-core" />
   <property name="src-core" location="${dir-core}/src" relative="yes" />
   <property name="lib-core" location="${dir-core}/lib" relative="yes" />
   <property name="build-core" location="${dir-core}/build" relative="yes" />
@@ -24,14 +26,22 @@
     <mkdir dir="${javadoc-core}" />
   </target>
 
-  <target name="init-core" depends="clean-core">
+  <target name="init-core">
     <mkdir dir="${lib-core}" />
     <mkdir dir="${build-core}" />
   </target>
 
-  <target name="clean-core">
+  <target name="clean">
+    <echo>Clean core</echo>
     <delete dir="${build-core}" />
     <delete file="${jarfile-core}" />
+  </target>
+
+  <target name="check-change">
+    <uptodate property="no-change" targetfile="${jarfile-core}">
+      <srcfiles dir="${src-core}" includes="**/*.java" />
+      <srcfiles dir="${src-core}" includes="**/*.properties" />
+    </uptodate>
   </target>
 
   <target name="compile-core" depends="init-core" description="compile the source">
@@ -41,7 +51,7 @@
     </javac>
   </target>
 
-  <target name="jar-core" depends="compile-core">
+  <target name="jar-core" depends="check-change,compile-core" unless="no-change">
     <echo>copying *.propertie files and misc ...</echo>
     <copy todir="${build-core}" overwrite="true">
       <fileset dir="${src-core}">

@@ -24,8 +24,10 @@ import java.util.Arrays;
  * Class Hyperlink
  *
  * @author Simon QUÉMÉNEUR
+ * @author Nicolas Magré
  */
 public abstract class Hyperlink extends SearchResult {
+
   private static final long serialVersionUID = 1L;
   protected URL url;
 
@@ -49,12 +51,11 @@ public abstract class Hyperlink extends SearchResult {
   // throw new RuntimeException(e);
   // }
   // }
-
   @Override
   public boolean equals(Object object) {
     if (object instanceof Hyperlink) {
       Hyperlink other = (Hyperlink) object;
-      return title.equals(other.title) && ((url == null) ? "" : url.toString()).toString().equals((other.url == null) ? "" : other.url.toString());
+      return title.equals(other.title) && ((url == null) ? "" : url.toString()).equals((other.url == null) ? "" : other.url.toString());
     }
 
     return false;
@@ -62,8 +63,8 @@ public abstract class Hyperlink extends SearchResult {
 
   @Override
   public int hashCode() {
-    return Arrays.hashCode(new Object[] {
-        title, (url == null) ? null : url.toString()
+    return Arrays.hashCode(new Object[]{
+      title, (url == null) ? null : url.toString()
     });
   }
 
@@ -71,7 +72,6 @@ public abstract class Hyperlink extends SearchResult {
   // public Hyperlink clone() {
   // return new Hyperlink(this);
   // }
-
   @Override
   public String toString() {
     if (url != null) {

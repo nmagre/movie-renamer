@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,11 @@ public class MediaTag implements Serializable {
 
   private MediaInfo mediaInfo;
   private final File mediaFile;
+  private String containerFormat;
+  private Long duration;
+  private MediaVideo mediaVideo;
+  private List<MediaAudio> mediaAudio;
+  private List<MediaSubTitle> subTitles;
   public final boolean libMediaInfo = Settings.MEDIAINFO;
 
   public enum TagType {
@@ -49,9 +54,10 @@ public class MediaTag implements Serializable {
 
   public enum Tags {
 
-    ContainerFormat(StreamKind.General, true, "Codec/Extensions", "Format"),
-    //    FileSize(StreamKind.General, Long.class, "FileSize/String4", "FileSize/String"),
+    // General
+    ContainerFormat(StreamKind.General, "Format_Commercial", "Format", "Codec"),
     Duration(StreamKind.General, Long.class, "Duration"),
+    // Video
     VideoCodec(StreamKind.Video, true, "Encoded_Library/Name", "CodecID/Hint", "Format"),
     VideoFrameRate(StreamKind.Video, Double.class, "FrameRate"),
     VideoScanType(StreamKind.Video, "ScanType"),
@@ -59,6 +65,7 @@ public class MediaTag implements Serializable {
     VideoHeight(StreamKind.Video, Integer.class, "Height"),
     VideoWidth(StreamKind.Video, Integer.class, "Width"),
     VideoAspectRatio(StreamKind.Video, Float.class, "DisplayAspectRatio"),
+    // Audio
     AudioStreamCount(StreamKind.Audio, Integer.class, "StreamCount"),
     AudioCodec(StreamKind.Audio, "CodecID/Hint", "Format"),
     AudioLanguage(StreamKind.Audio, "Language/String3"),
@@ -66,6 +73,7 @@ public class MediaTag implements Serializable {
     AudioBitRateMode(StreamKind.Audio, "BitRate_Mode"),
     AudioBitRate(StreamKind.Audio, Integer.class, "BitRate"),
     AudioTitle(StreamKind.Audio, "Title"),
+    // Text
     TextStreamCount(StreamKind.Text, Integer.class, "StreamCount"),
     TextTitle(StreamKind.Text, "Title"),
     TextLanguage(StreamKind.Text, "Language/String3");
@@ -74,18 +82,17 @@ public class MediaTag implements Serializable {
     private boolean getFirst = false;
     private Class<?> clazz = String.class;
 
-    Tags(StreamKind kind, String... keys) {
-      this.kind = kind;
-      this.keys = keys;
+    private Tags(final StreamKind kind, final String... keys) {
+      this(kind, String.class, keys);
     }
 
-    Tags(StreamKind kind, Class<?> clazz, String... keys) {
+    private Tags(final StreamKind kind, final Class<?> clazz, final String... keys) {
       this.kind = kind;
       this.clazz = clazz;
       this.keys = keys;
     }
 
-    Tags(StreamKind kind, boolean getFirst, String... keys) {
+    private Tags(final StreamKind kind, final boolean getFirst, final String... keys) {
       this.kind = kind;
       this.keys = keys;
       this.getFirst = getFirst;
@@ -108,14 +115,42 @@ public class MediaTag implements Serializable {
     }
   }
 
-  public MediaTag(File mediaFile) {
+  /**
+   * This conversion is WRONG. E.g 3 channels can be "2.1" or "3.0", ...
+   */
+  public enum ConvertChannels {
+
+    _1("1.0"),
+    _2("2.0"),
+    _3("2.1"),
+    _4("3.1"),
+    // Surround
+    _5("4.1"),
+    _6("5.1"),
+    _7("6.1"),
+    _8("7.1"),
+    _9("7.2");
+
+    private final String format;
+
+    private ConvertChannels(final String format) {
+      this.format = format;
+    }
+
+    public String getFormat() {
+      return format;
+    }
+  }
+
+  public MediaTag(final File mediaFile) {
     this.mediaFile = mediaFile;
     mediaInfo = null;
   }
 
   private synchronized MediaInfo getMediaInfo() {
+
     if (mediaInfo == null) {
-      MediaInfo newMediaInfo = new MediaInfo();
+      final MediaInfo newMediaInfo = new MediaInfo();
       if (!newMediaInfo.open(mediaFile)) {
         throw new RuntimeException("Cannot open media file: " + mediaFile);
       }
@@ -126,15 +161,22 @@ public class MediaTag implements Serializable {
     return mediaInfo;
   }
 
-  private Object getMediaInfo(Tags tag) {
+  private Object getMediaInfo(final Tags tag) {
     return getMediaInfo(tag, 0);
   }
 
-  private Object getMediaInfo(Tags tag, int streamNumber) {
-    for (String key : tag.getKeys()) {
-      String value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
+  private Object getMediaInfo(final Tags tag, final int streamNumber) {
 
-      String nvalue = value.length() > 0 ? new Scanner(value).next() : " ";
+    String value, nvalue;
+
+    for (String key : tag.getKeys()) {
+      value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
+
+      if (value.isEmpty()) {
+        continue;
+      }
+
+      nvalue = new Scanner(value).next();
 
       if (tag.getVClass().equals(Integer.class)) {
         return NumberUtils.isNumeric(nvalue) ? Integer.parseInt(nvalue) : 0;
@@ -157,78 +199,134 @@ public class MediaTag implements Serializable {
   }
 
   public String getContainerFormat() {
+    if (containerFormat != null) {
+      return containerFormat;
+    }
+
     if (!libMediaInfo) {
       return StringUtils.EMPTY;
     }
-    return getMediaInfo(Tags.ContainerFormat).toString();
+    containerFormat = getMediaInfo(Tags.ContainerFormat).toString();
+    return containerFormat;
+  }
+
+  public void setContainerFormat(final String containerFormat) {
+    this.containerFormat = containerFormat;
   }
 
   public Long getDuration() {
+    if (duration != null) {
+      return duration;
+    }
+
     long rvalue = 0L;
     if (!libMediaInfo) {
       return rvalue;
     }
 
-    Object value = getMediaInfo(Tags.Duration);
+    final Object value = getMediaInfo(Tags.Duration);
     if (value instanceof Long) {
       rvalue = (Long) value;
+      duration = rvalue;
     }
+
     return rvalue;
   }
 
+  public void setDuration(final Long duration) {
+    this.duration = duration;
+  }
+
   public MediaVideo getMediaVideo() {
-    MediaVideo mediaVideo = new MediaVideo();
+    if (mediaVideo != null) {
+      return mediaVideo;
+    }
+
+    mediaVideo = new MediaVideo();
+
     if (!libMediaInfo) {
       return mediaVideo;
     }
+
     Object value = getMediaInfo(Tags.VideoAspectRatio);
     if (value instanceof Float) {
       mediaVideo.setAspectRatio((Float) value);
     }
+
     value = getMediaInfo(Tags.VideoFrameCount);
     if (value instanceof Long) {
       mediaVideo.setFrameCount((Long) value);
     }
+
     value = getMediaInfo(Tags.VideoFrameRate);
     if (value instanceof Double) {
       mediaVideo.setFrameRate((Double) value);
     }
+
     value = getMediaInfo(Tags.VideoHeight);
     if (value instanceof Integer) {
       mediaVideo.setHeight((Integer) value);
     }
+
     value = getMediaInfo(Tags.VideoWidth);
     if (value instanceof Integer) {
       mediaVideo.setWidth((Integer) value);
     }
+
     mediaVideo.setScanType(getMediaInfo(Tags.VideoScanType).toString());
     mediaVideo.setCodec(getMediaInfo(Tags.VideoCodec).toString());
 
     return mediaVideo;
   }
 
+  public void setMediaVideo(final MediaVideo mediaVideo) {
+    this.mediaVideo = mediaVideo;
+  }
+
   public List<MediaAudio> getMediaAudios() {
-    List<MediaAudio> mediaAudio = new ArrayList<MediaAudio>();
+    if (mediaAudio != null) {
+      return mediaAudio;
+    }
+
+    mediaAudio = new ArrayList<MediaAudio>();
     if (!libMediaInfo) {
       return mediaAudio;
     }
 
-    int count = (Integer) getMediaInfo(Tags.AudioStreamCount);
+    final Object obj = getMediaInfo(Tags.AudioStreamCount);
+
+    if (obj.toString().isEmpty() || !(obj instanceof Integer)) {
+      return mediaAudio;
+    }
+
+    final int count = (Integer) obj;
 
     Object intObj;
+    MediaAudio maudio;
+    Locale lang;
+
     for (int i = 0; i < count; i++) {
-      MediaAudio maudio = new MediaAudio(i);
+      maudio = new MediaAudio(i);
       maudio.setCodec(getMediaInfo(Tags.AudioCodec, i).toString());
-      Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.AudioLanguage, i).toString());
+      lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.AudioLanguage, i).toString());
+
       if (lang != null) {
         maudio.setLanguage(lang);
       }
+
       intObj = getMediaInfo(Tags.AudioChannels, i);
       if (intObj instanceof Integer) {
-        maudio.setChannel((Integer) intObj);
+        String value = String.valueOf((Integer) intObj);
+        try {
+          value = ConvertChannels.valueOf("_" + intObj).getFormat();
+        } catch (Exception e) {
+        }
+
+        maudio.setChannel(value);
       }
       maudio.setBitRateMode(getMediaInfo(Tags.AudioBitRateMode, i).toString());
       intObj = getMediaInfo(Tags.AudioBitRate, i);
+
       if (intObj instanceof Integer) {
         maudio.setBitRate((Integer) intObj);
       }
@@ -240,17 +338,29 @@ public class MediaTag implements Serializable {
     return mediaAudio;
   }
 
+  public void setMediaAudio(final List<MediaAudio> mediaAudio) {
+    this.mediaAudio = mediaAudio;
+  }
+
   public List<MediaSubTitle> getMediaSubTitles() {
-    List<MediaSubTitle> subTitles = new ArrayList<MediaSubTitle>();
+    if (subTitles != null) {
+      return subTitles;
+    }
+
+    subTitles = new ArrayList<MediaSubTitle>();
     if (!libMediaInfo) {
       return subTitles;
     }
 
+    int count;
+    MediaSubTitle subTitle;
+    Locale lang;
+
     if (getMediaInfo(Tags.TextStreamCount) instanceof Integer) {
-      int count = (Integer) getMediaInfo(Tags.TextStreamCount);
+      count = (Integer) getMediaInfo(Tags.TextStreamCount);
       for (int i = 0; i < count; i++) {
-        MediaSubTitle subTitle = new MediaSubTitle(i);
-        Locale lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.TextLanguage, i).toString());
+        subTitle = new MediaSubTitle(i);
+        lang = LocaleUtils.getLanguageMap().get(getMediaInfo(Tags.TextLanguage, i).toString());
         subTitle.setLanguage(lang);
         subTitle.setTitle(getMediaInfo(Tags.TextTitle, i).toString());
         subTitles.add(subTitle);
@@ -260,7 +370,11 @@ public class MediaTag implements Serializable {
     return subTitles;
   }
 
-  public String getTagString(Tags tag, String separator, int limit) {
+  public void setMediaSubtitles(final List<MediaSubTitle> subTitles) {
+    this.subTitles = subTitles;
+  }
+
+  public String getTagString(final Tags tag, final String separator, final int limit) {
     if (!libMediaInfo) {
       return StringUtils.EMPTY;
     }
@@ -271,8 +385,9 @@ public class MediaTag implements Serializable {
         if (getMediaInfo(Tags.AudioStreamCount) instanceof Integer) {
           count = (Integer) getMediaInfo(Tags.AudioStreamCount);
         }
+
         if (tag.equals(Tags.AudioStreamCount)) {
-          return "" + count;
+          return String.valueOf(count);
         }
         break;
       case Text:
@@ -280,16 +395,18 @@ public class MediaTag implements Serializable {
           count = (Integer) getMediaInfo(Tags.TextStreamCount);
         }
         if (tag.equals(Tags.TextStreamCount)) {
-          return "" + count;
+          return String.valueOf(count);
         }
         break;
       default:
         return getMediaInfo(tag).toString();
     }
 
-    StringBuilder res = new StringBuilder();
+    final StringBuilder res = new StringBuilder();
+    String info;
+
     for (int i = 0; i < count; i++) {
-      String info = getMediaInfo(tag, i).toString();
+      info = getMediaInfo(tag, i).toString();
       if (!info.equals(StringUtils.EMPTY)) {
         res.append(info);
         if (i + 1 < count && limit <= 0 || i < limit - 1) {

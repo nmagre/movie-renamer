@@ -30,6 +30,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 
 /**
@@ -48,7 +49,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    tmdb.setLanguage(Locale.CHINESE);
+    tmdb.setLanguage(LocaleUtils.AvailableLanguages.zh);
     List<Movie> results = tmdb.search("pulp fiction");
 
     Movie movie = results.get(0);
@@ -61,7 +62,7 @@ public class TMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void getMovieInfo() throws Exception {
-    tmdb.setLanguage(Locale.GERMAN);
+    tmdb.setLanguage(LocaleUtils.AvailableLanguages.de);
     MovieInfo movie = tmdb.getInfo(new Movie(null, new IdInfo(1858, ScrapperUtils.AvailableApiIds.TMDB), null, null, null, -1));
 
     Assert.assertEquals(Integer.valueOf(1858), movie.getId(ScrapperUtils.AvailableApiIds.TMDB));

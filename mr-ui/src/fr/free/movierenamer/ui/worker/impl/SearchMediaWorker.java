@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,19 +22,18 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.SearchScrapper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.Sorter;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import javax.swing.JOptionPane;
 
 /**
  * Class SearchMediaWorker
@@ -48,7 +47,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   private final SearchScrapper<? extends Hyperlink> scrapper;
   private final WebList searchResultList;
   private final ImageListModel<UISearchResult> searchResultModel;
-  private final Dimension searchListDim = new Dimension(45, 65);
+  //private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
    * Constructor arguments
@@ -65,14 +64,14 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   }
 
   @Override
-  @SuppressWarnings("unchecked")// FIXME
+  @SuppressWarnings("unchecked")
   public List<UISearchResult> executeInBackground() throws Exception {
     List<UISearchResult> results = new ArrayList<>();
     List<? extends Media> res;
 
     if (media != null && scrapper != null) {
       String search = media.getSearch();
-      res = (List<? extends Media>) scrapper.search(search);// FIXME
+      res = (List<? extends Media>) scrapper.search(search);
       int count = res.size();
 
       for (int i = 0; i < count; i++) {
@@ -81,6 +80,19 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
         }
 
         results.add(new UISearchResult(res.get(i), scrapper));
+      }
+    }
+
+    Settings settings = Settings.getInstance();
+    // Sort search results
+    if (settings.isSearchOrder()) {
+      Sorter.sortAccurate(results, media.getSearch(), media.getYear(), settings.getSearchOrderThreshold());
+    }
+
+    int nbres = Settings.getInstance().getSearchNbResult();
+    if (results.size() > nbres) {
+      while (results.size() > nbres) {
+        results.remove(results.size() - 1);
       }
     }
 
@@ -100,34 +112,10 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
       return;
     }
 
-    // Sort search results
-    Sorter.SorterType type = UISettings.getInstance().coreInstance.getSearchSorter();
-    UISettings.LOGGER.log(Level.INFO, String.format("Sort type %s, year %s , search %s", type.name(), media.getYear(), media.getSearch()));
-    switch (type) {
-      case ALPHABETIC:
-      case LENGTH:
-      case YEAR:
-        Sorter.sort(results, type);
-        break;
-      case YEAR_ROUND:
-      case ALPHA_YEAR:
-        Sorter.sort(results, type, media.getYear());
-        break;
-      case SIMMETRICS:
-        UISettings.LOGGER.log(Level.INFO, "Sort SIMMETRICS");
-        Sorter.sort(results, media.getSearch());
-        break;
-      case LEVEN_YEAR:
-        Sorter.sort(results, media.getYear(), media.getSearch());
-        break;
-      default:
-      // Do nothing
-    }
-
     searchResultModel.addAll(results);
 
     if (searchResultModel.isEmpty()) {
-      JOptionPane.showMessageDialog(mr, ("noResult"), ("warning"), JOptionPane.ERROR_MESSAGE);// FIXME tooltip + i18n
+      UIUtils.showNoResultNotification(media.getSearch());
     } else {
       if (UISettings.getInstance().isSelectFirstResult()) {
         searchResultList.setSelectedIndex(0);

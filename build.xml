@@ -3,8 +3,9 @@
   <description>Build the project Movie Renamer</description>
 
   <import file="mr-core/build.xml"/>
+  <import file="mr-updater/build.xml"/>
 
-  <target name="mr" depends="jar-core">
+  <target name="mr" depends="jar-core,jar-updater">
     <subant target="jar">
       <fileset dir="mr-ui" includes="build.xml"/>
     </subant>
@@ -14,8 +15,15 @@
     <echo>Build core done</echo>
   </target>
 
-  <target name="cleanall" depends="clean-core">
+  <target name="updater" depends="jar-updater">
+    <echo>Build updater done</echo>
+  </target>
+
+  <target name="clean">
+    <echo>Clean all Movie Renamer project</echo>
     <subant target="clean">
+      <fileset dir="mr-core" includes="build.xml"/>
+      <fileset dir="mr-updater" includes="build.xml"/>
       <fileset dir="mr-ui" includes="build.xml"/>
     </subant>
   </target>

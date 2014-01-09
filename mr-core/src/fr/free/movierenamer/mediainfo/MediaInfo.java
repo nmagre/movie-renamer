@@ -1,18 +1,63 @@
-// FIXME  It comes from where ?
+/**
+ * Copyright (C) rednoah
+ *
+ * This file is part of FileBot.
+ *
+ * FileBot is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * FileBot is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * FileBot. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package fr.free.movierenamer.mediainfo;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.WString;
-import fr.free.movierenamer.exception.MediaInfoException;
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-public class MediaInfo implements Closeable {
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
+import com.sun.jna.Pointer;
+import com.sun.jna.WString;
+import fr.free.movierenamer.exception.MediaInfoException;
+import java.io.Serializable;
+
+/**
+ * Class MediaInfoLibrary
+ *
+ * @author rednoah
+ * @see
+ * http://sourceforge.net/p/filebot/code/HEAD/tree/trunk/source/net/sourceforge/filebot/mediainfo/MediaInfo.java
+ */
+public class MediaInfo implements Closeable, Serializable {
+
+  static {
+    try {
+      // libmediainfo for linux depends on libzen
+      if (Platform.isLinux()) {
+        // We need to load dependencies first, because we know where our native libs are (e.g. Java Web Start Cache).
+        // If we do not, the system will look for dependencies, but only in the library path.
+        NativeLibrary.getInstance("zen");
+      }
+    } catch (Throwable e) {
+      Logger.getLogger(MediaInfo.class.getName()).warning("Failed to preload libzen");
+    }
+  }
 
   private Pointer handle;
 
@@ -25,7 +70,16 @@ public class MediaInfo implements Closeable {
   }
 
   public synchronized boolean open(File file) {
-    return file.isFile() && MediaInfoLibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath())) > 0;
+    if (file == null || !file.isFile()) {
+      return false;
+    }
+
+    // MacOS filesystem may require NFD unicode decomposition (forcing NFD seems to work for System.out() but passing to libmediainfo is still not working)
+    String path = file.getAbsolutePath();
+    if (Platform.isMac()) {
+      path = Normalizer.normalize(path, Form.NFD);
+    }
+    return MediaInfoLibrary.INSTANCE.Open(handle, new WString(path)) > 0;
   }
 
   public synchronized String inform() {
@@ -118,20 +172,13 @@ public class MediaInfo implements Closeable {
   }
 
   @Override
-  protected void finalize() throws Throwable {
-    super.finalize();
+  protected void finalize() {
     dispose();
   }
 
   public enum StreamKind {
 
-    General,
-    Video,
-    Audio,
-    Text,
-    Chapters,
-    Image,
-    Menu;
+    General, Video, Audio, Text, Chapters, Image, Menu;
   }
 
   public enum InfoKind {
@@ -197,6 +244,22 @@ public class MediaInfo implements Closeable {
       return MediaInfoLibrary.INSTANCE.Option(null, new WString(option), new WString(value)).toString();
     } catch (LinkageError e) {
       throw new MediaInfoException(e);
+    }
+  }
+
+  /**
+   * Helper for easy usage
+   */
+  public static Map<StreamKind, List<Map<String, String>>> snapshot(File file) throws IOException {
+    MediaInfo mi = new MediaInfo();
+    try {
+      if (mi.open(file)) {
+        return mi.snapshot();
+      } else {
+        throw new IOException("Failed to open file: " + file);
+      }
+    } finally {
+      mi.close();
     }
   }
 }

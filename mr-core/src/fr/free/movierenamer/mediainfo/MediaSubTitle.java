@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public class MediaSubTitle {
     return stream;
   }
 
-  public MediaSubTitle(int stream) {
+  public MediaSubTitle(final int stream) {
     this.stream = stream;
     title = "?";
     language = Locale.ROOT;
@@ -44,7 +44,7 @@ public class MediaSubTitle {
     return language;
   }
 
-  public void setLanguage(Locale language) {
+  public void setLanguage(final Locale language) {
     this.language = language;
   }
 
@@ -52,7 +52,7 @@ public class MediaSubTitle {
     return title;
   }
 
-  public void setTitle(String title) {
+  public void setTitle(final String title) {
     this.title = title;
   }
 

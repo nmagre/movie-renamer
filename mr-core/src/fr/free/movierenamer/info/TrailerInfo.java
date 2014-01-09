@@ -31,7 +31,7 @@ public class TrailerInfo extends Info {
   private final URL thumb;
   private final URL streamUrl;
 
-  public TrailerInfo(String title, String description, URL thumb, URL streamUrl) {
+  public TrailerInfo(final String title, final String description, final URL thumb, final URL streamUrl) {
     this.title = title;
     this.description = description;
     this.thumb = thumb;

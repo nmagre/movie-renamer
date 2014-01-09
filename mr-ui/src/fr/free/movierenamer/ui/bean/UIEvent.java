@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,9 @@ public final class UIEvent {
     EDIT,
     EDITED,
     RENAME_FILE,
-    RENAME_FILE_DONE
+    RENAME_FILE_DONE,
+    UPDATE_AVAILABLE,
+    NO_UPDATE
   }
 
   public static void addEventListener(Class<? extends IEventListener> clazz, IEventListener listener) {

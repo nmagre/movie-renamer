@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.searchinfo;
 
+import fr.free.movierenamer.utils.Sorter;
 import java.io.Serializable;
 
 /**
@@ -25,7 +26,7 @@ import java.io.Serializable;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class SearchResult implements Serializable {
+public abstract class SearchResult extends Sorter.ISort implements Serializable {
 
   private static final long serialVersionUID = 1L;
   protected String title;
@@ -40,10 +41,12 @@ public abstract class SearchResult implements Serializable {
     this.originalTitle = (originalTitle == null) ? title : originalTitle;
   }
 
+  @Override
   public String getName() {
     return title;
   }
 
+  @Override
   public String getOriginalTitle() {
     return originalTitle;
   }

@@ -24,6 +24,7 @@ import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
 import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
@@ -114,25 +115,27 @@ public final class ScrapperUtils {
     POOR
   }
 
-  public static IdInfo imdbIdLookup(IdInfo id, Movie searchResult) {
+  public static IdInfo imdbIdLookup(final IdInfo id, final Movie searchResult) {
 
-    if (searchResult != null) {
-      if (searchResult.getImdbId() != null) {
-        return searchResult.getImdbId();
-      }
+    if (searchResult != null && searchResult.getImdbId() != null) {
+      return searchResult.getImdbId();
     }
 
     return idLookup(AvailableApiIds.IMDB, id, searchResult);
   }
 
-  public static IdInfo alloIdLookup(IdInfo id, Movie searchResult) {
+  public static IdInfo alloIdLookup(final IdInfo id, final Movie searchResult) {
     return idLookup(AvailableApiIds.ALLOCINE, id, searchResult);
   }
 
-  private static IdInfo idLookup(AvailableApiIds lookupType, IdInfo id, Movie searchResult) {
-    List<IdInfo> ids = new ArrayList<IdInfo>();
+  public static IdInfo kinopoiskIdLookup(final Movie searchResult) {
+    return idLookup(AvailableApiIds.KINOPOISK, null, searchResult);
+  }
+
+  private static IdInfo idLookup(final AvailableApiIds lookupType, final IdInfo id, final Movie searchResult) {
+    final List<IdInfo> ids = new ArrayList<IdInfo>();
     if (searchResult != null) {
-      IdInfo mid = searchResult.getMediaId();
+      final IdInfo mid = searchResult.getMediaId();
       if (mid != null) {
         ids.add(mid);
       }
@@ -147,6 +150,8 @@ public final class ScrapperUtils {
         return getImdbId(ids, searchResult);
       case ALLOCINE:
         return getAlloId(ids, searchResult);
+      case KINOPOISK:
+        return getKinopoiskId(searchResult);
     }
 
     return null;
@@ -154,11 +159,17 @@ public final class ScrapperUtils {
 
   private static IdInfo getIdBySearch(MovieScrapper scrapper, Movie searchResult) {
     try {
-      String searchTitle = StringUtils.normaliseClean(searchResult.getOriginalTitle());
+      String search = searchResult.getOriginalTitle();
+      if (search == null || search.isEmpty()) {
+        search = searchResult.getName();
+      }
+
       List<Movie> results;
-      results = scrapper.search(searchTitle);
+      String searchTitle = StringUtils.normaliseClean(search);
+      results = scrapper.search(search);
+
       for (Movie result : results) {
-        if (searchTitle.equalsIgnoreCase(StringUtils.normaliseClean(result.getOriginalTitle())) || searchTitle.equalsIgnoreCase(StringUtils.normaliseClean(result.getName()))) {
+        if (searchTitle.equals(StringUtils.normaliseClean(result.getOriginalTitle())) || searchTitle.equals(StringUtils.normaliseClean(result.getName()))) {
           if (searchResult.getYear() > 1900) {
             if (searchResult.getYear() == result.getYear()) {
               return result.getImdbId() != null ? result.getImdbId() : result.getMediaId();
@@ -203,6 +214,10 @@ public final class ScrapperUtils {
     }
 
     return imdbid;
+  }
+
+  private static IdInfo getKinopoiskId(Movie searchResult) {
+    return getIdBySearch(new KinopoiskScrapper(), searchResult);
   }
 
   private static IdInfo getAlloId(List<IdInfo> ids, Movie searchResult) {
@@ -254,7 +269,7 @@ public final class ScrapperUtils {
     }
 
     if (scrapper != null) {
-      // ty to find allo id with allogroup scrapper
+      // try to find allo id with allogroup scrapper
       alloId = getIdBySearch(scrapper, searchResult);
     }
 

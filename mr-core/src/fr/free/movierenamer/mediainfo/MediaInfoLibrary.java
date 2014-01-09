@@ -1,10 +1,41 @@
-// FIXME It comes from where ?
+/**
+ * Copyright (C) rednoah
+ *
+ * This file is part of FileBot.
+ *
+ * FileBot is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * FileBot is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * FileBot. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package fr.free.movierenamer.mediainfo;
 
-import com.sun.jna.*;
-import java.lang.reflect.Method;
-import static java.util.Collections.singletonMap;
+import static java.util.Collections.*;
 
+import java.lang.reflect.Method;
+
+import com.sun.jna.FunctionMapper;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+import com.sun.jna.Pointer;
+import com.sun.jna.WString;
+
+/**
+ * Interface MediaInfoLibrary
+ *
+ * @author rednoah
+ * @see
+ * http://sourceforge.net/p/filebot/code/HEAD/tree/trunk/source/net/sourceforge/filebot/mediainfo/MediaInfoLibrary.java
+ */
 public interface MediaInfoLibrary extends Library {
 
   MediaInfoLibrary INSTANCE = (MediaInfoLibrary) Native.loadLibrary("mediainfo", MediaInfoLibrary.class, singletonMap(OPTION_FUNCTION_MAPPER, new FunctionMapper() {
@@ -74,9 +105,8 @@ public interface MediaInfoLibrary extends Library {
    * @param handle
    * @param streamKind Kind of stream (general, video, audio...)
    * @param streamNumber Stream number in Kind of stream (first, second...)
-   * @param parameterIndex Parameter you are looking for in the stream (Codec,
-   * width, bitrate...), in integer format (first parameter, second
-   * parameter...)
+   * @param parameter Parameter you are looking for in the stream (Codec, width,
+   * bitrate...), in integer format (first parameter, second parameter...)
    * @param infoKind Kind of information you want about the parameter (the text,
    * the measure, the help...)
    * @return a string about information you search, an empty string if there is
@@ -108,4 +138,5 @@ public interface MediaInfoLibrary extends Library {
    * @param handle
    */
   void Delete(Pointer handle);
+
 }

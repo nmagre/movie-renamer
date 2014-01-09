@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,11 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
 
+    if ("progress".equals(evt.getPropertyName())) {
+      workerProgress((Integer) evt.getNewValue());
+      return;
+    }
+
     if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
       return;
     }
@@ -93,6 +98,10 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
   }
 
   protected void workerPending() {
+    // DO nothing
+  }
+
+  protected void workerProgress(int progress) {
     // DO nothing
   }
 

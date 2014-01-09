@@ -32,7 +32,6 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
-import fr.free.movierenamer.ui.worker.impl.GetFileInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
@@ -58,11 +57,6 @@ public final class WorkerManager {
 
   private WorkerManager() {
     throw new UnsupportedOperationException();
-  }
-
-  public static void getFileInfo(MovieRenamer mr, UIFile file) {
-    GetFileInfoWorker getFileInfoWorker = new GetFileInfoWorker(mr, file);
-    start(getFileInfoWorker);
   }
 
   public static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
@@ -110,8 +104,8 @@ public final class WorkerManager {
     start(GalleryWorker);
   }
 
-  public static void rename(File source, String RenamedTitle) {
-    RenamerWorker renameworker = new RenamerWorker(source, RenamedTitle);
+  public static void rename(MovieRenamer mr, File source, String RenamedTitle) {
+    RenamerWorker renameworker = new RenamerWorker(mr, source, RenamedTitle);
     if (!UISettings.getInstance().isMoveFileOneByOne()) {
       start(renameworker, false, UIEvent.Event.RENAME_FILE);
     } else {

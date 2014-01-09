@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,12 @@ package fr.free.movierenamer.ui.bean;
 
 /**
  * Interface IEventInfo
+ *
  * @author Nicolas Magré
  */
 public interface IEventInfo {
+
   public String getParam();
+
   public String getDisplayName();
 }

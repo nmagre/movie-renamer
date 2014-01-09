@@ -1,6 +1,6 @@
 /*
  * mr-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ public class FileInfo extends Info {
   private static final long serialVersionUID = 1L;
   private File file;
   private final MediaType type;
-  private String search;
+  private final String search;
   private final Map<FileProperty, String> fileProperty;
   private final MediaTag mtag;
 
@@ -59,15 +59,15 @@ public class FileInfo extends Info {
 
   public FileInfo(File file) {
     this.file = file;
-    this.type = getMediaType(file);
+    this.type = /*getMediaType(file);*/ MediaType.MOVIE;// FIXME
     fileProperty = NameMatcher.getProperty(file, type);
     search = fileProperty.get(FileProperty.name);
     this.mtag = new MediaTag(file);
   }
 
   public IdInfo getImdbId() {
-    String id = get(FileProperty.imdbId);
-    if(id != null && id.length() > 0) {
+    final String id = get(FileProperty.imdbId);
+    if (id != null && id.length() > 0) {
       return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.IMDB);
     }
     return null;
@@ -75,26 +75,25 @@ public class FileInfo extends Info {
 
   public Integer getSeason() {
     try {
-      return new Integer(get(FileProperty.season));
-    } catch (Exception e) {
-      return null;
+      return Integer.valueOf(get(FileProperty.season));
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Integer getEpisode() {
     try {
-      return new Integer(get(FileProperty.episode));
-    } catch (Exception e) {
-      return null;
+      return Integer.valueOf(get(FileProperty.episode));
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
-  public String get(FileProperty property) {
+  public String get(final FileProperty property) {
     return fileProperty.get(property);
   }
 
-  private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
-    String filename = file.getName();
+  private MediaType getMediaType(final File file) {// TODO A refaire , améliorer la detection !!!
 
     if (file.length() < minMovieFileSize) {
       return MediaType.TVSHOW;
@@ -110,9 +109,9 @@ public class FileInfo extends Info {
   public Integer getYear() {
     try {
       return Integer.parseInt(fileProperty.get(FileProperty.year));
-    } catch (Exception ex) {
-      return -1;
+    } catch (NumberFormatException ex) {
     }
+    return -1;
   }
 
   public boolean wasRenamed() {
@@ -127,13 +126,9 @@ public class FileInfo extends Info {
     return mtag;
   }
 
-  public final void setSearch(String search) {
-    this.search = search;
-  }
-
-  public boolean renamed(String newName) {
-    File newFile = FileUtils.move(this.file, newName);
-    boolean success = Renamer.getInstance().addRenamed(this, this.file.toURI(), newFile.toURI());
+  public boolean renamed(final String newName) {
+    final File newFile = FileUtils.move(this.file, newName);
+    final boolean success = Renamer.getInstance().addRenamed(this, this.file.toURI(), newFile.toURI());
     this.file = newFile;
     return success;
   }

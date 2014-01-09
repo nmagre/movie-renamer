@@ -31,6 +31,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapperTest;
 import fr.free.movierenamer.searchinfo.TvShow;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 
 /**
@@ -63,7 +64,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getTvShowInfo() throws Exception {
-    thetvdb.setLanguage(Locale.FRENCH);
+    thetvdb.setLanguage(LocaleUtils.AvailableLanguages.fr);
     TvShowInfo tvShow = thetvdb.getInfo(new TvShow(null, new IdInfo(82066, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
 
     Assert.assertEquals("Fringe", tvShow.getName());
@@ -93,7 +94,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getEpisodesInfoList() throws Exception {
-    thetvdb.setLanguage(Locale.GERMAN);
+    thetvdb.setLanguage(LocaleUtils.AvailableLanguages.de);
     List<EpisodeInfo> episodes = thetvdb.getEpisodesInfoList(new TvShow(null, new IdInfo(81189, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
 
     EpisodeInfo first = episodes.get(0);

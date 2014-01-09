@@ -20,9 +20,9 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebListCellRenderer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.swing.SpinningDial;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
@@ -62,8 +62,8 @@ public class ZoomListRenderer extends WebListCellRenderer {
 
     ZoomImageLbl zlabel = new ZoomImageLbl(width + "x" + height, icon, SwingConstants.CENTER);
     zlabel.setVerticalAlignment(SwingConstants.BOTTOM);
-    zlabel.setFont(zlabel.getFont().deriveFont(Font.BOLD));
     zlabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+    zlabel.setFont(UIUtils.boldFont);
     return zlabel;
   }
 

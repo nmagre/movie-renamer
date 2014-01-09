@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.exception.InvalidUrlException;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -28,7 +27,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.JOptionPane;
 
 /**
  * Class Worker
@@ -70,6 +68,6 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
 
   @Override
   protected void process(List<String> v) {
-    WebOptionPane.showMessageDialog(mr, v.get(0) + "\n", UIUtils.i18n.getLanguage("error.error", false), JOptionPane.ERROR_MESSAGE);
+    UIUtils.showErrorNotification(v.get(0));
   }
 }

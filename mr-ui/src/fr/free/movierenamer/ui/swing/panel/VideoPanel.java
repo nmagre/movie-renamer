@@ -22,9 +22,8 @@ import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,6 +72,8 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
     clearStars();
     mainTb.setMargin(0, 4, 0, 0);
     setMargin(4, 5, 4, 5);
+
+    mediaTitleLbl.setFont(UIUtils.titleFont);
   }
 
   @Override
@@ -83,6 +84,7 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
 
   @Override
   public T getInfo() {
+
     return info;
   }
 
@@ -107,9 +109,7 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
       return;
     }
 
-    if (value > 5) {
-      value /= (10 / nbStar);
-    }
+    value /= (10 / nbStar);
 
     int n = value.intValue();
     for (int i = 0; i < n; i++) {
@@ -154,7 +154,6 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
     mainTb.setFloatable(false);
     mainTb.setRollover(true);
 
-    mediaTitleLbl.setFont(new java.awt.Font("Ubuntu", 1, 14)); // NOI18N
     mediaTitleLbl.setMargin(new java.awt.Insets(0, 0, 0, 10));
     mainTb.add(mediaTitleLbl);
 

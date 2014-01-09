@@ -43,26 +43,27 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
     super(supportedLanguages);
   }
 
-  protected abstract List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception;
+  protected abstract List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, AvailableLanguages language) throws Exception;
 
   public final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow) throws Exception {
     return getEpisodesInfoList(tvShow, getLanguage());
   }
 
-  protected final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
+  protected final List<EpisodeInfo> getEpisodesInfoList(TvShow tvShow, AvailableLanguages language) throws Exception {
+    Locale lang = language.getLocale();
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get episode info list for '%s' in '%s'", getName(), tvShow, lang.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
-    List<EpisodeInfo> episodes = (cache != null) ? cache.getList(tvShow, language, EpisodeInfo.class) : null;
+    List<EpisodeInfo> episodes = (cache != null) ? cache.getList(tvShow, lang, EpisodeInfo.class) : null;
     if (episodes != null) {
       return episodes;
     }
 
     // perform actual search
     episodes = fetchEpisodesInfoList(tvShow, language);
-    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, language.getDisplayLanguage(Locale.ENGLISH)));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d episode info for '%s' in '%s'", getName(), episodes.size(), tvShow, lang.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
-    return (cache != null) ? cache.putList(tvShow, language, EpisodeInfo.class, episodes) : episodes;
+    return (cache != null) ? cache.putList(tvShow, lang, EpisodeInfo.class, episodes) : episodes;
   }
 
   @Override

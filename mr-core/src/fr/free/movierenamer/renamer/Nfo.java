@@ -1,6 +1,6 @@
 /*
  * mr-core
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,19 @@ package fr.free.movierenamer.renamer;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import fr.free.movierenamer.info.MediaInfo.InfoType;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.ScrapperUtils;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +52,13 @@ import org.w3c.dom.Node;
  */
 public class Nfo {// TODO
 
-  private final MovieInfo mediaInfo;
+  private final MediaInfo mediaInfo;
   private final List<ImageInfo> images;
-  private static final Map<MediaInfo.InfoProperty, String> xbmcNFOLayout;
-  private static final Map<MediaInfo.InfoProperty, String> boxeeNFOLayout;
+  private static final Map<MediaInfo.InfoProperty, String> xbmcMovieNFOLayout;
+  private static final Map<MediaInfo.InfoProperty, String> boxeeMovieNFOLayout;
+  private static final Map<InfoType, Map> xbmcNFOLayout;
+  private static final Map<InfoType, Map> BoxeeNFOLayout;
+  private static final Settings settings = Settings.getInstance();
   private final String[] boxeeGenre = new String[]{"ACTION", " ADVENTURE", " ANIMATION", " COMEDY", " CRIME", " DOCUMENTARY", " DRAMA", " FAMILY", " FANTASY", " FILM_NOIR", " HISTORY", " MUSIC", " MUSICAL", " MYSTERY", " NEWS", " ROMANCE", " SCI_FI", " SHORT", " SPORT", " THRILLER", " WAR", " WESTERN"};
   private Element rootElement;
   private Document nfoDocument;
@@ -65,35 +72,39 @@ public class Nfo {// TODO
   }
 
   static {
-    xbmcNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
-    boxeeNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
+    xbmcNFOLayout = new EnumMap<InfoType, Map>(InfoType.class);
+    BoxeeNFOLayout = new EnumMap<InfoType, Map>(InfoType.class);
+    xbmcMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
+    boxeeMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
 
-    xbmcNFOLayout.put(MovieProperty.title, "title");
-    xbmcNFOLayout.put(MovieProperty.originalTitle, "originaltitle");
-    xbmcNFOLayout.put(MovieProperty.sortTitle, "sorttitle");
-    xbmcNFOLayout.put(MovieProperty.collection, "set");
-    xbmcNFOLayout.put(MovieProperty.rating, "rating");
-    xbmcNFOLayout.put(MovieProperty.releasedDate, "year");
-    xbmcNFOLayout.put(MovieProperty.votes, "votes");
-    xbmcNFOLayout.put(MovieProperty.overview, "plot");
-    xbmcNFOLayout.put(MovieProperty.tagline, "tagline");
-    xbmcNFOLayout.put(MovieProperty.runtime, "runtime");
-    xbmcNFOLayout.put(MovieProperty.certification, "mpaa");
-    xbmcNFOLayout.put(MovieProperty.certificationCode, "mpaa");
-    xbmcNFOLayout.put(MovieMultipleProperty.genres, "genre");
-    xbmcNFOLayout.put(MovieMultipleProperty.countries, "country");
-    xbmcNFOLayout.put(MovieMultipleProperty.studios, "studio");
-    xbmcNFOLayout.put(MovieMultipleProperty.tags, "tag");
+    xbmcMovieNFOLayout.put(MovieProperty.title, "title");
+    xbmcMovieNFOLayout.put(MovieProperty.originalTitle, "originaltitle");
+    xbmcMovieNFOLayout.put(MovieProperty.sortTitle, "sorttitle");
+    xbmcMovieNFOLayout.put(MovieProperty.collection, "set");
+    xbmcMovieNFOLayout.put(MovieProperty.rating, "rating");
+    xbmcMovieNFOLayout.put(MovieProperty.releasedDate, "year");
+    xbmcMovieNFOLayout.put(MovieProperty.votes, "votes");
+    xbmcMovieNFOLayout.put(MovieProperty.overview, "plot");
+    xbmcMovieNFOLayout.put(MovieProperty.tagline, "tagline");
+    xbmcMovieNFOLayout.put(MovieProperty.runtime, "runtime");
+    xbmcMovieNFOLayout.put(MovieProperty.certification, "mpaa");
+    xbmcMovieNFOLayout.put(MovieProperty.certificationCode, "mpaa");
+    xbmcMovieNFOLayout.put(MovieMultipleProperty.genres, "genre");
+    xbmcMovieNFOLayout.put(MovieMultipleProperty.countries, "country");
+    xbmcMovieNFOLayout.put(MovieMultipleProperty.studios, "studio");
+    xbmcMovieNFOLayout.put(MovieMultipleProperty.tags, "tag");
 
-    boxeeNFOLayout.put(MovieProperty.title, "title");
-    boxeeNFOLayout.put(MovieProperty.rating, "rating");
-    boxeeNFOLayout.put(MovieProperty.releasedDate, "year");
-    boxeeNFOLayout.put(MovieProperty.overview, "outline");
-    boxeeNFOLayout.put(MovieProperty.runtime, "runtime");
+    boxeeMovieNFOLayout.put(MovieProperty.title, "title");
+    boxeeMovieNFOLayout.put(MovieProperty.rating, "rating");
+    boxeeMovieNFOLayout.put(MovieProperty.releasedDate, "year");
+    boxeeMovieNFOLayout.put(MovieProperty.overview, "outline");
+    boxeeMovieNFOLayout.put(MovieProperty.runtime, "runtime");
 
+    xbmcNFOLayout.put(InfoType.MOVIE, xbmcMovieNFOLayout);
+    BoxeeNFOLayout.put(InfoType.MOVIE, boxeeMovieNFOLayout);
   }
 
-  public Nfo(MovieInfo mediaInfo, List<ImageInfo> images) {
+  public Nfo(MediaInfo mediaInfo, List<ImageInfo> images) {
     this.mediaInfo = mediaInfo;
     this.images = images;
   }
@@ -109,17 +120,36 @@ public class Nfo {// TODO
     nfoDocument.appendChild(rootElement);
   }
 
-  private void addSimpleInfo(Map<MediaInfo.InfoProperty, String> nfoLayout) {
-    for (Entry<MediaInfo.InfoProperty, String> entry : nfoLayout.entrySet()) {
-      if (entry.getKey() == MovieProperty.certificationCode && mediaInfo.getCertification() != null) {
+  private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, InfoType infoType) {
+
+    switch (infoType) {
+      case MOVIE:
+        addSimpleMovieInfo(nfoLayout, (MovieInfo) mediaInfo);
+        break;
+      case TVSHOW:// TODO tvshow info
+        break;
+    }
+  }
+
+  private void addSimpleMovieInfo(final Map<InfoProperty, String> nfoLayout, MovieInfo movieInfo) {
+    InfoProperty property;
+    List<String> values;
+
+    for (Entry<InfoProperty, String> entry : nfoLayout.entrySet()) {
+      property = entry.getKey();
+      if (property == MovieProperty.certificationCode && movieInfo.getCertification() != null) {
         continue;
       }
 
-      List<String> values = new ArrayList<String>();
+      if (property == MovieMultipleProperty.tags && !settings.isMovieNfoTag()) {
+        continue;
+      }
+
+      values = new ArrayList<String>();
       if (entry.getKey() instanceof MovieProperty) {
-        values.add(mediaInfo.get((MovieProperty) entry.getKey()));
+        values.add(movieInfo.get((MovieProperty) entry.getKey()));
       } else {
-        values = mediaInfo.get((MovieMultipleProperty) entry.getKey());
+        values = movieInfo.get((MovieMultipleProperty) entry.getKey());
       }
 
       for (String value : values) {
@@ -147,107 +177,148 @@ public class Nfo {// TODO
 
   public void writeNFO() throws ParserConfigurationException {
     createDocument("movie");
+
+    InfoType infoType = mediaInfo.getInfoType();
+
+    if (infoType.equals(InfoType.MOVIE)) {
+      if (settings.isMovieImdbId()) {
+        addNode("id", ((MovieInfo) mediaInfo).getIdString(ScrapperUtils.AvailableApiIds.IMDB));
+      }
+    }
+
     switch (Settings.getInstance().getMovieNfoType()) {
       case BOXEE:
-        addSimpleInfo(boxeeNFOLayout);
-        // Add genre
-        StringBuilder sgenres = new StringBuilder();
-        List<String> genres = mediaInfo.getGenres();
-        for (String genre : genres) {
-          if (Arrays.asList(boxeeGenre).contains(genre.toUpperCase())) {
-            if (sgenres.length() > 0) {
-              sgenres.append(", ");
-            }
-            sgenres.append(genre.toUpperCase());
-          }
-        }
-        addNode("genre", sgenres.toString());
-
-        // Add mpaa
-        String mpaa = mediaInfo.getCertification(MovieInfo.MotionPictureRating.USA);
-        if (mpaa.equals("NC-17")) {
-          addNode("mpaa", mpaa.toLowerCase());
-        }
-
-        // Add director
-        List<CastingInfo> directors = mediaInfo.getDirectors();
-        for (CastingInfo director : directors) {
-          addNode("director", director.getName());
-        }
-
-        // Add actor
-        List<CastingInfo> actors = mediaInfo.getActors();
-        Node node;
-        for (CastingInfo actor : actors) {
-          node = createNode(rootElement, "actor");
-          addToNode(node, "name", actor.getName());
-          addToNode(node, "role", actor.getCharacter());
-        }
+        addSimpleInfo(BoxeeNFOLayout.get(infoType), infoType);
+        addBoxeeInfo(infoType);
         break;
       case MEDIAPORTAL:
-        addSimpleInfo(xbmcNFOLayout);
+        addSimpleInfo(xbmcNFOLayout.get(infoType), infoType);
+        // TODO MEDIAPORTAL NFO
         break;
       case XBMC:
-        addSimpleInfo(xbmcNFOLayout);
-        // Add director
-        directors = mediaInfo.getDirectors();
-        for (CastingInfo director : directors) {
-          addNode("director", director.getName());
-        }
-
-        // Add writer
-        List<CastingInfo> writers = mediaInfo.getDirectors();
-        for (CastingInfo writer : writers) {
-          addNode("credits", writer.getName());
-        }
-
-        // Add actor
-        actors = mediaInfo.getActors();
-        for (CastingInfo actor : actors) {
-          node = createNode(rootElement, "actor");
-          addToNode(node, "name", actor.getName());
-          addToNode(node, "role", actor.getCharacter());
-          URI img = actor.getPicturePath();
-          if (img != null && !img.toString().equals("")) {
-            addToNode(node, "thumb", img.toString());
-          }
-        }
-
-        if (images != null) {
-          List<ImageInfo> fanarts = new ArrayList<ImageInfo>();
-          for (ImageInfo image : images) {
-            if (image.getCategory() == ImageInfo.ImageCategoryProperty.thumb) {
-              node = createNode(rootElement, "thumb");
-              Attr preview = nfoDocument.createAttribute("preview");
-              preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
-              ((Element) node).setAttributeNode(preview);
-              ((Element) node).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
-            } else if (image.getCategory() == ImageInfo.ImageCategoryProperty.fanart) {
-              fanarts.add(image);
-            }
-          }
-
-          node = createNode(rootElement, "fanart");
-          Node fnode;
-          for (ImageInfo image : fanarts) {
-            fnode = createNode(node, "thumb");
-            Attr preview = nfoDocument.createAttribute("preview");
-            preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
-            ((Element) fnode).setAttributeNode(preview);
-            ((Element) fnode).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
-          }
-        }
-
+        addSimpleInfo(xbmcNFOLayout.get(infoType), infoType);
+        addXbmcInfo(infoType);
         break;
       case YAMJ:
-        addSimpleInfo(xbmcNFOLayout);
+        addSimpleInfo(xbmcNFOLayout.get(infoType), infoType);
+        // TODO YAMJ NFO
         break;
     }
 
-    FileUtils.writeXmlFile(nfoDocument, new File("/tmp/test.nfo"));
+    FileUtils.writeXmlFile(nfoDocument, new File("/tmp/test.nfo"));// FIXME
 
     rootElement = null;
     nfoDocument = null;
+  }
+
+  private void addBoxeeInfo(InfoType infoType) {
+    switch (infoType) {
+      case MOVIE:
+        addBoxeeMovieInfo((MovieInfo) mediaInfo);
+        break;
+      case TVSHOW:
+        break;
+    }
+  }
+
+  private void addBoxeeMovieInfo(MovieInfo movieInfo) {
+    // Add genre
+    StringBuilder sgenres = new StringBuilder();
+    List<String> genres = movieInfo.getGenres();
+    for (String genre : genres) {
+      if (Arrays.asList(boxeeGenre).contains(genre.toUpperCase())) {
+        if (sgenres.length() > 0) {
+          sgenres.append(", ");
+        }
+        sgenres.append(genre.toUpperCase());
+      }
+    }
+    addNode("genre", sgenres.toString());
+
+    // Add mpaa
+    String mpaa = movieInfo.getCertification(MovieInfo.MotionPictureRating.USA);
+    if (mpaa.equals("NC-17")) {
+      addNode("mpaa", mpaa.toLowerCase());
+    }
+
+    // Add director
+    List<CastingInfo> directors = mediaInfo.getDirectors();
+    for (CastingInfo director : directors) {
+      addNode("director", director.getName());
+    }
+
+    // Add actor
+    List<CastingInfo> actors = mediaInfo.getActors();
+    Node node;
+    for (CastingInfo actor : actors) {
+      node = createNode(rootElement, "actor");
+      addToNode(node, "name", actor.getName());
+      addToNode(node, "role", actor.getCharacter());
+    }
+  }
+
+  private void addXbmcInfo(InfoType infoType) {
+    switch (infoType) {
+      case MOVIE:
+        addXbmcMovieInfo((MovieInfo) mediaInfo);
+        break;
+      case TVSHOW:
+        break;
+    }
+  }
+
+  private void addXbmcMovieInfo(MovieInfo movieInfo) {
+    // Add director
+    List<CastingInfo> directors = mediaInfo.getDirectors();
+    for (CastingInfo director : directors) {
+      addNode("director", director.getName());
+    }
+
+    // Add writer
+    List<CastingInfo> writers = mediaInfo.getDirectors();
+    for (CastingInfo writer : writers) {
+      addNode("credits", writer.getName());
+    }
+
+    // Add actor
+    List<CastingInfo> actors = mediaInfo.getActors();
+    Node node;
+    for (CastingInfo actor : actors) {
+      node = createNode(rootElement, "actor");
+      addToNode(node, "name", actor.getName());
+      addToNode(node, "role", actor.getCharacter());
+      URI img = actor.getPicturePath();
+      if (img != null && !img.toString().equals("")) {
+        addToNode(node, "thumb", img.toString());
+      }
+    }
+
+    if (settings.isMovieNfoImage() && images != null) {
+      final List<ImageInfo> fanarts = new ArrayList<ImageInfo>();
+      Attr preview;
+
+      for (ImageInfo image : images) {
+        if (image.getCategory() == ImageInfo.ImageCategoryProperty.thumb) {
+          node = createNode(rootElement, "thumb");
+          preview = nfoDocument.createAttribute("preview");
+          preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
+          ((Element) node).setAttributeNode(preview);
+          ((Element) node).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
+        } else if (image.getCategory() == ImageInfo.ImageCategoryProperty.fanart) {
+          fanarts.add(image);
+        }
+      }
+
+      node = createNode(rootElement, "fanart");
+      Node fnode;
+      for (ImageInfo image : fanarts) {
+        fnode = createNode(node, "thumb");
+        preview = nfoDocument.createAttribute("preview");
+        preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
+        ((Element) fnode).setAttributeNode(preview);
+        ((Element) fnode).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
+      }
+    }
   }
 
 }

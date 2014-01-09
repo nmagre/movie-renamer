@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,17 +67,13 @@ public class ImageInfo extends Info {
   protected ImageCategoryProperty category;
   protected int id;
 
-  public ImageInfo(int id, Map<ImageProperty, String> fields, ImageCategoryProperty category) {
+  public ImageInfo(final int id, final Map<ImageProperty, String> fields, final ImageCategoryProperty category) {
     this.id = id;
     this.fields = new EnumMap<ImageProperty, String>(fields);
-    if (category == null) {
-      this.category = ImageCategoryProperty.unknown;
-    } else {
-      this.category = category;
-    }
+    this.category = category == null ? ImageCategoryProperty.unknown : category;
   }
 
-  private String get(ImageProperty key) {
+  private String get(final ImageProperty key) {
     return fields.get(key);
   }
 
@@ -91,22 +87,23 @@ public class ImageInfo extends Info {
 
   public Integer getWidth() {
     try {
-      return new Integer(get(ImageProperty.width));
-    } catch (Exception e) {
-      return null;
+      return Integer.valueOf(get(ImageProperty.width));
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
   public Integer getHeight() {
     try {
-      return new Integer(get(ImageProperty.height));
-    } catch (Exception e) {
-      return null;
+      return Integer.valueOf(get(ImageProperty.height));
+    } catch (NumberFormatException e) {
     }
+    return null;
   }
 
-  public URL getHref(ImageSize size) {
+  public URL getHref(final ImageSize size) {
     String url = null;
+
     switch (size) {
       case small:
         url = get(ImageProperty.urlTumb);
@@ -123,7 +120,7 @@ public class ImageInfo extends Info {
         break;
     }
 
-    if(url == null) {
+    if (url == null) {
       return null;
     }
 
@@ -139,7 +136,7 @@ public class ImageInfo extends Info {
   public String getDescription() {
     return get(ImageProperty.desc);
   }
-  
+
   public int getId() {
     return id;
   }

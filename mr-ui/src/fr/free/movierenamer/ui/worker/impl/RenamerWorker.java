@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,17 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.renamer.MoveFile;
+import fr.free.movierenamer.renamer.Nfo;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.swing.dialog.FileConflictDialog;
+import fr.free.movierenamer.ui.swing.dialog.FileConflictDialog.Action;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
-import fr.free.movierenamer.ui.worker.AbstractWorker;
+import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.ui.worker.ControlWorker;
 import fr.free.movierenamer.utils.FileUtils;
 import java.io.File;
 import java.util.List;
@@ -29,16 +36,17 @@ import java.util.List;
  *
  * @author Nicolas Magré
  */
-public class RenamerWorker extends AbstractWorker<Void, Integer> {
+public class RenamerWorker extends ControlWorker<Void> {
 
-  private TaskPanel tpanel;
+  private final TaskPanel tpanel;
   private MoveFile moveThread;
-  private String RenamedTitle;
-  private File source;
+  private final String RenamedTitle;
+  private final File source;
+  private File destFile;
   private String param;
 
-  public RenamerWorker(File source, String RenamedTitle) {
-    super();
+  public RenamerWorker(MovieRenamer mr, File source, String RenamedTitle) {
+    super(mr);
     this.source = source;
     this.RenamedTitle = RenamedTitle;
     param = new File(RenamedTitle).getName();
@@ -53,15 +61,34 @@ public class RenamerWorker extends AbstractWorker<Void, Integer> {
     File mediaFolder = source.getParentFile();
 
     String ext = FileUtils.getExtension(source);
-    File destFile = new File(RenamedTitle + "." + ext);
+    destFile = new File(RenamedTitle + "." + ext);
     if (!destFile.isAbsolute()) {
       destFile = new File(mediaFolder, RenamedTitle + "." + ext);
+    }
+
+    MediaInfo info = mr.getMediaPanel().getPanel(InfoPanel.PanelType.INFO).getInfo();
+    Nfo nfo = new Nfo(info, null);
+    nfo.writeNFO();
+
+    if (destFile.exists()) {
+      publishPause(i18n.getLanguageKey("dialog.replacefile"));
+    }
+
+    if (source.equals(destFile)) {
+      return null;
+    }
+
+    if (destFile.exists()) {
+      publishPause("");
+      if (isCancelled()) {
+        return null;
+      }
     }
 
     moveThread = new MoveFile(source, destFile);
     moveThread.start();
     while (moveThread.isAlive()) {
-      publish(moveThread.getProgress());
+      setProgress(moveThread.getProgress());
       Thread.sleep(500);
     }
     moveThread.join();
@@ -83,8 +110,26 @@ public class RenamerWorker extends AbstractWorker<Void, Integer> {
   }
 
   @Override
-  protected void process(List<Integer> chunks) {
-    tpanel.setProgress(chunks.get(chunks.size() - 1));
+  protected void processPause(List<String> chunks) {// TODO
+    FileConflictDialog conflictdialog = new FileConflictDialog(mr, destFile, source);
+    conflictdialog.setVisible(true);
+    Action action = conflictdialog.getAction();
+    switch (action) {
+      case cancel:
+        cancel(true);
+        break;
+      case replace:
+
+        break;
+      case skip:
+
+        break;
+    }
+  }
+
+  @Override
+  protected void workerProgress(int progress) {
+    tpanel.setProgress(progress);
   }
 
   @Override

@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,20 +82,20 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
+  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/" + version + "/search/movie"
-            + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&query="
+            + "?api_key=" + apikey + "&language=" + language.name() + "&query="
             + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
 
@@ -183,11 +182,15 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   private IdInfo tmdbIDLookUp(IdInfo imdbId) throws Exception {
-    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + imdbId + "?api_key=" + apikey);
-    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    String id = JSONUtils.selectString("id", json);
-    if (id != null && !id.isEmpty()) {
-      return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.TMDB);
+    try {
+      URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + imdbId + "?api_key=" + apikey);
+      JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+      String id = JSONUtils.selectString("id", json);
+      if (id != null && !id.isEmpty()) {
+        return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.TMDB);
+      }
+    } catch (Exception ex) {
+      Settings.LOGGER.severe(ex.getMessage());
     }
 
     return null;
@@ -213,17 +216,17 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
 
     IdInfo id = movie.getMediaId();
     if (id == null) {
       id = tmdbIDLookUp(movie.getImdbId());
       if (id == null) {
-        throw new Exception("Tmdb id not found for imdb id : " + movie.getImdbId());
+        return null;
       }
     }
 
-    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey + "&language=" + language.getLanguage() + "&append_to_response=releases,keywords");
+    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey + "&language=" + language.name() + "&append_to_response=releases,keywords");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
@@ -271,10 +274,12 @@ public class TMDbScrapper extends MovieScrapper {
     }
 
     List<String> tags = new ArrayList<String>();
-    JSONObject keywords = JSONUtils.selectObject("keywords", json);
-    if (keywords != null) {
-      for (JSONObject jsonObj : JSONUtils.selectList("keywords", keywords)) {
-        tags.add(JSONUtils.selectString("name", jsonObj));
+    if (Settings.getInstance().isSearchTmdbTag()) {
+      JSONObject keywords = JSONUtils.selectObject("keywords", json);
+      if (keywords != null) {
+        for (JSONObject jsonObj : JSONUtils.selectList("keywords", keywords)) {
+          tags.add(JSONUtils.selectString("name", jsonObj));
+        }
       }
     }
 
@@ -288,7 +293,7 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getMediaId() + "/casts?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 

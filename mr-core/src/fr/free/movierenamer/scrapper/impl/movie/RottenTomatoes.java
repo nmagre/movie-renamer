@@ -24,7 +24,7 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
@@ -59,7 +59,7 @@ public class RottenTomatoes extends MovieScrapper {
   private static String apikey;
 
   public RottenTomatoes() {
-    super(LocaleUtils.AvailableLanguages.en);
+    super(AvailableLanguages.en);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("rottentomatoes.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -78,19 +78,19 @@ public class RottenTomatoes extends MovieScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, Locale language) throws Exception {
+  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies.json"
             + "?apikey=" + apikey + "&q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
     List<JSONObject> jsonObj = JSONUtils.selectList("movies", json);
@@ -172,7 +172,7 @@ public class RottenTomatoes extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
     String id = movie.getMediaId().toString();
     if (movie.getMediaId().getIdType() == ScrapperUtils.AvailableApiIds.IMDB) {
       id = rottenTomatoesIdLookUp(id);
@@ -252,7 +252,7 @@ public class RottenTomatoes extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
 
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + movie.getMediaId() + "/cast.json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());

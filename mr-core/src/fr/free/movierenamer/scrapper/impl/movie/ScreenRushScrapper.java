@@ -20,7 +20,6 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -74,8 +73,8 @@ public final class ScreenRushScrapper extends AlloGroupScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override

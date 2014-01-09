@@ -35,7 +35,7 @@ import fr.free.movierenamer.scrapper.impl.SubsceneSubtitleScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
-import fr.free.movierenamer.scrapper.impl.movie.Kinopoisk;
+import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
 import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
@@ -68,7 +68,7 @@ public class ScrapperManager {
     getScrapper(TMDbScrapper.class);
     getScrapper(UniversalScrapper.class);
     getScrapper(RottenTomatoes.class);
-    getScrapper(Kinopoisk.class);
+    getScrapper(KinopoiskScrapper.class);
     // tvshow
     getScrapper(TheTVDBScrapper.class);
     getScrapper(TvRageScrapper.class);
@@ -105,7 +105,6 @@ public class ScrapperManager {
   public static MovieScrapper getMovieScrapper() {
     Settings settings = Settings.getInstance();
     MovieScrapper scrapper = getScrapper(settings.getSearchMovieScrapper());
-    scrapper.setLanguage(settings.getSearchScrapperLang().getLocale());
     return scrapper;
   }
 
@@ -127,7 +126,6 @@ public class ScrapperManager {
     List<MovieScrapper> toRet = new ArrayList<MovieScrapper>();
     for (Class<?> clazz : map.keySet()) {
       if (MovieScrapper.class.isAssignableFrom(clazz)) {
-        ((MovieScrapper) map.get(clazz)).setLanguage(settings.getSearchScrapperLang().getLocale());
         toRet.add((MovieScrapper) map.get(clazz));
       }
     }
@@ -139,7 +137,6 @@ public class ScrapperManager {
     List<MovieScrapper> toRet = new ArrayList<MovieScrapper>();
     for (Class<?> clazz : map.keySet()) {
       if (MovieScrapper.class.isAssignableFrom(clazz) && ((MovieScrapper) map.get(clazz)).hasSupportedLanguage(language)) {
-        ((MovieScrapper) map.get(clazz)).setLanguage(settings.getSearchScrapperLang().getLocale());
         toRet.add((MovieScrapper) map.get(clazz));
       }
     }

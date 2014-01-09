@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,18 +29,18 @@ public class MediaAudio {
   private final int stream;
   private String title;
   private String codec;
-  private int channel;
+  private String channel;
   private String bitRateMode;
   private Locale language;
   private int bitRate;
 
-  public MediaAudio(int stream) {
+  public MediaAudio(final int stream) {
     this.stream = stream;
-    codec = "?";
-    channel = -1;
-    bitRate = -1;
-    title = "?";
-    bitRateMode = "?";
+    codec = "";
+    channel = "";
+    bitRate = 0;
+    title = "";
+    bitRateMode = "";
     language = Locale.ROOT;
   }
 
@@ -48,11 +48,11 @@ public class MediaAudio {
     return stream;
   }
 
-  public int getChannel() {
+  public String getChannel() {
     return channel;
   }
 
-  public void setChannel(int channel) {
+  public void setChannel(final String channel) {
     this.channel = channel;
   }
 
@@ -60,7 +60,7 @@ public class MediaAudio {
     return codec;
   }
 
-  public void setCodec(String codec) {
+  public void setCodec(final String codec) {
     this.codec = codec;
   }
 
@@ -68,7 +68,7 @@ public class MediaAudio {
     return language;
   }
 
-  public void setLanguage(Locale language) {
+  public void setLanguage(final Locale language) {
     this.language = language;
   }
 
@@ -76,7 +76,7 @@ public class MediaAudio {
     return title;
   }
 
-  public void setTitle(String title) {
+  public void setTitle(final String title) {
     this.title = title;
   }
 
@@ -84,7 +84,7 @@ public class MediaAudio {
     return bitRateMode;
   }
 
-  public void setBitRateMode(String bitRateMode) {
+  public void setBitRateMode(final String bitRateMode) {
     this.bitRateMode = bitRateMode;
   }
 
@@ -92,7 +92,7 @@ public class MediaAudio {
     return bitRate;
   }
 
-  public void setBitRate(int bitRate) {
+  public void setBitRate(final int bitRate) {
     this.bitRate = bitRate;
   }
 

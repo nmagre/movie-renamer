@@ -50,7 +50,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
 
   @Override
   public void search() throws Exception {
-    imdb.setLanguage(Locale.FRENCH);
+    imdb.setLanguage(LocaleUtils.AvailableLanguages.fr);
     List<Movie> results = imdb.search("il était une fois dans l'ouest");
 
     Movie movie = results.get(0);
@@ -58,26 +58,26 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTgwMzU1MDEyMl5BMl5BanBnXkFtZTcwNDc5Mzg3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1968, movie.getYear());
-    Assert.assertEquals(64116, movie.getMediaId().getId());
+    Assert.assertEquals(64116, movie.getImdbId().getId());
   }
 
   @Test
   public void searchOneResult() throws Exception {
-    imdb.setLanguage(Locale.FRENCH);
+    imdb.setLanguage(LocaleUtils.AvailableLanguages.fr);
     List<Movie> results = imdb.search("le pont de la rivière kwai");
 
     Movie movie = results.get(0);
 
-    Assert.assertEquals("Le pont de la rivière Kwai", movie.getName());
+    Assert.assertEquals("Le pont de la rivière Kwaï", movie.getName());
     Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@._V1_SY70_SX100.jpg", movie.getURL().toExternalForm());
     Assert.assertEquals(1957, movie.getYear());
-    Assert.assertEquals(50212, movie.getMediaId().getId());
+    Assert.assertEquals(50212, movie.getImdbId().getId());
 
   }
 
   @Override
   public void getMovieInfo() throws Exception {
-    imdb.setLanguage(LocaleUtils.AvailableLanguages.it.getLocale());
+    imdb.setLanguage(LocaleUtils.AvailableLanguages.it);
     MovieInfo movie = imdb.getInfo(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1));
 
     Assert.assertEquals("C'era una volta il West", movie.getTitle());

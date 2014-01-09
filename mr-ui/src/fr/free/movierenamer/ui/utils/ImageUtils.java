@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,20 +47,21 @@ import javax.swing.ImageIcon;
 public final class ImageUtils {
 
   // 24 pixel icon
-  public static final Icon CANCEL_24 = getIconFromJar("ui/24/cancel.png");
   public static final Icon APPLICATIONEXIT_24 = getIconFromJar("ui/24/application-exit.png");
-  public static final Icon DIALOGWARNING_24 = getIconFromJar("ui/24/dialog-warning.png");
   public static final Icon FOLDERVIDEO_24 = getIconFromJar("ui/24/folder-video.png");
   public static final Icon MOVIE_24 = getIconFromJar("ui/24/movie.png");
   public static final Icon SETTING_24 = getIconFromJar("ui/24/setting.png");
-//  public static final Icon STAREMPTY_24 = getIconFromJar("ui/24/star-empty.png");
-//  public static final Icon STARHALF_24 = getIconFromJar("ui/24/star-half.png");
-//  public static final Icon STAR_24 = getIconFromJar("ui/24/star.png");
   public static final Icon TV_24 = getIconFromJar("ui/24/tv.png");
   public static final Icon UPDATE_24 = getIconFromJar("ui/24/update.png");
-  public static final Icon OK_24 = getIconFromJar("ui/24/ok.png");
+  public static final Icon DOWNLOAD_24 = getIconFromJar("ui/24/download.png");
+  public static final Icon OK_24 = getIconFromJar("ui/24/check.png");
   public static final Icon HELP_24 = getIconFromJar("ui/24/help.png");
   public static final Icon INFO_24 = getIconFromJar("ui/24/info.png");
+  public static final Icon ERROR_24 = getIconFromJar("ui/24/delete.png");
+  public static final Icon ERROREXC_24 = getIconFromJar("ui/24/error.png");
+  public static final Icon ERESTRICTED_24 = getIconFromJar("ui/24/restricted.png");
+  public static final Icon STOP_24 = getIconFromJar("ui/24/stop.png");
+  public static final Icon NORESULT_24 = getIconFromJar("ui/24/zoom_out.png");
   public static final Icon LOAD_24 = new SpinningDial(24, 24);
   // 16 pixel icon
   public static final Icon CANCEL_16 = getIconFromJar("ui/16/cancel.png");
@@ -98,6 +99,15 @@ public final class ImageUtils {
   public static final Icon ZOOMOUT_16 = getIconFromJar("ui/16/zoom_out.png");
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
   public static final Icon SUBTITLE_16 = getIconFromJar("ui/16/srt.png");
+  public static final Icon LOOK_16 = getIconFromJar("ui/16/look.png");
+  public static final Icon RENAME_16 = getIconFromJar("ui/16/rename.png");
+  public static final Icon SSEARCH_16 = getIconFromJar("ui/16/ssearch.png");
+  public static final Icon WINDOW_16 = getIconFromJar("ui/16/window.png");
+  public static final Icon OTHER_16 = getIconFromJar("ui/16/other.png");
+  public static final Icon NETWORK_16 = getIconFromJar("ui/16/network.png");
+  public static final Icon SKIP_16 = getIconFromJar("ui/16/skip.png");
+  public static final Icon FORMAT_16 = getIconFromJar("ui/16/format.png");
+
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
   public static final Icon LOAD_8 = new SpinningDial(8, 8);
@@ -110,6 +120,8 @@ public final class ImageUtils {
   public static final Icon BAN = getIconFromJar("ui/mr-ban.png");
   public static final Icon NO_IMAGE = getIconFromJar("ui/nothumb.png");
   public static final Icon NO_IMAGE_H = flipImageHorizontally(NO_IMAGE);
+  public static final Icon WARNING = getIconFromJar("ui/warning.png");
+  public static final Icon FILE = getIconFromJar("ui/file.png");
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {

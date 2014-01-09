@@ -19,8 +19,7 @@ package fr.free.movierenamer.scrapper.impl.movie;
 
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
-import fr.free.movierenamer.utils.LocaleUtils;
-import java.util.Locale;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,7 +65,7 @@ public class FilmstartsScrapper extends AlloGroupScrapper {
   }
 
   public FilmstartsScrapper() {
-    super(LocaleUtils.AvailableLanguages.de);
+    super(AvailableLanguages.de);
   }
 
   @Override
@@ -80,8 +79,8 @@ public class FilmstartsScrapper extends AlloGroupScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.GERMAN;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.de;
   }
 
   @Override

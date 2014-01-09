@@ -61,26 +61,26 @@ public class OpenSubtitlesScrapper extends SubtitleScrapper {
   }
 
   @Override
-  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, Locale language) throws Exception {
+  protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<Subtitle> searchSubtitles(String query, Locale language) throws Exception {
+  protected List<Subtitle> searchSubtitles(String query, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected Locale getDefaultLanguage() {// TODO
+  protected AvailableLanguages getDefaultLanguage() {// TODO
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  protected List<Subtitle> searchSubtitlesById(IdInfo id, Locale language) {
+  protected List<Subtitle> searchSubtitlesById(IdInfo id, AvailableLanguages language) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

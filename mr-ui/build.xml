@@ -2,9 +2,14 @@
 <project name="Movie_Renamer" default="jar" basedir=".">
   <description>Build Movie Renamer</description>
     
-  <target name="-pre-init">
+  <property name="ant.file.imported" location="." />
+
+  <import file="../mr-core/build.xml"/>
+  <import file="../mr-updater/build.xml"/>
+
+  <target name="-pre-init" depends="jar-core,jar-updater">
     <property file="src/fr/free/movierenamer/ui/settings/UISettings.properties"/>
-    <property name="dist.jar" value="dist/${application.name}-${application.version}.jar" />
+    <property name="dist.jar" value="dist/${application.name}.jar" />
   </target>
 
   <import file="nbproject/build-impl.xml"/>
@@ -26,7 +31,7 @@
     <copy file="Izpack/install.xml" tofile="Izpack/install-tmp.xml" >
       <filterchain>
          <replacetokens>
-            <token key="JARFILE" value="${application.name}-${application.version}.jar"/>
+            <token key="JARFILE" value="${application.name}.jar"/>
             <token key="VERSION" value="${application.version}"/>
           </replacetokens>
       </filterchain>
@@ -35,7 +40,7 @@
     <copy file="Izpack/shortcutSpec.xml" tofile="Izpack/shortcutSpec-tmp.xml" >
       <filterchain>
          <replacetokens>
-            <token key="JARFILE" value="${application.name}-${application.version}.jar"/>
+            <token key="JARFILE" value="${application.name}.jar"/>
           </replacetokens>
       </filterchain>
     </copy>
@@ -43,12 +48,12 @@
     <copy file="Izpack/Unix/Unix_shortcutSpec.xml" tofile="Izpack/Unix/Unix_shortcutSpec-tmp.xml" >
       <filterchain>
          <replacetokens>
-            <token key="JARFILE" value="${application.name}-${application.version}.jar"/>
+            <token key="JARFILE" value="${application.name}.jar"/>
           </replacetokens>
       </filterchain>
     </copy>
 
-    <copy file="dist/${application.name}-${application.version}.jar" tofile="Izpack/MacOS/Contents/Resources/Java/${application.name}.jar"/>
+    <copy file="dist/${application.name}.jar" tofile="Izpack/MacOS/Contents/Resources/Java/${application.name}.jar"/>
 
     <!-- Izpack  -->
     <exec executable="compile">

@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@ import com.alee.managers.hotkey.Hotkey;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
-import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.AncestorAdapter;
 import fr.free.movierenamer.info.ImageInfo;
@@ -58,32 +57,15 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.bean.IEventInfo;
-import fr.free.movierenamer.ui.bean.IEventListener;
-import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.bean.UIEvent;
-import fr.free.movierenamer.ui.bean.UIFile;
-import fr.free.movierenamer.ui.bean.UILoader;
-import fr.free.movierenamer.ui.bean.UIMode;
-import fr.free.movierenamer.ui.bean.UIScrapper;
-import fr.free.movierenamer.ui.bean.UISearchResult;
+import fr.free.movierenamer.ui.bean.*;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
-import fr.free.movierenamer.ui.swing.ContextMenuFieldMouseListener;
-import fr.free.movierenamer.ui.swing.DragAndDrop;
-import fr.free.movierenamer.ui.swing.ImageListModel;
-import fr.free.movierenamer.ui.swing.ListTooltip;
-import fr.free.movierenamer.ui.swing.renderer.MediaListRenderer;
-import fr.free.movierenamer.ui.swing.renderer.SearchResultListRenderer;
-import fr.free.movierenamer.ui.swing.TaskPopup;
-import fr.free.movierenamer.ui.swing.panel.ImagePanel;
+import fr.free.movierenamer.ui.swing.*;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.swing.dialog.LogDialog;
-import fr.free.movierenamer.ui.swing.panel.TaskPanel;
 import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
-import fr.free.movierenamer.ui.swing.panel.MediaPanel;
-import fr.free.movierenamer.ui.swing.panel.MoviePanel;
-import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
+import fr.free.movierenamer.ui.swing.panel.*;
+import fr.free.movierenamer.ui.swing.renderer.*;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -112,7 +94,9 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
 import fr.free.movierenamer.utils.Cache;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -218,7 +202,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mainContainerTransition.setTransitionEffect(new FadeTransitionEffect());
 
     FadeTransitionEffect fadeTransition = new FadeTransitionEffect();
-    fadeTransition.setSpeed(0.05F);// Slow down transition (default : 0.1)
+    //fadeTransition.setSpeed(0.05F);// Slow down transition (default : 0.1)
 
     // Setting popup options
     showIconMediaListChk = UIUtils.createShowIconChk(mediaFileList, setting.isShowIconMediaList(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
@@ -247,7 +231,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     init();
 
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
-    setLocationRelativeTo(null);
     setLanguage(UIUtils.i18n.getLanguageKey("title"), UISettings.APPNAME, UISettings.VERSION);
 
     if (!files.isEmpty()) {
@@ -257,16 +240,28 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     loading.setVisible(false);
     statusBar.setVisible(false);
 
-    // Check for Movie Renamer update
-    Timer updateTimer = new Timer(3000, new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        // TODO check update
-      }
-    });
-    updateTimer.setRepeats(false);
-    updateTimer.start();
+    // check for update
+    if (setting.isCheckupdate()) {
+      Timer updateTimer = new Timer(3000, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          CheckUpdateWorker updateWorker = new CheckUpdateWorker(MovieRenamer.this, false);
+          updateWorker.execute();
+        }
+      });
+      updateTimer.setRepeats(false);
+      updateTimer.start();
+    }
 
+    // TODO Check if mediaInfo is installed
+  }
+
+  @Override
+  public void setVisible(boolean b) {
+    if (b) {
+      UIUtils.showOnScreen(this);
+    }
+    super.setVisible(b);
   }
 
   @SuppressWarnings("unchecked")// Weblaf is in java 6, and combobox, .. use generic type now. We must unchecked on setRenderer, .. method :(
@@ -305,6 +300,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     mediaFileList.addListSelectionListener(mediaFileListListener);
     addDragAndDropListener(mediaFileList);//Add drag and drop listener on mediaFileList
+
     mediaFileList.addMouseListener(mediaFileTooltip);
     mediaFileList.addMouseMotionListener(mediaFileTooltip);
 
@@ -388,12 +384,16 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     // Set panel
     setMediaPanel();
 
+    // Font
+    mediaLbl.setFont(UIUtils.titleFont);
+    searchLbl.setFont(UIUtils.titleFont);
+
     // Add MovieRenamer (Main UI) to UIEvent receiver
     UIEvent.addEventListener(MovieRenamer.class, this);
   }
 
   /**
-   * Create a background panel for animation
+   * Create a background panel for startup animation
    *
    * @return WebImage
    */
@@ -555,6 +555,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
                 showImagePanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
                 updatePanel = true;
                 break;
+              case screenDevice:
+                UIUtils.showOnScreen(this);
+                break;
             }
 
             if (updatePanel) {
@@ -562,6 +565,50 @@ public class MovieRenamer extends WebFrame implements IEventListener {
             }
           }
         }
+        break;
+
+      case UPDATE_AVAILABLE:// FIXME i18n
+        UIUpdate update = (UIUpdate) param;
+        int n = WebOptionPane.showConfirmDialog(MovieRenamer.this,
+                "An update is available.\nDo you want to update Mr to " + update.getUpdateVersion() + "\n\n" + update.getDescen(),
+                UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE
+        );
+
+        if (n > 0) {
+          return;
+        }
+
+        String version = UISettings.getApplicationVersionNumber();
+        String updateDir = Settings.appFolder + File.separator + "update";
+        String installDir = "";
+        try {
+          installDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath();
+        } catch (URISyntaxException ex) {
+          //
+        }
+
+        try {
+
+          String javaBin = System.getProperty("java.home") + "/bin/java";
+          File jarFile = new File(installDir + File.separator + "lib" + File.separator + "Mr-updater.jar");
+          String toExec[];
+
+          if (setting.coreInstance.isProxyIsOn()) {
+            toExec = new String[]{javaBin, "-Dhttp.proxyHost=" + setting.coreInstance.getProxyUrl(),
+              "-Dhttp.proxyPort=" + setting.coreInstance.getProxyPort(), "-jar", jarFile.getPath(), version, installDir, updateDir};
+          } else {
+            toExec = new String[]{javaBin, "-jar", jarFile.getPath(), version, installDir, updateDir};
+          }
+
+          Process p = Runtime.getRuntime().exec(toExec);
+          dispose();
+          System.exit(0);
+        } catch (Exception ex) {
+          JOptionPane.showMessageDialog(this, "Restart failed :(", "error", JOptionPane.ERROR_MESSAGE);// FIXME i18n
+        }
+        break;
+      case NO_UPDATE:
+
         break;
     }
   }
@@ -609,11 +656,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
           }
 
           currentMedia = mediaFile;
+          System.out.println("Search : " + currentMedia.getSearch());
           searchField.setText(currentMedia.getSearch());
           mediaPanel.clearfileInfoPanel();
 
           searchMedia();
-          WorkerManager.getFileInfo(MovieRenamer.this, currentMedia);// We start get file info after otherwise "searchmedia" will stop it
         }
       }
     };
@@ -724,10 +771,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       return;
     }
 
-    String search = searchField.getText();
+    String search = searchField.getText().trim();
     if (search.length() == 0) {
-      TooltipManager.showOneTimeTooltip(searchField, null, "<html><center>One-time <font color=red>HTML</font> tooltip<br>"
-              + "<font size=2>just click anywhere to close it</font></center></html>", TooltipWay.down);// FIXME i18n
+      UIUtils.showWrongNotification(i18n.getLanguage("error.searchempty", false));
       return;
     }
 
@@ -1152,11 +1198,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     mediaLbl.setLanguage(i18n.getLanguageKey("mediatb.media"));
     mediaLbl.setIcon(ImageUtils.MEDIA_16);
-    mediaLbl.setFont(new Font("Ubuntu", 1, 12)); // NOI18N
     mediaFileTb.add(mediaLbl);
 
     mediaFileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    mediaFileList.setFocusable(false);
     mediaFileScp.setViewportView(mediaFileList);
 
     GroupLayout mediaFilePnlLayout = new GroupLayout(mediaFilePnl);
@@ -1193,8 +1237,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchTb.setRound(5);
 
     searchLbl.setLanguage(i18n.getLanguageKey("searchtb.search"));
-    searchLbl.setIcon(ImageUtils.SEARCH_16);
-    searchLbl.setFont(new Font("DialogInput", 1, 12)); // NOI18N
+    searchLbl.setIcon(ImageUtils.LOOK_16);
     searchTb.add(searchLbl);
 
     searchBtn.setEnabled(false);
@@ -1220,7 +1263,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     scrapperCb.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
     scrapperCb.setDrawFocus(false);
-    scrapperCb.setFont(new Font("Ubuntu Light", 0, 12)); // NOI18N
     scrapperCb.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         scrapperCbActionPerformed(evt);
@@ -1370,11 +1412,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     });  }//GEN-LAST:event_settingBtnActionPerformed
 
   private void updateBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
-    //checkUpdate(true); // TODO
+    CheckUpdateWorker updateWorker = new CheckUpdateWorker(MovieRenamer.this, true);
+    updateWorker.execute();
   }//GEN-LAST:event_updateBtnActionPerformed
 
   private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
-    WorkerManager.rename(currentMedia.getFile(), renameField.getText());
+    WorkerManager.rename(this, currentMedia.getFile(), renameField.getText());
   }//GEN-LAST:event_renameBtnActionPerformed
 
   private void searchBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
@@ -1417,6 +1460,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private void scrapperCbActionPerformed(ActionEvent evt) {//GEN-FIRST:event_scrapperCbActionPerformed
     currentScrapper = (UIScrapper) scrapperCb.getModel().getSelectedItem();
   }//GEN-LAST:event_scrapperCbActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private WebPanel centerPanel;
   private WebButton clearMediaFileListBtn;

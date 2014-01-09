@@ -24,7 +24,7 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,9 +47,9 @@ import org.w3c.dom.Node;
  */
 public abstract class AlloGroupScrapper extends MovieScrapper {
 
-  private final Pattern yearPattern = Pattern.compile("\\d{4}");
-  private final Pattern runtimePattern = Pattern.compile("(\\d+)h\\s?(\\d+)min");
-  private final String key = "0A12B34C56D78E9FULONYXTIZKJSHVPWQMGR";
+  private static final Pattern yearPattern = Pattern.compile("\\d{4}");
+  private static final Pattern runtimePattern = Pattern.compile("(\\d+)h\\s?(\\d+)min");
+  private static final String key = "0A12B34C56D78E9FULONYXTIZKJSHVPWQMGR";
 
   protected interface ITag {
 
@@ -76,7 +75,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
     actors
   }
 
-  protected AlloGroupScrapper(LocaleUtils.AvailableLanguages lang) {
+  protected AlloGroupScrapper(AvailableLanguages lang) {
     super(lang);
   }
 
@@ -128,13 +127,13 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   }
 
   @Override
-  protected final List<Movie> searchMedia(String query, Locale language) throws Exception {
+  protected final List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", getHost(), "/" + getSearchString() + "/1/?q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected final List<Movie> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected final List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     // select movie results
@@ -214,7 +213,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, Locale language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", getHost(), getMoviePageString(movie.getMediaId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
@@ -348,7 +347,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
 
     URL searchUrl = new URL("http", getHost(), getCastingPageString(movie.getMediaId()));
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
@@ -394,8 +393,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
           personFields.put(CastingInfo.PersonProperty.job, CastingInfo.DIRECTOR);
           break;
       }
-      casting.add(
-              new CastingInfo(personFields));
+      casting.add(new CastingInfo(personFields));
     }
 
     return casting;

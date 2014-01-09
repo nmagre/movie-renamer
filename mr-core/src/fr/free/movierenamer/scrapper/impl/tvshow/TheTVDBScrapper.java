@@ -100,18 +100,18 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected Locale getDefaultLanguage() {
-    return Locale.ENGLISH;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, Locale language) throws Exception {
-    URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + language.getLanguage());
+  protected List<TvShow> searchMedia(String query, AvailableLanguages language) throws Exception {
+    URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + language.getLocale().getLanguage());
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected List<TvShow> searchMedia(URL searchUrl, Locale language) throws Exception {
+  protected List<TvShow> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Data/Series", dom);
@@ -133,8 +133,8 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, Locale language) throws Exception {
-    URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.getLanguage() + ".xml");
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+    URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.name() + ".xml");
 
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
@@ -165,8 +165,8 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, Locale language) throws Exception {
-    Document seriesRecord = getTvShowRecord(tvShow, language.getLanguage());
+  protected List<EpisodeInfo> fetchEpisodesInfoList(TvShow tvShow, AvailableLanguages language) throws Exception {
+    Document seriesRecord = getTvShowRecord(tvShow, language.name());
 
     // we could get the series name from the search result, but the language may
     // not match the given parameter
@@ -247,7 +247,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, Locale language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/actors.xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
