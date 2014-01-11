@@ -241,7 +241,7 @@ public class TMDbScrapper extends MovieScrapper {
     fields.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
     fields.put(MovieProperty.tagline, JSONUtils.selectString("tagline", json));
     JSONObject collection = JSONUtils.selectObject("belongs_to_collection", json);
-    fields.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection) : "");
+    fields.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection).replace("(Collection)", "").trim() : "");
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.TMDB));
@@ -274,7 +274,7 @@ public class TMDbScrapper extends MovieScrapper {
     }
 
     List<String> tags = new ArrayList<String>();
-    if (Settings.getInstance().isSearchTmdbTag()) {
+    if (Settings.getInstance().isGetTmdbTagg()) {
       JSONObject keywords = JSONUtils.selectObject("keywords", json);
       if (keywords != null) {
         for (JSONObject jsonObj : JSONUtils.selectList("keywords", keywords)) {

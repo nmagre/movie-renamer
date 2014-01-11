@@ -51,7 +51,7 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
     MediaTag mtag = info.getMediaTag();
 
     MediaVideo mvideo = mtag.getMediaVideo();
-    add(createTitle("fileinfo.video", true), getTitleConstraint());
+    add(createTitle("fileinfo.video"), getTitleConstraint());
     try {
       createFields(mvideo, level);
     } catch (IntrospectionException ex) {
@@ -60,12 +60,12 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
 
     List<MediaAudio> audios = mtag.getMediaAudios();
     if (audios.size() > 0) {
-      add(createTitle("fileinfo.audio", true), getTitleConstraint());
+      add(createTitle("fileinfo.audio"), getTitleConstraint());
     }
 
     int count = 1;
     for (MediaAudio audio : audios) {
-      add(createTitle(("fileinfo.audio") + " #" + count++, false), getGroupConstraint(2));// FIXME i18n
+      add(createTitle(("fileinfo.audio") + " #" + count++), getGroupConstraint(2));// FIXME i18n
       try {
         createFields(audio, 2);
       } catch (IntrospectionException ex) {

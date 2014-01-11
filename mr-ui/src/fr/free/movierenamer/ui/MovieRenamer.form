@@ -221,7 +221,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="mediaFileTb" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="mediaFileScp" pref="710" max="32767" attributes="0"/>
+                                  <Component id="mediaFileScp" pref="726" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -500,13 +500,7 @@
             </Constraint>
           </Constraints>
           <SubComponents>
-            <Component class="com.alee.laf.label.WebLabel" name="webLabel1">
-              <Properties>
-                <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/image/ui/16/media-warn.png"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Media info is not installed"/>
-              </Properties>
+            <Component class="com.alee.laf.label.WebLabel" name="mediainfoStatusLbl">
             </Component>
             <Component class="com.alee.laf.label.WebLabel" name="statusLbl">
             </Component>

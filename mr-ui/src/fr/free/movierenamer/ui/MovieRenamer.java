@@ -63,6 +63,7 @@ import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.*;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.swing.dialog.LogDialog;
+import fr.free.movierenamer.ui.swing.dialog.MediaInfoDownloadDialog;
 import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
 import fr.free.movierenamer.ui.swing.panel.*;
 import fr.free.movierenamer.ui.swing.renderer.*;
@@ -170,6 +171,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final WebSplitPane listSpmini = new WebSplitPane();
   private WebButtonPopup mediaFileListsettingBtn;
   private List<ImageInfo> images;
+  private LoadingDialog loadingDial;
 
   public MovieRenamer(List<File> files) {
     super();
@@ -205,8 +207,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     //fadeTransition.setSpeed(0.05F);// Slow down transition (default : 0.1)
 
     // Setting popup options
-    showIconMediaListChk = UIUtils.createShowIconChk(mediaFileList, setting.isShowIconMediaList(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
-    showIconResultListChk = UIUtils.createShowIconChk(searchResultList, setting.isShowThumb(), UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
+    showIconMediaListChk = UIUtils.createShowIconChk(mediaFileList, setting.isShowIconMediaList(),
+            UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
+    showIconResultListChk = UIUtils.createShowIconChk(searchResultList, setting.isShowThumbResultList(),
+            UIUtils.i18n.getLanguageKey("showIcon", "popupmenu"));
     showMediaPanelChk = new WebCheckBox(UIUtils.i18n.getLanguageKey("showMediaPanel", "popupmenu"));
     showMediaPanelChk.setSelected(setting.isShowMediaPanel());
     showMediaPanelChk.addActionListener(createShowPanelListerner());
@@ -215,9 +219,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     showImagePanelChk.setSelected(setting.isShowImagePanel());
     showImagePanelChk.addActionListener(createShowPanelListerner());
 
-    showIdResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showId, setting.isShowId(), UIUtils.i18n.getLanguageKey("showId", "popupmenu"));
-    showYearResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showYear, setting.isShowYear(), UIUtils.i18n.getLanguageKey("showYear", "popupmenu"));
-    showOrigTitleResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showOrigTitle, setting.isShowOrigTitle(), UIUtils.i18n.getLanguageKey("showOrigTitle", "popupmenu"));
+    showIdResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showId,
+            setting.isShowIdResultList(), UIUtils.i18n.getLanguageKey("showId", "popupmenu"));
+    showYearResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showYear,
+            setting.isShowYearResultList(), UIUtils.i18n.getLanguageKey("showYear", "popupmenu"));
+    showOrigTitleResultListChk = UIUtils.createShowChk(searchResultList, SearchResultListRenderer.Property.showOrigTitle,
+            setting.isShowOrigTitleResultList(), UIUtils.i18n.getLanguageKey("showOrigTitle", "popupmenu"));
 
     showFormatFieldChk = new WebCheckBox(UIUtils.i18n.getLanguageKey("showFormatField", "popupmenu"));
     showFormatFieldChk.setSelected(setting.isShowFormatField());
@@ -240,17 +247,46 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     loading.setVisible(false);
     statusBar.setVisible(false);
 
-    // check for update
-    if (setting.isCheckupdate()) {
-      Timer updateTimer = new Timer(3000, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          CheckUpdateWorker updateWorker = new CheckUpdateWorker(MovieRenamer.this, false);
-          updateWorker.execute();
+    // check for update timer
+    final Timer updateTimer = new Timer(3000, new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CheckUpdateWorker updateWorker = new CheckUpdateWorker(MovieRenamer.this, false);
+        updateWorker.execute();
+      }
+    });
+    updateTimer.setRepeats(false);
+
+    // Media info warning or download dialog (only for windows)
+    final Timer mediainfoTimer = new Timer(2500, new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (Settings.WINDOWS) {
+          new MediaInfoDownloadDialog(MovieRenamer.this).setVisible(true);
+        } else {
+          UIUtils.showWarningNotification(i18n.getLanguage("error.noWritePermission", false));
+          // Start check update
+          if (setting.isCheckupdate()) {
+            updateTimer.start();
+          }
         }
-      });
-      updateTimer.setRepeats(false);
-      updateTimer.start();
+
+      }
+    });
+
+    if (!Settings.MEDIAINFO) {
+      mediainfoStatusLbl.setLanguage(i18n.getLanguageKey("error.mediaInfoNotInstalled", false));
+      mediainfoStatusLbl.setIcon(ImageUtils.MEDIAWARN_16);
+
+      if (setting.isMediaInfoWarning()) {
+        mediainfoTimer.setRepeats(false);
+        mediainfoTimer.start();
+      } else {
+        // check for update
+        if (setting.isCheckupdate()) {
+          updateTimer.start();
+        }
+      }
     }
 
     // TODO Check if mediaInfo is installed
@@ -452,6 +488,17 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         statusLbl.setIcon(null);
         statusBar.setVisible(false);
         break;
+      case DOWNLOAD_START:
+        if (loadingDial == null) {
+          loadingDial = new LoadingDialog();
+        }
+        break;
+      case DOWNLOAD_DONE:
+        if (loadingDial != null) {
+          loadingDial.dispose();
+        }
+        loadingDial = null;
+        break;
       case RENAME_FILE:
         if (info instanceof RenamerWorker) {
           synchronized (renamerWorkerQueue) {
@@ -584,9 +631,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         try {
           installDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath();
         } catch (URISyntaxException ex) {
-          //
+          // TODO
+          UISettings.LOGGER.log(Level.SEVERE, null, ex);
         }
 
+        // TODO check if "installDir" is writable
         try {
 
           String javaBin = System.getProperty("java.home") + "/bin/java";
@@ -608,7 +657,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         }
         break;
       case NO_UPDATE:
-
+        // TODO
         break;
     }
   }
@@ -1018,12 +1067,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     MediaInfo mediaInfo = getMediaPanel().getInfo();
     if (mediaInfo != null && images != null) {
       renameBtn.setEnabled(true);
-      Nfo nfo = new Nfo((MovieInfo) mediaInfo, images);
-      try {
-        nfo.writeNFO();
-      } catch (ParserConfigurationException ex) {
-        Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
-      }
     }
   }
 
@@ -1100,7 +1143,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     renameTb = new WebToolBar();
     renameBtn = new WebButton();
     statusBar = new WebStatusBar();
-    webLabel1 = new WebLabel();
+    mediainfoStatusLbl = new WebLabel();
     statusLbl = new WebLabel();
 
     updateBtn.addActionListener(new ActionListener() {
@@ -1215,7 +1258,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       .addGroup(mediaFilePnlLayout.createSequentialGroup()
         .addComponent(mediaFileTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 710, Short.MAX_VALUE))
+        .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE))
     );
 
     listSp.setLeftComponent(mediaFilePnl);
@@ -1335,10 +1378,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     renamePnl.add(renameTb, BorderLayout.NORTH);
 
     statusBar.setMargin(new Insets(2, 10, 2, 10));
-
-    webLabel1.setIcon(new ImageIcon(getClass().getResource("/image/ui/16/media-warn.png"))); // NOI18N
-    webLabel1.setText("Media info is not installed");
-    statusBar.add(webLabel1);
+    statusBar.add(mediainfoStatusLbl);
     statusBar.add(statusLbl);
 
     renamePnl.add(statusBar, BorderLayout.SOUTH);
@@ -1479,6 +1519,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private WebToolBar mediaFileTb;
   private WebLabel mediaLbl;
   private WebSplitPane mediaSp;
+  private WebLabel mediainfoStatusLbl;
   private Separator modeSep;
   private WebButton movieModeBtn;
   private WebCheckBox nfoChk;
@@ -1503,6 +1544,5 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private WebButton toggleGroup;
   private WebButton tvShowModeBtn;
   private WebButton updateBtn;
-  private WebLabel webLabel1;
   // End of variables declaration//GEN-END:variables
 }

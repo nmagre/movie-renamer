@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui.i18n;
 
 import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.utils.ClassUtils;
 import java.util.logging.Level;
 
 /**
@@ -83,7 +84,8 @@ public class I18n {
     lkey += key;
     String str = LanguageManager.get(lkey);
     if (str.equals(lkey)) {
-      UISettings.LOGGER.log(Level.WARNING, String.format("Language Key \"%s\" does not exist", lkey));
+      StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+      UISettings.LOGGER.log(Level.WARNING, String.format("Language Key \"%s\" does not exist.\n%s", lkey, ClassUtils.getStackTrace(stackTraceElements)));
     }
 
     return value ? String.format(str, (Object[]) replace) : lkey;

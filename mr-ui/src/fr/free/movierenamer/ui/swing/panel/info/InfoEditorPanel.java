@@ -63,7 +63,7 @@ public abstract class InfoEditorPanel<T extends Info> extends InfoPanel<T> {
   }
 
   protected void createEditableField(String i18nkey, UIEditor editor, int gridWidth, int nbElement, boolean inline, boolean last) {
-    WebLabel label = (WebLabel) createComponent(Component.LABEL, UIUtils.i18n.getLanguageKey(i18nkey));
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, i18nkey);
     label.setDrawShade(true);
 
     JComponent component = editor.getComponent();

@@ -51,7 +51,9 @@ public final class UIEvent {
     RENAME_FILE,
     RENAME_FILE_DONE,
     UPDATE_AVAILABLE,
-    NO_UPDATE
+    NO_UPDATE,
+    DOWNLOAD_START,
+    DOWNLOAD_DONE
   }
 
   public static void addEventListener(Class<? extends IEventListener> clazz, IEventListener listener) {

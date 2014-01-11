@@ -22,9 +22,14 @@ import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.ClassUtils;
+import fr.free.movierenamer.utils.URIRequest;
+import java.awt.Image;
+import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
  * Class AbstractImageWorker
@@ -56,8 +61,29 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
           break;
         }
 
-        res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
-        publish(new ImageChunk(res, image.getId()));
+        //res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
+        Image img = null;
+        InputStream is = null;
+        try {
+          is = URIRequest.getInputStream(image.getUri(size));
+          img = ImageIO.read(is);
+        } catch (Exception ex) {
+        } finally {
+          if (is != null) {
+            is.close();
+          }
+        }
+
+        if (img == null) {
+          img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);
+        }
+
+        if (img != null) {
+          if (image.getResize() != null) {
+            img = img.getScaledInstance(image.getResize().width, image.getResize().height, Image.SCALE_DEFAULT);
+          }
+          publish(new ImageChunk(new ImageIcon(img), image.getId()));
+        }
       }
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, getName() + "\n\n" + ClassUtils.getStackTrace(ex));

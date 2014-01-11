@@ -80,8 +80,8 @@ public class SettingDialog extends JDialog {
 
   private static enum mainTabIcon {
 
-    GENERALim(ImageUtils.SETTING_16),
-    RENAME(ImageUtils.RENAME_16),
+    GENERAL(ImageUtils.SETTING_16),
+    MEDIA(ImageUtils.MEDIA_16),
     SEARCH(ImageUtils.SSEARCH_16),
     INTERFACE(ImageUtils.WINDOW_16),
     FORMAT(ImageUtils.FORMAT_16),
@@ -116,12 +116,12 @@ public class SettingDialog extends JDialog {
     properties.addAll(Arrays.asList(UISettingsProperty.values()));
     properties.addAll(Arrays.asList(Settings.SettingsProperty.values()));
 
-    LanguageManager.registerComponent(mainTabbedPane, i18n.getLanguageKey("settings.maintab", false));
+    LanguageManager.registerComponent(mainTabbedPane, "mrui.settings.maintab");
     mainTabbedPane.setFont(UIUtils.titleFont);
 
     for (SettingsType settingType : SettingsType.values()) {
       final SettingPanelGen panel = new SettingPanelGen(mr);
-      panel.addSettings(settingType, getSettings(settingType), settingType.equals(SettingsType.RENAME));
+      panel.addSettings(settingType, getSettings(settingType));
       panel.setName(settingType.name().toLowerCase());
       mainTabbedPane.addTab("", getMainTabIcon(settingType.name()), panel);
       panels.put(settingType, panel);
@@ -221,9 +221,9 @@ public class SettingDialog extends JDialog {
         map.put(SettingsSubType.TIME, tproperties);
         break;
 
-      case RENAME:
-        tproperties = map.get(SettingsSubType.MOVIEFILENAME);
-        tproperties.add(new UITestSettings(type, SettingsSubType.MOVIEFILENAME) {
+      case MEDIA:
+        tproperties = map.get(SettingsSubType.MOVIE);
+        tproperties.add(new UITestSettings(type, SettingsSubType.MOVIE) {
           private ITestActionListener listener;
           private MovieInfo info;
 
@@ -382,6 +382,7 @@ public class SettingDialog extends JDialog {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+    saveBtn.setPreferredSize(UIUtils.buttonSize);
     saveBtn.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveBtnActionPerformed(evt);
@@ -401,8 +402,8 @@ public class SettingDialog extends JDialog {
       .addComponent(mainTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 391, Short.MAX_VALUE)
+        .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 483, Short.MAX_VALUE)
         .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
     );
@@ -413,7 +414,7 @@ public class SettingDialog extends JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(cancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-          .addComponent(saveBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE))
+          .addComponent(saveBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents

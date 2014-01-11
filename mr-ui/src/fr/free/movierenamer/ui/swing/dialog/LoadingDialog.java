@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,12 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 public class LoadingDialog extends WebDialog {
 
   private static final long serialVersionUID = 1L;
+  private WebPanel jPanel1;
+  private WebLabel logoLbl;
+  private WebLabel webLabel1;
 
   public LoadingDialog() {
+
     initComponents();
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
     setTitle(UISettings.APPNAME);
@@ -80,7 +84,5 @@ public class LoadingDialog extends WebDialog {
 
     pack();
   }
-  private WebPanel jPanel1;
-  private WebLabel logoLbl;
-  private WebLabel webLabel1;
+
 }

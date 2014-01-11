@@ -24,7 +24,9 @@ import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.renderer.CastingListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.Icon;
 
 /**
@@ -37,8 +39,8 @@ public class CastingInfoPanel<T extends MediaInfo> extends InfoPanel<T> {
   private T info;
   private final ImageListModel<UIPersonImage> directorListModel = new ImageListModel<>();
   private final ImageListModel<UIPersonImage> actorListModel = new ImageListModel<>();
-  private List<UIPersonImage> actorsList;
-  private List<UIPersonImage> directorsList;
+  private final List<UIPersonImage> actorsList;
+  private final List<UIPersonImage> directorsList;
 
   /**
    * Creates new form CastingInfoPanel

@@ -73,14 +73,28 @@ public final class ClassUtils {
   /**
    * Get stack trace message to string
    *
+   * @param stes
+   * @return String with stack trace
+   */
+  public static String getStackTrace(StackTraceElement[] stes) {
+    return getStackTrace(null, stes);
+  }
+
+  /**
+   * Get stack trace message to string
+   *
    * @param exception String
    * @param ste Stack trace
    * @return String with stack trace
    */
-  private static String getStackTrace(String exception, StackTraceElement[] ste) {
-    StringBuilder res = new StringBuilder(exception + "\n");
-    for (int i = 0; i < ste.length; i++) {
-      res.append("    ").append(ste[i].toString()).append("\n");
+  private static String getStackTrace(String exception, StackTraceElement[] stes) {
+    final StringBuilder res = new StringBuilder();
+    if (exception != null) {
+      res.append(exception).append("\n");
+    }
+
+    for (StackTraceElement ste : stes) {
+      res.append("    ").append(ste.toString()).append("\n");
     }
     return res.toString();
   }

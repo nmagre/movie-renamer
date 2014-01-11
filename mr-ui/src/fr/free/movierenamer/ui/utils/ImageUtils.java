@@ -100,13 +100,13 @@ public final class ImageUtils {
   public static final Icon LOAD_16 = new SpinningDial(16, 16);
   public static final Icon SUBTITLE_16 = getIconFromJar("ui/16/srt.png");
   public static final Icon LOOK_16 = getIconFromJar("ui/16/look.png");
-  public static final Icon RENAME_16 = getIconFromJar("ui/16/rename.png");
   public static final Icon SSEARCH_16 = getIconFromJar("ui/16/ssearch.png");
   public static final Icon WINDOW_16 = getIconFromJar("ui/16/window.png");
   public static final Icon OTHER_16 = getIconFromJar("ui/16/other.png");
   public static final Icon NETWORK_16 = getIconFromJar("ui/16/network.png");
   public static final Icon SKIP_16 = getIconFromJar("ui/16/skip.png");
   public static final Icon FORMAT_16 = getIconFromJar("ui/16/format.png");
+  public static final Icon TEST_16 = getIconFromJar("ui/16/test.png");
 
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
@@ -145,7 +145,7 @@ public final class ImageUtils {
    * @param cls Class
    * @return Image file or null
    */
-  private static Image getImageFromJAR(String fileName, Class<?> clazz) {
+  public static Image getImageFromJAR(String fileName, Class<?> clazz) {
     if (fileName == null) {
       return null;
     }
@@ -219,6 +219,7 @@ public final class ImageUtils {
           } finally {
             is.close();
           }
+
           if (cache != null) {
             cache.put(imagePth, new ImageIcon(img));
           }
@@ -227,6 +228,7 @@ public final class ImageUtils {
           Settings.LOGGER.log(Level.SEVERE, String.format("%s %s", ex.getMessage(), imagePth));
         }
       }
+
     } else {
       img = null;
     }
@@ -235,6 +237,7 @@ public final class ImageUtils {
       // load default image id necessary
       img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);
     }
+
     if (dim != null) {
       // let's resize
       img = img.getScaledInstance(dim.width, dim.height, Image.SCALE_DEFAULT);

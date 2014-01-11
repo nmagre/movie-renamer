@@ -25,6 +25,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
@@ -44,12 +45,12 @@ import fr.free.movierenamer.ui.swing.dialog.SettingsHelpDialog;
 import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -72,12 +73,27 @@ import javax.swing.JPanel;
 public class SettingPanelGen extends PanelGenerator {
 
   private static final long serialVersionUID = 1L;
-  private final Dimension comboboxDim = new Dimension(200, 25);
+  private static final Dimension comboboxDim = new Dimension(200, 25);
   private Map<IProperty, WebCheckBox> checkboxs;
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebComboBox> comboboxs;
-  private final String settingsi18n = "settings.";
+  private static final String settingsi18n = "settings.";
   private final MovieRenamer mr;
+
+  private static enum TabbedSettings {
+
+    MEDIA("file"),
+    IMAGE("file");
+    private final String titleKey;
+
+    private TabbedSettings(final String titleKey) {
+      this.titleKey = settingsi18n + titleKey;
+    }
+
+    public String getTitleKey() {
+      return titleKey;
+    }
+  }
 
   public SettingPanelGen(MovieRenamer mr) {
     super();
@@ -86,12 +102,21 @@ public class SettingPanelGen extends PanelGenerator {
   }
 
   @SuppressWarnings("unchecked")
-  public void addSettings(Settings.SettingsType type, Map<Settings.SettingsSubType, List<IProperty>> settingsDef, boolean tabbed) {
+  public void addSettings(Settings.SettingsType type, Map<Settings.SettingsSubType, List<IProperty>> settingsDef) {
 
     checkboxs = new HashMap<>();
     fields = new HashMap<>();
     comboboxs = new HashMap<>();
-    WebTabbedPane tabbedPane = new WebTabbedPane();
+    WebTabbedPane tabbedPane = null;
+    TabbedSettings tabbed = null;
+
+    try {
+      tabbed = TabbedSettings.valueOf(type.name());
+      tabbedPane = new WebTabbedPane();
+      LanguageManager.registerComponent(tabbedPane, "mrui.settings.tab");
+      tabbedPane.setFont(UIUtils.titleFont);
+    } catch (Exception ex) {
+    }
 
     for (List<IProperty> group : settingsDef.values()) {
       int level = 1;
@@ -102,17 +127,20 @@ public class SettingPanelGen extends PanelGenerator {
       final List<JComponent> childs = new ArrayList<>();
 
       for (final IProperty property : group) {
+
+        // Create title toolbar (SettingsSubType)
         if (createTitle) {
           Settings.SettingsSubType subType = property.getSubType();
           String ssubType = subType.name();
-          if (type.equals(Settings.SettingsType.RENAME) && !subType.equals(Settings.SettingsSubType.GENERAL)) {
+          if (tabbedPane != null && !subType.equals(Settings.SettingsSubType.GENERAL)) {
             panel = new WebPanel();
             panel.setLayout(new GridBagLayout());
+            panel.setName(subType.name().toLowerCase());
             if (tabbedPane.getTabCount() == 0) {
-              add(createTitle(settingsi18n + ssubType, true, type, subType), getTitleConstraint());
+              add(createTitle(tabbed.getTitleKey(), type, subType), getTitleConstraint());
             }
           } else {
-            add(createTitle(settingsi18n + ssubType, true, type, subType), getTitleConstraint());
+            add(createTitle(settingsi18n + ssubType.toLowerCase(), type, subType), getTitleConstraint());
           }
           createTitle = false;
         }
@@ -120,6 +148,7 @@ public class SettingPanelGen extends PanelGenerator {
         // Create settings test button + textfield
         if (property instanceof UITestSettings) {
           WebButton button = (WebButton) createComponent(Component.BUTTON, settingsi18n + "test");
+          button.setIcon(ImageUtils.TEST_16);
           final JComponent component = createComponent(Component.FIELD, null);
           button.addActionListener(new ActionListener() {
 
@@ -135,7 +164,7 @@ public class SettingPanelGen extends PanelGenerator {
           });
           GridBagConstraints ctr = getGroupConstraint(0, false, false, level);
           ctr.insets.top += 25;
-          if (tabbed && panel != null) {
+          if (tabbedPane != null && panel != null) {
             panel.add(button, ctr);
           } else {
             add(button, ctr);
@@ -143,7 +172,7 @@ public class SettingPanelGen extends PanelGenerator {
 
           ctr = getGroupConstraint(1, true, true, level);
           ctr.insets.top += 25;
-          if (tabbed && panel != null) {
+          if (tabbedPane != null && panel != null) {
             panel.add(component, ctr);
           } else {
             add(component, ctr);
@@ -153,12 +182,12 @@ public class SettingPanelGen extends PanelGenerator {
 
         GridBagConstraints constraint = getGroupConstraint(level);
         final JComponent component;
-        String title = (settingsi18n + property.name().toLowerCase());// FIXME i18n
+        String title = (settingsi18n + property.name().toLowerCase());
 
         if (property.getVclass().equals(Boolean.class)) {
 
           // Create checkbox for boolean value
-          component = createComponent(Component.CHECKBOX, "");
+          component = createComponent(Component.CHECKBOX, null);
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           label.setMargin(0, 25, 0, 0);
           ((WebCheckBox) component).add(label);
@@ -170,7 +199,7 @@ public class SettingPanelGen extends PanelGenerator {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = createComponent(Component.FIELD, null);
 
-          if (tabbed && panel != null) {
+          if (tabbedPane != null && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
           } else {
             add(label, getGroupConstraint(0, false, false, level));
@@ -186,7 +215,7 @@ public class SettingPanelGen extends PanelGenerator {
 
           DefaultComboBoxModel<IIconList> model = new DefaultComboBoxModel<>();
 
-          if (tabbed && panel != null) {
+          if (tabbedPane != null && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
           } else {
             add(label, getGroupConstraint(0, false, false, level));
@@ -228,7 +257,7 @@ public class SettingPanelGen extends PanelGenerator {
           //component.setPreferredSize(comboboxDim);
           DefaultComboBoxModel<UIScrapper> model = new DefaultComboBoxModel<>();
 
-          if (tabbed && panel != null) {
+          if (tabbedPane != null && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
           } else {
             add(label, getGroupConstraint(0, false, false, level));
@@ -280,22 +309,23 @@ public class SettingPanelGen extends PanelGenerator {
           }
         }
 
-        if (tabbed && panel != null) {
+        if (tabbedPane != null && panel != null) {
           panel.add(component, constraint);
         } else {
           add(component, constraint);
         }
       }
 
-      if (tabbed && panel != null) {
-        tabbedPane.add((settingsi18n + group.get(0).getSubType().name().toLowerCase()), panel);// FIXME i18n
+      if (tabbedPane != null && panel != null) {
+        tabbedPane.add(panel);
       }
     }
 
-    if (tabbed) {
+    if (tabbedPane != null) {
       add(tabbedPane, getGroupConstraint(0, true, true, 1));
     }
 
+    // Add a dummy panel to avoid centering
     add(new JPanel(), getDummyPanelConstraint());
   }
 
@@ -339,15 +369,14 @@ public class SettingPanelGen extends PanelGenerator {
    * Create title toolbar with help button
    *
    * @param title
-   * @param i18n
    * @param type
    * @param subType
    * @return WebToolBar
    */
-  protected WebToolBar createTitle(String title, final boolean i18n, final Settings.SettingsType type, final Settings.SettingsSubType subType) {
-    WebToolBar toolbar = createTitle(title, i18n);
+  protected WebToolBar createTitle(String title, final Settings.SettingsType type, final Settings.SettingsSubType subType) {
+    WebToolBar toolbar = createTitle(title);
 
-    final WebButton button = UIUtils.createButton("setting.help", ImageUtils.HELP_16, false, false);// FIXME i18n
+    final WebButton button = UIUtils.createButton(i18n.getLanguageKey(settingsi18n + "help", false), ImageUtils.HELP_16, false, false);
     button.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ae) {
@@ -363,24 +392,6 @@ public class SettingPanelGen extends PanelGenerator {
     toolbar.addToEnd(button);
 
     return toolbar;
-  }
-
-  public void createTest(final ITestActionListener listener) {
-    int level = 1;
-    WebButton button = (WebButton) createComponent(Component.BUTTON, settingsi18n + "test");
-    final JComponent component = createComponent(Component.FIELD, null);
-    button.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        listener.actionPerformed(e);
-        ((WebTextField) component).setText(listener.getResult());
-      }
-
-    });
-    add(button, getGroupConstraint(0, false, false, level));
-
-    add(component, getGroupConstraint(1, true, true, level));
   }
 
   public Map<IProperty, WebCheckBox> getCheckbox() {

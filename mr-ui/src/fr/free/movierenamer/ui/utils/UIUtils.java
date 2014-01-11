@@ -42,6 +42,7 @@ import fr.free.movierenamer.ui.i18n.I18n;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -65,6 +66,7 @@ import javax.swing.plaf.FontUIResource;
 public final class UIUtils {
 
   private static final int NOTIFICATION_DELAY = 3000;
+  public static final Dimension buttonSize = new Dimension(110, 27);
   public static final I18n i18n = new I18n("main");
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<>();
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
@@ -80,7 +82,7 @@ public final class UIUtils {
   public static final Font italicFont;
 
   static {
-    fontName = Platform.isWindows() ? "Courier New" : "Lucida Typewriter";
+    fontName = Platform.isWindows() ? "Courier New" : "Lucida Typewriter";// FIXME "Courier New" is so ugly, we need to find another best font
     defaultFont = getFont(11);
     boldFont = getFont(Font.BOLD, 11);
     titleFont = getFont(Font.BOLD, 12);
@@ -96,8 +98,7 @@ public final class UIUtils {
   }
 
   /**
-   * Show window on screen device N and centered/fullscreen (depends on
-   * settings)
+   * Show window on screen device N and centered
    *
    * @param frame Window to move
    */
@@ -357,6 +358,9 @@ public final class UIUtils {
         UIManager.put(key, f);
       }
     }
+
+    f = new FontUIResource(boldFont);
+    UIManager.put("Button.font", f);
   }
 
   private UIUtils() {

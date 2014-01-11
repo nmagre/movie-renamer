@@ -26,6 +26,8 @@ import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -264,17 +266,18 @@ public abstract class PanelGenerator extends WebPanel {
   /**
    * Create title toolbar
    *
-   * @param title
-   * @param i18n
+   * @param key
+   * @param data
    * @return WebToolBar
    */
-  protected WebToolBar createTitle(String title, boolean i18n) {
-    WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, title);
+  protected WebToolBar createTitle(String key, Object... data) {
+    WebToolBar toolbar = (WebToolBar) createComponent(Component.TOOLBAR, key);
     toolbar.setMargin(new Insets(0, 5, 0, 5));
     toolbar.setFloatable(false);
     toolbar.setRollover(true);
 
-    WebLabel label = new WebLabel(i18n ? title.toLowerCase() : title);// FIXME i18n
+    WebLabel label = new WebLabel();
+    label.setLanguage(i18n.getLanguageKey(key.toLowerCase(), false), data);
     label.setFont(UIUtils.boldFont);
     toolbar.add(label);
 
@@ -302,16 +305,22 @@ public abstract class PanelGenerator extends WebPanel {
    */
   protected JComponent createComponent(Component settingComponent, String title, String tooltip) {
     JComponent component = null;
+    String i18nKey = null;
+
+    if (title != null) {
+      i18nKey = i18n.getLanguageKey(title, false);
+    }
 
     switch (settingComponent) {
       case BUTTON:
         component = new WebButton();
-        ((WebButton) component).setLanguage(title);
+        ((WebButton) component).setLanguage(i18nKey);
+        component.setPreferredSize(UIUtils.buttonSize);
         break;
       case CHECKBOX:
         component = new WebCheckBox();
-        ((WebCheckBox) component).setLanguage(title);
-        ((WebCheckBox) component).setShadeWidth(2);
+        //((WebCheckBox) component).setLanguage(i18nKey);
+        //((WebCheckBox) component).setShadeWidth(2);
         break;
       case FIELD:
         component = new WebTextField();
@@ -321,7 +330,7 @@ public abstract class PanelGenerator extends WebPanel {
         break;
       case LABEL:
         component = new WebLabel();
-        ((WebLabel) component).setLanguage(title);
+        ((WebLabel) component).setLanguage(i18nKey);
         ((WebLabel) component).setDrawShade(true);
         break;
       default:

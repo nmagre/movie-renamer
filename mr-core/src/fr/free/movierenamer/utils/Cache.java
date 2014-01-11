@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.nio.channels.FileLock;
 import java.util.Arrays;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
@@ -36,11 +35,9 @@ import net.sf.ehcache.Element;
  * @author Simon QUÉMÉNEUR
  */
 public final class Cache {
+
   static {
     Cache.initializeCache();
-    if (Settings.getInstance().isCacheClear()) {
-      Cache.clearAllCache();
-    }
   }
 
   private static void initializeCache() {
@@ -101,11 +98,11 @@ public final class Cache {
   }
 
   public synchronized static void clearCache(String name) {
-  	net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
-  	if (cache != null) {
+    net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
+    if (cache != null) {
       Settings.LOGGER.log(Level.FINER, String.format("Clear cache %s", cache.getName()));
-  		cache.removeAll();
-  	}
+      cache.removeAll();
+    }
   }
 
   public synchronized static void clearAllCache() {

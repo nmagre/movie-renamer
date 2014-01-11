@@ -96,50 +96,52 @@ public final class UISettings {
   public enum UISettingsProperty implements Settings.IProperty {
 
     // General
-    screenDevice(0, SettingsType.GENERAL, SettingsSubType.SCREEN),
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    moveFileOneByOne(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    mediaInfoWarning(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    // General interface
+    screenDevice(0, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    showStartupAnim(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    showMediaPanel(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    showImagePanel(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    showActorImage(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    showIconMediaList(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    showFormatField(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
+    groupMediaList(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
     checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
-    // Interface
-    showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showThumb(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showFanart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showSubtitle(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showCdart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showClearart(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showLogo(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showBanner(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showId(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showYear(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showOrigTitle(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
-    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    // Rename
-    generateThumb(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    generateCdart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    generateClearart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    generateLogo(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    generateFanart(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    generateBanner(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    generateSubtitles(Boolean.FALSE, SettingsType.RENAME, SettingsSubType.GENERAL),
-    moveFileOneByOne(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.GENERAL),
     // Image
-    imageThumbName("<fileName>.tbn", SettingsType.IMAGE, SettingsSubType.THUMB),
-    imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB, true),
+    generateThumb(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    generateFanart(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    generateCdart(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    generateClearart(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    generateLogo(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    generateBanner(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    imageThumbName("<fileName>-poster.jpg", SettingsType.IMAGE, SettingsSubType.THUMB),
     imageThumbSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.THUMB),
-    imageThumbWidth(720, SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB, true),
+    imageThumbHeight(720, SettingsType.IMAGE, SettingsSubType.THUMB),
     imageFanartName("<fileName>-fanart.jpg", SettingsType.IMAGE, SettingsSubType.FANART),
-    imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART, true),
     imageFanartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART, true),
     imageFanartWidth(1080, SettingsType.IMAGE, SettingsSubType.FANART),
+    imageLogoName("<fileName>-clearlogo.jpg", SettingsType.IMAGE, SettingsSubType.LOGO),
+    imageLogoSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.LOGO),
+    imageCdartName("<fileName>-discart.jpg", SettingsType.IMAGE, SettingsSubType.CDART),
+    imageCdartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.CDART),
+    imageClearartName("<fileName>-clearart.jpg", SettingsType.IMAGE, SettingsSubType.CLEARART),
+    imageClearartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.CLEARART),
+    imageBannerName("<fileName>-clearlogo.jpg", SettingsType.IMAGE, SettingsSubType.BANNER),
+    imageBannerSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.BANNER),
     // Search
     useImdbIdInSearch(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    showIdResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    showYearResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    showOrigTitleResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    showThumbResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
     // Misc
     fileChooserPath(userFolder);
     private Class<?> vclass;
@@ -372,10 +374,6 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.showActorImage));
   }
 
-  public boolean isShowThumb() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showThumb));
-  }
-
   public boolean isShowMediaPanel() {
     return Boolean.parseBoolean(get(UISettingsProperty.showMediaPanel));
   }
@@ -384,40 +382,20 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.showImagePanel));
   }
 
-  public boolean isShowFanart() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showFanart));
+  public boolean isShowIdResultList() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showIdResultList));
   }
 
-  public boolean isShowSubtitle() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showSubtitle));
+  public boolean isShowYearResultList() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showYearResultList));
   }
 
-  public boolean isShowCdart() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showCdart));
+  public boolean isShowOrigTitleResultList() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showOrigTitleResultList));
   }
 
-  public boolean isShowClearart() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showClearart));
-  }
-
-  public boolean isShowLogo() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showLogo));
-  }
-
-  public boolean isShowBanner() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showBanner));
-  }
-
-  public boolean isShowId() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showId));
-  }
-
-  public boolean isShowYear() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showYear));
-  }
-
-  public boolean isShowOrigTitle() {
-    return Boolean.parseBoolean(get(UISettingsProperty.showOrigTitle));
+  public boolean isShowThumbResultList() {
+    return Boolean.parseBoolean(get(UISettingsProperty.showThumbResultList));
   }
 
   public boolean isGenerateThumb() {
@@ -428,12 +406,12 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.generateFanart));
   }
 
-  public boolean isGenerateSubtitles() {
-    return Boolean.parseBoolean(get(UISettingsProperty.generateSubtitles));
-  }
-
   public boolean isMoveFileOneByOne() {
     return Boolean.parseBoolean(get(UISettingsProperty.moveFileOneByOne));
+  }
+
+  public boolean isMediaInfoWarning() {
+    return Boolean.parseBoolean(get(UISettingsProperty.mediaInfoWarning));
   }
 
   public String getImageThumbName() {
@@ -448,8 +426,8 @@ public final class UISettings {
     return ImageSize.valueOf(get(UISettingsProperty.imageThumbSize));
   }
 
-  public int getImageThumbWidth() {
-    return Integer.parseInt(get(UISettingsProperty.imageThumbWidth));
+  public int getImageThumbHeight() {
+    return Integer.parseInt(get(UISettingsProperty.imageThumbHeight));
   }
 
   public String getImageFanartName() {

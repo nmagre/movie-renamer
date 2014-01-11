@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 duffy
+ * Copyright (C) 2013 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  */
 package fr.free.movierenamer.ui.swing.renderer;
 
-import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.combobox.WebComboBoxCellRenderer;
 import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.ui.bean.IIconList;
@@ -28,8 +27,9 @@ import javax.swing.Icon;
 import javax.swing.JList;
 
 /**
+ * Class IconComboRenderer
  *
- * @author duffy
+ * @author Nicolas Magré
  */
 public class IconComboRenderer<T extends IIconList> extends WebComboBoxCellRenderer {
 
@@ -44,13 +44,11 @@ public class IconComboRenderer<T extends IIconList> extends WebComboBoxCellRende
 
     T obj;
     try {
-      if (!(value instanceof SeparatorList.Separator)) {
-        obj = (T) value;
-        Icon icon = obj.getIcon();
+      obj = (T) value;
+      Icon icon = obj.getIcon();
 
-        if (icon != null && true) {
-          label.setIcon(icon);
-        }
+      if (icon != null && true) {
+        label.setIcon(icon);
       }
     } catch (ClassCastException e) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("IconListRenderer ClassCastException : IIconList != %s", value.getClass().getSimpleName()));

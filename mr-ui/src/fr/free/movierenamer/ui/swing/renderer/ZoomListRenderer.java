@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ public class ZoomListRenderer extends WebListCellRenderer {
 
   private class ZoomImageLbl extends WebLabel {// Really dirty :(
 
-    private final Image originalImage;
+    private Image originalImage;
     private final int scaleWidth;
     private int scaleheight;
 
@@ -82,9 +82,11 @@ public class ZoomListRenderer extends WebListCellRenderer {
         setIcon(icon);
       } else {
         setIcon(null);
-        originalImage = ((ImageIcon) icon).getImage();
-        double ratio = (double) originalImage.getWidth(null) / originalImage.getHeight(null);
-        scaleheight = (int) (scaleWidth / ratio);
+        if (icon != null) {
+          originalImage = ((ImageIcon) icon).getImage();
+          double ratio = (double) originalImage.getWidth(null) / originalImage.getHeight(null);
+          scaleheight = (int) (scaleWidth / ratio);
+        }
       }
     }
 

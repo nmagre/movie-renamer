@@ -24,6 +24,7 @@ import org.junit.Test;
 
 /**
  * Class TvShowEpisodeNumMatcherTest
+ *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
@@ -71,6 +72,7 @@ public class TvShowEpisodeNumMatcherTest {
     Assert.assertEquals(new SxE(3, 11), new TvShowEpisodeNumMatcher(new File("test/test s3/Episode 11.avi")).matchEpisode());
     Assert.assertEquals(new SxE(9, 2), new TvShowEpisodeNumMatcher(new File("Season 9/test - 180 s09e02 - le principal test.avi")).matchEpisode());
     Assert.assertEquals(new SxE(4, 3), new TvShowEpisodeNumMatcher(new File("saison 4/03 - Un test 720p 800x600.avi")).matchEpisode());
+    Assert.assertEquals(new SxE(1, 1), new TvShowEpisodeNumMatcher(new File("Spartacus/saison 01/01 - Epilogue.avi")).matchEpisode());
   }
 
 }

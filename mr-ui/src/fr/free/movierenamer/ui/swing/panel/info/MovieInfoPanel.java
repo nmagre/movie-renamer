@@ -49,7 +49,7 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
 
   private final int smallFieldSize = 4;
   private final int fieldSize = 10;
-  private final String i18nKey = "moviepnl.info.";
+  private final String i18nKey = "main.moviepnl.info.";
   private final DefaultListModel<UICountry> countryListModel;
   private final List<InfoProperty> excludeProperty = Arrays.asList(new InfoProperty[]{
     MovieProperty.overview,

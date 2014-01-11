@@ -34,9 +34,9 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
 
   public enum Property implements IRendererProperty {
 
-    showId(settings.isShowId()),
-    showYear(settings.isShowYear()),
-    showOrigTitle(settings.isShowOrigTitle());
+    showId(settings.isShowIdResultList()),
+    showYear(settings.isShowYearResultList()),
+    showOrigTitle(settings.isShowOrigTitleResultList());
     private boolean value = true;
 
     private Property(boolean value) {
