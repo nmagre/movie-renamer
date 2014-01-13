@@ -212,7 +212,7 @@ public class RottenTomatoes extends MovieScrapper {
     }
 
     jobject = JSONUtils.selectObject("ratings", json);
-    fields.put(MovieInfo.MovieProperty.rating, jobject != null ? "" + (JSONUtils.selectInteger("audience_score", jobject) / 20) : "");
+    fields.put(MovieInfo.MovieProperty.rating, jobject != null ? "" + (JSONUtils.selectInteger("audience_score", jobject) / 10) : "");
 
     String mpaa = JSONUtils.selectString("mpaa_rating", json);
     if (mpaa != null) {

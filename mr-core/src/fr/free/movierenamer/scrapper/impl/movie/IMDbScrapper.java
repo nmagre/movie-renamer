@@ -197,7 +197,7 @@ public class IMDbScrapper extends MovieScrapper {// TODO need to be cleaned
     if (rating.contains("/")) {
       String[] rateVal = rating.split("\\/");
       Float rate = Float.parseFloat(rateVal[0]);
-      fields.put(MovieProperty.rating, String.valueOf(rate / 2));
+      fields.put(MovieProperty.rating, String.valueOf(rate));
     }
 
     String votes = XPathUtils.selectString("//DIV[@class='starbar-meta']/A[@href='ratings']", dom);

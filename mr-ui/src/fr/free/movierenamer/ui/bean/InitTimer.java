@@ -86,6 +86,11 @@ public class InitTimer {
           updateTimer.start();
         }
       }
+    } else {
+      // check for update
+      if (setting.isCheckupdate()) {
+        updateTimer.start();
+      }
     }
 
   }

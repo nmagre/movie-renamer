@@ -304,7 +304,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
     if (retNodes != null && !retNodes.isEmpty()) {
       Node node = retNodes.size() >= 2 ? retNodes.get(1) : retNodes.get(0);
       Float rate = Float.parseFloat(node.getTextContent().trim().replace(",", "."));
-      fields.put(MovieInfo.MovieProperty.rating, String.valueOf(rate));
+      fields.put(MovieInfo.MovieProperty.rating, String.valueOf(rate * 2));
     }
 
     Node retNode = XPathUtils.selectNode("//SPAN[@itemprop='ratingCount']", dom);

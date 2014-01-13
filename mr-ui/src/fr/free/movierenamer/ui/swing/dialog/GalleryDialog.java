@@ -74,7 +74,7 @@ public class GalleryDialog extends AbstractDialog {
 
   @SuppressWarnings("unchecked")
   public GalleryDialog(MovieRenamer mr, SupportedImages supportedImage) {
-    super(mr, UIUtils.i18n.getLanguageKey("image.gallery", false));
+    super(mr, UIUtils.i18n.getLanguageKey("image.gallery"));
 
     this.supportedImage = supportedImage;
     this.property = supportedImage.getCategoryProperty();
