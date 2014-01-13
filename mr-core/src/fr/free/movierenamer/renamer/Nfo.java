@@ -242,13 +242,13 @@ public class Nfo {// TODO
     }
 
     // Add director
-    List<CastingInfo> directors = mediaInfo.getDirectors();
+    List<CastingInfo> directors = movieInfo.getDirectors();
     for (CastingInfo director : directors) {
       addNode("director", director.getName());
     }
 
     // Add actor
-    List<CastingInfo> actors = mediaInfo.getActors();
+    List<CastingInfo> actors = movieInfo.getActors();
     Node node;
     for (CastingInfo actor : actors) {
       node = createNode(rootElement, "actor");
@@ -269,19 +269,19 @@ public class Nfo {// TODO
 
   private void addXbmcMovieInfo(MovieInfo movieInfo) {
     // Add director
-    List<CastingInfo> directors = mediaInfo.getDirectors();
+    List<CastingInfo> directors = movieInfo.getDirectors();
     for (CastingInfo director : directors) {
       addNode("director", director.getName());
     }
 
     // Add writer
-    List<CastingInfo> writers = mediaInfo.getDirectors();
+    List<CastingInfo> writers = movieInfo.getDirectors();
     for (CastingInfo writer : writers) {
       addNode("credits", writer.getName());
     }
 
     // Add actor
-    List<CastingInfo> actors = mediaInfo.getActors();
+    List<CastingInfo> actors = movieInfo.getActors();
     Node node;
     for (CastingInfo actor : actors) {
       node = createNode(rootElement, "actor");

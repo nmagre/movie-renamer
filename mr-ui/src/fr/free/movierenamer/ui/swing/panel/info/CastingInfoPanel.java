@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.swing.panel.info;
 
 import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.renderer.CastingListRenderer;
@@ -32,7 +32,7 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public class CastingInfoPanel<T extends MediaInfo> extends InfoPanel<T> {
+public class CastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
 
   private T info;
   private final ImageListModel<UIPersonImage> directorListModel = new ImageListModel<>();

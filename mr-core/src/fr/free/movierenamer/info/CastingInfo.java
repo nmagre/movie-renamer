@@ -64,6 +64,7 @@ public class CastingInfo extends Info {
       return Integer.valueOf(get(PersonProperty.id));
     } catch (NumberFormatException e) {
     }
+
     return -1;
   }
 

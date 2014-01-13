@@ -23,14 +23,17 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.swing.panel.info.CastingInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,8 +90,12 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
     if (!casting.isEmpty()) {
       CastingInfoPanel<?> castingPanel = (CastingInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.CASTING_INFO);
       if (castingPanel != null) {
-        WorkerManager.fetchImages(castingPanel.getActors(), castingPanel.getActorListModel(), ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
-        WorkerManager.fetchImages(castingPanel.getDirectors(), castingPanel.getDirectorListModel(), ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+        // Copy to avoid reference issue
+        List<UIPersonImage> tmp = new ArrayList<>(castingPanel.getActors());
+        List<UIPersonImage> tmp1 = new ArrayList<>(castingPanel.getDirectors());
+
+        WorkerManager.fetchImages(tmp, castingPanel.getActorListModel(), UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+        WorkerManager.fetchImages(tmp1, castingPanel.getDirectorListModel(), UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
       }
     }
 

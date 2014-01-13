@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scrapper;
 
+import fr.free.movierenamer.info.IdInfo;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -35,9 +36,17 @@ import fr.free.movierenamer.utils.CacheObject;
 public abstract class ImageScrapper<M extends Media> extends Scrapper {
 
   public final List<ImageInfo> getImages(M media) throws Exception {
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get image info list for '%s", getName(), media));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get image list for '%s", getName(), media));
     CacheObject cache = getCache();
-    List<ImageInfo> imageList = (cache != null) ? cache.getList(media, Locale.ROOT, ImageInfo.class) : null;
+
+    IdInfo id = media.getImdbId();
+    if (id == null) {
+      id = media.getMediaId();
+    }
+
+    String cacheKey = id.toString() + "_" + getCacheKey();
+
+    List<ImageInfo> imageList = (cache != null) ? cache.getList(cacheKey, Locale.ROOT, ImageInfo.class) : null;
     if (imageList != null) {
       return imageList;
     }
@@ -51,6 +60,8 @@ public abstract class ImageScrapper<M extends Media> extends Scrapper {
   }
 
   protected abstract List<ImageInfo> fetchImagesInfo(M media) throws Exception;
+
+  protected abstract String getCacheKey();
 
   @Override
   protected final String getCacheName() {

@@ -70,11 +70,8 @@ public class UIPersonImage implements IImage {
 
   @Override
   public int getId() {
-    return (person != null) ? person.getId() : -1;
+    String id = getName() + person.getCharacter() + ((person != null) ? person.getId() : -1);
+    return id.hashCode();
   }
 
-  @Override
-  public Dimension getResize() {
-    return new Dimension(45, 70);
-  }
 }

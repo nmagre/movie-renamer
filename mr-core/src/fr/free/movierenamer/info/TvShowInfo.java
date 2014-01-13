@@ -167,6 +167,11 @@ public class TvShowInfo extends MediaInfo {
   }
 
   @Override
+  protected void setMediaCasting() {// TODO
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
   public String getRenamedTitle(String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
           boolean reservedCharacter, boolean rmDupSpace, boolean trim) {// TODO
     // TODO Auto-generated method stub

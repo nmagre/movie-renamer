@@ -150,6 +150,9 @@ public class MovieInfo extends MediaInfo {
   }
   protected final Map<MovieProperty, String> fields;
   protected final Map<MovieMultipleProperty, List<String>> multipleFields;
+  protected List<CastingInfo> directors;
+  protected List<CastingInfo> actors;
+  protected List<CastingInfo> writers;
 
   protected MovieInfo() {
     // used by serializer
@@ -304,6 +307,37 @@ public class MovieInfo extends MediaInfo {
   public List<String> getTags() {
     final List<String> tags = get(MovieMultipleProperty.tags);
     return tags != null ? tags : new ArrayList<String>();
+  }
+
+  public List<CastingInfo> getActors() {
+    return actors;
+  }
+
+  public List<CastingInfo> getDirectors() {
+    return directors;
+  }
+
+  public List<CastingInfo> getWriters() {
+    return writers;
+  }
+
+  @Override
+  protected void setMediaCasting() {
+    actors = new ArrayList<CastingInfo>();
+    directors = new ArrayList<CastingInfo>();
+    writers = new ArrayList<CastingInfo>();
+
+    if (casting != null) {
+      for (CastingInfo cast : casting) {
+        if (cast.isActor()) {
+          actors.add(cast);
+        } else if (cast.isDirector()) {
+          directors.add(cast);
+        } else if (cast.isWriter()) {
+          writers.add(cast);
+        }
+      }
+    }
   }
 
   @Override

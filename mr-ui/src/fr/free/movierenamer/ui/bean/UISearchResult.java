@@ -146,9 +146,4 @@ public class UISearchResult extends Sorter.ISort implements IImage {
 
     return -1;
   }
-
-  @Override
-  public Dimension getResize() {
-    return new Dimension(45, 70);
-  }
 }

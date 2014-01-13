@@ -214,11 +214,8 @@ public final class ImageUtils {
       img = isInCache(imagePth) ? cache.get(imagePth, ImageIcon.class).getImage() : null;
       if (img == null) {
         try {
-          InputStream is = URIRequest.getInputStream(imagePth);
-          try {
+          try (InputStream is = URIRequest.getInputStream(imagePth)) {
             img = ImageIO.read(is);
-          } finally {
-            is.close();
           }
 
           if (cache != null) {

@@ -92,7 +92,6 @@ public class Main {
     TooltipManager.setDefaultDelay(1500);
 
     final MovieRenamer mr = new MovieRenamer(files);
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

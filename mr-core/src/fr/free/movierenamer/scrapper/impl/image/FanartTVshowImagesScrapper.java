@@ -51,6 +51,11 @@ public class FanartTVshowImagesScrapper extends FanartTvScrapper<TvShow> {
   }
 
   @Override
+  protected String getCacheKey() {
+    return getClass().getName();
+  }
+
+  @Override
   protected String getTypeName() {
     return "series";
   }

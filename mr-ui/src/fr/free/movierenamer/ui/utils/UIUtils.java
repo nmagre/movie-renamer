@@ -67,6 +67,7 @@ public final class UIUtils {
 
   private static final int NOTIFICATION_DELAY = 3000;
   public static final Dimension buttonSize = new Dimension(110, 27);
+  public static final Dimension listImageSize = new Dimension(45, 70);
   public static final I18n i18n = new I18n("main");
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<>();
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {

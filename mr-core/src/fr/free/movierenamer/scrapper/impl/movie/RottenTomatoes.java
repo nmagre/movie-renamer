@@ -172,9 +172,12 @@ public class RottenTomatoes extends MovieScrapper {
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
-    String id = movie.getMediaId().toString();
-    if (movie.getMediaId().getIdType() == ScrapperUtils.AvailableApiIds.IMDB) {
-      id = rottenTomatoesIdLookUp(id);
+    IdInfo idinfo = movie.getImdbId();
+    String id;
+    if (idinfo != null) {
+      id = rottenTomatoesIdLookUp(idinfo.toString());
+    } else {
+      id = movie.getMediaId().toString();
     }
 
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + ".json?apikey=" + apikey);

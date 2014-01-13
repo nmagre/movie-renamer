@@ -24,7 +24,6 @@ import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
-import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -108,11 +107,6 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
     } catch (URISyntaxException ex) {
       UISettings.LOGGER.log(Level.WARNING, null, ex);
     }
-    return null;
-  }
-
-  @Override
-  public Dimension getResize() {
     return null;
   }
 }

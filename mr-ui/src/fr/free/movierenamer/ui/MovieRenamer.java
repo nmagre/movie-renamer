@@ -159,7 +159,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     loadingDial = new LoadingDialog();
 
-    Cache.clearAllCache();// FIXME remove !!!
+    // Cache.clearAllCache();// FIXME remove !!!
     mediaFileSeparatorModel = new EventListModel<>(mediaFileSeparator);
 
     // Set Movie Renamer mode

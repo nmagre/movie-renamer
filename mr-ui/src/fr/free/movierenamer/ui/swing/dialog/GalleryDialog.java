@@ -220,7 +220,7 @@ public class GalleryDialog extends AbstractDialog {
             ? ImageUtils.NO_IMAGE_H : ImageUtils.NO_IMAGE);
 
     if (!imgs.isEmpty()) {
-      WorkerManager.fetchGalleryImages(imgs, this, ImageUtils.NO_IMAGE,
+      WorkerManager.fetchGalleryImages(imgs, this, null, ImageUtils.NO_IMAGE,
               property.equals(ImageInfo.ImageCategoryProperty.thumb) ? ImageInfo.ImageSize.medium : ImageInfo.ImageSize.small);
     }
   }
@@ -229,12 +229,12 @@ public class GalleryDialog extends AbstractDialog {
     List<UIMediaImage> limages = new ArrayList<>();
 
     int nbImage = UISettings.getInstance().getNumberImageGallery();
-    if (nbImage >= images.size()) {
-      nbImage = images.size() - 1;
+    if (nbImage > images.size()) {
+      nbImage = images.size();
     }
 
     if (lang == null) {
-      return new ArrayList<>(images.subList(0, nbImage >= 0 ? nbImage : 0));// Avoid reference issue
+      return new ArrayList<>(images.subList(0, nbImage));// Avoid reference issue
     }
 
     for (UIMediaImage image : images) {
@@ -250,11 +250,11 @@ public class GalleryDialog extends AbstractDialog {
     }
 
     nbImage = UISettings.getInstance().getNumberImageGallery();
-    if (nbImage >= limages.size()) {
-      nbImage = limages.size() - 1;
+    if (nbImage > limages.size()) {
+      nbImage = limages.size();
     }
 
-    return limages.subList(0, nbImage >= 0 ? nbImage : 0);
+    return limages.subList(0, nbImage);
   }
 
   public void setImage(Icon icon, int id) {

@@ -40,6 +40,7 @@ import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaTrailerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaWorker;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -90,18 +91,18 @@ public final class WorkerManager {
     start(trailerWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, defaultImage, downloadImage);
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, defaultImage, downloadImage);
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, Icon defaultImage, ImageInfo.ImageSize size) {
-    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, defaultImage);
+  public static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
+    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, resize, defaultImage);
     start(GalleryWorker);
   }
 

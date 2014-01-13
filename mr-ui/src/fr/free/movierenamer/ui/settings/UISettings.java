@@ -117,11 +117,11 @@ public final class UISettings {
     showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showActorImage(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    numberImageGallery(6, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    numberImageGallery(15, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
     // Image

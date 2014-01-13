@@ -121,7 +121,8 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
         searchResultList.setSelectedIndex(0);
       }
 
-      WorkerManager.fetchImages(results, searchResultModel, ImageInfo.ImageSize.small, ImageUtils.NO_IMAGE, mr.isShowIconResult());
+      List<UISearchResult> tmp = new ArrayList<>(results);
+      WorkerManager.fetchImages(tmp, searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
     }
   }
 

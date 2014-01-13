@@ -21,6 +21,7 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
+import java.awt.Dimension;
 import java.util.List;
 import javax.swing.Icon;
 
@@ -33,12 +34,12 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
 
   private final GalleryDialog panel;
 
-  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, Icon defaultImage) {
-    this(images, panel, ImageInfo.ImageSize.small, defaultImage);
+  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, Dimension resize, Icon defaultImage) {
+    this(images, panel, ImageInfo.ImageSize.small, resize, defaultImage);
   }
 
-  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, ImageInfo.ImageSize size, Icon defaultImage) {
-    super(images, size, defaultImage, true);
+  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage) {
+    super(images, size, resize, defaultImage, true);
     this.panel = panel;
   }
 

@@ -57,8 +57,6 @@ public abstract class NameMatcher {// TODO
       properties.put(FileProperty.year, String.valueOf(year));
     }
 
-    System.out.println(properties);
-
     return properties;
   }
 

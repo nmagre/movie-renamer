@@ -29,7 +29,7 @@ import java.util.List;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public abstract class MediaInfo extends Info {// FIXME CastingInfo, getActors,....
+public abstract class MediaInfo extends Info {
 
   private static final long serialVersionUID = 1L;
   protected CastingInfo[] casting;
@@ -54,43 +54,6 @@ public abstract class MediaInfo extends Info {// FIXME CastingInfo, getActors,..
     return casting != null ? Arrays.asList(casting) : new ArrayList<CastingInfo>();
   }
 
-  public List<CastingInfo> getActors() {
-
-    List<CastingInfo> actors = new ArrayList<CastingInfo>();
-    if (casting != null) {
-      for (CastingInfo castingInfo : casting) {
-        if (castingInfo.isActor()) {
-          actors.add(castingInfo);
-        }
-      }
-    }
-    return actors;
-  }
-
-  public List<CastingInfo> getDirectors() {
-    final List<CastingInfo> directors = new ArrayList<CastingInfo>();
-    if (casting != null) {
-      for (CastingInfo castingInfo : casting) {
-        if (castingInfo.isDirector()) {
-          directors.add(castingInfo);
-        }
-      }
-    }
-    return directors;
-  }
-
-  public List<CastingInfo> getWriters() {
-    final List<CastingInfo> writers = new ArrayList<CastingInfo>();
-    if (casting != null) {
-      for (CastingInfo castingInfo : casting) {
-        if (castingInfo.isWriter()) {
-          writers.add(castingInfo);
-        }
-      }
-    }
-    return writers;
-  }
-
   public MediaTag getMediaTag() {
     return mtag;
   }
@@ -101,9 +64,12 @@ public abstract class MediaInfo extends Info {// FIXME CastingInfo, getActors,..
 
   public void setCasting(final List<CastingInfo> persons) {
     this.casting = (persons == null) ? null : persons.toArray(new CastingInfo[persons.size()]);
+    setMediaCasting();
   }
 
   public abstract String getRenamedTitle(String format);
+
+  protected abstract void setMediaCasting();
 
   public abstract String getRenamedTitle(String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
           boolean reservedCharacter, boolean rmDupSpace, boolean trim);

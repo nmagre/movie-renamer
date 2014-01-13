@@ -18,13 +18,25 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.ClassUtils;
+import fr.free.movierenamer.utils.StringUtils;
+import fr.free.movierenamer.utils.URIRequest;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 /**
  * Class AbstractImageWorker
@@ -39,30 +51,76 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   protected final Icon defaultImage;
   protected final ImageInfo.ImageSize size;
   private final boolean downloadImage;
+  private final File imageCacheDir = new File(Settings.appFolder, "cache/images");
+  private final Dimension resize;
+  private static final long delay = 2628000L;
 
-  public AbstractImageWorker(List<T> images, ImageInfo.ImageSize size, Icon defaultImage, boolean downloadImage) {
+  public AbstractImageWorker(List<T> images, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
     this.images = images;
     this.defaultImage = defaultImage;
     this.size = size;
     this.downloadImage = downloadImage;
+    this.resize = resize;
   }
 
   @Override
   @SuppressWarnings("unchecked")
   protected Icon executeInBackground() {
     Icon res = defaultImage;
+    if (!imageCacheDir.exists()) {
+      imageCacheDir.mkdirs();
+    }
+
+    Calendar cal = Calendar.getInstance();
+    long ctime = cal.getTimeInMillis();
+    Dimension dim;
+
     try {
+
+      InputStream input;
+      File imageFile;
+      ImageIcon img;
 
       for (T image : images) {
         if (isCancelled()) {
           break;
         }
 
-        if (downloadImage) {
-          res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
+        img = null;
+
+        URI uri = image.getUri(size);
+        if (downloadImage && uri != null) {
+          // We do not use the cache because there is many issue like high CPU usage, really slow,...
+          try {
+            String filename = new HexBinaryAdapter().marshal(StringUtils.getSha1(uri.toString()));
+            imageFile = new File(imageCacheDir, filename);
+            if (!imageFile.exists() || (ctime - imageFile.lastModified()) > delay) {
+
+              input = URIRequest.getInputStream(uri);
+              Image bimg = ImageIO.read(input);
+              if (resize != null) {
+                bimg = bimg.getScaledInstance(resize.width, resize.height, Image.SCALE_FAST);
+              }
+
+              BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), BufferedImage.TYPE_4BYTE_ABGR);
+              buffered.getGraphics().drawImage(bimg, 0, 0, null);
+
+              ImageIO.write(buffered, "PNG", imageFile);
+              img = new ImageIcon(bimg);
+            } else {
+              img = new ImageIcon(ImageIO.read(imageFile));
+            }
+          } catch (Exception ex) {
+            // We don't care about
+            img = null;
+          }
         }
 
-        publish(new ImageChunk(res, image.getId()));
+        if (img == null && defaultImage != null) {
+          img = (ImageIcon) defaultImage;
+        }
+
+        publish(new ImageChunk(img, image.getId()));
       }
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("%s\n\n%s", getName(), ClassUtils.getStackTrace(ex)));

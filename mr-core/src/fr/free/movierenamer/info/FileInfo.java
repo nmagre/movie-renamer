@@ -99,7 +99,6 @@ public class FileInfo extends Info {
     final TvShowEpisodeNumMatcher nmatcher = new TvShowEpisodeNumMatcher(file);
     final SxE sxe = nmatcher.matchEpisode();
     if (sxe.isValid()) {
-      System.out.println(file.getName() + " : " + sxe.toXL0String());
       return MediaType.TVSHOW;
     }
 

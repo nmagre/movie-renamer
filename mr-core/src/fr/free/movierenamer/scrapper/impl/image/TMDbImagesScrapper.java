@@ -118,6 +118,11 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
   }
 
   @Override
+  protected String getCacheKey() {
+    return getClass().getName();
+  }
+
+  @Override
   protected String getHost() {
     return host;
   }
