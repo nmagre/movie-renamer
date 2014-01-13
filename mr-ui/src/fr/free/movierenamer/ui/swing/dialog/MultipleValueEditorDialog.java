@@ -25,7 +25,6 @@ import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.util.List;
-import javax.swing.JDialog;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
@@ -39,9 +38,8 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Nicolas Magré
  */
-public class MultipleValueEditorDialog extends JDialog {
+public class MultipleValueEditorDialog extends AbstractDialog {// TODO check and finish editor
 
-  private final MovieRenamer mr;
   private final DefaultListModel<String> listModel = new DefaultListModel<>();
   private int index = -1;
   private final MovieInfo.MovieMultipleProperty property;
@@ -54,8 +52,7 @@ public class MultipleValueEditorDialog extends JDialog {
    * @param property
    */
   public MultipleValueEditorDialog(MovieRenamer mr, List<?> objectList, MovieInfo.MovieMultipleProperty property) {
-    super();
-    this.mr = mr;
+    super(mr, i18n.getLanguageKey("dialog.editor", false));
     this.property = property;
     initComponents();
 
@@ -71,8 +68,6 @@ public class MultipleValueEditorDialog extends JDialog {
       index = 0;
     }
 
-    UIUtils.showOnScreen(mr, this);
-    setModal(true);
   }
 
   private ListSelectionListener createListListener() {
@@ -185,7 +180,7 @@ public class MultipleValueEditorDialog extends JDialog {
   }//GEN-LAST:event_removeBtnActionPerformed
 
   private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-    String s = (String) WebOptionPane.showInputDialog(this, "test", "test", JOptionPane.INFORMATION_MESSAGE, null, null, null);// TODO
+    String s = (String) WebOptionPane.showInputDialog(this, "test", "test", JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
     if (s != null && s.length() > 0) {
       listModel.addElement(s);

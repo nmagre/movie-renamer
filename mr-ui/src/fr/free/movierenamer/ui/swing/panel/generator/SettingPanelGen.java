@@ -36,7 +36,7 @@ import fr.free.movierenamer.settings.Settings.IProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;
-import fr.free.movierenamer.ui.bean.UIScrapper;
+import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -255,7 +255,7 @@ public class SettingPanelGen extends PanelGenerator {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
           //component.setPreferredSize(comboboxDim);
-          DefaultComboBoxModel<UIScrapper> model = new DefaultComboBoxModel<>();
+          DefaultComboBoxModel<UIScraper> model = new DefaultComboBoxModel<>();
 
           if (tabbedPane != null && panel != null) {
             panel.add(label, getGroupConstraint(0, false, false, level));
@@ -267,15 +267,15 @@ public class SettingPanelGen extends PanelGenerator {
 
           if (MovieScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
-              model.addElement(new UIScrapper(scrapper));
+              model.addElement(new UIScraper(scrapper));
             }
           } else if (TvShowScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
-              model.addElement(new UIScrapper(scrapper));
+              model.addElement(new UIScraper(scrapper));
             }
           } else if (SubtitleScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (SubtitleScrapper scrapper : ScrapperManager.getSubtitleScrapperList()) {
-              model.addElement(new UIScrapper(scrapper));
+              model.addElement(new UIScraper(scrapper));
             }
           } else {
             UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getDefaultValue()));

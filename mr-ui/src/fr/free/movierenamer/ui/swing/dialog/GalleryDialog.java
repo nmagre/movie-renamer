@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.swing.dialog;
 
-import com.alee.laf.rootpane.WebDialog;
 import fr.free.movierenamer.info.ImageInfo;
 import static fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -53,9 +52,8 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Nicolas Magré
  */
-public class GalleryDialog extends WebDialog {
+public class GalleryDialog extends AbstractDialog {
 
-  private final MovieRenamer mr;
   private final ImageInfo.ImageCategoryProperty property;
   private final ImageListModel<UIMediaImage> imageListModel;
   private final ZoomListRenderer zoomListRenderer;
@@ -68,7 +66,6 @@ public class GalleryDialog extends WebDialog {
     @Override
     public void itemStateChanged(ItemEvent event) {
       if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
-        Locale locale = ((UILang) languagesModel.getSelectedItem()).getLang();
         imageListModel.clear();
         fetchImages(getImageByLanguage((UILang) languagesModel.getSelectedItem()));
       }
@@ -77,7 +74,8 @@ public class GalleryDialog extends WebDialog {
 
   @SuppressWarnings("unchecked")
   public GalleryDialog(MovieRenamer mr, SupportedImages supportedImage) {
-    this.mr = mr;
+    super(mr, UIUtils.i18n.getLanguageKey("image.gallery", false));
+
     this.supportedImage = supportedImage;
     this.property = supportedImage.getCategoryProperty();
     float defaultRatio = supportedImage.getRatio();
@@ -145,17 +143,7 @@ public class GalleryDialog extends WebDialog {
 
     setPreferredSize(new Dimension(600, 550));
     pack();
-
-    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
-    setLanguage(UIUtils.i18n.getLanguageKey("title"), UISettings.APPNAME, "Gallery");
     setName(property.name());
-    UIUtils.showOnScreen(mr, this);
-  }
-
-  @Override
-  public void setVisible(boolean b) {
-    UIUtils.showOnScreen(mr, this);
-    super.setVisible(b);
   }
 
   private ListSelectionListener createImageListListener() {
@@ -228,18 +216,25 @@ public class GalleryDialog extends WebDialog {
   private void fetchImages(List<UIMediaImage> imgs) {
     imageListModel.addAll(imgs);
 
-    supportedImage.getLabel().setIcon(!imgs.isEmpty() ? ImageUtils.LOAD_24 : supportedImage.getRatio() > 1 ? ImageUtils.NO_IMAGE_H : ImageUtils.NO_IMAGE);
+    supportedImage.getLabel().setIcon(!imgs.isEmpty() ? ImageUtils.LOAD_24 : supportedImage.getRatio() > 1
+            ? ImageUtils.NO_IMAGE_H : ImageUtils.NO_IMAGE);
 
     if (!imgs.isEmpty()) {
-      WorkerManager.fetchGalleryImages(imgs, this, "ui/nothumb.png", ImageInfo.ImageSize.medium);
+      WorkerManager.fetchGalleryImages(imgs, this, ImageUtils.NO_IMAGE,
+              property.equals(ImageInfo.ImageCategoryProperty.thumb) ? ImageInfo.ImageSize.medium : ImageInfo.ImageSize.small);
     }
   }
 
   private List<UIMediaImage> getImageByLanguage(UILang lang) {
     List<UIMediaImage> limages = new ArrayList<>();
 
+    int nbImage = UISettings.getInstance().getNumberImageGallery();
+    if (nbImage >= images.size()) {
+      nbImage = images.size() - 1;
+    }
+
     if (lang == null) {
-      return new ArrayList<>(images);// Avoid reference issue
+      return new ArrayList<>(images.subList(0, nbImage >= 0 ? nbImage : 0));// Avoid reference issue
     }
 
     for (UIMediaImage image : images) {
@@ -254,7 +249,12 @@ public class GalleryDialog extends WebDialog {
       }
     }
 
-    return limages;
+    nbImage = UISettings.getInstance().getNumberImageGallery();
+    if (nbImage >= limages.size()) {
+      nbImage = limages.size() - 1;
+    }
+
+    return limages.subList(0, nbImage >= 0 ? nbImage : 0);
   }
 
   public void setImage(Icon icon, int id) {
@@ -278,7 +278,8 @@ public class GalleryDialog extends WebDialog {
     Icon icon = ((UIMediaImage) imageList.getSelectedValue()).getIcon();
     if (icon instanceof ImageIcon) {
       Image img = ((ImageIcon) icon).getImage();
-      Image newimg = img.getScaledInstance(ImagePanel.pwidth, (int) (ImagePanel.pwidth / supportedImage.getRatio()), java.awt.Image.SCALE_SMOOTH);
+      Image newimg = img.getScaledInstance(ImagePanel.pwidth, (int) (ImagePanel.pwidth / supportedImage.getRatio()),
+              java.awt.Image.SCALE_SMOOTH);
       supportedImage.getLabel().setIcon(new ImageIcon(newimg));
     }
   }

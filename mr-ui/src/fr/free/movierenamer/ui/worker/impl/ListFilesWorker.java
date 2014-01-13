@@ -21,12 +21,18 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
+import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.namematcher.NameMatcher;
+import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
+import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.ControlWorker;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
 import java.io.FileFilter;
@@ -77,7 +83,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>> {
     }
 
     if (!subFolder && subFolder(files)) {
-      publishPause(("dialog.scanSubFolder"));// FIXME i18n
+      publishPause(("dialog.scanSubFolder"));
     }
 
     try {
@@ -155,19 +161,18 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>> {
   }
 
   private void addUIfile(List<UIFile> medias, File file) {
-    String groupName = file.getName().trim().substring(0, 1);
-//    switch (FileInfo.getMediaType(file)) {
-//      case MOVIE:
-//        break;
-//      case TVSHOW:
-//       /* TvShowNameMatcher nameMatcher = new TvShowNameMatcher(file, new ArrayList<String>());
-//        TvShowEpisodeNumMatcher epMatch = new TvShowEpisodeNumMatcher(file);
-//        groupName = nameMatcher.getName() + " " + LocaleUtils.i18nExt("season") + " " + epMatch.matchEpisode().seasonL0();
-//        * */
-//        break;
-//    }
+    String groupName = "";
+    FileInfo.MediaType mtype = FileInfo.getMediaType(file);
+    switch (mtype) {
+      case MOVIE:
+        groupName = file.getName().trim().substring(0, 1);
+        break;
+      case TVSHOW:// TODO
+        groupName = NameMatcher.extractName(file.getName());
+        break;
+    }
 
-    medias.add(new UIFile(file, groupName));
+    medias.add(new UIFile(file, groupName, mtype));
   }
 
   @Override
@@ -206,7 +211,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>> {
 
   @Override
   public final void processPause(List<String> v) {
-    int res = WebOptionPane.showConfirmDialog(mr, v.get(0), ("dialog.question"), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);// FIXME i18n
+    int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v.get(0), false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
     if (res == WebOptionPane.YES_OPTION) {
       subFolder = true;
     }

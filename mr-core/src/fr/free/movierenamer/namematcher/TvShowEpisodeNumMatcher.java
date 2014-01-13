@@ -44,11 +44,12 @@ public class TvShowEpisodeNumMatcher {// TODO
 
     SxEPattern("([0-9]{1,2})x([0-9]{1,2})(?:\\D|$)"),
     SxEPattern2("s([0-9]{1,2}).?[eé]([0-9]{1,2})"),
-    SxEPattern3("(?:^|[\\W} ])([0-9]{1,2})([0-9][0-9])[\\._ \\-]"),
-    SxEPattern4("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
-    SxEPattern5("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
-    SxEPattern6("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
-    SxEPattern7("([0-9]{2}) ?([0-9]{2})(?:\\D|$)");
+    SxEPattern3("s([0-9]{1,2})[\\s\\.-]?ep?([0-9]{1,2})"),
+    SxEPattern4("(?:^|[\\W} ])([0-9]{1,2})([0-9][0-9])[\\._ \\-]"),
+    SxEPattern5("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*[eé]p.?([0-9]{1,2})"),
+    SxEPattern6("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
+    SxEPattern7("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
+    SxEPattern8("(?:^|[\\W} \\(])(0?[0-9]) ?([0-9]{2})(?:\\s|$|-\\))");
     private Pattern pattern;
 
     private TvShowNumPattern(String pattern) {
@@ -115,7 +116,7 @@ public class TvShowEpisodeNumMatcher {// TODO
       }
 
       if (!sxe.isValid()) {
-        return new SxE(1, 1);
+        return sxe;
       }
 
       if (sxe.isPartial()) {

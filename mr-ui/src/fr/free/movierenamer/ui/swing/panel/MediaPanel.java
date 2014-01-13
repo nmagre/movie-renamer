@@ -57,7 +57,6 @@ import javax.swing.SwingConstants;
  */
 public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator implements IInfoPanel<T> {
 
-  private final FileInfoPanel fileInfoPanel;
   private ComponentTransition transitionPanel;
   private WebPanel mediaPanel;
   private WebToggleButton editButton;
@@ -67,7 +66,6 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
 
   protected MediaPanel() {
     super();
-    fileInfoPanel = new FileInfoPanel();
     UIEvent.addEventListener(this.getClass(), this);
   }
 
@@ -91,8 +89,6 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
       }
       infoPanelBc.add(bcButton);
     }
-
-    infoPanelBc.add(createbuttonPanel(fileInfoPanel));
 
     SwingUtils.groupButtons(infoPanelBc);// Group breadcrumb button
     SwingUtils.setEnabledRecursively(infoPanelBc, false);
@@ -180,18 +176,6 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
   public abstract void clearPanel();
 
   protected abstract boolean addEditButton();
-
-  public void setFileInfo(FileInfo info) {
-    fileInfoPanel.setInfo(info);
-  }
-
-  public void clearfileInfoPanel() {
-    fileInfoPanel.clear();
-  }
-
-  public FileInfo getFileInfo() {
-    return fileInfoPanel.getInfo();
-  }
 
   public InfoPanel<T> getPanel(PanelType ptype) {
     return panels.get(ptype);

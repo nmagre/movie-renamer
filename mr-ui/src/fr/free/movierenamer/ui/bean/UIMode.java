@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.bean;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 
 /**
@@ -36,12 +37,15 @@ public enum UIMode {
   private final String title;
   private final String titleMode;
   private final ImageIcon icon;
+  private final DefaultComboBoxModel<UIScraper> scrapperModel = new DefaultComboBoxModel<>();
+  private String fileFormat;
 
   private UIMode(String title, String titleMode, FileInfo.MediaType mediaType, String imgName) {
     this.title = title;
     this.titleMode = titleMode;
     this.mediaType = mediaType;
     this.icon = new ImageIcon(ImageUtils.getImageFromJAR(imgName));
+    fileFormat = "";
   }
 
   public String getTitle() {
@@ -59,4 +63,25 @@ public enum UIMode {
   public ImageIcon getIcon() {
     return icon;
   }
+
+  public DefaultComboBoxModel<UIScraper> getScraperModel() {
+    return scrapperModel;
+  }
+
+  public UIScraper getSelectedScraper() {
+    return (UIScraper) scrapperModel.getSelectedItem();
+  }
+
+  public void addScrapper(UIScraper scraper) {
+    scrapperModel.addElement(scraper);
+  }
+
+  public String getFileFormat() {
+    return fileFormat;
+  }
+
+  public void setFileformat(String fileFormat) {
+    this.fileFormat = fileFormat;
+  }
+
 }

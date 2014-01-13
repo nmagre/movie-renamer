@@ -22,8 +22,10 @@ import com.alee.managers.language.LanguageManager;
 import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.JTabbedPaneLU;
+import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,21 +40,24 @@ import javax.swing.SwingUtilities;
 public class Main {
 // vm option : -Xmx256m -verbose:gc
 
-  private static MovieRenamer mr;
   private static final UISettings setting = UISettings.getInstance();
+  private static LoadingDialog loading;
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws InterruptedException, InvocationTargetException {
 
     // Fixe JNA crash under 64 bit unix system
     if (System.getProperty("jna.nosys") == null) {
       System.setProperty("jna.nosys", "true");
     }
 
-    List<File> files = new ArrayList<>();
+    final List<File> files = new ArrayList<>();
     for (String arg : args) {
       files.add(new File(arg));
     }
 
+    /**
+     * Should be in EDT, but loading dialog will not works
+     */
     // Install look and feel
     WebLookAndFeel.install();
 
@@ -86,33 +91,7 @@ public class Main {
 
     TooltipManager.setDefaultDelay(1500);
 
-    //    new Thread(new Runnable() {
-//      @Override
-//      public void run() {
-//        while (true) {
-//          Runtime runtime = Runtime.getRuntime();
-//
-//          NumberFormat format = NumberFormat.getInstance();
-//
-//          StringBuilder sb = new StringBuilder();
-//          long maxMemory = runtime.maxMemory();
-//          long allocatedMemory = runtime.totalMemory();
-//          long freeMemory = runtime.freeMemory();
-//
-//          sb.append("free memory: " + format.format(freeMemory / 1024) + "\n");
-//          sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + "\n");
-//          sb.append("max memory: " + format.format(maxMemory / 1024) + "\n");
-//          sb.append("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "\n");
-//          System.out.println(sb.toString());
-//          try {
-//            Thread.sleep(20000);
-//          } catch (InterruptedException ex) {
-//            UISettings.LOGGER.log(Level.SEVERE, null, ex);
-//          }
-//        }
-//      }
-//    }).start();
-    mr = new MovieRenamer(files);
+    final MovieRenamer mr = new MovieRenamer(files);
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override

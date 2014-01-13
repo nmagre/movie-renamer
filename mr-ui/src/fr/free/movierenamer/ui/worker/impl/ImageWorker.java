@@ -34,12 +34,12 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
   private final ImageListModel<T> model;
 
-  public ImageWorker(List<T> images, ImageListModel<T> model, String defaultImage) {
-    this(images, model, ImageInfo.ImageSize.small, defaultImage);
+  public ImageWorker(List<T> images, ImageListModel<T> model, Icon defaultImage, boolean downloadImage) {
+    this(images, model, ImageInfo.ImageSize.small, defaultImage, downloadImage);
   }
 
-  public ImageWorker(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, String defaultImage) {
-    super(images, size, defaultImage);
+  public ImageWorker(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Icon defaultImage, boolean downloadImage) {
+    super(images, size, defaultImage, downloadImage);
     this.model = model;
   }
 

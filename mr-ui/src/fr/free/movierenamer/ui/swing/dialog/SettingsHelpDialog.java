@@ -25,7 +25,6 @@ import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.impl.HelpWorker;
 import fr.free.movierenamer.utils.LocaleUtils;
 import java.net.MalformedURLException;
-import javax.swing.JDialog;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
@@ -34,9 +33,8 @@ import javax.swing.text.html.StyleSheet;
  *
  * @author Nicolas Magré
  */
-public class SettingsHelpDialog extends JDialog {
+public class SettingsHelpDialog extends AbstractDialog {
 
-  private final MovieRenamer mr;
   private String id;
 
   /**
@@ -48,7 +46,7 @@ public class SettingsHelpDialog extends JDialog {
    * @throws java.net.MalformedURLException
    */
   public SettingsHelpDialog(MovieRenamer mr, Settings.SettingsType type, Settings.SettingsSubType subType) throws MalformedURLException {
-    this.mr = mr;
+    super(mr, i18n.getLanguageKey("dialog.help", false));
 
     LocaleUtils.AppLanguages lng = Settings.getInstance().getAppLanguage();
     id = "wiki";
@@ -68,11 +66,6 @@ public class SettingsHelpDialog extends JDialog {
             + "    padding: 0.7em 1em;\n"
             + "    word-wrap: normal;\n"
             + "}");
-
-    setTitle(i18n.getLanguage("dialog.help", false));
-    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
-    UIUtils.showOnScreen(mr, this);
-    setModal(true);
   }
 
   public void getHelp() {
@@ -82,7 +75,6 @@ public class SettingsHelpDialog extends JDialog {
 
   public void setText(String text) {
     webEditorPane1.setText(text);
-    System.out.println(text);
     webEditorPane1.setCaretPosition(0);
   }
 

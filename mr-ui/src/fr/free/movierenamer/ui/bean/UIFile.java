@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,16 +36,19 @@ public class UIFile extends Sorter.ISort implements IIconList {
   private final String groupName;
   private final Icon icon;
   private String search;
+  private FileInfo.MediaType mtype;
 
   /**
    * Constructor arguments
    *
    * @param file A mediaInfo file
    * @param groupName
+   * @param mtype
    */
-  public UIFile(File file, String groupName) {
+  public UIFile(File file, String groupName, FileInfo.MediaType mtype) {
     this.file = file;
     this.groupName = groupName;
+    this.mtype = mtype;
     this.icon = ImageUtils.MEDIA_16;
 
     fileInfo = null;
@@ -97,9 +100,16 @@ public class UIFile extends Sorter.ISort implements IIconList {
    * @return Icon
    */
   @Override
-  public Icon getIcon() {// TODO
+  public Icon getIcon() {// TODO return icon if file was renamed and id renamed
+    switch (mtype) {
+      case MOVIE:
+        return ImageUtils.MOVIE_16;
+      case TVSHOW:
+        return ImageUtils.TV_16;
+    }
+
     /*if (wasRenamed()) {
-     return ImageUtils.LOGO_22;// FIXME change icon
+     return ImageUtils.LOGO_22;
      }
 
      if (fileInfo == null) {
@@ -115,7 +125,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
      //return ImageUtils.MEDIA;
      * */
-    return icon; // FIXME
+    return icon;
   }
 
   @Override

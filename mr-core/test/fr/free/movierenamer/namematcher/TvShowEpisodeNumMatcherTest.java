@@ -63,6 +63,8 @@ public class TvShowEpisodeNumMatcherTest {
     Assert.assertEquals(new SxE(10, 9), new TvShowEpisodeNumMatcher(new File("test- Season 10 - Episode 9 - test.avi")).matchEpisode());
     Assert.assertEquals(new SxE(9, 9), new TvShowEpisodeNumMatcher(new File("test - 9x09 - test (HD 720x400 Fr).avi")).matchEpisode());
     Assert.assertEquals(new SxE(0, 9), new TvShowEpisodeNumMatcher(new File("test - 009 - test (HD 720x400 Fr).avi")).matchEpisode());
+    Assert.assertEquals(new SxE(9, 3), new TvShowEpisodeNumMatcher(new File("test - S09ep03 - test (HD 720x400 Fr).avi")).matchEpisode());
+    Assert.assertEquals(new SxE(5, 8), new TvShowEpisodeNumMatcher(new File("tesS5 ep8 - test (HD 720x400 Fr).avi")).matchEpisode());
   }
 
   @Test

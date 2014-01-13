@@ -33,19 +33,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.JDialog;
 
 /**
  * Class MediaInfoDownload,
  *
  * @author Nicolas Magré
  */
-public class MediaInfoDownloadDialog extends JDialog {
-
-  private final MovieRenamer mr;
+public class MediaInfoDownloadDialog extends AbstractDialog {
 
   public MediaInfoDownloadDialog(MovieRenamer mr) {
-    this.mr = mr;
+    super(mr, i18n.getLanguageKey("dialog.question", false));
 
     initComponents();
     webLabel1.setIcon(ImageUtils.FILE);
@@ -62,18 +59,6 @@ public class MediaInfoDownloadDialog extends JDialog {
 
     titleLbl.setFont(UIUtils.titleFont);
     questionLbl.setFont(UIUtils.boldFont);
-
-    setTitle(i18n.getLanguage("dialog.question", false));
-    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
-    setModal(true);
-  }
-
-  @Override
-  public void setVisible(boolean b) {
-    if (b) {
-      UIUtils.showOnScreen(mr, this);
-    }
-    super.setVisible(b);
   }
 
   private void saveDoNotAsk() {

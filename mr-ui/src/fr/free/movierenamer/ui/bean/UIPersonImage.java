@@ -69,7 +69,7 @@ public class UIPersonImage implements IImage {
   }
 
   @Override
-  public int getId() {// TODO
+  public int getId() {
     return (person != null) ? person.getId() : -1;
   }
 

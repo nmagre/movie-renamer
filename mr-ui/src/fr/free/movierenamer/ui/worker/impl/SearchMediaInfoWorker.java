@@ -19,15 +19,16 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.FileInfo;
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.swing.panel.info.CastingInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.util.List;
@@ -62,11 +63,7 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
       info = scrapper.getInfo(media);
-      FileInfo fileInfo = mr.getMediaPanel().getFileInfo();
-
-      if (fileInfo == null) {
-        fileInfo = new FileInfo(mr.getFile().getFile());
-      }
+      FileInfo fileInfo = mr.getFile().getFileInfo();
       info.setMediaTag(fileInfo.getMediaTag());
     }
     return info;
@@ -90,8 +87,8 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
     if (!casting.isEmpty()) {
       CastingInfoPanel<?> castingPanel = (CastingInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.CASTING_INFO);
       if (castingPanel != null) {
-        WorkerManager.fetchImages(castingPanel.getActors(), castingPanel.getActorListModel(), ImageInfo.ImageSize.small, "ui/unknown.png");
-        WorkerManager.fetchImages(castingPanel.getDirectors(), castingPanel.getDirectorListModel(), ImageInfo.ImageSize.small, "ui/unknown.png");
+        WorkerManager.fetchImages(castingPanel.getActors(), castingPanel.getActorListModel(), ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+        WorkerManager.fetchImages(castingPanel.getDirectors(), castingPanel.getDirectorListModel(), ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
       }
     }
 

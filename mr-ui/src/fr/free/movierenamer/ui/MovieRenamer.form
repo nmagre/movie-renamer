@@ -66,17 +66,17 @@
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="fileFormatFieldKeyReleased"/>
       </Events>
     </Component>
-    <Component class="com.alee.laf.button.WebButton" name="logsBtn">
+    <Component class="com.alee.laf.button.WebButton" name="aboutBtn">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="ImageUtils.INFO_24" type="code"/>
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logsBtnActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboutBtnActionPerformed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.logs&quot;), ImageUtils.INFO_24, ImageUtils.INFO_16)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.about&quot;), ImageUtils.INFO_24, ImageUtils.INFO_16)"/>
       </AuxValues>
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="clearMediaFileListBtn">
@@ -429,9 +429,6 @@
                                     </Property>
                                     <Property name="drawFocus" type="boolean" value="false"/>
                                   </Properties>
-                                  <Events>
-                                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="scrapperCbActionPerformed"/>
-                                  </Events>
                                   <AuxValues>
                                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value=""/>
                                   </AuxValues>

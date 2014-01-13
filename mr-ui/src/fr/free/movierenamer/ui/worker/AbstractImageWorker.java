@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,9 @@ import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.ClassUtils;
-import fr.free.movierenamer.utils.URIRequest;
-import java.awt.Image;
-import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 /**
  * Class AbstractImageWorker
@@ -41,19 +36,21 @@ import javax.swing.ImageIcon;
 public abstract class AbstractImageWorker<T extends IImage> extends AbstractWorker<Icon, AbstractImageWorker<T>.ImageChunk> {
 
   protected final List<T> images;
-  protected final String defaultImage;
+  protected final Icon defaultImage;
   protected final ImageInfo.ImageSize size;
+  private final boolean downloadImage;
 
-  public AbstractImageWorker(List<T> images, ImageInfo.ImageSize size, String defaultImage) {
+  public AbstractImageWorker(List<T> images, ImageInfo.ImageSize size, Icon defaultImage, boolean downloadImage) {
     this.images = images;
     this.defaultImage = defaultImage;
     this.size = size;
+    this.downloadImage = downloadImage;
   }
 
   @Override
   @SuppressWarnings("unchecked")
   protected Icon executeInBackground() {
-    Icon res = null;
+    Icon res = defaultImage;
     try {
 
       for (T image : images) {
@@ -61,32 +58,14 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
           break;
         }
 
-        //res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
-        Image img = null;
-        InputStream is = null;
-        try {
-          is = URIRequest.getInputStream(image.getUri(size));
-          img = ImageIO.read(is);
-        } catch (Exception ex) {
-        } finally {
-          if (is != null) {
-            is.close();
-          }
+        if (downloadImage) {
+          res = ImageUtils.getIcon(image.getUri(size), image.getResize(), defaultImage);
         }
 
-        if (img == null) {
-          img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);
-        }
-
-        if (img != null) {
-          if (image.getResize() != null) {
-            img = img.getScaledInstance(image.getResize().width, image.getResize().height, Image.SCALE_DEFAULT);
-          }
-          publish(new ImageChunk(new ImageIcon(img), image.getId()));
-        }
+        publish(new ImageChunk(res, image.getId()));
       }
     } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, getName() + "\n\n" + ClassUtils.getStackTrace(ex));
+      UISettings.LOGGER.log(Level.SEVERE, String.format("%s\n\n%s", getName(), ClassUtils.getStackTrace(ex)));
     }
 
     return res;
@@ -101,8 +80,8 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
 
   public class ImageChunk {
 
-    private int id;
-    private Icon icon;
+    private final int id;
+    private final Icon icon;
 
     public ImageChunk(Icon icon, int id) {
       this.icon = icon;

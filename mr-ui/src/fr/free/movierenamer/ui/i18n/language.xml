@@ -152,9 +152,9 @@
         <value lang="fr">Quitter</value>
       </record>
 
-      <record key="logs">
-        <value lang="en">Logs</value>
-        <value lang="fr">Logs</value>
+      <record key="about">
+        <value lang="en">About</value>
+        <value lang="fr">A propos</value>
       </record>
 
       <record key="movieMode">
@@ -185,6 +185,11 @@
           <value lang="fr">Grouper</value>
         </record>
 
+        <record key="showIcon">
+          <value lang="en">Show icons</value>
+          <value lang="fr">Afficher les icônes</value>
+        </record>
+
       </Dictionary><!-- END settingspopup -->
 
     </Dictionary><!-- END mediatb -->
@@ -194,6 +199,15 @@
         <value lang="en">Search</value>
         <value lang="fr">Recherche</value>
       </record>
+
+      <Dictionary name="Settings popup" prefix="settingspopup">
+
+        <record key="showIcon">
+          <value lang="en">Show images</value>
+          <value lang="fr">Afficher les images</value>
+        </record>
+
+      </Dictionary><!-- END settingspopup -->
 
     </Dictionary><!-- END searchtb -->
 
@@ -319,6 +333,11 @@
       <record key="banner">
         <value lang="en">Banner</value>
         <value lang="fr">Bannière</value>
+      </record>
+
+      <record key="gallery">
+        <value lang="en">Gallery</value>
+        <value lang="fr">Galerie</value>
       </record>
 
     </Dictionary><!-- END image -->
@@ -500,6 +519,11 @@
     <record key="movefileonebyone">
       <value lang="en">Move files one by one</value>
       <value lang="fr">Déplacer les fichiers un par un</value>
+    </record>
+
+    <record key="mediainfowarning">
+      <value lang="en">Show "media info is not installer" warning</value>
+      <value lang="fr">Afficher l'avertissement "media info n'est pas installé"</value>
     </record>
 
     <record key="screendevice">
@@ -713,6 +737,11 @@
       <value lang="fr">Générer la Bannière</value>
     </record>
 
+    <record key="numberimagegallery">
+      <value lang="en">Number of images by gallery</value>
+      <value lang="fr">Nombre d'images par galerie</value>
+    </record>
+
     <record key="tab.thumb">
       <value lang="en">Poster</value>
       <value lang="fr">Affiche</value>
@@ -900,6 +929,50 @@
 
   </Dictionary><!-- END settings -->
 
+  <Dictionary name="About dialog" prefix="aboutDialog">
+
+    <record key="appname">
+      <value lang="en">Application : %s</value>
+      <value lang="fr">Application : %s</value>
+    </record>
+
+    <record key="appversion">
+      <value lang="en">Version : %s</value>
+      <value lang="fr">Version : %s</value>
+    </record>
+
+    <record key="author">
+      <value lang="en">Author : %s</value>
+      <value lang="fr">Auteur : %s</value>
+    </record>
+
+    <record key="contributor">
+      <value lang="en">Contributor : %s</value>
+      <value lang="fr">Contributeur : %s</value>
+    </record>
+
+    <record key="license">
+      <value lang="en">License : %s</value>
+      <value lang="fr">Licence : %s</value>
+    </record>
+
+    <record key="provider">
+      <value lang="en">Provider :</value>
+      <value lang="fr">Fournisseur :</value>
+    </record>
+
+    <record key="website">
+      <value lang="en">Website :</value>
+      <value lang="fr">Site web :</value>
+    </record>
+
+    <record key="contact">
+      <value lang="en">Contact : %s</value>
+      <value lang="fr">Contact : %s</value>
+    </record>
+
+  </Dictionary><!-- END notification -->
+
   <Dictionary name="notification (question/information/error)" prefix="notification">
 
     <record key="noresult">
@@ -924,6 +997,11 @@
     <record key="help">
       <value lang="en">Help</value>
       <value lang="fr">Aide</value>
+    </record>
+
+    <record key="editor">
+      <value lang="en">Editor</value>
+      <value lang="fr">Editeur</value>
     </record>
 
     <record key="wantrestart">
@@ -994,6 +1072,10 @@
       <value lang="fr">Ne pas demander à nouveau</value>
     </record>
 
+    <record key="scanSubFolder">
+      <value lang="en">Do you to scan subfolders ?</value>
+      <value lang="fr">Voulez-vous parcourir les sous-dossiers ?</value>
+    </record>
 
   </Dictionary><!-- END dialog -->
 

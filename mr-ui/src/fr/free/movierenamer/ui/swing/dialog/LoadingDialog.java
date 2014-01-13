@@ -46,6 +46,11 @@ public class LoadingDialog extends WebDialog {
     setVisible(true);
   }
 
+  public void hideDial() {
+    setVisible(false);
+    dispose();
+  }
+
   private void initComponents() {
 
     jPanel1 = new WebPanel();

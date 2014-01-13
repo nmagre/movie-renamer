@@ -52,10 +52,6 @@ public class CastingListRenderer extends IconListRenderer<UIPersonImage> {
       label.setText(text);
     }
 
-    if (!settings.isShowActorImage()) {
-      label.setIcon(null);
-    }
-
     return label;
   }
 }

@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.swing.dialog;
 
 import com.alee.laf.label.WebLabel;
-import com.alee.laf.rootpane.WebDialog;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -34,11 +33,10 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public class FileConflictDialog extends WebDialog {
+public class FileConflictDialog extends AbstractDialog {
 
   private final File origFile, newFile;
   private final Action action = Action.cancel;
-  private final MovieRenamer mr;
 
   public static enum Action {
 
@@ -48,7 +46,7 @@ public class FileConflictDialog extends WebDialog {
   }
 
   public FileConflictDialog(MovieRenamer mr, File origFile, File newFile) {
-    this.mr = mr;
+    super(mr, i18n.getLanguageKey("dialog.fileconflict", false));
     this.origFile = origFile;
     this.newFile = newFile;
 
@@ -76,18 +74,6 @@ public class FileConflictDialog extends WebDialog {
     newLbl.setFont(UIUtils.boldFont);
     origModifiedLbl.setFont(UIUtils.italicFont);
     newModifiedLbl.setFont(UIUtils.italicFont);
-
-    setTitle(i18n.getLanguage("dialog.fileconflict", false));
-    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
-    setModal(true);
-  }
-
-  @Override
-  public void setVisible(boolean b) {
-    if (b) {
-      UIUtils.showOnScreen(mr, this);
-    }
-    super.setVisible(b);
   }
 
   public Action getAction() {

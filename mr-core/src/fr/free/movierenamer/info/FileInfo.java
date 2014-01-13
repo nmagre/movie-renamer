@@ -19,6 +19,8 @@ package fr.free.movierenamer.info;
 
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.namematcher.NameMatcher;
+import fr.free.movierenamer.namematcher.SxE;
+import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
@@ -34,7 +36,6 @@ import java.util.Map;
  */
 public class FileInfo extends Info {
 
-  private static final long minMovieFileSize = 450000;
   private static final long serialVersionUID = 1L;
   private File file;
   private final MediaType type;
@@ -93,9 +94,12 @@ public class FileInfo extends Info {
     return fileProperty.get(property);
   }
 
-  private MediaType getMediaType(final File file) {// TODO A refaire , améliorer la detection !!!
+  public static MediaType getMediaType(final File file) {// TODO A refaire , améliorer la detection !!!
 
-    if (file.length() < minMovieFileSize) {
+    final TvShowEpisodeNumMatcher nmatcher = new TvShowEpisodeNumMatcher(file);
+    final SxE sxe = nmatcher.matchEpisode();
+    if (sxe.isValid()) {
+      System.out.println(file.getName() + " : " + sxe.toXL0String());
       return MediaType.TVSHOW;
     }
 

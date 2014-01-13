@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import javax.swing.Icon;
 
 /**
  * Class WorkerManager
@@ -89,17 +90,17 @@ public final class WorkerManager {
     start(trailerWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, String defaultImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, defaultImage);
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, String defaultImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, defaultImage);
+  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, String defaultImage, ImageInfo.ImageSize size) {
+  public static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, Icon defaultImage, ImageInfo.ImageSize size) {
     AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, defaultImage);
     start(GalleryWorker);
   }

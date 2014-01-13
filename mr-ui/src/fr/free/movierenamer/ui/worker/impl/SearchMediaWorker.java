@@ -28,6 +28,7 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
@@ -47,7 +48,6 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   private final SearchScrapper<? extends Hyperlink> scrapper;
   private final WebList searchResultList;
   private final ImageListModel<UISearchResult> searchResultModel;
-  //private final Dimension searchListDim = new Dimension(45, 65);
 
   /**
    * Constructor arguments
@@ -58,7 +58,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   public SearchMediaWorker(MovieRenamer mr, UIFile media) {
     super(mr);
     this.media = media;
-    this.scrapper = mr.getScrapper().getScrapper();
+    this.scrapper = mr.getScraper().getScraper();
     this.searchResultList = mr.getSearchResultList();
     this.searchResultModel = mr.getSearchResultListModel();
   }
@@ -120,7 +120,8 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
       if (UISettings.getInstance().isSelectFirstResult()) {
         searchResultList.setSelectedIndex(0);
       }
-      WorkerManager.fetchImages(results, searchResultModel, /*searchListDim*/ ImageInfo.ImageSize.small, "ui/nothumb.png");
+
+      WorkerManager.fetchImages(results, searchResultModel, ImageInfo.ImageSize.small, ImageUtils.NO_IMAGE, mr.isShowIconResult());
     }
   }
 

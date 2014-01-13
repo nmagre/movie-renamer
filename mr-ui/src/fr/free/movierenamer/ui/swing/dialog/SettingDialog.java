@@ -38,7 +38,7 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UILang;
-import fr.free.movierenamer.ui.bean.UIScrapper;
+import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
@@ -62,7 +62,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
@@ -70,13 +69,12 @@ import javax.swing.JOptionPane;
  *
  * @author Nicolas Magré
  */
-public class SettingDialog extends JDialog {
+public class SettingDialog extends AbstractDialog {
 
   private static final long serialVersionUID = 1L;
   private final UISettings settings = UISettings.getInstance();
   private final Map<SettingsType, SettingPanelGen> panels;
   private final List<Settings.IProperty> properties;
-  private final MovieRenamer mr;
 
   private static enum mainTabIcon {
 
@@ -107,7 +105,7 @@ public class SettingDialog extends JDialog {
    * @param mr Movie Renamer main interface
    */
   public SettingDialog(MovieRenamer mr) {
-    this.mr = mr;
+    super(mr, i18n.getLanguageKey("toptb.settings"));
     panels = new LinkedHashMap<>();
     properties = new ArrayList<>();
 
@@ -120,6 +118,10 @@ public class SettingDialog extends JDialog {
     mainTabbedPane.setFont(UIUtils.titleFont);
 
     for (SettingsType settingType : SettingsType.values()) {
+      if (settingType.equals(SettingsType.FORMAT)) {
+        continue;// FIXME
+      }
+
       final SettingPanelGen panel = new SettingPanelGen(mr);
       panel.addSettings(settingType, getSettings(settingType));
       panel.setName(settingType.name().toLowerCase());
@@ -129,15 +131,6 @@ public class SettingDialog extends JDialog {
     }
 
     pack();
-    setModal(true);
-    setTitle(UISettings.APPNAME + " " + ("settings"));// FIXME i18n
-    setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_32));
-  }
-
-  @Override
-  public void setVisible(boolean b) {
-    UIUtils.showOnScreen(mr, this);
-    super.setVisible(b);
   }
 
   private Icon getMainTabIcon(String name) {
@@ -381,6 +374,7 @@ public class SettingDialog extends JDialog {
     cancelBtn = UIUtils.createButton(i18n.getLanguageKey("cancel", false), ImageUtils.CANCEL_16);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    setResizable(false);
 
     saveBtn.setPreferredSize(UIUtils.buttonSize);
     saveBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -389,6 +383,7 @@ public class SettingDialog extends JDialog {
       }
     });
 
+    cancelBtn.setPreferredSize(UIUtils.buttonSize);
     cancelBtn.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         cancelBtnActionPerformed(evt);
@@ -399,23 +394,26 @@ public class SettingDialog extends JDialog {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(mainTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 483, Short.MAX_VALUE)
-        .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(mainTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(saveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addComponent(mainTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+        .addContainerGap()
+        .addComponent(mainTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(cancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+          .addComponent(cancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(saveBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap())
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -485,11 +483,11 @@ public class SettingDialog extends JDialog {
 
             UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue.equals(property.getValue()) ? property : null, property);
 
-          } else if (combobox.getValue().getSelectedItem() instanceof UIScrapper) {
-            UIScrapper scrapper = (UIScrapper) combobox.getValue().getSelectedItem();
+          } else if (combobox.getValue().getSelectedItem() instanceof UIScraper) {
+            UIScraper scrapper = (UIScraper) combobox.getValue().getSelectedItem();
             Class<?> clazz = Class.forName(property.getValue().replace("class ", ""));
-            settings.coreInstance.set((SettingsProperty) property, scrapper.getScrapper().getClass());
-            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scrapper.getScrapper().getClass()) ? property : null, property);
+            settings.coreInstance.set((SettingsProperty) property, scrapper.getScraper().getClass());
+            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scrapper.getScraper().getClass()) ? property : null, property);
           } else {
             UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown property %s : Class %s", property.name(), property.getDefaultValue()));
           }

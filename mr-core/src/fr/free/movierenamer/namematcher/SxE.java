@@ -68,7 +68,7 @@ public class SxE {
   }
 
   public boolean isValid() {
-    return season != -1 && episode != -1;
+    return season > 0 && episode > 0;
   }
 
   public boolean isPartial() {

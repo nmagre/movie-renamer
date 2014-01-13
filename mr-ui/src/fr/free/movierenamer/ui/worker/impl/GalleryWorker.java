@@ -33,12 +33,12 @@ public class GalleryWorker extends AbstractImageWorker<UIMediaImage> {
 
   private final GalleryDialog panel;
 
-  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, String defaultImage) {
-    this(images, panel, ImageInfo.ImageSize.medium, defaultImage);
+  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, Icon defaultImage) {
+    this(images, panel, ImageInfo.ImageSize.small, defaultImage);
   }
 
-  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, ImageInfo.ImageSize size, String defaultImage) {
-    super(images, size, defaultImage);
+  public GalleryWorker(List<UIMediaImage> images, GalleryDialog panel, ImageInfo.ImageSize size, Icon defaultImage) {
+    super(images, size, defaultImage, true);
     this.panel = panel;
   }
 

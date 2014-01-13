@@ -122,6 +122,7 @@ public final class ImageUtils {
   public static final Icon NO_IMAGE_H = flipImageHorizontally(NO_IMAGE);
   public static final Icon WARNING = getIconFromJar("ui/warning.png");
   public static final Icon FILE = getIconFromJar("ui/file.png");
+  public static final Icon UNKNOWN = getIconFromJar("ui/unknown.png");
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {
@@ -140,9 +141,8 @@ public final class ImageUtils {
   /**
    * Get image from jar file (from 'image' folder)
    *
-   * @param <T>
    * @param fileName Image filename
-   * @param cls Class
+   * @param clazz Class
    * @return Image file or null
    */
   public static Image getImageFromJAR(String fileName, Class<?> clazz) {
@@ -190,7 +190,8 @@ public final class ImageUtils {
     } catch (URISyntaxException ex) {
       uri = null;
     }
-    return getIcon(uri, dim, defaultImage);
+
+    return getIcon(uri, dim, new ImageIcon(getImageFromJAR(defaultImage, ImageUtils.class)));
   }
 
   public static boolean isInCache(URI imagePth) {
@@ -205,7 +206,7 @@ public final class ImageUtils {
     return false;
   }
 
-  public static Icon getIcon(URI imagePth, Dimension dim, String defaultImage) {
+  public static Icon getIcon(URI imagePth, Dimension dim, Icon defaultImage) {
     Cache cache = Cache.getCache("long");
     Image img;
 
@@ -235,7 +236,7 @@ public final class ImageUtils {
 
     if (img == null && defaultImage != null) {
       // load default image id necessary
-      img = ImageUtils.getImageFromJAR(defaultImage, ImageUtils.class);
+      img = iconToImage(defaultImage);
     }
 
     if (dim != null) {

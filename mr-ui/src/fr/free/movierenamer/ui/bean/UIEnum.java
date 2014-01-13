@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import javax.swing.Icon;
@@ -52,6 +53,9 @@ public class UIEnum implements IIconList {
 
   @Override
   public String toString() {
+    if (enumValue instanceof Nfo.NFOtype) {
+      return enumValue.name();
+    }
     return UIUtils.i18n.getLanguage("settings." + enumValue.name().toLowerCase(), false);
   }
 

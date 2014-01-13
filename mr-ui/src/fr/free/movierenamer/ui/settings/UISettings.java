@@ -51,6 +51,11 @@ public final class UISettings {
     APPNAME = appName;
     VERSION = getApplicationProperty("application.version");
     HOST = getApplicationProperty("application.host");
+    AUTHOR = getApplicationProperty("application.author");
+    CONTRIB = getApplicationProperty("application.contributors");
+    LICENSE = getApplicationProperty("application.license");
+    COPYRIGHT = getApplicationProperty("application.copyright");
+    PROVIDER = getApplicationProperty("application.provider");
     CORE_VERSION = Settings.VERSION;
     userFolder = System.getProperty("user.home");
     appFolder = Settings.getApplicationFolder();
@@ -67,6 +72,11 @@ public final class UISettings {
   public static final String VERSION;
   public static final String HOST;
   public static final String CORE_VERSION;
+  public static final String AUTHOR;
+  public static final String CONTRIB;
+  public static final String LICENSE;
+  public static final String COPYRIGHT;
+  public static final String PROVIDER;
   public static final File appFolder;
   private static final String userFolder;
   public static final String languagePrefix;
@@ -101,16 +111,17 @@ public final class UISettings {
     scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     moveFileOneByOne(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     mediaInfoWarning(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
-    // General interface
-    screenDevice(0, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    showStartupAnim(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    showMediaPanel(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    showImagePanel(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    showActorImage(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    showIconMediaList(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    showFormatField(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
-    groupMediaList(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.INTERFACE),
     checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
+    // Interface
+    screenDevice(0, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    numberImageGallery(6, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
     // Image
@@ -412,6 +423,10 @@ public final class UISettings {
 
   public boolean isMediaInfoWarning() {
     return Boolean.parseBoolean(get(UISettingsProperty.mediaInfoWarning));
+  }
+
+  public int getNumberImageGallery() {
+    return Integer.valueOf(get(UISettingsProperty.numberImageGallery));
   }
 
   public String getImageThumbName() {

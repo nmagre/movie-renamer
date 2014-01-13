@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,50 +29,50 @@ import javax.swing.ImageIcon;
  * @author Simon QUÉMÉNEUR
  * @author Nicolas Magré
  */
-public class UIScrapper implements IIconList {
+public class UIScraper implements IIconList {
 
   private Icon icon;
-  private final SearchScrapper<? extends Hyperlink> scrapper;
+  private final SearchScrapper<? extends Hyperlink> scraper;
 
-  public UIScrapper(SearchScrapper<? extends Hyperlink> scrapper) {
-    this.scrapper = scrapper;
+  public UIScraper(SearchScrapper<? extends Hyperlink> scraper) {
+    this.scraper = scraper;
   }
 
   @Override
   public Icon getIcon() {
     if (icon == null) {
-      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scrapper.getName().toLowerCase())));
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scraper.getName().toLowerCase())));
     }
     return icon;
   }
 
-  public SearchScrapper<? extends Hyperlink> getScrapper() {
-    return scrapper;
+  public SearchScrapper<? extends Hyperlink> getScraper() {
+    return scraper;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (obj == null || !(obj instanceof UIScrapper)) {
+    if (obj == null || !(obj instanceof UIScraper)) {
       return false;
     }
-    UIScrapper other = (UIScrapper) obj;
-    return scrapper.getName().equals(other.getScrapper().getName());
+    UIScraper other = (UIScraper) obj;
+    return scraper.getName().equals(other.getScraper().getName());
   }
 
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 29 * hash + (this.scrapper != null ? this.scrapper.hashCode() : 0);
+    hash = 29 * hash + (this.scraper != null ? this.scraper.hashCode() : 0);
     return hash;
   }
 
   @Override
   public String toString() {
-    return scrapper.getName();
+    return scraper.getName();
   }
 
   @Override
   public String getName() {
-    return scrapper.getClass().toString();
+    return scraper.getClass().toString();
   }
 }

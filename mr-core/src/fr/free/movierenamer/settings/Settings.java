@@ -109,6 +109,7 @@ public final class Settings {
   public enum SettingsType {
 
     GENERAL,
+    INTERFACE,
     MEDIA,
     SEARCH,
     FORMAT,
@@ -127,7 +128,6 @@ public final class Settings {
     SCRAPER,
     MOVIE,
     //TVSHOW,
-    INTERFACE,
     THUMB,
     FANART,
     LOGO,
