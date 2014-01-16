@@ -103,6 +103,13 @@ public final class UISettings {
     SMALL;
   }
 
+  public static enum ImageFormat {
+
+    PNG,
+    JPG,
+    GIF
+  }
+
   public enum UISettingsProperty implements Settings.IProperty {
 
     // General
@@ -121,7 +128,6 @@ public final class UISettings {
     showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    numberImageGallery(15, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
     // Image
@@ -131,21 +137,23 @@ public final class UISettings {
     generateClearart(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
     generateLogo(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
     generateBanner(Boolean.TRUE, SettingsType.IMAGE, SettingsSubType.GENERAL),
-    imageThumbName("<fileName>-poster.jpg", SettingsType.IMAGE, SettingsSubType.THUMB),
+    imageFormat(ImageFormat.PNG, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    numberImageGallery(15, SettingsType.IMAGE, SettingsSubType.GENERAL),
+    imageThumbName("<fileName>-poster.png", SettingsType.IMAGE, SettingsSubType.THUMB),
     imageThumbSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.THUMB),
     imageThumbResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.THUMB, true),
     imageThumbHeight(720, SettingsType.IMAGE, SettingsSubType.THUMB),
-    imageFanartName("<fileName>-fanart.jpg", SettingsType.IMAGE, SettingsSubType.FANART),
+    imageFanartName("<fileName>-fanart.png", SettingsType.IMAGE, SettingsSubType.FANART),
     imageFanartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.FANART),
     imageFanartResize(Boolean.FALSE, SettingsType.IMAGE, SettingsSubType.FANART, true),
     imageFanartWidth(1080, SettingsType.IMAGE, SettingsSubType.FANART),
-    imageLogoName("<fileName>-clearlogo.jpg", SettingsType.IMAGE, SettingsSubType.LOGO),
+    imageLogoName("<fileName>-clearlogo.png", SettingsType.IMAGE, SettingsSubType.LOGO),
     imageLogoSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.LOGO),
-    imageCdartName("<fileName>-discart.jpg", SettingsType.IMAGE, SettingsSubType.CDART),
+    imageCdartName("<fileName>-discart.png", SettingsType.IMAGE, SettingsSubType.CDART),
     imageCdartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.CDART),
-    imageClearartName("<fileName>-clearart.jpg", SettingsType.IMAGE, SettingsSubType.CLEARART),
+    imageClearartName("<fileName>-clearart.png", SettingsType.IMAGE, SettingsSubType.CLEARART),
     imageClearartSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.CLEARART),
-    imageBannerName("<fileName>-clearlogo.jpg", SettingsType.IMAGE, SettingsSubType.BANNER),
+    imageBannerName("<fileName>-banner.png", SettingsType.IMAGE, SettingsSubType.BANNER),
     imageBannerSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.BANNER),
     // Search
     useImdbIdInSearch(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
@@ -425,6 +433,10 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.mediaInfoWarning));
   }
 
+  public ImageFormat getImageFormat() {
+    return ImageFormat.valueOf(get(UISettingsProperty.imageFormat));
+  }
+
   public int getNumberImageGallery() {
     return Integer.valueOf(get(UISettingsProperty.numberImageGallery));
   }
@@ -459,6 +471,22 @@ public final class UISettings {
 
   public int getImageFanartWidth() {
     return Integer.parseInt(get(UISettingsProperty.imageFanartWidth));
+  }
+
+  public ImageSize getImageLogoSize() {
+    return ImageSize.valueOf(get(UISettingsProperty.imageLogoSize));
+  }
+
+  public ImageSize getImageCdartSize() {
+    return ImageSize.valueOf(get(UISettingsProperty.imageCdartSize));
+  }
+
+  public ImageSize getImageClearartSize() {
+    return ImageSize.valueOf(get(UISettingsProperty.imageClearartSize));
+  }
+
+  public ImageSize getImageBannerSize() {
+    return ImageSize.valueOf(get(UISettingsProperty.imageBannerSize));
   }
 
   public boolean isUseExtensionFilter() {

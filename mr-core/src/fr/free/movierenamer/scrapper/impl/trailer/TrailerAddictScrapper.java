@@ -73,6 +73,7 @@ public class TrailerAddictScrapper extends TrailerScrapper {
         trailers.add(new Trailer(node.getTextContent(), new URL("http", simpleapi + host, XPathUtils.getAttribute("href", node))));
       }
     }
+
     return trailers;
   }
 

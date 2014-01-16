@@ -39,7 +39,6 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
   private final int nbStar = 5;
   private final WebPanel starPanel;
   private final List<WebLabel> stars;
-  private T info;
 
   /**
    * Creates new form VideoPanel
@@ -63,11 +62,11 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
 
     mainTb.addToEnd(starPanel);
 
-    Map<InfoPanel.PanelType, InfoPanel<T>> pnls = new LinkedHashMap<>();
+    Map<InfoPanel.PanelType, InfoPanel<T>> mediaPanels = new LinkedHashMap<>();
     for (InfoPanel<T> panel : panels) {
-      pnls.put(panel.getType(), panel);
+      mediaPanels.put(panel.getType(), panel);
     }
-    createPanel(infoPanels, pnls);
+    createPanel(infoPanels, mediaPanels);
 
     clearStars();
     mainTb.setMargin(0, 4, 0, 0);
@@ -83,14 +82,7 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
   }
 
   @Override
-  public T getInfo() {
-
-    return info;
-  }
-
-  @Override
   public void addInfo(T info) {
-    this.info = info;
     for (Map.Entry<InfoPanel.PanelType, InfoPanel<T>> entry : panels.entrySet()) {
       entry.getValue().setInfo(info);
     }
@@ -130,7 +122,6 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
   @Override
   public final void clear() {
     super.clear();
-    info = null;
     clearStars();
     mediaTitleLbl.setText("");
   }

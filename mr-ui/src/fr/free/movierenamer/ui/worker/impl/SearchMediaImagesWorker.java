@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,17 +85,6 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
     return mediaImages;
   }
 
-  private List<UIMediaImage> getImagesByType(List<UIMediaImage> images, ImageInfo.ImageCategoryProperty property) {
-    List<UIMediaImage> res = new ArrayList<>();
-    for (UIMediaImage image : images) {
-      if (image.getType().equals(property)) {
-        res.add(image);
-      }
-    }
-
-    return res;
-  }
-
   @Override
   protected void workerDone() throws Exception {
     List<UIMediaImage> images = get();
@@ -116,6 +105,17 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
     }
 
     mr.setRenamebuttonEnabled();
+  }
+
+  private List<UIMediaImage> getImagesByType(List<UIMediaImage> images, ImageInfo.ImageCategoryProperty property) {
+    List<UIMediaImage> res = new ArrayList<>();
+    for (UIMediaImage image : images) {
+      if (image.getType().equals(property)) {
+        res.add(image);
+      }
+    }
+
+    return res;
   }
 
   @Override

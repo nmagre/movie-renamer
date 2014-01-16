@@ -58,7 +58,7 @@ public class ZoomListRenderer extends WebListCellRenderer {
     UIMediaImage uimedia = (UIMediaImage) value;
     Icon icon = uimedia.getIcon();
     String width = uimedia.getInfo().getWidth() != null ? "" + uimedia.getInfo().getWidth() : "" + icon.getIconWidth();
-    String height = uimedia.getInfo().getHeight() != null ? "" + uimedia.getInfo().getWidth() : "" + icon.getIconHeight();
+    String height = uimedia.getInfo().getHeight() != null ? "" + uimedia.getInfo().getHeight() : "" + icon.getIconHeight();
 
     ZoomImageLbl zlabel = new ZoomImageLbl(width + "x" + height, icon, SwingConstants.CENTER);
     zlabel.setVerticalAlignment(SwingConstants.BOTTOM);

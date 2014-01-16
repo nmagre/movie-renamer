@@ -36,7 +36,7 @@ public class MediaSubTitle {
 
   public MediaSubTitle(final int stream) {
     this.stream = stream;
-    title = "?";
+    title = "";
     language = Locale.ROOT;
   }
 

@@ -33,32 +33,32 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="newIconLbl" min="-2" pref="100" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="newSizeLbl" alignment="1" pref="282" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="newSizeLbl" alignment="1" min="-2" pref="353" max="-2" attributes="0"/>
                                   <Component id="newModifiedLbl" max="32767" attributes="0"/>
-                                  <Component id="newLbl" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="newLbl" alignment="1" min="-2" pref="353" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="alreadyExistLbl" max="32767" attributes="0"/>
-                          <Component id="replaceTitleLbl" max="32767" attributes="0"/>
+                          <Component id="alreadyExistLbl" min="-2" pref="459" max="-2" attributes="0"/>
+                          <Component id="replaceTitleLbl" min="-2" pref="459" max="-2" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="origIconLbl" min="-2" pref="100" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="origLbl" max="32767" attributes="0"/>
-                                  <Component id="origSizeLbl" max="32767" attributes="0"/>
-                                  <Component id="origModifiedLbl" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="origLbl" min="-2" pref="353" max="-2" attributes="0"/>
+                                  <Component id="origSizeLbl" min="-2" pref="353" max="-2" attributes="0"/>
+                                  <Component id="origModifiedLbl" alignment="0" min="-2" pref="353" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="applyAllChk" alignment="0" max="32767" attributes="0"/>
+                          <Component id="applyAllChk" alignment="0" min="-2" pref="459" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="replaceBtn" min="-2" pref="110" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="skipBtn" min="-2" pref="110" max="-2" attributes="0"/>
-                      <EmptySpace pref="124" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="cancelBtn" min="-2" pref="110" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -102,7 +102,7 @@
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="applyAllChk" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="27" max="32767" attributes="0"/>
+              <EmptySpace pref="83" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="replaceBtn" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="skipBtn" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
@@ -148,6 +148,9 @@
     <Component class="com.alee.laf.checkbox.WebCheckBox" name="applyAllChk">
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="replaceBtn">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="replaceBtnActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;replace&quot;, false), ImageUtils.OK_16)"/>
       </AuxValues>
@@ -161,6 +164,9 @@
       </AuxValues>
     </Component>
     <Component class="com.alee.laf.button.WebButton" name="skipBtn">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="skipBtnActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;skip&quot;, false), ImageUtils.SKIP_16)"/>
       </AuxValues>

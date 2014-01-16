@@ -60,6 +60,7 @@ public class GalleryDialog extends AbstractDialog {
   private final DefaultComboBoxModel<UILang> languagesModel;
   private boolean useLanguage;
   private List<UIMediaImage> images;
+  private List<UIMediaImage> imagesByLang;
   private List<UILang> languages;
   private SupportedImages supportedImage;
   private final ItemListener languageChangeListener = new ItemListener() {
@@ -214,6 +215,7 @@ public class GalleryDialog extends AbstractDialog {
   }
 
   private void fetchImages(List<UIMediaImage> imgs) {
+    imagesByLang = imgs;
     imageListModel.addAll(imgs);
 
     supportedImage.getLabel().setIcon(!imgs.isEmpty() ? ImageUtils.LOAD_24 : supportedImage.getRatio() > 1
@@ -223,6 +225,10 @@ public class GalleryDialog extends AbstractDialog {
       WorkerManager.fetchGalleryImages(imgs, this, null, ImageUtils.NO_IMAGE,
               property.equals(ImageInfo.ImageCategoryProperty.thumb) ? ImageInfo.ImageSize.medium : ImageInfo.ImageSize.small);
     }
+  }
+
+  public List<UIMediaImage> getImageByLanguage() {
+    return imagesByLang;
   }
 
   private List<UIMediaImage> getImageByLanguage(UILang lang) {
@@ -282,6 +288,10 @@ public class GalleryDialog extends AbstractDialog {
               java.awt.Image.SCALE_SMOOTH);
       supportedImage.getLabel().setIcon(new ImageIcon(newimg));
     }
+  }
+
+  public UIMediaImage getSelectedValue() {
+    return (UIMediaImage) imageList.getSelectedValue();
   }
 
   public ImageCategoryProperty getImageProperty() {

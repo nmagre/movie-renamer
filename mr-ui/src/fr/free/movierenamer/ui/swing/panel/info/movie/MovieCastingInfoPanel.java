@@ -15,14 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.panel.info;
+package fr.free.movierenamer.ui.swing.panel.info.movie;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.swing.renderer.CastingListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Icon;
@@ -32,7 +36,7 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public class CastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
+public class MovieCastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
 
   private T info;
   private final ImageListModel<UIPersonImage> directorListModel = new ImageListModel<>();
@@ -43,7 +47,7 @@ public class CastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
   /**
    * Creates new form CastingInfoPanel
    */
-  public CastingInfoPanel() {
+  public MovieCastingInfoPanel() {
     initComponents();
     actorsList = new ArrayList<>();
     directorsList = new ArrayList<>();
@@ -54,14 +58,6 @@ public class CastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
     actorList.setCellRenderer(new CastingListRenderer());
     directorList.setVisibleRowCount(0);
     actorList.setVisibleRowCount(0);
-  }
-
-  public ImageListModel<UIPersonImage> getDirectorListModel() {
-    return directorListModel;
-  }
-
-  public ImageListModel<UIPersonImage> getActorListModel() {
-    return actorListModel;
   }
 
   public List<UIPersonImage> getActors() {
@@ -94,6 +90,7 @@ public class CastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
   @Override
   public void setInfo(T info) {
     this.info = info;
+
     UIPersonImage person;
     List<CastingInfo> cinfo = info.getActors();
     for (CastingInfo pinfo : cinfo) {
@@ -108,6 +105,13 @@ public class CastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
       directorsList.add(person);
     }
     directorListModel.addAll(directorsList);
+
+    // Avoid reference
+    List<UIPersonImage> actors = new ArrayList<>(actorsList);
+    List<UIPersonImage> directors = new ArrayList<>(directorsList);
+    // Get images
+    WorkerManager.fetchImages(actors, actorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+    WorkerManager.fetchImages(directors, directorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
   }
 
   @Override

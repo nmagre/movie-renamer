@@ -190,6 +190,37 @@ public class ImagePanel extends WebPanel {
     galleryPanels.get(key).addImages(image);
   }
 
+  /**
+   * Get images by languages
+   *
+   * @return
+   */
+  public List<ImageInfo> getImages() {
+    List<ImageInfo> images = new ArrayList<>();
+
+    List<UIMediaImage> uiImages;
+
+    for (GalleryDialog gallery : galleryPanels.values()) {
+
+      uiImages = gallery.getImageByLanguage();
+      if (uiImages != null) {
+        for (UIMediaImage uiImage : uiImages) {
+          images.add(uiImage.getInfo());
+        }
+      }
+    }
+
+    return images;
+  }
+
+  public UIMediaImage getSelectedImage(ImageCategoryProperty key) {
+    if (isSupportedImage(key)) {
+      return galleryPanels.get(key).getSelectedValue();
+    }
+
+    return null;
+  }
+
   public void enabledListener() {
     for (ImageCategoryProperty property : imageLabels.keySet()) {
       imageLabels.get(property).setListenerEnabled(true);

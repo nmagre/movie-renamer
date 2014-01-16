@@ -23,10 +23,12 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.utils.StringUtils;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 /**
  * Class FileConflictDialog
@@ -35,19 +37,22 @@ import javax.swing.Icon;
  */
 public class FileConflictDialog extends AbstractDialog {
 
-  private final File origFile, newFile;
-  private final Action action = Action.cancel;
+  private final File oldFile, newFile;
+  private Action action = Action.cancel;
 
   public static enum Action {
 
     cancel,
     skip,
-    replace
+    replace,
+    skipAll,
+    replaceAll,
+    none
   }
 
-  public FileConflictDialog(MovieRenamer mr, File origFile, File newFile) {
+  public FileConflictDialog(MovieRenamer mr, File oldFile, File newFile) {
     super(mr, i18n.getLanguageKey("dialog.fileconflict", false));
-    this.origFile = origFile;
+    this.oldFile = oldFile;
     this.newFile = newFile;
 
     initComponents();
@@ -55,18 +60,19 @@ public class FileConflictDialog extends AbstractDialog {
     origIconLbl.setIcon(ImageUtils.FILE);
     newIconLbl.setIcon(ImageUtils.FILE);
 
-    setFileIcon(origFile, origIconLbl);
+    setFileIcon(oldFile, origIconLbl);
     setFileIcon(newFile, newIconLbl);
 
-    replaceTitleLbl.setLanguage(i18n.getLanguageKey("dialog.replacefile", false), newFile.getName());
-    alreadyExistLbl.setLanguage(i18n.getLanguageKey("dialog.alreadyexist", false), newFile.getParentFile().getName());
+    replaceTitleLbl.setLanguage(i18n.getLanguageKey("dialog.replacefile", false), oldFile.getName());
+    alreadyExistLbl.setLanguage(i18n.getLanguageKey("dialog.alreadyexist", false), oldFile.getParentFile().getName());
     origLbl.setLanguage(i18n.getLanguageKey("dialog.origfile", false));
     newLbl.setLanguage(i18n.getLanguageKey("dialog.replacewith", false));
-    origSizeLbl.setLanguage(i18n.getLanguageKey("dialog.size", false), StringUtils.humanReadableByteCount(origFile.length()));
-    newSizeLbl.setLanguage(i18n.getLanguageKey("dialog.size", false), StringUtils.humanReadableByteCount(origFile.length()));
-    origModifiedLbl.setLanguage(i18n.getLanguageKey("dialog.lastmodified", false), StringUtils.humanReadableDate(origFile.lastModified()));
-    newModifiedLbl.setLanguage(i18n.getLanguageKey("dialog.lastmodified", false), StringUtils.humanReadableDate(origFile.lastModified()));
+    origSizeLbl.setLanguage(i18n.getLanguageKey("dialog.size", false), StringUtils.humanReadableByteCount(oldFile.length()));
+    origModifiedLbl.setLanguage(i18n.getLanguageKey("dialog.lastmodified", false), StringUtils.humanReadableDate(oldFile.lastModified()));
     applyAllChk.setLanguage(i18n.getLanguageKey("dialog.applytoall", false));
+
+    newSizeLbl.setLanguage(i18n.getLanguageKey("dialog.size", false), StringUtils.humanReadableByteCount(newFile.length()));
+    newModifiedLbl.setLanguage(i18n.getLanguageKey("dialog.lastmodified", false), StringUtils.humanReadableDate(newFile.lastModified()));
 
     // Font
     replaceTitleLbl.setFont(UIUtils.titleFont);
@@ -80,10 +86,6 @@ public class FileConflictDialog extends AbstractDialog {
     return action;
   }
 
-  public boolean applyToAll() {
-    return applyAllChk.isSelected();
-  }
-
   private void setFileIcon(File file, WebLabel label) {
     try {
       String contentType = Files.probeContentType(file.toPath());
@@ -91,7 +93,11 @@ public class FileConflictDialog extends AbstractDialog {
         if (contentType.contains("image")) {
           Icon icon = ImageUtils.getIcon(file.toURI(), null, null);
           if (icon != null) {
-            label.setIcon(icon);
+            Image img = ((ImageIcon) icon).getImage();
+            int width = 100;
+            int height = (int) (width * icon.getIconHeight()) / icon.getIconWidth();
+            Image newimg = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
+            label.setIcon(new ImageIcon(newimg));
           }
         }
       }
@@ -131,9 +137,21 @@ public class FileConflictDialog extends AbstractDialog {
 
     newIconLbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
+    replaceBtn.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        replaceBtnActionPerformed(evt);
+      }
+    });
+
     cancelBtn.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         cancelBtnActionPerformed(evt);
+      }
+    });
+
+    skipBtn.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        skipBtnActionPerformed(evt);
       }
     });
 
@@ -150,26 +168,26 @@ public class FileConflictDialog extends AbstractDialog {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(newIconLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addComponent(newSizeLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addComponent(newSizeLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addComponent(newModifiedLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(newLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-              .addComponent(alreadyExistLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(replaceTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(newLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
+              .addComponent(alreadyExistLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(replaceTitleLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(origIconLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addComponent(origLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(origSizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(origModifiedLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-              .addComponent(applyAllChk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                  .addComponent(origLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(origSizeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addComponent(origModifiedLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)))
+              .addComponent(applyAllChk, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)))
           .addGroup(layout.createSequentialGroup()
             .addComponent(replaceBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(skipBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
@@ -203,7 +221,7 @@ public class FileConflictDialog extends AbstractDialog {
             .addComponent(newModifiedLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addGap(18, 18, 18)
         .addComponent(applyAllChk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(replaceBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(skipBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -215,8 +233,25 @@ public class FileConflictDialog extends AbstractDialog {
   }// </editor-fold>//GEN-END:initComponents
 
   private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+    action = Action.cancel;
     dispose();
   }//GEN-LAST:event_cancelBtnActionPerformed
+
+  private void replaceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_replaceBtnActionPerformed
+    action = Action.replace;
+    if (applyAllChk.isSelected()) {
+      action = Action.replaceAll;
+    }
+    dispose();
+  }//GEN-LAST:event_replaceBtnActionPerformed
+
+  private void skipBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_skipBtnActionPerformed
+    action = Action.skip;
+    if (applyAllChk.isSelected()) {
+      action = Action.skipAll;
+    }
+    dispose();
+  }//GEN-LAST:event_skipBtnActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private com.alee.laf.label.WebLabel alreadyExistLbl;

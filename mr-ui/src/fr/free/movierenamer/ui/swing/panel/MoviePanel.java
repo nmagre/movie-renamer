@@ -19,8 +19,9 @@ package fr.free.movierenamer.ui.swing.panel;
 
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.swing.panel.info.CastingInfoPanel;
-import fr.free.movierenamer.ui.swing.panel.info.MovieInfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.movie.MovieCastingInfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.movie.MovieInfoPanel;
 
 /**
  * Class MoviePanel
@@ -31,7 +32,7 @@ public class MoviePanel extends VideoPanel<MovieInfo> {
 
   @SuppressWarnings("unchecked")
   public MoviePanel(MovieRenamer mr) {
-    super(new MovieInfoPanel(mr), new CastingInfoPanel<MovieInfo>());
+    super(new MovieInfoPanel(mr), new MovieCastingInfoPanel<>());
   }
 
   @Override
@@ -56,5 +57,10 @@ public class MoviePanel extends VideoPanel<MovieInfo> {
   @Override
   protected boolean addEditButton() {
     return true;
+  }
+
+  @Override
+  public MovieInfo getInfo() {
+    return panels.get(InfoPanel.PanelType.INFO).getInfo();
   }
 }

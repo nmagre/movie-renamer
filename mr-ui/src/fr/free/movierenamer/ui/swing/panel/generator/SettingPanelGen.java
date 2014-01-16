@@ -40,6 +40,7 @@ import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.settings.UISettings.ImageFormat;
 import fr.free.movierenamer.ui.swing.ITestActionListener;
 import fr.free.movierenamer.ui.swing.dialog.SettingsHelpDialog;
 import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
@@ -48,7 +49,6 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -73,7 +73,6 @@ import javax.swing.JPanel;
 public class SettingPanelGen extends PanelGenerator {
 
   private static final long serialVersionUID = 1L;
-  private static final Dimension comboboxDim = new Dimension(200, 25);
   private Map<IProperty, WebCheckBox> checkboxs;
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebComboBox> comboboxs;
@@ -236,6 +235,8 @@ public class SettingPanelGen extends PanelGenerator {
                 imgfolder = "mediacenter";
               } else if (property.getDefaultValue() instanceof CaseConversionType) {
                 imgfolder = "case";
+              } else if (property.getDefaultValue() instanceof ImageFormat) {
+                imgfolder = "image";
               }
               iicon = new UIEnum(e, imgfolder);
             }

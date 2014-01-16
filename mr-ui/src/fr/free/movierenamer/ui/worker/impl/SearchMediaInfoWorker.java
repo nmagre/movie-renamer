@@ -27,7 +27,7 @@ import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
-import fr.free.movierenamer.ui.swing.panel.info.CastingInfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.movie.MovieCastingInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -82,21 +82,9 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
       return;
     }
 
-    @SuppressWarnings("unchecked")
     MediaPanel<MediaInfo> mediaPanel = (MediaPanel<MediaInfo>) mr.getMediaPanel();
-    mediaPanel.setInfo(info);
-
-    List<CastingInfo> casting = info.getCasting();
-    if (!casting.isEmpty()) {
-      CastingInfoPanel<?> castingPanel = (CastingInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.CASTING_INFO);
-      if (castingPanel != null) {
-        // Copy to avoid reference issue
-        List<UIPersonImage> tmp = new ArrayList<>(castingPanel.getActors());
-        List<UIPersonImage> tmp1 = new ArrayList<>(castingPanel.getDirectors());
-
-        WorkerManager.fetchImages(tmp, castingPanel.getActorListModel(), UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
-        WorkerManager.fetchImages(tmp1, castingPanel.getDirectorListModel(), UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
-      }
+    if (mediaPanel != null) {
+      mediaPanel.setInfo(info);
     }
 
     mr.updateRenamedTitle();

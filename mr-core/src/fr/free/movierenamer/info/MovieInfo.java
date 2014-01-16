@@ -223,8 +223,7 @@ public class MovieInfo extends MediaInfo {
   public URI getPosterPath() {
     try {
       return new URL(get(MovieProperty.posterPath)).toURI();
-    } catch (MalformedURLException e) {
-    } catch (URISyntaxException e) {
+    } catch (Exception e) {
     }
     return null;
   }
@@ -236,7 +235,7 @@ public class MovieInfo extends MediaInfo {
   public Integer getVotes() {
     try {
       return Integer.valueOf(get(MovieProperty.votes));
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
     }
     return null;
   }
@@ -244,7 +243,7 @@ public class MovieInfo extends MediaInfo {
   public Double getRating() {
     try {
       return new Double(get(MovieProperty.rating));
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
     }
     return null;
   }
@@ -268,7 +267,7 @@ public class MovieInfo extends MediaInfo {
   public Integer getRuntime() {
     try {
       return Integer.valueOf(get(MovieProperty.runtime));
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
     }
     return null;
   }
@@ -410,7 +409,7 @@ public class MovieInfo extends MediaInfo {
 
       for (MediaSubTitle subTitle : subTitles) {
         sTitles.add(subTitle.getTitle());
-        sLanguages.add(subTitle.getLanguage().getLanguage());
+        sLanguages.add(subTitle.getLanguage() != null ? subTitle.getLanguage().getLanguage() : StringUtils.EMPTY);
       }
 
       // General

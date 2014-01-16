@@ -250,7 +250,7 @@ public abstract class PanelGenerator extends WebPanel {
     if (resize) {
       defaultConstraint.weightx = 1.0;
       if (gridx == 0) {
-        defaultConstraint.gridwidth = maxgridx;
+        defaultConstraint.gridwidth = maxgridx + 1;
       }
     }
 

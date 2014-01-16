@@ -23,8 +23,6 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.namematcher.NameMatcher;
-import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
-import fr.free.movierenamer.namematcher.TvShowNameMatcher;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -32,7 +30,6 @@ import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.ControlWorker;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
 import java.io.FileFilter;
@@ -45,7 +42,7 @@ import java.util.logging.Level;
  *
  * @author Nicolas Magré
  */
-public class ListFilesWorker extends ControlWorker<List<UIFile>> {
+public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
 
   private final List<File> files;
   private final EventList<UIFile> eventList;
@@ -83,7 +80,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>> {
     }
 
     if (!subFolder && subFolder(files)) {
-      publishPause(("dialog.scanSubFolder"));
+      publishPause("dialog.scanSubFolder");
     }
 
     try {
@@ -210,8 +207,8 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>> {
   }
 
   @Override
-  public final void processPause(List<String> v) {
-    int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v.get(0), false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
+  public final void processPause(String v) {
+    int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v, false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
     if (res == WebOptionPane.YES_OPTION) {
       subFolder = true;
     }

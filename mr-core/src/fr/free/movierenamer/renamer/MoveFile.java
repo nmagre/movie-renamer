@@ -18,12 +18,13 @@
 package fr.free.movierenamer.renamer;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.FileUtils;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.logging.Level;
 
 /**
@@ -37,36 +38,42 @@ public class MoveFile extends Thread {
   private int progress;
   private final File source, dest;
   private boolean cancel;
+  private Status status;
+  private String errorStr;
+
+  public static enum Status {
+
+    OK,
+    CHECK_FAILED,
+    REMOVE_FAILED,
+    ERROR
+  }
 
   public MoveFile(File source, File dest) {
     this.source = source;
     this.dest = dest;
     this.done = false;
-    this.progress = -1;
+    this.progress = 0;
     this.cancel = false;
+    errorStr = "";
   }
 
   @Override
   public void run() {
-    if (dest.exists()) {
-      // error
-      return;
-    }
 
-    if (source.renameTo(dest)) {
-      return;
-    }
-
+    status = null;
     long size = source.length();
     if (size == 0L) {
-      size = -1;
+      size = 1;
     }
 
-    InputStream input = null;
-    OutputStream output = null;
+    final String sourceChk = FileUtils.getFileChecksum(source);
+
+    BufferedInputStream input = null;
+    BufferedOutputStream output = null;
     try {
-      input = new FileInputStream(source);
-      output = new FileOutputStream(dest);
+      input = new BufferedInputStream(new FileInputStream(source));
+      output = new BufferedOutputStream(new FileOutputStream(dest));
       final byte[] buf = new byte[1024];
       int bytesRead;
       long count = 0;
@@ -76,7 +83,11 @@ public class MoveFile extends Thread {
         count += bytesRead;
         progress = (int) ((count * 100) / size);
       }
+
     } catch (IOException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+      status = Status.ERROR;
+      errorStr = ex.getMessage();
     } finally {
       try {
         if (input != null) {
@@ -87,21 +98,38 @@ public class MoveFile extends Thread {
           output.close();
         }
 
-        if (cancel) {
-          if (dest.exists()) {
-            dest.delete();// FIXME check return
-          }
+        if (cancel && dest.exists() && !dest.delete()) {
+          status = Status.REMOVE_FAILED;
         }
 
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.SEVERE, null, ex);
-        if (dest.exists()) {
-          dest.delete();// FIXME check return
-        }
+        status = Status.ERROR;
+        errorStr = ex.getMessage();
+        dest.delete();
+      }
+    }
+
+    // Check if file is complete
+    if (status == null) {
+      final String destChk = FileUtils.getFileChecksum(dest);
+      if (!sourceChk.equals(destChk)) {
+        status = Status.CHECK_FAILED;
+        dest.delete();
+      } else {
+        status = source.delete() ? Status.OK : Status.REMOVE_FAILED;
       }
     }
 
     done = true;
+  }
+
+  public Status getStatus() {
+    return status;
+  }
+
+  public String getErrorString() {
+    return errorStr;
   }
 
   public boolean isDone() {

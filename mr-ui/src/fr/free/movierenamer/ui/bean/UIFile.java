@@ -21,6 +21,7 @@ import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
+import java.util.Objects;
 import javax.swing.Icon;
 
 /**
@@ -34,7 +35,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
   private final File file;
   private FileInfo fileInfo;
   private final String groupName;
-  private final Icon icon;
+  private Icon icon;
   private String search;
   private FileInfo.MediaType mtype;
 
@@ -49,7 +50,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
     this.file = file;
     this.groupName = groupName;
     this.mtype = mtype;
-    this.icon = ImageUtils.MEDIA_16;
+    this.icon = null;
 
     fileInfo = null;
   }
@@ -101,7 +102,12 @@ public class UIFile extends Sorter.ISort implements IIconList {
    */
   @Override
   public Icon getIcon() {// TODO return icon if file was renamed and id renamed
-    switch (mtype) {
+
+    if (icon != null) {
+      return icon;
+    }
+
+    switch (getMtype()) {
       case MOVIE:
         return ImageUtils.MOVIE_16;
       case TVSHOW:
@@ -125,7 +131,11 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
      //return ImageUtils.MEDIA;
      * */
-    return icon;
+    return ImageUtils.MEDIA_16;
+  }
+
+  public void setIcon(Icon icon) {
+    this.icon = icon;
   }
 
   @Override
@@ -143,10 +153,11 @@ public class UIFile extends Sorter.ISort implements IIconList {
     return getFile().length();
   }
 
-  /**
-   * @return the groupName
-   */
   public String getGroupName() {
     return groupName;
+  }
+
+  public FileInfo.MediaType getMtype() {
+    return mtype;
   }
 }

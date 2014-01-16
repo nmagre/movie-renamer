@@ -522,7 +522,7 @@
     </record>
 
     <record key="mediainfowarning">
-      <value lang="en">Show "media info is not installer" warning</value>
+      <value lang="en">Show "media info is not installed" warning</value>
       <value lang="fr">Afficher l'avertissement "media info n'est pas installé"</value>
     </record>
 
@@ -737,6 +737,11 @@
       <value lang="fr">Générer la Bannière</value>
     </record>
 
+    <record key="imageformat">
+      <value lang="en">Images format</value>
+      <value lang="fr">Format des images</value>
+    </record>
+
     <record key="numberimagegallery">
       <value lang="en">Number of images by gallery</value>
       <value lang="fr">Nombre d'images par galerie</value>
@@ -886,6 +891,11 @@
     <record key="movienfoimdbid">
       <value lang="en">Include imdb id</value>
       <value lang="fr">Inclure l'id imdb</value>
+    </record>
+
+    <record key="movienfogenerate">
+      <value lang="en">Generate NFO</value>
+      <value lang="fr">Générer le NFO</value>
     </record>
 
     <record key="movienfotype">

@@ -180,10 +180,11 @@ public final class Settings {
     stringTimeShowSeconde(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.TIME),
     stringTimeShowMillis(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.TIME),
     // movie NFO
-    movieNFOFilename("<filename>.nfo", SettingsType.NFO, SettingsSubType.GENERAL),
+    movieNFOFilename("<fileName>.nfo", SettingsType.NFO, SettingsSubType.GENERAL),
     movieNfoTag(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
     movieNfoImage(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
     movieNfoImdbId(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
+    movieNfogenerate(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
     movieNfoType(Nfo.NFOtype.XBMC, SettingsType.NFO, SettingsSubType.MEDIACENTER),
     // tvShow
     //    tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
@@ -480,6 +481,10 @@ public final class Settings {
 
   public boolean isMovieImdbId() {
     return Boolean.parseBoolean(get(SettingsProperty.movieNfoImdbId));
+  }
+
+  public boolean isMovieNfogenerate() {
+    return Boolean.parseBoolean(get(SettingsProperty.movieNfogenerate));
   }
 
   public int getSearchNbResult() {

@@ -17,13 +17,20 @@
  */
 package fr.free.movierenamer.ui.swing;
 
+import com.alee.extended.image.DisplayType;
+import com.alee.extended.image.WebImage;
+import com.alee.laf.StyleConstants;
+import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.Main;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UIScraper;
+import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.dialog.AboutDialog;
 import fr.free.movierenamer.ui.swing.dialog.AbstractDialog;
@@ -31,8 +38,20 @@ import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.swing.panel.MoviePanel;
+import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.utils.UIUtils;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.LinearGradientPaint;
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /**
@@ -118,6 +137,74 @@ public final class UIManager {
         dialog.setVisible(true);
       }
     });
+  }
+
+  public static void update(MovieRenamer mr, UIUpdate update) {// FIXME i18n
+    UISettings setting = UISettings.getInstance();
+
+    int n = WebOptionPane.showConfirmDialog(mr,
+            "An update is available.\nDo you want to update Mr to " + update.getUpdateVersion() + "\n\n" + update.getDescen(),
+            UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE
+    );
+
+    if (n > 0) {
+      return;
+    }
+
+    String version = UISettings.getApplicationVersionNumber();
+    String updateDir = Settings.appFolder + File.separator + "update";
+    String installDir = "";
+    try {
+      installDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath();
+    } catch (URISyntaxException ex) {
+      // TODO
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    // TODO check if "installDir" is writable
+    try {
+      String javaBin = System.getProperty("java.home") + "/bin/java";
+      File jarFile = new File(installDir + File.separator + "lib" + File.separator + "Mr-updater.jar");
+      String toExec[];
+
+      if (setting.coreInstance.isProxyIsOn()) {
+        toExec = new String[]{javaBin, "-Dhttp.proxyHost=" + setting.coreInstance.getProxyUrl(),
+          "-Dhttp.proxyPort=" + setting.coreInstance.getProxyPort(), "-jar", jarFile.getPath(), version, installDir, updateDir};
+      } else {
+        toExec = new String[]{javaBin, "-jar", jarFile.getPath(), version, installDir, updateDir};
+      }
+
+      Process p = Runtime.getRuntime().exec(toExec);
+
+      System.exit(0);
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(mr, "Restart failed :(", "error", JOptionPane.ERROR_MESSAGE);// FIXME i18n
+    }
+  }
+
+  /**
+   * Create a background panel for startup animation
+   *
+   * @return WebImage
+   */
+  public static JComponent createBackgroundPanel() {
+    WebImage wi = new WebImage(ImageUtils.BAN) {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      protected void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setPaint(new LinearGradientPaint(0, 0, 0, getHeight(), new float[]{0f, 0.4f, 0.6f, 1f},
+                new Color[]{StyleConstants.bottomBgColor, Color.WHITE, Color.WHITE, StyleConstants.bottomBgColor}));
+        g2d.fill(g2d.getClip() != null ? g2d.getClip() : getVisibleRect());
+
+        super.paintComponent(g);
+      }
+    };
+    wi.setDisplayType(DisplayType.fitComponent);
+    wi.setHorizontalAlignment(SwingConstants.CENTER);
+    wi.setVerticalAlignment(SwingConstants.CENTER);
+    return wi;
   }
 
   private UIManager() {

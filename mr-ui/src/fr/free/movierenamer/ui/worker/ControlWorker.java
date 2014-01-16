@@ -18,53 +18,36 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.ui.MovieRenamer;
-import java.util.List;
+import fr.free.movierenamer.ui.settings.UISettings;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import javax.swing.SwingUtilities;
 
 /**
  * Class ControlWorker, worker with pause/resume control
  *
  * @author Nicolas Magré
  */
-public abstract class ControlWorker<T> extends Worker<T> {
-
-  protected boolean paused = false;
-  protected boolean usePause = false;
+public abstract class ControlWorker<T, V> extends Worker<T> {
 
   public ControlWorker(MovieRenamer mr) {
     super(mr);
   }
 
-  protected final void publishPause(String... chunks) {
-    usePause = true;
-    publish(chunks);
-    pause();
-  }
+  protected final void publishPause(final V chunk) {
+    try {
+      SwingUtilities.invokeAndWait(new Runnable() {
 
-  @Override
-  public final void process(List<String> v) {
-    if (usePause) {
-      processPause(v);
-      resume();
-    } else {
-      super.process(v);
-    }
-    usePause = false;
-  }
-
-  protected abstract void processPause(List<String> v);
-
-  protected void pause() {
-    paused = true;
-    while (paused && !isCancelled()) {
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException ex) {
-      }
+        @Override
+        public void run() {
+          processPause(chunk);
+        }
+      });
+    } catch (InterruptedException | InvocationTargetException ex) {
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
     }
   }
 
-  protected void resume() {
-    paused = false;
-  }
+  protected abstract void processPause(V v);
 
 }

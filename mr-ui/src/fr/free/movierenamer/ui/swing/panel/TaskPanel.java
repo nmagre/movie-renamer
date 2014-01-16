@@ -42,6 +42,9 @@ public class TaskPanel extends WebPanel {
 
   /**
    * Creates new form TaskPanel
+   *
+   * @param str
+   * @param indeterminate
    */
   public TaskPanel(String str, boolean indeterminate) {
     initComponents();

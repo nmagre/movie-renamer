@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.panel.info;
+package fr.free.movierenamer.ui.swing.panel.info.movie;
 
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
@@ -30,6 +30,7 @@ import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UICountry;
+import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.utils.ClassUtils;
@@ -167,15 +168,17 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
 
   @Override
   public MovieInfo getInfo() {
-    for (MovieProperty property : MovieProperty.values()) {
-      if (map.containsKey(property)) {
-        info.set(property, map.get(property).getValue());
+    if (info != null) {
+      for (MovieProperty property : MovieProperty.values()) {
+        if (map.containsKey(property)) {
+          info.set(property, map.get(property).getValue());
+        }
       }
-    }
 
-    for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
-      if (map.containsKey(property)) {
-        info.set(property, map.get(property).getValue());
+      for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
+        if (map.containsKey(property)) {
+          info.set(property, map.get(property).getValue());
+        }
       }
     }
 

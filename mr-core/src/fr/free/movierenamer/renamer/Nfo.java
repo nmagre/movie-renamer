@@ -26,9 +26,7 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,7 +173,7 @@ public class Nfo {// TODO
     return enode;
   }
 
-  public void writeNFO() throws ParserConfigurationException {
+  public Document getNFO() throws ParserConfigurationException {
     createDocument("movie");
 
     InfoType infoType = mediaInfo.getInfoType();
@@ -205,10 +203,7 @@ public class Nfo {// TODO
         break;
     }
 
-    FileUtils.writeXmlFile(nfoDocument, new File("/tmp/test.nfo"));// FIXME
-
-    rootElement = null;
-    nfoDocument = null;
+    return nfoDocument;
   }
 
   private void addBoxeeInfo(InfoType infoType) {

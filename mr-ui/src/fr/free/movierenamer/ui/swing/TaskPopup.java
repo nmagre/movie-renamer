@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@ package fr.free.movierenamer.ui.swing;
 
 import com.alee.managers.popup.WebPopup;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
+import fr.free.movierenamer.ui.swing.panel.TaskPanel;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -26,7 +27,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.util.Queue;
 import javax.swing.BoxLayout;
 
 /**
@@ -57,19 +57,19 @@ public class TaskPopup extends WebPopup {
     setCloseOnFocusLoss(true);
   }
 
-  public void update() {
-    removeAll();
-    Queue<RenamerWorker> rqueue = mr.getTaskWorker();
-    for (RenamerWorker taskWorker : rqueue) {
-      add(taskWorker.getTaskPanel());
-    }
-
-    if (rqueue.isEmpty()) {
-      hidePopup();
-      return;
-    }
+  public void addTaskPanel(TaskPanel taskPanel) {
+    add(taskPanel);
 
     revalidate();
+  }
+
+  public void removeTaskPanel(TaskPanel taskPanel) {
+    remove(taskPanel);
+
+    revalidate();
+    if (WorkerManager.renameQueue.isEmpty()) {
+      hidePopup();
+    }
   }
 
   /**

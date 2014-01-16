@@ -27,13 +27,16 @@ import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
+import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
+import fr.free.movierenamer.ui.swing.panel.TaskPanel;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
+import fr.free.movierenamer.ui.worker.impl.RenameThread;
 import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
@@ -45,7 +48,9 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import javax.swing.Icon;
 
 /**
@@ -56,62 +61,62 @@ import javax.swing.Icon;
 public final class WorkerManager {
 
   private static final Queue<AbstractWorker<?, ?>> workerQueue = new ConcurrentLinkedQueue<>();
+  public static final BlockingQueue<RenamerWorker> renameQueue = new LinkedBlockingQueue<>();
+  private static final Thread renameThread = new RenameThread(renameQueue);
 
-  private WorkerManager() {
-    throw new UnsupportedOperationException();
-  }
-
-  public static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
+  public final static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
     ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList);
     start(listFileWorker);
   }
 
-  public static void search(MovieRenamer mr, UIFile media) {
+  public final static void search(MovieRenamer mr, UIFile media) {
     SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media);
     start(searchWorker);
   }
 
-  public static void searchInfo(MovieRenamer mr, UISearchResult searchResult) {
+  public final static void searchInfo(MovieRenamer mr, UISearchResult searchResult) {
     SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(mr, searchResult);
     start(infoWorker);
   }
 
-  public static void searchImage(MovieRenamer mr, UISearchResult searchResult) {
+  public final static void searchImage(MovieRenamer mr, UISearchResult searchResult) {
     SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
     start(imagesWorker);
   }
 
-  public static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {// not used
+  public final static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {// not used
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
     start(castingWorker);
   }
 
-  public static void searchTrailer(MovieRenamer mr, UISearchResult searchResult) {
+  public final static void searchTrailer(MovieRenamer mr, UISearchResult searchResult) {
     SearchMediaTrailerWorker trailerWorker = new SearchMediaTrailerWorker(mr, searchResult);
     start(trailerWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+  public final static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+  public final static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
     ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
+  public final static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
     AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, resize, defaultImage);
     start(GalleryWorker);
   }
 
-  public static void rename(MovieRenamer mr, File source, String RenamedTitle) {
-    RenamerWorker renameworker = new RenamerWorker(mr, source, RenamedTitle);
-    if (!UISettings.getInstance().isMoveFileOneByOne()) {
-      start(renameworker, false, UIEvent.Event.RENAME_FILE);
-    } else {
-      UIEvent.fireUIEvent(UIEvent.Event.RENAME_FILE, renameworker);
+  public static void rename(MovieRenamer mr, UIFile file, TaskPanel taskPanel, UIRename uirename) throws InterruptedException {
+    RenamerWorker renameworker = new RenamerWorker(mr, file, taskPanel, uirename);
+    renameQueue.put(renameworker);
+  }
+
+  public final static void startRenameThread() {
+    if (!renameThread.isAlive()) {
+      renameThread.start();
     }
   }
 
@@ -209,4 +214,9 @@ public final class WorkerManager {
     }
     updateWorkerQueue();
   }
+
+  private WorkerManager() {
+    throw new UnsupportedOperationException();
+  }
+
 }

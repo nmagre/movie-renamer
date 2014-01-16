@@ -22,8 +22,6 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.EventListModel;
-import com.alee.extended.image.DisplayType;
-import com.alee.extended.image.WebImage;
 import com.alee.extended.layout.ToolbarLayout;
 import com.alee.extended.statusbar.WebStatusBar;
 import com.alee.extended.transition.ComponentTransition;
@@ -31,7 +29,6 @@ import com.alee.extended.transition.effects.Direction;
 import com.alee.extended.transition.effects.curtain.CurtainTransitionEffect;
 import com.alee.extended.transition.effects.curtain.CurtainType;
 import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
-import com.alee.laf.StyleConstants;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
@@ -64,7 +61,6 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
-import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
@@ -76,9 +72,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.logging.Level;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
@@ -89,9 +83,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
-import fr.free.movierenamer.utils.Cache;
-import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Class MovieRenamer
@@ -140,10 +135,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   // UI tools
   public static final Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
   public static final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-  // Renamer worker queue
-  private final Queue<RenamerWorker> renamerWorkerQueue = new LinkedList<>();
   // Task popup
   private final TaskPopup taskPopup = new TaskPopup(this);
+  private final Map<UIFile, TaskPanel> tasksPanel = new LinkedHashMap<>();
   // List tooltip listener
   private final ListTooltip mediaFileTooltip = new ListTooltip();
   private final ListTooltip searchResultTooltip = new ListTooltip(1200, true);
@@ -153,6 +147,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private WebButtonPopup mediaFileListsettingBtn;
   private List<ImageInfo> images;
   private LoadingDialog loadingDial;
+  private boolean workersDone = true;
+  private boolean renameWorkerDone = true;
 
   public MovieRenamer(List<File> files) {
     super();
@@ -286,7 +282,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
           return;
         }
 
-        if (!renamerWorkerQueue.isEmpty()) {
+        if (!WorkerManager.renameQueue.isEmpty()) {
           if (!taskPopup.isShowing()) {
             taskPopup.armPopup();
             // Center on taskPanel in statusBar
@@ -306,7 +302,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     if (setting.isShowStartupAnim()) {
       remove(containerTransition);
       containerTransition.setTransitionEffect(new FadeTransitionEffect());
-      final ComponentTransition appearanceTransition = new ComponentTransition(createBackgroundPanel()) {
+      final ComponentTransition appearanceTransition = new ComponentTransition(UIManager.createBackgroundPanel()) {
         @Override
         public Dimension getPreferredSize() {
           return containerTransition.getPreferredSize();
@@ -349,31 +345,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     loadingDial.hideDial();
     loadingDial = null;
-  }
 
-  /**
-   * Create a background panel for startup animation
-   *
-   * @return WebImage
-   */
-  private JComponent createBackgroundPanel() {
-    WebImage wi = new WebImage(ImageUtils.BAN) {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      protected void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setPaint(new LinearGradientPaint(0, 0, 0, getHeight(), new float[]{0f, 0.4f, 0.6f, 1f},
-                new Color[]{StyleConstants.bottomBgColor, Color.WHITE, Color.WHITE, StyleConstants.bottomBgColor}));
-        g2d.fill(g2d.getClip() != null ? g2d.getClip() : getVisibleRect());
-
-        super.paintComponent(g);
-      }
-    };
-    wi.setDisplayType(DisplayType.fitComponent);
-    wi.setHorizontalAlignment(SwingConstants.CENTER);
-    wi.setVerticalAlignment(SwingConstants.CENTER);
-    return wi;
+    WorkerManager.startRenameThread();
   }
 
   /**
@@ -392,24 +365,29 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    * @param param
    */
   @Override
-  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object object, Object param) {
+  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object oldObj, Object newObj) {
 
-    UISettings.LOGGER.fine(String.format("%s receive event %s %s [%s]", getClass().getSimpleName(), event, (info != null ? info : ""), param));
+    UISettings.LOGGER.info(String.format("%s receive event %s %s [%s : %s]", getClass().getSimpleName(), event, (info != null ? info : ""), oldObj, newObj));
 
     switch (event) {
       case WORKER_STARTED:// FIXME
         statusLbl.setText(info.getDisplayName());
         statusLbl.setIcon(ImageUtils.LOAD_8);
+        workersDone = false;
         statusBar.setVisible(true);
         break;
       case WORKER_RUNNING:// FIXME
         statusLbl.setText(info.getDisplayName());
         statusBar.setVisible(true);
+        workersDone = false;
         break;
       case WORKER_ALL_DONE:// FIXME
         statusLbl.setText("");
         statusLbl.setIcon(null);
-        statusBar.setVisible(false);
+        workersDone = true;
+        if (workersDone && renameWorkerDone) {
+          statusBar.setVisible(false);
+        }
         break;
       case DOWNLOAD_START:
         if (loadingDial == null) {
@@ -423,70 +401,77 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         loadingDial = null;
         break;
       case RENAME_FILE:
-        if (info instanceof RenamerWorker) {
-          synchronized (renamerWorkerQueue) {
-            renamerWorkerQueue.add((RenamerWorker) info);
+        renameWorkerDone = false;
+        statusBar.setVisible(true);
 
-            boolean hasRenamerWorker = false;
-            for (Component cmp : statusBar.getComponents()) {
-              if (cmp instanceof TaskPanel) {
-                hasRenamerWorker = true;
-                if (renamerWorkerQueue.size() > 0) {
-                  ((TaskPanel) cmp).setStatus(renamerWorkerQueue.size() + " More");// FIXME i18n
-                }
-                break;
-              }
+        int index = mediaFileEventList.indexOf((UIFile) oldObj);
+
+        if (index != -1) {
+          UIFile item = mediaFileEventList.get(index);
+          item.setIcon(ImageUtils.LOAD_8);
+          mediaFileEventList.remove(index);
+          mediaFileEventList.add(index, item);
+        }
+
+        boolean hasRenamerWorker = false;
+        for (Component cmp : statusBar.getComponents()) {
+          if (cmp instanceof TaskPanel) {
+            hasRenamerWorker = true;
+            if (tasksPanel.size() > 0) {
+              ((TaskPanel) cmp).setStatus(tasksPanel.size() + " More");// FIXME i18n
             }
-
-            taskPopup.update();
-
-            if (!hasRenamerWorker) {
-              RenamerWorker rworker = renamerWorkerQueue.poll();
-              TaskPanel tpanel = rworker.getTaskPanel();
-              if (renamerWorkerQueue.size() > 0) {
-                tpanel.setStatus(renamerWorkerQueue.size() + " More");// FIXME i18n
-              }
-              statusBar.addToEnd(tpanel);
-              statusBar.revalidate();
-              if (setting.isMoveFileOneByOne()) {
-                rworker.execute();
-              }
-            }
+            break;
           }
         }
+
+        if (!hasRenamerWorker) {
+          statusBar.addToEnd(tasksPanel.values().iterator().next());
+          statusBar.revalidate();
+        }
+
         break;
       case RENAME_FILE_DONE:
-        if (info instanceof RenamerWorker) {
-          synchronized (renamerWorkerQueue) {
-            renamerWorkerQueue.remove((RenamerWorker) info);
-            TaskPanel tpanel = ((RenamerWorker) info).getTaskPanel();
-            if (statusBar.isAncestorOf(tpanel)) {
-              statusBar.remove(tpanel);
-              statusBar.revalidate();
-            }
+        UIFile uifile = (UIFile) (oldObj != null ? oldObj : newObj);
+        index = mediaFileEventList.indexOf(uifile);
 
-            if (!renamerWorkerQueue.isEmpty()) {
-              RenamerWorker rworker = renamerWorkerQueue.poll();
-              if (setting.isMoveFileOneByOne()) {
-                rworker.execute();
-              }
+        UIFile item = null;
+        if (index != -1) {
+          item = mediaFileEventList.get(index);
+          item.setIcon(null);
+          mediaFileEventList.remove(index);
+          mediaFileEventList.add(index, uifile);
+        }
+        System.out.println("get : " + item);
+        for (UIFile dd : tasksPanel.keySet()) {
+          System.out.println("list : " + dd);
+        }
 
-              tpanel = rworker.getTaskPanel();
-              if (renamerWorkerQueue.size() > 0) {
-                tpanel.setStatus(renamerWorkerQueue.size() + " More");// FIXME i18n
-              }
-              statusBar.addToEnd(tpanel);
-              statusBar.revalidate();
-            }
-          }
+        if (statusBar.isAncestorOf(tasksPanel.get(item != null ? item : uifile))) {
+          statusBar.remove(tasksPanel.get(item != null ? item : uifile));
+          statusBar.revalidate();
+        }
 
-          taskPopup.update();
+        tasksPanel.remove(uifile);
+        if (tasksPanel.isEmpty()) {
+          renameWorkerDone = true;
+        } else {
+          statusBar.addToEnd(tasksPanel.values().iterator().next());
+          statusBar.revalidate();
+        }
+
+        System.out.println("get : " + uifile);
+        for (UIFile dd : tasksPanel.keySet()) {
+          System.out.println("list : " + dd);
+        }
+
+        if (workersDone && renameWorkerDone) {
+          statusBar.setVisible(false);
         }
         break;
       case SETTINGS:// TODO
-        if (param instanceof Settings.IProperty) {
-          if (param instanceof Settings.SettingsProperty) {
-            Settings.SettingsProperty sproperty = (Settings.SettingsProperty) param;
+        if (newObj instanceof Settings.IProperty) {
+          if (newObj instanceof Settings.SettingsProperty) {
+            Settings.SettingsProperty sproperty = (Settings.SettingsProperty) newObj;
             System.out.println(sproperty.name() + " changed to " + sproperty.getValue());
             switch (sproperty) {
               case movieFilenameCase:
@@ -508,9 +493,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
             }
           }
 
-          if (param instanceof UISettings.UISettingsProperty) {
+          if (newObj instanceof UISettings.UISettingsProperty) {
             boolean updatePanel = false;
-            UISettings.UISettingsProperty uisproperty = (UISettings.UISettingsProperty) param;
+            UISettings.UISettingsProperty uisproperty = (UISettings.UISettingsProperty) newObj;
             System.out.println(uisproperty.name() + " changed to " + uisproperty.getValue());// FIXME remove
             switch (uisproperty) {
               case showMediaPanel:
@@ -533,47 +518,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         }
         break;
 
-      case UPDATE_AVAILABLE:// FIXME i18n
-        UIUpdate update = (UIUpdate) param;
-        int n = WebOptionPane.showConfirmDialog(MovieRenamer.this,
-                "An update is available.\nDo you want to update Mr to " + update.getUpdateVersion() + "\n\n" + update.getDescen(),
-                UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE
-        );
-
-        if (n > 0) {
-          return;
-        }
-
-        String version = UISettings.getApplicationVersionNumber();
-        String updateDir = Settings.appFolder + File.separator + "update";
-        String installDir = "";
-        try {
-          installDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath();
-        } catch (URISyntaxException ex) {
-          // TODO
-          UISettings.LOGGER.log(Level.SEVERE, null, ex);
-        }
-
-        // TODO check if "installDir" is writable
-        try {
-
-          String javaBin = System.getProperty("java.home") + "/bin/java";
-          File jarFile = new File(installDir + File.separator + "lib" + File.separator + "Mr-updater.jar");
-          String toExec[];
-
-          if (setting.coreInstance.isProxyIsOn()) {
-            toExec = new String[]{javaBin, "-Dhttp.proxyHost=" + setting.coreInstance.getProxyUrl(),
-              "-Dhttp.proxyPort=" + setting.coreInstance.getProxyPort(), "-jar", jarFile.getPath(), version, installDir, updateDir};
-          } else {
-            toExec = new String[]{javaBin, "-jar", jarFile.getPath(), version, installDir, updateDir};
-          }
-
-          Process p = Runtime.getRuntime().exec(toExec);
-          dispose();
-          System.exit(0);
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(this, "Restart failed :(", "error", JOptionPane.ERROR_MESSAGE);// FIXME i18n
-        }
+      case UPDATE_AVAILABLE:
+        UIManager.update(this, (UIUpdate) newObj);
         break;
       case NO_UPDATE:
         // TODO
@@ -803,6 +749,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     System.gc();
   }
 
+  public void updateRenamedTitle() {
+    MediaInfo mediaInfo = getMediaPanel().getInfo();
+    renameField.setText(null);
+
+    if (mediaInfo != null) {
+      renameField.setText(mediaInfo.getRenamedTitle(fileFormatField.getText()));
+    }
+  }
+
   /**
    *******************************
    *
@@ -931,10 +886,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     return current;
   }
 
-  public Queue<RenamerWorker> getTaskWorker() {
-    return renamerWorkerQueue;// FIXME unmodifiable
-  }
-
   /**
    *******************************
    *
@@ -953,15 +904,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   public void setSearchEnabled() {
     searchBtn.setEnabled(true);
     searchField.setEnabled(true);
-  }
-
-  public void updateRenamedTitle() {
-    MediaInfo mediaInfo = getMediaPanel().getInfo();
-    renameField.setText(null);
-
-    if (mediaInfo != null) {
-      renameField.setText(mediaInfo.getRenamedTitle(fileFormatField.getText()));
-    }
   }
 
   public void setRenameFieldEnabled() {
@@ -1329,7 +1271,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     }
 
     if (!runningProcess) {
-      runningProcess = !renamerWorkerQueue.isEmpty();
+      runningProcess = !WorkerManager.renameQueue.isEmpty();// FIXME this is wrong, rename worker can be not done
     }
 
     if (runningProcess) {
@@ -1354,7 +1296,19 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }//GEN-LAST:event_updateBtnActionPerformed
 
   private void renameBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_renameBtnActionPerformed
-    WorkerManager.rename(this, currentMedia.getFile(), renameField.getText());
+    String tasktitle = currentMedia.getName();
+    if (tasktitle.length() > 30) {
+      tasktitle = tasktitle.substring(0, 27) + "...";
+    }
+
+    TaskPanel taskPanel = new TaskPanel(tasktitle);
+    tasksPanel.put(currentMedia, taskPanel);
+    taskPopup.add(taskPanel);
+    try {
+      WorkerManager.rename(this, currentMedia, taskPanel, new UIRename(currentMedia, renameField.getText(), null));
+    } catch (InterruptedException ex) {
+      Logger.getLogger(MovieRenamer.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }//GEN-LAST:event_renameBtnActionPerformed
 
   private void searchBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
