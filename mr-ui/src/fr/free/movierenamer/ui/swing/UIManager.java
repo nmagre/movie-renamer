@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.swing;
 import com.alee.extended.image.DisplayType;
 import com.alee.extended.image.WebImage;
 import com.alee.laf.StyleConstants;
+import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
@@ -28,7 +29,9 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.Main;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMode;
+import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -40,14 +43,18 @@ import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.swing.panel.MoviePanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -64,9 +71,41 @@ public final class UIManager {
   private static SettingDialog settingsDialog;
   private static AboutDialog aboutDialog;
   private static ImagePanel imagePanel;
+  private static final UISettings setting = UISettings.getInstance();
+  private static final Map<Settings.IProperty, WebCheckBox> checkboxs;
+  private static final WebCheckBox nfoChk = new WebCheckBox();
+  private static final WebCheckBox thumbChk = new WebCheckBox();
+  private static final WebCheckBox fanartChk = new WebCheckBox();
+  private static final WebCheckBox logoChk = new WebCheckBox();
+  private static final WebCheckBox cdartChk = new WebCheckBox();
+  private static final WebCheckBox clearartChk = new WebCheckBox();
+  private static final WebCheckBox bannerChk = new WebCheckBox();
+  private static final List<JComponent> movieRenameSettingsCmp;
+
+  //private static final List<JComponent> tvshowRenameSettingsCmp;
+  static {
+    checkboxs = new HashMap<>();
+    checkboxs.put(Settings.SettingsProperty.movieNfogenerate, nfoChk);
+    checkboxs.put(UISettings.UISettingsProperty.generateThumb, thumbChk);
+    checkboxs.put(UISettings.UISettingsProperty.generateFanart, fanartChk);
+    checkboxs.put(UISettings.UISettingsProperty.generateLogo, logoChk);
+    checkboxs.put(UISettings.UISettingsProperty.generateCdart, cdartChk);
+    checkboxs.put(UISettings.UISettingsProperty.generateClearart, clearartChk);
+    checkboxs.put(UISettings.UISettingsProperty.generateBanner, bannerChk);
+
+    movieRenameSettingsCmp = new ArrayList<>();
+    movieRenameSettingsCmp.add(nfoChk);
+    movieRenameSettingsCmp.add(thumbChk);
+    movieRenameSettingsCmp.add(fanartChk);
+    movieRenameSettingsCmp.add(logoChk);
+    movieRenameSettingsCmp.add(cdartChk);
+    movieRenameSettingsCmp.add(clearartChk);
+    movieRenameSettingsCmp.add(bannerChk);
+
+  }
 
   public static void init(MovieRenamer mr) {
-    UISettings setting = UISettings.getInstance();
+
     settingsDialog = new SettingDialog(mr);
     aboutDialog = new AboutDialog(mr);
     imagePanel = new ImagePanel(mr);
@@ -92,6 +131,24 @@ public final class UIManager {
 
       }
     }
+
+    nfoChk.setText("NFO");
+    thumbChk.setLanguage(i18n.getLanguageKey("image.thumb"));
+    fanartChk.setLanguage(i18n.getLanguageKey("image.fanart"));
+    logoChk.setLanguage(i18n.getLanguageKey("image.logo"));
+    cdartChk.setLanguage(i18n.getLanguageKey("image.cdart"));
+    clearartChk.setLanguage(i18n.getLanguageKey("image.clearart"));
+    bannerChk.setLanguage(i18n.getLanguageKey("image.banner"));
+
+    // Set checkbox selected
+    for (Entry<Settings.IProperty, WebCheckBox> entry : checkboxs.entrySet()) {
+      entry.getValue().setSelected(Boolean.parseBoolean(entry.getKey().getValue()));
+    }
+
+  }
+
+  public static void setCheckBox(Settings.IProperty property) {
+    checkboxs.get(property).setSelected(Boolean.parseBoolean(property.getValue()));
   }
 
   public static ImagePanel getImagePanel() {
@@ -205,6 +262,36 @@ public final class UIManager {
     wi.setHorizontalAlignment(SwingConstants.CENTER);
     wi.setVerticalAlignment(SwingConstants.CENTER);
     return wi;
+  }
+
+  public static UIRename getUIRenamer(UIFile mediaFile, String format, UIMode uimode) {
+
+    UIRename uirename = null;
+    Map<UIRename.RenameOption, Boolean> options = new HashMap<>();
+    switch (uimode) {
+      case MOVIEMODE:
+        options.put(UIRename.RenameOption.NFO, nfoChk.isSelected());
+        options.put(UIRename.RenameOption.THUMB, thumbChk.isSelected());
+        options.put(UIRename.RenameOption.FANART, fanartChk.isSelected());
+        options.put(UIRename.RenameOption.LOGO, logoChk.isSelected());
+        options.put(UIRename.RenameOption.CDART, cdartChk.isSelected());
+        options.put(UIRename.RenameOption.CLEARART, clearartChk.isSelected());
+        options.put(UIRename.RenameOption.BANNER, bannerChk.isSelected());
+        uirename = new UIRename(mediaFile, format, options);
+        break;
+      //TODO tvshow
+    }
+
+    return uirename;
+  }
+
+  public static List<JComponent> getRenameSettingsComponents(UIMode mode) {
+    switch (mode) {
+      case MOVIEMODE:
+        return movieRenameSettingsCmp;
+    }
+
+    return null;
   }
 
   private UIManager() {

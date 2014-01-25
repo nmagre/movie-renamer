@@ -124,8 +124,7 @@ public final class LocaleUtils {
   public static enum AppLanguages implements Language {
 
     fr(Locale.FRENCH),
-    en(Locale.US),
-    it(Locale.ITALIAN);
+    en(Locale.US);
     private final Locale locale;
     private final String name;
 

@@ -105,7 +105,7 @@ public class MoveFile extends Thread {
       } catch (IOException ex) {
         Settings.LOGGER.log(Level.SEVERE, null, ex);
         status = Status.ERROR;
-        errorStr = ex.getMessage();
+        errorStr = ex.getLocalizedMessage();
         dest.delete();
       }
     }

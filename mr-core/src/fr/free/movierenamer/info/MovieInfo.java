@@ -23,12 +23,11 @@ import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.renamer.FormatReplacing;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -44,6 +43,11 @@ public class MovieInfo extends MediaInfo {
 
   private static final long serialVersionUID = 1L;
   private List<IdInfo> idsInfo;
+  protected final Map<MovieProperty, String> fields;
+  protected final Map<MovieMultipleProperty, List<String>> multipleFields;
+  protected List<CastingInfo> directors;
+  protected List<CastingInfo> actors;
+  protected List<CastingInfo> writers;
 
   public static enum MovieProperty implements InfoProperty {
 
@@ -148,11 +152,6 @@ public class MovieInfo extends MediaInfo {
       return null;
     }
   }
-  protected final Map<MovieProperty, String> fields;
-  protected final Map<MovieMultipleProperty, List<String>> multipleFields;
-  protected List<CastingInfo> directors;
-  protected List<CastingInfo> actors;
-  protected List<CastingInfo> writers;
 
   protected MovieInfo() {
     // used by serializer
@@ -340,14 +339,14 @@ public class MovieInfo extends MediaInfo {
   }
 
   @Override
-  public String getRenamedTitle(String format) {
+  public String getRenamedTitle(String filename, String format) {
     final Settings settings = Settings.getInstance();
-    return getRenamedTitle(format, settings.getMovieFilenameCase(), settings.getMovieFilenameSeparator(), settings.getMovieFilenameLimit(),
-            settings.isReservedCharacter(), settings.isMovieFilenameRmDupSpace(), settings.isMovieFilenameTrim());
+    return getRenamedTitle(filename, format, settings.getMovieFilenameCase(), settings.getMovieFilenameSeparator(), settings.getMovieFilenameLimit(),
+            settings.isReservedCharacter(), settings.isFilenameRmDupSpace(), settings.isFilenameTrim());
   }
 
   @Override
-  public String getRenamedTitle(final String format, final StringUtils.CaseConversionType renameCase, final String filenameSeparator,
+  public String getRenamedTitle(String filename, final String format, final StringUtils.CaseConversionType renameCase, final String filenameSeparator,
           final int filenameLimit, final boolean reservedCharacter, final boolean rmDupSpace, final boolean trim) {
 
     final List<String> reservedCharacterList = Arrays.asList(new String[]{"<", ">", ":", "\"", "/", "\\", "|", "?", "*"});
@@ -368,6 +367,7 @@ public class MovieInfo extends MediaInfo {
     }
 
     final Map<String, Object> replace = new HashMap<String, Object>();
+    replace.put("<fn>", FileUtils.getNameWithoutExtension(filename));
     replace.put("<t>", this.getTitle());
     replace.put("<tp>", titlePrefix);
     replace.put("<st>", shortTitle);
@@ -444,7 +444,14 @@ public class MovieInfo extends MediaInfo {
     if (reservedCharacter) {
       for (String c : reservedCharacterList) {
         if (!c.equals(File.separator)) {
-          res = res.replace(c, "");
+          if (":".equals(c) && Settings.WINDOWS) {
+            // Replace all colon except for hard drive if there are at the beginning of the string
+            // E.g: D:\.... -> not replaced
+            // E.g: file D:\... -> replaced
+            res = res.replaceAll("(?<!(^\\p{Lu}))" + c + "(?<!(\\\\))", "");
+          } else {
+            res = res.replace(c, "");
+          }
         }
       }
     }

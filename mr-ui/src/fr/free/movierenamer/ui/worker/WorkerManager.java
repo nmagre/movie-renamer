@@ -29,7 +29,6 @@ import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
@@ -61,7 +60,7 @@ import javax.swing.Icon;
 public final class WorkerManager {
 
   private static final Queue<AbstractWorker<?, ?>> workerQueue = new ConcurrentLinkedQueue<>();
-  public static final BlockingQueue<RenamerWorker> renameQueue = new LinkedBlockingQueue<>();
+  private static final BlockingQueue<RenamerWorker> renameQueue = new LinkedBlockingQueue<>();
   private static final Thread renameThread = new RenameThread(renameQueue);
 
   public final static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
@@ -117,6 +116,13 @@ public final class WorkerManager {
   public final static void startRenameThread() {
     if (!renameThread.isAlive()) {
       renameThread.start();
+    }
+  }
+
+  public final static void stopRenameThread() {
+    renameQueue.clear();
+    if (!renameThread.isAlive()) {
+      renameThread.interrupt();
     }
   }
 

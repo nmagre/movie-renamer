@@ -21,7 +21,6 @@ import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
-import java.util.Objects;
 import javax.swing.Icon;
 
 /**
@@ -32,7 +31,7 @@ import javax.swing.Icon;
  */
 public class UIFile extends Sorter.ISort implements IIconList {
 
-  private final File file;
+  private File file;
   private FileInfo fileInfo;
   private final String groupName;
   private Icon icon;
@@ -61,6 +60,10 @@ public class UIFile extends Sorter.ISort implements IIconList {
     }
 
     return fileInfo;
+  }
+
+  public void setFile(File file) {
+    this.file = file;
   }
 
   public void setFileInfo(FileInfo fileInfo) {
@@ -92,9 +95,6 @@ public class UIFile extends Sorter.ISort implements IIconList {
     return getFileInfo().getYear();
   }
 
-  /*  public IdInfo getIdInfo() {
-   return getFileInfo().getImdbId();
-   }*/
   /**
    * Get media icon to display in list
    *
@@ -105,6 +105,10 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
     if (icon != null) {
       return icon;
+    }
+
+    if (getFileInfo().wasRenamed()) {
+      return ImageUtils.LOGO_22;
     }
 
     switch (getMtype()) {
@@ -145,7 +149,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
   @Override
   public String getName() {
-    return toString();
+    return file.getName();
   }
 
   @Override

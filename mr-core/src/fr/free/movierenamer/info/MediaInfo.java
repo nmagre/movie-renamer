@@ -67,10 +67,10 @@ public abstract class MediaInfo extends Info {
     setMediaCasting();
   }
 
-  public abstract String getRenamedTitle(String format);
+  public abstract String getRenamedTitle(String filename, String format);
 
   protected abstract void setMediaCasting();
 
-  public abstract String getRenamedTitle(String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
+  public abstract String getRenamedTitle(String filename, String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
           boolean reservedCharacter, boolean rmDupSpace, boolean trim);
 }

@@ -23,7 +23,6 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.Node;
@@ -36,10 +35,10 @@ import org.w3c.dom.Node;
  */
 public final class AllocineScrapper extends AlloGroupScrapper {
 
-  private final String host = "www.allocine.fr";
-  private final String imageHost = "images.allocine.fr";
-  private final String name = "Allocine";
-  private final String search = "recherche";
+  private static final String host = "www.allocine.fr";
+  private static final String imageHost = "images.allocine.fr";
+  private static final String name = "Allocine";
+  private static final String search = "recherche";
   private final Pattern allocineID = Pattern.compile(".*gen_cfilm=(\\d+).*");
   private final Pattern allocinePersonID = Pattern.compile(".*cpersonne=(\\d+).*");
   private final Pattern countryCode = Pattern.compile("pays-(\\d{4})");

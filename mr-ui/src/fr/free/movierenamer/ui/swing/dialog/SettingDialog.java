@@ -340,13 +340,13 @@ public class SettingDialog extends AbstractDialog {
                   Map<IProperty, WebTextField> fields = panels.get(type).getField();
                   Map<IProperty, WebCheckBox> checkbox = panels.get(type).getCheckbox();
                   Map<IProperty, WebComboBox> combobox = panels.get(type).getCombobox();
-                  result = info.getRenamedTitle(fields.get(Settings.SettingsProperty.movieFilenameFormat).getText(),
+                  result = info.getRenamedTitle("Default filename.avi", fields.get(Settings.SettingsProperty.movieFilenameFormat).getText(),
                           (StringUtils.CaseConversionType) ((UIEnum) combobox.get(Settings.SettingsProperty.movieFilenameCase).getSelectedItem()).getValue(),
                           fields.get(Settings.SettingsProperty.movieFilenameSeparator).getText(),
                           Integer.parseInt(fields.get(Settings.SettingsProperty.movieFilenameLimit).getText()),// FIXME check if it is an integer before
                           checkbox.get(Settings.SettingsProperty.reservedCharacter).isSelected(),
-                          checkbox.get(Settings.SettingsProperty.movieFilenameRmDupSpace).isSelected(),
-                          checkbox.get(Settings.SettingsProperty.movieFilenameTrim).isSelected());
+                          checkbox.get(Settings.SettingsProperty.filenameRmDupSpace).isSelected(),
+                          checkbox.get(Settings.SettingsProperty.filenameTrim).isSelected());
                 }
               };
             }

@@ -73,7 +73,8 @@ public class LogsTableModel extends AbstractTableModel {
       case Thread_ID:
         return logs.get(rowIndex).getThreadID();
       case Class:
-        return logs.get(rowIndex).getSourceClassName();
+        String sclazz = logs.get(rowIndex).getSourceClassName();
+        return sclazz/*.substring(sclazz.lastIndexOf(".") + 1)*/;
       case Method:
         return logs.get(rowIndex).getSourceMethodName();
       case Message:

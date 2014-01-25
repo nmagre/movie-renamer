@@ -22,7 +22,6 @@ import fr.free.movierenamer.namematcher.NameMatcher;
 import fr.free.movierenamer.namematcher.SxE;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.renamer.Renamer;
-import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import java.io.File;
 import java.net.URI;
@@ -129,11 +128,8 @@ public class FileInfo extends Info {
     return mtag;
   }
 
-  public boolean renamed(final String newName) {
-    final File newFile = FileUtils.move(this.file, newName);
-    final boolean success = Renamer.getInstance().addRenamed(this, this.file.toURI(), newFile.toURI());
-    this.file = newFile;
-    return success;
+  public void renamed(final File newFile) {
+    final boolean success = Renamer.getInstance().addRenamed(this, file.toURI(), newFile.toURI());
   }
 
   public URI getURI() {

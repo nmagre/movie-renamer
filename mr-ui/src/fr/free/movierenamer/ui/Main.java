@@ -20,6 +20,8 @@ package fr.free.movierenamer.ui;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.tooltip.TooltipManager;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.ui.bean.UILogHandler;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.JTabbedPaneLU;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;

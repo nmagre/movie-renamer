@@ -219,19 +219,6 @@ public final class FileUtils {
     }
   }
 
-  public static File move(File currentFile, String dest) {
-    try {
-      File destFile = new File(currentFile.getParentFile(), dest);
-      if (destFile.toURI().getScheme().equals("file")) {
-        if (currentFile.renameTo(destFile)) {
-          return destFile;
-        }
-      }
-    } catch (Exception ex) {
-    }
-    return currentFile;
-  }
-
   public static String getFileChecksum(File file) {
 //    String result = "";
 //    try {

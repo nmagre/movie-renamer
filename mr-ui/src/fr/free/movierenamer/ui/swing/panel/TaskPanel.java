@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,6 @@
 package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.panel.WebPanel;
-import com.alee.managers.tooltip.TooltipWay;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.ui.utils.UIUtils;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Class TaskPanel
@@ -30,11 +25,7 @@ import java.awt.event.ActionListener;
  */
 public class TaskPanel extends WebPanel {
 
-  private final ActionListener showpopup = new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-    }
-  };
+  private boolean run = false;
 
   public TaskPanel(String str) {
     this(str, true);
@@ -51,7 +42,6 @@ public class TaskPanel extends WebPanel {
     progressBar.setIndeterminate(indeterminate);
     progressBar.setMinimum(0);
     progressBar.setMaximum(100);
-    cancelBtn.addActionListener(showpopup);
     nameLbl.setText(str);
   }
 
@@ -60,12 +50,20 @@ public class TaskPanel extends WebPanel {
       progressBar.setIndeterminate(true);
       return;
     }
-    progressBar.setIndeterminate(false);
+    progressBar.setIndeterminate(progress == 100);
     progressBar.setValue(progress);
   }
 
   public void setStatus(String str) {
     statusLbl.setText(str);
+  }
+
+  public void setRun() {
+    run = true;
+  }
+
+  public boolean isrunning() {
+    return run;
   }
 
   /**
@@ -80,18 +78,13 @@ public class TaskPanel extends WebPanel {
     nameLbl = new com.alee.laf.label.WebLabel();
     progressBar = new com.alee.laf.progressbar.WebProgressBar();
     statusLbl = new com.alee.laf.label.WebLabel();
-    cancelBtn = UIUtils.createButton("cancel", ImageUtils.CANCEL_8, ImageUtils.CANCEL_8, TooltipWay.up);
 
     setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
     add(nameLbl);
     add(progressBar);
     add(statusLbl);
-
-    cancelBtn.setIcon(ImageUtils.CANCEL_8);
-    add(cancelBtn);
   }// </editor-fold>//GEN-END:initComponents
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.alee.laf.button.WebButton cancelBtn;
   private com.alee.laf.label.WebLabel nameLbl;
   private com.alee.laf.progressbar.WebProgressBar progressBar;
   private com.alee.laf.label.WebLabel statusLbl;

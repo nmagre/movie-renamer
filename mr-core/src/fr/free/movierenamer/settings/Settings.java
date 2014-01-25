@@ -162,14 +162,14 @@ public final class Settings {
   public enum SettingsProperty implements IProperty {
 
     reservedCharacter(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
+    filenameTrim(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
+    filenameRmDupSpace(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
+    filenameRomanUpper(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
     // movie filename
     movieFilenameFormat("<t> (<y>)", SettingsType.MEDIA, SettingsSubType.MOVIE),
     movieFilenameSeparator(", ", SettingsType.MEDIA, SettingsSubType.MOVIE),
     movieFilenameLimit(3, SettingsType.MEDIA, SettingsSubType.MOVIE),
     movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.MEDIA, SettingsSubType.MOVIE),
-    movieFilenameTrim(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.MOVIE),
-    movieFilenameRmDupSpace(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.MOVIE),
-    movieFilenameRomanUpper(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.MOVIE),
     // format
     stringSizeUnit(StringUtils.SizeFormat.BYTE, SettingsType.FORMAT, SettingsSubType.SIZE),
     stringSizeSi(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.SIZE),
@@ -419,16 +419,16 @@ public final class Settings {
     return StringUtils.CaseConversionType.valueOf(get(SettingsProperty.movieFilenameCase));
   }
 
-  public boolean isMovieFilenameTrim() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameTrim));
+  public boolean isFilenameTrim() {
+    return Boolean.parseBoolean(get(SettingsProperty.filenameTrim));
   }
 
-  public boolean isMovieFilenameRmDupSpace() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRmDupSpace));
+  public boolean isFilenameRmDupSpace() {
+    return Boolean.parseBoolean(get(SettingsProperty.filenameRmDupSpace));
   }
 
-  public boolean isMovieFilenameRomanUpper() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieFilenameRomanUpper));
+  public boolean isFilenameRomanUpper() {
+    return Boolean.parseBoolean(get(SettingsProperty.filenameRomanUpper));
   }
 
   public StringUtils.SizeFormat getStringSizeUnit() {

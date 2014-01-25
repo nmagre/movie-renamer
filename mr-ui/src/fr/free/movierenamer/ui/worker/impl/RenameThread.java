@@ -39,7 +39,7 @@ public final class RenameThread extends Thread {
   @Override
   public void run() {
 
-    RenamerWorker worker;
+    RenamerWorker worker = null;
     while (!stop) {
       try {
         worker = sharedQueue.take();
@@ -56,6 +56,9 @@ public final class RenameThread extends Thread {
 
       } catch (InterruptedException ex) {
         stop = true;
+        if (worker != null && !worker.isDone()) {
+          worker.cancel(true);
+        }
       }
     }
   }

@@ -190,6 +190,16 @@
           <value lang="fr">Afficher les icônes</value>
         </record>
 
+        <record key="showMediaPanel">
+          <value lang="en">Show media panel</value>
+          <value lang="fr">Afficher le panneau média</value>
+        </record>
+
+        <record key="showImagePanel">
+          <value lang="en">Show image panel</value>
+          <value lang="fr">Afficher le panneau image</value>
+        </record>
+
       </Dictionary><!-- END settingspopup -->
 
     </Dictionary><!-- END mediatb -->
@@ -206,6 +216,22 @@
           <value lang="en">Show images</value>
           <value lang="fr">Afficher les images</value>
         </record>
+
+        <record key="showId">
+          <value lang="en">Show id</value>
+          <value lang="fr">Afficher l'id</value>
+        </record>
+
+        <record key="showYear">
+          <value lang="en">Show year</value>
+          <value lang="fr">Afficher l'année</value>
+        </record>
+
+        <record key="showOrigTitle">
+          <value lang="en">Show original title</value>
+          <value lang="fr">Afficher le titre original</value>
+        </record>
+
 
       </Dictionary><!-- END settingspopup -->
 
@@ -350,20 +376,12 @@
       </record>
 
       <Dictionary name="Settings popup" prefix="settingspopup">
-        <record key="thumb">
-          <value lang="en">Thumbnail</value>
-          <value lang="fr">Jaquette</value>
+
+        <record key="showFormatField">
+          <value lang="en">Show format</value>
+          <value lang="fr">Afficher le format</value>
         </record>
 
-        <record key="fanart">
-          <value lang="en">Fanart</value>
-          <value lang="fr">Fanart</value>
-        </record>
-
-        <record key="nfo">
-          <value lang="en">NFO</value>
-          <value lang="fr">NFO</value>
-        </record>
 
       </Dictionary><!-- END settingspopup -->
 
@@ -521,6 +539,11 @@
       <value lang="fr">Déplacer les fichiers un par un</value>
     </record>
 
+    <record key="debug">
+      <value lang="en">Debug</value>
+      <value lang="fr">Debug</value>
+    </record>
+
     <record key="mediainfowarning">
       <value lang="en">Show "media info is not installed" warning</value>
       <value lang="fr">Afficher l'avertissement "media info n'est pas installé"</value>
@@ -638,17 +661,17 @@
       <value lang="fr">Aucun</value>
     </record>
 
-    <record key="moviefilenametrim">
+    <record key="filenametrim">
       <value lang="en">Remove leading and trailing white space</value>
       <value lang="fr">Supprimer les espaces en début et fin</value>
     </record>
 
-    <record key="moviefilenamermdupspace">
+    <record key="filenamermdupspace">
       <value lang="en">Remove extra white spaces</value>
       <value lang="fr">Supprimer les espaces en trop</value>
     </record>
 
-    <record key="moviefilenameromanupper">
+    <record key="filenameromanupper">
       <value lang="en">Keep roman numerals upper</value>
       <value lang="fr">Garder les chiffres romain en majuscules</value>
     </record>
@@ -1142,6 +1165,55 @@
       </record>
 
     </Dictionary><!-- END network -->
+
+    <Dictionary name="Rename,move,.. file error" prefix="rename">
+
+      <record key="fileNotExists">
+        <value lang="en">File "%s" does not exists.</value>
+        <value lang="fr">Le fichier "%s" n'existe pas.</value>
+      </record>
+
+      <record key="unableWriteFolder">
+        <value lang="en">Unable to write in folder "%s"</value>
+        <value lang="fr">Impossible d'écrire dans le dossier "%s"</value>
+      </record>
+
+      <record key="noSpaceLeft">
+        <value lang="en">No space left on device "%s"</value>
+        <value lang="fr">Espace insuffisant sur "%s"</value>
+      </record>
+
+      <record key="copyCheckFailed">
+        <value lang="en">Copy failed, wrong checksum for "%s"</value>
+        <value lang="fr">Échec de la copie, mauvaise somme de contrôle pour "%s"</value>
+      </record>
+
+      <record key="removeFailed">
+        <value lang="en">Remove failed for "%s"</value>
+        <value lang="fr">Échec de la suppression pour "%s"</value>
+      </record>
+
+      <record key="renameFailed">
+        <value lang="en">Rename failed for "%s"</value>
+        <value lang="fr">Échec du renommage pour "%s"</value>
+      </record>
+
+      <record key="downloadImageFailed">
+        <value lang="en">Download image "%s" failed</value>
+        <value lang="fr">Échec du téléchargement de l'image "%s"</value>
+      </record>
+
+      <record key="unableCreateFolder">
+        <value lang="en">Unable to create folder "%s"</value>
+        <value lang="fr">Impossible de créer le dossier "%s"</value>
+      </record>
+
+      <record key="createNfoFailed">
+        <value lang="en">Creation of nfo failed.</value>
+        <value lang="fr">La création du nfo à échoué.</value>
+      </record>
+
+    </Dictionary><!-- END rename -->
 
   </Dictionary><!-- END error -->
 </Dictionary><!-- END mrui -->

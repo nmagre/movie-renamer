@@ -31,13 +31,17 @@ public class AbstractDialog extends WebDialog {
 
   protected final MovieRenamer mr;
 
-  protected AbstractDialog(final MovieRenamer mr, String title) {
+  protected AbstractDialog(final MovieRenamer mr, final String title) {
+    this(mr, title, true);
+  }
+
+  protected AbstractDialog(final MovieRenamer mr, final String title, final boolean modal) {
     super();
     this.mr = mr;
 
     setLanguage(title);
     setIconImage(ImageUtils.iconToImage(ImageUtils.LOGO_22));
-    setModal(true);
+    setModal(modal);
   }
 
   @Override

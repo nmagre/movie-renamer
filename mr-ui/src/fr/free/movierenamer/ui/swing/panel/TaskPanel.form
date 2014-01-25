@@ -22,11 +22,5 @@
     </Component>
     <Component class="com.alee.laf.label.WebLabel" name="statusLbl">
     </Component>
-    <Component class="com.alee.laf.button.WebButton" name="cancelBtn">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(&quot;cancel&quot;, ImageUtils.CANCEL_8, ImageUtils.CANCEL_8, TooltipWay.up)"/>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="cancelBtn.setIcon(ImageUtils.CANCEL_8);"/>
-      </AuxValues>
-    </Component>
   </SubComponents>
 </Form>

@@ -34,21 +34,6 @@
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
-    <Component class="com.alee.laf.checkbox.WebCheckBox" name="thumbChk">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="thumbChk.setLanguage(i18n.getLanguageKey(&quot;renametb.settingspopup.thumb&quot;));"/>
-      </AuxValues>
-    </Component>
-    <Component class="com.alee.laf.checkbox.WebCheckBox" name="fanartChk">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="fanartChk.setLanguage(i18n.getLanguageKey(&quot;renametb.settingspopup.fanart&quot;));"/>
-      </AuxValues>
-    </Component>
-    <Component class="com.alee.laf.checkbox.WebCheckBox" name="nfoChk">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="nfoChk.setLanguage(i18n.getLanguageKey(&quot;renametb.settingspopup.nfo&quot;));// FIXME XBMC, ..."/>
-      </AuxValues>
-    </Component>
     <Component class="com.alee.laf.button.WebButton" name="toggleGroup">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">

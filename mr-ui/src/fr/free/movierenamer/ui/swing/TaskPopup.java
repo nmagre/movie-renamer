@@ -67,9 +67,9 @@ public class TaskPopup extends WebPopup {
     remove(taskPanel);
 
     revalidate();
-    if (WorkerManager.renameQueue.isEmpty()) {
-      hidePopup();
-    }
+//    if (WorkerManager.renameQueue.isEmpty()) {
+//      hidePopup();
+//    }
   }
 
   /**

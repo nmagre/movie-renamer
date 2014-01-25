@@ -40,7 +40,12 @@ public abstract class ControlWorker<T, V> extends Worker<T> {
 
         @Override
         public void run() {
-          processPause(chunk);
+          try {
+            processPause(chunk);
+          } catch (Exception ex) {
+            // Prevent any bug, sometimes weblaf notification thrown an exception (i hope it will be fixed)
+            UISettings.LOGGER.log(Level.SEVERE, null, ex);
+          }
         }
       });
     } catch (InterruptedException | InvocationTargetException ex) {

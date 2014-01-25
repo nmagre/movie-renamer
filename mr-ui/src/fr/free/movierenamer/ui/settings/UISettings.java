@@ -116,8 +116,9 @@ public final class UISettings {
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
-    moveFileOneByOne(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    moveFileOneByOne(Boolean.TRUE/*, SettingsType.GENERAL, SettingsSubType.GENERAL*/),// not a good idea to let user change this for the moment
     mediaInfoWarning(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    debug(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
     // Interface
     screenDevice(0, SettingsType.INTERFACE, SettingsSubType.GENERAL),
@@ -126,7 +127,7 @@ public final class UISettings {
     showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showFormatField(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showFormatField(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
@@ -425,12 +426,32 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.generateFanart));
   }
 
+  public boolean isGenerateLogo() {
+    return Boolean.parseBoolean(get(UISettingsProperty.generateLogo));
+  }
+
+  public boolean isGenerateCdart() {
+    return Boolean.parseBoolean(get(UISettingsProperty.generateCdart));
+  }
+
+  public boolean isGenerateClearart() {
+    return Boolean.parseBoolean(get(UISettingsProperty.generateClearart));
+  }
+
+  public boolean isGenerateBanner() {
+    return Boolean.parseBoolean(get(UISettingsProperty.generateBanner));
+  }
+
   public boolean isMoveFileOneByOne() {
     return Boolean.parseBoolean(get(UISettingsProperty.moveFileOneByOne));
   }
 
   public boolean isMediaInfoWarning() {
     return Boolean.parseBoolean(get(UISettingsProperty.mediaInfoWarning));
+  }
+
+  public boolean isDebug() {
+    return Boolean.parseBoolean(get(UISettingsProperty.debug));
   }
 
   public ImageFormat getImageFormat() {

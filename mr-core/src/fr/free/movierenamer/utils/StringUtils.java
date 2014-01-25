@@ -189,7 +189,7 @@ public final class StringUtils {
         break;
     }
 
-    if (Settings.getInstance().isMovieFilenameRomanUpper()) {// FIXME for TVshow
+    if (Settings.getInstance().isFilenameRomanUpper()) {
       // Make sure that roman numerical are in uppercase
       final Matcher matcher = romanSymbol.matcher(res);
       final StringBuffer sb = new StringBuffer();

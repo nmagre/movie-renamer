@@ -55,7 +55,8 @@ public class IMDbScrapper extends MovieScrapper {// TODO need to be cleaned
 
   private static final String host = "www.imdb.com";
   private static final String name = "IMDb";
-  private final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
+  private static final Pattern blacklist = Pattern.compile("\\((TV Series|Video Game|TV Mini-Series|TV Special|TV|TV Episode)\\)");
+  private static final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
 
   public IMDbScrapper() {
     super(AvailableLanguages.en);
@@ -92,7 +93,7 @@ public class IMDbScrapper extends MovieScrapper {// TODO need to be cleaned
     // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
     // Only title -> ref_=fn_tt
     // Only movie -> ref_=fn_ft
-    URL searchUrl = new URL("http", host, "/find?s=tt&ref_=fn_ft&q=" + URIRequest.encode(query));
+    URL searchUrl = new URL("http", host, "/find?s=all&q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
@@ -107,6 +108,10 @@ public class IMDbScrapper extends MovieScrapper {// TODO need to be cleaned
     for (Node node : nodes) {
       try {
         Node retNode = XPathUtils.selectNode("TD[@class='result_text']", node);
+        if (blacklist.matcher(retNode.getTextContent()).find()) {
+          continue;
+        }
+
         String title = XPathUtils.selectNode("A", retNode).getTextContent().trim();
         Matcher m = Pattern.compile("\\((\\d{4}).*\\)").matcher(retNode.getTextContent());
         String year;

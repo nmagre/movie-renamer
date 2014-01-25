@@ -162,7 +162,7 @@ public class TvShowInfo extends MediaInfo {
   }
 
   @Override
-  public String getRenamedTitle(final String format) {// TODO
+  public String getRenamedTitle(String filename, final String format) {// TODO
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -172,7 +172,7 @@ public class TvShowInfo extends MediaInfo {
   }
 
   @Override
-  public String getRenamedTitle(String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
+  public String getRenamedTitle(String filename, String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
           boolean reservedCharacter, boolean rmDupSpace, boolean trim) {// TODO
     // TODO Auto-generated method stub
     return getName();

@@ -63,11 +63,17 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
       publish(UIUtils.i18n.getLanguage("error.unknown", false, getClass().getSimpleName(), ex.getLocalizedMessage()));
     }
+
     return result;
   }
 
   @Override
   protected void process(List<String> v) {
-    UIUtils.showErrorNotification(v.get(0));
+    try {
+      UIUtils.showErrorNotification(v.get(0));
+    } catch (Exception ex) {
+      // Prevent any bug, sometimes weblaf notification thrown an exception (i hope it will be fixed)
+      UISettings.LOGGER.log(Level.SEVERE, null, ex);
+    }
   }
 }

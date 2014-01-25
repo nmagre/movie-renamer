@@ -161,11 +161,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
         if (res.endsWith("gif")) {
           thumb = null;
         } else {
-          if (res.contains("/medias")) {
-            thumb = new URL("http", getImageHost(), res.replaceAll(".*\\/medias", "/medias"));
-          } else {
-            thumb = new URL(res);
-          }
+          thumb = new URL(res);
         }
       } catch (Exception ex) {
         thumb = null;

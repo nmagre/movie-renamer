@@ -334,6 +334,10 @@ public final class UIUtils {
     shownotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
   }
 
+  public static void showNotification(String str) {
+    shownotification(str, ImageUtils.INFO_24, NOTIFICATION_DELAY);
+  }
+
   private static void shownotification(String str, Icon icon, Integer delay, NotificationOption... options) {
     final WebNotificationPopup notificationPopup = new WebNotificationPopup();
     notificationPopup.setIcon(icon);
