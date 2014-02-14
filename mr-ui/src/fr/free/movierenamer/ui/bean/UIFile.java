@@ -106,10 +106,10 @@ public class UIFile extends Sorter.ISort implements IIconList {
     if (icon != null) {
       return icon;
     }
-
-    if (getFileInfo().wasRenamed()) {
-      return ImageUtils.LOGO_22;
-    }
+//
+//    if (getFileInfo().wasRenamed()) {
+//      return ImageUtils.LOGO_22;
+//    }
 
     switch (getMtype()) {
       case MOVIE:

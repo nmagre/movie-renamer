@@ -61,7 +61,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
     this.files = files;
     this.eventList = eventList;
     setting = UISettings.getInstance();
-    subFolder = setting.isScanSubfolder();
+    subFolder = !setting.getScanSubfolder().equals(UISettings.Subfolder.NOTBROWSE);
   }
 
   /**
@@ -79,7 +79,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
       return medias;
     }
 
-    if (!subFolder && subFolder(files)) {
+    if (setting.getScanSubfolder().equals(UISettings.Subfolder.ASK) && subFolder(files)) {
       publishPause("dialog.scanSubFolder");
     }
 

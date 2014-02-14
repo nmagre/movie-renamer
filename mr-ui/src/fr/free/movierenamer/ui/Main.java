@@ -19,11 +19,9 @@ package fr.free.movierenamer.ui;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
+import com.alee.managers.language.updaters.LanguageUpdaterSettings;
 import com.alee.managers.tooltip.TooltipManager;
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.bean.UILogHandler;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.JTabbedPaneLU;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
@@ -57,6 +55,9 @@ public class Main {
       files.add(new File(arg));
     }
 
+    // Add language support to tabbedPane
+    LanguageUpdaterSettings.useTabComponentNames = true;
+
     /**
      * Should be in EDT, but loading dialog will not works
      */
@@ -88,16 +89,20 @@ public class Main {
     }
     LanguageManager.setLanguage(lcode);
 
-    // Add language support to tabbedPane
-    LanguageManager.registerLanguageUpdater(new JTabbedPaneLU());
-
     TooltipManager.setDefaultDelay(1500);
 
-    final MovieRenamer mr = new MovieRenamer(files);
+    if (files.isEmpty() && setting.isLoadFileAtStartup()) {
+      files.add(new File(setting.getLoadFilePath()));
+    }
+
+    final MovieRenamer mr = new MovieRenamer();
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         mr.setVisible(true);
+        if (!files.isEmpty()) {
+          mr.loadFiles(files);
+        }
       }
     });
   }

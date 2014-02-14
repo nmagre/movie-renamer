@@ -116,10 +116,9 @@ public class FileInfo extends Info {
     return -1;
   }
 
-  public boolean wasRenamed() {
-    return Renamer.getInstance().wasRenamed(this);
-  }
-
+//  public boolean wasRenamed() {
+//    return Renamer.getInstance().wasRenamed(this);
+//  }
   public MediaType getType() {
     return type;
   }

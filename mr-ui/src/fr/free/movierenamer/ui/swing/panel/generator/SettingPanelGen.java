@@ -21,7 +21,9 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
@@ -62,8 +64,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 
 /**
  * Class SettingPanel
@@ -237,6 +241,8 @@ public class SettingPanelGen extends PanelGenerator {
                 imgfolder = "case";
               } else if (property.getDefaultValue() instanceof ImageFormat) {
                 imgfolder = "image";
+              } else if (property.getDefaultValue() instanceof UISettings.Subfolder) {
+                imgfolder = "subfolder";
               }
               iicon = new UIEnum(e, imgfolder);
             }
@@ -255,7 +261,6 @@ public class SettingPanelGen extends PanelGenerator {
           // Class (Scrapper)
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
           component = new WebComboBox();
-          //component.setPreferredSize(comboboxDim);
           DefaultComboBoxModel<UIScraper> model = new DefaultComboBoxModel<>();
 
           if (tabbedPane != null && panel != null) {
@@ -286,6 +291,31 @@ public class SettingPanelGen extends PanelGenerator {
           ((WebComboBox) component).setModel(model);
           ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
           comboboxs.put(property, ((WebComboBox) component));
+
+        } else if (property.getDefaultValue() instanceof List) {
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+          DefaultListModel<Object> listModel = new DefaultListModel();
+          List<Object> list = (List<Object>) property.getDefaultValue();
+          WebList wlist = new WebList();
+          component = new WebScrollPane(wlist);
+
+          for (Object obj : list) {
+            listModel.addElement(obj);
+          }
+
+          GridBagConstraints gcontrainte = getGroupConstraint(0, true, false, level);
+          gcontrainte.insets.top += 10;
+          if (tabbedPane != null && panel != null) {
+            panel.add(label, gcontrainte);
+          } else {
+            add(label, gcontrainte);
+          }
+
+          wlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+          wlist.setLayoutOrientation(WebList.HORIZONTAL_WRAP);
+
+          constraint = getGroupConstraint(0, true, true, level);
+          wlist.setModel(listModel);
         } else {
           UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getVclass()));
           continue;

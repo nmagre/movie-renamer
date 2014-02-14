@@ -110,15 +110,24 @@ public final class UISettings {
     GIF
   }
 
+  public static enum Subfolder {
+
+    BROWSE,
+    NOTBROWSE,
+    ASK
+  }
+
   public enum UISettingsProperty implements Settings.IProperty {
 
     // General
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     selectFirstResult(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
-    scanSubfolder(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     moveFileOneByOne(Boolean.TRUE/*, SettingsType.GENERAL, SettingsSubType.GENERAL*/),// not a good idea to let user change this for the moment
     mediaInfoWarning(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
     debug(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
+    scanSubfolder(Subfolder.ASK, SettingsType.GENERAL, SettingsSubType.FOLDER),
+    loadFileAtStartup(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.FOLDER, true),
+    loadFilePath(userFolder, SettingsType.GENERAL, SettingsSubType.FOLDER),
     checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
     // Interface
     screenDevice(0, SettingsType.INTERFACE, SettingsSubType.GENERAL),
@@ -258,7 +267,10 @@ public final class UISettings {
       settingsDocument = URIRequest.getXmlDocument(file.toURI());
       Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
       if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
-        throw new NullPointerException("App version is different");
+        String sub = get(UISettingsProperty.scanSubfolder);
+        if ("true".equals(sub) || "false".equals(sub)) {
+          set(UISettingsProperty.scanSubfolder, Boolean.getBoolean(sub) ? Subfolder.BROWSE : Subfolder.ASK);
+        }
       }
       settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
       // TODO convert if version are diff !
@@ -382,8 +394,8 @@ public final class UISettings {
     return Boolean.parseBoolean(get(UISettingsProperty.selectFirstResult));
   }
 
-  public boolean isScanSubfolder() {
-    return Boolean.parseBoolean(get(UISettingsProperty.scanSubfolder));
+  public Subfolder getScanSubfolder() {
+    return Subfolder.valueOf(get(UISettingsProperty.scanSubfolder));
   }
 
   public boolean isCheckupdate() {
@@ -452,6 +464,14 @@ public final class UISettings {
 
   public boolean isDebug() {
     return Boolean.parseBoolean(get(UISettingsProperty.debug));
+  }
+
+  public boolean isLoadFileAtStartup() {
+    return Boolean.parseBoolean(get(UISettingsProperty.loadFileAtStartup));
+  }
+
+  public String getLoadFilePath() {
+    return get(UISettingsProperty.loadFilePath);
   }
 
   public ImageFormat getImageFormat() {

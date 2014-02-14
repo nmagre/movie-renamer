@@ -190,7 +190,7 @@ public class TMDbScrapper extends MovieScrapper {
         return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.TMDB);
       }
     } catch (Exception ex) {
-      Settings.LOGGER.severe(ex.getMessage());
+      // No id found
     }
 
     return null;

@@ -19,7 +19,7 @@
       C:\User\My_User\Movie_Renamer\language.xml
 
 -->
-<Dictionary name="Movie Renamer UI language" prefix="mrui">
+<Dictionary name="Movie Renamer UI language" prefix="mrui" id="mrui">
 
   <record key="ok">
     <value lang="en">Ok</value>
@@ -74,6 +74,11 @@
   <record key="loading">
     <value lang="en">Loading</value>
     <value lang="fr">Chargement</value>
+  </record>
+
+  <record key="movie">
+    <value lang="en">Movie</value>
+    <value lang="fr">Film</value>
   </record>
 
   <Dictionary name="Right click menu" prefix="rmenu">
@@ -155,6 +160,11 @@
       <record key="about">
         <value lang="en">About</value>
         <value lang="fr">A propos</value>
+      </record>
+
+      <record key="log">
+        <value lang="en">Logs</value>
+        <value lang="fr">Logs</value>
       </record>
 
       <record key="movieMode">
@@ -461,6 +471,11 @@
       <value lang="fr">Mise à jour</value>
     </record>
 
+    <record key="folder">
+      <value lang="en">Folder</value>
+      <value lang="fr">Dossier</value>
+    </record>
+
     <record key="language">
       <value lang="en">Language</value>
       <value lang="fr">Langue</value>
@@ -516,17 +531,37 @@
 
     <record key="selectfirstmedia">
       <value lang="en">Select first media automatically</value>
-      <value lang="fr">Sélectionnez le premier média automatiquement</value>
+      <value lang="fr">Sélectionner le premier média automatiquement</value>
     </record>
 
     <record key="selectfirstresult">
       <value lang="en">Select first result automatically</value>
-      <value lang="fr">Sélectionnez le premier résultat automatiquement</value>
+      <value lang="fr">Sélectionner le premier résultat automatiquement</value>
     </record>
 
     <record key="scansubfolder">
-      <value lang="en">Scan sub-folders automatically</value>
-      <value lang="fr">Parcourir les sous-dossiers automatiquement</value>
+      <value lang="en">Sub-folders</value>
+      <value lang="fr">Sous-dossiers</value>
+    </record>
+
+    <record key="browse">
+      <value lang="en">Browse</value>
+      <value lang="fr">Parcourir</value>
+    </record>
+
+    <record key="notbrowse">
+      <value lang="en">Do not browse</value>
+      <value lang="fr">Ne pas parcourir</value>
+    </record>
+
+    <record key="ask">
+      <value lang="en">Ask</value>
+      <value lang="fr">Demander</value>
+    </record>
+
+    <record key="browse">
+      <value lang="en">Browse</value>
+      <value lang="fr">Parcourir</value>
     </record>
 
     <record key="showstartupanim">
@@ -542,6 +577,16 @@
     <record key="debug">
       <value lang="en">Debug</value>
       <value lang="fr">Debug</value>
+    </record>
+
+    <record key="loadfileatstartup">
+      <value lang="en">Load files on startup</value>
+      <value lang="fr">Charger des fichiers au démarrage</value>
+    </record>
+
+    <record key="loadfilepath">
+      <value lang="en">Folder path</value>
+      <value lang="fr">Chemin du dossier</value>
     </record>
 
     <record key="mediainfowarning">
@@ -581,7 +626,7 @@
 
     <record key="groupmedialist">
       <value lang="en">Group medias by first letter</value>
-      <value lang="fr">Grouper les médias par leurs première lettre</value>
+      <value lang="fr">Grouper les médias par leur première lettre</value>
     </record>
 
     <record key="checkupdate">
@@ -603,7 +648,7 @@
 
     <record key="reservedcharacter">
       <value lang="en">Remove reserved characters</value>
-      <value lang="fr">Supprimer les charatères réservés</value>
+      <value lang="fr">Supprimer les caractères réservés</value>
     </record>
 
     <record key="file">
@@ -623,7 +668,7 @@
 
     <record key="moviefilenameseparator">
       <value lang="en">Separator</value>
-      <value lang="fr">Separateur</value>
+      <value lang="fr">Séparateur</value>
     </record>
 
     <record key="moviefilenamelimit">
@@ -643,7 +688,7 @@
 
     <record key="firstla">
       <value lang="en">All First Letters Uppercase</value>
-      <value lang="fr">Toutes Les Première Lettres en Majuscule</value>
+      <value lang="fr">Toutes Les Première Lettres En Majuscule</value>
     </record>
 
     <record key="upper">
@@ -673,7 +718,7 @@
 
     <record key="filenameromanupper">
       <value lang="en">Keep roman numerals upper</value>
-      <value lang="fr">Garder les chiffres romain en majuscules</value>
+      <value lang="fr">Garder les chiffres romains en majuscules</value>
     </record>
 
     <!-- Search panel -->
@@ -933,6 +978,11 @@
       <value lang="fr">Utiliser le filtre par extensions</value>
     </record>
 
+    <record key="fileextension">
+      <value lang="en">File extension</value>
+      <value lang="fr">Extension de fichier</value>
+    </record>
+
     <!-- Network panel -->
 
     <record key="httprequesttimeout">
@@ -1004,7 +1054,7 @@
       <value lang="fr">Contact : %s</value>
     </record>
 
-  </Dictionary><!-- END notification -->
+  </Dictionary><!-- END aboutDialog -->
 
   <Dictionary name="notification (question/information/error)" prefix="notification">
 
@@ -1108,6 +1158,16 @@
     <record key="scanSubFolder">
       <value lang="en">Do you to scan subfolders ?</value>
       <value lang="fr">Voulez-vous parcourir les sous-dossiers ?</value>
+    </record>
+
+    <record key="updateAvailable">
+      <value lang="en">An update is available.\nDo you want to update Movie Renamer to %s ?\n\n%s</value>
+      <value lang="fr">Une mise à jour est disponible.\nVoulez-vous mettre à jour Movie Renamer en %s ?\n\n%s</value>
+    </record>
+
+    <record key="alreadyUptodate">
+      <value lang="en">Movie Renamer is already up-to-date.</value>
+      <value lang="fr">Movie Renamer est déjà à jour.</value>
     </record>
 
   </Dictionary><!-- END dialog -->

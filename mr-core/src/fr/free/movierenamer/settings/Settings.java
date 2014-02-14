@@ -124,6 +124,7 @@ public final class Settings {
     GENERAL,
     NFO,
     UPDATE,
+    FOLDER,
     LANGUAGE,
     SCRAPER,
     MOVIE,
@@ -310,7 +311,7 @@ public final class Settings {
       settingsDocument = URIRequest.getXmlDocument(file.toURI());
       Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
       if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
-        throw new NullPointerException("App version is different");
+        // throw new NullPointerException("App version is different");
       }
       settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
       // TODO convert if version are diff !

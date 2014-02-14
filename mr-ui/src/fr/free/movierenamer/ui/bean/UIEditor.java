@@ -150,7 +150,6 @@ public class UIEditor {
 
   private void edited(JTextComponent textComponent) {// TODO font color and fixe modified value
     textComponent.setForeground(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedColor : defaultColor);
-    //textComponent.setFont(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedFont : defaultFont);
     cancelButton.setEnabled(!textComponent.getText().equals(defaultValue != null ? defaultValue : ""));
     if (cancelButton.isEnabled()) {
       WebLabel label = new WebLabel("", ImageUtils.CANCEL_16, SwingConstants.TRAILING);
@@ -184,10 +183,12 @@ public class UIEditor {
         }
 
         ((JTextComponent) component).setText(str);
+        ((JTextComponent) component).setCaretPosition(0);
         return;
       }
 
       ((JTextComponent) component).setText(value != null ? value.toString() : "");
+      ((JTextComponent) component).setCaretPosition(0);
       ((JTextComponent) component).getDocument().addDocumentListener(docListener);
     } else {
       ((DefaultListModel) ((JList) component).getModel()).addElement(value);

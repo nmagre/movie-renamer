@@ -73,7 +73,7 @@ public class ScrapperManager {
     getScrapper(TheTVDBScrapper.class);
     getScrapper(TvRageScrapper.class);
     // anime
-    getScrapper(AnidbScrapper.class);
+    // getScrapper(AnidbScrapper.class);
     // subtitle
     getScrapper(OpenSubtitlesScrapper.class);
     getScrapper(SubsceneSubtitleScrapper.class);

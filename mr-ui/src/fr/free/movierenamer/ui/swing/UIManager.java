@@ -37,6 +37,7 @@ import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.dialog.AboutDialog;
 import fr.free.movierenamer.ui.swing.dialog.AbstractDialog;
+import fr.free.movierenamer.ui.swing.dialog.LoggerDialog;
 import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
@@ -44,6 +45,7 @@ import fr.free.movierenamer.ui.swing.panel.MoviePanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -57,7 +59,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -70,6 +71,7 @@ public final class UIManager {
 
   private static SettingDialog settingsDialog;
   private static AboutDialog aboutDialog;
+  private static LoggerDialog logDialog;
   private static ImagePanel imagePanel;
   private static final UISettings setting = UISettings.getInstance();
   private static final Map<Settings.IProperty, WebCheckBox> checkboxs;
@@ -109,6 +111,7 @@ public final class UIManager {
     settingsDialog = new SettingDialog(mr);
     aboutDialog = new AboutDialog(mr);
     imagePanel = new ImagePanel(mr);
+    logDialog = new LoggerDialog(mr);
 
     for (UIMode mode : UIMode.values()) {
       switch (mode) {
@@ -187,6 +190,10 @@ public final class UIManager {
     showDialog(aboutDialog);
   }
 
+  public static void showLogDialog() {
+    showDialog(logDialog);
+  }
+
   private static void showDialog(final AbstractDialog dialog) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -196,13 +203,11 @@ public final class UIManager {
     });
   }
 
-  public static void update(MovieRenamer mr, UIUpdate update) {// FIXME i18n
-    UISettings setting = UISettings.getInstance();
-
-    int n = WebOptionPane.showConfirmDialog(mr,
-            "An update is available.\nDo you want to update Mr to " + update.getUpdateVersion() + "\n\n" + update.getDescen(),
-            UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE
-    );
+  public static void update(MovieRenamer mr, UIUpdate update) {
+    String description = setting.coreInstance.getAppLanguage().equals(AppLanguages.fr) ? update.getDescfr() : update.getDescen();
+    String str = "<html>" + i18n.getLanguage("dialog.updateAvailable", false, update.getUpdateVersion(), description).replace("\n", "<br>").replace("\\n", "<br>") + "<br><br></html>";
+    System.out.println(str);
+    int n = WebOptionPane.showConfirmDialog(mr, str, UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
 
     if (n > 0) {
       return;
@@ -235,7 +240,7 @@ public final class UIManager {
 
       System.exit(0);
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(mr, "Restart failed :(", "error", JOptionPane.ERROR_MESSAGE);// FIXME i18n
+      WebOptionPane.showMessageDialog(mr, "Restart failed :(", "error", WebOptionPane.ERROR_MESSAGE);// FIXME i18n
     }
   }
 

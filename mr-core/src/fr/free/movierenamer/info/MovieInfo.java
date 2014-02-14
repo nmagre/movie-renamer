@@ -349,8 +349,6 @@ public class MovieInfo extends MediaInfo {
   public String getRenamedTitle(String filename, final String format, final StringUtils.CaseConversionType renameCase, final String filenameSeparator,
           final int filenameLimit, final boolean reservedCharacter, final boolean rmDupSpace, final boolean trim) {
 
-    final List<String> reservedCharacterList = Arrays.asList(new String[]{"<", ">", ":", "\"", "/", "\\", "|", "?", "*"});
-
     String titlePrefix = "";
     String shortTitle = this.getTitle();
 
@@ -442,7 +440,7 @@ public class MovieInfo extends MediaInfo {
     String res = freplace.getReplacedString(format);
 
     if (reservedCharacter) {
-      for (String c : reservedCharacterList) {
+      for (String c : StringUtils.reservedCharacterList) {
         if (!c.equals(File.separator)) {
           if (":".equals(c) && Settings.WINDOWS) {
             // Replace all colon except for hard drive if there are at the beginning of the string

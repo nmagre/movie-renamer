@@ -37,7 +37,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 
 import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
 
 /**
@@ -202,20 +206,29 @@ public final class FileUtils {
    * @param file
    */
   public static void writeXmlFile(Document doc, File file) {
+    FileOutputStream fos = null;
     try {
       // Prepare the DOM document for writing
       Source source = new DOMSource(doc);
 
       // Prepare the output file
-      Result result = new StreamResult(file.toURI().getPath());
-
+      fos = new FileOutputStream(file);
       // Write the DOM document to the file
       Transformer xformer = TransformerFactory.newInstance().newTransformer();
       xformer.setOutputProperty(OutputKeys.INDENT, "yes");
       xformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-      xformer.transform(source, result);
+      xformer.transform(source, new StreamResult(fos));
+
     } catch (TransformerConfigurationException e) {
     } catch (TransformerException e) {
+    } catch (FileNotFoundException ex) {
+    } finally {
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException ex) {
+        }
+      }
     }
   }
 

@@ -202,7 +202,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
             }
           }
 
-          if (moveFile(mediaSourceFile, newMediaFile, destFolder)) {
+          if (moveFile(mediaSourceFile, newMediaFile, destFolder, false)) {
             newUiFile = new UIFile(newMediaFile, newMediaFile.getName().substring(0, 1), uiFile.getMtype());// FIXME for tvshow
             UISettings.LOGGER.info(String.format("Move [%s] to [%s]", mediaSourceFile, newMediaFile));
           }
@@ -231,7 +231,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
           continue;
         }
 
-        if (moveFile(file, ofile, destFolder)) {
+        if (moveFile(file, ofile, destFolder, false)) {
           UISettings.LOGGER.info(String.format("Move [%s] to [%s]", file, ofile));
         }
       }
@@ -289,7 +289,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
           UISettings.LOGGER.info(String.format("Delete [%s]", destFile));
         }
       case none:
-        if (moveFile(tmpFile, destFile, destFolder) == null) {
+        if (moveFile(tmpFile, destFile, destFolder, true) == null) {
           return null;
         }
         UISettings.LOGGER.info(String.format("Move [%s] to [%s]", tmpFile, destFile));
@@ -355,7 +355,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
     return generate(tmpFile, destFile, destFolder);
   }
 
-  private Boolean moveFile(File sourceFile, File destFile, File destFolder) throws Exception {
+  private Boolean moveFile(File sourceFile, File destFile, File destFolder, boolean isTempFile) throws Exception {
 
     if (destFile.equals(sourceFile)) {
       return false;
@@ -371,7 +371,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
       }
 
       try {
-        MoveFile moveThread = new MoveFile(sourceFile, destFile);
+        MoveFile moveThread = new MoveFile(sourceFile, destFile, isTempFile);
         moveThread.start();
         int progress;
         while (moveThread.isAlive()) {
@@ -387,9 +387,11 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
         MoveFile.Status status = moveThread.getStatus();
         switch (status) {
           case CHECK_FAILED:
+            UISettings.LOGGER.log(Level.WARNING, null, "Md5 failed for file : " + sourceFile);
             publish(i18n.getLanguage("error.rename.copyCheckFailed", false, sourceFile.getName()));
             return false;
           case REMOVE_FAILED:
+            UISettings.LOGGER.log(Level.WARNING, null, "Remove failed for file : " + sourceFile);
             publish(i18n.getLanguage("error.rename.removeFailed", false, sourceFile.getName()));
             return false;
           case ERROR:
@@ -456,7 +458,8 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
         bimg = bimg.getScaledInstance(width, height, Image.SCALE_SMOOTH);
       }
 
-      BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), BufferedImage.TYPE_INT_RGB);
+      int imageType = settings.getImageFormat().name().equals("JPG") ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+      BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), imageType);
       buffered.getGraphics().drawImage(bimg, 0, 0, null);
       ImageIO.write(buffered, settings.getImageFormat().name(), tmpFile);
     }

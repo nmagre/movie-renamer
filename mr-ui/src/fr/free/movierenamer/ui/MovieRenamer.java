@@ -55,7 +55,6 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.*;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
-import fr.free.movierenamer.ui.swing.dialog.LoggerDialog;
 import fr.free.movierenamer.ui.swing.panel.*;
 import fr.free.movierenamer.ui.swing.renderer.*;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -85,11 +84,12 @@ import javax.swing.event.ListSelectionListener;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
 import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.FileUtils;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Class MovieRenamer
@@ -152,8 +152,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private LoadingDialog loadingDial;
   private boolean workersDone = true;
   private boolean renameWorkerDone = true;
+  private FileFilter movieFileFilter;
 
-  public MovieRenamer(List<File> files) {
+  public MovieRenamer() {
     super();
 
     loadingDial = new LoadingDialog();
@@ -176,7 +177,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     addWindowListener(createWindowListener());
 
-    init(files);
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    double width = screenSize.getWidth();
+    double height = screenSize.getHeight();
+
+    setSize(new Dimension(900, 830));
+    init();
   }
 
   @Override
@@ -188,7 +194,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }
 
   @SuppressWarnings("unchecked")// Weblaf is in java 6, and combobox, .. use generic type now. We must unchecked on setRenderer, .. method :(
-  private void init(List<File> files) {
+  private void init() {
     // Panels/dialog/... init
     UIManager.init(this);
 
@@ -236,6 +242,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     loaderModel.addElement(new UILoader());
 
     // Add button to main toolbar
+    mainTb.addToEnd(logBtn);
     mainTb.addToEnd(aboutBtn);
     mainTb.addToEnd(new JSeparator(JSeparator.VERTICAL));
     mainTb.addToEnd(updateBtn);
@@ -263,6 +270,22 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchResultList.addMouseMotionListener(searchResultTooltip);
 
     fileChooser.setGenerateThumbnails(true);
+    fileChooser.addChoosableFileFilter(new FileFilter() {
+
+      @Override
+      public String getDescription() {
+        return i18n.getLanguage("movie", false);
+      }
+
+      @Override
+      public boolean accept(File f) {
+        if (f.isDirectory()) {
+          return true;
+        }
+
+        return FileUtils.checkFileExt(f, setting.coreInstance.getfileExtension().toArray(new String[0]));
+      }
+    });
 
     toggleGroup.setLanguage(UIUtils.i18n.getLanguageKey("mediatb.settingspopup.group"));
     toggleGroup.addActionListener(createToggleGroupListener());
@@ -320,10 +343,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     // Add MovieRenamer (Main UI) to UIEvent receiver
     UIEvent.addEventListener(MovieRenamer.class, this);
-
-    if (!files.isEmpty()) {
-      loadFiles(files);
-    }
 
     InitTimer initTimer = new InitTimer(this, mediainfoStatusLbl);
     initTimer.start();
@@ -502,7 +521,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         UIManager.update(this, (UIUpdate) newObj);
         break;
       case NO_UPDATE:
-        // TODO
+        UIUtils.showNotification(i18n.getLanguage("dialog.alreadyUptodate", false));
         break;
     }
   }
@@ -650,7 +669,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    * @param files
    */
   @SuppressWarnings("unchecked")
-  private void loadFiles(List<File> files) {
+  public void loadFiles(List<File> files) {
     clearMediaFileListBtn.setEnabled(false);
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
     mediaFileList.setModel(loaderModel);
@@ -775,7 +794,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     // Stop all running workers
     WorkerManager.stop();
-    System.gc();
   }
 
   /**
@@ -1071,8 +1089,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     renameField = new JTextField();
     toggleGroup = new WebButton();
     fileFormatField = new WebTextField();
-    aboutBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.about"), ImageUtils.INFO_24, ImageUtils.INFO_16);
+    aboutBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.about"), ImageUtils.HELP_24, ImageUtils.HELP_16);
     clearMediaFileListBtn = UIUtils.createButton(i18n.getLanguageKey("mediatb.clear"), ImageUtils.CLEAR_LIST_16, ImageUtils.CLEAR_LIST_16);
+    logBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.log"), ImageUtils.INFO_24, ImageUtils.INFO_16);
     containerTransition = new ComponentTransition();
     mainTb = new WebToolBar();
     openBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.open"), ImageUtils.FOLDERVIDEO_24, ImageUtils.FOLDERVIDEO_16, Hotkey.CTRL_O, MovieRenamer.this);
@@ -1135,7 +1154,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       }
     });
 
-    aboutBtn.setIcon(ImageUtils.INFO_24);
     aboutBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         aboutBtnActionPerformed(evt);
@@ -1151,8 +1169,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       }
     });
 
+    logBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        logBtnActionPerformed(evt);
+      }
+    });
+
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    setMinimumSize(new Dimension(800, 600));
+    setMinimumSize(new Dimension(800, 580));
 
     containerTransition.setLayout(new BorderLayout());
 
@@ -1216,8 +1240,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     listSp.setLeftComponent(mediaFilePnl);
 
-    centerPanel.setPreferredSize(new Dimension(600, 400));
-
     mediaSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
     mediaSp.setMinimumSize(new Dimension(300, 500));
     mediaSp.setPreferredSize(new Dimension(300, 500));
@@ -1271,7 +1293,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         .addComponent(scrapperCb, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-      .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+      .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 786, Short.MAX_VALUE)
     );
     searchPnlLayout.setVerticalGroup(
       searchPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1337,7 +1359,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }// </editor-fold>//GEN-END:initComponents
 
   private void openBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_openBtnActionPerformed
-    fileChooser.setCurrentDirectory(new File(setting.getFileChooserPath()));
+    File file = new File(setting.getFileChooserPath());
+
+    fileChooser.setCurrentDirectory(file);
     int r = fileChooser.showOpenDialog(this);
     if (r == 0) {
       List<File> files = Arrays.asList(fileChooser.getSelectedFiles());
@@ -1438,6 +1462,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     clearMediaFileListBtn.setEnabled(false);
   }//GEN-LAST:event_clearMediaFileListBtnActionPerformed
 
+  private void logBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_logBtnActionPerformed
+    UIManager.showLogDialog();
+  }//GEN-LAST:event_logBtnActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private WebButton aboutBtn;
   private WebPanel centerPanel;
@@ -1446,6 +1474,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private WebButton exitBtn;
   private WebTextField fileFormatField;
   private WebSplitPane listSp;
+  private WebButton logBtn;
   private ComponentTransition mainContainerTransition;
   private WebPanel mainPanel;
   private WebToolBar mainTb;

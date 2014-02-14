@@ -17,7 +17,9 @@
  */
 package fr.free.movierenamer.renamer;
 
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.StringUtils;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -176,6 +178,9 @@ public class FormatReplacing {
 
     final Object obj = replace.get(token);
     if (obj == null) {
+      if (replace.containsKey(token)) {
+        return "";
+      }
       return StringUtils.applyCase(token, renameCase);
     }
 
@@ -224,6 +229,15 @@ public class FormatReplacing {
           value = value.replaceAll("(?:\\W|\\d)", "");
           break;
       }
+    }
+
+    if (Settings.getInstance().isReservedCharacter()) {
+      for (String c : StringUtils.reservedCharacterList) {
+        if (!c.equals(File.separator)) {
+          value = value.replace(c, "");
+        }
+      }
+      value = value.trim();
     }
 
     return StringUtils.applyCase(value, scase != null ? scase : renameCase);

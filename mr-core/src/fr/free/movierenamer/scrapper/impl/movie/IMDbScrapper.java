@@ -178,7 +178,7 @@ public class IMDbScrapper extends MovieScrapper {// TODO need to be cleaned
     List<String> tags = new ArrayList<String>();
 
     Node node = XPathUtils.selectNode("//H1", dom);
-    if (movie.getName() == null) {
+    if (movie.getName() == null || movie.getName().isEmpty()) {
       fields.put(MovieProperty.title, XPathUtils.selectString("text()", node));
     } else {
       fields.put(MovieProperty.title, movie.getName());
