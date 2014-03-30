@@ -52,13 +52,13 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
       publish(String.format("InvalidUrlException %s failed\n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
     } catch (UnknownHostException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(UIUtils.i18n.getLanguage("error.network.connection", false));
+      publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getMessage()));
     } catch (SocketTimeoutException ex) {
       UISettings.LOGGER.log(Level.WARNING, ex.getCause().toString());
       publish(UIUtils.i18n.getLanguage("error.network.timeout", false));
     } catch (SocketException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(UIUtils.i18n.getLanguage("error.network.connection", false) + "\n\n" + ex.getLocalizedMessage());
+      publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getLocalizedMessage()));
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
       publish(UIUtils.i18n.getLanguage("error.unknown", false, getClass().getSimpleName(), ex.getLocalizedMessage()));

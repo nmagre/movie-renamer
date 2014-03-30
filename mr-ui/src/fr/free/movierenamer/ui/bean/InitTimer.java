@@ -63,7 +63,7 @@ public class InitTimer {
         if (Settings.WINDOWS) {
           new MediaInfoDownloadDialog(mr).setVisible(true);
         } else {
-          UIUtils.showWarningNotification(i18n.getLanguage("error.noWritePermission", false));
+          UIUtils.showWarningNotification(i18n.getLanguage("error.mediaInfoNotInstalled", false));
           // Start check update
           if (setting.isCheckupdate()) {
             updateTimer.start();

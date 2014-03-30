@@ -594,9 +594,9 @@
       <value lang="fr">Afficher l'avertissement "media info n'est pas installé"</value>
     </record>
 
-    <record key="screendevice">
-      <value lang="en">Diplay application on screen</value>
-      <value lang="fr">Afficher l'application sur l'écran</value>
+    <record key="mainframesavestate">
+      <value lang="en">Save application position on screen</value>
+      <value lang="fr">Sauvegarde la position de l'application sur l'écran</value>
     </record>
 
     <record key="showmediapanel">
@@ -999,6 +999,11 @@
       <value lang="en">Enable proxy</value>
       <value lang="fr">Activer le proxy</value>
     </record>
+    
+    <record key="proxyissocks">
+      <value lang="en">Use SOCKS proxy</value>
+      <value lang="fr">Utiliser un proxy SOCKS</value>
+    </record>
 
     <record key="proxyurl">
       <value lang="en">Url</value>
@@ -1008,6 +1013,16 @@
     <record key="proxyport">
       <value lang="en">Port</value>
       <value lang="fr">Port</value>
+    </record>
+    
+    <record key="proxyuser">
+      <value lang="en">User</value>
+      <value lang="fr">Utilisateur</value>
+    </record>
+    
+    <record key="proxypass">
+      <value lang="en">Password</value>
+      <value lang="fr">Mot de passe</value>
     </record>
 
   </Dictionary><!-- END settings -->
@@ -1210,8 +1225,8 @@
 
     <Dictionary name="Network Error" prefix="network">
       <record key="connection">
-        <value lang="en">Unable to contact server.\nPlease check your network settings.</value>
-        <value lang="fr">Impossible de contacter le serveur.\nS'il vous plaît vérifier vos paramètres réseau.</value>
+        <value lang="en">Unable to contact server.\nPlease check your network settings.\n\nError : %s</value>
+        <value lang="fr">Impossible de contacter le serveur.\nS'il vous plaît vérifier vos paramètres réseau.\n\nErreur : %s</value>
       </record>
 
       <record key="timeout">

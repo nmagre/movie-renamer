@@ -20,6 +20,7 @@ package fr.free.movierenamer.ui.swing.dialog;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.optionpane.WebOptionPane;
+import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.info.CastingInfo;
@@ -430,6 +431,7 @@ public class SettingDialog extends AbstractDialog {
       Map<IProperty, WebCheckBox> checkboxs = panel.getCheckbox();
       Map<IProperty, WebTextField> fields = panel.getField();
       Map<IProperty, WebComboBox> comboboxs = panel.getCombobox();
+      Map<IProperty, WebPasswordField> passFields = panel.getPassField();
 
       // Save checkbox
       for (Map.Entry<IProperty, WebCheckBox> checkbox : checkboxs.entrySet()) {
@@ -448,6 +450,29 @@ public class SettingDialog extends AbstractDialog {
 
       // Save text field
       for (Map.Entry<IProperty, WebTextField> field : fields.entrySet()) {
+        try {
+          IProperty property = field.getKey();
+          String oldValue = property.getValue();
+          if (field.getKey().getDefaultValue() instanceof Number) {
+            if (!NumberUtils.isNumeric(field.getValue().getText())) {
+              WebOptionPane.showMessageDialog(mr, i18n.getLanguage("error.nan", false, i18n.getLanguage("settings." + property.name().toLowerCase(), false)),
+                      i18n.getLanguage("error.error", false), JOptionPane.ERROR_MESSAGE);
+              return;
+            }
+          }
+
+          property.setValue(field.getValue().getText());
+
+          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue.equals(property.getValue()) ? property : null, property);
+        } catch (IOException ex) {
+          UISettings.LOGGER.log(Level.SEVERE, null, ex);
+          WebOptionPane.showMessageDialog(mr, ("settings.saveSettingsFailed"), ("error"), JOptionPane.ERROR_MESSAGE);// FIXME i18n
+          return;
+        }
+      }
+
+      // Save password field
+      for (Map.Entry<IProperty, WebPasswordField> field : passFields.entrySet()) {
         try {
           IProperty property = field.getKey();
           String oldValue = property.getValue();

@@ -48,7 +48,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import fr.free.movierenamer.settings.Settings;
+import java.net.Authenticator;
 import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,8 +151,17 @@ public final class URIRequest {
     boolean isHttpRequest = Proxy.Type.HTTP.name().equalsIgnoreCase(uri.getScheme());
     URLConnection connection;
     if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
-      Settings settings = Settings.getInstance();
-      Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
+      final Settings settings = Settings.getInstance();
+      if (!settings.getProxyUser().equals("")) {
+        Authenticator.setDefault(new Authenticator() {
+          @Override
+          public PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(
+                    settings.getProxyUser(), settings.getProxyPass());
+          }
+        });
+      }
+      Proxy proxy = new Proxy(settings.isProxySocks() ? Proxy.Type.SOCKS : Proxy.Type.HTTP, new InetSocketAddress(settings.getProxyUrl(), settings.getProxyPort()));
       connection = uri.toURL().openConnection(proxy);
     } else {
       connection = uri.toURL().openConnection();

@@ -32,6 +32,7 @@ import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.filechooser.FileChooserViewType;
 import com.alee.laf.filechooser.WebFileChooser;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
@@ -188,7 +189,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   @Override
   public void setVisible(boolean b) {
     if (b) {
-      UIUtils.showOnScreen(this);
+      if (setting.isMainFrameSaveState()) {
+        setSize(new Dimension(setting.getMainFrameSizeWidth(), setting.getMainFrameSizeHeight()));
+        UIUtils.showOnScreen(this, setting.getMainFrameScreen(), setting.getMainFrameLocationX(), setting.getMainFrameLocationY(), setting.getMainFrameState());
+        listSp.setDividerLocation(setting.getMainFrameFileDivider());
+        mediaSp.setDividerLocation(setting.getMainFrameMediaDivider());
+      } else {
+        UIUtils.showOnScreen(this, 0, -1, -1, WebFrame.NORMAL);
+      }
     }
     super.setVisible(b);
   }
@@ -260,7 +268,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     addDragAndDropListener(mediaFileList);//Add drag and drop listener on mediaFileList
 
     mediaFileList.addMouseListener(mediaFileTooltip);
-    //mediaFileList.addMouseMotionListener(mediaFileTooltip);
+    mediaFileList.addMouseMotionListener(mediaFileTooltip);
 
     mediaFileList.setCellRenderer(mediaFileListRenderer);
 
@@ -270,6 +278,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchResultList.addMouseMotionListener(searchResultTooltip);
 
     fileChooser.setGenerateThumbnails(true);
+    fileChooser.setMultiSelectionEnabled(true);
+    fileChooser.getWebUI().getFileChooserPanel().setViewType(setting.getFileChooserViewType());
+
     fileChooser.addChoosableFileFilter(new FileFilter() {
 
       @Override
@@ -484,9 +495,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
               case showImagePanel:
                 showImagePanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
                 updatePanel = true;
-                break;
-              case screenDevice:
-                UIUtils.showOnScreen(this);
                 break;
               case showFormatField:
                 showFormatFieldChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
@@ -822,9 +830,25 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       }
     }
 
-    // TODO stop process + clean
     clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
     WorkerManager.stopRenameThread();
+
+    if (setting.isMainFrameSaveState()) {
+      try {
+        UISettings.UISettingsProperty.mainFrameState.setValue(this.getExtendedState());
+        Point location = this.getLocation();
+        UISettings.UISettingsProperty.mainFrameLocationX.setValue(location.x);
+        UISettings.UISettingsProperty.mainFrameLocationY.setValue(location.y);
+        UISettings.UISettingsProperty.mainFrameScreen.setValue(UIUtils.getScreen(this));
+        UISettings.UISettingsProperty.mainFrameFileDivider.setValue(listSp.getDividerLocation());
+        UISettings.UISettingsProperty.mainFrameMediaDivider.setValue(mediaSp.getDividerLocation());
+        Dimension wsize = this.getSize();
+        UISettings.UISettingsProperty.mainFrameSizeWidth.setValue(wsize.width);
+        UISettings.UISettingsProperty.mainFrameSizeHeight.setValue(wsize.height);
+      } catch (IOException ex) {
+        UISettings.LOGGER.log(Level.SEVERE, null, ex);
+      }
+    }
 
     System.exit(0);
   }
@@ -1210,6 +1234,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     containerTransition.add(mainTb, BorderLayout.PAGE_START);
 
+    listSp.setDividerLocation(180);
+
     mediaFilePnl.setMargin(new Insets(4, 5, 4, 5));
 
     mediaFileTb.setFloatable(false);
@@ -1228,7 +1254,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mediaFilePnlLayout.setHorizontalGroup(
       mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
       .addComponent(mediaFileTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+      .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
     );
     mediaFilePnlLayout.setVerticalGroup(
       mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1240,6 +1266,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     listSp.setLeftComponent(mediaFilePnl);
 
+    mediaSp.setDividerLocation(200);
     mediaSp.setOrientation(JSplitPane.VERTICAL_SPLIT);
     mediaSp.setMinimumSize(new Dimension(300, 500));
     mediaSp.setPreferredSize(new Dimension(300, 500));
@@ -1293,7 +1320,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         .addComponent(scrapperCb, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-      .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 786, Short.MAX_VALUE)
+      .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 766, Short.MAX_VALUE)
     );
     searchPnlLayout.setVerticalGroup(
       searchPnlLayout.createParallelGroup(Alignment.LEADING)
@@ -1363,6 +1390,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     fileChooser.setCurrentDirectory(file);
     int r = fileChooser.showOpenDialog(this);
+    try {
+      FileChooserViewType fcvt = fileChooser.getWebUI().getFileChooserPanel().getViewType();
+      UISettingsProperty.fileChooserViewType.setValue(fcvt);
+    } catch (IOException e) {
+      UISettings.LOGGER.log(Level.SEVERE, e.getMessage());
+      WebOptionPane.showMessageDialog(MovieRenamer.this, UIUtils.i18n.getLanguage("error.failSaveFolderPath", false), UIUtils.i18n.getLanguage("error.error", false), WebOptionPane.ERROR_MESSAGE);
+    }
+
     if (r == 0) {
       List<File> files = Arrays.asList(fileChooser.getSelectedFiles());
       if (!files.isEmpty()) {// Remember path

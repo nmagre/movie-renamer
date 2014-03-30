@@ -51,6 +51,7 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -210,6 +211,9 @@ public final class Settings {
     proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, true),
     proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY),
     proxyPort(80, SettingsType.NETWORK, SettingsSubType.PROXY),
+    proxyUser("", SettingsType.NETWORK, SettingsSubType.PROXY),
+    proxyPass(new char[0], SettingsType.NETWORK, SettingsSubType.PROXY),
+    proxyIsSocks(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY),
     // Extension
     fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL),
     //app lang
@@ -358,8 +362,13 @@ public final class Settings {
     } else {
       value = null;
     }
+
     if (value == null) {
-      value = key.getDefaultValue().toString();
+      if (key.getDefaultValue() instanceof char[]) {
+        value = "";
+      } else {
+        value = key.getDefaultValue().toString();
+      }
     }
     return value;
   }
@@ -378,7 +387,13 @@ public final class Settings {
         // param.appendChild(settingsDocument.createTextNode(value.toString()));
         settingsNode.appendChild(found);
       }
-      found.setTextContent(value.toString());
+
+      // Pass
+      if (key.getDefaultValue() instanceof char[]) {
+        found.setTextContent(StringUtils.encrypt(value.toString().getBytes()));
+      } else {
+        found.setTextContent(value.toString());
+      }
       if (autosave) {
         saveSetting();
       }
@@ -567,6 +582,18 @@ public final class Settings {
 
   public int getProxyPort() {
     return Integer.parseInt(get(SettingsProperty.proxyPort));
+  }
+
+  public String getProxyUser() {
+    return get(SettingsProperty.proxyUser);
+  }
+
+  public char[] getProxyPass() {
+    return StringUtils.decrypt(get(SettingsProperty.proxyPass)).toCharArray();
+  }
+
+  public boolean isProxySocks() {
+    return Boolean.parseBoolean(get(SettingsProperty.proxyIsSocks));
   }
 
   public int getHttpRequestTimeOut() {

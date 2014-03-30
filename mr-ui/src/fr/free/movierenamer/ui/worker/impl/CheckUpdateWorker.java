@@ -76,6 +76,10 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
   @Override
   protected void workerDone() throws Exception {
     UIUpdate update = get();
+    if(update == null) {
+      return;
+    }
+    
     if (update.isUpdateAvailable()) {
       UIEvent.fireUIEvent(Event.UPDATE_AVAILABLE, null, update);
     } else if (showNoUpdate) {

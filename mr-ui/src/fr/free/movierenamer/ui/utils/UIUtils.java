@@ -22,6 +22,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
+import com.alee.laf.rootpane.WebFrame;
 import com.alee.managers.hotkey.ButtonHotkeyRunnable;
 import com.alee.managers.hotkey.HotkeyData;
 import com.alee.managers.hotkey.HotkeyManager;
@@ -39,11 +40,11 @@ import com.sun.jna.Platform;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.i18n.I18n;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -99,14 +100,13 @@ public final class UIUtils {
   }
 
   /**
-   * Show window on screen device N and centered
+   * Move and center frameToMove to the screen of the mainFrame
    *
-   * @param frame Window to move
+   * @param mainFrame Main Window
+   * @param frameToMove Window to move
    */
-  public static void showOnScreen(Window frame) {
-    UISettings settings = UISettings.getInstance();
-    int screen = settings.getScreenDevice();
-    showOnScreen(frame, screen, false);
+  public static void showOnScreen(Window mainFrame, Window frameToMove) {
+    showOnScreen(frameToMove, getScreen(mainFrame));
   }
 
   /**
@@ -114,41 +114,45 @@ public final class UIUtils {
    *
    * @param frame Window to move
    * @param screen Screen device to display Window
-   * @param fullscreen fullscreen or not
    */
-  public static void showOnScreen(Window frame, int screen, boolean fullscreen) {
+  public static void showOnScreen(Window frame, int screen) {
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice[] gd = ge.getScreenDevices();
 
-    if (screen > -1 && screen < gd.length) {
-      if (fullscreen) {
-        gd[screen].setFullScreenWindow(frame);
-      } else {
-        Rectangle bound = gd[screen].getDefaultConfiguration().getBounds();
-        int x = (int) bound.getCenterX() - frame.getWidth() / 2;
-        int y = (int) bound.getCenterY() - frame.getHeight() / 2;
-        frame.setLocation(x, y);
+    if (gd.length > 0) {
+      Rectangle bound = gd[0].getDefaultConfiguration().getBounds();
+
+      if (screen > -1 && screen < gd.length) {
+        bound = gd[screen].getDefaultConfiguration().getBounds();
       }
-    } else if (gd.length > 0) {
-      if (fullscreen) {
-        gd[0].setFullScreenWindow(frame);
-      } else {
-        Rectangle bound = gd[0].getDefaultConfiguration().getBounds();
-        int x = (int) bound.getCenterX() - frame.getWidth() / 2;
-        int y = (int) bound.getCenterY() - frame.getHeight() / 2;
-        frame.setLocation(x, y);
-      }
+
+      int x = (int) bound.getCenterX() - frame.getWidth() / 2;
+      int y = (int) bound.getCenterY() - frame.getHeight() / 2;
+      frame.setLocation(x, y);
     }
+
   }
 
-  /**
-   * Move and center frameToMove to the screen of the mainFrame
-   *
-   * @param mainFrame Main Window
-   * @param frameToMove Window to move
-   */
-  public static void showOnScreen(Window mainFrame, Window frameToMove) {
-    showOnScreen(frameToMove, getScreen(mainFrame), false);
+  public static void showOnScreen(Frame frame, int screen, int x, int y, int state) {
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice[] gd = ge.getScreenDevices();
+
+    if (gd.length > 0) {
+      Rectangle bound = gd[0].getDefaultConfiguration().getBounds();
+
+      if (screen > -1 && screen < gd.length) {
+        bound = gd[screen].getDefaultConfiguration().getBounds();
+      }
+
+      // If frame is OOB, we center it
+      if (!bound.contains(new Point(x, y))) {
+        x = (int) bound.getCenterX() - frame.getWidth() / 2;
+        y = (int) bound.getCenterY() - frame.getHeight() / 2;
+      }
+
+      frame.setLocation(x, y);
+    }
+    frame.setExtendedState(state);
   }
 
   /**

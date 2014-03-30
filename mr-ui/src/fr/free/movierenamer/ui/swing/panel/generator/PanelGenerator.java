@@ -21,6 +21,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.tooltip.TooltipManager;
@@ -61,6 +62,7 @@ public abstract class PanelGenerator extends WebPanel {
 
     CHECKBOX,
     FIELD,
+    PASSWORD,
     BUTTON,
     TOOLBAR,
     LABEL,
@@ -324,6 +326,9 @@ public abstract class PanelGenerator extends WebPanel {
         break;
       case FIELD:
         component = new WebTextField();
+        break;
+      case PASSWORD:
+        component = new WebPasswordField();
         break;
       case TOOLBAR:
         component = new WebToolBar();

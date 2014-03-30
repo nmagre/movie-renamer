@@ -59,6 +59,7 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     } catch (Exception ex) {
       genericClazz = (Class<M>) ((ParameterizedType) getClass().getSuperclass().getSuperclass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
+    System.out.println(genericClazz);// FIXME remove
 
     List<M> results = (cache != null) ? cache.getList(query, language.getLocale(), genericClazz) : null;
     if (results != null) {

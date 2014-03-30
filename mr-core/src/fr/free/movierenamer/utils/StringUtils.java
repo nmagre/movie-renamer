@@ -27,11 +27,25 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import fr.free.movierenamer.settings.Settings;
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import org.apache.xerces.impl.dv.util.Base64;
 
 /**
  * Class StringUtils
@@ -78,6 +92,11 @@ public final class StringUtils {
   private static final Pattern trailingParentheses = Pattern.compile("[(]([^)]*)[)]$");
   private static final Pattern checksum = Pattern.compile("[\\(\\[]\\p{XDigit}{8}[\\]\\)]");
   public static final List<String> reservedCharacterList = Arrays.asList(new String[]{"<", ">", ":", "\"", "/", "\\", "|", "?", "*"});
+  private static final char[] PASSWORD = "0KzNosgW01KlPRzGev8zPpBMrDvGIphVJ2W3t".toCharArray();
+  private static final byte[] SALT = {
+    (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
+    (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12
+  };
 
   public static boolean isEmptyValue(Object object) {
     return object == null || object.toString().length() == 0;
@@ -443,6 +462,47 @@ public final class StringUtils {
       format += "'" + append + "'";
     }
     return format;
+  }
+
+  public static String encrypt(byte[] property) {
+    String encrypted = "";
+    try {
+      SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+      SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
+      Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+      pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+
+      encrypted = Base64.encode(pbeCipher.doFinal(property));
+
+      for (int i = 0; i < property.length; i++) {
+        property[i] = 0;
+      }
+      property = null;
+      System.gc();
+
+    } catch (GeneralSecurityException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+
+    return encrypted;
+  }
+
+  public static String decrypt(String property) {
+    if(property == null || property.length() == 0) {
+      return "";
+    }
+    
+    try {
+      SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+      SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
+      Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+      pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+      return new String(pbeCipher.doFinal(Base64.decode(property)));
+    } catch (GeneralSecurityException ex) {
+      Settings.LOGGER.log(Level.SEVERE, null, ex);
+    }
+    
+    return "";
   }
 
   private StringUtils() {

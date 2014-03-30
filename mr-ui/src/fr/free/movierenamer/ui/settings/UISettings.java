@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.ui.settings;
 
+import com.alee.laf.filechooser.FileChooserViewType;
+import com.alee.laf.rootpane.WebFrame;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsSubType;
 import fr.free.movierenamer.settings.Settings.SettingsType;
@@ -130,7 +132,7 @@ public final class UISettings {
     loadFilePath(userFolder, SettingsType.GENERAL, SettingsSubType.FOLDER),
     checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
     // Interface
-    screenDevice(0, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    mainFrameSaveState(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
@@ -172,7 +174,16 @@ public final class UISettings {
     showOrigTitleResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
     showThumbResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
     // Misc
-    fileChooserPath(userFolder);
+    fileChooserPath(userFolder),
+    fileChooserViewType(FileChooserViewType.tiles),
+    mainFrameLocationX(0),
+    mainFrameLocationY(0),
+    mainFrameSizeWidth(900),
+    mainFrameSizeHeight(830),
+    mainFrameState(WebFrame.NORMAL),
+    mainFrameFileDivider(180),
+    mainFrameMediaDivider(200),
+    mainFrameScreen(0);
     private Class<?> vclass;
     private Object defaultValue;
     private SettingsType type;
@@ -292,7 +303,6 @@ public final class UISettings {
         // setting elements
         settingsNode = settingsDocument.createElement(settingNodeName);
         rootElement.appendChild(settingsNode);
-
       } catch (ParserConfigurationException ex1) {
         settingsDocument = null;
         settingsNode = null;
@@ -301,11 +311,6 @@ public final class UISettings {
 
     this.settingsDocument = settingsDocument;
     this.settingsNode = settingsNode;
-    try {
-      saveSetting();
-    } catch (IOException e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
-    }
   }
 
   private synchronized String get(UISettingsProperty key) {
@@ -380,10 +385,6 @@ public final class UISettings {
       saveSuccess = false;
     }
     return saveSuccess;
-  }
-
-  public int getScreenDevice() {
-    return Integer.parseInt(get(UISettingsProperty.screenDevice));
   }
 
   public boolean isSelectFirstMedia() {
@@ -537,6 +538,10 @@ public final class UISettings {
   public String getFileChooserPath() {
     return get(UISettingsProperty.fileChooserPath);
   }
+  
+  public FileChooserViewType getFileChooserViewType() {
+    return FileChooserViewType.valueOf(get(UISettingsProperty.fileChooserViewType));
+  }
 
   public boolean isGroupMediaList() {
     return Boolean.parseBoolean(get(UISettingsProperty.groupMediaList));
@@ -552,6 +557,42 @@ public final class UISettings {
 
   public boolean isShowStartupAnim() {
     return Boolean.parseBoolean(get(UISettingsProperty.showStartupAnim));
+  }
+
+  public int getMainFrameLocationX() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameLocationX));
+  }
+
+  public int getMainFrameLocationY() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameLocationY));
+  }
+
+  public int getMainFrameSizeWidth() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameSizeWidth));
+  }
+
+  public int getMainFrameSizeHeight() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameSizeHeight));
+  }
+
+  public int getMainFrameState() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameState));
+  }
+
+  public boolean isMainFrameSaveState() {
+    return Boolean.parseBoolean(get(UISettingsProperty.mainFrameSaveState));
+  }
+
+  public int getMainFrameScreen() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameScreen));
+  }
+
+  public int getMainFrameFileDivider() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameFileDivider));
+  }
+
+  public int getMainFrameMediaDivider() {
+    return Integer.parseInt(get(UISettingsProperty.mainFrameMediaDivider));
   }
 
   private static String getApplicationProperty(String key) {

@@ -25,6 +25,7 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.language.LanguageManager;
@@ -50,6 +51,7 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -79,6 +81,7 @@ public class SettingPanelGen extends PanelGenerator {
   private static final long serialVersionUID = 1L;
   private Map<IProperty, WebCheckBox> checkboxs;
   private Map<IProperty, WebTextField> fields;
+  private Map<IProperty, WebPasswordField> passFields;
   private Map<IProperty, WebComboBox> comboboxs;
   private static final String settingsi18n = "settings.";
   private final MovieRenamer mr;
@@ -110,6 +113,7 @@ public class SettingPanelGen extends PanelGenerator {
     checkboxs = new HashMap<>();
     fields = new HashMap<>();
     comboboxs = new HashMap<>();
+    passFields = new HashMap<>();
     WebTabbedPane tabbedPane = null;
     TabbedSettings tabbed = null;
 
@@ -195,6 +199,19 @@ public class SettingPanelGen extends PanelGenerator {
           label.setMargin(0, 25, 0, 0);
           ((WebCheckBox) component).add(label);
           checkboxs.put(property, (WebCheckBox) component);
+
+        } else if (property.getDefaultValue() instanceof char[]) {
+          //Password
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+          component = createComponent(Component.PASSWORD, null);
+
+          if (tabbedPane != null && panel != null) {
+            panel.add(label, getGroupConstraint(0, false, false, level));
+          } else {
+            add(label, getGroupConstraint(0, false, false, level));
+          }
+          constraint = getGroupConstraint(1, true, true, level);
+          passFields.put(property, (WebPasswordField) component);
 
         } else if (property.getVclass().equals(String.class) || property.getDefaultValue() instanceof Number) {
 
@@ -381,6 +398,11 @@ public class SettingPanelGen extends PanelGenerator {
       textfield.getValue().setText(property.getValue());
     }
 
+    for (Map.Entry<IProperty, WebPasswordField> passfield : passFields.entrySet()) {
+      IProperty property = passfield.getKey();
+      passfield.getValue().setText(StringUtils.decrypt(property.getValue()));
+    }
+
     for (Map.Entry<IProperty, WebComboBox> combobox : comboboxs.entrySet()) {
       IProperty property = combobox.getKey();
       WebComboBox cb = combobox.getValue();
@@ -435,5 +457,9 @@ public class SettingPanelGen extends PanelGenerator {
 
   public Map<IProperty, WebComboBox> getCombobox() {
     return Collections.unmodifiableMap(comboboxs);
+  }
+
+  public Map<IProperty, WebPasswordField> getPassField() {
+    return Collections.unmodifiableMap(passFields);
   }
 }
