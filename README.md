@@ -1,4 +1,4 @@
-Movie Renamer
+![Movie Renamer](http://movie-renamer.fr/image/mrLogo.png)Movie Renamer
 =============
 
 User-friendly application to rename movies, get informations like actors, genre,..., images, generate NFO file for media center and more.
@@ -24,7 +24,7 @@ Media center like [XBMC](http://xbmc.org/), [MediaPortal](http://www.team-mediap
 ### Requirements
 
 Only java version >= 7 is required to run **Movie Renamer**.  
-You can also install [MediaInfo](http://mediaarea.net/fr/MediaInfo) to get file container informations and use it in file name (optional)
+You can also install [MediaInfo](http://mediaarea.net/fr/MediaInfo) to get file container informations and use it in filename (optional)
 
 ### Want to help ?
 
@@ -49,6 +49,6 @@ The project is in 3 parts (core, ui, updater) and you can compile it with "ant"
 
 List of target :  
 
-  * `ant core` Build only the core part
+  * `ant core` Build core part
   * `ant updater` Build updater part
   * `ant installer` Build and create installer /!\ [IzPack](http://izpack.org/) is required
