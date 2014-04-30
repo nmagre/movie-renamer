@@ -1,4 +1,5 @@
-![Movie Renamer](http://movie-renamer.fr/image/mrLogo.png)Movie Renamer
+![Movie Renamer](http://movie-renamer.fr/image/banniere.png)
+Movie Renamer
 =============
 
 User-friendly application to rename movies, get informations like actors, genre,..., images, generate NFO file for media center and more.
