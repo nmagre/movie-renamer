@@ -20,23 +20,12 @@ package fr.free.movierenamer.ui.settings;
 import com.alee.laf.filechooser.FileChooserViewType;
 import com.alee.laf.rootpane.WebFrame;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.Settings.SettingsSubType;
-import fr.free.movierenamer.settings.Settings.SettingsType;
-import fr.free.movierenamer.utils.*;
-import java.io.File;
+import fr.free.movierenamer.settings.XMLSettings;
+import fr.free.movierenamer.settings.XMLSettings.SettingsSubType;
+import fr.free.movierenamer.settings.XMLSettings.SettingsType;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Class Settings , Movie Renamer settings Only public and non static attributes
@@ -45,58 +34,36 @@ import org.w3c.dom.NodeList;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public final class UISettings {
+public final class UISettings extends XMLSettings {
 
   static {
-    String appName = getApplicationProperty("application.name");
-    String appNameNospace = appName.replace(' ', '_');
-    APPNAME = appName;
     VERSION = getApplicationProperty("application.version");
-    HOST = getApplicationProperty("application.host");
-    AUTHOR = getApplicationProperty("application.author");
-    CONTRIB = getApplicationProperty("application.contributors");
-    LICENSE = getApplicationProperty("application.license");
-    COPYRIGHT = getApplicationProperty("application.copyright");
-    PROVIDER = getApplicationProperty("application.provider");
     CORE_VERSION = Settings.VERSION;
     userFolder = System.getProperty("user.home");
-    appFolder = Settings.getApplicationFolder();
     languagePrefix = "mrui";
-    configFile = appNameNospace + ".conf";
     renamedFile = "renamed.xml";
     languageFile = "language.xml";
-    logFile = appNameNospace + ".log";
     LOGGER = Logger.getLogger("UI");
-    appSettingsNodeName = appNameNospace;
-    settingNodeName = "settings";
   }
-  public static final String APPNAME;
+
   public static final String VERSION;
-  public static final String HOST;
   public static final String CORE_VERSION;
-  public static final String AUTHOR;
-  public static final String CONTRIB;
-  public static final String LICENSE;
-  public static final String COPYRIGHT;
-  public static final String PROVIDER;
-  public static final File appFolder;
+
   private static final String userFolder;
   public static final String languagePrefix;
   // files
-  public static final String configFile;
   public static final String renamedFile;
-  private static final String logFile;
   public static final String languageFile;
   // Logger
   public static final Logger LOGGER;
   // Settings instance
   private static final UISettings instance = new UISettings();
   public final Settings coreInstance = Settings.getInstance();
-  // Settings xml conf instance
-  private final Document settingsDocument;
-  private final Node settingsNode;
-  private static final String appSettingsNodeName;
-  private static final String settingNodeName;
+
+  @Override
+  protected String getAppSettingsNodeName() {
+    return APPNAME_NOSPACE;
+  }
 
   public static enum ImageSize {
 
@@ -119,7 +86,7 @@ public final class UISettings {
     ASK
   }
 
-  public enum UISettingsProperty implements Settings.IProperty {
+  public enum UISettingsProperty implements XMLSettings.IProperty {
 
     // General
     selectFirstMedia(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
@@ -255,136 +222,14 @@ public final class UISettings {
    * Constructor
    */
   private UISettings() {
-    // Log init
-    try {
-      File logsRoot = new File(UISettings.appFolder, "logs");
-      if (!logsRoot.isDirectory() && !logsRoot.mkdirs()) {
-        throw new IOException("Failed to create logs dir: " + logsRoot);
-      }
-      FileHandler fh = new FileHandler(logsRoot.getAbsolutePath() + File.separator + logFile);
-      LOGGER.addHandler(fh);
-    } catch (SecurityException e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
-    } catch (IOException e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
-    }
-
-    // settingsDocument init
-    Document settingsDocument;
-    Node settingsNode;
-    try {
-      File confRoot = new File(UISettings.appFolder, "conf");
-      File file = new File(confRoot, configFile);
-      settingsDocument = URIRequest.getXmlDocument(file.toURI());
-      Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
-      if (!VERSION.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {
-        String sub = get(UISettingsProperty.scanSubfolder);
-        if ("true".equals(sub) || "false".equals(sub)) {
-          set(UISettingsProperty.scanSubfolder, Boolean.getBoolean(sub) ? Subfolder.BROWSE : Subfolder.ASK);
-        }
-      }
-      settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
-      // TODO convert if version are diff !
-    } catch (Exception ex) {
-      try {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder;
-        docBuilder = docFactory.newDocumentBuilder();
-
-        // root elements
-        settingsDocument = docBuilder.newDocument();
-        Element rootElement = settingsDocument.createElement(appSettingsNodeName);
-        settingsDocument.appendChild(rootElement);
-
-        Attr version = settingsDocument.createAttribute("Version");
-        version.setValue(VERSION);
-        rootElement.setAttributeNode(version);
-
-        // setting elements
-        settingsNode = settingsDocument.createElement(settingNodeName);
-        rootElement.appendChild(settingsNode);
-      } catch (ParserConfigurationException ex1) {
-        settingsDocument = null;
-        settingsNode = null;
-      }
-    }
-
-    this.settingsDocument = settingsDocument;
-    this.settingsNode = settingsNode;
+    super(LOGGER, APPNAME_NOSPACE + ".log", APPNAME_NOSPACE + ".conf", VERSION);
   }
 
-  private synchronized String get(UISettingsProperty key) {
-    String value = null;
-    if (key != null) {
-      Node found = XPathUtils.selectNode(key.name(), settingsNode);
-      if (found != null) {
-        value = XPathUtils.getTextContent(found);
-      }
 
-      if (value == null) {
-        value = key.getDefaultValue().toString();
-      }
-    }
-
-    return value;
-  }
-
-  private synchronized void set(UISettingsProperty key, Object value) throws IOException {
-    if (value != null && key != null) {
-      Object savedValue = key.getValue();
-
-      if (savedValue.toString().equals(value.toString())) {
-        return;
-      }
-
-      Node found = XPathUtils.selectNode(key.name(), this.settingsNode);
-      if (found == null) {
-        found = settingsDocument.createElement(key.name());
-        // param.appendChild(settingsDocument.createTextNode(value.toString()));
-        this.settingsNode.appendChild(found);
-      }
-      found.setTextContent(value.toString());
-      saveSetting();
-    }
-  }
-
-  public synchronized void clear() throws IOException {
-    LOGGER.log(Level.INFO, String.format("Clear UISettings"));
-    NodeList list = this.settingsNode.getChildNodes();
-    for (int i = 0; i < list.getLength(); i++) {
-      this.settingsNode.removeChild(list.item(i));
-    }
-    saveSetting();
+  @Override
+  public synchronized void clear() {
+    super.clear();
     coreInstance.clear();
-  }
-
-  /**
-   * Save setting
-   *
-   * @return True if setting was saved, False otherwise
-   */
-  private synchronized boolean saveSetting() throws IOException {
-    boolean saveSuccess;
-    try {
-      LOGGER.log(Level.INFO, String.format("Save configuration to %s", configFile));
-      File confRoot = new File(Settings.appFolder, "conf");
-      if (!confRoot.isDirectory() && !confRoot.mkdirs()) {
-        throw new IOException("Failed to create conf dir: " + confRoot);
-      }
-      try {
-        // write it to file
-        File confFile = new File(confRoot, configFile);
-        FileUtils.writeXmlFile(settingsDocument, confFile);
-        saveSuccess = true;
-      } catch (Exception e) {
-        LOGGER.log(Level.SEVERE, e.getMessage());
-        saveSuccess = false;
-      }
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, ex.getMessage());
-      saveSuccess = false;
-    }
-    return saveSuccess;
   }
 
   public boolean isSelectFirstMedia() {
@@ -538,7 +383,7 @@ public final class UISettings {
   public String getFileChooserPath() {
     return get(UISettingsProperty.fileChooserPath);
   }
-  
+
   public FileChooserViewType getFileChooserViewType() {
     return FileChooserViewType.valueOf(get(UISettingsProperty.fileChooserViewType));
   }

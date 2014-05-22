@@ -18,6 +18,7 @@
 package fr.free.movierenamer.utils;
 
 import java.io.File;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +98,29 @@ public final class ClassUtils {
       res.append("    ").append(ste.toString()).append("\n");
     }
     return res.toString();
+  }
+
+  /**
+   * Get generic class type argument
+   * @param <T>
+   * @param clazz 
+   * @param arg 
+   * @return Class 
+   */
+  public static <T> Class<T> getGenericSuperClassArg(Class clazz, int arg) {
+    Class<T> genericClazz = null;
+    Class superClazz = clazz;
+    int count = 0;
+    while(genericClazz == null && count < 10) {
+      try {
+        superClazz = superClazz.getSuperclass();
+        genericClazz = (Class<T>) ((ParameterizedType) superClazz.getGenericSuperclass()).getActualTypeArguments()[arg];
+      } catch (Exception ex) {
+      }
+      count++;
+    }
+
+    return genericClazz;
   }
 
   private ClassUtils() {

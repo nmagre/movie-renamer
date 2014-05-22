@@ -54,6 +54,7 @@ import java.net.PasswordAuthentication;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.simple.JSONArray;
 
 /**
  * Class URIRequest
@@ -145,6 +146,18 @@ public final class URIRequest {
 
   private static JSONObject getJsonDocument(Reader reader) {
     return (JSONObject) JSONValue.parse(reader);
+  }
+
+  public static JSONArray getJsonArrayDocument(URI uri, RequestProperty... properties) throws IOException {
+    return getJsonArrayDocument(openConnection(uri, properties));
+  }
+
+  private static JSONArray getJsonArrayDocument(URLConnection connection) throws IOException {
+    return getJsonArrayDocument(getReader(connection));
+  }
+
+  private static JSONArray getJsonArrayDocument(Reader reader) {
+    return (JSONArray) JSONValue.parse(reader);
   }
 
   private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {

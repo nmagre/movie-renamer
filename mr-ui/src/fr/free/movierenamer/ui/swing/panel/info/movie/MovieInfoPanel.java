@@ -22,14 +22,15 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextArea;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.ui.bean.UIEditor;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UICountry;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -46,7 +47,7 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
+public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
 
   private final int smallFieldSize = 4;
   private final int fieldSize = 10;
@@ -55,7 +56,7 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
   private final List<InfoProperty> excludeProperty = Arrays.asList(new InfoProperty[]{
     MovieProperty.overview,
     MovieProperty.posterPath,
-    MovieProperty.rating,
+    MediaProperty.rating,
     MovieProperty.budget,
     MovieProperty.votes,
     MovieProperty.releasedDate,
@@ -64,13 +65,13 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
     MovieProperty.certificationCode,
     MovieMultipleProperty.countries
   });// Will be added manually
-  private MovieInfo info;
+  private UIMovieInfo info;
 
   private enum InlineProperty {
 
     DATE(MovieProperty.releasedDate, MovieProperty.runtime),
     CERT(MovieProperty.certification, MovieProperty.certificationCode),
-    RATE(MovieProperty.rating, MovieProperty.votes, MovieProperty.budget);
+    RATE(MediaProperty.rating, MovieProperty.votes, MovieProperty.budget);
     private final InfoProperty[] properties;
 
     private InlineProperty(InfoProperty... properties) {
@@ -102,6 +103,14 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
     countryListModel = new DefaultListModel<>();
 
     int maxGridWith = InlineProperty.getMaxSize() * 3;// 3 -> Label + field + edit/cancel button
+
+    for (MediaProperty property : MediaProperty.values()) {
+      if (excludeProperty.contains(property)) {
+        continue;
+      }
+
+      createField(property, maxGridWith);
+    }
 
     for (MovieProperty property : MovieProperty.values()) {
       if (excludeProperty.contains(property)) {
@@ -154,7 +163,7 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
   }
 
   private void createField(InfoProperty property, int maxGridWith) {
-    UIEditor editor = new UIEditor(mr, new WebTextField(fieldSize), (MovieMultipleProperty) ((property instanceof MovieMultipleProperty) ? property : null));
+    UIEditor editor = new UIEditor(mr, new WebTextField(fieldSize), (MovieMultipleProperty) ((property instanceof MovieMultipleProperty) ? property : null));// FIXME
     createEditableField(i18nKey + property.name(), editor, maxGridWith);
     map.put(property, editor);
   }
@@ -167,8 +176,14 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
   }
 
   @Override
-  public MovieInfo getInfo() {
+  public UIMovieInfo getInfo() {
     if (info != null) {
+      for (MediaProperty property : MediaProperty.values()) {
+        if (map.containsKey(property)) {
+          info.set(property, map.get(property).getValue());
+        }
+      }
+
       for (MovieProperty property : MovieProperty.values()) {
         if (map.containsKey(property)) {
           info.set(property, map.get(property).getValue());
@@ -176,19 +191,35 @@ public class MovieInfoPanel extends InfoEditorPanel<MovieInfo> {
       }
 
       for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
-        if (map.containsKey(property)) {
+        if (property != MovieMultipleProperty.countries && map.containsKey(property)) {
           info.set(property, map.get(property).getValue());
         }
       }
+
+      String countries = "";
+      for (int i = 0; i < countryListModel.size(); i++) {
+        if (i > 0) {
+          countries += ", ";
+        }
+        countries += countryListModel.get(i).getName();
+      }
+      info.set(MovieMultipleProperty.countries, countries);
     }
 
     return info;
   }
 
   @Override
-  public void setInfo(MovieInfo info) {
+  public void setInfo(UIMovieInfo info) {
     try {
       this.info = info;
+
+      for (MediaProperty property : MediaProperty.values()) {
+        if (map.containsKey(property)) {
+          map.get(property).setValue(info.get(property));
+        }
+      }
+
       for (MovieProperty property : MovieProperty.values()) {
         if (map.containsKey(property)) {
           map.get(property).setValue(info.get(property));

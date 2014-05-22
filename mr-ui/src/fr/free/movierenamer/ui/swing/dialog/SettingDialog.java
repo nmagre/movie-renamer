@@ -25,16 +25,17 @@ import com.alee.laf.text.WebTextField;
 import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.Settings.IProperty;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
-import fr.free.movierenamer.settings.Settings.SettingsSubType;
-import fr.free.movierenamer.settings.Settings.SettingsType;
+import fr.free.movierenamer.settings.XMLSettings.IProperty;
+import fr.free.movierenamer.settings.XMLSettings.SettingsSubType;
+import fr.free.movierenamer.settings.XMLSettings.SettingsType;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UIEvent;
@@ -75,7 +76,7 @@ public class SettingDialog extends AbstractDialog {
   private static final long serialVersionUID = 1L;
   private final UISettings settings = UISettings.getInstance();
   private final Map<SettingsType, SettingPanelGen> panels;
-  private final List<Settings.IProperty> properties;
+  private final List<IProperty> properties;
 
   private static enum mainTabIcon {
 
@@ -224,13 +225,16 @@ public class SettingDialog extends AbstractDialog {
           @Override
           public ITestActionListener getActionListener() {
             if (info == null) {
+              Map<MediaProperty, String> mediaFields = new HashMap<>();
+              mediaFields.put(MediaProperty.rating, "8.7");
+              mediaFields.put(MediaProperty.title, "Matrix");
+
               Map<MovieInfo.MovieProperty, String> fields = new HashMap<>();
               fields.put(MovieInfo.MovieProperty.certificationCode, "R");
               fields.put(MovieInfo.MovieProperty.originalTitle, "The Matrix");
-              fields.put(MovieInfo.MovieProperty.rating, "8.7");
               fields.put(MovieInfo.MovieProperty.releasedDate, "1999");
               fields.put(MovieInfo.MovieProperty.runtime, "136");
-              fields.put(MovieInfo.MovieProperty.title, "Matrix");
+              //fields.put(MediaInfo.MediaProperty.title, "Matrix");
 
               Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new HashMap<>();
               List<String> genres = new ArrayList<>();
@@ -246,7 +250,7 @@ public class SettingDialog extends AbstractDialog {
 
               List<IdInfo> ids = new ArrayList<>();
               ids.add(new IdInfo(133093, ScrapperUtils.AvailableApiIds.IMDB));
-              info = new MovieInfo(ids, fields, multipleFields);
+              info = new MovieInfo(mediaFields, ids, fields, multipleFields);
 
               List<MediaAudio> audios = new ArrayList<>();
               MediaAudio audio = new MediaAudio(0);
@@ -477,7 +481,7 @@ public class SettingDialog extends AbstractDialog {
           IProperty property = field.getKey();
           String oldValue = property.getValue();
           if (field.getKey().getDefaultValue() instanceof Number) {
-            if (!NumberUtils.isNumeric(field.getValue().getText())) {
+            if (!NumberUtils.isNumeric(field.getValue().getText())) {// FIXME deprecated
               WebOptionPane.showMessageDialog(mr, i18n.getLanguage("error.nan", false, i18n.getLanguage("settings." + property.name().toLowerCase(), false)),
                       i18n.getLanguage("error.error", false), JOptionPane.ERROR_MESSAGE);
               return;

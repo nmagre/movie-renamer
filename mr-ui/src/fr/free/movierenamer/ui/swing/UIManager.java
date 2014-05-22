@@ -21,23 +21,28 @@ import com.alee.extended.image.DisplayType;
 import com.alee.extended.image.WebImage;
 import com.alee.laf.StyleConstants;
 import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;
-import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.Settings.SettingsProperty;
+import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.Main;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
+import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.dialog.AboutDialog;
 import fr.free.movierenamer.ui.swing.dialog.AbstractDialog;
 import fr.free.movierenamer.ui.swing.dialog.LoggerDialog;
+import fr.free.movierenamer.ui.swing.dialog.MediaInfoDownloadDialog;
 import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
@@ -45,11 +50,14 @@ import fr.free.movierenamer.ui.swing.panel.MoviePanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
 import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.LinearGradientPaint;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -61,9 +69,10 @@ import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
- * Class PanelManager
+ * Class UIManager
  *
  * @author Nicolas Magré
  */
@@ -74,7 +83,7 @@ public final class UIManager {
   private static LoggerDialog logDialog;
   private static ImagePanel imagePanel;
   private static final UISettings setting = UISettings.getInstance();
-  private static final Map<Settings.IProperty, WebCheckBox> checkboxs;
+  private static final Map<IProperty, WebCheckBox> checkboxs;
   private static final WebCheckBox nfoChk = new WebCheckBox();
   private static final WebCheckBox thumbChk = new WebCheckBox();
   private static final WebCheckBox fanartChk = new WebCheckBox();
@@ -87,13 +96,13 @@ public final class UIManager {
   //private static final List<JComponent> tvshowRenameSettingsCmp;
   static {
     checkboxs = new HashMap<>();
-    checkboxs.put(Settings.SettingsProperty.movieNfogenerate, nfoChk);
-    checkboxs.put(UISettings.UISettingsProperty.generateThumb, thumbChk);
-    checkboxs.put(UISettings.UISettingsProperty.generateFanart, fanartChk);
-    checkboxs.put(UISettings.UISettingsProperty.generateLogo, logoChk);
-    checkboxs.put(UISettings.UISettingsProperty.generateCdart, cdartChk);
-    checkboxs.put(UISettings.UISettingsProperty.generateClearart, clearartChk);
-    checkboxs.put(UISettings.UISettingsProperty.generateBanner, bannerChk);
+    checkboxs.put(SettingsProperty.movieNfogenerate, nfoChk);
+    checkboxs.put(UISettingsProperty.generateThumb, thumbChk);
+    checkboxs.put(UISettingsProperty.generateFanart, fanartChk);
+    checkboxs.put(UISettingsProperty.generateLogo, logoChk);
+    checkboxs.put(UISettingsProperty.generateCdart, cdartChk);
+    checkboxs.put(UISettingsProperty.generateClearart, clearartChk);
+    checkboxs.put(UISettingsProperty.generateBanner, bannerChk);
 
     movieRenameSettingsCmp = new ArrayList<>();
     movieRenameSettingsCmp.add(nfoChk);
@@ -144,13 +153,13 @@ public final class UIManager {
     bannerChk.setLanguage(i18n.getLanguageKey("image.banner"));
 
     // Set checkbox selected
-    for (Entry<Settings.IProperty, WebCheckBox> entry : checkboxs.entrySet()) {
+    for (Entry<IProperty, WebCheckBox> entry : checkboxs.entrySet()) {
       entry.getValue().setSelected(Boolean.parseBoolean(entry.getKey().getValue()));
     }
 
   }
 
-  public static void setCheckBox(Settings.IProperty property) {
+  public static void setCheckBox(IProperty property) {
     checkboxs.get(property).setSelected(Boolean.parseBoolean(property.getValue()));
   }
 
@@ -162,9 +171,9 @@ public final class UIManager {
     imagePanel.clearPanel();
   }
 
-  public static Map<UIMode, MediaPanel<? extends MediaInfo>> createMediaPanel(MovieRenamer mr) {
-    Map<UIMode, MediaPanel<? extends MediaInfo>> panels = new HashMap<>();
-    MediaPanel<? extends MediaInfo> panel;
+  public static Map<UIMode, MediaPanel<? extends UIMediaInfo>> createMediaPanel(MovieRenamer mr) {
+    Map<UIMode, MediaPanel<? extends UIMediaInfo>> panels = new HashMap<>();
+    MediaPanel<? extends UIMediaInfo> panel;
     for (UIMode mode : UIMode.values()) {
       switch (mode) {
         case MOVIEMODE:
@@ -206,7 +215,6 @@ public final class UIManager {
   public static void update(MovieRenamer mr, UIUpdate update) {
     String description = setting.coreInstance.getAppLanguage().equals(AppLanguages.fr) ? update.getDescfr() : update.getDescen();
     String str = "<html>" + i18n.getLanguage("dialog.updateAvailable", false, update.getUpdateVersion(), description).replace("\n", "<br>").replace("\\n", "<br>") + "<br><br></html>";
-    System.out.println(str);
     int n = WebOptionPane.showConfirmDialog(mr, str, UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
 
     if (n > 0) {
@@ -214,7 +222,7 @@ public final class UIManager {
     }
 
     String version = UISettings.getApplicationVersionNumber();
-    String updateDir = Settings.appFolder + File.separator + "update";
+    String updateDir = Settings.APPFOLDER + File.separator + "update";
     String installDir = "";
     try {
       installDir = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath();
@@ -230,8 +238,20 @@ public final class UIManager {
       String toExec[];
 
       if (setting.coreInstance.isProxyIsOn()) {
-        toExec = new String[]{javaBin, "-Dhttp.proxyHost=" + setting.coreInstance.getProxyUrl(),
-          "-Dhttp.proxyPort=" + setting.coreInstance.getProxyPort(), "-jar", jarFile.getPath(), version, installDir, updateDir};
+        String host = setting.coreInstance.isProxySocks() ? "-DsocksProxyHost" : "-Dhttp.proxyHost=";
+        String port = setting.coreInstance.isProxySocks() ? "-DsocksProxyPort" : "-Dhttp.proxyPort=";
+        String user = setting.coreInstance.getProxyUser();
+        String pass = new String(setting.coreInstance.getProxyPass());
+
+        if (user.length() > 0) {
+          toExec = new String[]{javaBin, host + setting.coreInstance.getProxyUrl(),
+            port + setting.coreInstance.getProxyPort(), "-Dhttp.proxyUser" + user, "-Dhttp.proxyPassword" + pass,
+            "-jar", jarFile.getPath(), version, installDir, updateDir};// FIXME really unsecure, password is visible in process list :-(
+        } else {
+          toExec = new String[]{javaBin, host + setting.coreInstance.getProxyUrl(),
+            port + setting.coreInstance.getProxyPort(), "-jar", jarFile.getPath(), version, installDir, updateDir};
+        }
+
       } else {
         toExec = new String[]{javaBin, "-jar", jarFile.getPath(), version, installDir, updateDir};
       }
@@ -297,6 +317,56 @@ public final class UIManager {
     }
 
     return null;
+  }
+
+  public static void startInitTimer(final MovieRenamer mr, final WebLabel mediainfoStatusLbl) {
+    // check for update timer
+    final Timer updateTimer = new Timer(3000, new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        CheckUpdateWorker updateWorker = new CheckUpdateWorker(mr, false);
+        updateWorker.execute();
+      }
+    });
+    updateTimer.setRepeats(false);
+
+    // Media info warning or download dialog (only for windows)
+    final Timer mediainfoTimer = new Timer(2500, new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (Settings.WINDOWS) {
+          new MediaInfoDownloadDialog(mr).setVisible(true);
+        } else {
+          UIUtils.showWarningNotification(i18n.getLanguage("error.mediaInfoNotInstalled", false));
+          // Start check update
+          if (setting.isCheckupdate()) {
+            updateTimer.start();
+          }
+        }
+
+      }
+    });
+
+    if (!Settings.MEDIAINFO) {
+      mediainfoStatusLbl.setLanguage(i18n.getLanguageKey("error.mediaInfoNotInstalled", false));
+      mediainfoStatusLbl.setIcon(ImageUtils.MEDIAWARN_16);
+
+      if (setting.isMediaInfoWarning()) {
+        mediainfoTimer.setRepeats(false);
+        mediainfoTimer.start();
+      } else {
+        // check for update
+        if (setting.isCheckupdate()) {
+          updateTimer.start();
+        }
+      }
+    } else {
+      // check for update
+      if (setting.isCheckupdate()) {
+        updateTimer.start();
+      }
+    }
+
   }
 
   private UIManager() {

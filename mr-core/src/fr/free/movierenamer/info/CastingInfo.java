@@ -103,6 +103,6 @@ public class CastingInfo extends Info {
 
   @Override
   public String toString() {
-    return fields.toString();
+    return getName();
   }
 }

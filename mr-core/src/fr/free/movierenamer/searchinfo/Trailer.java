@@ -27,13 +27,39 @@ import java.net.URL;
 public class Trailer extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
+  private String runtime;
+  private String providerName;
+  private URL thumb;
 
   protected Trailer() {
     // used by serializer
   }
 
-  public Trailer(String title, URL url) {
+  public Trailer(String title, String runtime, String providerName, URL thumb, URL url) {
     super(title, null, url);
+    this.runtime = runtime;
+    this.providerName = providerName;
+    this.thumb = thumb;
+  }
+
+  public String getRuntime() {
+    return runtime;
+  }
+
+  public URL getThumb() {
+    return thumb;
+  }
+
+  public String getProviderName() {
+    return providerName;
+  }
+
+  @Override
+  public String toString() {
+    if (runtime != null) {
+      return title + " (" + runtime + ") " + thumb + " : " + url;
+    }
+    return title + " " + thumb + " : " + url;
   }
 
 }

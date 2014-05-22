@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.swing.dialog;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.XMLSettings;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -45,7 +46,7 @@ public class SettingsHelpDialog extends AbstractDialog {
    * @param subType
    * @throws java.net.MalformedURLException
    */
-  public SettingsHelpDialog(MovieRenamer mr, Settings.SettingsType type, Settings.SettingsSubType subType) throws MalformedURLException {
+  public SettingsHelpDialog(MovieRenamer mr, XMLSettings.SettingsType type, XMLSettings.SettingsSubType subType) throws MalformedURLException {
     super(mr, i18n.getLanguageKey("dialog.help", false));
 
     LocaleUtils.AppLanguages lng = Settings.getInstance().getAppLanguage();

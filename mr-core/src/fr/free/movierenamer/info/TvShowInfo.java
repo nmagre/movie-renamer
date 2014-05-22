@@ -40,7 +40,7 @@ public class TvShowInfo extends MediaInfo {
 
   private static final long serialVersionUID = 1L;
 
-  public static enum TvShowProperty {
+  public static enum TvShowProperty implements InfoProperty {// TODO
 
     id,
     IMDB_ID,
@@ -53,21 +53,43 @@ public class TvShowInfo extends MediaInfo {
     runtime,
     name,
     status,
-    posterPath
+    posterPath;
+
+    private final boolean languageDepends;
+
+    private TvShowProperty() {
+      languageDepends = false;
+    }
+
+    private TvShowProperty(final boolean languageDepends) {
+      this.languageDepends = languageDepends;
+    }
+
+    @Override
+    public boolean isLanguageDepends() {
+      return languageDepends;
+    }
   }
   protected final Map<TvShowProperty, String> fields;
 
   protected TvShowInfo() {
     // used by serializer
+    super(null, null);
     this.fields = null;
   }
 
-  public TvShowInfo(final Map<TvShowProperty, String> fields) {
+  public TvShowInfo(final Map<TvShowProperty, String> fields, List<IdInfo> idsInfo) {
+    super(null, null);// FIXME
     this.fields = (fields != null) ? new EnumMap<TvShowProperty, String>(fields) : new EnumMap<TvShowProperty, String>(TvShowProperty.class);
   }
 
   private String get(final TvShowProperty key) {
     return (fields != null) ? fields.get(key) : null;
+  }
+
+  @Override
+  protected void unsetUnsupportedLanguageInfo() {// TODO
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
   @Override

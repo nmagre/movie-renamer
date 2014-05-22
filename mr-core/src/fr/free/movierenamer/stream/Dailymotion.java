@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.free.movierenamer.trailerinfo;
+package fr.free.movierenamer.stream;
 
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
@@ -18,13 +18,13 @@ import java.util.regex.Pattern;
  */
 public class Dailymotion extends AbstractStream {
 
-  private final Pattern urlPattern = Pattern.compile("http://(www\\.)?dailymotion\\.com/((embed/)?video/[a-z0-9\\-_]+|swf(/video)?/[a-zA-Z0-9]+)");
-  private final Pattern videoSourcePattern = Pattern.compile("\"sequence\":\"([^<>\"]*?)\"");
-  private final String host = "www.dailymotion.com";
-  private final String[] videoQuality = new String[]{"hd1080URL", "hd720URL", "hqURL", "sdURL", "ldURL"};
+  private static final Pattern urlPattern = Pattern.compile("http://(www\\.)?dailymotion\\.com/((embed/)?video/[a-z0-9\\-_]+|swf(/video)?/[a-zA-Z0-9]+)");
+  private static final Pattern videoSourcePattern = Pattern.compile("\"sequence\":\"([^<>\"]*?)\"");
+  private static final String host = "www.dailymotion.com";
+  private static final String[] videoQuality = new String[]{"hd1080URL", "hd720URL", "hqURL", "sdURL", "ldURL"};
 
   @Override
-  protected Map<Quality, URL> getLinks(URL url) throws Exception {
+  public Map<Quality, URL> getLinks(URL url) throws Exception {
     String html = URIRequest.getDocumentContent(url.toURI());
     if (html.contains("Dailymotion – 404 Not Found")) {
       return null;

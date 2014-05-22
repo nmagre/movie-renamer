@@ -18,7 +18,6 @@
 package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
-import fr.free.movierenamer.scrapper.impl.movie.AnidbScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
@@ -39,6 +38,7 @@ import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
 import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
+import fr.free.movierenamer.scrapper.impl.movie.TracktScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
@@ -69,6 +69,7 @@ public class ScrapperManager {
     getScrapper(UniversalScrapper.class);
     getScrapper(RottenTomatoes.class);
     getScrapper(KinopoiskScrapper.class);
+    getScrapper(TracktScrapper.class);
     // tvshow
     getScrapper(TheTVDBScrapper.class);
     getScrapper(TvRageScrapper.class);
@@ -122,7 +123,6 @@ public class ScrapperManager {
 //    return scrapper;
 //  }
   public static List<MovieScrapper> getMovieScrapperList() {
-    Settings settings = Settings.getInstance();
     List<MovieScrapper> toRet = new ArrayList<MovieScrapper>();
     for (Class<?> clazz : map.keySet()) {
       if (MovieScrapper.class.isAssignableFrom(clazz)) {
@@ -133,7 +133,6 @@ public class ScrapperManager {
   }
 
   public static List<MovieScrapper> getMovieScrapperList(AvailableLanguages language) {
-    Settings settings = Settings.getInstance();
     List<MovieScrapper> toRet = new ArrayList<MovieScrapper>();
     for (Class<?> clazz : map.keySet()) {
       if (MovieScrapper.class.isAssignableFrom(clazz) && ((MovieScrapper) map.get(clazz)).hasSupportedLanguage(language)) {

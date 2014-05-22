@@ -20,6 +20,7 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
@@ -128,28 +129,28 @@ public class KinopoiskScrapper extends MovieScrapper {
     URL searchUrl = new URL("http", host, "/film/" + movie.getMediaId());
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
+    final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
     Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
     List<String> genres = new ArrayList<String>();
     List<String> countries = new ArrayList<String>();
     List<String> studios = new ArrayList<String>();
 
+    String title = movie.getName();
     Node titleNode = XPathUtils.selectNode("//H1[@class='moviename-big'][@itemprop='name']", dom);
     if (titleNode != null) {
-      fields.put(MovieProperty.title, titleNode.getTextContent());
-    } else {
-      fields.put(MovieProperty.title, movie.getName());
+      title = titleNode.getTextContent();
     }
+    mediaFields.put(MediaInfo.MediaProperty.title, title);
 
     titleNode = XPathUtils.selectNode("//SPAN[@itemprop='alternativeHeadline']", dom);
     if (titleNode != null) {
       fields.put(MovieProperty.originalTitle, titleNode.getTextContent());
     } else {
-      fields.put(MovieProperty.title, movie.getOriginalTitle());
+      fields.put(MovieProperty.originalTitle, movie.getOriginalTitle());
     }
 
     List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='info']//TR", dom);
-
     for (Node node : nodes) {
       String infoname = XPathUtils.selectString("TD[@class='type']", node);
       if (infoname == null || infoname.equals("")) {
@@ -168,6 +169,7 @@ public class KinopoiskScrapper extends MovieScrapper {
           String syear = XPathUtils.selectString("TD//A", node);
           if (syear != null && NumberUtils.isNumeric(syear)) {
             fields.put(MovieProperty.releasedDate, syear);
+            mediaFields.put(MediaInfo.MediaProperty.year, syear);
           }
           break;
         case страна:// Country
@@ -235,8 +237,8 @@ public class KinopoiskScrapper extends MovieScrapper {
     if (rateNode != null) {
       String rate = rateNode.getTextContent().trim();
       try {
-        double rating = Double.parseDouble(rate);
-        fields.put(MovieProperty.rating, "" + rating);
+        Double rating = Double.parseDouble(rate);
+        mediaFields.put(MediaInfo.MediaProperty.rating, "" + rating);
       } catch (Exception ex) {
       }
     }
@@ -271,7 +273,7 @@ public class KinopoiskScrapper extends MovieScrapper {
     multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
     multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(ids, fields, multipleFields);
+    MovieInfo movieInfo = new MovieInfo(mediaFields, ids, fields, multipleFields);
     return movieInfo;
   }
 

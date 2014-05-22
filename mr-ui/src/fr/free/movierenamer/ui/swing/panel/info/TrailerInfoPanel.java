@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 duffy
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,44 +16,61 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
-import fr.free.movierenamer.info.MovieInfo;
-import fr.free.movierenamer.info.TrailerInfo;
-import fr.free.movierenamer.scrapper.impl.trailer.TrailerAddictScrapper;
-import fr.free.movierenamer.searchinfo.Trailer;
+import fr.free.movierenamer.stream.AbstractStream;
+import fr.free.movierenamer.stream.VideoDetective;
+import fr.free.movierenamer.stream.Youtube;
+import fr.free.movierenamer.ui.bean.UITrailer;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.worker.WorkerManager;
+import java.awt.Dimension;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
+ * Class TrailerInfoPanel
  *
- * @author duffy
+ * @author Nicolas Magré
  */
-public class TrailerInfoPanel extends InfoPanel<MovieInfo> {
+public class TrailerInfoPanel extends InfoPanel<UITrailer> {
 
-  private final DefaultListModel<Trailer> listModel;
-  private TrailerInfo tinfo;
+  private final ImageListModel<UITrailer> listModel;
+  private final List<UITrailer> trailers;
+  private static final Dimension imageSize = new Dimension(160, 120);
 
   /**
    * Creates new form TrailerPanel
    */
   public TrailerInfoPanel() {
-    listModel = new DefaultListModel();
+    trailers = new ArrayList<>();
+    listModel = new ImageListModel();
     initComponents();
     trailerList.setModel(listModel);
+    trailerList.setCellRenderer(UIUtils.trailerListRenderer);
+    trailerList.setVisibleRowCount(0);
     trailerList.addListSelectionListener(createTrailerListListener());
   }
 
-  public void addTrailers(List<Trailer> trailers) {
-    for (Trailer trailer : trailers) {
-      listModel.addElement(trailer);
+  public void addTrailers(List<UITrailer> trailers) {// FIXME nimp a virer
+    for (UITrailer trailer : trailers) {
+      listModel.add(trailer);
+      this.trailers.add(trailer);
     }
+
+    // Avoid reference
+    List<UITrailer> uitrailers = new ArrayList<>(this.trailers);
+    // Get images
+    WorkerManager.fetchImages(uitrailers, listModel, imageSize, ImageUtils.UNKNOWN, true);
 
     if (!listModel.isEmpty()) {
       trailerList.setSelectedIndex(0);
@@ -65,13 +82,36 @@ public class TrailerInfoPanel extends InfoPanel<MovieInfo> {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         if (!lse.getValueIsAdjusting()) {
-          TrailerAddictScrapper scrapper = new TrailerAddictScrapper();
-          try {
-            tinfo = scrapper.fetchTrailerInfo((Trailer) trailerList.getSelectedValue());
+          UITrailer ctrailer = (UITrailer) trailerList.getSelectedValue();
+          String str = "";
+          if (ctrailer.getProviderName().equals("Youtube")) {
+            Youtube yt = new Youtube();
+            try {
+              Map<AbstractStream.Quality, URL> links = yt.getLinks(ctrailer.getUrl().toURL());
 
-          } catch (Exception ex) {
-            Logger.getLogger(TrailerInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+              for (Entry<AbstractStream.Quality, URL> entry : links.entrySet()) {
+                str += entry.getKey() + " : " + entry.getValue();
+              }
+            } catch (MalformedURLException ex) {
+              Logger.getLogger(TrailerInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+              Logger.getLogger(TrailerInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          } else {
+            VideoDetective vd = new VideoDetective();
+            try {
+              Map<AbstractStream.Quality, URL> links = vd.getLinks(ctrailer.getUrl().toURL());
+
+              for (Entry<AbstractStream.Quality, URL> entry : links.entrySet()) {
+                str += entry.getKey() + " : " + entry.getValue();
+              }
+            } catch (MalformedURLException ex) {
+              Logger.getLogger(TrailerInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+              Logger.getLogger(TrailerInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
           }
+          jTextArea1.setText(str);
         }
       }
     };
@@ -79,7 +119,7 @@ public class TrailerInfoPanel extends InfoPanel<MovieInfo> {
 
   @Override
   public Icon getIcon() {
-    return ImageUtils.MOVIE_16;
+    return ImageUtils.TRAILER_16;
   }
 
   @Override
@@ -90,15 +130,17 @@ public class TrailerInfoPanel extends InfoPanel<MovieInfo> {
   @Override
   public void clear() {
     listModel.clear();
+    trailers.clear();
+    jTextArea1.setText("");
   }
 
   @Override
-  public void setInfo(MovieInfo info) {
+  public void setInfo(UITrailer info) {// TODO
 
   }
 
   @Override
-  public MovieInfo getInfo() {
+  public UITrailer getInfo() {
     return null;
   }
 
@@ -118,17 +160,17 @@ public class TrailerInfoPanel extends InfoPanel<MovieInfo> {
 
     jScrollPane1 = new javax.swing.JScrollPane();
     trailerList = new com.alee.laf.list.WebList();
-    webButton1 = new com.alee.laf.button.WebButton();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    jTextArea1 = new javax.swing.JTextArea();
 
     trailerList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    trailerList.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
+    trailerList.setVisibleRowCount(2);
     jScrollPane1.setViewportView(trailerList);
 
-    webButton1.setText("Play");
-    webButton1.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        webButton1ActionPerformed(evt);
-      }
-    });
+    jTextArea1.setColumns(20);
+    jTextArea1.setRows(5);
+    jScrollPane2.setViewportView(jTextArea1);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -136,34 +178,27 @@ public class TrailerInfoPanel extends InfoPanel<MovieInfo> {
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(266, Short.MAX_VALUE))
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+        .addGap(18, 18, 18)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE))
+        .addContainerGap(87, Short.MAX_VALUE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+          .addComponent(jScrollPane1))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
 
-  private void webButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webButton1ActionPerformed
-    if (tinfo != null && tinfo.getStreamUrl() != null) {
-
-    }
-  }//GEN-LAST:event_webButton1ActionPerformed
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JTextArea jTextArea1;
   private com.alee.laf.list.WebList trailerList;
-  private com.alee.laf.button.WebButton webButton1;
   // End of variables declaration//GEN-END:variables
 
 }

@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import javax.swing.DefaultComboBoxModel;
@@ -39,10 +40,10 @@ public enum UIMode {
   private final String titleMode;
   private final ImageIcon icon;
   private final DefaultComboBoxModel<UIScraper> scrapperModel = new DefaultComboBoxModel<>();
-  private final Settings.IProperty[] renameOptions;
+  private final IProperty[] renameOptions;
   private String fileFormat;
 
-  private UIMode(String title, String titleMode, FileInfo.MediaType mediaType, String imgName, Settings.IProperty... renameOptions) {
+  private UIMode(String title, String titleMode, FileInfo.MediaType mediaType, String imgName, IProperty... renameOptions) {
     this.title = title;
     this.titleMode = titleMode;
     this.mediaType = mediaType;

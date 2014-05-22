@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ public final class WorkerManager {
 
   public final static void stopRenameThread() {
     renameQueue.clear();
-    if (!renameThread.isAlive()) {
+    if (renameThread.isAlive()) {
       renameThread.interrupt();
     }
   }

@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * @author Nicolas Magré
  */
-public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
+public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
 
   private final int nbStar = 5;
   private final WebPanel starPanel;
@@ -46,7 +46,7 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
    * @param panels
    */
   @SafeVarargs
-  protected VideoPanel(InfoPanel<T>... panels) {
+  protected VideoPanel(InfoPanel... panels) {
     super();
     initComponents();
 
@@ -59,11 +59,10 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
       stars.add(label);
       starPanel.add(stars.get(i));
     }
-
     mainTb.addToEnd(starPanel);
 
-    Map<InfoPanel.PanelType, InfoPanel<T>> mediaPanels = new LinkedHashMap<>();
-    for (InfoPanel<T> panel : panels) {
+    Map<InfoPanel.PanelType, InfoPanel> mediaPanels = new LinkedHashMap<>();
+    for (InfoPanel panel : panels) {
       mediaPanels.put(panel.getType(), panel);
     }
     createPanel(infoPanels, mediaPanels);
@@ -83,8 +82,14 @@ public abstract class VideoPanel<T extends MediaInfo> extends MediaPanel<T> {
 
   @Override
   public void addInfo(T info) {
-    for (Map.Entry<InfoPanel.PanelType, InfoPanel<T>> entry : panels.entrySet()) {
-      entry.getValue().setInfo(info);
+    InfoPanel<T> panel = panels.get(InfoPanel.PanelType.INFO);
+    if (panel != null) {
+      panel.setInfo(info);
+    }
+
+    //panel = panels.get(InfoPanel.PanelType.CASTING_INFO);
+    if (panel != null) {
+      //panel.setInfo(info);
     }
 
     mediaTitleLbl.setText(getTitle(info));

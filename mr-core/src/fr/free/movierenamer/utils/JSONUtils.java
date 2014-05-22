@@ -123,6 +123,7 @@ public final class JSONUtils {
         if (array == null) {
           return null;
         }
+        
         return (JSONObject) ((JSONArray) array).get(index);
       }
 

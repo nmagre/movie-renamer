@@ -20,7 +20,6 @@ package fr.free.movierenamer.ui.bean;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.utils.ImageUtils;
-import java.awt.Dimension;
 import java.net.URI;
 import javax.swing.Icon;
 
@@ -48,6 +47,10 @@ public class UIPersonImage implements IImage {
   public String getName() {
     return person.getName();
   }
+  
+  public String getJob() {
+    return person.getJob();
+  }
 
   public CastingInfo getInfo() {
     return person;
@@ -70,7 +73,7 @@ public class UIPersonImage implements IImage {
 
   @Override
   public int getId() {
-    String id = getName() + person.getCharacter() + ((person != null) ? person.getId() : -1);
+    String id = getName() + person.getCharacter() + ((person != null) ? person.getId() : -1);// FIXME
     return id.hashCode();
   }
 

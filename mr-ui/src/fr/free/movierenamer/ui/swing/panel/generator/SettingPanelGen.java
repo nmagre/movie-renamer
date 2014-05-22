@@ -35,7 +35,7 @@ import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.Settings.IProperty;
+import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;

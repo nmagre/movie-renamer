@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.free.movierenamer.searchinfo;
 
@@ -27,17 +27,17 @@ import java.util.Arrays;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class Movie extends Media {
+public class Movie extends Video {
 
   private static final long serialVersionUID = 1L;
-  protected IdInfo imdbId;
 
   protected Movie() {
     // used by serializer
+    super();
   }
 
   public Movie(IdInfo imdbId, IdInfo id, String title, String originalTitle, URL thumb, int year) {
-    super(imdbId, id, title, originalTitle, thumb, year);
+    super(imdbId, id != null ? id : imdbId, title, originalTitle, thumb, year);
   }
 
   @Override
@@ -48,7 +48,7 @@ public class Movie extends Media {
         return true;
       }
 
-      if (imdbId != null && imdbId.equals(other.getImdbId())) {
+      if (imdbIdInfo != null && imdbIdInfo.equals(other.getImdbId())) {
         return true;
       }
 
@@ -71,9 +71,6 @@ public class Movie extends Media {
       return super.toString() + String.format(" (%s:%d)", idInfo.getIdType().name(), idInfo.getId());
     }
 
-    if (imdbId != null && imdbId.getId() > 0) {
-      return super.toString() + String.format(" (%s:%d)", imdbId.getIdType().name(), imdbId.getId());
-    }
     return super.toString();
   }
 }

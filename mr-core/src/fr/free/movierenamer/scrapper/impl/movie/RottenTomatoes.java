@@ -19,10 +19,12 @@ package fr.free.movierenamer.scrapper.impl.movie;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
@@ -183,6 +185,7 @@ public class RottenTomatoes extends MovieScrapper {
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + ".json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
+    final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
     Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
 
@@ -195,8 +198,8 @@ public class RottenTomatoes extends MovieScrapper {
         originaleTitle = StringUtils.removeBrackets(title);
       }
     }
+    mediaFields.put(MediaInfo.MediaProperty.title, title);
 
-    fields.put(MovieInfo.MovieProperty.title, title);
     if (originaleTitle != null) {
       fields.put(MovieInfo.MovieProperty.originalTitle, originaleTitle);
     }
@@ -208,14 +211,20 @@ public class RottenTomatoes extends MovieScrapper {
     JSONObject jobject = JSONUtils.selectObject("release_dates", json);
     if (jobject != null) {
       String releaseDate = JSONUtils.selectString("theater", jobject);
-      if (releaseDate == null) {
-        releaseDate = JSONUtils.selectString("dvd", jobject);
+      releaseDate = releaseDate == null ? JSONUtils.selectString("dvd", jobject) : releaseDate;
+      
+      if(releaseDate != null) {
+        fields.put(MovieInfo.MovieProperty.releasedDate, releaseDate);
+        mediaFields.put(MediaInfo.MediaProperty.year, releaseDate);
       }
-      fields.put(MovieInfo.MovieProperty.releasedDate, releaseDate != null ? releaseDate : "");
+      
     }
 
     jobject = JSONUtils.selectObject("ratings", json);
-    fields.put(MovieInfo.MovieProperty.rating, jobject != null ? "" + (JSONUtils.selectInteger("audience_score", jobject) / 10) : "");
+    if (jobject != null) {
+      Double rating = JSONUtils.selectInteger("audience_score", jobject).doubleValue() / 10;
+      mediaFields.put(MediaInfo.MediaProperty.rating, "" + rating);
+    }
 
     String mpaa = JSONUtils.selectString("mpaa_rating", json);
     if (mpaa != null) {
@@ -249,8 +258,7 @@ public class RottenTomatoes extends MovieScrapper {
     multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
     multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(ids, fields, multipleFields);
-    return movieInfo;
+    return new MovieInfo(mediaFields, ids, fields, multipleFields);
   }
 
   @Override

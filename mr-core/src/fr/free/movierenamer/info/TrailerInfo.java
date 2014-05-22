@@ -17,7 +17,11 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.utils.Date;
+import java.net.URI;
 import java.net.URL;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Class TrailerInfo
@@ -26,32 +30,91 @@ import java.net.URL;
  */
 public class TrailerInfo extends Info {
 
-  private final String title;
-  private final String description;
-  private final URL thumb;
-  private final URL streamUrl;
+  protected final Map<TrailerProperty, String> fields;
 
-  public TrailerInfo(final String title, final String description, final URL thumb, final URL streamUrl) {
-    this.title = title;
-    this.description = description;
-    this.thumb = thumb;
-    this.streamUrl = streamUrl;
+  public static enum TrailerProperty {
+
+    title,
+    overview,
+    url,
+    streamUrl,
+    releasedDate,
+    rating,
+    posterPath,
+    runtime,
+    provider;
+  }
+
+  public TrailerInfo(Map<TrailerProperty, String> fields) {
+    this.fields = fields != null ? fields : new EnumMap<TrailerProperty, String>(TrailerProperty.class);
+  }
+
+  public String get(final TrailerProperty key) {
+    return (fields != null) ? fields.get(key) : null;
+  }
+
+  public void set(final TrailerProperty key, final String value) {
+    fields.put((TrailerProperty) key, value);
   }
 
   public String getTitle() {
-    return title;
+    return get(TrailerProperty.title);
   }
 
-  public String getDescription() {
-    return description;
+  public String getOverview() {
+    return get(TrailerProperty.overview);
   }
 
-  public URL getThumb() {
-    return thumb;
+  public URI getUrl() {
+    try {
+      return new URL(get(TrailerProperty.url)).toURI();
+    } catch (Exception e) {
+    }
+    return null;
   }
 
-  public URL getStreamUrl() {
-    return streamUrl;
+  public URI getPosterPath() {
+    try {
+      return new URL(get(TrailerProperty.posterPath)).toURI();
+    } catch (Exception e) {
+    }
+    return null;
   }
 
+  public URI getStreamUrl() {
+    try {
+      return new URL(get(TrailerProperty.streamUrl)).toURI();
+    } catch (Exception e) {
+    }
+    return null;
+  }
+
+  public Date getReleasedDate() {
+    try {
+      return Date.parse(get(TrailerProperty.releasedDate), "yyyy-MM-dd");
+    } catch (Exception e) {
+    }
+    return null;
+  }
+
+  public Double getRating() {
+    try {
+      return new Double(get(TrailerProperty.rating));
+    } catch (Exception e) {
+    }
+    return null;
+  }
+
+  public String getRuntime() {
+    return get(TrailerProperty.runtime);
+  }
+
+  public String getProvider() {
+    return get(TrailerProperty.provider);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s", fields.toString());
+  }
 }

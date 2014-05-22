@@ -67,7 +67,7 @@ public class Renamer {
     // renamed file
     Document renamedDocument;
     try {
-      File file = new File(Settings.appFolder, renamedFileName);
+      File file = new File(Settings.APPFOLDER, renamedFileName);
       renamedDocument = URIRequest.getXmlDocument(file.toURI());
     } catch (Exception ex) {
       try {
@@ -97,7 +97,7 @@ public class Renamer {
     Settings.LOGGER.log(Level.INFO, String.format("Save renamed files to %s", renamedFileName));
     try {
       // write it to file
-      File renamedFile = new File(Settings.appFolder, renamedFileName);
+      File renamedFile = new File(Settings.APPFOLDER, renamedFileName);
       FileUtils.writeXmlFile(renamedDocument, renamedFile);
       saveSuccess = true;
     } catch (Exception e) {

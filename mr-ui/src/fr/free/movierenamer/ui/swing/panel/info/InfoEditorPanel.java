@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,12 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
-import fr.free.movierenamer.info.Info;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UIEditor;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import java.awt.GridBagConstraints;
 import java.util.HashMap;
@@ -41,7 +39,7 @@ import javax.swing.JScrollPane;
  *
  * @author Nicolas Magré
  */
-public abstract class InfoEditorPanel<T extends Info> extends InfoPanel<T> {
+public abstract class InfoEditorPanel<T> extends InfoPanel<T> {
 
   protected Map<MediaInfo.InfoProperty, UIEditor> map;
   protected final MovieRenamer mr;

@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import static fr.free.movierenamer.info.ImageInfo.ImageProperty.url;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.datatransfer.DataFlavor;
@@ -29,7 +28,6 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -67,11 +65,11 @@ public abstract class DragAndDrop implements DropTargetListener {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void drop(DropTargetDropEvent evt) {// FIXME put this in a thread and do not block EDT
+  public void drop(DropTargetDropEvent evt) {
 
-    // We block the UI thread (EDT) during file process to avoid any other operation
-    // This is the only case where it's acceptable to do that
+    //FIXME ? We block the UI thread (EDT) during file process to avoid any other operation
     List<File> files = new ArrayList<>();
+    List<URL> urls = new ArrayList<>();
 
     try {
       mr.setCursor(MovieRenamer.hourglassCursor);
@@ -90,13 +88,12 @@ public abstract class DragAndDrop implements DropTargetListener {
             file = file.substring(0, file.length() - 1);
             files.add(new File(file));
           } else if (file.startsWith("http") || file.startsWith("www")) {
-            File f;
+            
             try {
               URL url = new URL(file);
-              f = new File(url.toExternalForm());
-              files.add(f);
+              urls.add(url);
             } catch (Exception e) {
-
+              // don't care ?
             }
 
           }
@@ -106,7 +103,7 @@ public abstract class DragAndDrop implements DropTargetListener {
         files.addAll((List<File>) data.getTransferData(DataFlavor.javaFileListFlavor));
       }
 
-      getFiles(files);
+      getFiles(files, urls);
 
     } catch (UnsupportedFlavorException | IOException ex) {
       UISettings.LOGGER.log(Level.SEVERE, null, ex);
@@ -116,5 +113,5 @@ public abstract class DragAndDrop implements DropTargetListener {
     }
   }
 
-  public abstract void getFiles(List<File> files);
+  public abstract void getFiles(List<File> files, List<URL> urls);
 }

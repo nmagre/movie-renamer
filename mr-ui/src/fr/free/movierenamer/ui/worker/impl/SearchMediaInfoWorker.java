@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,24 +17,18 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.VideoInfo;
 import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.UIPersonImage;
+import fr.free.movierenamer.ui.bean.UIMediaInfo;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
-import fr.free.movierenamer.ui.swing.panel.info.movie.MovieCastingInfoPanel;
-import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
-import fr.free.movierenamer.ui.worker.WorkerManager;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class SearchMediaInfosWorker
@@ -42,7 +36,7 @@ import java.util.List;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaInfoWorker extends Worker<MediaInfo> {
+public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
 
   private final MediaScrapper<Media, MediaInfo> scrapper;
   private final UISearchResult searchResult;
@@ -61,20 +55,29 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
   }
 
   @Override
-  public MediaInfo executeInBackground() throws Exception {
-    MediaInfo info = null;
+  public UIMediaInfo executeInBackground() throws Exception {
+    UIMediaInfo info = null;
     if (searchResult != null && scrapper != null) {
       Media media = searchResult.getSearchResult();
-      info = scrapper.getInfo(media);
-      FileInfo fileInfo = mr.getFile().getFileInfo();
-      info.setMediaTag(fileInfo.getMediaTag());
+      MediaInfo inf = scrapper.getInfo(media);
+      
+      if (inf instanceof VideoInfo) {
+        FileInfo fileInfo = mr.getFile().getFileInfo();
+        ((VideoInfo) inf).setMediaTag(fileInfo.getMediaTag());
+      }
+
+      if (inf instanceof MovieInfo) {
+        info = new UIMovieInfo((MovieInfo) inf);
+      }
+
     }
+
     return info;
   }
 
   @Override
   protected void workerDone() throws Exception {
-    MediaInfo info = get();
+    UIMediaInfo info = get();
 
     // Search info failed, we let the user try again by clearing selection
     if (info == null) {
@@ -82,7 +85,7 @@ public class SearchMediaInfoWorker extends Worker<MediaInfo> {
       return;
     }
 
-    MediaPanel<MediaInfo> mediaPanel = (MediaPanel<MediaInfo>) mr.getMediaPanel();
+    MediaPanel mediaPanel = mr.getMediaPanel();
     if (mediaPanel != null) {
       mediaPanel.setInfo(info);
     }

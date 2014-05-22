@@ -25,7 +25,6 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
-import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -124,7 +123,7 @@ public class UISearchResult extends Sorter.ISort implements IImage {
     if (showId) {
       IdInfo id = searchResult.getMediaId();
       if (id == null) {
-        id = searchResult.getImdbId();
+       // id = searchResult.getImdbId();
       }
       toString += " (id:" + id + ")";
     }
@@ -139,7 +138,7 @@ public class UISearchResult extends Sorter.ISort implements IImage {
       return id.getId();
     }
 
-    id = searchResult.getImdbId();
+    //id = searchResult.getImdbId();
     if (id != null) {
       return id.getId();
     }

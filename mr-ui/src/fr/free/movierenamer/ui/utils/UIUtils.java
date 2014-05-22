@@ -22,7 +22,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
-import com.alee.laf.rootpane.WebFrame;
 import com.alee.managers.hotkey.ButtonHotkeyRunnable;
 import com.alee.managers.hotkey.HotkeyData;
 import com.alee.managers.hotkey.HotkeyManager;
@@ -41,10 +40,12 @@ import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.i18n.I18n;
 import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;
+import fr.free.movierenamer.ui.swing.renderer.TrailerListRenderer;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -71,6 +72,7 @@ public final class UIUtils {
   public static final Dimension listImageSize = new Dimension(45, 70);
   public static final I18n i18n = new I18n("main");
   public static final IconListRenderer<IIconList> iconListRenderer = new IconListRenderer<>();
+  public static final TrailerListRenderer trailerListRenderer = new TrailerListRenderer();
   public static final Comparator<UIFile> groupFileComparator = new Comparator<UIFile>() {
     @Override
     public int compare(UIFile stringOne, UIFile stringTwo) {
@@ -163,17 +165,18 @@ public final class UIUtils {
    */
   public static int getScreen(Window frame) {
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsConfiguration fge = frame.getGraphicsConfiguration();
+    GraphicsDevice fs = fge.getDevice();
     GraphicsDevice[] gds = ge.getScreenDevices();
+
     int i = 0;
     for (GraphicsDevice gd : gds) {
-      Point p = frame.getLocation();
-      p.x += 1;
-      p.y += 1;
-      if (gd.getDefaultConfiguration().getBounds().contains(p)) {
+      if (gd.equals(fs)) {
         return i;
       }
       i++;
     }
+
     return 0;
   }
 
@@ -370,6 +373,28 @@ public final class UIUtils {
 
     f = new FontUIResource(boldFont);
     UIManager.put("Button.font", f);
+  }
+
+  /**
+   * Get selected object (IIconList) in list
+   *
+   * @param <T> IIconList
+   * @param list List
+   * @return Selected object (IIconList) or null
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends IIconList> T getSelectedElement(WebList list) {
+    T current = null;
+    if (list != null) {
+      Object obj = list.getSelectedValue();
+      if (obj != null) {
+        if (obj instanceof IIconList) {
+          current = (T) obj;
+          list.ensureIndexIsVisible(list.getSelectedIndex());
+        }
+      }
+    }
+    return current;
   }
 
   private UIUtils() {

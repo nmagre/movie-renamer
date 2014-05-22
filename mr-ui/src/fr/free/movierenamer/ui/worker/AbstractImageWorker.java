@@ -51,7 +51,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   protected final Icon defaultImage;
   protected final ImageInfo.ImageSize size;
   private final boolean downloadImage;
-  private final File imageCacheDir = new File(Settings.appFolder, "cache/images");
+  private final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images");
   private final Dimension resize;
   private static final long delay = 2628000L;
 

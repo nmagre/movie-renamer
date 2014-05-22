@@ -21,7 +21,7 @@ import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.scrapper.ImageScrapper;
-import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.Video;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.URIRequest;
@@ -38,7 +38,7 @@ import org.json.simple.JSONObject;
  * @author Simon QUÉMÉNEUR
  * @author Nicolas Magré
  */
-public abstract class FanartTvScrapper<M extends Media> extends ImageScrapper<M> {
+public abstract class FanartTvScrapper<M extends Video> extends ImageScrapper<M> {
 
   protected final String host = "api.fanart.tv/webservice";
   protected final String name = "FanartTV";

@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 package fr.free.movierenamer.ui.swing.panel.info.movie;
 
 import fr.free.movierenamer.info.CastingInfo;
-import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
@@ -32,21 +31,18 @@ import java.util.List;
 import javax.swing.Icon;
 
 /**
- * Class CastingInfoPane
+ * Class MovieCastingInfoPanel
  *
  * @author Nicolas Magré
  */
-public class MovieCastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
+public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
 
-  private T info;
-  private final ImageListModel<UIPersonImage> directorListModel = new ImageListModel<>();
-  private final ImageListModel<UIPersonImage> actorListModel = new ImageListModel<>();
+  private List<UIPersonImage> casts;
   private final List<UIPersonImage> actorsList;
   private final List<UIPersonImage> directorsList;
+  private final ImageListModel<UIPersonImage> directorListModel = new ImageListModel<>();
+  private final ImageListModel<UIPersonImage> actorListModel = new ImageListModel<>();
 
-  /**
-   * Creates new form CastingInfoPanel
-   */
   public MovieCastingInfoPanel() {
     initComponents();
     actorsList = new ArrayList<>();
@@ -80,7 +76,7 @@ public class MovieCastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
 
   @Override
   public void clear() {
-    info = null;
+    casts = null;
     directorListModel.clear();
     actorListModel.clear();
     actorsList.clear();
@@ -88,22 +84,21 @@ public class MovieCastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
   }
 
   @Override
-  public void setInfo(T info) {
-    this.info = info;
+  public void setInfo(List<UIPersonImage> casts) {
+    this.casts = casts;
 
-    UIPersonImage person;
-    List<CastingInfo> cinfo = info.getActors();
-    for (CastingInfo pinfo : cinfo) {
-      person = new UIPersonImage(pinfo);
-      actorsList.add(person);
+    for (UIPersonImage cast : casts) {
+      switch (cast.getJob()) {
+        case CastingInfo.ACTOR:
+          actorsList.add(cast);
+          break;
+        case CastingInfo.DIRECTOR:
+          directorsList.add(cast);
+          break;
+      }
     }
+
     actorListModel.addAll(actorsList);
-
-    cinfo = info.getDirectors();
-    for (CastingInfo pinfo : cinfo) {
-      person = new UIPersonImage(pinfo);
-      directorsList.add(person);
-    }
     directorListModel.addAll(directorsList);
 
     // Avoid reference
@@ -115,8 +110,8 @@ public class MovieCastingInfoPanel<T extends MovieInfo> extends InfoPanel<T> {
   }
 
   @Override
-  public T getInfo() {
-    return info;
+  public List<UIPersonImage> getInfo() {
+    return casts;
   }
 
   @Override

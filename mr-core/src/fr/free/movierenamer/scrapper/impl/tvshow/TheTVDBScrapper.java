@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -160,7 +159,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
     // node));
     fields.put(TvShowProperty.posterPath, posterRoot + XPathUtils.getTextContent("poster", node));
 
-    TvShowInfo tvShowInfo = new TvShowInfo(fields);
+    TvShowInfo tvShowInfo = new TvShowInfo(fields, null);
     return tvShowInfo;
   }
 

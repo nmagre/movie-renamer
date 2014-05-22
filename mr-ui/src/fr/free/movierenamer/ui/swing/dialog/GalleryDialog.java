@@ -23,6 +23,7 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.DragAndDropGallery;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel.SupportedImages;
@@ -34,6 +35,7 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -63,6 +65,8 @@ public class GalleryDialog extends AbstractDialog {
   private List<UIMediaImage> imagesByLang;
   private List<UILang> languages;
   private SupportedImages supportedImage;
+  private final DropTarget dt;
+  private int userAdId = -1;
   private final ItemListener languageChangeListener = new ItemListener() {
     @Override
     public void itemStateChanged(ItemEvent event) {
@@ -145,6 +149,11 @@ public class GalleryDialog extends AbstractDialog {
     setPreferredSize(new Dimension(600, 550));
     pack();
     setName(property.name());
+
+    // Drag and drop
+    DragAndDropGallery dropFile = new DragAndDropGallery(mr, this);
+    dt = new DropTarget(imageList, dropFile);
+    dt.setActive(false);
   }
 
   private ListSelectionListener createImageListListener() {
@@ -158,6 +167,10 @@ public class GalleryDialog extends AbstractDialog {
     };
   }
 
+  public int getUserAdId() {
+    return userAdId--;
+  }
+
   /**
    * Add a list of images. If language is enable, all languages will be
    * extracted and added to the languages combobox
@@ -167,6 +180,8 @@ public class GalleryDialog extends AbstractDialog {
   public void addImages(List<UIMediaImage> images) {
     UILang imglang = null;
     this.images = images;
+    
+    dt.setActive(true);
 
     if (useLanguage) {
       ItemListener[] itemListeners = languageCbb.getItemListeners();
@@ -209,9 +224,19 @@ public class GalleryDialog extends AbstractDialog {
     imageList.setSelectedIndex(0);
   }
 
-  public void addImage(UIMediaImage image) {
+  public void addLocaleImage(UIMediaImage image) {
     imageListModel.add(image);
     imageList.setSelectedValue(image);
+  }
+
+  public void addRemoteImage(UIMediaImage image) {
+    imageListModel.add(image);
+    imageList.setSelectedValue(image);
+    supportedImage.getLabel().setIcon(ImageUtils.LOAD_24);
+    List<UIMediaImage> imgs = new ArrayList<>();
+    imgs.add(image);
+    WorkerManager.fetchGalleryImages(imgs, this, null, ImageUtils.NO_IMAGE,
+            property.equals(ImageInfo.ImageCategoryProperty.thumb) ? ImageInfo.ImageSize.medium : ImageInfo.ImageSize.small);
   }
 
   private void fetchImages(List<UIMediaImage> imgs) {
@@ -265,12 +290,10 @@ public class GalleryDialog extends AbstractDialog {
 
   public void setImage(Icon icon, int id) {
 
-    for (UIMediaImage image : images) {
-      if (image.getId() == id) {
-        image.setIcon(icon);
-        imageListModel.setElement(image);
-        break;
-      }
+    UIMediaImage mimage = imageListModel.getElementById(id);
+    if (mimage != null) {
+      mimage.setIcon(icon);
+      imageListModel.setElement(mimage);
     }
 
     if (!imageListModel.isEmpty()) {
@@ -305,6 +328,8 @@ public class GalleryDialog extends AbstractDialog {
     languages.clear();
     nbImagesLbl.setText(null);
     images.clear();
+    userAdId = -1;
+    dt.setActive(false);
   }
 
   /**

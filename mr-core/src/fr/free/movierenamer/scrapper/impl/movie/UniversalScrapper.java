@@ -1,11 +1,25 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * movie-renamer-core
+ * Copyright (C) 2013-2014 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.free.movierenamer.scrapper.impl.movie;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
@@ -86,12 +100,11 @@ public class UniversalScrapper extends MovieScrapper {// TODO
 
   @Override
   protected MovieInfo fetchMediaInfo(Movie searchResult, AvailableLanguages language) throws Exception {
+    final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     final Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
     final Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
 
     final List<MovieScrapper> scrappers = getScrappersByQuality(language);
-    final List<MovieInfo> infos = new ArrayList<MovieInfo>();
-
     final List<IdInfo> idsInfo = new ArrayList<IdInfo>();
 
     IdInfo idInfo = searchResult.getMediaId();
@@ -118,6 +131,9 @@ public class UniversalScrapper extends MovieScrapper {// TODO
             }
           }
         }
+        mediaFields.put(MediaInfo.MediaProperty.title, info.get(MediaInfo.MediaProperty.title));
+        mediaFields.put(MediaInfo.MediaProperty.year, info.get(MediaInfo.MediaProperty.year));
+        mediaFields.put(MediaInfo.MediaProperty.rating, info.get(MediaInfo.MediaProperty.rating));
 
         for (MovieInfo.MovieMultipleProperty property : MovieInfo.MovieMultipleProperty.values()) {
           if (!property.isLanguageDepends()) {
@@ -180,6 +196,21 @@ public class UniversalScrapper extends MovieScrapper {// TODO
           continue;
         }
 
+        String title = mediaFields.get(MediaInfo.MediaProperty.title);
+        if (title == null || title.isEmpty()) {
+          mediaFields.put(MediaInfo.MediaProperty.title, info.get(MediaInfo.MediaProperty.title));
+        }
+        
+        String year = mediaFields.get(MediaInfo.MediaProperty.year);
+        if (year == null) {
+          mediaFields.put(MediaInfo.MediaProperty.year, info.get(MediaInfo.MediaProperty.year));
+        }
+        
+        String rating = mediaFields.get(MediaInfo.MediaProperty.rating);
+        if (rating == null) {
+          mediaFields.put(MediaInfo.MediaProperty.rating, info.get(MediaInfo.MediaProperty.rating));
+        }
+
         // Merge info
         // TODO
         for (MovieInfo.MovieProperty property : MovieInfo.MovieProperty.values()) {
@@ -202,7 +233,7 @@ public class UniversalScrapper extends MovieScrapper {// TODO
       }
     }
 
-    return new MovieInfo(idsInfo, fields, multipleFields);
+    return new MovieInfo(mediaFields, idsInfo, fields, multipleFields);
   }
 
   @Override

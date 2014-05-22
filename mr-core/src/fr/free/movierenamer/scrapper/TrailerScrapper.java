@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@ package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.info.TrailerInfo;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.searchinfo.Trailer;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import java.util.List;
@@ -33,24 +32,22 @@ import java.util.logging.Level;
  */
 public abstract class TrailerScrapper extends Scrapper {
 
-  public final List<Trailer> getTrailer(Movie media) throws Exception {// TODO
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get image info list for '%s", getName(), media));
+  public final List<TrailerInfo> getTrailer(Movie media) throws Exception {// TODO
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get trailer for '%s", getName(), media));
     CacheObject cache = getCache();
-    List<Trailer> trailerList = (cache != null) ? cache.getList(media, Locale.ROOT, Trailer.class) : null;
+    List<TrailerInfo> trailerList = (cache != null) ? cache.getList(media, Locale.ROOT, TrailerInfo.class) : null;
     if (trailerList != null) {
       return trailerList;
     }
 
     // perform actual search
     trailerList = searchTrailer(media);
-    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d images for '%s' in", getName(), trailerList.size(), media));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d trailer for '%s' in", getName(), trailerList.size(), media));
 
     // cache results and return
-    return (cache != null) ? cache.putList(media, Locale.ROOT, Trailer.class, trailerList) : trailerList;
+    return (cache != null) ? cache.putList(media, Locale.ROOT, TrailerInfo.class, trailerList) : trailerList;
   }
 
-  protected abstract List<Trailer> searchTrailer(Movie movie) throws Exception;
-
-  public abstract TrailerInfo fetchTrailerInfo(Trailer trailercc) throws Exception;
+  protected abstract List<TrailerInfo> searchTrailer(Movie movie) throws Exception;
 
 }

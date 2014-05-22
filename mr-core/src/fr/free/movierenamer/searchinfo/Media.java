@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,60 +31,33 @@ public abstract class Media extends Hyperlink {
   private static final long serialVersionUID = 1L;
   protected int year;
   protected IdInfo idInfo;
-  protected IdInfo imdbIdInfo;
 
   protected Media() {
     // used by serializer
   }
 
-  public Media(IdInfo imdbIdInfo, IdInfo id, String title, String originalTitle, URL thumb, int year) {
+  public Media(IdInfo id, String title, String originalTitle, URL thumb, int year) {
     super(title, originalTitle, thumb);
-    this.imdbIdInfo = imdbIdInfo;
+
     this.idInfo = id;
     this.year = year;
-  }
-
-  public IdInfo getImdbId() {
-    return imdbIdInfo;
-  }
-
-  public void setImdbId(IdInfo imdbId) {
-    this.imdbIdInfo = imdbId;
   }
 
   public IdInfo getMediaId() {
     return idInfo;
   }
 
+  @Override
   public int getYear() {
     return year;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    return super.equals(obj);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-
-  @Override
   public String toString() {
-    IdInfo id = idInfo != null ? idInfo : imdbIdInfo;
     if (year > 0) {
-      if (id.getId() > 0) {
-        return super.toString() + String.format(" (%04d) (id:%d)", year, id.getId());
-      } else {
-        return super.toString() + String.format(" (%04d)", year);
-      }
-    } else {
-      if (id.getId() > 0) {
-        return super.toString() + String.format(" (id:%d)", id.getId());
-      } else {
-        return super.toString();
-      }
+      return super.toString() + String.format(" (%04d)", year);
     }
+
+    return super.toString();
   }
 }

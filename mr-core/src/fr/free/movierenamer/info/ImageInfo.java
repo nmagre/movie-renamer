@@ -48,8 +48,7 @@ public class ImageInfo extends Info {
     height,
     url,
     urlTumb,
-    urlMid,
-    desc
+    urlMid
   }
 
   public static enum ImageCategoryProperty {
@@ -131,10 +130,6 @@ public class ImageInfo extends Info {
     }
 
     return null;
-  }
-
-  public String getDescription() {
-    return get(ImageProperty.desc);
   }
 
   public int getId() {

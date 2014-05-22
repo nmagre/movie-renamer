@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
+import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -45,6 +46,8 @@ import javax.swing.ImageIcon;
  * @author Simon QUÉMÉNEUR
  */
 public final class ImageUtils {
+
+  public static final MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
 
   // 24 pixel icon
   public static final Icon APPLICATIONEXIT_24 = getIconFromJar("ui/24/application-exit.png");
@@ -107,6 +110,9 @@ public final class ImageUtils {
   public static final Icon SKIP_16 = getIconFromJar("ui/16/skip.png");
   public static final Icon FORMAT_16 = getIconFromJar("ui/16/format.png");
   public static final Icon TEST_16 = getIconFromJar("ui/16/test.png");
+  public static final Icon TRAILER_16 = getIconFromJar("ui/16/trailer.png");
+  public static final Icon REFRESH_16 = getIconFromJar("ui/16/refresh.png");
+  public static final Icon ID_16 = getIconFromJar("ui/16/id.png");
 
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
@@ -123,6 +129,10 @@ public final class ImageUtils {
   public static final Icon WARNING = getIconFromJar("ui/warning.png");
   public static final Icon FILE = getIconFromJar("ui/file.png");
   public static final Icon UNKNOWN = getIconFromJar("ui/unknown.png");
+
+  static {
+    mtftp.addMimeTypes("image png tif jpg jpeg bmp");
+  }
 
   public static Image iconToImage(Icon icon) {
     if (icon instanceof ImageIcon) {
@@ -192,6 +202,17 @@ public final class ImageUtils {
     }
 
     return getIcon(uri, dim, new ImageIcon(getImageFromJAR(defaultImage, ImageUtils.class)));
+  }
+
+  public static Icon getIcon(URL imagePth, Dimension dim, Icon defaultImage) {
+    URI uri;
+    try {
+      uri = (imagePth != null) ? imagePth.toURI() : null;
+    } catch (URISyntaxException ex) {
+      uri = null;
+    }
+
+    return getIcon(uri, dim, defaultImage);
   }
 
   public static boolean isInCache(URI imagePth) {
@@ -274,6 +295,13 @@ public final class ImageUtils {
     icon = new ImageIcon(image);
     return icon;
   }
+  
+  public static boolean isImage(String file) {
+    String mimetype = mtftp.getContentType(file);
+    return mimetype.contains("image");
+  }
+  
+  
 
   private ImageUtils() {
     throw new UnsupportedOperationException();

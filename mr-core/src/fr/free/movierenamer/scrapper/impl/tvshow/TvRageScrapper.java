@@ -138,7 +138,7 @@ public class TvRageScrapper extends TvShowScrapper {
     }
     fields.put(TvShowProperty.runtime, XPathUtils.getTextContent("runtime", node));
 
-    TvShowInfo tvShowInfo = new TvShowInfo(fields);
+    TvShowInfo tvShowInfo = new TvShowInfo(fields, null);
     return tvShowInfo;
   }
 

@@ -21,11 +21,12 @@ import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.renamer.MoveFile;
 import fr.free.movierenamer.renamer.Nfo;
-import fr.free.movierenamer.settings.Settings.IProperty;
+import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.exception.CancelException;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -61,7 +62,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
   private final UIRename uirename;
   private final UIFile uiFile;
   private UIFile newUiFile;
-  private final MediaInfo info;
+  private final UIMediaInfo info;
   private final TaskPanel taskPanel;
   private Action action = Action.none;
   private static final UISettings settings = UISettings.getInstance();
@@ -334,7 +335,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
     File destFile;
 
     try {
-      Nfo nfo = new Nfo(info, uirename.getImages());
+      Nfo nfo = new Nfo(info.getInfo(), uirename.getImages());
       Document nfoDom = nfo.getNFO();
 
       filename = settings.coreInstance.getNFOFileName().replace("<fileName>", renamedTitle);

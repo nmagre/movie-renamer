@@ -17,18 +17,11 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
-import fr.free.movierenamer.info.Info;
-import fr.free.movierenamer.ui.bean.IEventListener;
-
 /**
  * Interface IInfoPanel
+ *
  * @author Nicolas Magré
  */
-public interface IInfoPanel<T extends Info> extends IEventListener {
-  
-  public void clear();
+public interface IInfoPanel<T> extends IInfo<T> {
 
-  public void setInfo(T info);
-  
-  public T getInfo();
 }

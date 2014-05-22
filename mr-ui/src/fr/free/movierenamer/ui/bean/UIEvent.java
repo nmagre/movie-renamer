@@ -48,6 +48,7 @@ public final class UIEvent {
     SETTINGS,
     EDIT,
     EDITED,
+    REFRESH_MEDIAINFO,
     RENAME_FILE,
     RENAME_FILE_DONE,
     UPDATE_AVAILABLE,

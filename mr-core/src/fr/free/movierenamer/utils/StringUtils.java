@@ -28,19 +28,12 @@ import java.util.regex.Pattern;
 
 import fr.free.movierenamer.settings.Settings;
 import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -84,8 +77,8 @@ public final class StringUtils {
   public static final String DOT = ".";
   public static final String EXCLA = "!";
   public static final Pattern romanSymbol = Pattern.compile("(\\s+(?:M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})|[IDCXMLV])(\\s|$))", Pattern.CASE_INSENSITIVE);
-  private static final Pattern apostrophe = Pattern.compile("['`´‘’ʻ]");
-  private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:]]");
+  private static final Pattern apostrophe = Pattern.compile("[`´‘’ʻ]");
+  private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:']]");
   private static final Pattern[] brackets = new Pattern[]{
     Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
   };
@@ -261,12 +254,22 @@ public final class StringUtils {
     if (str == null) {
       return array;
     }
+
     if (separator == null) {
       separator = ", ";
     }
+
     String[] res = str.split(separator);
     array.addAll(Arrays.asList(res));
     return array;
+  }
+
+  public static String[] fromString(String string) {
+    String[] strings = string.replace("[", "").replace("]", "").split(",");
+    for (int i = 0; i < strings.length; i++) {
+      strings[i] = strings[i].replaceAll("^\"|\"$", "");
+    }
+    return strings;
   }
 
   /**
@@ -285,7 +288,7 @@ public final class StringUtils {
     }
 
     for (int i = 0; i < array.length; i++) {
-      if (limit != 0 && i == limit) {
+      if (limit > 0 && i == limit) {
         break;
       }
 
@@ -346,7 +349,7 @@ public final class StringUtils {
 
   public static String removePunctuation(String name) {
     // remove/normalize special characters
-    name = apostrophe.matcher(name).replaceAll(" ");
+    name = apostrophe.matcher(name).replaceAll("'");
     name = punctuation.matcher(name).replaceAll(" ");
     name = name.replaceAll("\\p{Space}+", " ");// Remove duplicate space
     return name.trim();
@@ -464,6 +467,11 @@ public final class StringUtils {
     return format;
   }
 
+  public static String durationInMinute(String duration) {// in second
+    int runtime = Integer.parseInt(duration);
+    return String.format("%02d:%02d", (runtime % 3600) / 60, (runtime % 60));
+  }
+
   public static String encrypt(byte[] property) {
     String encrypted = "";
     try {
@@ -488,10 +496,10 @@ public final class StringUtils {
   }
 
   public static String decrypt(String property) {
-    if(property == null || property.length() == 0) {
+    if (property == null || property.length() == 0) {
       return "";
     }
-    
+
     try {
       SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
       SecretKey key = keyFactory.generateSecret(new PBEKeySpec(PASSWORD));
@@ -501,8 +509,35 @@ public final class StringUtils {
     } catch (GeneralSecurityException ex) {
       Settings.LOGGER.log(Level.SEVERE, null, ex);
     }
-    
+
     return "";
+  }
+
+  public static String substringBetween(String str, String open, String close) {
+
+    int start = str.indexOf(open);
+    if (start == -1) {
+      return str;
+    }
+
+    int end = str.indexOf(close, start + open.length());
+    if (end == -1) {
+      return str.substring(start);
+    }
+
+    return str.substring(start + open.length(), end);
+  }
+
+  public static int countMatches(String str, String search) {
+    int count = 0;
+    int idx = 0;
+
+    while ((idx = str.indexOf(search, idx)) != -1) {
+      idx++;
+      count++;
+    }
+
+    return count;
   }
 
   private StringUtils() {

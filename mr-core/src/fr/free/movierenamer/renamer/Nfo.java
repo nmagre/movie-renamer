@@ -18,15 +18,19 @@
 package fr.free.movierenamer.renamer;
 
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.InfoType;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,11 +79,11 @@ public class Nfo {// TODO
     xbmcMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
     boxeeMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
 
-    xbmcMovieNFOLayout.put(MovieProperty.title, "title");
+    xbmcMovieNFOLayout.put(MediaProperty.title, "title");
+    xbmcMovieNFOLayout.put(MediaProperty.rating, "rating");
     xbmcMovieNFOLayout.put(MovieProperty.originalTitle, "originaltitle");
     xbmcMovieNFOLayout.put(MovieProperty.sortTitle, "sorttitle");
     xbmcMovieNFOLayout.put(MovieProperty.collection, "set");
-    xbmcMovieNFOLayout.put(MovieProperty.rating, "rating");
     xbmcMovieNFOLayout.put(MovieProperty.releasedDate, "year");
     xbmcMovieNFOLayout.put(MovieProperty.votes, "votes");
     xbmcMovieNFOLayout.put(MovieProperty.overview, "plot");
@@ -92,8 +96,8 @@ public class Nfo {// TODO
     xbmcMovieNFOLayout.put(MovieMultipleProperty.studios, "studio");
     xbmcMovieNFOLayout.put(MovieMultipleProperty.tags, "tag");
 
-    boxeeMovieNFOLayout.put(MovieProperty.title, "title");
-    boxeeMovieNFOLayout.put(MovieProperty.rating, "rating");
+    boxeeMovieNFOLayout.put(MediaProperty.title, "title");
+    boxeeMovieNFOLayout.put(MediaProperty.rating, "rating");
     boxeeMovieNFOLayout.put(MovieProperty.releasedDate, "year");
     boxeeMovieNFOLayout.put(MovieProperty.overview, "outline");
     boxeeMovieNFOLayout.put(MovieProperty.runtime, "runtime");
@@ -116,6 +120,99 @@ public class Nfo {// TODO
     nfoDocument = docBuilder.newDocument();
     rootElement = nfoDocument.createElement(rootNode);
     nfoDocument.appendChild(rootElement);
+  }
+
+  public void getMrXml() throws ParserConfigurationException {
+    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder docBuilder;
+    docBuilder = docFactory.newDocumentBuilder();
+
+    // root elements
+    nfoDocument = docBuilder.newDocument();
+    rootElement = nfoDocument.createElement("movie-renamer");
+    nfoDocument.appendChild(rootElement);
+
+    MovieInfo movieInfo = (MovieInfo) mediaInfo;
+
+    Node node;
+    Node anode;
+    String nodeName;
+
+    node = createNode(rootElement, "ids");
+    for (IdInfo idInfo : movieInfo.getIdsInfo()) {
+      anode = createNode(node, idInfo.getIdType().name().toLowerCase());
+      anode.setTextContent(idInfo.toString());
+    }
+
+    for (MediaProperty property : MediaProperty.values()) {
+      node = createNode(rootElement, property.name());
+      node.setTextContent(movieInfo.get(property));
+    }
+
+    for (MovieProperty property : MovieProperty.values()) {
+      node = createNode(rootElement, property.name());
+      node.setTextContent(movieInfo.get(property));
+    }
+
+    for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
+      nodeName = property.name();
+      node = createNode(rootElement, nodeName);
+      for (String value : movieInfo.get(property)) {
+        anode = createNode(node, nodeName.substring(0, nodeName.length() - 1));
+        anode.setTextContent(value);
+      }
+    }
+
+    // Images
+    Integer width;
+    Integer height;
+    for (ImageInfo imginfo : images) {
+      node = createNode(rootElement, imginfo.getCategory().name());
+      width = imginfo.getWidth();
+      height = imginfo.getHeight();
+
+      ((Element) node).setAttribute("lang", imginfo.getLanguage());
+      ((Element) node).setAttribute("width", width != null ? width.toString() : "");
+      ((Element) node).setAttribute("height", height != null ? height.toString() : "");
+
+      anode = createNode(node, ImageInfo.ImageSize.big.name());
+      anode.setTextContent(imginfo.getHref(ImageInfo.ImageSize.big).toExternalForm());
+      anode = createNode(node, ImageInfo.ImageSize.medium.name());
+      anode.setTextContent(imginfo.getHref(ImageInfo.ImageSize.medium).toExternalForm());
+      anode = createNode(node, ImageInfo.ImageSize.small.name());
+      anode.setTextContent(imginfo.getHref(ImageInfo.ImageSize.small).toExternalForm());
+    }
+
+    // Add director
+    List<CastingInfo> directors = movieInfo.getDirectors();
+    for (CastingInfo director : directors) {
+      node = createNode(rootElement, "director");
+      node.setTextContent(director.getName());
+    }
+
+    // Add writer
+    List<CastingInfo> writers = movieInfo.getDirectors();
+    for (CastingInfo writer : writers) {
+      node = createNode(rootElement, "writer");
+      node.setTextContent(writer.getName());
+    }
+
+    // Add actor
+    List<CastingInfo> actors = movieInfo.getActors();
+    URI img;
+    for (CastingInfo actor : actors) {
+      node = createNode(rootElement, "actor");
+      anode = createNode(node, "name");
+      anode.setTextContent(actor.getName());
+      anode = createNode(node, "role");
+      anode.setTextContent(actor.getCharacter());
+
+      img = actor.getPicturePath();
+      anode = createNode(node, "thumb");
+      anode.setTextContent(img != null ? img.toString() : "");
+    }
+
+    FileUtils.writeXmlFile(nfoDocument, new File("/home/duffy/Desktop/mr.xml"));
   }
 
   private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, InfoType infoType) {
@@ -144,8 +241,11 @@ public class Nfo {// TODO
       }
 
       values = new ArrayList<String>();
+
       if (entry.getKey() instanceof MovieProperty) {
         values.add(movieInfo.get((MovieProperty) entry.getKey()));
+      } else if (entry.getKey() instanceof MediaProperty) {
+        values.add(movieInfo.get((MediaProperty) entry.getKey()));
       } else {
         values = movieInfo.get((MovieMultipleProperty) entry.getKey());
       }

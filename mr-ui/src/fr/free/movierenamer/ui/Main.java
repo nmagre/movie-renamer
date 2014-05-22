@@ -71,7 +71,7 @@ public class Main {
     Locale.setDefault(setting.coreInstance.getAppLanguage().getLocale());
 
     // Set UI locale file
-    File languageFile = new File(UISettings.appFolder, UISettings.languageFile);
+    File languageFile = new File(UISettings.APPFOLDER, UISettings.languageFile);
     if (languageFile.exists()) {
       LanguageManager.addDictionary(languageFile);
     } else {

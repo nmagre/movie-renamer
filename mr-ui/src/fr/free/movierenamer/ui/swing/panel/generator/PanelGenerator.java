@@ -28,7 +28,6 @@ import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;

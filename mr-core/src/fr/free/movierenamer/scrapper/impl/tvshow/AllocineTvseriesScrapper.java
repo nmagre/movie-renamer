@@ -18,7 +18,6 @@
 package fr.free.movierenamer.scrapper.impl.tvshow;
 
 import java.util.List;
-import java.util.Locale;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;

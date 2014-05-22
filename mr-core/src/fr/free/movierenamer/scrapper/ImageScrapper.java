@@ -39,11 +39,7 @@ public abstract class ImageScrapper<M extends Media> extends Scrapper {
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get image list for '%s", getName(), media));
     CacheObject cache = getCache();
 
-    IdInfo id = media.getImdbId();
-    if (id == null) {
-      id = media.getMediaId();
-    }
-
+    IdInfo id = media.getMediaId();
     String cacheKey = id.toString() + "_" + getCacheKey();
 
     List<ImageInfo> imageList = (cache != null) ? cache.getList(cacheKey, Locale.ROOT, ImageInfo.class) : null;

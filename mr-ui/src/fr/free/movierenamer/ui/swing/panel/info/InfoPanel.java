@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
-import fr.free.movierenamer.info.Info;
 import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
@@ -28,20 +27,21 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public abstract class InfoPanel<T extends Info> extends PanelGenerator implements IInfoPanel<T> {
+public abstract class InfoPanel<T> extends PanelGenerator implements IInfoPanel<T> {
 
   public enum PanelType {
 
     INFO,
     CASTING_INFO,
     TRAILER_INFO,
-    FILE_INFO
+    FILE_INFO,
+    ID_INFO
   }
 
   public abstract Icon getIcon();
 
   public abstract String getPanelName();
-
+  
   protected void regiterUIEvent() {
     UIEvent.addEventListener(this.getClass(), this);
   }

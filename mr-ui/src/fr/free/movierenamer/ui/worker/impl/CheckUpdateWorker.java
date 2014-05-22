@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ import org.w3c.dom.Node;
  */
 public class CheckUpdateWorker extends Worker<UIUpdate> {
 
-  private final static UISettings settings = UISettings.getInstance();
   private final boolean showNoUpdate;
 
   public CheckUpdateWorker(MovieRenamer mr, boolean showNoUpdate) {

@@ -30,6 +30,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,33 +40,31 @@ import java.util.regex.Pattern;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class MovieInfo extends MediaInfo {
+public class MovieInfo extends VideoInfo {
 
   private static final long serialVersionUID = 1L;
-  private List<IdInfo> idsInfo;
   protected final Map<MovieProperty, String> fields;
   protected final Map<MovieMultipleProperty, List<String>> multipleFields;
   protected List<CastingInfo> directors;
   protected List<CastingInfo> actors;
   protected List<CastingInfo> writers;
+  protected List<TrailerInfo> trailers;
 
   public static enum MovieProperty implements InfoProperty {
 
-    title(true),
     originalTitle,
     sortTitle,
     overview(true),
-    releasedDate,// Obviously language dependent, but we don't care about for the moment
-    rating,
     tagline(true),
     certification(true),
     certificationCode,// MotionPictureRating can transfrom it
+    releasedDate,
     votes,
     budget,
     posterPath,
     collection,
     runtime;
-    private boolean languageDepends;
+    private final boolean languageDepends;
 
     private MovieProperty() {
       languageDepends = false;
@@ -84,7 +83,7 @@ public class MovieInfo extends MediaInfo {
   public static enum MovieMultipleProperty implements InfoProperty {
 
     genres(true),
-    countries,
+    countries(true),
     studios,
     tags;// Obviously language dependent, but we don't care about for the moment
     private final boolean languageDepends;
@@ -155,32 +154,70 @@ public class MovieInfo extends MediaInfo {
 
   protected MovieInfo() {
     // used by serializer
+    super(null, null);
     this.fields = null;
     this.multipleFields = null;
   }
 
-  public MovieInfo(List<IdInfo> idsInfo, Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<String>> multipleFields) {
-    this.idsInfo = idsInfo;
-    this.fields = (fields != null) ? new EnumMap<MovieProperty, String>(fields) : new EnumMap<MovieProperty, String>(MovieProperty.class);
-    this.multipleFields = (multipleFields != null) ? new EnumMap<MovieMultipleProperty, List<String>>(multipleFields) : new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
+  public MovieInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo, Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<String>> multipleFields) {
+    super(mediaFields, idsInfo);
+    this.fields = (fields != null) ? fields : new EnumMap<MovieProperty, String>(MovieProperty.class);
+    this.multipleFields = (multipleFields != null) ? multipleFields : new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
   }
 
   public String get(final MovieProperty key) {
     return (fields != null) ? fields.get(key) : null;
   }
 
-  public void set(final InfoProperty key, final String value) {
+  public void set(MovieProperty key, String value) {
+    fields.put((MovieProperty) key, value);
+  }
 
-    if (key instanceof MovieProperty) {
-      fields.put((MovieProperty) key, value);
-    } else if (key instanceof MovieMultipleProperty) {
-      multipleFields.put((MovieMultipleProperty) key, Arrays.asList(value.split(", ")));
-    }
+  public void set(MovieMultipleProperty key, String value) {
+    multipleFields.put((MovieMultipleProperty) key, Arrays.asList(value.split(", ")));
   }
 
   @Override
   public InfoType getInfoType() {
     return InfoType.MOVIE;
+  }
+
+  @Override
+  protected void unsetUnsupportedLanguageInfo() {
+    Settings settings = Settings.getInstance();
+    Iterator<Entry<MovieProperty, String>> it = fields.entrySet().iterator();
+    Entry<MovieProperty, String> entry;
+
+    while (it.hasNext()) {
+      entry = it.next();
+      if (entry.getKey().isLanguageDepends()) {
+        it.remove();
+      }
+    }
+
+    Iterator<Entry<MovieMultipleProperty, List<String>>> iterator = multipleFields.entrySet().iterator();
+    Entry<MovieMultipleProperty, List<String>> mentry;
+    MovieMultipleProperty key;
+
+    while (iterator.hasNext()) {
+      mentry = iterator.next();
+      key = mentry.getKey();
+      if (key.equals(MovieMultipleProperty.tags) && settings.isGetTmdbTagg()) {
+        continue;
+      }
+
+      if (key.isLanguageDepends()) {
+        iterator.remove();
+      }
+    }
+  }
+
+  @Override
+  public void filterInfo() {
+    String origTitle = fields.get(MovieProperty.originalTitle);
+    if (Settings.getInstance().isSetOrigTitle() && (origTitle == null || origTitle.isEmpty())) {
+      set(MovieProperty.originalTitle, get(MediaProperty.title));
+    }
   }
 
   public List<String> get(final MovieMultipleProperty key) {
@@ -191,34 +228,6 @@ public class MovieInfo extends MediaInfo {
     return get(MovieProperty.originalTitle);
   }
 
-  public String getTitle() {
-    return get(MovieProperty.title);
-  }
-
-  public String getIdString(final AvailableApiIds idType) {
-    final Integer id = getId(idType);
-    if (id != null) {
-      return idType.getPrefix() + id;
-    }
-    return null;
-  }
-
-  public Integer getId(final AvailableApiIds idType) {
-
-    for (IdInfo id : idsInfo) {
-      if (id.getIdType().equals(idType)) {
-        return id.getId();
-      }
-    }
-
-    return null;
-  }
-
-//  public void addId(IdInfo id) {
-//    if (getId(id.getIdType()) == null) {
-//      idsInfo.add(id);
-//    }
-//  }
   public URI getPosterPath() {
     try {
       return new URL(get(MovieProperty.posterPath)).toURI();
@@ -239,25 +248,9 @@ public class MovieInfo extends MediaInfo {
     return null;
   }
 
-  public Double getRating() {
-    try {
-      return new Double(get(MovieProperty.rating));
-    } catch (Exception e) {
-    }
-    return null;
-  }
-
   public Date getReleasedDate() {
     try {
       return Date.parse(get(MovieProperty.releasedDate), "yyyy-MM-dd");
-    } catch (Exception e) {
-    }
-    return null;
-  }
-
-  public Integer getYear() {
-    try {
-      return Date.parse(get(MovieProperty.releasedDate), "yyyy").getYear();
     } catch (Exception e) {
     }
     return null;
@@ -467,6 +460,6 @@ public class MovieInfo extends MediaInfo {
 
   @Override
   public String toString() {
-    return String.format("%s %s", fields.toString(), multipleFields.toString());
+    return super.toString() + String.format(" %s %s", fields.toString(), multipleFields.toString());
   }
 }

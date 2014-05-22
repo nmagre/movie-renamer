@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.XMLSettings;
 import fr.free.movierenamer.ui.swing.ITestActionListener;
 import java.io.IOException;
 
@@ -26,12 +27,12 @@ import java.io.IOException;
  *
  * @author Nicolas Magré
  */
-public abstract class UITestSettings implements Settings.IProperty {
+public abstract class UITestSettings implements XMLSettings.IProperty {
 
-  private final Settings.SettingsType type;
-  private final Settings.SettingsSubType subType;
+  private final XMLSettings.SettingsType type;
+  private final XMLSettings.SettingsSubType subType;
 
-  public UITestSettings(Settings.SettingsType type, Settings.SettingsSubType subType) {
+  public UITestSettings(XMLSettings.SettingsType type, XMLSettings.SettingsSubType subType) {
     this.type = type;
     this.subType = subType;
   }

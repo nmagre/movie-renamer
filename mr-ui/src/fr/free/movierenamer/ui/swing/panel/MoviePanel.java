@@ -17,10 +17,11 @@
  */
 package fr.free.movierenamer.ui.swing.panel;
 
-import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieCastingInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieInfoPanel;
 
 /**
@@ -28,11 +29,11 @@ import fr.free.movierenamer.ui.swing.panel.info.movie.MovieInfoPanel;
  *
  * @author Nicolas Magré
  */
-public class MoviePanel extends VideoPanel<MovieInfo> {
+public class MoviePanel extends VideoPanel<UIMovieInfo> {
 
   @SuppressWarnings("unchecked")
   public MoviePanel(MovieRenamer mr) {
-    super(new MovieInfoPanel(mr), new MovieCastingInfoPanel<>());
+    super(new MovieInfoPanel(mr), new MovieCastingInfoPanel()/*, new MovieIdPanel(mr), new TrailerInfoPanel()*/);
   }
 
   @Override
@@ -41,7 +42,7 @@ public class MoviePanel extends VideoPanel<MovieInfo> {
   }
 
   @Override
-  protected String getTitle(MovieInfo info) {
+  protected String getTitle(UIMovieInfo info) {
     String title = info.getTitle();
     if (info.getYear() != null) {
       title += " (" + info.getYear() + ")";
@@ -50,7 +51,7 @@ public class MoviePanel extends VideoPanel<MovieInfo> {
   }
 
   @Override
-  protected Double getRate(MovieInfo info) {
+  protected Double getRate(UIMovieInfo info) {
     return info.getRating();
   }
 
@@ -60,7 +61,18 @@ public class MoviePanel extends VideoPanel<MovieInfo> {
   }
 
   @Override
-  public MovieInfo getInfo() {
-    return panels.get(InfoPanel.PanelType.INFO).getInfo();
+  public UIMovieInfo getInfo() {
+    return (UIMovieInfo) panels.get(InfoPanel.PanelType.INFO).getInfo();
+  }
+
+  @Override
+  public void setInfo(UIMovieInfo info) {
+    super.setInfo(info);
+    //panels.get(InfoPanel.PanelType.ID_INFO).setInfo(info.getIds());
+  }
+  
+  @Override
+  protected boolean addRefreshButton() {
+    return true;
   }
 }

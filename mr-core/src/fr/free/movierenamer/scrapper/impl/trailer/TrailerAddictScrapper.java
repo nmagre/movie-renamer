@@ -1,7 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * movie-renamer-core
+ * Copyright (C) 2014 Nicolas Magré
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package fr.free.movierenamer.scrapper.impl.trailer;
 
@@ -22,8 +34,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
+ * Class TrailerAddictScrapper
  *
- * @author duffy
+ * @author Nicolas Magré
  */
 public class TrailerAddictScrapper extends TrailerScrapper {
 
@@ -48,8 +61,8 @@ public class TrailerAddictScrapper extends TrailerScrapper {
   }
 
   @Override
-  protected List<Trailer> searchTrailer(Movie movie) throws Exception {
-    List<Trailer> trailers = new ArrayList<Trailer>();
+  protected List<TrailerInfo> searchTrailer(Movie movie) throws Exception {
+    List<TrailerInfo> trailers = new ArrayList<TrailerInfo>();
     IdInfo imdbId = movie.getImdbId();
     String tag = null;
     if (imdbId != null) {
@@ -70,37 +83,37 @@ public class TrailerAddictScrapper extends TrailerScrapper {
       Document dom = URIRequest.getHtmlDocument(url.toURI());
       List<Node> nodes = XPathUtils.selectNodes("//DD[@id='one-ddcontent']/A", dom);
       for (Node node : nodes) {
-        trailers.add(new Trailer(node.getTextContent(), new URL("http", simpleapi + host, XPathUtils.getAttribute("href", node))));
+       // trailers.add(new Trailer(node.getTextContent(), new URL("http", simpleapi + host, XPathUtils.getAttribute("href", node))));
       }
     }
 
     return trailers;
   }
 
-  @Override
-  public TrailerInfo fetchTrailerInfo(Trailer trailer) throws Exception {
-
-    Document dom = URIRequest.getXmlDocument(trailer.getURL().toURI());
-    String title = XPathUtils.selectString("//trailer/title", dom);
-    String tid = XPathUtils.selectString("//trailer/trailer_id", dom);
-    String description = XPathUtils.selectString("//trailer/description", dom);
-    URL thumb = null;
-    URL streamUrl = null;
-
-    URL url = new URL("http", www + host, "/fvar.php?tid=" + tid);
-    String doc = URIRequest.getDocumentContent(url.toURI());
-    Scanner sc = new Scanner(doc.replaceAll("\n", ""));
-    sc.useDelimiter("&");
-    while (sc.hasNext()) {
-      String str = sc.next();
-      if (str.startsWith("fileurl=")) {
-        streamUrl = new URL((str.replace("fileurl=", "")));
-      } else if (str.startsWith("image=")) {
-        thumb = new URL((str.replace("image=", "")));
-      }
-    }
-
-    // TODO if streamUrl == null
-    return new TrailerInfo(title, description, thumb, streamUrl);
-  }
+//  @Override
+//  public TrailerInfo fetchTrailerInfo(Trailer trailer) throws Exception {
+//
+//    Document dom = URIRequest.getXmlDocument(trailer.getURL().toURI());
+//    String title = XPathUtils.selectString("//trailer/title", dom);
+//    String tid = XPathUtils.selectString("//trailer/trailer_id", dom);
+//    String description = XPathUtils.selectString("//trailer/description", dom);
+//    URL thumb = null;
+//    URL streamUrl = null;
+//
+//    URL url = new URL("http", www + host, "/fvar.php?tid=" + tid);
+//    String doc = URIRequest.getDocumentContent(url.toURI());
+//    Scanner sc = new Scanner(doc.replaceAll("\n", ""));
+//    sc.useDelimiter("&");
+//    while (sc.hasNext()) {
+//      String str = sc.next();
+//      if (str.startsWith("fileurl=")) {
+//        streamUrl = new URL((str.replace("fileurl=", "")));
+//      } else if (str.startsWith("image=")) {
+//        thumb = new URL((str.replace("image=", "")));
+//      }
+//    }
+//
+//    // TODO if streamUrl == null
+//    return null;
+//  }
 }

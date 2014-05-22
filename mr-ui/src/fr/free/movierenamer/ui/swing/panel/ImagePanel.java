@@ -26,7 +26,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.DragAndDrop;
+import fr.free.movierenamer.ui.swing.DragAndDropGallery;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.Color;
@@ -34,15 +34,11 @@ import java.awt.Dimension;
 import java.awt.dnd.DropTarget;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.activation.MimetypesFileTypeMap;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
@@ -73,9 +69,7 @@ public class ImagePanel extends WebPanel {
     private final ImageCategoryProperty categoryProperty;
     private final String i18nKey;
     private final WebLabel label;
-    private LabelListener imageLabel;
     private final float ratio;
-    private DropTarget dt;
 
     private SupportedImages(ImageCategoryProperty categoryProperty, String i18nKey, float ratio) {
       this.categoryProperty = categoryProperty;
@@ -147,16 +141,15 @@ public class ImagePanel extends WebPanel {
     return galleryPanels.containsKey(key);
   }
 
-  private SupportedImages getSupportedImages(ImageCategoryProperty key) {
-
-    for (SupportedImages simage : SupportedImages.values()) {
-      if (simage.getCategoryProperty() == key) {
-        return simage;
-      }
-    }
-    return null;
-  }
-
+//  private SupportedImages getSupportedImages(ImageCategoryProperty key) {
+//
+//    for (SupportedImages simage : SupportedImages.values()) {
+//      if (simage.getCategoryProperty() == key) {
+//        return simage;
+//      }
+//    }
+//    return null;
+//  }
   public GalleryDialog getGallery(ImageCategoryProperty key) {
 
     if (!isSupportedImage(key)) {
@@ -258,28 +251,7 @@ public class ImagePanel extends WebPanel {
       this.label = label;
       this.key = key;
       this.listenerEnabled = false;
-      DragAndDrop dropFile = new DragAndDrop(ImagePanel.this.mr) {
-        @Override
-        public void getFiles(List<File> files) {
-          for (File file : files) {// FIXME need to be improved ?
-            MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
-            mtftp.addMimeTypes("image png tif jpg jpeg bmp");
-            String mimetype = mtftp.getContentType(file);
-            if (mimetype.contains("image")) {
-              Map<ImageInfo.ImageProperty, String> fields = new EnumMap<>(ImageInfo.ImageProperty.class);
-
-              fields.put(ImageInfo.ImageProperty.url, file.toURI().toString());
-              UIMediaImage image = new UIMediaImage(new ImageInfo(-1, fields, key));
-              try {
-                image.setIcon(ImageUtils.getIcon(file.toURI().toURL(), null, null));
-              } catch (MalformedURLException ex) {
-                Logger.getLogger(ImagePanel.class.getName()).log(Level.SEVERE, null, ex);
-              }
-              galleryPanels.get(key).addImage(image);
-            }
-          }
-        }
-      };
+      DragAndDropGallery dropFile = new DragAndDropGallery(ImagePanel.this.mr, galleryPanels.get(key));
       this.dt = new DropTarget(label, dropFile);
       dt.setActive(listenerEnabled);
 

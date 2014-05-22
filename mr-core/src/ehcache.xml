@@ -17,6 +17,7 @@
 		overflowToDisk="false"
 		diskPersistent="false"
 		memoryStoreEvictionPolicy="LRU"
+    copyOnRead="true"
 	/>
 	
 	<!--
@@ -31,6 +32,7 @@
 		overflowToDisk="true"
 		diskPersistent="true"
 		memoryStoreEvictionPolicy="LRU"
+    copyOnRead="true"
 	/>
 	
 	<!--
@@ -45,6 +47,7 @@
 		overflowToDisk="true"
 		diskPersistent="true"
 		memoryStoreEvictionPolicy="LRU"
+    copyOnRead="true"
 	/>
 	
 	<!--
@@ -59,6 +62,7 @@
 		overflowToDisk="true"
 		diskPersistent="true"
 		memoryStoreEvictionPolicy="LRU"
+    copyOnRead="true"
 	/>
 	
 </ehcache>

@@ -297,6 +297,11 @@
         </record>
 
         <record key="releasedDate">
+          <value lang="en">Date</value>
+          <value lang="fr">Date</value>
+        </record>
+        
+        <record key="year">
           <value lang="en">Year</value>
           <value lang="fr">Année</value>
         </record>
@@ -760,7 +765,7 @@
 
     <record key="searchorderthreshold">
       <value lang="en">Sort threshold</value>
-      <value lang="fr">Seuil de trie</value>
+      <value lang="fr">Seuil de tri</value>
     </record>
 
     <record key="searchmoviescrapper">
@@ -772,6 +777,18 @@
       <value lang="en">Get TMDB tags</value>
       <value lang="fr">Récupérer les tags de TMDB</value>
     </record>
+    
+    <record key="searchsetorigtitle">
+      <value lang="en">Use title as original title if it is empty</value>
+      <value lang="fr">Utiliser le titre comme titre original si il est vide</value>
+    </record>
+    
+    <record key="searchgetonlylangdep">
+      <value lang="en">Keep only infos in current language</value>
+      <value lang="fr">Garder les infos seulement dans la langue actuelle</value>
+    </record>
+    
+    
 
     <!-- Image panel -->
 

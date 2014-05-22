@@ -18,6 +18,8 @@
 package fr.free.movierenamer.utils;
 
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
@@ -29,6 +31,7 @@ import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
 import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
+import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import java.io.IOException;
@@ -37,10 +40,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -83,7 +88,7 @@ public final class ScrapperUtils {
     }
   }
 
-  public static enum AvailableApiIds implements Serializable {
+  public static enum AvailableApiIds implements InfoProperty, Serializable {
 
     IMDB("tt"),
     ALLOCINE(),
@@ -104,6 +109,11 @@ public final class ScrapperUtils {
 
     public String getPrefix() {
       return prefix;
+    }
+
+    @Override
+    public boolean isLanguageDepends() {
+      return false;
     }
   }
 
@@ -209,7 +219,7 @@ public final class ScrapperUtils {
     }
 
     if (searchResult != null) {
-      // ty to find imdb id with imdb scrapper
+      // try to find imdb id with imdb scrapper
       imdbid = getIdBySearch(new IMDbScrapper(), searchResult);
     }
 
@@ -376,6 +386,61 @@ public final class ScrapperUtils {
     }
 
     return null;
+  }
+
+  public static void setTitle(Map<MediaProperty, String> mediaProperties, Media media, Node node) {
+    String title = media.getName();
+    mediaProperties.put(MediaProperty.title, title);
+
+    if (node != null) {
+      String content = getValue(XPathUtils.selectString("text()", node));
+      if (content != null) {
+        mediaProperties.put(MediaProperty.title, content);
+      }
+    }
+  }
+
+  public static <T extends InfoProperty> boolean addValue(Map<T, String> properties, T property, String value) {
+
+    String val = getValue(value);
+    if (val == null) {
+      return false;
+    }
+
+    properties.put(property, val);
+
+    return true;
+  }
+
+  public static <T extends InfoProperty> boolean addValue(Map<T, String> properties, T property, Node node) {
+
+    if (node == null) {
+      return false;
+    }
+
+    return addValue(properties, property, node.getTextContent());
+  }
+
+  public static String getValue(String value) {
+    if (value == null) {
+      return null;
+    }
+
+    value = value.trim();
+
+    if (value.isEmpty()) {
+      return null;
+    }
+
+    return value;
+  }
+
+  public static String getValue(Node node) {
+    if (node == null) {
+      return null;
+    }
+
+    return getValue(node.getTextContent());
   }
 
   private ScrapperUtils() {

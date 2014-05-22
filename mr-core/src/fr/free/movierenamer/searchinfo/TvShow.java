@@ -26,12 +26,13 @@ import java.net.URL;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class TvShow extends Media {
+public class TvShow extends Video {
 
   private static final long serialVersionUID = 1L;
 
   protected TvShow() {
     // used by serializer
+    super();
   }
 
   public TvShow(IdInfo imdbId, IdInfo id, String seriesName, URL thumb, int year) {

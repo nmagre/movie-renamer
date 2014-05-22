@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.trailerinfo;
+package fr.free.movierenamer.stream;
 
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;
@@ -34,9 +34,13 @@ public abstract class AbstractStream {
 
   public static enum Quality {
 
-    LD,
     SD,
-    HD
+    SD3D,
+    LD,
+    HD,
+    HD3D,
+    UHD,
+    AUDIO
   }
 
   public URL getLink(URL url) {
@@ -66,6 +70,7 @@ public abstract class AbstractStream {
     }
 
     return getLink(links, quality);
+
   }
 
   private URL getLink(Map<Quality, URL> links, Quality quality) {
@@ -86,7 +91,7 @@ public abstract class AbstractStream {
     return null;
   }
 
-  protected abstract Map<Quality, URL> getLinks(URL url) throws Exception;
+  public abstract Map<Quality, URL> getLinks(URL url) throws Exception;
 
   protected abstract boolean isUrlSupported(URL url);
 

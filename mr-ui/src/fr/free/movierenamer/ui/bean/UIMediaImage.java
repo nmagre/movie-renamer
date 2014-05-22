@@ -92,7 +92,7 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
 
   @Override
   public String toString() {
-    return (info != null) ? info.getDescription() : type.name();
+    return type.name();
   }
 
   @Override

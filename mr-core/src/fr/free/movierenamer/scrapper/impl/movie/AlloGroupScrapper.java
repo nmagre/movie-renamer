@@ -20,6 +20,7 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
 import fr.free.movierenamer.scrapper.MovieScrapper;
@@ -213,6 +214,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
     URL searchUrl = new URL("http", getHost(), getMoviePageString(movie.getMediaId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
+    Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     List<String> genres = new ArrayList<String>();
     List<String> countries = new ArrayList<String>();
     List<String> studios = new ArrayList<String>();
@@ -220,7 +222,8 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
     Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(
             MovieInfo.MovieMultipleProperty.class);
 
-    fields.put(MovieInfo.MovieProperty.title, XPathUtils.selectString("//DIV[@id='title']//SPAN", dom).trim());
+    String title = XPathUtils.selectString("//DIV[@id='title']//SPAN", dom).trim();
+    mediaFields.put(MediaInfo.MediaProperty.title, title);
 
     String certification = XPathUtils.selectString("//SPAN[@class='insist']", dom);
     if (certification != null && !certification.equals("")) {
@@ -256,7 +259,9 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
         case Date_de_sortie:
           Node retNode = XPathUtils.selectNode("//SPAN[@itemprop='datePublished']", node);
           if (retNode != null) {
-            fields.put(MovieInfo.MovieProperty.releasedDate, XPathUtils.getAttribute("content", retNode));
+            String date = XPathUtils.getAttribute("content", retNode);
+            mediaFields.put(MediaInfo.MediaProperty.year, date);
+            fields.put(MovieInfo.MovieProperty.releasedDate, date);
           }
 
           retNode = XPathUtils.selectNode("../TD//SPAN[@itemprop='duration']", node);
@@ -296,11 +301,13 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
       }
     }
 
+
     List<Node> retNodes = XPathUtils.selectNodes("//SPAN[@class='note']", dom);
     if (retNodes != null && !retNodes.isEmpty()) {
       Node node = retNodes.size() >= 2 ? retNodes.get(1) : retNodes.get(0);
-      Float rate = Float.parseFloat(node.getTextContent().trim().replace(",", "."));
-      fields.put(MovieInfo.MovieProperty.rating, String.valueOf(rate * 2));
+      Double rating = Double.parseDouble(node.getTextContent().trim().replace(",", "."));
+      rating *= 2;
+      mediaFields.put(MediaInfo.MediaProperty.rating, "" + rating);
     }
 
     Node retNode = XPathUtils.selectNode("//SPAN[@itemprop='ratingCount']", dom);
@@ -337,9 +344,8 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
     multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
     multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
     multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
-    MovieInfo movieInfo = new MovieInfo(ids, fields, multipleFields);
 
-    return movieInfo;
+    return new MovieInfo(mediaFields, ids, fields, multipleFields);
   }
 
   @Override

@@ -377,6 +377,7 @@ public final class LocaleUtils {
           }
         }
       }
+      
       if (country == null) {
         // check enum identifier
         for (String ident : clc.getIdentifier()) {

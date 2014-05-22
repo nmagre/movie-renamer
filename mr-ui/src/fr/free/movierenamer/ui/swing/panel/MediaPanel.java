@@ -21,19 +21,21 @@ import com.alee.extended.breadcrumb.WebBreadcrumb;
 import com.alee.extended.breadcrumb.WebBreadcrumbToggleButton;
 import com.alee.extended.transition.ComponentTransition;
 import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.SwingUtils;
-import fr.free.movierenamer.info.Info;
-import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.bean.UIInfo;
+import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
-import fr.free.movierenamer.ui.swing.panel.info.IInfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.IMediaInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel.PanelType;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -53,12 +55,13 @@ import javax.swing.SwingConstants;
  * @param <T>
  * @author Nicolas Magré
  */
-public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator implements IInfoPanel<T> {
+public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator implements IMediaInfoPanel<T> {
 
   private ComponentTransition transitionPanel;
   private WebPanel mediaPanel;
   private WebToggleButton editButton;
   private WebBreadcrumb infoPanelBc;
+  private WebButton refreshButton;
   private WebLabel loadingLbl;
   protected Map<PanelType, InfoPanel<T>> panels;
 
@@ -77,6 +80,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
 
     this.panels = panels;
     int pos = 0;
+
     // Bread crumb buttons for navigate between panels
     infoPanelBc = new WebBreadcrumb();
     infoPanelBc.setFocusable(false);
@@ -92,11 +96,27 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     SwingUtils.setEnabledRecursively(infoPanelBc, false);
 
     boolean addEditButton = addEditButton();
+    boolean addRefreshButton = addRefreshButton();
 
     mediaPanel.add(infoPanelBc, getGroupConstraint(0, false, false));
 
     loadingLbl = new WebLabel();
-    mediaPanel.add(loadingLbl, getGroupConstraint(1, !addEditButton, false));
+    mediaPanel.add(loadingLbl, getGroupConstraint(addRefreshButton ? 2 : 1, !addEditButton || !addRefreshButton, false));
+
+    if (addRefreshButton) {
+      refreshButton = new WebButton(ImageUtils.REFRESH_16);
+      refreshButton.setRolloverShadeOnly(true);
+      refreshButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          UIEvent.fireUIEvent(UIEvent.Event.REFRESH_MEDIAINFO, MovieRenamer.class);// Fire event on mr
+        }
+      });
+      refreshButton.setEnabled(false);
+
+      TooltipManager.setTooltip(refreshButton, new WebLabel("mediapanel.refresh", refreshButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
+      mediaPanel.add(refreshButton, getGroupConstraint(1, !addEditButton, false));
+    }
 
     if (addEditButton) {
       editButton = new WebToggleButton(ImageUtils.EDIT_16);
@@ -112,7 +132,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
       editButton.setEnabled(false);
 
       TooltipManager.setTooltip(editButton, new WebLabel("mediapanel.edit", editButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
-      mediaPanel.add(editButton, getGroupConstraint(2, true, false, true, 1));
+      mediaPanel.add(editButton, getGroupConstraint(addRefreshButton ? 3 : 2, true, false, true, 1));
     }
 
     transitionPanel = new ComponentTransition(panels.values().iterator().next());
@@ -128,6 +148,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     gbc.weighty = 1;
     gbc.gridheight = 1;
     gbc.gridwidth = addEditButton ? 3 : 1;
+    gbc.gridwidth = addRefreshButton ? gbc.gridwidth + 1 : gbc.gridwidth;
 
     // Fixe random scroll when resize
     scrollpane.setPreferredSize(new Dimension(1, 1));
@@ -135,7 +156,7 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     mediaPanel.add(scrollpane, gbc);
   }
 
-  private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<? extends Info> panel) {
+  private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<? extends UIInfo> panel) {
     WebBreadcrumbToggleButton bcButton = new WebBreadcrumbToggleButton();
     bcButton.setIcon(panel.getIcon());
     bcButton.setFocusable(false);
@@ -175,6 +196,8 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
 
   protected abstract boolean addEditButton();
 
+  protected abstract boolean addRefreshButton();
+
   public InfoPanel<T> getPanel(PanelType ptype) {
     return panels.get(ptype);
   }
@@ -186,6 +209,10 @@ public abstract class MediaPanel<T extends MediaInfo> extends PanelGenerator imp
     SwingUtils.setEnabledRecursively(infoPanelBc, true);
     if (addEditButton()) {
       editButton.setEnabled(true);
+    }
+    
+    if(addRefreshButton()) {
+      refreshButton.setEnabled(true);
     }
   }
 
