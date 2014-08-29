@@ -19,10 +19,11 @@ package fr.free.movierenamer.ui.swing.panel;
 
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
+import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieCastingInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
-import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieInfoPanel;
+import java.util.List;
 
 /**
  * Class MoviePanel
@@ -68,9 +69,11 @@ public class MoviePanel extends VideoPanel<UIMovieInfo> {
   @Override
   public void setInfo(UIMovieInfo info) {
     super.setInfo(info);
+
+    ((InfoPanel<List<UIPersonImage>>) panels.get(InfoPanel.PanelType.CASTING_INFO)).setInfo(info.getCasting());
     //panels.get(InfoPanel.PanelType.ID_INFO).setInfo(info.getIds());
   }
-  
+
   @Override
   protected boolean addRefreshButton() {
     return true;

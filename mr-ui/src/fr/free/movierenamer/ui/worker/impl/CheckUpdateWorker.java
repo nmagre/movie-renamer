@@ -54,7 +54,7 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
     CacheObject cache = getCache();
 
     String version = UISettings.getApplicationVersionNumber();
-    UIUpdate uiUpdate = cache.getData(version, Locale.ENGLISH, UIUpdate.class);
+    UIUpdate uiUpdate = /*cache.getData(version, Locale.ENGLISH, UIUpdate.class);*/ null;
     if (uiUpdate != null) {
       return uiUpdate;
     }

@@ -212,14 +212,6 @@ public class MovieInfo extends VideoInfo {
     }
   }
 
-  @Override
-  public void filterInfo() {
-    String origTitle = fields.get(MovieProperty.originalTitle);
-    if (Settings.getInstance().isSetOrigTitle() && (origTitle == null || origTitle.isEmpty())) {
-      set(MovieProperty.originalTitle, get(MediaProperty.title));
-    }
-  }
-
   public List<String> get(final MovieMultipleProperty key) {
     return (List<String>) ((multipleFields != null && multipleFields.get(key) != null) ? multipleFields.get(key) : new ArrayList<String>());
   }

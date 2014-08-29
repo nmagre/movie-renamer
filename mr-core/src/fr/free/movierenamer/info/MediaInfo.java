@@ -105,10 +105,6 @@ public abstract class MediaInfo extends Info {
     unsetUnsupportedLanguageInfo();
   }
 
-  public void filterInfo() {
-    //
-  }
-
   public String getTitle() {
     return get(MediaProperty.title);
   }

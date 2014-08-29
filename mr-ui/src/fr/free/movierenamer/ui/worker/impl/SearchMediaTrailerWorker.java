@@ -81,10 +81,10 @@ public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
   @SuppressWarnings("unchecked")
   protected void workerDone() throws Exception {
     List<UITrailer> trailers = get();
-    TrailerInfoPanel panel = (TrailerInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.TRAILER_INFO);
-    if (panel != null) {
-      panel.addTrailers(trailers);
-    }
+//    TrailerInfoPanel panel = (TrailerInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.TRAILER_INFO);
+//    if (panel != null) {
+//      panel.addTrailers(trailers);
+//    }
   }
 
   @Override

@@ -27,6 +27,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
@@ -53,6 +54,7 @@ public class TracktScrapper extends MovieScrapper {
   private static final String name = "Trackt";
   private static final String NOIMAGE = "http://slurm.trakt.us/images/avatar-large.jpg";
   private static String apikey;
+  private static final AvailableApiIds supportedId = AvailableApiIds.IMDB;// Track.tv support both imdb and tmdb ids
 
   public TracktScrapper() {
     super(LocaleUtils.AvailableLanguages.en);
@@ -61,6 +63,11 @@ public class TracktScrapper extends MovieScrapper {
       throw new NullPointerException("apikey must not be null");
     }
     apikey = key;
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override

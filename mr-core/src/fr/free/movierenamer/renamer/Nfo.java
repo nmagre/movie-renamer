@@ -212,7 +212,6 @@ public class Nfo {// TODO
       anode.setTextContent(img != null ? img.toString() : "");
     }
 
-    FileUtils.writeXmlFile(nfoDocument, new File("/home/duffy/Desktop/mr.xml"));
   }
 
   private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, InfoType infoType) {

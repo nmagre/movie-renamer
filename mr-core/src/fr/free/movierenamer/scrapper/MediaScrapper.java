@@ -31,6 +31,8 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,21 +44,21 @@ import java.util.ArrayList;
  * @author Simon QUÉMÉNEUR
  */
 public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> extends SearchScrapper<M> {
-  
+
   protected static final Settings settings = Settings.getInstance();
-  
+
   protected MediaScrapper(AvailableLanguages... supportedLanguages) {
     super(supportedLanguages);
   }
-  
+
   @Override
   protected final List<M> search(String query, AvailableLanguages language) throws Exception {
     Locale lang = language.getLocale();
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to search media for '%s' in '%s'", getName(), query, lang.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
-    
+
     Class<M> genericClazz = ClassUtils.getGenericSuperClassArg(getClass(), 0);
-    
+
     List<M> results = (cache != null) ? cache.getList(query, language.getLocale(), genericClazz) : null;
     if (results != null) {
       return results;
@@ -77,32 +79,41 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     // cache results and return
     return (cache != null) ? cache.putList(query, lang, genericClazz, results) : results;
   }
-  
+
   protected abstract List<M> searchMedia(String query, AvailableLanguages language) throws Exception;
-  
+
   protected abstract List<M> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception;
-  
+
   public final MI getInfo(M search) throws Exception {
     return getInfo(search, getLanguage());
   }
-  
+
   protected final MI getInfo(M search, AvailableLanguages language) throws Exception {
     Locale lang = language.getLocale();
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get media info for '%s' in '%s'", getName(), search, lang.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
-    
+
     Class<MI> genericClazz = ClassUtils.getGenericSuperClassArg(getClass(), 1);
-    
+
     MI info = (cache != null) ? cache.getData(search, lang, genericClazz) : null;
     if (info != null) {
       //filterInfo(info, language);
       return info;
     }
 
+    // Fetch id
+    IdInfo id = search.getMediaId();
+    if (id != null && id.getIdType() != getSupportedId()) {
+      id = ScrapperUtils.idLookup(getSupportedId(), id, search);
+      if (id != null) {
+        search.setMediaId(id);
+      }
+    }
+
     // perform actual search
     info = fetchMediaInfo(search, language);
     Settings.LOGGER.log(Level.INFO, String.format("'%s' returns '%s' as info for '%s' in '%s'", getName(), info, search, lang.getDisplayLanguage(Locale.ENGLISH)));
-    
+
     if (info == null) {
       return info;
     }
@@ -116,50 +127,31 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     }
     info.setCasting(casting);
 
-//    //fetch id
-//    List<IdInfo> ids;
-//    try {
-//      ids = getIds(search);
-//    } catch (Exception ex) {
-//      ids = null;
-//    }
-//    
-//    if (ids != null) {
-//      info.setIdsInfo(ids);
-//    }
-
     // cache results
     if (cache != null) {
       cache.putData(search, lang, info);
     }
-    //filterInfo(info, language);
+
     return info;
   }
-  
-  private void filterInfo(MI info, AvailableLanguages language) {
-    if (!hasSupportedLanguage(language) && settings.isGetOnlyLangDepInfo()) {
-      info.unsetUnsupportedLangInfo();
-    }
-    info.filterInfo();
-  }
-  
+
   protected abstract MI fetchMediaInfo(M searchResult, AvailableLanguages language) throws Exception;
-  
+
   public final List<ImageInfo> getImages(M search) throws Exception {
     List<ImageInfo> imagesInfo = fetchImagesInfo(search);
     return imagesInfo != null ? imagesInfo : new ArrayList<ImageInfo>();
   }
-  
+
   protected abstract List<ImageInfo> fetchImagesInfo(M media) throws Exception;
-  
+
   protected List<ImageInfo> getScrapperImages(M searchResult) throws Exception {
     return null;
   }
-  
+
   public final List<CastingInfo> getCasting(M search) throws Exception {
     return getCasting(search, getLanguage());
   }
-  
+
   protected final List<CastingInfo> getCasting(M search, AvailableLanguages language) throws Exception {
     Locale lang = language.getLocale();
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get casting info list for '%s' in '%s'", getName(), search, lang.getDisplayLanguage(Locale.ENGLISH)));
@@ -176,27 +168,9 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     // cache results and return
     return (cache != null) ? cache.putList(search, lang, CastingInfo.class, personsInfo) : personsInfo;
   }
-  
+
   protected abstract List<CastingInfo> fetchCastingInfo(M search, AvailableLanguages language) throws Exception;
-  
-  public final List<IdInfo> getIds(M search) throws Exception {
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get id info list for '%s'", getName(), search));
-    CacheObject cache = getCache();
-    List<IdInfo> ids = (cache != null) ? cache.getList(search, Locale.ROOT, IdInfo.class) : null;
-    if (ids != null) {
-      return ids;
-    }
 
-    // perform actual search
-    ids = fetchIdInfo(search);
-    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d id info for '%s'", getName(), ids.size(), search));
+  public abstract AvailableApiIds getSupportedId();
 
-    // cache results and return
-    return (cache != null) ? cache.putList(search, Locale.ROOT, IdInfo.class, ids) : ids;
-  }
-  
-  protected List<IdInfo> fetchIdInfo(M search) throws Exception {
-    return null;
-  }
-  
 }

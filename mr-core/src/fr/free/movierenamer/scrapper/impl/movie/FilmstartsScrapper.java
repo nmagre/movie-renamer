@@ -42,6 +42,7 @@ public class FilmstartsScrapper extends AlloGroupScrapper {
   private static enum Tag {
 
     Kinostart(InfoTag.Date_de_sortie),
+    Starttermin(InfoTag.Date_de_sortie),
     Regie(InfoTag.Réalisé_par),
     Genre(InfoTag.Genre),
     Nationalität(InfoTag.Nationalité),
@@ -59,9 +60,6 @@ public class FilmstartsScrapper extends AlloGroupScrapper {
       return infotag;
     }
 
-    public static void test() {
-
-    }
   }
 
   public FilmstartsScrapper() {

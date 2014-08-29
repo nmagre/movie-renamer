@@ -22,6 +22,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import java.util.List;
 
 /**
+ * Class UIMediaInfo
  *
  * @author Nicolas Magré
  */

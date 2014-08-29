@@ -17,17 +17,21 @@
  */
 package fr.free.movierenamer.scrapper.impl.movie;
 
+import fr.free.movierenamer.scrapper.ScraperThread;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.scrapper.MovieScrapper;
+import fr.free.movierenamer.scrapper.Scrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +39,9 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Class UniversalScrapper : Search movie on several scrapper (based on imdb)
@@ -47,9 +53,16 @@ public class UniversalScrapper extends MovieScrapper {// TODO
   private static final String host = "www.imdb.com";
   private static final String name = "Universal";
   private String query;
+  private static final AvailableApiIds supportedId = AvailableApiIds.IMDB;
+  private final MovieScrapper defaultScrapper = new IMDbScrapper();
 
   public UniversalScrapper() {
     super(LocaleUtils.AvailableLanguages.values());
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override
@@ -107,112 +120,44 @@ public class UniversalScrapper extends MovieScrapper {// TODO
     final List<MovieScrapper> scrappers = getScrappersByQuality(language);
     final List<IdInfo> idsInfo = new ArrayList<IdInfo>();
 
-    IdInfo idInfo = searchResult.getMediaId();
-    if (idInfo == null) {
-      idInfo = searchResult.getImdbId();
-    }
-    idsInfo.add(idInfo);
+    int poolSize = 5;
+    ExecutorService service = Executors.newFixedThreadPool(poolSize);
+    List<Future<MovieInfo>> futures = new ArrayList<Future<MovieInfo>>();
 
-    // Try to get imdb ID
-    if (language != AvailableLanguages.en) {
-      final IdInfo imdbId = ScrapperUtils.imdbIdLookup(idInfo, searchResult);
-      if (imdbId != null) {
-        searchResult.setImdbId(imdbId);
-        final MovieScrapper movieScrapper = ScrapperManager.getScrapper(IMDbScrapper.class);
-        movieScrapper.setLanguage(language);
-
-        final MovieInfo info = movieScrapper.getInfo(searchResult);
-        for (MovieInfo.MovieProperty property : MovieInfo.MovieProperty.values()) {
-          if (!property.isLanguageDepends()) {
-            String cvalue = fields.get(property);
-            String nvalue = info.get(property);
-            if ((cvalue == null || cvalue.equals("")) && nvalue != null && !nvalue.equals("")) {
-              fields.put(property, nvalue);
-            }
-          }
-        }
-        mediaFields.put(MediaInfo.MediaProperty.title, info.get(MediaInfo.MediaProperty.title));
-        mediaFields.put(MediaInfo.MediaProperty.year, info.get(MediaInfo.MediaProperty.year));
-        mediaFields.put(MediaInfo.MediaProperty.rating, info.get(MediaInfo.MediaProperty.rating));
-
-        for (MovieInfo.MovieMultipleProperty property : MovieInfo.MovieMultipleProperty.values()) {
-          if (!property.isLanguageDepends()) {
-            List<String> cvalue = multipleFields.get(property);
-            List<String> nvalue = info.get(property);
-            if ((cvalue == null || cvalue.isEmpty()) && nvalue != null && !nvalue.isEmpty()) {
-              multipleFields.put(property, nvalue);
-            }
-          }
-        }
-      }
-    }
+    Future f = service.submit(new ScraperThread<Movie, MovieInfo>(defaultScrapper, searchResult, language));
+    futures.add(f);
 
     for (MovieScrapper scrapper : scrappers) {
-      if (scrapper.getName().equals(getName())) {
+      if (scrapper.getName().equals(getName()) || defaultScrapper.getName().equals(scrapper.getName())) {
         continue;
       }
 
+      f = service.submit(new ScraperThread<Movie, MovieInfo>(scrapper, searchResult, language));
+      futures.add(f);
+    }
+
+    // Wait for all threads and Merge info
+    // TODO
+    for (Future<MovieInfo> future : futures) {
+
       try {
-        Movie result = searchResult;
-        switch (idInfo.getIdType()) {
-          case TMDB:
-          case IMDB:
-            if (AlloGroupScrapper.class.isAssignableFrom(scrapper.getClass())) {
-              IdInfo alloId = ScrapperUtils.alloIdLookup(idInfo, searchResult);
-              if (alloId == null) {
-                continue;
-              }
-
-              idsInfo.add(alloId);
-              result = new Movie(idInfo, alloId, searchResult.getName(), searchResult.getOriginalTitle(), searchResult.getURL(), searchResult.getYear());
-            }
-            break;
-          case ALLOCINE:
-            if (!(AlloGroupScrapper.class.isAssignableFrom(scrapper.getClass()))) {
-              IdInfo imdbId = ScrapperUtils.imdbIdLookup(idInfo, searchResult);
-              if (imdbId == null) {
-                continue;
-              }
-
-              idsInfo.add(imdbId);
-              result = new Movie(imdbId, idInfo, searchResult.getName(), searchResult.getOriginalTitle(), searchResult.getURL(), searchResult.getYear());
-            }
-            break;
-          default:
-            result = searchResult;
-        }
-
-        // Try to found movie on kinopoisk
-        if (KinopoiskScrapper.class.isAssignableFrom(scrapper.getClass())) {
-          IdInfo kinopoiskId = ScrapperUtils.kinopoiskIdLookup(searchResult);
-          if (kinopoiskId == null) {
-            continue;
-          }
-          result = new Movie(result.getImdbId(), kinopoiskId, searchResult.getName(), searchResult.getOriginalTitle(), searchResult.getURL(), searchResult.getYear());
-        }
-
-        MovieInfo info = scrapper.getInfo(result);
-        if (info == null) {
-          continue;
-        }
+        MovieInfo info = future.get();
 
         String title = mediaFields.get(MediaInfo.MediaProperty.title);
         if (title == null || title.isEmpty()) {
           mediaFields.put(MediaInfo.MediaProperty.title, info.get(MediaInfo.MediaProperty.title));
         }
-        
+
         String year = mediaFields.get(MediaInfo.MediaProperty.year);
         if (year == null) {
           mediaFields.put(MediaInfo.MediaProperty.year, info.get(MediaInfo.MediaProperty.year));
         }
-        
+
         String rating = mediaFields.get(MediaInfo.MediaProperty.rating);
         if (rating == null) {
           mediaFields.put(MediaInfo.MediaProperty.rating, info.get(MediaInfo.MediaProperty.rating));
         }
 
-        // Merge info
-        // TODO
         for (MovieInfo.MovieProperty property : MovieInfo.MovieProperty.values()) {
           String cvalue = fields.get(property);
           String nvalue = info.get(property);
@@ -229,9 +174,11 @@ public class UniversalScrapper extends MovieScrapper {// TODO
           }
         }
       } catch (Exception ex) {
-        Settings.LOGGER.log(Level.SEVERE, null, ex);
+        Settings.LOGGER.warning(ex.getMessage());
       }
     }
+
+    service.shutdownNow();
 
     return new MovieInfo(mediaFields, idsInfo, fields, multipleFields);
   }

@@ -42,6 +42,7 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
@@ -63,9 +64,15 @@ public class IMDbScrapper extends MovieScrapper {
   private static final String name = "IMDb";
   private static final Pattern blacklist = Pattern.compile("\\((TV Series|Video Game|TV Mini-Series|TV Special|TV|TV Episode)\\)");
   private static final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
+  private static final AvailableApiIds supportedId = AvailableApiIds.IMDB;
 
   public IMDbScrapper() {
     super(AvailableLanguages.en);
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override
@@ -141,7 +148,7 @@ public class IMDbScrapper extends MovieScrapper {
           thumb = null;
         }
 
-        results.add(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, title, null, thumb, Integer.parseInt(year)));
+        results.add(new Movie(new IdInfo(imdbid, AvailableApiIds.IMDB), null, title, null, thumb, Integer.parseInt(year)));
       } catch (Exception e) {
         // ignore
       }
@@ -151,7 +158,7 @@ public class IMDbScrapper extends MovieScrapper {
     if (results.isEmpty()) {
       try {
         int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
-        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1), language);
+        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, AvailableApiIds.IMDB), null, null, null, null, -1), language);
         URL thumb;
         try {
           String imgPath = info.getPosterPath().toURL().toExternalForm();
@@ -160,7 +167,7 @@ public class IMDbScrapper extends MovieScrapper {
           thumb = null;
         }
 
-        Movie movie = new Movie(new IdInfo(imdbid, ScrapperUtils.AvailableApiIds.IMDB), null, info.getTitle(), null, thumb, info.getYear());
+        Movie movie = new Movie(new IdInfo(imdbid, AvailableApiIds.IMDB), null, info.getTitle(), null, thumb, info.getYear());
         results.add(movie);
 
       } catch (Exception e) {
@@ -300,34 +307,13 @@ public class IMDbScrapper extends MovieScrapper {
     }
 
     // Genre
-    List<Node> ngenres = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'Genres')]", dom);
-    String sgrenre;
-    for (Node genre : ngenres) {
-      sgrenre = ScrapperUtils.getValue(genre);
-      if (sgrenre != null) {
-        genres.add(sgrenre);
-      }
-    }
+    ScrapperUtils.getMultipleValues(genres, "//DIV[@class='info']//A[contains(@href, 'Genres')]", dom);
 
     // Country
-    List<Node> ncountries = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, 'country')]", dom);
-    String scountry;
-    for (Node country : ncountries) {
-      scountry = ScrapperUtils.getValue(country);
-      if (scountry != null) {
-        countries.add(scountry);
-      }
-    }
+    ScrapperUtils.getMultipleValues(countries, "//DIV[@class='info']//A[contains(@href, 'country')]", dom);
 
     // Tag
-    List<Node> ntags = XPathUtils.selectNodes("//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
-    String stag;
-    for (Node ntag : ntags) {
-      stag = ScrapperUtils.getValue(ntag);
-      if (stag != null) {
-        tags.add(stag);
-      }
-    }
+    ScrapperUtils.getMultipleValues(tags, "//DIV[@class='info']//A[contains(@href, '/keyword/')]", dom);
 
     // Overview (long version)
     Node plot = XPathUtils.selectNode(String.format("//A[@href='/title/%s/plotsummary']", movie.getImdbId()), dom);

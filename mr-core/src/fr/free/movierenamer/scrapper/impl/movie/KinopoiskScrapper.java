@@ -28,6 +28,7 @@ import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.net.URL;
@@ -51,6 +52,7 @@ public class KinopoiskScrapper extends MovieScrapper {
   private static final String name = "Kinopoisk";
   private static final String imgHost = "http://st.kinopoisk.ru/images/sm_film/";
   private final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
+  private static final AvailableApiIds supportedId = AvailableApiIds.KINOPOISK;
 
   private enum MInfo {
 
@@ -67,6 +69,11 @@ public class KinopoiskScrapper extends MovieScrapper {
 
   public KinopoiskScrapper() {
     super(AvailableLanguages.ru);
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override

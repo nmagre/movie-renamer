@@ -23,6 +23,7 @@ import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.utils.FileUtils;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -86,7 +87,9 @@ public abstract class NameMatcher {// TODO
       extractedName = names[0].replaceAll("(\\p{Lower})(\\p{Upper})", "$1 $2");// Add space between lowercase and uppercase letter
       extractedName = NameCleaner.extractName(extractedName, false);// try to sxtract name with space added
     }
-    return extractedName;
+
+    extractedName = Normalizer.normalize(extractedName, Normalizer.Form.NFD);
+    return extractedName.replaceAll("[^\\p{ASCII}]", "");
   }
 
   /**

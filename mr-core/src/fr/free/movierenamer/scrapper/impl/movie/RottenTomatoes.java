@@ -24,10 +24,10 @@ import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.JSONUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.io.IOException;
@@ -57,6 +57,7 @@ public class RottenTomatoes extends MovieScrapper {
   private static final String name = "RottenTomatoes";
   private static final String version = "1.0";
   private static final Pattern origTitle = Pattern.compile("[(]([^)]*)[)]$");
+  private static final AvailableApiIds supportedId = AvailableApiIds.ROTTEN;
   private static String apikey;
 
   public RottenTomatoes() {
@@ -66,6 +67,11 @@ public class RottenTomatoes extends MovieScrapper {
       throw new NullPointerException("apikey must not be null");
     }
     apikey = key;
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override
@@ -133,17 +139,30 @@ public class RottenTomatoes extends MovieScrapper {
       }
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(null, new IdInfo(id, ScrapperUtils.AvailableApiIds.ROTTEN), title, originaleTitle, thumb, year));
+        resultSet.put(id, new Movie(null, new IdInfo(id, AvailableApiIds.ROTTEN), title, originaleTitle, thumb, year));
       }
     }
 
     return new ArrayList<Movie>(resultSet.values());
   }
 
-  private String rottenTomatoesIdLookUp(String imdbId) throws Exception {
-    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movie_alias.json?apikey=" + apikey + "&type=imdb&id=" + imdbId);
-    JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    return JSONUtils.selectString("id", json);
+  public static IdInfo rottenTomatoesIdLookUp(IdInfo imdbId) {
+    if (imdbId.getIdType() != AvailableApiIds.IMDB) {
+      return null;
+    }
+
+    try {
+      URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movie_alias.json?apikey=" + apikey + "&type=imdb&id=" + imdbId);
+      JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
+      String id = JSONUtils.selectString("id", json);
+      if (id != null && !id.isEmpty()) {
+        return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.ROTTEN);
+      }
+    } catch (Exception ex) {
+      // No id found
+    }
+
+    return null;
   }
 
   public static IdInfo imdbIdLookup(IdInfo rottenTomatoesId) {
@@ -175,14 +194,13 @@ public class RottenTomatoes extends MovieScrapper {
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
     IdInfo idinfo = movie.getImdbId();
-    String id;
     if (idinfo != null) {
-      id = rottenTomatoesIdLookUp(idinfo.toString());
+      idinfo = rottenTomatoesIdLookUp(idinfo);
     } else {
-      id = movie.getMediaId().toString();
+      idinfo = movie.getMediaId();
     }
 
-    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + ".json?apikey=" + apikey);
+    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + idinfo + ".json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
@@ -212,12 +230,17 @@ public class RottenTomatoes extends MovieScrapper {
     if (jobject != null) {
       String releaseDate = JSONUtils.selectString("theater", jobject);
       releaseDate = releaseDate == null ? JSONUtils.selectString("dvd", jobject) : releaseDate;
-      
-      if(releaseDate != null) {
+
+      if (releaseDate != null) {
         fields.put(MovieInfo.MovieProperty.releasedDate, releaseDate);
-        mediaFields.put(MediaInfo.MediaProperty.year, releaseDate);
+        Pattern pattern = Pattern.compile("(\\d{4})-\\d{2}-\\d{2}");
+        Matcher matcher = pattern.matcher(releaseDate);
+        if (matcher.find()) {
+          mediaFields.put(MediaInfo.MediaProperty.year, matcher.group(1));
+        }
+        fields.put(MovieInfo.MovieProperty.releasedDate, releaseDate);
       }
-      
+
     }
 
     jobject = JSONUtils.selectObject("ratings", json);

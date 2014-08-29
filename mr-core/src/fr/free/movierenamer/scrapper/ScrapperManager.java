@@ -36,7 +36,6 @@ import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
-import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TracktScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
@@ -62,7 +61,6 @@ public class ScrapperManager {
     getScrapper(AdorocinemaScrapper.class);
     getScrapper(BeyazperdeScrapper.class);
     getScrapper(FilmstartsScrapper.class);
-    getScrapper(ScreenRushScrapper.class);
     getScrapper(SensacineScrapper.class);
     getScrapper(IMDbScrapper.class);
     getScrapper(TMDbScrapper.class);

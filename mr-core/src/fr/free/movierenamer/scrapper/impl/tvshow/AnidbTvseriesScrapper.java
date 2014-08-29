@@ -18,7 +18,6 @@
 package fr.free.movierenamer.scrapper.impl.tvshow;
 
 import java.util.List;
-import java.util.Locale;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
@@ -26,6 +25,7 @@ import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import java.net.URL;
 
 /**
@@ -41,6 +41,11 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
 
   public AnidbTvseriesScrapper() {
     super(AvailableLanguages.en);
+  }
+  
+    @Override
+  public AvailableApiIds getSupportedId() {
+    return null;
   }
 
   @Override

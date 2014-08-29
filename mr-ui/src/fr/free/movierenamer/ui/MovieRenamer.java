@@ -48,7 +48,6 @@ import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.AncestorAdapter;
-import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.settings.Settings;
@@ -166,7 +165,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     loadingDial = new LoadingDialog();
 
-    //Cache.clearAllCache();// FIXME remove !!!
+    Cache.clearAllCache();// FIXME remove !!!
     mediaFileSeparatorModel = new EventListModel<>(mediaFileSeparator);
 
     // Set Movie Renamer mode
@@ -422,9 +421,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         loadingDial = null;
         break;
       case RENAME_FILE:
-        int index = mediaFileEventList.indexOf((UIFile) oldObj);
+        int index = mediaFileList.getSelectedIndex();
 
         if (index != -1) {
+          System.out.println("INDEX : " + index);
+          System.out.println("OBJ : " + oldObj);
           UIFile item = (UIFile) getMediaFileListModel().getElementAt(index);
           item.setIcon(ImageUtils.LOAD_8);
         }
@@ -571,15 +572,18 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
         if (!lse.getValueIsAdjusting()) {
-          UIFile mediaFile = null;
+          UIFile mediaFile;
 
           try {
-            mediaFile = getSelectedMediaFile();
+            mediaFile = (UIFile) getSelectedMediaFile();
           } catch (ClassCastException ex) {// Spinningdial (user cancel)
             clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
+            return;
           }
 
           if (mediaFile == null) {
+            clearInterface(!CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
+            searchField.setText("");
             UISettings.LOGGER.log(Level.SEVERE, "Media file is null for : {0}", lse.toString());
             return;
           }
@@ -790,6 +794,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       searchField.setText(null);
       mediaFileEventList.clear();
       mediaFileSeparator.clear();
+      mediaFileList.setModel(getMediaFileListModel());
+      mediaCount.setText("");
     }
 
     if (clearSearchResultList) {
@@ -873,7 +879,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    *
    * @return
    */
-  public final EventListModel<UIFile> getMediaFileListModel() {
+  public EventListModel<UIFile> getMediaFileListModel() {
     return groupFile ? mediaFileSeparatorModel : mediaFileModel;
   }
 
@@ -1093,6 +1099,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     statusBar.setVisible(true);
   }
 
+  public void setMediaCount(int count) {
+    mediaCount.setText("(" + count + ")");
+  }
+
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -1124,6 +1134,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mediaFilePnl = new WebPanel();
     mediaFileTb = new WebToolBar();
     mediaLbl = new WebLabel();
+    mediaCount = new WebLabel();
     mediaFileScp = new JScrollPane();
     mediaFileList = new WebList();
     centerPanel = new WebPanel();
@@ -1240,6 +1251,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mediaLbl.setLanguage(i18n.getLanguageKey("mediatb.media"));
     mediaLbl.setIcon(ImageUtils.MEDIA_16);
     mediaFileTb.add(mediaLbl);
+    mediaFileTb.add(mediaCount);
 
     mediaFileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     mediaFileScp.setViewportView(mediaFileList);
@@ -1256,7 +1268,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       .addGroup(mediaFilePnlLayout.createSequentialGroup()
         .addComponent(mediaFileTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
-        .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE))
+        .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE))
     );
 
     listSp.setLeftComponent(mediaFilePnl);
@@ -1508,6 +1520,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private ComponentTransition mainContainerTransition;
   private WebPanel mainPanel;
   private WebToolBar mainTb;
+  private WebLabel mediaCount;
   private WebList mediaFileList;
   private WebPanel mediaFilePnl;
   private JScrollPane mediaFileScp;

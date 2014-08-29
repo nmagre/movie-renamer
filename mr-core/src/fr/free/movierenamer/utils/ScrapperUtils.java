@@ -28,7 +28,6 @@ import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
-import fr.free.movierenamer.scrapper.impl.movie.ScreenRushScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Media;
@@ -142,7 +141,7 @@ public final class ScrapperUtils {
     return idLookup(AvailableApiIds.KINOPOISK, null, searchResult);
   }
 
-  private static IdInfo idLookup(final AvailableApiIds lookupType, final IdInfo id, final Movie searchResult) {
+  public static IdInfo idLookup(final AvailableApiIds lookupType, final IdInfo id, final Media searchResult) {
     final List<IdInfo> ids = new ArrayList<IdInfo>();
     if (searchResult != null) {
       final IdInfo mid = searchResult.getMediaId();
@@ -157,11 +156,15 @@ public final class ScrapperUtils {
 
     switch (lookupType) {
       case IMDB:
-        return getImdbId(ids, searchResult);
+        return getImdbId(ids, (Movie) searchResult);
+      case TMDB:
+        return getTmdbId(ids, (Movie) searchResult);
+      case ROTTEN:
+        return getRottenId(ids, (Movie) searchResult);
       case ALLOCINE:
-        return getAlloId(ids, searchResult);
+        return getAlloId(ids, (Movie) searchResult);
       case KINOPOISK:
-        return getKinopoiskId(searchResult);
+        return getKinopoiskId(ids, (Movie) searchResult);
     }
 
     return null;
@@ -219,14 +222,52 @@ public final class ScrapperUtils {
     }
 
     if (searchResult != null) {
-      // try to find imdb id with imdb scrapper
+      // try to find imdb id with imdb scraper
       imdbid = getIdBySearch(new IMDbScrapper(), searchResult);
     }
 
     return imdbid;
   }
 
-  private static IdInfo getKinopoiskId(Movie searchResult) {
+  private static IdInfo getTmdbId(List<IdInfo> ids, Movie searchResult) {
+
+    for (IdInfo id : ids) {
+      if (id.getIdType() == AvailableApiIds.TMDB) {
+        return id;
+      }
+    }
+
+    IdInfo imdbid = getImdbId(ids, searchResult);
+    if (imdbid != null) {
+      return TMDbScrapper.tmdbIDLookUp(imdbid);
+    }
+
+    return getIdBySearch(new TMDbScrapper(), searchResult);
+  }
+
+  private static IdInfo getRottenId(List<IdInfo> ids, Movie searchResult) {
+
+    for (IdInfo id : ids) {
+      if (id.getIdType() == AvailableApiIds.ROTTEN) {
+        return id;
+      }
+    }
+
+    IdInfo imdbid = getImdbId(ids, searchResult);
+    if (imdbid != null) {
+      return RottenTomatoes.rottenTomatoesIdLookUp(imdbid);
+    }
+
+    return getIdBySearch(new RottenTomatoes(), searchResult);
+  }
+
+  private static IdInfo getKinopoiskId(List<IdInfo> ids, Movie searchResult) {
+    for (IdInfo id : ids) {
+      if (id.getIdType() == AvailableApiIds.TMDB) {
+        return id;
+      }
+    }
+
     return getIdBySearch(new KinopoiskScrapper(), searchResult);
   }
 
@@ -271,11 +312,9 @@ public final class ScrapperUtils {
       case de:
         scrapper = new FilmstartsScrapper();
         break;
-      case en:
-        scrapper = new ScreenRushScrapper();
-        break;
       case es:
         scrapper = new SensacineScrapper();
+        break;
     }
 
     if (scrapper != null) {
@@ -441,6 +480,17 @@ public final class ScrapperUtils {
     }
 
     return getValue(node.getTextContent());
+  }
+
+  public static void getMultipleValues(List<String> values, String xpath, Object docNode) {
+    List<Node> nodes = XPathUtils.selectNodes(xpath, docNode);
+    String value;
+    for (Node node : nodes) {
+      value = ScrapperUtils.getValue(node);
+      if (value != null) {
+        values.add(value);
+      }
+    }
   }
 
   private ScrapperUtils() {

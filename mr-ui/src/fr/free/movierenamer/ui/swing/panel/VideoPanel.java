@@ -61,7 +61,7 @@ public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
     }
     mainTb.addToEnd(starPanel);
 
-    Map<InfoPanel.PanelType, InfoPanel> mediaPanels = new LinkedHashMap<>();
+    Map<InfoPanel.PanelType, InfoPanel<?>> mediaPanels = new LinkedHashMap<>();
     for (InfoPanel panel : panels) {
       mediaPanels.put(panel.getType(), panel);
     }
@@ -82,9 +82,9 @@ public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
 
   @Override
   public void addInfo(T info) {
-    InfoPanel<T> panel = panels.get(InfoPanel.PanelType.INFO);
+    InfoPanel<?> panel = panels.get(InfoPanel.PanelType.INFO);
     if (panel != null) {
-      panel.setInfo(info);
+      ((InfoPanel<T>) panel).setInfo(info);
     }
 
     //panel = panels.get(InfoPanel.PanelType.CASTING_INFO);

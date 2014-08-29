@@ -49,6 +49,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -67,6 +68,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
    */
   private final String apikey;
   private final String posterRoot;
+  private static final AvailableApiIds supportedId = AvailableApiIds.TVDB;
 
   public TheTVDBScrapper() {
     super(AvailableLanguages.en, AvailableLanguages.sv, AvailableLanguages.no, AvailableLanguages.da, AvailableLanguages.fi,
@@ -86,6 +88,11 @@ public class TheTVDBScrapper extends TvShowScrapper {
       posterRoot = "";
     }
     this.posterRoot = posterRoot;
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override

@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.swing;
 import com.alee.managers.popup.WebPopup;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
-import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;

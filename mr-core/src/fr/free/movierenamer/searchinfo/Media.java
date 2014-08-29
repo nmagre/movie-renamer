@@ -47,6 +47,10 @@ public abstract class Media extends Hyperlink {
     return idInfo;
   }
 
+  public void setMediaId(IdInfo idInfo) {
+    this.idInfo = idInfo;
+  }
+
   @Override
   public int getYear() {
     return year;

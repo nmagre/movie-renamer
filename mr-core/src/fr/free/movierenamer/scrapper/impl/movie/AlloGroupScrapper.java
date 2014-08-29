@@ -27,6 +27,7 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
@@ -51,6 +52,14 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
   private static final Pattern yearPattern = Pattern.compile("\\d{4}");
   private static final Pattern runtimePattern = Pattern.compile("(\\d+)h\\s?(\\d+)min");
   private static final String key = "0A12B34C56D78E9FULONYXTIZKJSHVPWQMGR";
+  private static final AvailableApiIds supportedId = AvailableApiIds.ALLOCINE;
+  public static final List<AvailableLanguages> avLangs = Arrays.asList(new AvailableLanguages[]{
+    AvailableLanguages.fr,
+    AvailableLanguages.pt,
+    AvailableLanguages.tr,
+    AvailableLanguages.de,
+    AvailableLanguages.es
+  });
 
   protected interface ITag {
 
@@ -78,6 +87,11 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
 
   protected AlloGroupScrapper(AvailableLanguages lang) {
     super(lang);
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   protected abstract String getSearchString();
@@ -260,7 +274,11 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
           Node retNode = XPathUtils.selectNode("//SPAN[@itemprop='datePublished']", node);
           if (retNode != null) {
             String date = XPathUtils.getAttribute("content", retNode);
-            mediaFields.put(MediaInfo.MediaProperty.year, date);
+            Pattern pattern = Pattern.compile("(\\d{4})-\\d{2}-\\d{2}");
+            Matcher matcher = pattern.matcher(date);
+            if (matcher.find()) {
+              mediaFields.put(MediaInfo.MediaProperty.year, matcher.group(1));
+            }
             fields.put(MovieInfo.MovieProperty.releasedDate, date);
           }
 
@@ -300,7 +318,6 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
           break;
       }
     }
-
 
     List<Node> retNodes = XPathUtils.selectNodes("//SPAN[@class='note']", dom);
     if (retNodes != null && !retNodes.isEmpty()) {

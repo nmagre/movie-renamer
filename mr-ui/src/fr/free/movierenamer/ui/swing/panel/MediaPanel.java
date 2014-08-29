@@ -31,7 +31,6 @@ import com.alee.utils.SwingUtils;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UIEvent;
-import fr.free.movierenamer.ui.bean.UIInfo;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
@@ -63,18 +62,18 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
   private WebBreadcrumb infoPanelBc;
   private WebButton refreshButton;
   private WebLabel loadingLbl;
-  protected Map<PanelType, InfoPanel<T>> panels;
+  protected Map<PanelType, InfoPanel<?>> panels;
 
   protected MediaPanel() {
     super();
     UIEvent.addEventListener(this.getClass(), this);
   }
 
-  protected void createPanel(Map<PanelType, InfoPanel<T>> panels) {
+  protected void createPanel(Map<PanelType, InfoPanel<?>> panels) {
     createPanel(null, panels);
   }
 
-  protected void createPanel(WebPanel mpanel, final Map<PanelType, InfoPanel<T>> panels) {
+  protected void createPanel(WebPanel mpanel, final Map<PanelType, InfoPanel<?>> panels) {
 
     mediaPanel = mpanel != null ? mpanel : this;
 
@@ -84,7 +83,7 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
     // Bread crumb buttons for navigate between panels
     infoPanelBc = new WebBreadcrumb();
     infoPanelBc.setFocusable(false);
-    for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
+    for (Entry<PanelType, InfoPanel<?>> entry : panels.entrySet()) {
       WebBreadcrumbToggleButton bcButton = createbuttonPanel(entry.getValue());
       if (pos == 0) {
         bcButton.setSelected(true);
@@ -156,7 +155,7 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
     mediaPanel.add(scrollpane, gbc);
   }
 
-  private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<? extends UIInfo> panel) {
+  private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<?> panel) {
     WebBreadcrumbToggleButton bcButton = new WebBreadcrumbToggleButton();
     bcButton.setIcon(panel.getIcon());
     bcButton.setFocusable(false);
@@ -198,7 +197,7 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
 
   protected abstract boolean addRefreshButton();
 
-  public InfoPanel<T> getPanel(PanelType ptype) {
+  public InfoPanel<?> getPanel(PanelType ptype) {
     return panels.get(ptype);
   }
 
@@ -220,7 +219,7 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
 
   @Override
   public void clear() {
-    for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
+    for (Entry<PanelType, InfoPanel<?>> entry : panels.entrySet()) {
       entry.getValue().clear();
     }
 

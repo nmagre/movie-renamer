@@ -46,6 +46,7 @@ import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 
@@ -59,9 +60,15 @@ public class TvRageScrapper extends TvShowScrapper {
 
   private static final String host = "services.tvrage.com";
   private static final String name = "TVRage";
+  private static final AvailableApiIds supportedId = AvailableApiIds.TVRAGE;
 
   public TvRageScrapper() {
     super(AvailableLanguages.en);
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override

@@ -18,7 +18,6 @@
 package fr.free.movierenamer.scrapper.impl.movie;
 
 import java.util.List;
-import java.util.Locale;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MovieInfo;
@@ -26,7 +25,9 @@ import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Class AnidbScrapper : search movie on anidb (Anime DataBase)
@@ -39,9 +40,15 @@ public class AnidbScrapper extends MovieScrapper {
   private static final String host = "anidb.net";
   private static final String name = "AniDB";
   private static final String version = "2";
+  private static final List<AvailableApiIds> avIds = Arrays.asList(new AvailableApiIds[]{});
 
   public AnidbScrapper() {
     super(AvailableLanguages.en);
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return null;
   }
 
   @Override

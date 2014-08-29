@@ -26,6 +26,7 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import java.net.URL;
 
 /**
@@ -40,6 +41,7 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   private static final String name = "Allocine";
   private static final String version = "3";
   private final String apikey;
+  private static final AvailableApiIds supportedId = AvailableApiIds.ALLOCINE;
 
   public AllocineTvseriesScrapper() {
     super(AvailableLanguages.fr);
@@ -48,6 +50,11 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
       throw new NullPointerException("apikey must not be null");
     }
     this.apikey = key;
+  }
+
+  @Override
+  public AvailableApiIds getSupportedId() {
+    return supportedId;
   }
 
   @Override

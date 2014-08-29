@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
     this.files = files;
     this.eventList = eventList;
     setting = UISettings.getInstance();
-    subFolder = !setting.getScanSubfolder().equals(UISettings.Subfolder.NOTBROWSE);
+    subFolder = setting.getScanSubfolder().equals(UISettings.Subfolder.BROWSE);
   }
 
   /**
@@ -149,6 +149,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
       if (isCancelled()) {
         return;
       }
+      
       if (listFile.isDirectory() && subFolder) {
         addFiles(medias, listFile);
       } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFile)) {
@@ -179,7 +180,6 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
 
     WebList list = mr.getMediaList();
     list.setModel(mr.getMediaFileListModel());
-
     eventList.addAll(medias);
 
     if (eventList.isEmpty()) {
@@ -187,9 +187,11 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
       return;
     }
 
+    mr.setMediaCount(medias.size());
+    
     if (UISettings.getInstance().isSelectFirstMedia()) {
       int index = 0;
-      if (mr.getMediaFileListModel().getElementAt(index) instanceof SeparatorList.Separator) {
+      if (list.getValueAt(index) instanceof SeparatorList.Separator) {
         index++;
       }
       list.setSelectedIndex(index);
@@ -201,14 +203,13 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
   @Override
   @SuppressWarnings("unchecked")
   protected void workerCanceled() {
-    WebList list = mr.getMediaList();
-    list.setModel(mr.getMediaFileListModel());
     eventList.clear();
   }
 
   @Override
   public final void processPause(String v) {
     int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v, false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
+    
     if (res == WebOptionPane.YES_OPTION) {
       subFolder = true;
     }

@@ -49,44 +49,6 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
   }
 
   @Override
-  protected List<IdInfo> fetchIdInfo(Movie movie) throws Exception {
-    Map<AvailableApiIds, IdInfo> ids = new EnumMap<AvailableApiIds, IdInfo>(AvailableApiIds.class);
-
-    IdInfo id = movie.getImdbId();
-    if (id != null) {
-      ids.put(AvailableApiIds.IMDB, id);
-    }
-    id = movie.getMediaId();
-
-    if (id != null) {
-      ids.put(id.getIdType(), id);
-    }
-
-    if (!ids.containsKey(AvailableApiIds.IMDB)) {
-      id = ScrapperUtils.imdbIdLookup(id, movie);
-      if (id != null) {
-        ids.put(id.getIdType(), id);
-      }
-    }
-
-    if (!ids.containsKey(AvailableApiIds.ALLOCINE)) {
-      id = ScrapperUtils.alloIdLookup(id, movie);
-      if (id != null) {
-        ids.put(id.getIdType(), id);
-      }
-    }
-
-    if (!ids.containsKey(AvailableApiIds.KINOPOISK)) {
-      id = ScrapperUtils.kinopoiskIdLookup(movie);
-      if (id != null) {
-        ids.put(id.getIdType(), id);
-      }
-    }
-
-    return new ArrayList<IdInfo>(ids.values());
-  }
-
-  @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
 
     List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();

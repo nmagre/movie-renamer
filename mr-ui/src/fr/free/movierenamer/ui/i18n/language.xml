@@ -1188,7 +1188,7 @@
     </record>
 
     <record key="scanSubFolder">
-      <value lang="en">Do you to scan subfolders ?</value>
+      <value lang="en">Do you want to scan subfolders ?</value>
       <value lang="fr">Voulez-vous parcourir les sous-dossiers ?</value>
     </record>
 
