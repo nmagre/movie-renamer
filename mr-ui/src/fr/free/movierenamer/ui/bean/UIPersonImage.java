@@ -58,7 +58,7 @@ public class UIPersonImage implements IImage {
 
   @Override
   public URI getUri(ImageInfo.ImageSize size) {
-    return person.getPicturePath();
+    return person.getImage(size);
   }
 
   @Override

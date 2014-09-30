@@ -60,8 +60,8 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
     if (value instanceof UISearchResult) {
       UISearchResult sres = (UISearchResult) value;
       String text = sres.print(Property.showId.isEnabled(), Property.showYear.isEnabled());
-      if (Property.showOrigTitle.isEnabled()) {
-        text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalTitle() + "</i></html>";
+      if (Property.showOrigTitle.isEnabled() && sres.getOriginalName() != null) {
+        text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalName()+ "</i></html>";
       } else {
         text = "<html><b>" + text + "</b></html>";
       }

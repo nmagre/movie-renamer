@@ -22,9 +22,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.Scrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
@@ -112,7 +110,7 @@ public class UniversalScrapper extends MovieScrapper {// TODO
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie searchResult, AvailableLanguages language) throws Exception {
+  protected MovieInfo fetchMediaInfo(final Movie searchResult, IdInfo id, AvailableLanguages language) throws Exception {
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     final Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
     final Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
@@ -184,7 +182,7 @@ public class UniversalScrapper extends MovieScrapper {// TODO
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie search, AvailableLanguages language) throws Exception {// TODO
+  protected List<CastingInfo> fetchCastingInfo(Movie search, IdInfo id, AvailableLanguages language) throws Exception {// TODO
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

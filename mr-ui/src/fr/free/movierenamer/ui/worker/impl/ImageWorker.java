@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
   private final ImageListModel<T> model;
 
-  public ImageWorker(List<T> images, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    this(images, model, ImageInfo.ImageSize.small, resize, defaultImage, downloadImage);
+  public ImageWorker(ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    this(model, ImageInfo.ImageSize.small, resize, defaultImage, downloadImage);
   }
 
-  public ImageWorker(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    super(images, size, resize, defaultImage, downloadImage);
+  public ImageWorker(ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    super(model.getAll(), size, resize, defaultImage, downloadImage);
     this.model = model;
   }
 

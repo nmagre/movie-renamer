@@ -25,6 +25,7 @@ import com.alee.laf.list.WebList;
 import com.alee.managers.hotkey.ButtonHotkeyRunnable;
 import com.alee.managers.hotkey.HotkeyData;
 import com.alee.managers.hotkey.HotkeyManager;
+import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.notification.NotificationManager;
 import com.alee.managers.notification.NotificationOption;
 import com.alee.managers.notification.WebNotificationPopup;
@@ -34,7 +35,6 @@ import static com.alee.managers.popup.PopupWay.upLeft;
 import static com.alee.managers.popup.PopupWay.upRight;
 import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import com.sun.jna.Platform;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
@@ -383,7 +383,7 @@ public final class UIUtils {
    * @return Selected object (IIconList) or null
    */
   @SuppressWarnings("unchecked")
-  public static <T extends IIconList> T getSelectedElement(WebList list) {
+  public static <T extends IIconList> T getSelectedElement(final WebList list) {
     T current = null;
     if (list != null) {
       Object obj = list.getSelectedValue();

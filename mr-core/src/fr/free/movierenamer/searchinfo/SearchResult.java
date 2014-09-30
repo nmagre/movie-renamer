@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import fr.free.movierenamer.utils.Sorter;
 import java.io.Serializable;
 
 /**
- * Class SearchResult
+ * Class SearchResult : A search result that can be sorted
  *
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
@@ -29,30 +29,48 @@ import java.io.Serializable;
 public abstract class SearchResult extends Sorter.ISort implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  protected String title;
-  protected String originalTitle;
+  protected int year;
+  protected String name;
+  protected String originalName;
 
   protected SearchResult() {
     // used by serializer
   }
 
-  public SearchResult(String title, String originalTitle) {
-    this.title = title;
-    this.originalTitle = (originalTitle == null) ? title : originalTitle;
+  /**
+   * Constructor
+   *
+   * @param name Result name
+   * @param originalName Result original name
+   * @param year Year
+   */
+  public SearchResult(String name, String originalName, int year) {
+    this.name = name;
+    this.originalName = originalName;
+    this.year = year;
   }
 
   @Override
   public String getName() {
-    return title;
+    return name;
   }
 
   @Override
-  public String getOriginalTitle() {
-    return originalTitle;
+  public String getOriginalName() {
+    return originalName;
+  }
+
+  @Override
+  public int getYear() {
+    return year;
   }
 
   @Override
   public String toString() {
-    return title;
+    if (year > 0) {
+      return name + String.format(" (%04d)", year);
+    }
+    
+    return name;
   }
 }

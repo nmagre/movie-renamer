@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.ArrayList;
@@ -48,12 +49,6 @@ public abstract class MediaInfo extends Info {
     public boolean isLanguageDepends();
 
     public String name();
-  }
-
-  public enum InfoType {
-
-    MOVIE,
-    TVSHOW
   }
 
   public enum MediaProperty implements InfoProperty {
@@ -166,7 +161,7 @@ public abstract class MediaInfo extends Info {
     return null;
   }
 
-  public abstract InfoType getInfoType();
+  public abstract MediaType getMediaType();
 
   public abstract String getRenamedTitle(String filename, String format);
 

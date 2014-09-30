@@ -21,6 +21,7 @@ import java.util.List;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
@@ -76,7 +77,7 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
@@ -96,7 +97,7 @@ public class AnidbTvseriesScrapper extends TvShowScrapper {
 //    // return null;
 //  }
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

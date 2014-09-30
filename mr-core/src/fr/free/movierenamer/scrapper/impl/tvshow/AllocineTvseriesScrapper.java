@@ -21,6 +21,7 @@ import java.util.List;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
@@ -85,7 +86,7 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     // URL searchUrl = new URL("http", host, "/rest/v" + version + "/tvseries?season=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + season.getId());
     // URL searchUrl = new URL("http", host, "/rest/v" + version + "/tvseries?episode=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + episode.getId());
     // TODO Auto-generated method stub
@@ -107,7 +108,7 @@ public class AllocineTvseriesScrapper extends TvShowScrapper {
 //    // return null;
 //  }
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;

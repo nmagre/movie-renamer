@@ -22,15 +22,15 @@ import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
-import fr.free.movierenamer.info.MediaInfo.InfoType;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
+import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
+import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,8 +58,8 @@ public class Nfo {// TODO
   private final List<ImageInfo> images;
   private static final Map<MediaInfo.InfoProperty, String> xbmcMovieNFOLayout;
   private static final Map<MediaInfo.InfoProperty, String> boxeeMovieNFOLayout;
-  private static final Map<InfoType, Map> xbmcNFOLayout;
-  private static final Map<InfoType, Map> BoxeeNFOLayout;
+  private static final Map<MediaType, Map> xbmcNFOLayout;
+  private static final Map<MediaType, Map> BoxeeNFOLayout;
   private static final Settings settings = Settings.getInstance();
   private final String[] boxeeGenre = new String[]{"ACTION", " ADVENTURE", " ANIMATION", " COMEDY", " CRIME", " DOCUMENTARY", " DRAMA", " FAMILY", " FANTASY", " FILM_NOIR", " HISTORY", " MUSIC", " MUSICAL", " MYSTERY", " NEWS", " ROMANCE", " SCI_FI", " SHORT", " SPORT", " THRILLER", " WAR", " WESTERN"};
   private Element rootElement;
@@ -74,8 +74,8 @@ public class Nfo {// TODO
   }
 
   static {
-    xbmcNFOLayout = new EnumMap<InfoType, Map>(InfoType.class);
-    BoxeeNFOLayout = new EnumMap<InfoType, Map>(InfoType.class);
+    xbmcNFOLayout = new EnumMap<MediaType, Map>(MediaType.class);
+    BoxeeNFOLayout = new EnumMap<MediaType, Map>(MediaType.class);
     xbmcMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
     boxeeMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
 
@@ -102,8 +102,8 @@ public class Nfo {// TODO
     boxeeMovieNFOLayout.put(MovieProperty.overview, "outline");
     boxeeMovieNFOLayout.put(MovieProperty.runtime, "runtime");
 
-    xbmcNFOLayout.put(InfoType.MOVIE, xbmcMovieNFOLayout);
-    BoxeeNFOLayout.put(InfoType.MOVIE, boxeeMovieNFOLayout);
+    xbmcNFOLayout.put(MediaType.MOVIE, xbmcMovieNFOLayout);
+    BoxeeNFOLayout.put(MediaType.MOVIE, boxeeMovieNFOLayout);
   }
 
   public Nfo(MediaInfo mediaInfo, List<ImageInfo> images) {
@@ -207,14 +207,14 @@ public class Nfo {// TODO
       anode = createNode(node, "role");
       anode.setTextContent(actor.getCharacter());
 
-      img = actor.getPicturePath();
+      img = actor.getImage(ImageInfo.ImageSize.big);
       anode = createNode(node, "thumb");
       anode.setTextContent(img != null ? img.toString() : "");
     }
 
   }
 
-  private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, InfoType infoType) {
+  private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, MediaType infoType) {
 
     switch (infoType) {
       case MOVIE:
@@ -275,9 +275,9 @@ public class Nfo {// TODO
   public Document getNFO() throws ParserConfigurationException {
     createDocument("movie");
 
-    InfoType infoType = mediaInfo.getInfoType();
+    MediaType infoType = mediaInfo.getMediaType();
 
-    if (infoType.equals(InfoType.MOVIE)) {
+    if (infoType.equals(MediaType.MOVIE)) {
       if (settings.isMovieImdbId()) {
         addNode("id", ((MovieInfo) mediaInfo).getIdString(ScrapperUtils.AvailableApiIds.IMDB));
       }
@@ -305,7 +305,7 @@ public class Nfo {// TODO
     return nfoDocument;
   }
 
-  private void addBoxeeInfo(InfoType infoType) {
+  private void addBoxeeInfo(MediaType infoType) {
     switch (infoType) {
       case MOVIE:
         addBoxeeMovieInfo((MovieInfo) mediaInfo);
@@ -351,7 +351,7 @@ public class Nfo {// TODO
     }
   }
 
-  private void addXbmcInfo(InfoType infoType) {
+  private void addXbmcInfo(MediaType infoType) {
     switch (infoType) {
       case MOVIE:
         addXbmcMovieInfo((MovieInfo) mediaInfo);
@@ -381,7 +381,7 @@ public class Nfo {// TODO
       node = createNode(rootElement, "actor");
       addToNode(node, "name", actor.getName());
       addToNode(node, "role", actor.getCharacter());
-      URI img = actor.getPicturePath();
+      URI img = actor.getImage(ImageInfo.ImageSize.big);
       if (img != null && !img.toString().equals("")) {
         addToNode(node, "thumb", img.toString());
       }

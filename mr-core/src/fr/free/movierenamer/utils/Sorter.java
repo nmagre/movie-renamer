@@ -43,11 +43,11 @@ public class Sorter {
 
     protected abstract String getName();
 
-    protected String getOriginalTitle() {
+    protected String getOriginalName() {
       return getName();
     }
 
-    protected int getYear() {
+    public int getYear() {
       return -1;
     }
 
@@ -105,7 +105,7 @@ public class Sorter {
 
       // Get best similarity between title and orig title
       int sim = simCompare(tocompare, object.getName(), bonus);
-      if (!object.getName().equals(object.getOriginalTitle())) {
+      if (object.getOriginalName() != null && !ObjectUtils.compare(object.getName(), object.getOriginalName())) {
         sim = Math.max(sim, simCompare(tocompare, object.getName(), bonus));
       }
 

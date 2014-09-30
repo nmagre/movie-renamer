@@ -23,6 +23,9 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.namematcher.NameMatcher;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
+import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
+import static fr.free.movierenamer.settings.XMLSettings.SettingsSubType.MOVIE;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -160,7 +163,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
 
   private void addUIfile(List<UIFile> medias, File file) {
     String groupName = "";
-    FileInfo.MediaType mtype = FileInfo.getMediaType(file);
+    MediaType mtype = FileInfo.getMediaType(file);
     switch (mtype) {
       case MOVIE:
         groupName = file.getName().trim().substring(0, 1);

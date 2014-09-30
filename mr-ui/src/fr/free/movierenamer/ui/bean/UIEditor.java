@@ -20,11 +20,11 @@ package fr.free.movierenamer.ui.bean;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
+import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.swing.ContextMenuFieldMouseListener;
+import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
 import fr.free.movierenamer.ui.swing.dialog.MultipleValueEditorDialog;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -94,7 +94,7 @@ public class UIEditor {
 
     if (isTextComponent) {
       ((JTextComponent) component).setEditable(false);
-      ((JTextComponent) component).addMouseListener(new ContextMenuFieldMouseListener());
+      ((JTextComponent) component).addMouseListener(new ContextMenuField());
     }
   }
 

@@ -67,10 +67,8 @@ public class TrailerInfoPanel extends InfoPanel<UITrailer> {
       this.trailers.add(trailer);
     }
 
-    // Avoid reference
-    List<UITrailer> uitrailers = new ArrayList<>(this.trailers);
     // Get images
-    WorkerManager.fetchImages(uitrailers, listModel, imageSize, ImageUtils.UNKNOWN, true);
+    WorkerManager.fetchImages(listModel, imageSize, ImageUtils.UNKNOWN, true);
 
     if (!listModel.isEmpty()) {
       trailerList.setSelectedIndex(0);

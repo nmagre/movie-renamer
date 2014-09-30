@@ -36,7 +36,12 @@ public class TvShow extends Video {
   }
 
   public TvShow(IdInfo imdbId, IdInfo id, String seriesName, URL thumb, int year) {
-    super(imdbId, id, seriesName, null, thumb, year);
+    super(imdbId, id, seriesName, null, year, thumb);
+  }
+
+  @Override
+  public MediaType getMediaType() {
+    return MediaType.TVSHOW;
   }
 
   @Override

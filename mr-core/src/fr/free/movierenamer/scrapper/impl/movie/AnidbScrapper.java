@@ -20,6 +20,7 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import java.util.List;
 
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
@@ -67,7 +68,7 @@ public class AnidbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
@@ -92,7 +93,7 @@ public class AnidbScrapper extends MovieScrapper {
 //    // return null;
 //  }
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;

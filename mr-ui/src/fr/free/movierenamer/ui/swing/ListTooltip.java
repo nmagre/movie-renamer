@@ -18,8 +18,8 @@
 package fr.free.movierenamer.ui.swing;
 
 import com.alee.laf.list.WebList;
+import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UILoader;
 import fr.free.movierenamer.ui.utils.UIUtils;

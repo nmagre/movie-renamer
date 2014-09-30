@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.scrapper;
 
-import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.impl.image.FanartTVImagesScrapper;
@@ -25,8 +24,6 @@ import fr.free.movierenamer.scrapper.impl.image.TMDbImagesScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.ScrapperUtils;
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.ScrapperUtils.InfoQuality;
 import java.io.FileNotFoundException;
 import java.net.URL;

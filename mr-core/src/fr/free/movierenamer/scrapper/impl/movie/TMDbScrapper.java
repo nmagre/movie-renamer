@@ -20,6 +20,7 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.CastingInfo.PersonProperty;
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
@@ -41,6 +42,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -188,7 +190,7 @@ public class TMDbScrapper extends MovieScrapper {
       try {
         int tmdbid = findTmdbId(searchUrl.toString());
         IdInfo id = new IdInfo(tmdbid, ScrapperUtils.AvailableApiIds.TMDB);
-        MovieInfo info = fetchMediaInfo(new Movie(null, id, null, null, null, -1), language);
+        MovieInfo info = fetchMediaInfo(new Movie(null, id, null, null, null, -1), id, language);
         URL thumb;
         try {
           thumb = new URL(info.getPosterPath().toURL().toExternalForm());
@@ -264,15 +266,7 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
-
-    IdInfo id = movie.getMediaId();
-    if (id == null) {
-      id = tmdbIDLookUp(movie.getImdbId());
-      if (id == null) {
-        return null;
-      }
-    }
+  protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
 
     URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey + "&language=" + language.name() + "&append_to_response=releases,keywords");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
@@ -359,8 +353,8 @@ public class TMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
-    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + movie.getMediaId() + "/casts?api_key=" + apikey);
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
+    URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "/casts?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
@@ -374,8 +368,15 @@ public class TMDbScrapper extends MovieScrapper {
         personFields.put(PersonProperty.name, JSONUtils.selectString("name", jsonObj));
         personFields.put(PersonProperty.character, JSONUtils.selectString("character", jsonObj));
         String image = JSONUtils.selectString("profile_path", jsonObj);
+        ImageInfo imgInfo = null;
         if (image != null && image.length() > 0) {
-          personFields.put(PersonProperty.picturePath, getTmdbImageBaseUrl() + TmdbImageSize.cast.getMedium() + image);
+          int cid = JSONUtils.selectInteger("id", json);
+
+          Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
+          fields.put(ImageInfo.ImageProperty.urlTumb, getTmdbImageBaseUrl() + TmdbImageSize.cast.getSmall()+ image);
+          fields.put(ImageInfo.ImageProperty.urlMid, getTmdbImageBaseUrl() + TmdbImageSize.cast.getMedium() + image);
+          fields.put(ImageInfo.ImageProperty.url, getTmdbImageBaseUrl() + TmdbImageSize.cast.getBig()+ image);
+          imgInfo = new ImageInfo(cid, fields, ImageInfo.ImageCategoryProperty.actor);
         }
 
         if (section.equals("crew")) {
@@ -383,7 +384,8 @@ public class TMDbScrapper extends MovieScrapper {
         } else {
           personFields.put(PersonProperty.job, CastingInfo.ACTOR);
         }
-        casting.add(new CastingInfo(personFields));
+
+        casting.add(new CastingInfo(personFields, imgInfo));
       }
     }
 

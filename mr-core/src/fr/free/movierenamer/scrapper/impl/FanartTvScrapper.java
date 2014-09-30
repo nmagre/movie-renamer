@@ -88,6 +88,7 @@ public abstract class FanartTvScrapper<M extends Video> extends ImageScrapper<M>
         Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
         int id = JSONUtils.selectInteger("id", image);
         imageFields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("url", image));
+        imageFields.put(ImageInfo.ImageProperty.urlTumb, JSONUtils.selectString("url", image).replace("/fanart/", "/preview/"));
         imageFields.put(ImageInfo.ImageProperty.language, JSONUtils.selectString("lang", image));
         ImageInfo.ImageCategoryProperty category = getCategory(tag);
         imagesInfos.add(new ImageInfo(id, imageFields, category));

@@ -56,7 +56,7 @@ public class YoutubeScrapper extends TrailerScrapper {
   protected List<TrailerInfo> searchTrailer(Movie movie) throws Exception {
 
     List<TrailerInfo> trailers = new ArrayList<TrailerInfo>();
-    String search = movie.getOriginalTitle();
+    String search = movie.getOriginalName();
     if (search == null || search.equals("")) {
       search = movie.getName();
     }

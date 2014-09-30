@@ -48,7 +48,7 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
    * @param searchResult
    */
   @SuppressWarnings("unchecked")
-  public SearchMediaInfoWorker(MovieRenamer mr, UISearchResult searchResult) {
+  public SearchMediaInfoWorker(final MovieRenamer mr, final UISearchResult searchResult) {
     super(mr);
     this.searchResult = searchResult;
     this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
@@ -58,8 +58,7 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
   public UIMediaInfo executeInBackground() throws Exception {
     UIMediaInfo info = null;
     if (searchResult != null && scrapper != null) {
-      Media media = searchResult.getSearchResult();
-      MediaInfo inf = scrapper.getInfo(media);
+      MediaInfo inf = scrapper.getInfo(searchResult.getSearchResult());
       
       if (inf instanceof VideoInfo) {
         FileInfo fileInfo = mr.getFile().getFileInfo();

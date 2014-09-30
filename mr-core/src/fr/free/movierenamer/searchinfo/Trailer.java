@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,25 +29,25 @@ public class Trailer extends Hyperlink {
   private static final long serialVersionUID = 1L;
   private String runtime;
   private String providerName;
-  private URL thumb;
+  private URL turl;
 
   protected Trailer() {
     // used by serializer
   }
 
-  public Trailer(String title, String runtime, String providerName, URL thumb, URL url) {
-    super(title, null, url);
+  public Trailer(String title, String runtime, String providerName, URL thumb, URL turl) {
+    super(title, null, 0, thumb);
     this.runtime = runtime;
     this.providerName = providerName;
-    this.thumb = thumb;
+    this.turl = turl;
   }
 
   public String getRuntime() {
     return runtime;
   }
 
-  public URL getThumb() {
-    return thumb;
+  public URL getTrailerUrl() {
+    return turl;
   }
 
   public String getProviderName() {
@@ -57,9 +57,9 @@ public class Trailer extends Hyperlink {
   @Override
   public String toString() {
     if (runtime != null) {
-      return title + " (" + runtime + ") " + thumb + " : " + url;
+      return name + String.format(" (%s) %s", runtime, turl);
     }
-    return title + " " + thumb + " : " + url;
+    return name + " : " + turl;
   }
 
 }

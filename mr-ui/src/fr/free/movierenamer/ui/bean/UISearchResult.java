@@ -92,8 +92,8 @@ public class UISearchResult extends Sorter.ISort implements IImage {
   }
 
   @Override
-  public String getOriginalTitle() {
-    return searchResult.getOriginalTitle();
+  public String getOriginalName() {
+    return searchResult.getOriginalName();
   }
 
   @Override

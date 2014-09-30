@@ -131,7 +131,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
 
       if (!resultSet.containsKey(sid)) {
         // search can have multiple times the result (fr, en, ...)
-        resultSet.put(sid, new TvShow(null, new IdInfo(sid, ScrapperUtils.AvailableApiIds.TVDB), seriesName, banner, year));
+        resultSet.put(sid, new TvShow(null, new IdInfo(sid, ScrapperUtils.AvailableApiIds.TVDB), seriesName, null, year));
       }
     }
 
@@ -139,7 +139,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/" + language.name() + ".xml");
 
     Document dom = URIRequest.getXmlDocument(url.toURI());
@@ -253,7 +253,7 @@ public class TheTVDBScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     URL url = new URL("http", host, "/api/" + apikey + "/series/" + tvShow.getMediaId() + "/actors.xml");
     Document dom = URIRequest.getXmlDocument(url.toURI());
 
@@ -264,10 +264,10 @@ public class TheTVDBScrapper extends TvShowScrapper {
       Map<PersonProperty, String> fields = new EnumMap<PersonProperty, String>(PersonProperty.class);
       fields.put(PersonProperty.id, XPathUtils.getTextContent("id", node));
       fields.put(PersonProperty.name, XPathUtils.getTextContent("Name", node));
-      fields.put(PersonProperty.picturePath, posterRoot + XPathUtils.getTextContent("Image", node));
+      //fields.put(PersonProperty.picturePath, posterRoot + XPathUtils.getTextContent("Image", node));
       fields.put(PersonProperty.character, XPathUtils.getTextContent("Role", node));
       fields.put(PersonProperty.job, "Actor");
-      casting.add(new CastingInfo(fields));
+      casting.add(new CastingInfo(fields, null));
     }
     return casting;
   }

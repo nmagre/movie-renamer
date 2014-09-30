@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ public class Subtitle extends Hyperlink {
   }
 
   public Subtitle(String shortName, String title, URL link) {
-    super(title, null, link);
+    super(title, null, 0, link);
     this.shortName = shortName;
   }
 

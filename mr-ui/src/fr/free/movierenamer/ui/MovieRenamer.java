@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui;
 
+import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
 import fr.free.movierenamer.ui.swing.UIManager;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -44,9 +45,9 @@ import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.hotkey.Hotkey;
 import com.alee.managers.language.LanguageManager;
+import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
-import com.alee.managers.tooltip.TooltipWay;
 import com.alee.utils.swing.AncestorAdapter;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.renamer.Nfo;
@@ -153,14 +154,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final ListTooltip searchResultTooltip = new ListTooltip(1200, true);
   // Misc
   private final ListSelectionListener mediaFileListListener = createMediaFileListListener();
-  private final ContextMenuFieldMouseListener contextMenuFieldMouseListener = new ContextMenuFieldMouseListener();
+  private final ContextMenuField contextMenuField = new ContextMenuField();
   private WebButtonPopup mediaFileListsettingBtn;
   private List<ImageInfo> images;
   private LoadingDialog loadingDial;
   private boolean workersDone = true;
   private boolean renameWorkerDone = true;
 
-  public MovieRenamer() {
+  public MovieRenamer(String lcode) {// FIXME remove String lcode
     super();
 
     loadingDial = new LoadingDialog();
@@ -185,6 +186,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     setSize(frameSize);
     init();
+    LanguageManager.setLanguage(lcode); // FIXME remove
   }
 
   @Override
@@ -311,9 +313,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchTb.addToEnd(UIUtils.createSettingButton(PopupWay.downLeft, showIconResultListChk, showIdResultListChk, showYearResultListChk, showOrigTitleResultListChk));
 
     // Add context menu on textfield (right click menu)
-    searchField.addMouseListener(contextMenuFieldMouseListener);
-    renameField.addMouseListener(contextMenuFieldMouseListener);
-    fileFormatField.addMouseListener(contextMenuFieldMouseListener);
+    searchField.addMouseListener(contextMenuField);
+    renameField.addMouseListener(contextMenuField);
+    fileFormatField.addMouseListener(contextMenuField);
 
     // add mouse listener on status bar for task popup
     statusBar.addMouseListener(createStatusBarListener());
@@ -331,10 +333,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
       CurtainTransitionEffect effect = new CurtainTransitionEffect();
       effect.setDirection(Direction.down);
-      effect.setType(CurtainType.slide);
-      int speed = 60;// TODO change animation speed
-
-      effect.setSpeed(60 * this.getSize().width / frameSize.width);
+      effect.setType(CurtainType.fade);
+      //effect.setSpeed(this.getSize().width / 10);
 
       appearanceTransition.setTransitionEffect(effect);
       appearanceTransition.addAncestorListener(new AncestorAdapter() {
@@ -364,7 +364,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     loadingDial.hideDial();
     loadingDial = null;
-
+    LanguageManager.setLanguage("fr");// FIXME remove
     // Start rename thread
     WorkerManager.startRenameThread();
   }
@@ -424,8 +424,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         int index = mediaFileList.getSelectedIndex();
 
         if (index != -1) {
-          System.out.println("INDEX : " + index);
-          System.out.println("OBJ : " + oldObj);
           UIFile item = (UIFile) getMediaFileListModel().getElementAt(index);
           item.setIcon(ImageUtils.LOAD_8);
         }
@@ -476,7 +474,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
                 break;
               case appLanguage:
                 LanguageManager.setLanguage(sproperty.getValue());
-                LanguageManager.updateAllComponents();
+                //LanguageManager.updateAllComponents();
+                // FIXME update UI
                 break;
               case movieNfogenerate:
                 UIManager.setCheckBox(sproperty);
@@ -571,7 +570,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     return new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
-        if (!lse.getValueIsAdjusting()) {
+        WebList lsm = (WebList) lse.getSource();
+        if (!lsm.getValueIsAdjusting() && !lsm.isSelectionEmpty()) {
           UIFile mediaFile;
 
           try {
@@ -601,7 +601,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     return new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent lse) {
-        if (!lse.getValueIsAdjusting()) {
+        WebList lsm = (WebList) lse.getSource();
+        if (!lsm.getValueIsAdjusting() && !lsm.isSelectionEmpty()) {
           UISearchResult searchResult = null;
           try {
             searchResult = getSelectedSearchResult();
@@ -757,9 +758,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     clearInterface(!CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
 
     searchResultList.setModel(loaderModel);
-
     currentMedia.setSearch(search);
-
     WorkerManager.search(this, currentMedia);
   }
 
@@ -895,7 +894,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     return searchResultList;
   }
 
-  public final UIScraper getScraper() {
+  public final UIScraper getUIScraper() {
     return currentMode.getSelectedScraper();
   }
 

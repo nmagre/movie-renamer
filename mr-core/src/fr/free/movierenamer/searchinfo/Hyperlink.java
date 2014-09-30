@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
  */
 package fr.free.movierenamer.searchinfo;
 
+import fr.free.movierenamer.utils.ObjectUtils;
 import java.net.URL;
 import java.util.Arrays;
 
 /**
- * Class Hyperlink
+ * Class Hyperlink : A search result
  *
  * @author Simon QUÉMÉNEUR
  * @author Nicolas Magré
@@ -35,27 +36,34 @@ public abstract class Hyperlink extends SearchResult {
     // used by serializer
   }
 
-  public Hyperlink(String title, String originalTitle, URL url) {
-    super(title, originalTitle);
+  /**
+   * Constructor
+   *
+   * @param name Result name
+   * @param originalName Result original name
+   * @param year Year
+   * @param url Result url
+   */
+  public Hyperlink(String name, String originalName, int year, URL url) {
+    super(name, originalName, year);
     this.url = url;
   }
 
+  /**
+   * Get hyperlink URL
+   *
+   * @return Hyperlink URL or null
+   */
   public URL getURL() {
     return url;
   }
 
-  // public URI getURI() {
-  // try {
-  // return (url == null) ? null : url.toURI();
-  // } catch (URISyntaxException e) {
-  // throw new RuntimeException(e);
-  // }
-  // }
   @Override
   public boolean equals(Object object) {
     if (object instanceof Hyperlink) {
       Hyperlink other = (Hyperlink) object;
-      return title.equals(other.title) && ((url == null) ? "" : url.toString()).equals((other.url == null) ? "" : other.url.toString());
+      return ObjectUtils.compare(name, other.getName()) && ObjectUtils.compare(url, other.getURL())
+              && ObjectUtils.compare(originalName, other.getOriginalName());
     }
 
     return false;
@@ -64,14 +72,10 @@ public abstract class Hyperlink extends SearchResult {
   @Override
   public int hashCode() {
     return Arrays.hashCode(new Object[]{
-      title, (url == null) ? null : url.toString()
+      name, (url == null) ? null : url.toString()
     });
   }
 
-  // @Override
-  // public Hyperlink clone() {
-  // return new Hyperlink(this);
-  // }
   @Override
   public String toString() {
     if (url != null) {

@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.swing;
 
 import com.alee.extended.image.DisplayType;
 import com.alee.extended.image.WebImage;
-import com.alee.laf.StyleConstants;
+import com.alee.global.StyleConstants;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;

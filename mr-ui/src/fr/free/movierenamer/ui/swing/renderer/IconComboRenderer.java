@@ -34,7 +34,7 @@ import javax.swing.JList;
 public class IconComboRenderer<T extends IIconList> extends WebComboBoxCellRenderer {
 
   public IconComboRenderer(Component component) {
-    super(component);
+    super();
   }
 
   @Override

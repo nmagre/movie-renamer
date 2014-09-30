@@ -192,15 +192,9 @@ public class RottenTomatoes extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
-    IdInfo idinfo = movie.getImdbId();
-    if (idinfo != null) {
-      idinfo = rottenTomatoesIdLookUp(idinfo);
-    } else {
-      idinfo = movie.getMediaId();
-    }
+  protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
 
-    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + idinfo + ".json?apikey=" + apikey);
+    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + ".json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
@@ -285,9 +279,9 @@ public class RottenTomatoes extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
 
-    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + movie.getMediaId() + "/cast.json?apikey=" + apikey);
+    URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + "/cast.json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
@@ -301,7 +295,7 @@ public class RottenTomatoes extends MovieScrapper {
       personFields.put(CastingInfo.PersonProperty.character, JSONUtils.selectString("character", jsonObj));
       personFields.put(CastingInfo.PersonProperty.job, CastingInfo.ACTOR);
 
-      casting.add(new CastingInfo(personFields));
+      casting.add(new CastingInfo(personFields, null));
     }
 
     searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + movie.getMediaId() + ".json?apikey=" + apikey);
@@ -312,7 +306,7 @@ public class RottenTomatoes extends MovieScrapper {
       personFields.put(CastingInfo.PersonProperty.name, JSONUtils.selectString("name", jsonObj));
       personFields.put(CastingInfo.PersonProperty.job, CastingInfo.DIRECTOR);
 
-      casting.add(new CastingInfo(personFields));
+      casting.add(new CastingInfo(personFields, null));
     }
 
     return casting;

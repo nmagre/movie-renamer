@@ -21,6 +21,7 @@ import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.renamer.FormatReplacing;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.FileUtils;
@@ -178,8 +179,8 @@ public class MovieInfo extends VideoInfo {
   }
 
   @Override
-  public InfoType getInfoType() {
-    return InfoType.MOVIE;
+  public MediaType getMediaType() {
+    return MediaType.MOVIE;
   }
 
   @Override

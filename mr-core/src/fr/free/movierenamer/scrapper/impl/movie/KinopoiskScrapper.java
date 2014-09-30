@@ -132,8 +132,8 @@ public class KinopoiskScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
-    URL searchUrl = new URL("http", host, "/film/" + movie.getMediaId());
+  protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
+    URL searchUrl = new URL("http", host, "/film/" + id);
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
 
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
@@ -154,7 +154,7 @@ public class KinopoiskScrapper extends MovieScrapper {
     if (titleNode != null) {
       fields.put(MovieProperty.originalTitle, titleNode.getTextContent());
     } else {
-      fields.put(MovieProperty.originalTitle, movie.getOriginalTitle());
+      fields.put(MovieProperty.originalTitle, movie.getOriginalName());
     }
 
     List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='info']//TR", dom);
@@ -275,6 +275,7 @@ public class KinopoiskScrapper extends MovieScrapper {
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     ids.add(movie.getMediaId());
+    ids.add(id);
 
     multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
     multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
@@ -285,7 +286,7 @@ public class KinopoiskScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie search, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(Movie search, IdInfo id, AvailableLanguages language) throws Exception {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
@@ -307,7 +308,7 @@ public class KinopoiskScrapper extends MovieScrapper {
 
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
-    movie.setImdbId(ScrapperUtils.imdbIdLookup(null, movie));
+    movie.setImdbId(ScrapperUtils.movieIdLookup(AvailableApiIds.IMDB, null, movie));
     return super.fetchImagesInfo(movie);
   }
 }

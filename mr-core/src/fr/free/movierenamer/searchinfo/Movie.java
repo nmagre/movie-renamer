@@ -18,6 +18,7 @@
 package fr.free.movierenamer.searchinfo;
 
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.utils.ObjectUtils;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -37,22 +38,27 @@ public class Movie extends Video {
   }
 
   public Movie(IdInfo imdbId, IdInfo id, String title, String originalTitle, URL thumb, int year) {
-    super(imdbId, id != null ? id : imdbId, title, originalTitle, thumb, year);
+    super(imdbId, id != null ? id : imdbId, title, originalTitle, year, thumb);
+  }
+
+  @Override
+  public MediaType getMediaType() {
+    return MediaType.MOVIE;
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof Movie) {
       Movie other = (Movie) object;
-      if (idInfo != null && idInfo.equals(other.getMediaId())) {
+      if (ObjectUtils.compare(idInfo, other.getMediaId())) {
         return true;
       }
 
-      if (imdbIdInfo != null && imdbIdInfo.equals(other.getImdbId())) {
+      if (ObjectUtils.compare(imdbIdInfo, other.getImdbId())) {
         return true;
       }
 
-      return title.equalsIgnoreCase(other.title);
+      return name.equalsIgnoreCase(other.name) || (originalName != null && ObjectUtils.compare(originalName, other.getOriginalName()));
     }
 
     return false;
@@ -61,7 +67,7 @@ public class Movie extends Video {
   @Override
   public int hashCode() {
     return Arrays.hashCode(new Object[]{
-      title, year
+      name, originalName, year
     });
   }
 
@@ -69,6 +75,10 @@ public class Movie extends Video {
   public String toString() {
     if (idInfo != null && idInfo.getId() > 0) {
       return super.toString() + String.format(" (%s:%d)", idInfo.getIdType().name(), idInfo.getId());
+    }
+
+    if (imdbIdInfo != null && imdbIdInfo.getId() > 0) {
+      return super.toString() + String.format(" (%s:%d)", imdbIdInfo.getIdType().name(), imdbIdInfo.getId());
     }
 
     return super.toString();

@@ -105,14 +105,14 @@ public class TvRageScrapper extends TvShowScrapper {
       URL url = getPosterURL(XPathUtils.getTextContent("link", node));
       int year = XPathUtils.getIntegerContent("started", node);
 
-      searchResults.add(new TvShow(null, new IdInfo(showid, ScrapperUtils.AvailableApiIds.TVDB), name, url, year));
+      searchResults.add(new TvShow(null, new IdInfo(showid, ScrapperUtils.AvailableApiIds.TVDB), name, null, year));
     }
 
     return searchResults;
   }
 
   @Override
-  protected TvShowInfo fetchMediaInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected TvShowInfo fetchMediaInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     URL episodeListUrl = new URL("http", host, "/feeds/showinfo.php?sid=" + tvShow.getMediaId());
     Document dom = URIRequest.getXmlDocument(episodeListUrl.toURI());
 
@@ -199,7 +199,7 @@ public class TvRageScrapper extends TvShowScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, AvailableLanguages language) throws Exception {
+  protected List<CastingInfo> fetchCastingInfo(TvShow tvShow, IdInfo id, AvailableLanguages language) throws Exception {
     return null;
   }
 

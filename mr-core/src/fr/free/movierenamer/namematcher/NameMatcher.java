@@ -18,8 +18,10 @@
 package fr.free.movierenamer.namematcher;
 
 import fr.free.movierenamer.info.FileInfo.FileProperty;
-import fr.free.movierenamer.info.FileInfo.MediaType;
 import fr.free.movierenamer.renamer.NameCleaner;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
+import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
+import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
 import fr.free.movierenamer.utils.FileUtils;
 import java.io.File;
 import java.io.FilenameFilter;

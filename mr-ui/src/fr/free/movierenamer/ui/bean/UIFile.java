@@ -18,6 +18,9 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
+import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
+import static fr.free.movierenamer.settings.XMLSettings.SettingsSubType.MOVIE;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import java.io.File;
@@ -36,7 +39,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
   private final String groupName;
   private Icon icon;
   private String search;
-  private FileInfo.MediaType mtype;
+  private MediaType mtype;
 
   /**
    * Constructor arguments
@@ -45,7 +48,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
    * @param groupName
    * @param mtype
    */
-  public UIFile(File file, String groupName, FileInfo.MediaType mtype) {
+  public UIFile(File file, String groupName, MediaType mtype) {
     this.file = file;
     this.groupName = groupName;
     this.mtype = mtype;
@@ -161,7 +164,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
     return groupName;
   }
 
-  public FileInfo.MediaType getMtype() {
+  public MediaType getMtype() {
     return mtype;
   }
 }

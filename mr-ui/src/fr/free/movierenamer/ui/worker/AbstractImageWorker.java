@@ -73,7 +73,6 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
 
     Calendar cal = Calendar.getInstance();
     long ctime = cal.getTimeInMillis();
-    Dimension dim;
 
     try {
 
@@ -89,6 +88,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
         img = null;
 
         URI uri = image.getUri(size);
+        
         if (downloadImage && uri != null) {
           // We do not use the cache because there is many issue like high CPU usage, really slow,...
           try {
@@ -111,6 +111,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
               img = new ImageIcon(ImageIO.read(imageFile));
             }
           } catch (Exception ex) {
+            Settings.LOGGER.warning(ex.getMessage());
             // We don't care about
             img = null;
           }

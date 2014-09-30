@@ -86,11 +86,6 @@ public class UIMediaImage extends Sorter.ISort implements IImage {
   }
 
   @Override
-  protected int getYear() {
-    return 0;
-  }
-
-  @Override
   public String toString() {
     return type.name();
   }

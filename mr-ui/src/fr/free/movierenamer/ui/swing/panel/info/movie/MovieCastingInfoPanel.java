@@ -93,6 +93,7 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
           actorsList.add(cast);
           break;
         case CastingInfo.DIRECTOR:
+        case CastingInfo.WRITER:
           directorsList.add(cast);
           break;
       }
@@ -101,12 +102,9 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
     actorListModel.addAll(actorsList);
     directorListModel.addAll(directorsList);
 
-    // Avoid reference
-    List<UIPersonImage> actors = new ArrayList<>(actorsList);
-    List<UIPersonImage> directors = new ArrayList<>(directorsList);
     // Get images
-    WorkerManager.fetchImages(actors, actorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
-    WorkerManager.fetchImages(directors, directorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+    WorkerManager.fetchImages(actorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+    WorkerManager.fetchImages(directorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
   }
 
   @Override

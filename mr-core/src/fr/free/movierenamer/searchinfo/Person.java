@@ -33,7 +33,7 @@ public class Person extends SearchResult {
   }
 
   public Person(String name, int personId) {
-    super(name, null);
+    super(name, null, 0);
     this.personId = personId;
   }
 
@@ -49,7 +49,7 @@ public class Person extends SearchResult {
         return personId == other.personId;
       }
 
-      return title.equalsIgnoreCase(other.title);
+      return name.equalsIgnoreCase(other.name);
     }
 
     return false;

@@ -29,19 +29,25 @@ import java.net.URL;
 public abstract class Media extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
-  protected int year;
   protected IdInfo idInfo;
+
+  public enum MediaType {
+
+    MOVIE,
+    TVSHOW
+  }
 
   protected Media() {
     // used by serializer
   }
 
-  public Media(IdInfo id, String title, String originalTitle, URL thumb, int year) {
-    super(title, originalTitle, thumb);
+  public Media(IdInfo id, String title, String originalTitle, int year, URL thumb) {
+    super(title, originalTitle, year, thumb);
 
     this.idInfo = id;
-    this.year = year;
   }
+
+  public abstract MediaType getMediaType();
 
   public IdInfo getMediaId() {
     return idInfo;
@@ -51,17 +57,4 @@ public abstract class Media extends Hyperlink {
     this.idInfo = idInfo;
   }
 
-  @Override
-  public int getYear() {
-    return year;
-  }
-
-  @Override
-  public String toString() {
-    if (year > 0) {
-      return super.toString() + String.format(" (%04d)", year);
-    }
-
-    return super.toString();
-  }
 }

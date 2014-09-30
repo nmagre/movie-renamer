@@ -19,13 +19,15 @@ package fr.free.movierenamer.scrapper.impl.movie;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
@@ -34,6 +36,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,7 +60,7 @@ public class TracktScrapper extends MovieScrapper {
   private static final AvailableApiIds supportedId = AvailableApiIds.IMDB;// Track.tv support both imdb and tmdb ids
 
   public TracktScrapper() {
-    super(LocaleUtils.AvailableLanguages.en);
+    super(AvailableLanguages.en);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("trackt.apkapikey"));
     if (key == null || key.trim().length() == 0) {
       throw new NullPointerException("apikey must not be null");
@@ -76,8 +79,8 @@ public class TracktScrapper extends MovieScrapper {
   }
 
   @Override
-  protected LocaleUtils.AvailableLanguages getDefaultLanguage() {
-    return LocaleUtils.AvailableLanguages.en;
+  protected AvailableLanguages getDefaultLanguage() {
+    return AvailableLanguages.en;
   }
 
   @Override
@@ -91,13 +94,13 @@ public class TracktScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, LocaleUtils.AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/search/movies.json/" + apikey + "?&query=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, LocaleUtils.AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
     JSONArray json = URIRequest.getJsonArrayDocument(searchUrl.toURI());
     Iterator<JSONObject> iterator = json.iterator();
@@ -144,12 +147,7 @@ public class TracktScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie searchResult, LocaleUtils.AvailableLanguages language) throws Exception {
-
-    IdInfo id = searchResult.getImdbId();
-    if (id == null) {
-      id = searchResult.getMediaId();
-    }
+  protected MovieInfo fetchMediaInfo(Movie searchResult, IdInfo id, AvailableLanguages language) throws Exception {
 
     URL searchUrl = new URL("http", apiHost, "/movie/summary.json/" + apikey + "/" + id);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
@@ -202,11 +200,7 @@ public class TracktScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie search, LocaleUtils.AvailableLanguages language) throws Exception {// TODO
-    IdInfo id = search.getImdbId();
-    if (id == null) {
-      id = search.getMediaId();
-    }
+  protected List<CastingInfo> fetchCastingInfo(Movie search, IdInfo id, AvailableLanguages language) throws Exception {// TODO
 
     URL searchUrl = new URL("http", apiHost, "/movie/summary.json/" + apikey + "/" + id);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
@@ -231,15 +225,18 @@ public class TracktScrapper extends MovieScrapper {
       }
 
       JSONObject image = JSONUtils.selectObject("images", cast);
+      ImageInfo imgInfo = null;
       if (image != null) {
         String img = JSONUtils.selectString("headshot", image);
         if (img != null && !img.equals(NOIMAGE)) {
-          personFields.put(CastingInfo.PersonProperty.picturePath, JSONUtils.selectString("headshot", image));
+          Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
+          fields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("headshot", image));
+          imgInfo = new ImageInfo(JSONUtils.selectInteger("id", cast), fields, ImageCategoryProperty.actor);
         }
       }
       personFields.put(CastingInfo.PersonProperty.job, job);
 
-      casting.add(new CastingInfo(personFields));
+      casting.add(new CastingInfo(personFields, imgInfo));
     }
   }
 

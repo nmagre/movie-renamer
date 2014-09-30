@@ -379,6 +379,9 @@ public final class StringUtils {
   }
 
   public static String normaliseClean(String str) {
+    if (str == null) {
+      return null;
+    }
     String string = removeBrackets(str);
     string = removePunctuation(string).toLowerCase();
     string = string.replace(" et ", "&").replace(" and ", "&").replaceAll("(?:^)|(?:\\s)the\\s", "");

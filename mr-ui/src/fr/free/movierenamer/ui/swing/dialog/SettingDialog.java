@@ -152,7 +152,6 @@ public class SettingDialog extends AbstractDialog {
    * @return Map of all settings of "type" by subtype
    */
   private Map<SettingsSubType, List<IProperty>> getSettings(SettingsType type) {
-    List<List<IProperty>> res = new ArrayList<>();
     Map<SettingsSubType, List<IProperty>> map = new LinkedHashMap<>();
 
     for (IProperty definition : properties) {
@@ -228,11 +227,12 @@ public class SettingDialog extends AbstractDialog {
               Map<MediaProperty, String> mediaFields = new HashMap<>();
               mediaFields.put(MediaProperty.rating, "8.7");
               mediaFields.put(MediaProperty.title, "Matrix");
+              mediaFields.put(MediaProperty.year, "1999");
 
               Map<MovieInfo.MovieProperty, String> fields = new HashMap<>();
               fields.put(MovieInfo.MovieProperty.certificationCode, "R");
-              fields.put(MovieInfo.MovieProperty.originalTitle, "The Matrix");
-              fields.put(MovieInfo.MovieProperty.releasedDate, "1999");
+              fields.put(MovieInfo.MovieProperty.originalTitle, "The Matrix");              
+              fields.put(MovieInfo.MovieProperty.releasedDate, "1999-03-31");
               fields.put(MovieInfo.MovieProperty.runtime, "136");
               //fields.put(MediaInfo.MediaProperty.title, "Matrix");
 
@@ -321,13 +321,13 @@ public class SettingDialog extends AbstractDialog {
               a4.put(CastingInfo.PersonProperty.name, "Gloria Foster");
 
               List<CastingInfo> persons = new ArrayList<>();
-              persons.add(new CastingInfo(d));
-              persons.add(new CastingInfo(d1));
-              persons.add(new CastingInfo(a));
-              persons.add(new CastingInfo(a1));
-              persons.add(new CastingInfo(a2));
-              persons.add(new CastingInfo(a3));
-              persons.add(new CastingInfo(a4));
+              persons.add(new CastingInfo(d, null));
+              persons.add(new CastingInfo(d1, null));
+              persons.add(new CastingInfo(a, null));
+              persons.add(new CastingInfo(a1, null));
+              persons.add(new CastingInfo(a2, null));
+              persons.add(new CastingInfo(a3, null));
+              persons.add(new CastingInfo(a4, null));
               info.setCasting(persons);
             }
 

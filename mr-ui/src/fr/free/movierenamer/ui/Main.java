@@ -22,7 +22,6 @@ import com.alee.managers.language.LanguageManager;
 import com.alee.managers.language.updaters.LanguageUpdaterSettings;
 import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +40,6 @@ public class Main {
 // vm option : -Xmx256m -verbose:gc
 
   private static final UISettings setting = UISettings.getInstance();
-  private static LoadingDialog loading;
 
   public static void main(String args[]) throws InterruptedException, InvocationTargetException {
 
@@ -87,7 +85,7 @@ public class Main {
         break;
       }
     }
-    LanguageManager.setLanguage(lcode);
+    LanguageManager.setLanguage("fr".equals(lcode) ? "en" : "fr"); // FIXME remove
 
     TooltipManager.setDefaultDelay(1500);
 
@@ -95,7 +93,7 @@ public class Main {
       files.add(new File(setting.getLoadFilePath()));
     }
 
-    final MovieRenamer mr = new MovieRenamer();
+    final MovieRenamer mr = new MovieRenamer(lcode);
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

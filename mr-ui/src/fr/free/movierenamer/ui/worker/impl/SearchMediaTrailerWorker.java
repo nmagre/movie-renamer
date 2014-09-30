@@ -23,8 +23,6 @@ import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.bean.UITrailer;
-import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
-import fr.free.movierenamer.ui.swing.panel.info.TrailerInfoPanel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
@@ -57,7 +55,7 @@ public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
     }
     trailersInfo.addAll(scrapper.getTrailer((Movie) searchResult.getSearchResult()));// FIXME cast
 
-    String title = searchResult.getOriginalTitle();
+    String title = searchResult.getOriginalName();
     if (title == null) {
       title = searchResult.getName();
     }

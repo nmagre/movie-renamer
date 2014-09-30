@@ -17,10 +17,8 @@
  */
 package fr.free.movierenamer.info;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -39,20 +37,21 @@ public class CastingInfo extends Info {
     id,
     name,
     character,
-    job,
-    picturePath
+    job
   }
   public static final String ACTOR = "Actor";
   public static final String DIRECTOR = "Director";
   public static final String WRITER = "Writer";
   protected Map<PersonProperty, String> fields;
+  protected ImageInfo img;
 
   protected CastingInfo() {
     // used by serializer
   }
 
-  public CastingInfo(Map<PersonProperty, String> fields) {
+  public CastingInfo(Map<PersonProperty, String> fields, ImageInfo img) {
     this.fields = new EnumMap<PersonProperty, String>(fields);
+    this.img = img;
   }
 
   private String get(final PersonProperty key) {
@@ -68,6 +67,23 @@ public class CastingInfo extends Info {
     return -1;
   }
 
+  public ImageInfo getImageInfo() {
+    return img;
+  }
+
+  public URI getImage(ImageInfo.ImageSize size) {
+    if(img == null) {
+      return null;
+    }
+    
+    try {
+      return img.getHref(size).toURI();
+    } catch (URISyntaxException ex) {
+    }
+
+    return null;
+  }
+
   public String getName() {
     return get(PersonProperty.name);
   }
@@ -78,15 +94,6 @@ public class CastingInfo extends Info {
 
   public String getJob() {
     return get(PersonProperty.job);
-  }
-
-  public URI getPicturePath() {
-    try {
-      return new URL(get(PersonProperty.picturePath)).toURI();
-    } catch (MalformedURLException e) {
-    } catch (URISyntaxException e) {
-    }
-    return null;
   }
 
   public boolean isActor() {

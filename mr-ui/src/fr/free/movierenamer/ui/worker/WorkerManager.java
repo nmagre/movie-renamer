@@ -93,13 +93,13 @@ public final class WorkerManager {
     start(trailerWorker);
   }
 
-  public final static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, resize, defaultImage, downloadImage);
+  public final static <T extends IImage> void fetchImages(ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(model, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public final static <T extends IImage> void fetchImages(List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(images, model, size, resize, defaultImage, downloadImage);
+  public final static <T extends IImage> void fetchImages(ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(model, size, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 

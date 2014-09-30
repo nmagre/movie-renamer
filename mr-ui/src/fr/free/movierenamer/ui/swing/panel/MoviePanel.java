@@ -76,6 +76,6 @@ public class MoviePanel extends VideoPanel<UIMovieInfo> {
 
   @Override
   protected boolean addRefreshButton() {
-    return true;
+    return false;
   }
 }

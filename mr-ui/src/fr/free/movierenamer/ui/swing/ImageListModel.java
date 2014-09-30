@@ -18,9 +18,11 @@
 package fr.free.movierenamer.ui.swing;
 
 import fr.free.movierenamer.ui.bean.IImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractListModel;
 
@@ -29,13 +31,13 @@ import javax.swing.AbstractListModel;
  *
  * @author Nicolas Magré
  */
-public class ImageListModel<T extends IImage> extends AbstractListModel {
+public final class ImageListModel<T extends IImage> extends AbstractListModel {
 
   private static final long serialVersionUID = 1L;
   private Map<Integer, T> model;
 
   public ImageListModel() {
-    model = new LinkedHashMap<Integer, T>();
+    model = new LinkedHashMap<>();
   }
 
   public ImageListModel(Collection<T> data) {
@@ -97,6 +99,10 @@ public class ImageListModel<T extends IImage> extends AbstractListModel {
     }
     return removed;
   }
+  
+  public List<T> getAll() {
+    return new ArrayList(model.values());
+  }
 
   public T getElementById(int id) {
     return model.get(id);
@@ -135,4 +141,5 @@ public class ImageListModel<T extends IImage> extends AbstractListModel {
       fireContentsChanged(this, 0, getSize());
     }
   }
+
 }

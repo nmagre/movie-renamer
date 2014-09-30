@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -93,8 +94,8 @@ public class TvShowInfo extends MediaInfo {
   }
 
   @Override
-  public InfoType getInfoType() {
-    return InfoType.TVSHOW;
+  public MediaType getMediaType() {
+    return MediaType.TVSHOW;
   }
 
   public Integer getId() {

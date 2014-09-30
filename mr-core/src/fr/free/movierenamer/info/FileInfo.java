@@ -22,6 +22,7 @@ import fr.free.movierenamer.namematcher.NameMatcher;
 import fr.free.movierenamer.namematcher.SxE;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.renamer.Renamer;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import java.io.File;
 import java.net.URI;
@@ -41,12 +42,6 @@ public class FileInfo extends Info {
   private final String search;
   private final Map<FileProperty, String> fileProperty;
   private final MediaTag mtag;
-
-  public enum MediaType {
-
-    MOVIE,
-    TVSHOW
-  }
 
   public enum FileProperty {
 

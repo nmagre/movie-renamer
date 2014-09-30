@@ -49,6 +49,7 @@ import fr.free.movierenamer.utils.XPathUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import org.w3c.dom.NodeList;
 
@@ -97,6 +98,13 @@ public class IMDbScrapper extends MovieScrapper {
     return imgPath.replaceAll("@@\\._.*?\\.jpg", "@@.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", ".jpg");
   }
 
+  private String getThumb(String imgPath) {
+    if (imgPath == null) {
+      return StringUtils.EMPTY;
+    }
+    return imgPath.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX70.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX70.jpg");
+  }
+
   private URIRequest.RequestProperty getRequestProperties(AvailableLanguages language) {
     return new URIRequest.RequestProperty("Accept-Language", String.format("%s-%s", language.getLocale().getLanguage(), language.getLocale().getCountry()));
   }
@@ -140,7 +148,7 @@ public class IMDbScrapper extends MovieScrapper {
         try {
           String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("TD[@class='primary_photo']/A/IMG", node));
           if (!imgPath.contains("nopicture")) {
-            thumb = new URL(createImgPath(imgPath));
+            thumb = new URL(getThumb(imgPath));
           } else {
             thumb = null;
           }
@@ -158,7 +166,8 @@ public class IMDbScrapper extends MovieScrapper {
     if (results.isEmpty()) {
       try {
         int imdbid = findImdbId(XPathUtils.selectString("//LINK[@rel='canonical']/@href", dom));
-        MovieInfo info = fetchMediaInfo(new Movie(new IdInfo(imdbid, AvailableApiIds.IMDB), null, null, null, null, -1), language);
+        IdInfo id = new IdInfo(imdbid, AvailableApiIds.IMDB);
+        MovieInfo info = fetchMediaInfo(new Movie(id, null, null, null, null, -1), id, language);
         URL thumb;
         try {
           String imgPath = info.getPosterPath().toURL().toExternalForm();
@@ -179,7 +188,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, AvailableLanguages language) throws Exception {
+  protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
 
     final Map<MediaProperty, String> mediaFields = new EnumMap<MediaProperty, String>(MediaProperty.class);
     final Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
@@ -190,7 +199,7 @@ public class IMDbScrapper extends MovieScrapper {
     final List<String> tags = new ArrayList<String>();
     final List<IdInfo> ids = new ArrayList<IdInfo>();
 
-    URL searchUrl = new URL("http", host, String.format("/title/%s/combined", movie.getImdbId()));
+    URL searchUrl = new URL("http", host, String.format("/title/%s/combined", id));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     Node node = XPathUtils.selectNode("//H1", dom);
@@ -366,7 +375,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<ImageInfo> getScrapperImages(Movie movie) throws Exception {// FIXMe we don't know image language
+  protected List<ImageInfo> getScrapperImages(Movie movie) throws Exception {// FIXME we don't know image language
     URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(getDefaultLanguage()));
 
@@ -405,8 +414,8 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, AvailableLanguages language) throws Exception {
-    URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", movie.getImdbId()));
+  protected List<CastingInfo> fetchCastingInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
+    URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", id));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     List<CastingInfo> casting = new ArrayList<CastingInfo>();
@@ -418,9 +427,9 @@ public class IMDbScrapper extends MovieScrapper {
 
       if (type.contains("Directed")) {
         cinfo = CastingInfo.DIRECTOR;
-      } else if (type.contains("Writing")) {
+      } else if (type.contains("Writing Credits")) {
         cinfo = CastingInfo.WRITER;
-      } else if (type.contains("Cast")) {
+      } else if (type.contains("Cast") && !type.contains("Casting")) {
         cinfo = CastingInfo.ACTOR;
       }
 
@@ -443,11 +452,17 @@ public class IMDbScrapper extends MovieScrapper {
           }
         }
 
+        ImageInfo imgInfo = null;
         if (cinfo.equals(CastingInfo.ACTOR)) {
           Node pictureNode = XPathUtils.selectNode("./TD[@class='primary_photo']/A/IMG", cnode);
           String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("loadlate", pictureNode)) : "";
-          if (picture.contains("nopicture")) {
-            picture = "";
+          if (!picture.contains("nopicture") && !picture.isEmpty()) {
+            Map<ImageInfo.ImageProperty, String> fields = getImageUrl(picture);
+            int cid = picture.hashCode();
+            if (personFields.get(PersonProperty.id) != null) {
+              cid = Integer.parseInt(personFields.get(PersonProperty.id));
+            }
+            imgInfo = new ImageInfo(cid, fields, ImageCategoryProperty.actor);
           }
 
           Node characterNode = XPathUtils.selectNode("TD[@class='character']", cnode);
@@ -458,14 +473,31 @@ public class IMDbScrapper extends MovieScrapper {
           }
 
           personFields.put(PersonProperty.character, character);
-          personFields.put(PersonProperty.picturePath, picture);
         }
 
-        casting.add(new CastingInfo(personFields));
+        if (cinfo.equals(CastingInfo.DIRECTOR) || cinfo.equals(CastingInfo.WRITER)) {
+          if (personFields.get(PersonProperty.id) != null) {
+            try {
+              imgInfo = getCastImage(Integer.parseInt(personFields.get(PersonProperty.id)), language);
+            } catch (Exception ex) {
+            }
+          }
+        }
+
+        casting.add(new CastingInfo(personFields, imgInfo));
       }
     }
 
     return casting;
+  }
+
+  private Map<ImageInfo.ImageProperty, String> getImageUrl(String picture) {
+    Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
+    fields.put(ImageProperty.url, picture);
+    fields.put(ImageProperty.urlMid, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX214.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX214.jpg"));
+    fields.put(ImageProperty.urlTumb, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX70.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX70.jpg"));
+
+    return fields;
   }
 
   private Map<PersonProperty, String> fetchPersonIdAndName(Node node) {
@@ -485,6 +517,27 @@ public class IMDbScrapper extends MovieScrapper {
         }
       }
     }
+
+    return null;
+  }
+
+  private ImageInfo getCastImage(Integer id, AvailableLanguages language) throws Exception {
+    if (id == null || id <= 0) {
+      return null;
+    }
+
+    URL searchUrl = new URL("http", host, String.format("/name/nm%07d/", id));
+    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
+
+    Node img = XPathUtils.selectNode("//TD[@id = 'img_primary']//IMG", dom);
+    if (img != null) {
+      String picture = createImgPath(XPathUtils.getAttribute("src", img));
+      if (!picture.contains("nopicture") && !picture.isEmpty()) {
+        Map<ImageInfo.ImageProperty, String> fields = getImageUrl(picture);
+        return new ImageInfo(id, fields, ImageCategoryProperty.actor);
+      }
+    }
+
     return null;
   }
 

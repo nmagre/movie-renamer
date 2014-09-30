@@ -58,7 +58,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   public SearchMediaWorker(MovieRenamer mr, UIFile media) {
     super(mr);
     this.media = media;
-    this.scrapper = mr.getScraper().getScraper();
+    this.scrapper = mr.getUIScraper().getScraper();
     this.searchResultList = mr.getSearchResultList();
     this.searchResultModel = mr.getSearchResultListModel();
   }
@@ -122,7 +122,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
       }
 
       List<UISearchResult> tmp = new ArrayList<>(results);
-      WorkerManager.fetchImages(tmp, searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
+      WorkerManager.fetchImages(searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
     }
   }
 

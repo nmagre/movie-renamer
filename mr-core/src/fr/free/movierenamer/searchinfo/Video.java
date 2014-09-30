@@ -35,8 +35,8 @@ public abstract class Video extends Media {
     super();
   }
 
-  public Video(IdInfo imdbIdInfo, IdInfo id, String title, String originalTitle, URL thumb, int year) {
-    super(id, title, originalTitle, thumb, year);
+  public Video(IdInfo imdbIdInfo, IdInfo id, String title, String originalTitle, int year, URL thumb) {
+    super(id, title, originalTitle, year, thumb);
     this.imdbIdInfo = imdbIdInfo;
   }
 
