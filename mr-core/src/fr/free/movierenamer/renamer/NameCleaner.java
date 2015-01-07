@@ -46,7 +46,7 @@ import java.util.Arrays;
  */
 public class NameCleaner {
 
-  private static final Pattern yearPattern = Pattern.compile("\\D?(\\d{4})\\D");
+  private static final Pattern yearPattern = Pattern.compile("\\D?(\\d{4})\\D?");
   private static final Map<Boolean, Pattern[]> mstoplist = new HashMap<Boolean, Pattern[]>(2);
   private static final Map<Boolean, Pattern[]> mcleanlist = new HashMap<Boolean, Pattern[]>(2);
   private static final List<String> keepLanguages = Arrays.asList(new String[]{
@@ -102,23 +102,24 @@ public class NameCleaner {
     // let's clean it
     output = clean(output, cleanlist);
     // remove year
-    Integer year = extractYear(item);
-    if (year != null && output.length() > 7 && year > 0) {
+    Integer year = getYear(item);
+    if (year != null && output.length() >= 7 && year > 0) {
       // ensure the output contains something else ;)
       int index = output.lastIndexOf(Integer.toString(year));
-      if (index != -1 && index < output.length()) {
+      if (index > 0 && index < output.length()) {
         output = output.substring(0, index);
       } else {
         output = StringUtils.replaceLast(output, Integer.toString(year), "");
       }
     }
+
     //reclean to be sure ;)
     output = clean(output, cleanlist);
 
     return output.trim();
   }
 
-  public static Integer extractYear(String item) {
+  private static Integer getYear(String item) {// TODO improve year detection
     Matcher matcher = yearPattern.matcher(item);
     Integer year = null;
 
@@ -137,6 +138,10 @@ public class NameCleaner {
     return year;
   }
 
+  public static Integer extractYear(String item) {// TODO remove resolution, ...
+    return getYear(item);
+  }
+
   private static Pattern getBracketPattern(boolean strict) {
     // match patterns like [Action, Drama] or {ENG-XViD-MP3-DVDRiP} etc
     String contentFilter = strict ? "[\\p{Space}\\p{Punct}&&[^\\[\\]]]" : "\\p{Alpha}";
@@ -146,7 +151,7 @@ public class NameCleaner {
   private static Pattern getReleaseGroupPattern(boolean strict) {
     // pattern matching any release group name enclosed in separators
     String pattern = getCleanerProperty("releaseGroup");
-    return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", strict ? 0 : Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    return Pattern.compile("(?<!\\p{Alnum})?(" + pattern + ")(?!\\p{Alnum})?", strict ? 0 : Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
   }
 
   private static Pattern getLanguageTagPattern(Collection<String> languages) {
@@ -162,11 +167,11 @@ public class NameCleaner {
   private static Pattern getVideoSourcePattern() {
     // pattern matching any video source name
     String pattern = getCleanerProperty("video.source");
-    return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE);
+    return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?![\\p{Alnum}]|$)", Pattern.CASE_INSENSITIVE);
   }
 
   private static Pattern getVideoFormatPattern() {
-    // pattern matching any video source name
+    // pattern matching any video format name
     String pattern = getCleanerProperty("video.format");
     return Pattern.compile("(?<!\\p{Alnum})(" + pattern + ")(?!\\p{Alnum})", Pattern.CASE_INSENSITIVE);
   }

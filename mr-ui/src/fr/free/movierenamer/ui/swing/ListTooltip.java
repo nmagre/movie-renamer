@@ -20,6 +20,8 @@ package fr.free.movierenamer.ui.swing;
 import com.alee.laf.list.WebList;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.WebCustomTooltip;
+import fr.free.movierenamer.ui.bean.IHtmlListTooltip;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UILoader;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -46,7 +48,7 @@ public class ListTooltip extends MouseAdapter {
   private TooltipWay tooltipWay;
 
   public ListTooltip() {
-    this(1200, false);
+    this(500, false);
   }
 
   public ListTooltip(int time, boolean onlyLoading) {
@@ -66,17 +68,16 @@ public class ListTooltip extends MouseAdapter {
     ListModel model = list.getModel();
     int index = list.locationToIndex(e.getPoint());
 
-
     final Rectangle rect = list.getCellBounds(index, index);
 
     if (index > -1 && rect.contains(e.getPoint())) {
       if (lastIndex != index) {
         TooltipManager.hideAllTooltips();
-        Object obj = model.getElementAt(index);
+        final Object obj = model.getElementAt(index);
 
         if (obj instanceof IIconList) {
           if ((onlyLoading && obj instanceof UILoader) || !onlyLoading) {
-            final String str = obj instanceof UILoader ? UIUtils.i18n.getLanguage("clickToCancel", true) : obj.toString();// FIXME i18n
+
             if (timer != null) {
               timer.stop();
             }
@@ -86,7 +87,19 @@ public class ListTooltip extends MouseAdapter {
               public void actionPerformed(ActionEvent e) {
                 int px = tooltipWay == TooltipWay.right ? list.getParent().getWidth() : list.getParent().getWidth() / 2;
                 int py = tooltipWay == TooltipWay.right ? rect.getLocation().y + rect.height / 2 : rect.getLocation().y + rect.height;
-                TooltipManager.showOneTimeTooltip(list, new Point(px, py), str, tooltipWay);
+                String str;
+
+                if (obj instanceof UILoader) {// FIXME i18n + run "getHtmlTooltip" in a thread
+                  str = UIUtils.i18n.getLanguage("clickToCancel", true);
+                } else if (obj instanceof IHtmlListTooltip) {
+                  IHtmlListTooltip ltt = (IHtmlListTooltip) obj;
+                  str = ltt.getHtmlTooltip();
+                } else {
+                  str = obj.toString();
+                }
+                
+                WebCustomTooltip wct = TooltipManager.showOneTimeTooltip(list, new Point(px, py), str, tooltipWay);
+                wct.setToolTipText(str);
                 timer.stop();
               }
             });

@@ -115,11 +115,6 @@ public final class FileInfoPanel extends InfoPanel<FileInfo> {
   }
 
   @Override
-  public FileInfo getInfo() {
-    return info;
-  }
-
-  @Override
   public PanelType getType() {
     return PanelType.FILE_INFO;
   }

@@ -106,6 +106,10 @@ public final class UISettings extends XMLSettings {
     showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showFormatField(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showIdResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showYearResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showOrigTitleResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showThumbResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
@@ -135,11 +139,7 @@ public final class UISettings extends XMLSettings {
     imageBannerName("<fileName>-banner.png", SettingsType.IMAGE, SettingsSubType.BANNER),
     imageBannerSize(ImageSize.ORIGINAL, SettingsType.IMAGE, SettingsSubType.BANNER),
     // Search
-    useImdbIdInSearch(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    showIdResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    showYearResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    showOrigTitleResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    showThumbResultList(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL),
+    useImdbIdInSearch(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.GENERAL),
     // Misc
     fileChooserPath(userFolder),
     fileChooserViewType(FileChooserViewType.tiles),
@@ -225,7 +225,6 @@ public final class UISettings extends XMLSettings {
     super(LOGGER, APPNAME_NOSPACE + ".log", APPNAME_NOSPACE + ".conf", VERSION);
   }
 
-
   @Override
   public synchronized void clear() {
     super.clear();
@@ -258,6 +257,10 @@ public final class UISettings extends XMLSettings {
 
   public boolean isShowImagePanel() {
     return Boolean.parseBoolean(get(UISettingsProperty.showImagePanel));
+  }
+
+  public boolean isUseImdbIdInSearch() {
+    return Boolean.parseBoolean(get(UISettingsProperty.useImdbIdInSearch));
   }
 
   public boolean isShowIdResultList() {
@@ -325,7 +328,7 @@ public final class UISettings extends XMLSettings {
   }
 
   public int getNumberImageGallery() {
-    return Integer.valueOf(get(UISettingsProperty.numberImageGallery));
+    return Integer.parseInt(get(UISettingsProperty.numberImageGallery));
   }
 
   public String getImageThumbName() {

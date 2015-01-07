@@ -20,7 +20,9 @@ package fr.free.movierenamer.ui.utils;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.SpinningDial;
+import fr.free.movierenamer.ui.swing.renderer.CompoundIcon;
 import fr.free.movierenamer.utils.Cache;
+import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -28,8 +30,12 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -65,6 +71,7 @@ public final class ImageUtils {
   public static final Icon ERESTRICTED_24 = getIconFromJar("ui/24/restricted.png");
   public static final Icon STOP_24 = getIconFromJar("ui/24/stop.png");
   public static final Icon NORESULT_24 = getIconFromJar("ui/24/zoom_out.png");
+  public static final Icon HISTORY_24 = getIconFromJar("ui/24/history.png");
   public static final Icon LOAD_24 = new SpinningDial(24, 24);
   // 16 pixel icon
   public static final Icon CANCEL_16 = getIconFromJar("ui/16/cancel.png");
@@ -113,6 +120,8 @@ public final class ImageUtils {
   public static final Icon TRAILER_16 = getIconFromJar("ui/16/trailer.png");
   public static final Icon REFRESH_16 = getIconFromJar("ui/16/refresh.png");
   public static final Icon ID_16 = getIconFromJar("ui/16/id.png");
+  public static final Icon HISTORY_16 = getIconFromJar("ui/16/history.png");
+  public static final Icon USER_16 = getIconFromJar("ui/16/user.png");
 
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
@@ -123,15 +132,28 @@ public final class ImageUtils {
   public static final Icon LOGO_48 = getIconFromJar("ui/icon-48.png");
   public static final Icon LOGO_72 = getIconFromJar("ui/icon-72.png");
   // Misc
+  public static final Icon IMDB_16 = getIconFromJar("scrapper/imdb.png");
   public static final Icon BAN = getIconFromJar("ui/mr-ban.png");
   public static final Icon NO_IMAGE = getIconFromJar("ui/nothumb.png");
   public static final Icon NO_IMAGE_H = flipImageHorizontally(NO_IMAGE);
   public static final Icon WARNING = getIconFromJar("ui/warning.png");
   public static final Icon FILE = getIconFromJar("ui/file.png");
   public static final Icon UNKNOWN = getIconFromJar("ui/unknown.png");
+  public static final CompoundIcon MOVIE_IMDB = new CompoundIcon(MOVIE_16, IMDB_16);
+  public static final CompoundIcon TVSHOW_IMDB = new CompoundIcon(TV_16, IMDB_16);
+  // Magic number
+  private static final String MG_GIF89A = "474946383961";
+  private static final String MG_GIF87A = "474946383761";
+  private static final String MG_JPEG_START = "FFD8FF";
+  private static final String MG_JPEG_END = "FFD9";
+  private static final String MG_PNG = "89504E470D0A1A0A";
+  private static final String MG_TIFF_LE = "49492A00";// Little endian
+  private static final String MG_TIFF_BE = "4D4D002A"; // Big endian
+  private static final String MG_ICO = "00000100";
+  private static final String MG_BMP = "424D";
 
   static {
-    mtftp.addMimeTypes("image png tif jpg jpeg bmp");
+    mtftp.addMimeTypes("image png tif jpg jpeg bmp gif");
   }
 
   public static Image iconToImage(Icon icon) {
@@ -228,28 +250,24 @@ public final class ImageUtils {
   }
 
   public static Icon getIcon(URI imagePth, Dimension dim, Icon defaultImage) {
-    Cache cache = Cache.getCache("long");
-    Image img;
+//    Cache cache = Cache.getCache("long");// FIXME don't use this cache
+    Image img = null;
 
     if (imagePth != null) {
-      img = isInCache(imagePth) ? cache.get(imagePth, ImageIcon.class).getImage() : null;
-      if (img == null) {
-        try {
-          try (InputStream is = URIRequest.getInputStream(imagePth)) {
-            img = ImageIO.read(is);
-          }
-
-          if (cache != null) {
-            cache.put(imagePth, new ImageIcon(img));
-          }
-        } catch (IOException ex) {
-          img = null;
-          Settings.LOGGER.log(Level.SEVERE, String.format("%s %s", ex.getMessage(), imagePth));
+//      img = isInCache(imagePth) ? cache.get(imagePth, ImageIcon.class).getImage() : null;
+//      if (img == null) {
+      try {
+        try (InputStream is = URIRequest.getInputStream(imagePth)) {
+          img = ImageIO.read(is);
         }
-      }
 
-    } else {
-      img = null;
+//          if (cache != null) {
+//            cache.put(imagePth, new ImageIcon(img));
+//          }
+      } catch (IOException ex) {
+        img = null;
+        Settings.LOGGER.log(Level.SEVERE, String.format("%s %s", ex.getMessage(), imagePth));
+      }
     }
 
     if (img == null && defaultImage != null) {
@@ -295,13 +313,71 @@ public final class ImageUtils {
     icon = new ImageIcon(image);
     return icon;
   }
-  
-  public static boolean isImage(String file) {
-    String mimetype = mtftp.getContentType(file);
-    return mimetype.contains("image");
+
+  public static boolean isImage(String fileName) {
+
+    // If it's an url, we only check mime type
+    try {
+      URL url = new URL(fileName);
+      String mimetype = mtftp.getContentType(fileName);
+      return mimetype.contains("image");
+    } catch (MalformedURLException ex) {
+    }
+
+    // Check magic number
+    try {
+      File file = new File(fileName);
+      if (!file.exists()) {
+        return false;
+      }
+
+      byte[] fileData = new byte[40];
+      // Read 20 first and 20 last bytes
+      RandomAccessFile raf = new RandomAccessFile(file, "r");
+      raf.read(fileData, 0, 20);
+      raf.seek(file.length() - 20);
+      raf.read(fileData, 20, 20);
+
+      String hexStr = StringUtils.bytesToHex(fileData);
+      if (hexStr.startsWith(MG_GIF87A) || hexStr.startsWith(MG_GIF89A)) {
+        return true;
+      }
+
+      if (hexStr.startsWith(MG_JPEG_START) && hexStr.endsWith(MG_JPEG_END)) {
+        return true;
+      }
+
+      if (hexStr.startsWith(MG_PNG)) {
+        return true;
+      }
+
+      if (hexStr.startsWith(MG_TIFF_LE) || hexStr.startsWith(MG_TIFF_BE)) {
+        return true;
+      }
+
+      if (hexStr.startsWith(MG_ICO)) {
+        return true;
+      }
+
+      if (hexStr.startsWith(MG_BMP)) {
+        return true;
+      }
+
+    } catch (FileNotFoundException ex) {
+    } catch (IOException ex) {
+    }
+
+    return false;
   }
-  
-  
+
+  public static String getImagePath(String image) {
+    try {
+      return ImageUtils.class.getClass().getResource(String.format("/image/%s", image)).toString();
+    } catch (Exception ex) {
+
+    }
+    return null;
+  }
 
   private ImageUtils() {
     throw new UnsupportedOperationException();

@@ -20,14 +20,16 @@ package fr.free.movierenamer.utils;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
+import fr.free.movierenamer.scrapper.MediaScrapper;
 import fr.free.movierenamer.scrapper.MovieScrapper;
+import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.AllocineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
-import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
+import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoesScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TMDbScrapper;
 import fr.free.movierenamer.searchinfo.Media;
@@ -92,25 +94,49 @@ public final class ScrapperUtils {
 
   public static enum AvailableApiIds implements InfoProperty, Serializable {
 
-    IMDB("tt"),
-    ALLOCINE(),
-    TMDB(),
-    TVDB(),
-    TVRAGE,
-    ROTTEN,
-    KINOPOISK;
-    private String prefix;
+    IMDB(MediaType.MOVIE, "www.imdb.com/title/%s", "tt"),
+    ALLOCINE(MediaType.MOVIE, "www.allocine.fr/film/fichefilm_gen_cfilm=%s.html"),
+    THEMOVIEDB(MediaType.MOVIE, "www.themoviedb.org/movie/%s"),
+    TVDB(MediaType.TVSHOW, "thetvdb.com/?tab=series&id=%s"),
+    TVRAGE(MediaType.TVSHOW, "www.tvrage.com/shows/id-%s"),
+    ROTTENTOMATOES(MediaType.MOVIE, null),
+    KINOPOISK(MediaType.MOVIE, "www.kinopoisk.ru/film/%s");
+    private final MediaType mediaType;
+    private final String prefix;
+    private final String link;
 
-    private AvailableApiIds() {
-      this("");
+    private AvailableApiIds(MediaType mediaType, String link) {
+      this(mediaType, link, "");
     }
 
-    private AvailableApiIds(String prefix) {
+    private AvailableApiIds(MediaType mediaType, String link, String prefix) {
+      this.mediaType = mediaType;
+      this.link = link;
       this.prefix = prefix;
     }
 
     public String getPrefix() {
       return prefix;
+    }
+
+    public MediaType getMediaType() {
+      return mediaType;
+    }
+
+    public static List<AvailableApiIds> getAvailableApiIds(MediaType mediaType) {
+      List<AvailableApiIds> list = new ArrayList<AvailableApiIds>();
+
+      for (AvailableApiIds apiId : AvailableApiIds.values()) {
+        if (apiId.getMediaType() == mediaType) {
+          list.add(apiId);
+        }
+      }
+
+      return list;
+    }
+
+    public String getLink() {
+      return link;
     }
 
     @Override
@@ -127,8 +153,20 @@ public final class ScrapperUtils {
     POOR
   }
 
-  public static IdInfo idLookup(MediaType mtype, AvailableApiIds lookupType, IdInfo id, Media searchResult) {
-    switch (mtype) {
+  public static MediaScrapper<?, ?> getScrapperFor(URL url) {
+    List<MovieScrapper> scrapers = ScrapperManager.getMovieScrapperList(); // FIXME add tvshow,...
+    for (MovieScrapper scraper : scrapers) {
+      if (scraper.hasUrlSupported(url)) {
+        return scraper;
+      }
+    }
+
+    return null;
+  }
+
+  public static IdInfo idLookup(AvailableApiIds lookupType, IdInfo id, Media searchResult) {
+
+    switch (searchResult.getMediaType()) {
       case MOVIE:
         return movieIdLookup(lookupType, id, (Movie) searchResult);
       case TVSHOW:
@@ -155,9 +193,9 @@ public final class ScrapperUtils {
     switch (lookupType) {
       case IMDB:
         return getImdbId(ids, searchResult);
-      case TMDB:
+      case THEMOVIEDB:
         return getTmdbId(ids, searchResult);
-      case ROTTEN:
+      case ROTTENTOMATOES:
         return getRottenId(ids, searchResult);
       case ALLOCINE:
         return getAlloId(ids, searchResult);
@@ -216,10 +254,10 @@ public final class ScrapperUtils {
             imdbid = imdbIdLookupByAlloId(id, searchResult);
           }
           break;
-        case ROTTEN:
-          imdbid = RottenTomatoes.imdbIdLookup(id);
+        case ROTTENTOMATOES:
+          imdbid = RottenTomatoesScrapper.imdbIdLookup(id);
           break;
-        case TMDB:
+        case THEMOVIEDB:
           imdbid = TMDbScrapper.imdbIdLookup(id);
           break;
       }
@@ -240,7 +278,7 @@ public final class ScrapperUtils {
   private static IdInfo getTmdbId(List<IdInfo> ids, Movie searchResult) {
 
     for (IdInfo id : ids) {
-      if (id.getIdType() == AvailableApiIds.TMDB) {
+      if (id.getIdType() == AvailableApiIds.THEMOVIEDB) {
         return id;
       }
     }
@@ -256,22 +294,25 @@ public final class ScrapperUtils {
   private static IdInfo getRottenId(List<IdInfo> ids, Movie searchResult) {
 
     for (IdInfo id : ids) {
-      if (id.getIdType() == AvailableApiIds.ROTTEN) {
+      if (id.getIdType() == AvailableApiIds.ROTTENTOMATOES) {
         return id;
       }
     }
 
     IdInfo imdbid = getImdbId(ids, searchResult);
     if (imdbid != null) {
-      return RottenTomatoes.rottenTomatoesIdLookUp(imdbid);
+      imdbid = RottenTomatoesScrapper.rottenTomatoesIdLookUp(imdbid);
+      if (imdbid != null) {
+        return imdbid;
+      }
     }
 
-    return getIdBySearch(new RottenTomatoes(), searchResult);
+    return getIdBySearch(new RottenTomatoesScrapper(), searchResult);
   }
 
   private static IdInfo getKinopoiskId(List<IdInfo> ids, Movie searchResult) {
     for (IdInfo id : ids) {
-      if (id.getIdType() == AvailableApiIds.TMDB) {
+      if (id.getIdType() == AvailableApiIds.THEMOVIEDB) {
         return id;
       }
     }

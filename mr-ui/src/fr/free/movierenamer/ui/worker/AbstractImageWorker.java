@@ -50,12 +50,14 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   protected final List<T> images;
   protected final Icon defaultImage;
   protected final ImageInfo.ImageSize size;
+  protected final WorkerId wid;
   private final boolean downloadImage;
   private final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images");
   private final Dimension resize;
   private static final long delay = 2628000L;
 
-  public AbstractImageWorker(List<T> images, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+  public AbstractImageWorker(WorkerId wid, List<T> images, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    this.wid = wid;
     this.images = images;
     this.defaultImage = defaultImage;
     this.size = size;
@@ -65,10 +67,12 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
 
   @Override
   @SuppressWarnings("unchecked")
-  protected Icon executeInBackground() {
+  protected Icon executeInBackground() throws Exception {
     Icon res = defaultImage;
     if (!imageCacheDir.exists()) {
-      imageCacheDir.mkdirs();
+      if (!imageCacheDir.mkdirs()) {
+        throw new Exception("Unable to create images folder : " + imageCacheDir.toString());
+      }
     }
 
     Calendar cal = Calendar.getInstance();
@@ -80,6 +84,8 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
       File imageFile;
       ImageIcon img;
 
+      int total = images.size();
+      int count = 0;
       for (T image : images) {
         if (isCancelled()) {
           break;
@@ -88,7 +94,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
         img = null;
 
         URI uri = image.getUri(size);
-        
+
         if (downloadImage && uri != null) {
           // We do not use the cache because there is many issue like high CPU usage, really slow,...
           try {
@@ -122,9 +128,12 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
         }
 
         publish(new ImageChunk(img, image.getId()));
+        count++;
+
+        setProgress((count * 100) / total);
       }
     } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("%s\n\n%s", getName(), ClassUtils.getStackTrace(ex)));
+      UISettings.LOGGER.log(Level.SEVERE, String.format("%s%n%n%s", getName(), ClassUtils.getStackTrace(ex)));
     }
 
     return res;
@@ -155,4 +164,10 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
       return icon;
     }
   }
+
+  @Override
+  public WorkerId getWorkerId() {
+    return wid;
+  }
+
 }

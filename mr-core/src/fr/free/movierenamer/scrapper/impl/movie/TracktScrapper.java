@@ -32,6 +32,7 @@ import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +95,16 @@ public class TracktScrapper extends MovieScrapper {
   }
 
   @Override
+  public IdInfo getIdfromURL(URL url) {
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {
+    return null;
+  }
+
+  @Override
   protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/search/movies.json/" + apikey + "?&query=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
@@ -139,7 +150,7 @@ public class TracktScrapper extends MovieScrapper {
       }
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(imdbId, new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, title, thumb, year));
+        resultSet.put(id, new Movie(imdbId, new IdInfo(id, ScrapperUtils.AvailableApiIds.THEMOVIEDB), title, title, thumb, year));
       }
     }
 
@@ -192,8 +203,8 @@ public class TracktScrapper extends MovieScrapper {
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
     addId(ids, json, "imdb_id", ScrapperUtils.AvailableApiIds.IMDB);
-    addId(ids, json, "tmdb_id", ScrapperUtils.AvailableApiIds.TMDB);
-    addId(ids, json, "rt_id", ScrapperUtils.AvailableApiIds.ROTTEN);
+    addId(ids, json, "tmdb_id", ScrapperUtils.AvailableApiIds.THEMOVIEDB);
+    addId(ids, json, "rt_id", ScrapperUtils.AvailableApiIds.ROTTENTOMATOES);
 
     MovieInfo movieInfo = new MovieInfo(mediaFields, ids, fields, multipleFields);
     return movieInfo;
@@ -231,7 +242,8 @@ public class TracktScrapper extends MovieScrapper {
         if (img != null && !img.equals(NOIMAGE)) {
           Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
           fields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("headshot", image));
-          imgInfo = new ImageInfo(JSONUtils.selectInteger("id", cast), fields, ImageCategoryProperty.actor);
+          int id = fields.get(ImageInfo.ImageProperty.url).hashCode();
+          imgInfo = new ImageInfo(id, fields, ImageCategoryProperty.actor);
         }
       }
       personFields.put(CastingInfo.PersonProperty.job, job);

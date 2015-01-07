@@ -36,10 +36,10 @@ public class NameMatcherTest {
     Assert.assertEquals("17 again", NameMatcher.extractName("17.again.FRENCH.DVDScr.XviD-VODKA.avi").toLowerCase());
     Assert.assertEquals("17 again", NameMatcher.extractName("17.again.FRENCH.TS.MD.XViD-VODKA.avi").toLowerCase());
     Assert.assertEquals("2012", NameMatcher.extractName("2012 (2009).avi").toLowerCase());
-    Assert.assertEquals("2:22", NameMatcher.extractName("2:22 (2008).avi").toLowerCase());
-    Assert.assertEquals("30 days of night: dark days", NameMatcher.extractName("30 Days of Night: Dark Days (2010).avi").toLowerCase());
+    Assert.assertEquals("2 22", NameMatcher.extractName("2:22 (2008).avi").toLowerCase());
+    Assert.assertEquals("30 days of night dark days", NameMatcher.extractName("30 Days of Night: Dark Days (2010).avi").toLowerCase());
     Assert.assertEquals("35 rhums", NameMatcher.extractName("35 rhums (2008).avi").toLowerCase());
-    Assert.assertEquals("600 kilos d or pur", NameMatcher.extractName("600 kilos d'or pur (2010).avi").toLowerCase());
+    Assert.assertEquals("600 kilos d'or pur", NameMatcher.extractName("600 kilos d'or pur (2010).avi").toLowerCase());
     Assert.assertEquals("7 plans avant mes 30 ans", NameMatcher.extractName("7.Plans.Avant.Mes.30.Ans.FRENCH.DVDRiP.XviD-HARIJO.avi").toLowerCase());
     Assert.assertEquals("8 fois debout", NameMatcher.extractName("8 fois debout (2009).avi").toLowerCase());
     Assert.assertEquals("a christmas carol", NameMatcher.extractName("A Christmas Carol (2004).avi").toLowerCase());
@@ -70,7 +70,7 @@ public class NameMatcherTest {
     Assert.assertEquals("amusement", NameMatcher.extractName("Amusement.FRENCH.DVDRiP.XviD-STRiVE.avi").toLowerCase());
     Assert.assertEquals("amusement", NameMatcher.extractName("Amusement.STV.PROPER.FRENCH.DVDRip.XviD-MJK.avi").toLowerCase());
     Assert.assertEquals("anaconda 4 trail of blood", NameMatcher.extractName("Anaconda.4.Trail.Of.Blood.2009.STV.FRENCH.DVDRIP.XViD-BAC.avi").toLowerCase());
-    Assert.assertEquals("angèle et tony", NameMatcher.extractName("Angèle Et Tony (2010).avi").toLowerCase());
+    Assert.assertEquals("angele et tony", NameMatcher.extractName("Angèle Et Tony (2010).avi").toLowerCase());
     Assert.assertEquals("angels and demons", NameMatcher.extractName("Angels.And.Demons.EXTENDED.TRUEFRENCH.DVDRIP.XVID-T2D.avi").toLowerCase());
     Assert.assertEquals("angels and demons", NameMatcher.extractName("Angels.and.Demons.FRENCH.R5.MD.XViD-VODKA.avi").toLowerCase());
     Assert.assertEquals("angle mort", NameMatcher.extractName("Angle.Mort.2011.French.DvDRip.Xvid-FwD.avi").toLowerCase());
@@ -91,9 +91,9 @@ public class NameMatcherTest {
     Assert.assertEquals("astro boy", NameMatcher.extractName("Astro.Boy.2009.FRENCH.BDRiP.XViD-SURViVAL.avi").toLowerCase());
     Assert.assertEquals("astro boy", NameMatcher.extractName("Astro.Boy.FRENCH.R5.MD.XviD-BOWSER.avi").toLowerCase());
     Assert.assertEquals("astro boy", NameMatcher.extractName("Astro.Boy.Truefrench.Dvdrip.Xvid-LECHTI.avi").toLowerCase());
-    Assert.assertEquals("astrópía", NameMatcher.extractName("Astrópía (2007).avi").toLowerCase());
+    Assert.assertEquals("astropia", NameMatcher.extractName("Astrópía (2007).avi").toLowerCase());
     Assert.assertEquals("attak on leningrad", NameMatcher.extractName("Attak.On.Leningrad.2010.French.DVDRiP.XViD-DaBzA77.avi").toLowerCase());
-    Assert.assertEquals("au delà du réel", NameMatcher.extractName("Au-Delà Du Réel (1980).avi").toLowerCase());
+    Assert.assertEquals("au dela du reel", NameMatcher.extractName("Au-Delà Du Réel (1980).avi").toLowerCase());
     Assert.assertEquals("australia", NameMatcher.extractName("Australia (2008).avi").toLowerCase());
     Assert.assertEquals("autopsy", NameMatcher.extractName("Autopsy (2008).avi").toLowerCase());
     Assert.assertEquals("autumn fin du monde", NameMatcher.extractName("Autumn.Fin.Du.Monde.2009.TRUEFRENCH.DVDRip.xvid-REDBULL.avi").toLowerCase());
@@ -104,7 +104,7 @@ public class NameMatcherTest {
     Assert.assertEquals("baal la tempete de dieu", NameMatcher.extractName("BAAL.La.Tempete.De.Dieu.2008.FRENCH.DVDRiP.XViD-ARTEFAC.avi").toLowerCase());
     Assert.assertEquals("baby", NameMatcher.extractName("baby.2009.TRUEFRENCH.DVDRIP.XVID-BN.DIV.avi").toLowerCase());
     Assert.assertEquals("babysitter wanted", NameMatcher.extractName("Babysitter Wanted (2008).avi").toLowerCase());
-    Assert.assertEquals("bad lieutenant escale à la nouvelle orléans", NameMatcher.extractName("Bad Lieutenant - Escale À La Nouvelle-Orléans (2009).avi").toLowerCase());
+    Assert.assertEquals("bad lieutenant escale a la nouvelle orleans", NameMatcher.extractName("Bad Lieutenant - Escale À La Nouvelle-Orléans (2009).avi").toLowerCase());
     Assert.assertEquals("bad teacher or bad student", NameMatcher.extractName("Bad Teacher Or Bad Student (2010).avi").toLowerCase());
     Assert.assertEquals("balls out garry the tennis coach", NameMatcher.extractName("Balls.Out.Garry.The.Tennis.Coach.STV.FRENCH.DVDRiP.XviD-LiTTLEHiT.avi").toLowerCase());
     Assert.assertEquals("bambou", NameMatcher.extractName("Bambou.FRENCH.DVDRip.XViD-PUTCH.avi").toLowerCase());
@@ -121,12 +121,12 @@ public class NameMatcherTest {
     Assert.assertEquals("beautiful", NameMatcher.extractName("Beautiful.2009.REPACK.FRENCH.DVDRiP.XViD-KBEC.avi").toLowerCase());
     Assert.assertEquals("bellamy", NameMatcher.extractName("Bellamy.2009.FRENCH.DVDRiP.XViD-RLD.avi").toLowerCase());
     Assert.assertEquals("belle epine", NameMatcher.extractName("Belle.Epine.FRENCH.DVDRip.XviD-AYMO.avi").toLowerCase());
-    Assert.assertEquals("ben 10: alien swarm", NameMatcher.extractName("Ben 10: Alien Swarm (2009).avi").toLowerCase());
+    Assert.assertEquals("ben 10 alien swarm", NameMatcher.extractName("Ben 10: Alien Swarm (2009).avi").toLowerCase());
     Assert.assertEquals("beowulf and grendel", NameMatcher.extractName("Beowulf.And.Grendel.STV.2005.FRENCH.DVDRip.XviD-COGiTO.avi").toLowerCase());
     Assert.assertEquals("beverly hills chihuahua 2", NameMatcher.extractName("Beverly.Hills.Chihuahua.2.2011.FRENCH.DVDRIP.XViD-SLiM.avi").toLowerCase());
     Assert.assertEquals("beyond a reasonable doubt", NameMatcher.extractName("Beyond A Reasonable Doubt (2009).avi").toLowerCase());
     Assert.assertEquals("b girl", NameMatcher.extractName("B-Girl.2009.STV.FRENCH.DVDRiP.XviD-SLiM.avi").toLowerCase());
-    Assert.assertEquals("bienvenue à zombieland", NameMatcher.extractName("Bienvenue à Zombieland (2009).avi").toLowerCase());
+    Assert.assertEquals("bienvenue a zombieland", NameMatcher.extractName("Bienvenue à Zombieland (2009).avi").toLowerCase());
     Assert.assertEquals("big nothing", NameMatcher.extractName("Big.Nothing.TRUEFRENCH.DVDRIP.XVID-M2Niro.avi").toLowerCase());
     Assert.assertEquals("bionicle the legend reborn", NameMatcher.extractName("Bionicle.The.Legend.Reborn.2009.STV.FRENCH.DVDRip.XviD-MONK.avi").toLowerCase());
     Assert.assertEquals("bitten", NameMatcher.extractName("Bitten.2010.TRUEFRENCH.DVDRiP.XViD-ARTEFAC.avi").toLowerCase());
@@ -146,7 +146,7 @@ public class NameMatcherTest {
     Assert.assertEquals("boston streets", NameMatcher.extractName("Boston.Streets.2008.LiMiTED.TRUEFRENCH.BRRip.XviD-LKT.avi").toLowerCase());
     Assert.assertEquals("bouquet final", NameMatcher.extractName("Bouquet.Final.FRENCH.DVDRiP.XViD-NTK.avi").toLowerCase());
     Assert.assertEquals("boy a", NameMatcher.extractName("Boy.A.2009.TRUEFRENCH.SUBFORCED.DVDRiP.XViD-RLD.avi").toLowerCase());
-    Assert.assertEquals("braqueurs d hiver", NameMatcher.extractName("Braqueurs d'hiver (2009).avi").toLowerCase());
+    Assert.assertEquals("braqueurs d'hiver", NameMatcher.extractName("Braqueurs d'hiver (2009).avi").toLowerCase());
     Assert.assertEquals("brave", NameMatcher.extractName("Brave.2009.STV.FRENCH.DVDRiP.XViD-RLD.avi").toLowerCase());
     Assert.assertEquals("brendan et le secret de kells", NameMatcher.extractName("Brendan.Et.Le.Secret.De.Kells.FRENCH.BDRIP.XviD-HARIJO.avi").toLowerCase());
     Assert.assertEquals("brick lane", NameMatcher.extractName("Brick.Lane.FRENCH.LIMITED.2007.DVDRiP.XViD-S60.avi").toLowerCase());
@@ -400,7 +400,7 @@ public class NameMatcherTest {
     Assert.assertEquals("hannah montana the movie", NameMatcher.extractName("Hannah.Montana.The.Movie.2009.FRENCH.DVDSCR.MD.XviD-PaGlop.avi").toLowerCase());
     Assert.assertEquals("hannah montana the movie", NameMatcher.extractName("Hannah.Montana.The.Movie.FRENCH.DVDRip.XviD-MONK.avi").toLowerCase());
     Assert.assertEquals("hannah montana the movie", NameMatcher.extractName("Hannah.Montana.The.Movie.TRUEFRENCH.SUBFORCED.DVDRiP.XviD-HARIJO.avi").toLowerCase());
-    Assert.assertEquals("hanté par ses ex", NameMatcher.extractName("Hanté.Par.Ses.Ex.2010.TRUEFRENCH.DVDRip.Xvid-RELEASEUR.avi").toLowerCase());
+    Assert.assertEquals("hante par ses ex", NameMatcher.extractName("Hanté.Par.Ses.Ex.2010.TRUEFRENCH.DVDRip.Xvid-RELEASEUR.avi").toLowerCase());
     Assert.assertEquals("happy few", NameMatcher.extractName("Happy.Few.FRENCH.DVDRip.XviD-AYMO.avi").toLowerCase());
     Assert.assertEquals("harceles", NameMatcher.extractName("Harceles.TRUEFRENCH.DVDRip.XViD-PUTCH.avi").toLowerCase());
     Assert.assertEquals("hard guns", NameMatcher.extractName("Hard.Guns.FRENCH.DVDRip.Xvid-THEWARRIOR777.avi").toLowerCase());
@@ -530,7 +530,7 @@ public class NameMatcherTest {
     Assert.assertEquals("labor pains", NameMatcher.extractName("Labor.Pains.STV.TRUEFRENCH.DVDRiP.XViD-REVOLTE.avi").toLowerCase());
     Assert.assertEquals("labou", NameMatcher.extractName("Labou.2010.TRUEFRENCH.DVDRIP.XVID-FwD.avi").toLowerCase());
     Assert.assertEquals("la cite de l ombre", NameMatcher.extractName("La.Cite.De.L.Ombre.TRUEFRENCH.DVDRip.XviD-HooPa.avi").toLowerCase());
-    Assert.assertEquals("la cité des enfants perdus", NameMatcher.extractName("La Cité Des Enfants Perdus (1995).avi").toLowerCase());
+    Assert.assertEquals("la cite des enfants perdus", NameMatcher.extractName("La Cité Des Enfants Perdus (1995).avi").toLowerCase());
     Assert.assertEquals("la disparition d alice creed", NameMatcher.extractName("La.Disparition.d.Alice.Creed.2010.TRUEFRENCH.DVDRIP.XViD-FiCTiON.avi").toLowerCase());
     Assert.assertEquals("la famille suricate", NameMatcher.extractName("La.Famille.Suricate.FRENCH.DVDRip.XviD-ZANBiC.avi").toLowerCase());
     Assert.assertEquals("la femme invisible d apres une histoire vraie", NameMatcher.extractName("La.Femme.Invisible.D.Apres.Une.Histoire.Vraie.FRENCH.DVDRiP.XViD-PROD.avi").toLowerCase());
@@ -587,7 +587,7 @@ public class NameMatcherTest {
     Assert.assertEquals("le cameleon", NameMatcher.extractName("Le.Cameleon.FRENCH.DVDRip.XviD-AYMO.avi").toLowerCase());
     Assert.assertEquals("le coach", NameMatcher.extractName("Le.Coach.FRENCH.DVDRip.XviD-AYMO.avi").toLowerCase());
     Assert.assertEquals("le code a change", NameMatcher.extractName("Le.Code.A.Change.FRENCH.DVDRiP.XViD-SURViVAL.avi").toLowerCase());
-    Assert.assertEquals("l école de tous les talents", NameMatcher.extractName("L'École De Tous Les Talents (2007).avi").toLowerCase());
+    Assert.assertEquals("l'ecole de tous les talents", NameMatcher.extractName("L'École De Tous Les Talents (2007).avi").toLowerCase());
     Assert.assertEquals("le colis", NameMatcher.extractName("Le.Colis.2011.FRENCH.DVDRiP.XViD-FwD.avi").toLowerCase());
     Assert.assertEquals("le concert", NameMatcher.extractName("Le.Concert.2010.FRENCH.DVDRIP.XVID-BN.DIV.avi").toLowerCase());
     Assert.assertEquals("le crime est notre affaire", NameMatcher.extractName("Le.Crime.est.Notre.Affaire.FRENCH.DVDRiP.XViD-PROD.avi").toLowerCase());
@@ -760,7 +760,7 @@ public class NameMatcherTest {
     Assert.assertEquals("nude nuns with big guns", NameMatcher.extractName("Nude.Nuns.with.Big.Guns.FRENCH.SUBFORCED.DVDRiP.XViD-FwD.avi").toLowerCase());
     Assert.assertEquals("nuit de chien", NameMatcher.extractName("Nuit.De.Chien.FRENCH.DVDRiP.XViD-STFRV.avi").toLowerCase());
     Assert.assertEquals("nuits d ivresse printaniere", NameMatcher.extractName("Nuits.D.Ivresse.Printaniere.FRENCH.DVDRip.XviD-UNSKiLLED.avi").toLowerCase());
-    Assert.assertEquals("numéro 9", NameMatcher.extractName("Numéro 9 (2009).avi").toLowerCase());
+    Assert.assertEquals("numero 9", NameMatcher.extractName("Numéro 9 (2009).avi").toLowerCase());
     Assert.assertEquals("numero 9", NameMatcher.extractName("Numero.9.FRENCH.PROPER.CAM.XViD.BY.MANO.avi").toLowerCase());
     Assert.assertEquals("numero 9", NameMatcher.extractName("Numero.9.READNFO.FRENCH.R5.MD.XviD-EldoRATdo.avi").toLowerCase());
     Assert.assertEquals("obsessed", NameMatcher.extractName("Obsessed.2009.TRUEFRENCH.DVDRiP.XViD-GKS.avi").toLowerCase());
@@ -965,7 +965,7 @@ public class NameMatcherTest {
     Assert.assertEquals("streets of blood", NameMatcher.extractName("Streets.Of.Blood.FRENCH.DVDRIP.XviD-PTN.avi").toLowerCase());
     Assert.assertEquals("stretch", NameMatcher.extractName("Stretch.FRENCH.DVDRip.XviD-AYMO.avi").toLowerCase());
     Assert.assertEquals("strike balls of glory", NameMatcher.extractName("Strike.Balls.Of.Glory.STV.2007.FRENCH.DVDRip.XviD-FAN.avi").toLowerCase());
-    Assert.assertEquals("st trinian s: pensionnat pour jeunes filles rebelles", NameMatcher.extractName("St Trinian'S: Pensionnat Pour Jeunes Filles Rebelles (2007).avi").toLowerCase());
+    Assert.assertEquals("st trinian's pensionnat pour jeunes filles rebelles", NameMatcher.extractName("St Trinian'S: Pensionnat Pour Jeunes Filles Rebelles (2007).avi").toLowerCase());
     Assert.assertEquals("stuck", NameMatcher.extractName("Stuck.2011.TRUEFRENCH.DVDRiP.XViD-FiCTiON.avi").toLowerCase());
     Assert.assertEquals("succubes", NameMatcher.extractName("Succubes.2008.FRENCH.DVDRiP.XViD-ARTEFAC.avi").toLowerCase());
     Assert.assertEquals("suffer island", NameMatcher.extractName("Suffer.Island.2010.TRUEFRENCH.DVDRiP.XVID-ARTEFAC.avi").toLowerCase());
@@ -1184,7 +1184,7 @@ public class NameMatcherTest {
     Assert.assertEquals("tooth fairy", NameMatcher.extractName("Tooth.Fairy.2010.TRUEFRENCH.SUBFORCED.DVDRiP.XViD-ARTEFAC.avi").toLowerCase());
     Assert.assertEquals("tooth fairy", NameMatcher.extractName("Tooth.Fairy.FRENCH.DVDRiP.XViD-SURViVAL.avi").toLowerCase());
     Assert.assertEquals("totally spies le film", NameMatcher.extractName("Totally.Spies.Le.Film.FRENCH.DVDRip.XviD-ZANBiC.avi").toLowerCase());
-    Assert.assertEquals("tout est illuminé", NameMatcher.extractName("Tout Est Illuminé (2005).avi").toLowerCase());
+    Assert.assertEquals("tout est illumine", NameMatcher.extractName("Tout Est Illuminé (2005).avi").toLowerCase());
     Assert.assertEquals("toy story 3", NameMatcher.extractName("Toy.Story.3.2010.TRUEFRENCH.DVDRiP.XViD-SLiM.avi").toLowerCase());
     Assert.assertEquals("toy story 3", NameMatcher.extractName("Toy.Story.3.FRENCH.TC.LD.2CD.XviD-SexToyStory.avi").toLowerCase());
     Assert.assertEquals("toy story 3", NameMatcher.extractName("Toy.Story.3.FRENCH.TS.LD.XviD-FRomCatTiS.avi").toLowerCase());
@@ -1236,7 +1236,7 @@ public class NameMatcherTest {
     Assert.assertEquals("unstoppable", NameMatcher.extractName("Unstoppable.2011.TRUEFRENCH.DVDRIP.XVID-FwD.avi").toLowerCase());
     Assert.assertEquals("unstoppable", NameMatcher.extractName("Unstoppable.FRENCH.BDRiP.XViD-THENiGHTMARE.avi").toLowerCase());
     Assert.assertEquals("unthinkable", NameMatcher.extractName("Unthinkable.REPACK.STV.FRENCH.DVDRiP.XViD-SURViVAL.avi").toLowerCase());
-    Assert.assertEquals("up 2009", NameMatcher.extractName("Up.2009.FRENCH.TS.MD.XViD-KoNG.avi").toLowerCase());
+    Assert.assertEquals("up", NameMatcher.extractName("Up.2009.FRENCH.TS.MD.XViD-KoNG.avi").toLowerCase());// FIXME 2009 ????
     Assert.assertEquals("up", NameMatcher.extractName("Up.FRENCH.BDRiP.XViD-SURViVAL.avi").toLowerCase());
     Assert.assertEquals("urgency", NameMatcher.extractName("Urgency.2011.TRUEFRENCH.DVDRIP.XViD-FiCTiON.avi").toLowerCase());
     Assert.assertEquals("valkyrie", NameMatcher.extractName("Valkyrie.TRUEFRENCH.SUBFORCED.DVDRiP.XviD-GKS.avi").toLowerCase());
@@ -1290,10 +1290,15 @@ public class NameMatcherTest {
     Assert.assertEquals("youth in revolt", NameMatcher.extractName("Youth.In.Revolt.2009.TRUEFRENCH.DVDRiP.XViD-BEBAD.avi").toLowerCase());
     Assert.assertEquals("you will meet a tall dark", NameMatcher.extractName("You.Will.Meet.A.Tall.Dark.2010.TRUEFRENCH.DVDRiP.XviD-AUTOPSiE.avi").toLowerCase());
     Assert.assertEquals("yuki et nina", NameMatcher.extractName("Yuki.Et.Nina.FRENCH.DVDRip.XviD-UNSKiLLED.avi").toLowerCase());
-    Assert.assertEquals("zmds: zombies of mass destruction", NameMatcher.extractName("ZMDs: Zombies of Mass Destruction (2011).avi").toLowerCase());
+    Assert.assertEquals("zmds zombies of mass destruction", NameMatcher.extractName("ZMDs: Zombies of Mass Destruction (2011).avi").toLowerCase());
     Assert.assertEquals("zombieland", NameMatcher.extractName("Zombieland.2009.PROPER.TRUEFRENCH.DVDRip.XviD-LU3UR.avi").toLowerCase());
     Assert.assertEquals("zombieland", NameMatcher.extractName("ZombieLand.FRENCH.TS.MD.XviD-VODKA.avi").toLowerCase());
     Assert.assertEquals("zombies zombies zombies", NameMatcher.extractName("Zombies! Zombies! Zombies! (2008).avi").toLowerCase());
     Assert.assertEquals("paranorman", NameMatcher.extractName("ParaNorman2012TRUEFRENCHDVDRipXvid-FUZION").toLowerCase());
+    Assert.assertEquals("deux supers flic", NameMatcher.extractName("1979.Deux supers flic").toLowerCase());
+    Assert.assertEquals("deux supers flic", NameMatcher.extractName("1979_Deux supers flic").toLowerCase());
+    Assert.assertEquals("deux supers flic", NameMatcher.extractName("1979 Deux supers flic").toLowerCase());
+    Assert.assertEquals("2012", NameMatcher.extractName("2012").toLowerCase());
+    Assert.assertEquals("Flying Swords", NameMatcher.extractName("ARTEFACFlyingSwordsFRENCHDVDRip2011bitododo"));
   }
 }

@@ -23,6 +23,7 @@ import com.alee.global.StyleConstants;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
@@ -41,6 +42,7 @@ import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.dialog.AboutDialog;
 import fr.free.movierenamer.ui.swing.dialog.AbstractDialog;
+import fr.free.movierenamer.ui.swing.dialog.HistoryDialog;
 import fr.free.movierenamer.ui.swing.dialog.LoggerDialog;
 import fr.free.movierenamer.ui.swing.dialog.MediaInfoDownloadDialog;
 import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
@@ -82,6 +84,7 @@ public final class UIManager {
   private static AboutDialog aboutDialog;
   private static LoggerDialog logDialog;
   private static ImagePanel imagePanel;
+  private static HistoryDialog historyDialog;
   private static final UISettings setting = UISettings.getInstance();
   private static final Map<IProperty, WebCheckBox> checkboxs;
   private static final WebCheckBox nfoChk = new WebCheckBox();
@@ -117,10 +120,12 @@ public final class UIManager {
 
   public static void init(MovieRenamer mr) {
 
+    // Create dialogs
     settingsDialog = new SettingDialog(mr);
     aboutDialog = new AboutDialog(mr);
     imagePanel = new ImagePanel(mr);
     logDialog = new LoggerDialog(mr);
+    historyDialog = new HistoryDialog(mr);
 
     for (UIMode mode : UIMode.values()) {
       switch (mode) {
@@ -171,9 +176,9 @@ public final class UIManager {
     imagePanel.clearPanel();
   }
 
-  public static Map<UIMode, MediaPanel<? extends UIMediaInfo>> createMediaPanel(MovieRenamer mr) {
-    Map<UIMode, MediaPanel<? extends UIMediaInfo>> panels = new HashMap<>();
-    MediaPanel<? extends UIMediaInfo> panel;
+  public static Map<UIMode, MediaPanel<? extends UIMediaInfo<?>>> createMediaPanel(MovieRenamer mr) {
+    Map<UIMode, MediaPanel<? extends UIMediaInfo<?>>> panels = new HashMap<>();
+    MediaPanel<? extends UIMediaInfo<? extends MediaInfo>> panel;
     for (UIMode mode : UIMode.values()) {
       switch (mode) {
         case MOVIEMODE:
@@ -201,6 +206,10 @@ public final class UIManager {
 
   public static void showLogDialog() {
     showDialog(logDialog);
+  }
+
+  public static void showHistoryDialog() {
+    showDialog(historyDialog);
   }
 
   private static void showDialog(final AbstractDialog dialog) {

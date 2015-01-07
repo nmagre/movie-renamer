@@ -50,7 +50,7 @@ public class TvShowEpisodeNumMatcher {// TODO
     SxEPattern6("(?:(?:season)|(?:saison)).?([0-9]{1,2}).*(?:[eé]pisode).?([0-9]{1,2})"),
     SxEPattern7("s([0-9]{1,2}).*[ée]pisode.?\\D?([0-9]{1,2})"),
     SxEPattern8("(?:^|[\\W} \\(])(0?[0-9]) ?([0-9]{2})(?:\\s|$|-\\))");
-    private Pattern pattern;
+    private final Pattern pattern;
 
     private TvShowNumPattern(String pattern) {
       this.pattern = Pattern.compile(pattern);

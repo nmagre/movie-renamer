@@ -18,7 +18,6 @@
 package fr.free.movierenamer.scrapper;
 
 import org.junit.Before;
-import org.junit.Test;
 
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.Cache;

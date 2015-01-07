@@ -27,6 +27,7 @@ import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.UIManager;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,12 +120,12 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
   }
 
   @Override
-  public String getParam() {
-    return String.format("[%s]", searchResult);
+  public String getDisplayName() {
+    return UIUtils.i18n.getLanguage("main.statusTb.searchimages", false);
   }
 
   @Override
-  public String getDisplayName() {
-    return ("worker.searchImages");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.SEARCH_IMAGE;
   }
 }

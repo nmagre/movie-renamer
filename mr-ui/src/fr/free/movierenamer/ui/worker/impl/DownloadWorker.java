@@ -19,7 +19,9 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.utils.URIRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,11 +39,14 @@ public class DownloadWorker extends Worker<Void> {
 
   private final List<URL> urls;
   private final File destDir;
+  private int progress = -1;
+  private String fileName;
 
   public DownloadWorker(MovieRenamer mr, List<URL> urls, File destDir) {
     super(mr);
     this.urls = urls;
     this.destDir = destDir;
+    fileName = "";
   }
 
   @Override
@@ -59,16 +64,23 @@ public class DownloadWorker extends Worker<Void> {
 
     String surl = url.toString();
 
+    long totalRead = 0;
     try {
-      String fileName = surl.substring(surl.lastIndexOf('/') + 1, surl.length());
-      URLConnection connection = url.openConnection();
-      input = connection.getInputStream();
+      fileName = surl.substring(surl.lastIndexOf('/') + 1, surl.length());
+      URLConnection connection = URIRequest.openConnection(url.toURI());
+      long length = connection.getContentLengthLong();
+      input = URIRequest.getInputStream(connection);
       output = new FileOutputStream(new File(destFolder, fileName));
 
       byte[] buffer = new byte[1024];
       int read;
       while ((read = input.read(buffer)) > 0) {
         output.write(buffer, 0, read);
+        totalRead += read;
+        if (totalRead > 0 && length > 0) {
+          progress = (int) ((totalRead * 100) / length);
+          setProgress(progress);
+        }
       }
 
       output.flush();
@@ -100,13 +112,13 @@ public class DownloadWorker extends Worker<Void> {
   }
 
   @Override
-  public String getParam() {
-    return null;
+  public String getDisplayName() {
+    return UIUtils.i18n.getLanguage("main.statusTb.downloading", false);
   }
 
   @Override
-  public String getDisplayName() {
-    return "Download worker";// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.DOWNLOAD;
   }
 
 }

@@ -17,16 +17,24 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.renamer.FormatReplacing;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.StringUtils;
+import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class MediaInfo
@@ -51,9 +59,14 @@ public abstract class MediaInfo extends Info {
     public String name();
   }
 
+  public interface MultipleInfoProperty extends InfoProperty {
+
+  }
+
   public enum MediaProperty implements InfoProperty {
 
     title,
+    originalTitle,
     year,
     rating;
 
@@ -102,6 +115,10 @@ public abstract class MediaInfo extends Info {
 
   public String getTitle() {
     return get(MediaProperty.title);
+  }
+
+  public String getOriginalTitle() {
+    return get(MediaProperty.originalTitle);
   }
 
   public Integer getYear() {
@@ -163,14 +180,76 @@ public abstract class MediaInfo extends Info {
 
   public abstract MediaType getMediaType();
 
-  public abstract String getRenamedTitle(String filename, String format);
+  protected abstract void setReplaceMap(Map<String, Object> replace);
 
   protected abstract void setMediaCasting();
 
   protected abstract void unsetUnsupportedLanguageInfo();
 
-  public abstract String getRenamedTitle(String filename, String format, StringUtils.CaseConversionType renameCase,
-          String filenameSeparator, int filenameLimit, boolean reservedCharacter, boolean rmDupSpace, boolean trim);
+  protected Map<String, Object> getReplaceMap(String fileName) {
+    Map<String, Object> replace = new HashMap<String, Object>();
+
+    String titlePrefix = "";
+    String shortTitle = this.getTitle();
+
+    Pattern pattern;
+    Matcher matcher;
+
+    if (shortTitle != null) {
+      pattern = Pattern.compile("^((le|la|les|the)\\s|(l\\'))(.*)", Pattern.CASE_INSENSITIVE);
+      matcher = pattern.matcher(shortTitle);
+      if (matcher.find() && matcher.groupCount() >= 2) {
+        titlePrefix = matcher.group(1).trim();
+        shortTitle = matcher.group(matcher.groupCount()).trim();
+      }
+    }
+
+    replace.put("fn", FileUtils.getNameWithoutExtension(fileName));
+    replace.put("t", this.getTitle());
+    replace.put("tp", titlePrefix);
+    replace.put("st", shortTitle);
+
+    setReplaceMap(replace);
+    return replace;
+  }
+
+  public final String getRenamedTitle(String fileName, String format) {
+    final Settings settings = Settings.getInstance();
+    return getRenamedTitle(fileName, format, settings.getMovieFilenameCase(), settings.getMovieFilenameSeparator(), settings.getMovieFilenameLimit(),
+            settings.isReservedCharacter(), settings.isFilenameRmDupSpace(), settings.isFilenameTrim());// FIXME movie option
+  }
+
+  public final String getRenamedTitle(String fileName, String format, CaseConversionType caseType,
+          String separator, int limit, boolean reservedCharacter, boolean rmDupSpace, boolean trim) {
+
+    final FormatReplacing freplace = new FormatReplacing(getReplaceMap(fileName));
+    String res = freplace.getReplacedString(format, caseType, separator, limit);
+
+    if (reservedCharacter) {
+      for (String c : StringUtils.reservedCharacterList) {
+        if (!c.equals(File.separator)) {
+          if (":".equals(c) && Settings.WINDOWS) {
+            // Replace all colon except for hard drive if there are at the beginning of the string
+            // E.g: D:\.... -> not replaced
+            // E.g: file D:\... -> replaced
+            res = res.replaceAll("(?<!(^\\p{Lu}))" + c + "(?<!(\\\\))", "");
+          } else {
+            res = res.replace(c, "");
+          }
+        }
+      }
+    }
+
+    if (rmDupSpace) {
+      res = res.replaceAll("\\s+", " ");
+    }
+
+    if (trim) {
+      res = res.trim();
+    }
+
+    return res;
+  }
 
   @Override
   public String toString() {

@@ -18,11 +18,17 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.FileInfo;
+import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.mediainfo.MediaAudio;
+import fr.free.movierenamer.mediainfo.MediaTag;
+import fr.free.movierenamer.mediainfo.MediaVideo;
+import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
-import static fr.free.movierenamer.settings.XMLSettings.SettingsSubType.MOVIE;
+import fr.free.movierenamer.ui.swing.renderer.CompoundIcon;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
+import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
 import javax.swing.Icon;
 
@@ -32,11 +38,11 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UIFile extends Sorter.ISort implements IIconList {
+public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip {
 
   private File file;
   private FileInfo fileInfo;
-  private final String groupName;
+  private String groupName;
   private Icon icon;
   private String search;
   private MediaType mtype;
@@ -53,30 +59,40 @@ public class UIFile extends Sorter.ISort implements IIconList {
     this.groupName = groupName;
     this.mtype = mtype;
     this.icon = null;
-
     fileInfo = null;
   }
 
-  public FileInfo getFileInfo() {
+  private synchronized FileInfo getSFileInfo() {
     if (fileInfo == null) {
-      fileInfo = new FileInfo(file);
+      setFileInfo(new FileInfo(file));
     }
 
     return fileInfo;
+  }
+
+  public FileInfo getFileInfo() {
+    return getSFileInfo();
+  }
+
+  public IdInfo getImdbId() {
+    return getSFileInfo().getImdbId();
   }
 
   public void setFile(File file) {
     this.file = file;
   }
 
-  public void setFileInfo(FileInfo fileInfo) {
+  public synchronized void setFileInfo(FileInfo fileInfo) {
     this.fileInfo = fileInfo;
+    this.mtype = fileInfo.getType();
+    setIcon();
   }
 
   public String getSearch() {
     if (search == null || search.isEmpty()) {
-      search = getFileInfo().getSearch();
+      search = getSFileInfo().getSearch();
     }
+
     return search;
   }
 
@@ -95,7 +111,7 @@ public class UIFile extends Sorter.ISort implements IIconList {
 
   @Override
   public int getYear() {
-    return getFileInfo().getYear();
+    return getSFileInfo().getYear();
   }
 
   /**
@@ -104,41 +120,39 @@ public class UIFile extends Sorter.ISort implements IIconList {
    * @return Icon
    */
   @Override
-  public Icon getIcon() {// TODO return icon if file was renamed and id renamed
+  public Icon getIcon() {
 
-    if (icon != null) {
-      return icon;
+    if (icon == null) {
+      return ImageUtils.LOAD_16;
     }
-//
-//    if (getFileInfo().wasRenamed()) {
-//      return ImageUtils.LOGO_22;
-//    }
+
+    return icon;
+  }
+
+  private void setIcon() {// TODO return icon if file was renamed and id renamed
+
+    FileInfo fileInfo = getFileInfo();
+    icon = ImageUtils.MEDIA_16;
 
     switch (getMtype()) {
       case MOVIE:
-        return ImageUtils.MOVIE_16;
+        icon = ImageUtils.MOVIE_16;
+        if (fileInfo.getImdbId() != null) {
+          icon = ImageUtils.MOVIE_IMDB;
+        }
+        break;
       case TVSHOW:
-        return ImageUtils.TV_16;
+        icon = ImageUtils.TV_16;
+        if (fileInfo.getImdbId() != null) {
+          icon = ImageUtils.TVSHOW_IMDB;
+        }
+        break;
     }
 
-    /*if (wasRenamed()) {
-     return ImageUtils.LOGO_22;
-     }
+    if (Renamer.getInstance().wasRenamed(fileInfo)) {
+      icon = new CompoundIcon(ImageUtils.LOGO_22, icon);
+    }
 
-     if (fileInfo == null) {
-     getFileInfo();
-     }
-
-     switch (fileInfo.getType()) {
-     case MOVIE:
-     return ImageUtils.MOVIE_16;
-     case TVSHOW:
-     return ImageUtils.TV_16;
-     }
-
-     //return ImageUtils.MEDIA;
-     * */
-    return ImageUtils.MEDIA_16;
   }
 
   public void setIcon(Icon icon) {
@@ -164,7 +178,55 @@ public class UIFile extends Sorter.ISort implements IIconList {
     return groupName;
   }
 
+  public String getMd5Hash() {
+    return fileInfo.get(FileInfo.FileProperty.md5);
+  }
+
+  public void setGroupName(String groupName) {
+    this.groupName = groupName;
+  }
+
   public MediaType getMtype() {
     return mtype;
   }
+
+  @Override
+  public String getHtmlTooltip() {
+
+    MediaTag tag = getFileInfo().getMediaTag();
+    String str = "<html>";
+    str += "<img src =\"" + ImageUtils.getImagePath("ui/16/movie.png") + "\">&nbsp;";
+    str += "<font color=#4e89a4>" + toString() + "</font><br><hr>";
+    str += "<img src =\"" + ImageUtils.getImagePath("ui/16/search.png") + "\">&nbsp;";
+    str += getSearch() + "<br>";
+
+    if (getYear() != -1) {
+      str += "<img src =\"" + ImageUtils.getImagePath("ui/16/ssearch.png") + "\">&nbsp;";
+      str += getYear() + "<br>";
+    }
+
+    if (getImdbId() != null) {
+      str += "<img src =\"" + ImageUtils.getImagePath("scrapper/imdb.png") + "\">&nbsp;";
+      str += getImdbId() + "<br>";
+    }
+
+    str += "<img src =\"" + ImageUtils.getImagePath("ui/16/other.png") + "\">&nbsp;";
+    str += StringUtils.humanReadableByteCount(getLength()) + "<br>";
+    if (tag != null) {
+      MediaVideo mvideo = tag.getMediaVideo();
+      MediaAudio maudio = tag.getMediaAudios().get(0);
+      mvideo.getAspectRatio();
+      
+      
+      
+      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/video/" + mvideo.getCodec().toLowerCase() + ".png") + "\">&nbsp;";
+      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/video/" + mvideo.getVideoDefinition().toLowerCase() + ".png") + "\">&nbsp;";
+      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/audio/" + maudio.getCodec().toLowerCase() + ".png") + "\">&nbsp;";
+      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/audio/" + maudio.getNbChannel() + ".png") + "\">&nbsp;";
+    }
+    str += "<html>";
+
+    return str;
+  }
+
 }

@@ -91,7 +91,7 @@ public final class TvRageScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = tvrage.getCasting(new TvShow(null, new IdInfo(2930, ScrapperUtils.AvailableApiIds.TVRAGE), null, null, -1));
+    List<CastingInfo> cast = tvrage.getCasting(new TvShow(null, new IdInfo(2930, ScrapperUtils.AvailableApiIds.TVRAGE), null, null, -1), new IdInfo(2930, ScrapperUtils.AvailableApiIds.TVRAGE));
     Assert.assertEquals(null, cast);
   }
 

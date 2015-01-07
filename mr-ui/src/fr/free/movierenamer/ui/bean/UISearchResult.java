@@ -18,17 +18,10 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.IdInfo;
-import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scrapper.SearchScrapper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import fr.free.movierenamer.utils.Sorter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import javax.swing.Icon;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 
 /**
  * Class UISearchResult
@@ -36,109 +29,40 @@ import javax.swing.Icon;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UISearchResult extends Sorter.ISort implements IImage {
-
-  private final Media searchResult;
-  private final SearchScrapper<? extends Hyperlink> scrapper;
-  private Icon icon = ImageUtils.LOAD_24;
+public class UISearchResult extends AbstractSearchResult<Media, SearchScrapper<? extends Hyperlink>> {
 
   /**
    * @param searchResult
    * @param scrapper
    */
   public UISearchResult(Media searchResult, SearchScrapper<? extends Hyperlink> scrapper) {
-    this.searchResult = searchResult;
-    this.scrapper = scrapper;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return icon;
-  }
-
-  public SearchScrapper<? extends Hyperlink> getScrapper() {
-    return scrapper;
-  }
-
-  public Media getSearchResult() {
-    return searchResult;
-  }
-
-  @Override
-  public URI getUri(ImageInfo.ImageSize size) {// FIXME size ???
-    if (searchResult.getURL() != null) {
-      try {
-        return searchResult.getURL().toURI();
-      } catch (URISyntaxException ex) {
-        UISettings.LOGGER.log(Level.WARNING, null, ex);
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public int getYear() {
-    return searchResult.getYear();
-  }
-
-  @Override
-  public void setIcon(Icon icon) {
-    this.icon = icon;
-  }
-
-  @Override
-  public String getName() {
-    return searchResult.getName();
-  }
-
-  @Override
-  public String getOriginalName() {
-    return searchResult.getOriginalName();
-  }
-
-  @Override
-  public long getLength() {
-    return getName().length();
-  }
-
-  @Override
-  protected boolean hasImage() {
-    return getUri(null) != null;
-  }
-
-  @Override
-  public String toString() {
-    String toString = getName();
-
-    return toString;
+    super(searchResult, scrapper);
   }
 
   public String print(boolean showId, boolean showYear) {
     String toString = getName();
 
     if (showYear) {
-      toString += " (" + searchResult.getYear() + ")";
+      toString += " (" + result.getYear() + ")";
     }
 
     if (showId) {
-      IdInfo id = searchResult.getMediaId();
-      if (id == null) {
-       // id = searchResult.getImdbId();
+      IdInfo id = result.getMediaId();
+      if (id != null) {
+        toString += " (id:" + id + ")";
       }
-      toString += " (id:" + id + ")";
     }
 
     return toString;
   }
 
+  public MediaType getMediaType() {
+    return result.getMediaType();
+  }
+
   @Override
   public int getId() {
-    IdInfo id = searchResult.getMediaId();
-    if (id != null) {
-      return id.getId();
-    }
-
-    //id = searchResult.getImdbId();
+    IdInfo id = result.getMediaId();
     if (id != null) {
       return id.getId();
     }

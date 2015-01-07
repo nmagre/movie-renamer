@@ -21,27 +21,34 @@ import ca.odell.glazedlists.EventList;
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
+import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
+import fr.free.movierenamer.ui.worker.IWorker.WorkerId;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
+import fr.free.movierenamer.ui.worker.impl.GetFilesInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.impl.RenameThread;
 import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
+import fr.free.movierenamer.ui.worker.impl.SearchMediaIdWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaImagesWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaTrailerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaWorker;
+import fr.free.movierenamer.ui.worker.impl.SetSearchWorker;
 import java.awt.Dimension;
 import java.io.File;
 import java.util.Iterator;
@@ -68,6 +75,16 @@ public final class WorkerManager {
     start(listFileWorker);
   }
 
+  public final static void getFilesInfo(List<UIFile> files) {
+    GetFilesInfoWorker filesInfoWorker = new GetFilesInfoWorker(files);
+    start(filesInfoWorker);
+  }
+
+  public final static void setSearch(MovieRenamer mr, UIFile media) {
+    SetSearchWorker searchWorker = new SetSearchWorker(mr, media);
+    start(searchWorker);
+  }
+
   public final static void search(MovieRenamer mr, UIFile media) {
     SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media);
     start(searchWorker);
@@ -82,6 +99,11 @@ public final class WorkerManager {
     SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
     start(imagesWorker);
   }
+  
+  public final static void searchIds(MovieIdPanel panel, UIMovieInfo mediaInfo, UISearchResult searchResult, Media.MediaType mediaType) {
+    SearchMediaIdWorker idsWorker = new SearchMediaIdWorker(panel, mediaInfo, searchResult, mediaType);
+    start(idsWorker);
+  }
 
   public final static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {// not used
     SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
@@ -93,18 +115,18 @@ public final class WorkerManager {
     start(trailerWorker);
   }
 
-  public final static <T extends IImage> void fetchImages(ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(model, resize, defaultImage, downloadImage);
+  public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public final static <T extends IImage> void fetchImages(ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(model, size, resize, defaultImage, downloadImage);
+  public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, size, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
-  public final static void fetchGalleryImages(List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
-    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(images, gallery, size, resize, defaultImage);
+  public final static void fetchGalleryImages(WorkerId wid, List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
+    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(wid, images, gallery, size, resize, defaultImage);
     start(GalleryWorker);
   }
 
@@ -191,6 +213,36 @@ public final class WorkerManager {
         UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
       }
     }
+  }
+
+  public static AbstractWorker<?, ?> getFirstWorker() {
+    synchronized (WorkerManager.class) {
+      return workerQueue.peek();
+    }
+  }
+
+  public static int getNbRunningWorkers() {
+    synchronized (WorkerManager.class) {
+      return workerQueue.size();
+    }
+  }
+
+  /**
+   * Stop worker with id wid
+   *
+   * @param wid Worker id
+   */
+  public static void stop(WorkerId wid) {
+    synchronized (WorkerManager.class) {
+      Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
+      while (iterator.hasNext()) {
+        AbstractWorker<?, ?> worker = iterator.next();
+        if (worker.getWorkerId() == wid && !worker.isDone()) {
+          worker.cancel(true);
+        }
+      }
+    }
+    updateWorkerQueue();
   }
 
   /**

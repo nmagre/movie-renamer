@@ -41,9 +41,9 @@ public class UIMovieInfo extends UIVideoInfo<MovieInfo> {
     if (key instanceof MediaProperty) {
       value = info.get((MediaProperty) key);
     } else if (key instanceof MovieProperty) {
-      value = ((MovieInfo) info).get((MovieProperty) key);
+      value = info.get((MovieProperty) key);
     } else if (key instanceof MovieMultipleProperty) {
-      List<String> values = ((MovieInfo) info).get((MovieMultipleProperty) key);
+      List<String> values = info.get((MovieMultipleProperty) key);
       value = StringUtils.arrayToString(values, ", ", 0);
     }
 
@@ -54,12 +54,9 @@ public class UIMovieInfo extends UIVideoInfo<MovieInfo> {
     if (key instanceof MediaProperty) {
       info.set((MediaProperty) key, value);
     } else if (key instanceof MovieProperty) {
-      ((MovieInfo) info).set((MovieProperty) key, value);
+      info.set((MovieProperty) key, value);
     } else if (key instanceof MovieMultipleProperty) {
-      if (value == null) {
-        value = "";
-      }
-      ((MovieInfo) info).set((MovieMultipleProperty) key, value);
+      info.set((MovieMultipleProperty) key, value != null ? value : "");
     }
   }
 

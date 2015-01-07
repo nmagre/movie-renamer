@@ -18,6 +18,10 @@
 package fr.free.movierenamer.info;
 
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class IdInfo
@@ -51,6 +55,16 @@ public class IdInfo extends Info {
 
   public String getLongId() {
     return longId;
+  }
+
+  public URL getLink() {
+    try {
+      return new URL("http", String.format(idType.getLink(), toString()), "");
+    } catch (MalformedURLException ex) {
+      Logger.getLogger(IdInfo.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
   }
 
   @Override

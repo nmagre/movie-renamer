@@ -17,10 +17,14 @@
  */
 package fr.free.movierenamer.renamer;
 
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.StringUtils;
-import java.io.File;
+import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -33,18 +37,13 @@ import java.util.regex.Pattern;
  */
 public class FormatReplacing {
 
-  private static final char tokenStart = '<';
-  private static final char tokenEnd = '>';
-  private static final String optionSeparator = ":";
-  private static final String equalsSeparator = "=";
-  private static final Pattern valueIndex = Pattern.compile("(\\d+)");
+  private static final String tokenStart = "<";
+  private static final String tokenEnd = ">";
+  private static final char optionSeparator = ':';
+  private static final char equalsSeparator = '=';
+  private static final char notEqualsSeparator = '!';
+  private static final Pattern valueIndex = Pattern.compile("[a-z]+(\\d+)");
   private final Map<String, Object> replace;
-  private final StringUtils.CaseConversionType renameCase;
-  private final String filenameSeparator;
-  private final int filenameLimit;
-  private StringBuilder tokenBuffer;
-  private StringBuilder outputBuffer;
-  private Integer tokenIndex;
 
   /**
    * Tag options
@@ -57,23 +56,15 @@ public class FormatReplacing {
     f,// first letter upper
     w,// keep only word caracter
     d// keep only digit
-    // = show if equals
-    // != show if not equals
   }
 
   /**
    * Simple tag replace for naming scheme
    *
    * @param replace Map of tags and replace values
-   * @param renameCase
-   * @param filenameSeparator
-   * @param filenameLimit
    */
-  public FormatReplacing(Map<String, Object> replace, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit) {
+  public FormatReplacing(Map<String, Object> replace) {
     this.replace = replace;
-    this.renameCase = renameCase;
-    this.filenameSeparator = filenameSeparator;
-    this.filenameLimit = filenameLimit;
   }
 
   /**
@@ -82,80 +73,204 @@ public class FormatReplacing {
    * @param format Naming scheme
    * @return Replaced string by values
    */
-  public String getReplacedString(final String format) {
-    tokenIndex = null;
-    tokenBuffer = new StringBuilder();
-    outputBuffer = new StringBuilder();
+  public String getReplacedString(String format) {
+    return getReplacedString(format, CaseConversionType.FIRSTLO, ", ", 0);
+  }
 
-    char c;
-    List<Option> options;
-    List<String> opts;
-    List<String> equ;
+  /**
+   * Replace tag by value
+   *
+   * @param format Naming scheme
+   * @param caseType Default used case if tag do not have a case option
+   * @param separator Separator for multiple value tag
+   * @param limit Limit for multiple value tag (limit less than 1 -> all)
+   * @return Replaced string by values
+   */
+  public String getReplacedString(String format, CaseConversionType caseType, String separator, int limit) {
 
-    for (int i = 0; i < format.length(); i++) {
-      c = format.charAt(i);
+    // Split format
+    List<String> list = new ArrayList<String>();
+    list.addAll(Arrays.asList(format.split("(((?=[" + tokenStart + "])|(?<=" + tokenStart + "))|((?=" + tokenEnd + ")|(?<=" + tokenEnd + ")))")));
 
-      // Try to replace tag by its value
-      if (c == tokenEnd && tokenIndex != null) {
-        String tag = tokenBuffer.toString();
-        options = new ArrayList<Option>();
-        // Get options
-        if (tag.contains(optionSeparator)) {
-          opts = StringUtils.stringToArray(tag, optionSeparator);
-          tag = opts.get(0);
-          opts.remove(0);
+    TreeNode charaTree = new TreeNode("");
+    TreeNode currentTree = charaTree;
+    boolean append = false;
 
-          for (String opt : opts) {
-            try {
-              options.add(Option.valueOf(opt));
-            } catch (Exception e) {
-            }
-          }
-        }
+    // Transform list to a tree
+    for (String str : list) {
 
-        String equalsOption = null;
-        boolean equals = true;
-        // (not) Equals option
-        if (tag.contains(equalsSeparator)) {
-          if (tag.contains(StringUtils.EXCLA + equalsSeparator)) {
-            equals = false;
-            tag = tag.replace(StringUtils.EXCLA, "");
-          }
-
-          equ = StringUtils.stringToArray(tag, equalsSeparator);
-          tag = equ.get(0);
-
-          if (equ.size() > 1) {
-            equalsOption = equ.get(1);
-          }
-        }
-
-        outputBuffer.append(getValue(tag + tokenEnd, equalsOption, equals, options.toArray(new Option[options.size()])));
-        tokenIndex = null;
-        tokenBuffer = new StringBuilder();
+      if (str.isEmpty()) {
         continue;
       }
 
-      if (c == tokenStart) {
-        // No token end found, so we copy token buffer to output buffer
-        if (tokenIndex != null) {
-          outputBuffer.append(tokenBuffer);
-          tokenBuffer = new StringBuilder();
+      if (str.equals(tokenStart)) {
+
+        if (currentTree.getParent() != null) {
+          if (!currentTree.isToken()) {
+            currentTree = currentTree.getParent();
+          }
         }
 
-        tokenBuffer.append(tokenStart);
-        tokenIndex = i;
-        continue;
-      }
+        currentTree = currentTree.addChild(new TreeNode(""));
+        currentTree.setIsToken(true);
+        append = true;
+      } else if (str.equals(tokenEnd)) {
 
-      if (tokenIndex != null) {
-        tokenBuffer.append(c);
+        if (currentTree.getParent() != null) {
+
+          if (!currentTree.isToken() && currentTree.getParent().isToken()) {
+            currentTree.getParent().setIsClosed(true);
+            currentTree = currentTree.getParent();
+          } else {
+            currentTree.setIsClosed(true);
+          }
+
+          currentTree = currentTree.getParent();
+        }
+
       } else {
-        outputBuffer.append(c);
+
+        if (append) {
+          currentTree.appendData(str);
+          append = false;
+        } else {
+
+          currentTree = currentTree.addChild(new TreeNode(str));
+        }
       }
 
     }
-    return outputBuffer.toString();
+
+    // Flat the tree if tokenEnd is missing
+    flatNoEndToken(charaTree);
+    String result = getTagString(charaTree, caseType, separator, limit);
+    System.out.println("Format : " + format);
+    System.out.println(charaTree.printTree(0));
+
+    return result;
+  }
+
+  private String getTagString(TreeNode tree, CaseConversionType caseType, String separator, int limit) {
+
+    StringBuilder data = new StringBuilder(tree.getData());
+    String childtokenData;
+    for (TreeNode child : tree.getChilds()) {
+      if (child.isToken() && child.containsToken()) {
+        childtokenData = getTagString(child.getTokenChild(), caseType, separator, limit);
+        System.out.println("child data for [" + child.getData() + "] = |" + childtokenData + "|");
+        if (childtokenData.isEmpty()) {
+          return "";
+        }
+      }
+      data.append(getTagString(child, caseType, separator, limit));
+    }
+
+    if (!tree.isToken() || !tree.isClosed()) {
+      return data.toString();
+    }
+
+    System.out.println("Tag : " + data);
+
+    List<Option> options = new ArrayList<Option>();
+    String equalsOption = null;
+    boolean equals = true;
+    boolean isIfCondition = false;
+    boolean isOption = false;
+
+    char lastC = '\0';
+    int index = 0;
+    StringBuilder tag = new StringBuilder(data);
+    char c;
+    try {
+
+      for (int i = 0; i < data.length(); i++) {
+        c = data.charAt(i);
+
+        switch (c) {
+          case notEqualsSeparator:
+            if (isOption) {
+              isOption = false;
+            }
+            break;
+          case equalsSeparator:
+            isOption = false;
+            if (equalsOption == null) {
+
+              if (lastC == notEqualsSeparator) {
+                equals = false;
+                tag.deleteCharAt(index - 1);
+                index--;
+              }
+
+              equalsOption = "";
+              if (index + 1 < tag.length()) {
+                equalsOption = tag.substring(index + 1, tag.length());
+                tag = new StringBuilder(tag.subSequence(0, index + 1));
+              }
+
+              tag.deleteCharAt(index);
+              index--;
+            }
+            break;
+          case '?':
+            isOption = false;
+            isIfCondition = true;
+            tag.deleteCharAt(index);
+            index--;
+            break;
+          case optionSeparator:
+
+            if (isIfCondition) {
+              isIfCondition = false;
+            } else {
+              isOption = true;
+            }
+            tag.deleteCharAt(index);
+            index--;
+            break;
+          default:
+        }
+
+        if (isOption && c != optionSeparator) {
+          try {
+            options.add(Option.valueOf("" + c));
+          } catch (Exception e) {
+          }
+          tag.deleteCharAt(index);
+          index--;
+        }
+
+        lastC = c;
+        index++;
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      System.err.println(tag);
+      System.err.println(equalsOption);
+    }
+
+    return getValue(tag.toString(), caseType, separator, limit, equalsOption, equals, options.toArray(new Option[options.size()]));
+  }
+
+  /**
+   * Remove all child of nodes which are not a TOKEN This mean that tokenEnd is
+   * missing
+   *
+   * @param tree
+   */
+  private void flatNoEndToken(TreeNode tree) {
+    List<TreeNode> childs = new ArrayList<TreeNode>(tree.getChilds());
+    Iterator<TreeNode> it = childs.iterator();
+    TreeNode child;
+    while (it.hasNext()) {
+      child = it.next();
+      flatNoEndToken(child);
+
+      if (!child.isToken() && child.hasChild() || child.isToken() && !child.isClosed()) {
+        child.getParent().addChilds(child.getChilds());
+        child.removeChilds();
+      }
+    }
   }
 
   /**
@@ -166,22 +281,25 @@ public class FormatReplacing {
    * @param options Tag options
    * @return Value or token if tag is not found
    */
-  private String getValue(String token, final String equalsValue, final boolean equals, final Option... options) {
+  private String getValue(String token, CaseConversionType caseType, String separator, int limit, String equalsValue, boolean equals, Option... options) {
 
     int index = -1;
     final Matcher matcher = valueIndex.matcher(token);
 
+    // Get index for multiple value Tag (ex: <a1>)
     if (matcher.find()) {
       index = Integer.parseInt(matcher.group(1)) - 1;
       token = token.replaceAll("\\d+", "");
     }
 
+    // Get token value
     final Object obj = replace.get(token);
     if (obj == null) {
       if (replace.containsKey(token)) {
         return "";
       }
-      return StringUtils.applyCase(token, renameCase);
+
+      return token;
     }
 
     String value = obj.toString();
@@ -193,7 +311,7 @@ public class FormatReplacing {
           value = list.get(index).toString();
         }
       } else {
-        value = StringUtils.arrayToString(list, filenameSeparator, filenameLimit);
+        value = StringUtils.arrayToString(list, separator, limit);
       }
     }
 
@@ -207,23 +325,23 @@ public class FormatReplacing {
       }
     }
 
-    StringUtils.CaseConversionType scase = null;
+    CaseConversionType scase = null;
     for (Option option : options) {
       switch (option) {
         case d:
           value = value.replaceAll("\\D", "");
           break;
         case f:
-          scase = StringUtils.CaseConversionType.FIRSTLA;
+          scase = CaseConversionType.FIRSTLA;
           break;
         case i:
-          scase = StringUtils.CaseConversionType.NONE;
+          scase = CaseConversionType.NONE;
           break;
         case l:
-          scase = StringUtils.CaseConversionType.LOWER;
+          scase = CaseConversionType.LOWER;
           break;
         case u:
-          scase = StringUtils.CaseConversionType.UPPER;
+          scase = CaseConversionType.UPPER;
           break;
         case w:
           value = value.replaceAll("(?:\\W|\\d)", "");
@@ -231,16 +349,198 @@ public class FormatReplacing {
       }
     }
 
-    if (Settings.getInstance().isReservedCharacter()) {
-      for (String c : StringUtils.reservedCharacterList) {
-        if (!c.equals(File.separator)) {
-          value = value.replace(c, "");
-        }
-      }
-      value = value.trim();
+    return StringUtils.applyCase(value, scase != null ? scase : caseType);
+  }
+
+  /**
+   * Simple tree class
+   */
+  private class TreeNode {
+
+    private final List<TreeNode> children = new LinkedList<TreeNode>();
+    private TreeNode parent = null;
+    private String data;
+    private boolean isToken;
+    private boolean isClosed;
+
+    public TreeNode(String data) {
+      this(data, null);
     }
 
-    return StringUtils.applyCase(value, scase != null ? scase : renameCase);
+    public TreeNode(String data, TreeNode parent) {
+      this.data = data;
+      this.parent = parent;
+      isToken = false;
+      isClosed = false;
+    }
+
+    public TreeNode getParent() {
+      return parent;
+    }
+
+    public void setParent(TreeNode parent) {
+      this.parent = parent;
+    }
+
+    public String getData() {
+      return data;
+    }
+
+    public void appendData(String data) {
+      this.data += data;
+    }
+
+    public void setIsToken(boolean isToken) {
+      this.isToken = isToken;
+    }
+
+    public void setIsClosed(boolean isClosed) {
+      this.isClosed = isClosed;
+    }
+
+    public boolean isToken() {
+      return isToken;
+    }
+
+    public boolean isClosed() {
+      return isClosed;
+    }
+
+    public boolean hasChild() {
+      return !children.isEmpty();
+    }
+
+    public List<TreeNode> getChilds() {
+      return Collections.unmodifiableList(children);
+    }
+
+    /**
+     * Add a child and set parent
+     *
+     * @param child
+     * @return TreeNode child
+     */
+    public TreeNode addChild(TreeNode child) {
+      child.setParent(this);
+      children.add(child);
+
+      return child;
+    }
+
+    /**
+     * Add a list of child and set parent
+     *
+     * @param child list of child
+     */
+    public void addChilds(List<TreeNode> childs) {
+      for (TreeNode child : childs) {
+        child.setParent(this);
+        children.add(child);
+      }
+    }
+
+    /**
+     * Remove all child
+     */
+    public void removeChilds() {
+      children.clear();
+    }
+
+    /**
+     * Search if a child (only child of current TreeNode) is a token
+     *
+     * @return true if a child is a token, otherwise false
+     */
+    public boolean containsToken() {
+      for (TreeNode child : children) {
+        if (child.isToken()) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public TreeNode getTokenChild() {
+      for (TreeNode child : children) {
+        if (child.isToken()) {
+          return child;
+        }
+      }
+
+      return null;
+    }
+
+    /**
+     * Get the tree as a string
+     *
+     * @param increment Space increment
+     * @return Tree as a string
+     */
+    public String printTree(int increment) {
+      String s;
+      String inc = "";
+      for (int i = 0; i < increment; ++i) {
+        inc += " ";
+      }
+
+      s = inc + "|" + data + "| " + (isToken ? " [Token]" + (isClosed ? " [Closed]" : " [Opened]") : "");
+
+      for (TreeNode child : children) {
+        s += "\n" + child.printTree(increment + 2);
+      }
+      return s;
+    }
+  }
+
+  public static void main(String[] args) {
+    final Map<String, Object> replace = new HashMap<String, Object>();
+    replace.put("fn", "Matrix.mkv");
+    replace.put("t", "Matrix");
+    replace.put("tp", "Matrix");
+    replace.put("st", "The");
+    replace.put("ot", "The matrix");
+    replace.put("y", "1999");
+    replace.put("test", "");
+    replace.put("vr", "720P");
+
+    FormatReplacing pm = new FormatReplacing(replace);
+    System.out.println("Result : " + pm.getReplacedString("<tp> ou pas <fn> <st>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<tp!=<fn>> <st>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<ot!=<fn> <st>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<t!=<fn:i=<ot>>>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<t:u!=<ot>>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<t> <(<ot=!=3=2>)> (<y>)"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<t> <(<test:u>) ><(<y>)>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<t> <(<vr:l=720p>) ><(<y>)>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<t> <(<test? - <tt> -:|<ot>|) ><(<y>)>"));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<Foo <<test><y>> Bar>", CaseConversionType.FIRSTLO, ", ", 0));
+    System.out.println();
+    System.out.println();
+    System.out.println("Result : " + pm.getReplacedString("<Foo <humm!!!> Bar>"));
+
   }
 
 }

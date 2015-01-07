@@ -63,7 +63,13 @@ public final class Cache {
 
             @Override
             public void run() {
-              CacheManager.getInstance().shutdown();
+
+              try {
+                CacheManager.getInstance().shutdown();
+              } catch (Exception e) {
+                Settings.LOGGER.log(Level.WARNING, e.toString());
+              }
+
               try {
                 lock.release();
               } catch (Exception e) {
@@ -94,20 +100,33 @@ public final class Cache {
   }
 
   public synchronized static Cache getCache(String name) {
-    return new Cache(CacheManager.getInstance().getCache(name));
+    try {
+      return new Cache(CacheManager.getInstance().getCache(name));
+    } catch (Exception ex) {
+      Settings.LOGGER.log(Level.WARNING, ex.toString(), ex);
+    }
+    return null;
   }
 
   public synchronized static void clearCache(String name) {
-    net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
-    if (cache != null) {
-      Settings.LOGGER.log(Level.FINER, String.format("Clear cache %s", cache.getName()));
-      cache.removeAll();
+    try {
+      net.sf.ehcache.Cache cache = CacheManager.getInstance().getCache(name);
+      if (cache != null) {
+        Settings.LOGGER.log(Level.FINER, String.format("Clear cache %s", cache.getName()));
+        cache.removeAll();
+      }
+    } catch (Exception ex) {
+      Settings.LOGGER.log(Level.WARNING, ex.toString(), ex);
     }
   }
 
   public synchronized static void clearAllCache() {
-    for (String cacheName : CacheManager.getInstance().getCacheNames()) {
-      clearCache(cacheName);
+    try {
+      for (String cacheName : CacheManager.getInstance().getCacheNames()) {
+        clearCache(cacheName);
+      }
+    } catch (Exception ex) {
+      Settings.LOGGER.log(Level.WARNING, ex.toString(), ex);
     }
   }
 

@@ -22,12 +22,15 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
-import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import fr.free.movierenamer.info.MediaInfo.MultipleInfoProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
 import fr.free.movierenamer.ui.swing.dialog.MultipleValueEditorDialog;
+import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.utils.StringUtils;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,41 +53,59 @@ import javax.swing.text.JTextComponent;
  */
 public class UIEditor {
 
-  private JComponent component;
   private final WebButton cancelButton = new WebButton(ImageUtils.CANCEL_16);
   private final WebButton editButton = new WebButton(ImageUtils.EDIT_16);
   private final boolean isTextComponent;
   private final Color defaultColor;
   private final Color modifiedColor = new Color(29, 86, 171);
-  private DocumentListener docListener;
-  private Object defaultValue;
   private boolean editable = false;
   private final boolean multipleValue;
   private final WebButton button;
   private final MovieRenamer mr;
-  private final MovieMultipleProperty property;
+  private final InfoProperty property;
+  //
+  private DocumentListener docListener;
+  private String defaultValue;
+  private String value;
+  private JComponent[] components;
+  private JComponent editableComponent;
 
-  public UIEditor(MovieRenamer mr, JComponent component) {
-    this(mr, component, null);
-  }
+  public UIEditor(MovieRenamer mr, InfoProperty property, JComponent... components) {
 
-  public UIEditor(MovieRenamer mr, JComponent component, MovieMultipleProperty property) {
-    if (!(component instanceof JTextComponent) && !(component instanceof JList)) {
+    if (components == null || components.length == 0) {
+      throw new UnsupportedOperationException();
+    }
+
+    this.components = new JComponent[components.length - 1];
+    boolean supported = false;
+    int pos = 0;
+    for (JComponent component : components) {
+      // Get first supported component as "editable component"
+      if (!supported && (component instanceof JTextComponent || component instanceof JList)) {
+        supported = true;
+        this.editableComponent = component;
+      } else {
+        this.components[pos++] = component;
+      }
+    }
+
+    if (!supported) {
       throw new UnsupportedOperationException();
     }
 
     this.mr = mr;
-    this.component = component;
-    this.multipleValue = property != null;
+    this.multipleValue = property != null && property instanceof MultipleInfoProperty;
     this.property = property;
-    isTextComponent = component instanceof JTextComponent;
-    defaultColor = component.getForeground();
+    isTextComponent = editableComponent instanceof JTextComponent;
+    defaultColor = editableComponent.getForeground();
     defaultValue = null;
+    value = null;
 
     button = multipleValue ? editButton : cancelButton;
 
     button.setEnabled(false);
     button.setVisible(false);
+    setEnableComponents(false);
 
     if (!multipleValue) {
       createCancelListener();
@@ -93,33 +114,44 @@ public class UIEditor {
     }
 
     if (isTextComponent) {
-      ((JTextComponent) component).setEditable(false);
-      ((JTextComponent) component).addMouseListener(new ContextMenuField());
+      ((JTextComponent) editableComponent).setEditable(false);
+      ((JTextComponent) editableComponent).addMouseListener(new ContextMenuField());
     }
   }
 
+  /**
+   * Create editor button listener
+   *
+   * Open a dialog to edit values (only for multiple values)
+   */
   private void createEditorListener() {
     button.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent evt) {
         List<Object> values = new ArrayList<>();
         if (!isTextComponent) {
-          WebList list = (WebList) component;
+          WebList list = (WebList) editableComponent;
           ListModel model = list.getModel();
           int size = model.getSize();
           for (int i = 0; i < size; i++) {
             values.add(model.getElementAt(i));
           }
         } else {
-          String value = ((JTextComponent) component).getText();
+          String value = ((JTextComponent) editableComponent).getText();
           values.addAll(Arrays.asList(value.split(", ")));
         }
+
         MultipleValueEditorDialog mvdial = new MultipleValueEditorDialog(mr, values, property);
         mvdial.setVisible(true);
       }
     });
   }
 
+  /**
+   * Create cancel button listener
+   *
+   * Set default value
+   */
   private void createCancelListener() {
     button.addActionListener(new ActionListener() {
       @Override
@@ -130,6 +162,15 @@ public class UIEditor {
     });
   }
 
+  /**
+   * Create document listener
+   *
+   * If value is changed fire an event to update current UIMediaInfo value and
+   * change font color
+   *
+   * @param textComponent A text component
+   * @return DocumentListener
+   */
   private DocumentListener createDocumentListener(final JTextComponent textComponent) {
     return new DocumentListener() {
       @Override
@@ -148,59 +189,75 @@ public class UIEditor {
     };
   }
 
+  /**
+   * Change font color and update UIMediaInfo value
+   *
+   * @param textComponent A text component
+   */
   private void edited(JTextComponent textComponent) {// TODO font color and fixe modified value
     textComponent.setForeground(!textComponent.getText().equals(defaultValue != null ? defaultValue : "") ? modifiedColor : defaultColor);
     cancelButton.setEnabled(!textComponent.getText().equals(defaultValue != null ? defaultValue : ""));
+
     if (cancelButton.isEnabled()) {
       WebLabel label = new WebLabel("", ImageUtils.CANCEL_16, SwingConstants.TRAILING);
       label.setLanguage(UIUtils.i18n.getLanguageKey("cancel", false));
       TooltipManager.setTooltip(cancelButton, label, TooltipWay.down);
     } else {
-      TooltipManager.removeTooltips(component);
+      TooltipManager.removeTooltips(editableComponent);
     }
 
+    setEnableComponents(!textComponent.getText().isEmpty());
+    if (property != null && !(property instanceof MultipleInfoProperty)) {
+      value = textComponent.getText();
+      // Refresh UIMediaInfo value
+      UIEvent.fireUIEvent(UIEvent.Event.EDITED, InfoEditorPanel.class, null, property, value);
+    }
     mr.updateRenamedTitle();
   }
 
-  public JComponent getComponent() {
-    return component;
+  public JComponent getEditableComponent() {
+    return editableComponent;
+  }
+
+  public List<JComponent> getComponents() {
+    return Arrays.asList(components);
+  }
+
+  public boolean hasMoreComponents() {
+    return components.length > 0;
+  }
+
+  public int nbMoreComponents() {
+    return components.length;
+  }
+
+  private void setEnableComponents(boolean enabled) {
+    for (JComponent component : components) {
+      component.setEnabled(enabled);
+    }
   }
 
   @SuppressWarnings("unchecked")
-  public void setValue(Object value) {
+  public void setValue(String value) {
     this.defaultValue = value;
+    this.value = value;
+
     if (isTextComponent) {
-      if (value instanceof List<?>) {
-        List<?> list = (List<?>) value;
-        String str = "";
-        int pos = 0;
-        for (Object obj : list) {
-          if (pos > 0) {
-            str += ", ";
-          }
-          str += obj.toString();
-          pos++;
-        }
 
-        ((JTextComponent) component).setText(str);
-        ((JTextComponent) component).setCaretPosition(0);
-        return;
-      }
+      setEnableComponents(value != null ? !value.isEmpty() : false);
 
-      ((JTextComponent) component).setText(value != null ? value.toString() : "");
-      ((JTextComponent) component).setCaretPosition(0);
-      ((JTextComponent) component).getDocument().addDocumentListener(docListener);
+      ((JTextComponent) editableComponent).setText(value != null ? value.toString() : "");
+      ((JTextComponent) editableComponent).setCaretPosition(0);
+      ((JTextComponent) editableComponent).getDocument().addDocumentListener(docListener);
+      ((JTextComponent) editableComponent).setCaretPosition(0);
     } else {
-      ((DefaultListModel) ((JList) component).getModel()).addElement(value);
+      ((DefaultListModel) ((JList) editableComponent).getModel()).addElement(value);
+      setEnableComponents(true);
     }
   }
 
   public String getValue() {
-    if (isTextComponent) {
-      return ((JTextComponent) component).getText();
-    }
-
-    return ((DefaultListModel) ((JList) component).getModel()).toString();
+    return value;
   }
 
   public void setEditable() {
@@ -213,22 +270,22 @@ public class UIEditor {
 
     if (editable) {
       if (isTextComponent) {
-        docListener = createDocumentListener((JTextComponent) component);
-        ((JTextComponent) component).getDocument().addDocumentListener(docListener);
+        docListener = createDocumentListener((JTextComponent) editableComponent);
+        ((JTextComponent) editableComponent).getDocument().addDocumentListener(docListener);
       }
     } else {
       if (isTextComponent) {
-        ((JTextComponent) component).getDocument().removeDocumentListener(docListener);
+        ((JTextComponent) editableComponent).getDocument().removeDocumentListener(docListener);
       }
     }
 
     if (isTextComponent && !multipleValue) {
-      ((JTextComponent) component).setEditable(editable);
+      ((JTextComponent) editableComponent).setEditable(editable);
     }
   }
 
   public void setEnabled(boolean enabled) {
-    component.setEnabled(enabled);
+    editableComponent.setEnabled(enabled);
     if (multipleValue) {
       button.setEnabled(enabled);
     }
@@ -241,10 +298,12 @@ public class UIEditor {
   public void reset() {
     defaultValue = null;
     if (isTextComponent) {
-      ((JTextComponent) component).setText("");
-      ((JTextComponent) component).getDocument().removeDocumentListener(docListener);
+      ((JTextComponent) editableComponent).setText("");
+      ((JTextComponent) editableComponent).getDocument().removeDocumentListener(docListener);
     } else {
-      ((JList) component).removeAll();
+      ((JList) editableComponent).removeAll();
     }
+
+    setEnableComponents(false);
   }
 }

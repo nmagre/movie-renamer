@@ -37,7 +37,11 @@ public class UIMediaInfo<T extends MediaInfo> implements UIInfo {
   public void setInfo(T info) {
     this.info = info;
   }
-  
+
+  public void setIdsInfo(List<IdInfo> ids) {
+    info.setIdsInfo(ids);
+  }
+
   public List<IdInfo> getIds() {
     return info.getIdsInfo();
   }

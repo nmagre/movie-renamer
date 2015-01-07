@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.ui.bean.IEventInfo;
+import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import java.beans.PropertyChangeEvent;
@@ -34,7 +35,7 @@ import javax.swing.SwingWorker;
  * @author Magré Nicolas
  * @author QUÉMÉNEUR Simon
  */
-public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener, IEventInfo {
+public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener, IEventInfo, IWorker {
 
   protected AbstractWorker() {
     addPropertyChangeListener(this);
@@ -102,7 +103,12 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
   }
 
   protected void workerProgress(int progress) {
-    // DO nothing
+    UIEvent.fireUIEvent(UIEvent.Event.WORKER_PROGRESS, this);
+  }
+
+  @Override
+  public String getParam() {
+    return "";
   }
 
   protected abstract void workerDone() throws Exception;

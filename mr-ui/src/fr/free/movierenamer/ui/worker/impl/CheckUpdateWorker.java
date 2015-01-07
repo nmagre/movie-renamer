@@ -50,7 +50,7 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
   }
 
   @Override
-  protected UIUpdate executeInBackground() throws Exception {
+  protected UIUpdate executeInBackground() throws Exception {// FIXME cache
     CacheObject cache = getCache();
 
     String version = UISettings.getApplicationVersionNumber();
@@ -75,10 +75,10 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
   @Override
   protected void workerDone() throws Exception {
     UIUpdate update = get();
-    if(update == null) {
+    if (update == null) {
       return;
     }
-    
+
     if (update.isUpdateAvailable()) {
       UIEvent.fireUIEvent(Event.UPDATE_AVAILABLE, null, update);
     } else if (showNoUpdate) {
@@ -87,13 +87,13 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
   }
 
   @Override
-  public String getParam() {
-    return null;
+  public String getDisplayName() {
+    return "Update worker";// FIXME i18n
   }
 
   @Override
-  public String getDisplayName() {
-    return "Update worker";// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.UPDATE;
   }
 
 }

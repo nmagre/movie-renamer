@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 
 import fr.free.movierenamer.info.EpisodeInfo;
+import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.scrapper.impl.image.FanartTVshowImagesScrapper;
@@ -29,6 +30,8 @@ import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -88,5 +91,15 @@ public abstract class TvShowScrapper extends MediaScrapper<TvShow, TvShowInfo> {
     }
 
     return imagesInfo;
+  }
+  
+    @Override
+  public IdInfo getIdfromURL(URL url) {// TODO remove
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {// TODO remove
+    return null;
   }
 }

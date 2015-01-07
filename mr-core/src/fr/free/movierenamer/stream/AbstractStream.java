@@ -37,6 +37,7 @@ public abstract class AbstractStream {
     SD,
     SD3D,
     LD,
+    HDR,
     HD,
     HD3D,
     UHD,

@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.scrapper;
 
-import fr.free.movierenamer.exception.InvalidUrlException;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -67,13 +66,18 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
     // perform actual search
     try {
       URL url = new URL(query);
-      if (!url.getHost().replace("www.", "").equals(getHost().replace("www.", ""))) {
-        throw new InvalidUrlException(getName() + " does not support url from " + url.getHost());
+      if (!hasUrlSupported(url)) {
+        url = convertUrl(url);
+        if (url == null) {
+          throw new Exception(String.format("Unable to convert URL to %s URL", getName()));
+        }
       }
+
       results = searchMedia(url, language);
     } catch (MalformedURLException ex) {
       results = searchMedia(query, language);
     }
+
     Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, lang.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return
@@ -83,6 +87,50 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
   protected abstract List<M> searchMedia(String query, AvailableLanguages language) throws Exception;
 
   protected abstract List<M> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception;
+
+  public boolean hasUrlSupported(URL url) {
+    return url.getHost().replace("www.", "").equals(getHost().replace("www.", ""));
+  }
+
+  public abstract IdInfo getIdfromURL(URL url);
+
+  public abstract URL getURL(IdInfo id);
+
+  /**
+   * Convert a scraper URL to this scraper URL
+   *
+   * @param url URL for another scraper
+   * @return Converted url or null
+   */
+  public URL convertUrl(URL url) {
+    MediaScrapper<?, ?> scraper = ScrapperUtils.getScrapperFor(url);
+    if (scraper == null) {
+      return null;
+    }
+
+    List<Media> results = null;
+    try {
+      results = (List<Media>) scraper.search(url.toExternalForm());
+    } catch (Exception ex) {
+
+    }
+
+    if (results == null || results.isEmpty()) {
+      return null;
+    }
+
+    IdInfo idinfo = scraper.getIdfromURL(url);
+    if (idinfo == null) {
+      return null;
+    }
+
+    IdInfo lookupId = ScrapperUtils.idLookup(getSupportedId(), idinfo, results.get(0));
+    if (lookupId == null) {
+      return null;
+    }
+
+    return getURL(lookupId);
+  }
 
   public final MI getInfo(M search) throws Exception {
     return getInfo(search, getLanguage());
@@ -97,14 +145,21 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
     MI info = (cache != null) ? cache.getData(search, lang, genericClazz) : null;
     if (info != null) {
-      //filterInfo(info, language);
+      String origtitle = info.getOriginalTitle();
+      if (origtitle != null && !origtitle.isEmpty()) {
+        search.setOriginalName(origtitle);
+      }
+      
+      if (!hasSupportedLanguage(language) && settings.isGetOnlyLangDepInfo()) {
+        info.unsetUnsupportedLangInfo();
+      }
       return info;
     }
 
     // Fetch id
     IdInfo id = search.getMediaId();
     if (id != null && id.getIdType() != getSupportedId()) {
-      id = ScrapperUtils.idLookup(search.getMediaType(), getSupportedId(), id, search);
+      id = ScrapperUtils.idLookup(getSupportedId(), id, search);
       if (id == null) {
         return info;
       }
@@ -126,11 +181,23 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
       Settings.LOGGER.severe(ClassUtils.getStackTrace(ex));
       casting = null;
     }
-    info.setCasting(casting);
+
+    if (casting != null) {
+      info.setCasting(casting);
+    }
 
     // cache results
     if (cache != null) {
       cache.putData(search, lang, info);
+    }
+
+    String origtitle = info.getOriginalTitle();
+    if (origtitle != null && !origtitle.isEmpty()) {
+      search.setOriginalName(origtitle);
+    }
+
+    if (!hasSupportedLanguage(language) && settings.isGetOnlyLangDepInfo()) {
+      info.unsetUnsupportedLangInfo();
     }
 
     return info;
@@ -164,6 +231,9 @@ public abstract class MediaScrapper<M extends Media, MI extends MediaInfo> exten
 
     // perform actual search
     personsInfo = fetchCastingInfo(search, id, language);
+    if (personsInfo == null) {
+      return null;
+    }
     Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d casting info for '%s' in '%s'", getName(), personsInfo.size(), search, lang.getDisplayLanguage(Locale.ENGLISH)));
 
     // cache results and return

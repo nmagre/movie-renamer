@@ -20,7 +20,9 @@ package fr.free.movierenamer.scrapper.impl.movie;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
@@ -50,17 +52,17 @@ import org.json.simple.JSONObject;
  *
  * @author Nicolas Magré
  */
-public class RottenTomatoes extends MovieScrapper {
+public class RottenTomatoesScrapper extends MovieScrapper {
 
   private static final String host = "rottentomatoes.com";
   private static final String apiHost = "api." + host;
   private static final String name = "RottenTomatoes";
   private static final String version = "1.0";
   private static final Pattern origTitle = Pattern.compile("[(]([^)]*)[)]$");
-  private static final AvailableApiIds supportedId = AvailableApiIds.ROTTEN;
+  private static final AvailableApiIds supportedId = AvailableApiIds.ROTTENTOMATOES;
   private static String apikey;
 
-  public RottenTomatoes() {
+  public RottenTomatoesScrapper() {
     super(AvailableLanguages.en);
     String key = Settings.decodeApkKey(Settings.getApplicationProperty("rottentomatoes.apkapikey"));
     if (key == null || key.trim().length() == 0) {
@@ -87,6 +89,16 @@ public class RottenTomatoes extends MovieScrapper {
   @Override
   protected AvailableLanguages getDefaultLanguage() {
     return AvailableLanguages.en;
+  }
+
+  @Override
+  public IdInfo getIdfromURL(URL url) {// Id is not in URL for Rotten
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {// Id is not in URL for Rotten
+    return null;
   }
 
   @Override
@@ -139,7 +151,7 @@ public class RottenTomatoes extends MovieScrapper {
       }
 
       if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(null, new IdInfo(id, AvailableApiIds.ROTTEN), title, originaleTitle, thumb, year));
+        resultSet.put(id, new Movie(null, new IdInfo(id, AvailableApiIds.ROTTENTOMATOES), title, originaleTitle, thumb, year));
       }
     }
 
@@ -156,7 +168,7 @@ public class RottenTomatoes extends MovieScrapper {
       JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
       String id = JSONUtils.selectString("id", json);
       if (id != null && !id.isEmpty()) {
-        return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.ROTTEN);
+        return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.ROTTENTOMATOES);
       }
     } catch (Exception ex) {
       // No id found
@@ -166,7 +178,7 @@ public class RottenTomatoes extends MovieScrapper {
   }
 
   public static IdInfo imdbIdLookup(IdInfo rottenTomatoesId) {
-    if (rottenTomatoesId.getIdType() != ScrapperUtils.AvailableApiIds.ROTTEN) {
+    if (rottenTomatoesId.getIdType() != ScrapperUtils.AvailableApiIds.ROTTENTOMATOES) {
       return null;
     }
 
@@ -181,11 +193,11 @@ public class RottenTomatoes extends MovieScrapper {
         }
       }
     } catch (MalformedURLException ex) {
-      Logger.getLogger(RottenTomatoes.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(RottenTomatoesScrapper.class.getName()).log(Level.SEVERE, null, ex);
     } catch (URISyntaxException ex) {
-      Logger.getLogger(RottenTomatoes.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(RottenTomatoesScrapper.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
-      Logger.getLogger(RottenTomatoes.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(RottenTomatoesScrapper.class.getName()).log(Level.SEVERE, null, ex);
     }
 
     return null;
@@ -199,7 +211,7 @@ public class RottenTomatoes extends MovieScrapper {
 
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
-    Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
+    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
 
     String title = JSONUtils.selectString("title", json);
     String originaleTitle = null;
@@ -213,7 +225,7 @@ public class RottenTomatoes extends MovieScrapper {
     mediaFields.put(MediaInfo.MediaProperty.title, title);
 
     if (originaleTitle != null) {
-      fields.put(MovieInfo.MovieProperty.originalTitle, originaleTitle);
+      mediaFields.put(MediaProperty.originalTitle, originaleTitle);
     }
 
     fields.put(MovieInfo.MovieProperty.overview, JSONUtils.selectString("synopsis", json));
@@ -252,7 +264,7 @@ public class RottenTomatoes extends MovieScrapper {
     }
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
-    ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.ROTTEN));
+    ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.ROTTENTOMATOES));
     jobject = JSONUtils.selectObject("alternate_ids", json);
     if (jobject != null) {
       Integer imdbId = JSONUtils.selectInteger("imdb", jobject);
@@ -272,8 +284,8 @@ public class RottenTomatoes extends MovieScrapper {
     List<String> studios = new ArrayList<String>();
     studios.add(JSONUtils.selectString("studio", json));
 
-    multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
-    multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
+    multipleFields.put(MovieMultipleProperty.studios, studios);
+    multipleFields.put(MovieMultipleProperty.genres, genres);
 
     return new MovieInfo(mediaFields, ids, fields, multipleFields);
   }

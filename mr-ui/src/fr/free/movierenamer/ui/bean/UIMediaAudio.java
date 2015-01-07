@@ -45,7 +45,7 @@ public class UIMediaAudio implements IIconList {
 
   @Override
   public String toString() {
-    return (maudio != null && maudio.getTitle().length() > 0) ? maudio.getTitle() : maudio.getLanguage().getLanguage();// FIXME maudio == null ?
+    return maudio.getTitle().length() > 0 ? maudio.getTitle() : maudio.getLanguage().getLanguage();
   }
 
   @Override

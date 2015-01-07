@@ -1,6 +1,6 @@
 /*
  * mr-core
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,12 +42,12 @@ import fr.free.movierenamer.utils.XPathUtils;
  * @author Simon QUÉMÉNEUR
  */
 public class Renamer {
-
+  
   private static final String renamedFileName = "renamed" + ".xml";
 
   // Settings instance
   private static final Renamer instance = new Renamer();
-
+  
   private static final String renamedNodeName = "renamed";
 
   // renamed document
@@ -61,7 +61,7 @@ public class Renamer {
   public static Renamer getInstance() {
     return instance;
   }
-
+  
   private Renamer() {
 
     // renamed file
@@ -106,14 +106,14 @@ public class Renamer {
     }
     return saveSuccess;
   }
-
+  
   public boolean wasRenamed(FileInfo fileInfo) {
     // return XPathUtils.selectNode("renamed/renamedMedia[@type='"+fileInfo.getType().name()+"']/media[@to='"+fileInfo.getURI().toString()+"']", this.renamedDocument) != null;
-    String checksum = FileUtils.getFileChecksum(new File(fileInfo.getURI()));
+    String checksum = fileInfo.get(FileInfo.FileProperty.md5);
     Node node = getRenamedMediaNode(checksum);
     return !checksum.isEmpty() && node != null;
   }
-
+  
   private Node getRenamedMediaNode(String fileKey) {
     return XPathUtils.selectNode("//renamedMedia[@checksum='" + fileKey + "']", this.renamedDocument);
   }
@@ -122,6 +122,7 @@ public class Renamer {
    * @param fileInfo
    * @param toURI
    * @param fromURI
+   * @return
    */
   public boolean addRenamed(FileInfo fileInfo, URI fromURI, URI toURI) {
     boolean saved;
@@ -131,16 +132,16 @@ public class Renamer {
         saved = false;
       } else {
         Node root = XPathUtils.selectNode(renamedNodeName, this.renamedDocument);
-
+        
         Node renamedMedia = getRenamedMediaNode(checksum);
-
+        
         if (renamedMedia == null) {
           Element renamedMediaElement = renamedDocument.createElement("renamedMedia");
           // renamedMedia.setAttribute("type", fileInfo.getType().name());
           renamedMediaElement.setAttribute("checksum", checksum);
           renamedMedia = renamedMediaElement;
         }
-
+        
         Element move = renamedDocument.createElement("historic");
         Element from = renamedDocument.createElement("from");
         from.setTextContent(fromURI.toString());
@@ -151,7 +152,7 @@ public class Renamer {
         Element date = renamedDocument.createElement("date");
         date.setTextContent(Calendar.getInstance().getTime().toString());
         move.appendChild(date);
-
+        
         renamedMedia.appendChild(move);
 
         // add it
@@ -161,7 +162,8 @@ public class Renamer {
     } else {
       saved = false;
     }
+    
     return saved;
   }
-
+  
 }

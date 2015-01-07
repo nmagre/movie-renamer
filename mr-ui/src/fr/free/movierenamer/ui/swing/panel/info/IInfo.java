@@ -30,6 +30,4 @@ public interface IInfo<T> extends IEventListener {
 
   public abstract void setInfo(T info);
 
-  public abstract T getInfo();
-
 }

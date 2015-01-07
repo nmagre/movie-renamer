@@ -45,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
@@ -54,26 +55,28 @@ import javax.swing.SwingConstants;
  * @param <T>
  * @author Nicolas Magré
  */
-public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator implements IMediaInfoPanel<T> {
+public abstract class MediaPanel<T extends UIMediaInfo<?>> extends PanelGenerator implements IMediaInfoPanel<T> {
+  private static final long serialVersionUID = 1L;
 
+  protected T info;
   private ComponentTransition transitionPanel;
   private WebPanel mediaPanel;
   private WebToggleButton editButton;
   private WebBreadcrumb infoPanelBc;
   private WebButton refreshButton;
   private WebLabel loadingLbl;
-  protected Map<PanelType, InfoPanel<?>> panels;
+  protected Map<PanelType, InfoPanel<T>> panels;
 
   protected MediaPanel() {
     super();
     UIEvent.addEventListener(this.getClass(), this);
   }
 
-  protected void createPanel(Map<PanelType, InfoPanel<?>> panels) {
+  protected void createPanel(Map<PanelType, InfoPanel<T>> panels) {
     createPanel(null, panels);
   }
 
-  protected void createPanel(WebPanel mpanel, final Map<PanelType, InfoPanel<?>> panels) {
+  protected void createPanel(WebPanel mpanel, final Map<PanelType, InfoPanel<T>> panels) {
 
     mediaPanel = mpanel != null ? mpanel : this;
 
@@ -83,7 +86,7 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
     // Bread crumb buttons for navigate between panels
     infoPanelBc = new WebBreadcrumb();
     infoPanelBc.setFocusable(false);
-    for (Entry<PanelType, InfoPanel<?>> entry : panels.entrySet()) {
+    for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
       WebBreadcrumbToggleButton bcButton = createbuttonPanel(entry.getValue());
       if (pos == 0) {
         bcButton.setSelected(true);
@@ -97,10 +100,12 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
     boolean addEditButton = addEditButton();
     boolean addRefreshButton = addRefreshButton();
 
+    int gwith = 2 + (addEditButton ? 1 : 0) + (addRefreshButton ? 1 : 0);
+
     mediaPanel.add(infoPanelBc, getGroupConstraint(0, false, false));
 
     loadingLbl = new WebLabel();
-    mediaPanel.add(loadingLbl, getGroupConstraint(addRefreshButton ? 2 : 1, !addEditButton || !addRefreshButton, false));
+    mediaPanel.add(loadingLbl, getGroupConstraint(addRefreshButton ? 2 : 1, !addEditButton && !addRefreshButton, false));
 
     if (addRefreshButton) {
       refreshButton = new WebButton(ImageUtils.REFRESH_16);
@@ -146,13 +151,16 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
     gbc.weightx = 1;
     gbc.weighty = 1;
     gbc.gridheight = 1;
-    gbc.gridwidth = addEditButton ? 3 : 1;
-    gbc.gridwidth = addRefreshButton ? gbc.gridwidth + 1 : gbc.gridwidth;
+    gbc.gridwidth = gwith;
 
     // Fixe random scroll when resize
     scrollpane.setPreferredSize(new Dimension(1, 1));
 
     mediaPanel.add(scrollpane, gbc);
+  }
+  
+  public InfoPanel<T> getPanel(PanelType type) {
+    return panels.get(type);
   }
 
   private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<?> panel) {
@@ -197,29 +205,32 @@ public abstract class MediaPanel<T extends UIMediaInfo> extends PanelGenerator i
 
   protected abstract boolean addRefreshButton();
 
-  public InfoPanel<?> getPanel(PanelType ptype) {
-    return panels.get(ptype);
-  }
-
   @Override
-  public void setInfo(T info) {
+  public final void setInfo(T info) {
+    this.info = info;
+
     addInfo(info);
 
     SwingUtils.setEnabledRecursively(infoPanelBc, true);
     if (addEditButton()) {
       editButton.setEnabled(true);
     }
-    
-    if(addRefreshButton()) {
+
+    if (addRefreshButton()) {
       refreshButton.setEnabled(true);
     }
+  }
+
+  @Override
+  public T getInfo() {
+    return info;
   }
 
   protected abstract void addInfo(T info);
 
   @Override
   public void clear() {
-    for (Entry<PanelType, InfoPanel<?>> entry : panels.entrySet()) {
+    for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
       entry.getValue().clear();
     }
 

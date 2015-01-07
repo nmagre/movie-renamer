@@ -17,38 +17,84 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info.movie;
 
+import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEditor;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
+import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.text.JTextComponent;
 
 /**
  *
  * @author Nicolas Magré
  */
-public class MovieIdPanel extends InfoEditorPanel<List<IdInfo>> {
+public class MovieIdPanel extends InfoEditorPanel<UIMovieInfo> {
 
-  private static final List<AvailableApiIds> apiIds = new ArrayList<>(Arrays.asList(new AvailableApiIds[]{AvailableApiIds.IMDB, AvailableApiIds.TMDB, AvailableApiIds.ALLOCINE, AvailableApiIds.ROTTEN, AvailableApiIds.KINOPOISK}));
+  private UIMovieInfo movieInfo;
+  private WebButton searchBtn;
 
   public MovieIdPanel(MovieRenamer mr) {
     super(mr);
     initComponents();
 
-    int maxGridWith = 3;// 3 -> Label + field + edit/cancel button
-    UIEditor editor;
-    for (AvailableApiIds apiId : apiIds) {
-      editor = new UIEditor(mr, new WebTextField());
-      createEditableField(apiId.name(), editor, maxGridWith);
+    int maxGridWith = 4;// 4 -> Label + link label + field + edit/cancel button
+    WebButton button;
+    Icon icon;
+
+    for (final AvailableApiIds apiId : AvailableApiIds.getAvailableApiIds(Media.MediaType.MOVIE)) {
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", apiId.name().toLowerCase())));
+      button = new WebButton(icon);
+
+      if (apiId.equals(AvailableApiIds.ROTTENTOMATOES)) {// Rotten tomatoes id cannot reference movie web page
+        button.setVisible(false);
+      }
+
+      final UIEditor editor = new UIEditor(mr, null, new WebTextField(), button);
+      button.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+
+          if (apiId.equals(AvailableApiIds.ROTTENTOMATOES)) {
+            return;
+          }
+
+          try {
+            Desktop.getDesktop().browse(new URL("http", String.format(apiId.getLink(), ((JTextComponent) editor.getEditableComponent()).getText()), "").toURI());
+          } catch (Exception ex) {
+            // TODO error
+          }
+        }
+      });
+
+      createEditableField(apiId.name().toLowerCase(), editor, maxGridWith);
       map.put(apiId, editor);
     }
+
+    searchBtn = (WebButton) createComponent(Component.BUTTON, "main.searchtb.search");
+    searchBtn.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        WorkerManager.searchIds(MovieIdPanel.this, movieInfo, (UISearchResult) MovieIdPanel.this.mr.getSearchResultList().getSelectedValue(), Media.MediaType.MOVIE);
+        searchBtn.setEnabled(false);
+      }
+    });
+    add(searchBtn, getGroupConstraint(0, true, false));
 
     // Add dummy Panel to avoid centering
     add(new WebPanel(), getDummyPanelConstraint());
@@ -70,19 +116,20 @@ public class MovieIdPanel extends InfoEditorPanel<List<IdInfo>> {
   }
 
   @Override
-  public void setInfo(List<IdInfo> idInfos) {
+  public void setInfo(UIMovieInfo movieInfo) {
+    this.movieInfo = movieInfo;
+
     UIEditor editor;
-    for (IdInfo idinfo : idInfos) {
+    for (IdInfo idinfo : movieInfo.getIds()) {
       editor = map.get(idinfo.getIdType());
       if (editor != null) {
         editor.setValue(idinfo.toString());
       }
     }
   }
-
-  @Override
-  public List<IdInfo> getInfo() {
-    return null;
+  
+  public void setSearchButton(boolean enabled) {
+    searchBtn.setEnabled(enabled);
   }
 
   /**

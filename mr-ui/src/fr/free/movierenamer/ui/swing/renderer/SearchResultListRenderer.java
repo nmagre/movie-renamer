@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,10 +61,11 @@ public class SearchResultListRenderer extends IconListRenderer<UISearchResult> {
       UISearchResult sres = (UISearchResult) value;
       String text = sres.print(Property.showId.isEnabled(), Property.showYear.isEnabled());
       if (Property.showOrigTitle.isEnabled() && sres.getOriginalName() != null) {
-        text = "<html><b>" + text + "</b><br><i>" + sres.getOriginalName()+ "</i></html>";
+        text = String.format("<html><b>%s</b><br><i>%s</i></html>", text, sres.getOriginalName());
       } else {
-        text = "<html><b>" + text + "</b></html>";
+        text = String.format("<html><b>%s</b></html>", text);
       }
+      
       label.setText(text);
     }
 

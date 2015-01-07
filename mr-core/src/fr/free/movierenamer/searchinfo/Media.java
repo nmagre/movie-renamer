@@ -43,7 +43,6 @@ public abstract class Media extends Hyperlink {
 
   public Media(IdInfo id, String title, String originalTitle, int year, URL thumb) {
     super(title, originalTitle, year, thumb);
-
     this.idInfo = id;
   }
 

@@ -41,7 +41,7 @@ public abstract class InfoPanel<T> extends PanelGenerator implements IInfoPanel<
   public abstract Icon getIcon();
 
   public abstract String getPanelName();
-  
+
   protected void regiterUIEvent() {
     UIEvent.addEventListener(this.getClass(), this);
   }
@@ -53,7 +53,7 @@ public abstract class InfoPanel<T> extends PanelGenerator implements IInfoPanel<
   public abstract PanelType getType();
 
   @Override
-  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object object, Object param) {
+  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object object, Object newObj) {
     // Do nothing
   }
 }

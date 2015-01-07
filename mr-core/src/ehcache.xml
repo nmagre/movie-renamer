@@ -18,6 +18,7 @@
 		diskPersistent="false"
 		memoryStoreEvictionPolicy="LRU"
     copyOnRead="true"
+    copyOnWrite="true"
 	/>
 	
 	<!--
@@ -33,6 +34,7 @@
 		diskPersistent="true"
 		memoryStoreEvictionPolicy="LRU"
     copyOnRead="true"
+    copyOnWrite="true"
 	/>
 	
 	<!--
@@ -48,6 +50,7 @@
 		diskPersistent="true"
 		memoryStoreEvictionPolicy="LRU"
     copyOnRead="true"
+    copyOnWrite="true"
 	/>
 	
 	<!--
@@ -63,6 +66,7 @@
 		diskPersistent="true"
 		memoryStoreEvictionPolicy="LRU"
     copyOnRead="true"
+    copyOnWrite="true"
 	/>
 	
 </ehcache>

@@ -103,4 +103,14 @@ public class AnidbScrapper extends MovieScrapper {
   public ScrapperUtils.InfoQuality getInfoQuality() {
     return ScrapperUtils.InfoQuality.GREAT;
   }
+
+  @Override
+  public IdInfo getIdfromURL(URL url) {
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {
+    return null;
+  }
 }

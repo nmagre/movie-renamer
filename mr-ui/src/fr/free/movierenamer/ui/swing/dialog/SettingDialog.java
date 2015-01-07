@@ -27,6 +27,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaTag;
@@ -40,6 +41,7 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UILang;
+import fr.free.movierenamer.ui.bean.UIPathSettings;
 import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -57,10 +59,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
@@ -167,7 +171,40 @@ public class SettingDialog extends AbstractDialog {
       map.put(definition.getSubType(), tproperties);
     }
 
-    return addTest(map, type);
+    map = addTest(map, type);
+
+    return addPath(map, type);
+  }
+
+  /**
+   * Add UIPathSettings if needed. UITestSettings is use to create "open" button
+   *
+   * @param map Map of all settings of a type by subtype
+   * @param type SettingsType
+   * @return Map of all settings of "type" by subtype + UIPathSettings if needed
+   */
+  private Map<SettingsSubType, List<IProperty>> addPath(Map<SettingsSubType, List<IProperty>> map, final SettingsType type) {
+
+    Iterator<Entry<SettingsSubType, List<IProperty>>> mapit = map.entrySet().iterator();
+    Entry<SettingsSubType, List<IProperty>> entry;
+    IProperty property;
+
+    while (mapit.hasNext()) {
+      entry = mapit.next();
+      List<IProperty> tproperties = entry.getValue();
+      Iterator<IProperty> it = tproperties.iterator();
+
+      while (it.hasNext()) {
+        property = it.next();
+        if (property.name().contains("Path")) {
+          tproperties.remove(property);
+          tproperties.add(new UIPathSettings(property));
+        }
+      }
+      map.put(entry.getKey(), tproperties);
+    }
+
+    return map;
   }
 
   /**
@@ -228,12 +265,12 @@ public class SettingDialog extends AbstractDialog {
               mediaFields.put(MediaProperty.rating, "8.7");
               mediaFields.put(MediaProperty.title, "Matrix");
               mediaFields.put(MediaProperty.year, "1999");
+              mediaFields.put(MediaProperty.originalTitle, "The Matrix");
 
-              Map<MovieInfo.MovieProperty, String> fields = new HashMap<>();
-              fields.put(MovieInfo.MovieProperty.certificationCode, "R");
-              fields.put(MovieInfo.MovieProperty.originalTitle, "The Matrix");              
-              fields.put(MovieInfo.MovieProperty.releasedDate, "1999-03-31");
-              fields.put(MovieInfo.MovieProperty.runtime, "136");
+              Map<MovieProperty, String> fields = new HashMap<>();
+              fields.put(MovieProperty.certificationCode, "R");
+              fields.put(MovieProperty.releasedDate, "1999-03-31");
+              fields.put(MovieProperty.runtime, "136");
               //fields.put(MediaInfo.MediaProperty.title, "Matrix");
 
               Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new HashMap<>();
@@ -364,6 +401,38 @@ public class SettingDialog extends AbstractDialog {
     return map;
   }
 
+  private void saveCombobox(Map<IProperty, WebComboBox> comboboxs) {
+    for (Map.Entry<IProperty, WebComboBox> combobox : comboboxs.entrySet()) {
+      IProperty property = combobox.getKey();
+      try {
+        if (property.getVclass().isEnum()) {
+          String oldValue = property.getValue();
+          if (combobox.getValue().getSelectedItem() instanceof UILang) {
+            property.setValue(((UILang) combobox.getValue().getSelectedItem()).getLanguage());
+          } else {
+            property.setValue(((UIEnum) combobox.getValue().getSelectedItem()).getValue());
+          }
+
+          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue.equals(property.getValue()) ? property : null, property);
+
+        } else if (combobox.getValue().getSelectedItem() instanceof UIScraper) {
+          UIScraper scrapper = (UIScraper) combobox.getValue().getSelectedItem();
+          Class<?> clazz = Class.forName(property.getValue().replace("class ", ""));
+          settings.coreInstance.set((SettingsProperty) property, scrapper.getScraper().getClass());
+          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scrapper.getScraper().getClass()) ? property : null, property);
+        } else {
+          UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown property %s : Class %s", property.name(), property.getDefaultValue()));
+        }
+      } catch (ClassNotFoundException ex) {
+        Logger.getLogger(SettingDialog.class.getName()).log(Level.SEVERE, null, ex);
+      } catch (IOException ex) {
+        UISettings.LOGGER.log(Level.SEVERE, null, ex);
+        WebOptionPane.showMessageDialog(mr, ("settings.saveSettingsFailed"), ("error"), JOptionPane.ERROR_MESSAGE);// FIXME i18n
+        return;
+      }
+    }
+  }
+
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -435,6 +504,7 @@ public class SettingDialog extends AbstractDialog {
       Map<IProperty, WebCheckBox> checkboxs = panel.getCheckbox();
       Map<IProperty, WebTextField> fields = panel.getField();
       Map<IProperty, WebComboBox> comboboxs = panel.getCombobox();
+      Map<IProperty, WebComboBox> scraperOptComboboxs = panel.getScraperOptCombobox();
       Map<IProperty, WebPasswordField> passFields = panel.getPassField();
 
       // Save checkbox
@@ -480,15 +550,7 @@ public class SettingDialog extends AbstractDialog {
         try {
           IProperty property = field.getKey();
           String oldValue = property.getValue();
-          if (field.getKey().getDefaultValue() instanceof Number) {
-            if (!NumberUtils.isNumeric(field.getValue().getText())) {// FIXME deprecated
-              WebOptionPane.showMessageDialog(mr, i18n.getLanguage("error.nan", false, i18n.getLanguage("settings." + property.name().toLowerCase(), false)),
-                      i18n.getLanguage("error.error", false), JOptionPane.ERROR_MESSAGE);
-              return;
-            }
-          }
-
-          property.setValue(field.getValue().getText());
+          property.setValue(new String(field.getValue().getPassword()));
 
           UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue.equals(property.getValue()) ? property : null, property);
         } catch (IOException ex) {
@@ -499,36 +561,10 @@ public class SettingDialog extends AbstractDialog {
       }
 
       // Save combobox
-      for (Map.Entry<IProperty, WebComboBox> combobox : comboboxs.entrySet()) {
-        IProperty property = combobox.getKey();
-        try {
-          if (property.getVclass().isEnum()) {
-            String oldValue = property.getValue();
-            if (combobox.getValue().getSelectedItem() instanceof UILang) {
-              property.setValue(((UILang) combobox.getValue().getSelectedItem()).getLanguage());
-            } else {
-              property.setValue(((UIEnum) combobox.getValue().getSelectedItem()).getValue());
-            }
-
-            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue.equals(property.getValue()) ? property : null, property);
-
-          } else if (combobox.getValue().getSelectedItem() instanceof UIScraper) {
-            UIScraper scrapper = (UIScraper) combobox.getValue().getSelectedItem();
-            Class<?> clazz = Class.forName(property.getValue().replace("class ", ""));
-            settings.coreInstance.set((SettingsProperty) property, scrapper.getScraper().getClass());
-            UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scrapper.getScraper().getClass()) ? property : null, property);
-          } else {
-            UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown property %s : Class %s", property.name(), property.getDefaultValue()));
-          }
-        } catch (ClassNotFoundException ex) {
-          Logger.getLogger(SettingDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-          UISettings.LOGGER.log(Level.SEVERE, null, ex);
-          WebOptionPane.showMessageDialog(mr, ("settings.saveSettingsFailed"), ("error"), JOptionPane.ERROR_MESSAGE);// FIXME i18n
-          return;
-        }
-      }
-
+      saveCombobox(comboboxs);
+      saveCombobox(scraperOptComboboxs);
+      
+      
       /*for (JComponent component : languageRBtns) {// TODO Ask for restart app
        if (((WebRadioButton) component).isSelected()) {
        SettingsProperty.appLanguage.setValue(new Locale(UISupportedLanguage.valueOf(component.getName()).name()).getLanguage());

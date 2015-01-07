@@ -23,6 +23,7 @@ import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.Normalizer;
@@ -83,15 +84,58 @@ public abstract class NameMatcher {// TODO
 
   public static String extractName(final String fileName) {
     String extractedName = NameCleaner.extractName(fileName, false);
+    if (extractedName.isEmpty()) {
+      extractedName = NameCleaner.extractName(fileName, true);
+    }
+    
+    if(extractedName.isEmpty()) {
+      return FileUtils.getNameWithoutExtension(fileName);
+    }
+
     // Try to extract name from String without spacing
-    final String[] names = extractedName.split(" ");
-    if (names.length < 3 && names[0].length() > 15) {
-      extractedName = names[0].replaceAll("(\\p{Lower})(\\p{Upper})", "$1 $2");// Add space between lowercase and uppercase letter
-      extractedName = NameCleaner.extractName(extractedName, false);// try to sxtract name with space added
+    String[] names = extractedName.split(" ");
+    if (names.length < 3) {
+
+      boolean addSpace = false;
+      for (String name : names) {
+        if (name.length() > 15) {
+          addSpace = true;
+          break;
+        }
+      }
+
+      if (addSpace) {
+        extractedName = "";
+        for (String name : names) {
+          extractedName += " ";
+          extractedName = name.replaceAll("(\\w)(\\p{Upper})(\\p{Lower})(\\p{Lower})", "$1 $2$3$4");
+          extractedName = extractedName.replaceAll("(\\w)(\\d+)(\\w)", "$1 $2 $3");
+          extractedName = extractedName.replaceAll("(\\p{Lower})(\\p{Lower})(\\p{Upper})", "$1$2 $3");
+        }
+
+        extractedName = NameCleaner.extractName(removeUppercase(extractedName) + ".mkv", false);
+      }
     }
 
     extractedName = Normalizer.normalize(extractedName, Normalizer.Form.NFD);
     return extractedName.replaceAll("[^\\p{ASCII}]", "");
+  }
+
+  private static String removeUppercase(String strName) {
+
+    if (StringUtils.isUpperCase(strName)) {
+      return strName;
+    }
+
+    String res = "";
+    String[] names = strName.split(" ");
+    for (String name : names) {
+      if (name.length() > 2 && StringUtils.nbUpperCase(name) < (name.length() - 2) || name.length() <= 2) {
+        res += " " + name;
+      }
+    }
+
+    return res.trim();
   }
 
   /**

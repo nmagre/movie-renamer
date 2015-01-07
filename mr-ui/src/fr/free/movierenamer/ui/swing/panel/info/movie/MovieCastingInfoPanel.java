@@ -18,13 +18,21 @@
 package fr.free.movierenamer.ui.swing.panel.info.movie;
 
 import fr.free.movierenamer.info.CastingInfo;
+import fr.free.movierenamer.settings.XMLSettings;
+import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.IEventInfo;
+import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.ImageListModel;
-import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuImage;
+import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.swing.renderer.CastingListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.ui.worker.IWorker.WorkerId;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +43,7 @@ import javax.swing.Icon;
  *
  * @author Nicolas Magré
  */
-public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
+public class MovieCastingInfoPanel extends InfoEditorPanel<UIMovieInfo> {
 
   private List<UIPersonImage> casts;
   private final List<UIPersonImage> actorsList;
@@ -43,25 +51,22 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
   private final ImageListModel<UIPersonImage> directorListModel = new ImageListModel<>();
   private final ImageListModel<UIPersonImage> actorListModel = new ImageListModel<>();
 
-  public MovieCastingInfoPanel() {
+  @SuppressWarnings("unchecked")
+  public MovieCastingInfoPanel(MovieRenamer mr) {
+    super(mr);
     initComponents();
     actorsList = new ArrayList<>();
     directorsList = new ArrayList<>();
 
+    casts = null;
     directorList.setModel(directorListModel);
     actorList.setModel(actorListModel);
     directorList.setCellRenderer(new CastingListRenderer());
     actorList.setCellRenderer(new CastingListRenderer());
     directorList.setVisibleRowCount(0);
     actorList.setVisibleRowCount(0);
-  }
-
-  public List<UIPersonImage> getActors() {
-    return actorsList;
-  }
-
-  public List<UIPersonImage> getDirectors() {
-    return directorsList;
+    
+    actorList.addMouseListener(new ContextMenuImage());
   }
 
   @Override
@@ -71,7 +76,7 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
 
   @Override
   public String getPanelName() {
-    return "casting";
+    return UIUtils.i18n.getLanguage("main.castingpnl.actor", false);
   }
 
   @Override
@@ -84,8 +89,8 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
   }
 
   @Override
-  public void setInfo(List<UIPersonImage> casts) {
-    this.casts = casts;
+  public void setInfo(UIMovieInfo movieInfo) {
+    this.casts = movieInfo.getCasting();
 
     for (UIPersonImage cast : casts) {
       switch (cast.getJob()) {
@@ -102,14 +107,48 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
     actorListModel.addAll(actorsList);
     directorListModel.addAll(directorsList);
 
-    // Get images
-    WorkerManager.fetchImages(actorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
-    WorkerManager.fetchImages(directorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+    setImage();
   }
 
   @Override
-  public List<UIPersonImage> getInfo() {
-    return casts;
+  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object oldObj, Object newObj) {
+
+    super.UIEventHandler(event, info, oldObj, newObj);
+    
+    switch (event) {
+      case SETTINGS:
+        if (newObj instanceof XMLSettings.IProperty) {
+          if (newObj instanceof UISettings.UISettingsProperty) {
+            UISettings.UISettingsProperty uisproperty = (UISettings.UISettingsProperty) newObj;
+            switch (uisproperty) {
+              case showActorImage:
+                if (casts != null) {
+                  // Stop image worker
+                  WorkerManager.stop(WorkerId.IMAGE_INFO_ACTOR);
+                  WorkerManager.stop(WorkerId.IMAGE_INFO_DIRECTOR);
+
+                  // Re-add loading animation
+                  for (int i = 0; i < actorListModel.getSize(); i++) {
+                    actorListModel.getElementAt(i).setDefaultIcon();
+                  }
+
+                  for (int i = 0; i < directorListModel.getSize(); i++) {
+                    directorListModel.getElementAt(i).setDefaultIcon();
+                  }
+
+                  setImage();
+                }
+            }
+          }
+        }
+        break;
+    }
+  }
+
+  public void setImage() {
+    // Get images
+    WorkerManager.fetchImages(WorkerId.IMAGE_INFO_ACTOR, actorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
+    WorkerManager.fetchImages(WorkerId.IMAGE_INFO_DIRECTOR, directorListModel, UIUtils.listImageSize, ImageUtils.UNKNOWN, UISettings.getInstance().isShowActorImage());
   }
 
   @Override
@@ -138,6 +177,9 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
     directorTb.setFloatable(false);
     directorTb.setRollover(true);
     directorTb.setMargin(new java.awt.Insets(0, 4, 0, 4));
+
+    directorLbl.setLanguage(i18n.getLanguageKey("castingpnl.director"));
+    directorLbl.setIcon(ImageUtils.USER_16);
     directorTb.add(directorLbl);
 
     directorList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -147,8 +189,12 @@ public class MovieCastingInfoPanel extends InfoPanel<List<UIPersonImage>> {
     actorTb.setFloatable(false);
     actorTb.setRollover(true);
     actorTb.setMargin(new java.awt.Insets(0, 4, 0, 4));
+
+    actorLbl.setLanguage(UIUtils.i18n.getLanguageKey("castingpnl.actor"));
+    actorLbl.setIcon(ImageUtils.USER_16);
     actorTb.add(actorLbl);
 
+    actorList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     actorList.setLayoutOrientation(javax.swing.JList.HORIZONTAL_WRAP);
     jScrollPane2.setViewportView(actorList);
 

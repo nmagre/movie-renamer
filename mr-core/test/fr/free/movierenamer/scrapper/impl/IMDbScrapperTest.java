@@ -91,7 +91,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
   @Override
   public void getCasting() throws Exception {
     boolean success = false;
-    List<CastingInfo> cast = imdb.getCasting(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1));
+    List<CastingInfo> cast = imdb.getCasting(new Movie(new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB), null, null, null, null, -1), new IdInfo(64116, ScrapperUtils.AvailableApiIds.IMDB));
     for (CastingInfo info : cast) {
       if (info.isDirector()) {
         success = "Sergio Leone".equals(info.getName());

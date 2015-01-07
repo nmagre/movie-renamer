@@ -326,26 +326,26 @@ public final class UIUtils {
   }
 
   public static void showNoResultNotification(String search) {
-    shownotification(i18n.getLanguage("notification.noresult", false, search), ImageUtils.NORESULT_24, NOTIFICATION_DELAY);
+    showNotification(i18n.getLanguage("notification.noresult", false, search), ImageUtils.NORESULT_24, NOTIFICATION_DELAY);
   }
 
   public static void showErrorNotification(String str) {
-    shownotification(str, ImageUtils.ERROR_24, null, NotificationOption.accept);
+    showNotification(str, ImageUtils.ERROR_24, null, NotificationOption.accept);
   }
 
   public static void showWrongNotification(String str) {
-    shownotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
+    showNotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
   }
 
   public static void showWarningNotification(String str) {
-    shownotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
+    showNotification(str, ImageUtils.STOP_24, NOTIFICATION_DELAY);
   }
 
   public static void showNotification(String str) {
-    shownotification(str, ImageUtils.INFO_24, NOTIFICATION_DELAY);
+    showNotification(str, ImageUtils.INFO_24, NOTIFICATION_DELAY);
   }
 
-  private static void shownotification(String str, Icon icon, Integer delay, NotificationOption... options) {
+  private static void showNotification(String str, Icon icon, Integer delay, NotificationOption... options) {
     final WebNotificationPopup notificationPopup = new WebNotificationPopup();
     notificationPopup.setIcon(icon);
     if (delay != null) {

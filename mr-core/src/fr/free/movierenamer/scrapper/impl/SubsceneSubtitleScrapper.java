@@ -94,7 +94,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
 
   @Override
   protected List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, AvailableLanguages language) throws Exception {
-    Document dom = URIRequest.getHtmlDocument(subtitle.getURL().toURI(), new URIRequest.RequestProperty("Cookie", "Filter=" + language.getLocale().getDisplayLanguage()));
+    Document dom = URIRequest.getHtmlDocument(subtitle.getURL(), new URIRequest.RequestProperty("Cookie", "Filter=" + language.getLocale().getDisplayLanguage()));
 
     List<Node> rows = XPathUtils.selectNodes("//TD[@class='a1']", dom);
     List<SubtitleInfo> subtitles = new ArrayList<SubtitleInfo>();
@@ -106,7 +106,7 @@ public class SubsceneSubtitleScrapper extends SubtitleScrapper {
           String href = XPathUtils.selectString(".//A/@href", row);
           Map<SubtitleProperty, String> subtitleFields = new EnumMap<SubtitleProperty, String>(SubtitleProperty.class);
           subtitleFields.put(SubtitleProperty.name, XPathUtils.getTextContent(fields.get(1)));
-          subtitleFields.put(SubtitleProperty.href, new URL(subtitle.getURL().getProtocol(), subtitle.getURL().getHost(), href).toExternalForm());
+          subtitleFields.put(SubtitleProperty.href, new URL(subtitle.getURL().toURL().getProtocol(), subtitle.getURL().getHost(), href).toExternalForm());
           subtitleFields.put(SubtitleProperty.language, lang);
           subtitles.add(new SubtitleInfo(subtitleFields));
         }

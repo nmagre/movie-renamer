@@ -21,11 +21,13 @@ import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.namematcher.NameMatcher;
 import fr.free.movierenamer.namematcher.SxE;
 import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
-import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
+import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 import java.io.File;
 import java.net.URI;
+import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -37,7 +39,7 @@ import java.util.Map;
 public class FileInfo extends Info {
 
   private static final long serialVersionUID = 1L;
-  private File file;
+  private final File file;
   private final MediaType type;
   private final String search;
   private final Map<FileProperty, String> fileProperty;
@@ -49,15 +51,17 @@ public class FileInfo extends Info {
     year,
     season,
     episode,
-    imdbId
+    imdbId,
+    md5
   }
 
   public FileInfo(File file) {
     this.file = file;
-    this.type = /*getMediaType(file);*/ MediaType.MOVIE;// FIXME
+    this.mtag = new MediaTag(file);
+    this.type = getMediaType(file);
     fileProperty = NameMatcher.getProperty(file, type);
     search = fileProperty.get(FileProperty.name);
-    this.mtag = new MediaTag(file);
+    fileProperty.put(FileProperty.md5, FileUtils.getFileChecksum(file));
   }
 
   public IdInfo getImdbId() {
@@ -88,11 +92,23 @@ public class FileInfo extends Info {
     return fileProperty.get(property);
   }
 
-  public static MediaType getMediaType(final File file) {// TODO A refaire , améliorer la detection !!!
+  private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
 
     final TvShowEpisodeNumMatcher nmatcher = new TvShowEpisodeNumMatcher(file);
     final SxE sxe = nmatcher.matchEpisode();
     if (sxe.isValid()) {
+      int date = (sxe.getSeason() * 100) + sxe.getEpisode();
+      if (date >= 1900 && date <= Calendar.getInstance().get(Calendar.YEAR)) {// It looks like a year
+        if (Settings.MEDIAINFO && mtag != null) {// Check media duration
+          long duration = mtag.getDuration();
+          if (duration > 0L && duration > 3000) {
+            return MediaType.MOVIE;
+          }
+        } else {
+          return MediaType.MOVIE;
+        }
+      }
+
       return MediaType.TVSHOW;
     }
 
@@ -122,9 +138,9 @@ public class FileInfo extends Info {
     return mtag;
   }
 
-  public void renamed(final File newFile) {
-    final boolean success = Renamer.getInstance().addRenamed(this, file.toURI(), newFile.toURI());
-  }
+//  public void renamed(final File newFile) {
+//    final boolean success = Renamer.getInstance().addRenamed(this, file.toURI(), newFile.toURI());
+//  }
 
   public URI getURI() {
     return this.file.toURI();

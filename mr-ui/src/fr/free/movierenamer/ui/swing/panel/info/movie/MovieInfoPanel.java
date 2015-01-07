@@ -23,13 +23,16 @@ import com.alee.laf.text.WebTextArea;
 import com.alee.laf.text.WebTextField;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
+import fr.free.movierenamer.info.MediaInfo.MultipleInfoProperty;
 import fr.free.movierenamer.ui.bean.UIEditor;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UICountry;
+import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.FlagUtils;
@@ -49,11 +52,12 @@ import javax.swing.Icon;
  */
 public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
 
+  private UIMovieInfo info;
   private final int smallFieldSize = 4;
   private final int fieldSize = 10;
   private final String i18nKey = "main.moviepnl.info.";
   private final DefaultListModel<UICountry> countryListModel;
-  private final List<InfoProperty> excludeProperty = Arrays.asList(new InfoProperty[]{
+  private final List<InfoProperty> excludeProperty = Arrays.asList(new InfoProperty[]{// Will be added manually
     MovieProperty.overview,
     MovieProperty.posterPath,
     MediaProperty.rating,
@@ -64,14 +68,13 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
     MovieProperty.certification,
     MovieProperty.certificationCode,
     MovieMultipleProperty.countries
-  });// Will be added manually
-  private UIMovieInfo info;
+  });
 
   private enum InlineProperty {
 
     DATE(MovieProperty.releasedDate, MovieProperty.runtime),
     CERT(MovieProperty.certification, MovieProperty.certificationCode),
-    RATE(MediaProperty.rating, MovieProperty.votes, MovieProperty.budget);
+    RATE(MediaProperty.rating, MovieProperty.votes);
     private final InfoProperty[] properties;
 
     private InlineProperty(InfoProperty... properties) {
@@ -96,13 +99,14 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
    *
    * @param mr
    */
+  @SuppressWarnings("unchecked")
   public MovieInfoPanel(MovieRenamer mr) {
     super(mr);
     initComponents();
 
     countryListModel = new DefaultListModel<>();
 
-    int maxGridWith = InlineProperty.getMaxSize() * 3;// 3 -> Label + field + edit/cancel button
+    int maxGridWith = InlineProperty.getMaxSize() * EDIT_WIDTH;
 
     for (MediaProperty property : MediaProperty.values()) {
       if (excludeProperty.contains(property)) {
@@ -133,17 +137,17 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
     list.setModel(countryListModel);
     list.setLayoutOrientation(WebList.HORIZONTAL_WRAP);
     list.setPreferredSize(new Dimension(0, 25));
-    UIEditor editor = new UIEditor(mr, list, MovieMultipleProperty.countries);
-    createEditableField(i18nKey + MovieMultipleProperty.countries.name(), editor, maxGridWith, 1, true, true);
+    UIEditor editor = new UIEditor(mr, MovieMultipleProperty.countries, list);
+    createEditableField(i18nKey + MovieMultipleProperty.countries.name(), editor, maxGridWith);
     map.put(MovieMultipleProperty.countries, editor);
 
     for (InlineProperty property : InlineProperty.values()) {
 
       List<InfoProperty> properties = property.getProperties();
-      int size = properties.size();
-      for (int i = 0; i < size; i++) {
-        editor = new UIEditor(mr, new WebTextField(smallFieldSize));
-        createEditableField(i18nKey + properties.get(i).name(), editor, maxGridWith, size, true, (i + 1 >= size));
+      int nbElement = properties.size();
+      for (int i = 0; i < nbElement; i++) {
+        editor = new UIEditor(mr, properties.get(i), new WebTextField(smallFieldSize));
+        createEditableField(i18nKey + properties.get(i).name(), editor, maxGridWith, nbElement, (i + 1 >= nbElement));
         map.put(properties.get(i), editor);
       }
     }
@@ -154,7 +158,7 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
     textArea.setLineWrap(true);
     textArea.setWrapStyleWord(true);
 
-    UIEditor overview = new UIEditor(mr, textArea);
+    UIEditor overview = new UIEditor(mr, MovieProperty.overview, textArea);
     createEditableField(i18nKey + MovieProperty.overview.name(), overview, maxGridWith);
     map.put(MovieProperty.overview, overview);
 
@@ -163,9 +167,31 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
   }
 
   private void createField(InfoProperty property, int maxGridWith) {
-    UIEditor editor = new UIEditor(mr, new WebTextField(fieldSize), (MovieMultipleProperty) ((property instanceof MovieMultipleProperty) ? property : null));// FIXME
+    UIEditor editor = new UIEditor(mr, property, new WebTextField(fieldSize));// FIXME
     createEditableField(i18nKey + property.name(), editor, maxGridWith);
     map.put(property, editor);
+  }
+
+  @Override
+  public void UIEventHandler(UIEvent.Event event, IEventInfo ieinfo, Object object, Object param) {
+    super.UIEventHandler(event, ieinfo, object, param);
+
+    switch (event) {
+      case EDITED:
+        // Save change in UIMovieInfo
+        if (object != null && object instanceof InfoProperty) {
+          InfoProperty property = (InfoProperty) object;
+          UIEditor editor = map.get(property);
+          if (editor != null) {
+            if(object instanceof MultipleInfoProperty) {
+              editor.setValue(param.toString());
+            }
+            info.set(property, editor.getValue());
+          }
+        }
+
+        break;
+    }
   }
 
   @Override
@@ -176,44 +202,10 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
   }
 
   @Override
-  public UIMovieInfo getInfo() {
-    if (info != null) {
-      for (MediaProperty property : MediaProperty.values()) {
-        if (map.containsKey(property)) {
-          info.set(property, map.get(property).getValue());
-        }
-      }
-
-      for (MovieProperty property : MovieProperty.values()) {
-        if (map.containsKey(property)) {
-          info.set(property, map.get(property).getValue());
-        }
-      }
-
-      for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
-        if (property != MovieMultipleProperty.countries && map.containsKey(property)) {
-          info.set(property, map.get(property).getValue());
-        }
-      }
-
-      String countries = "";
-      for (int i = 0; i < countryListModel.size(); i++) {
-        if (i > 0) {
-          countries += ", ";
-        }
-        countries += countryListModel.get(i).getName();
-      }
-      info.set(MovieMultipleProperty.countries, countries);
-    }
-
-    return info;
-  }
-
-  @Override
   public void setInfo(UIMovieInfo info) {
     try {
       this.info = info;
-
+      
       for (MediaProperty property : MediaProperty.values()) {
         if (map.containsKey(property)) {
           map.get(property).setValue(info.get(property));
@@ -236,7 +228,6 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
       for (String country : countries) {
         countryListModel.addElement(new UICountry(country, FlagUtils.getFlagByCountry(country)));
       }
-
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
     }
@@ -256,8 +247,8 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
   }
 
   @Override
-  public String getPanelName() {// TODO
-    return "movie info";
+  public String getPanelName() {
+    return "movie info";// FIXME i18n
   }
 
   @Override

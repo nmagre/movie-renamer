@@ -20,14 +20,15 @@ package fr.free.movierenamer.scrapper.impl.trailer;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.TrailerInfo;
 import fr.free.movierenamer.scrapper.TrailerScrapper;
-import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.searchinfo.Trailer;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.Document;
@@ -44,7 +45,8 @@ public class TrailerAddictScrapper extends TrailerScrapper {
   private static final String api = "api.";
   private static final String simpleapi = "simpleapi.";
   private static final String host = "traileraddict.com";
-  private static final Pattern tagsPattern = Pattern.compile(host + "\\/trailer\\/(\\w+)/");
+  private static final Pattern tagsPattern = Pattern.compile(host + "\\/(\\w+)\\/");
+  private static final MediaType[] supportedType = new MediaType[]{Media.MediaType.MOVIE};
 
   public TrailerAddictScrapper() {
 
@@ -61,9 +63,15 @@ public class TrailerAddictScrapper extends TrailerScrapper {
   }
 
   @Override
-  protected List<TrailerInfo> searchTrailer(Movie movie) throws Exception {
-    List<TrailerInfo> trailers = new ArrayList<TrailerInfo>();
-    IdInfo imdbId = movie.getImdbId();
+  public List<Media.MediaType> getSupportedMediaType() {
+    return Arrays.asList(supportedType);
+  }
+
+  @Override
+  protected List<Trailer> searchTrailer(Media media) throws Exception {
+    List<Trailer> trailers = new ArrayList<Trailer>();
+    IdInfo imdbId = null;/*media.getImdbId();*/
+
     String tag = null;
     if (imdbId != null) {
       URL url = new URL("http", api + host, "/?imdb=" + String.format("%07d", imdbId.getId()));
@@ -83,7 +91,7 @@ public class TrailerAddictScrapper extends TrailerScrapper {
       Document dom = URIRequest.getHtmlDocument(url.toURI());
       List<Node> nodes = XPathUtils.selectNodes("//DD[@id='one-ddcontent']/A", dom);
       for (Node node : nodes) {
-       // trailers.add(new Trailer(node.getTextContent(), new URL("http", simpleapi + host, XPathUtils.getAttribute("href", node))));
+        //trailers.add(new Trailer(node.getTextContent(), new URL("http", simpleapi + host, XPathUtils.getAttribute("href", node))));
       }
     }
 
@@ -116,4 +124,9 @@ public class TrailerAddictScrapper extends TrailerScrapper {
 //    // TODO if streamUrl == null
 //    return null;
 //  }
+  @Override
+  protected TrailerInfo fetchTrailerInfo(Trailer searchResult) throws Exception {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
 }

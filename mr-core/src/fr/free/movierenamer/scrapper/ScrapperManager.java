@@ -35,10 +35,16 @@ import fr.free.movierenamer.scrapper.impl.movie.AdorocinemaScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.BeyazperdeScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.FilmstartsScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.KinopoiskScrapper;
-import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoes;
+import fr.free.movierenamer.scrapper.impl.movie.RottenTomatoesScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.SensacineScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.TracktScrapper;
 import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
+import fr.free.movierenamer.scrapper.impl.trailer.AllocineTrailerScrapper;
+import fr.free.movierenamer.scrapper.impl.trailer.ImdbTrailerScrapper;
+import fr.free.movierenamer.scrapper.impl.trailer.TrailerAddictScrapper;
+import fr.free.movierenamer.scrapper.impl.trailer.VideoDetectiveScrapper;
+import fr.free.movierenamer.scrapper.impl.trailer.YoutubeTrailerScrapper;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 
@@ -65,7 +71,7 @@ public class ScrapperManager {
     getScrapper(IMDbScrapper.class);
     getScrapper(TMDbScrapper.class);
     getScrapper(UniversalScrapper.class);
-    getScrapper(RottenTomatoes.class);
+    getScrapper(RottenTomatoesScrapper.class);
     getScrapper(KinopoiskScrapper.class);
     getScrapper(TracktScrapper.class);
     // tvshow
@@ -76,6 +82,12 @@ public class ScrapperManager {
     // subtitle
     getScrapper(OpenSubtitlesScrapper.class);
     getScrapper(SubsceneSubtitleScrapper.class);
+    //Trailer
+    getScrapper(AllocineTrailerScrapper.class);
+    getScrapper(ImdbTrailerScrapper.class);
+    getScrapper(TrailerAddictScrapper.class);
+    getScrapper(VideoDetectiveScrapper.class);
+    getScrapper(YoutubeTrailerScrapper.class);
   }
 
   @SuppressWarnings("unchecked")
@@ -137,6 +149,21 @@ public class ScrapperManager {
         toRet.add((MovieScrapper) map.get(clazz));
       }
     }
+    return toRet;
+  }
+
+  public static List<TrailerScrapper> getTrailerScrapperList(MediaType type) {
+    List<TrailerScrapper> toRet = new ArrayList<TrailerScrapper>();
+    for (Class<?> clazz : map.keySet()) {
+      if (TrailerScrapper.class.isAssignableFrom(clazz)) {
+        if (type != null && !((TrailerScrapper) map.get(clazz)).getSupportedMediaType().contains(type)) {
+          continue;
+        }
+
+        toRet.add((TrailerScrapper) map.get(clazz));
+      }
+    }
+
     return toRet;
   }
 

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator;
 
+import com.alee.extended.label.WebLinkLabel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
@@ -65,6 +66,7 @@ public abstract class PanelGenerator extends WebPanel {
     BUTTON,
     TOOLBAR,
     LABEL,
+    LINKLABEL,
     CUSTOM_LIST
   }
 
@@ -180,6 +182,7 @@ public abstract class PanelGenerator extends WebPanel {
    * @param last Last component in group
    * @param resize Resize component
    * @param right Place component on right
+   * @param level
    * @return constraint
    */
   protected GridBagConstraints getGroupConstraint(int gridx, boolean last, boolean resize, boolean right, int level) {
@@ -315,7 +318,9 @@ public abstract class PanelGenerator extends WebPanel {
     switch (settingComponent) {
       case BUTTON:
         component = new WebButton();
-        ((WebButton) component).setLanguage(i18nKey);
+        if (title != null) {
+          ((WebButton) component).setLanguage(i18nKey);
+        }
         component.setPreferredSize(UIUtils.buttonSize);
         break;
       case CHECKBOX:
@@ -336,6 +341,11 @@ public abstract class PanelGenerator extends WebPanel {
         component = new WebLabel();
         ((WebLabel) component).setLanguage(i18nKey);
         ((WebLabel) component).setDrawShade(true);
+        break;
+      case LINKLABEL:
+        component = new WebLinkLabel();
+        ((WebLinkLabel) component).setLanguage(i18nKey);
+        ((WebLinkLabel) component).setDrawShade(true);
         break;
       default:
         break;

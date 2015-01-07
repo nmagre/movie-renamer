@@ -38,6 +38,7 @@ public class IconComboRenderer<T extends IIconList> extends WebComboBoxCellRende
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));

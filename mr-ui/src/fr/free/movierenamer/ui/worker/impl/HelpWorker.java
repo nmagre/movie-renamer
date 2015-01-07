@@ -82,8 +82,8 @@ public class HelpWorker extends Worker<String> {
   }
 
   @Override
-  public String getParam() {
-    return null;
+  public WorkerId getWorkerId() {
+    return WorkerId.HELP;
   }
 
 }

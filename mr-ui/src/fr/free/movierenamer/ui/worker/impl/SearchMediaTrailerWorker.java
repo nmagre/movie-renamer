@@ -16,13 +16,13 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import fr.free.movierenamer.info.TrailerInfo;
-import fr.free.movierenamer.scrapper.impl.trailer.VideoDetectiveScrapper;
-import fr.free.movierenamer.scrapper.impl.trailer.YoutubeScrapper;
-import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.scrapper.impl.trailer.UniversalTrailerScrapper;
+import fr.free.movierenamer.searchinfo.Trailer;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.bean.UITrailer;
+import fr.free.movierenamer.ui.bean.UISearchTrailerResult;
+import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.TrailerInfoPanel;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
@@ -34,7 +34,7 @@ import java.util.List;
  *
  * @author Nicolas Magré
  */
-public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
+public class SearchMediaTrailerWorker extends Worker<List<UISearchTrailerResult>> {
 
   private final UISearchResult searchResult;
 
@@ -44,16 +44,10 @@ public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
   }
 
   @Override
-  public List<UITrailer> executeInBackground() throws Exception {
-    List<UITrailer> trailers = new ArrayList<>();
-    VideoDetectiveScrapper viddec = new VideoDetectiveScrapper();
-    YoutubeScrapper scrapper = new YoutubeScrapper();
-    List<TrailerInfo> trailersInfo;
-    trailersInfo = viddec.getTrailer((Movie) searchResult.getSearchResult());// FIXME cast
-    if (trailersInfo == null) {
-      trailersInfo = new ArrayList<>();
-    }
-    trailersInfo.addAll(scrapper.getTrailer((Movie) searchResult.getSearchResult()));// FIXME cast
+  public List<UISearchTrailerResult> executeInBackground() throws Exception {
+    List<UISearchTrailerResult> trailers = new ArrayList<>();
+    UniversalTrailerScrapper scraper = new UniversalTrailerScrapper();
+    List<Trailer> trailersInfo = scraper.getTrailer(searchResult.getSearchResult());
 
     String title = searchResult.getOriginalName();
     if (title == null) {
@@ -61,16 +55,16 @@ public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
     }
     title = StringUtils.normaliseClean(title);
 
-    String trailerTitle;
-    for (TrailerInfo trailer : trailersInfo) {
-      trailerTitle = trailer.getTitle();
-      trailerTitle = StringUtils.normaliseClean(trailerTitle);
-      if (trailerTitle.contains(title)) {
-        trailers.add(new UITrailer(trailer));
-      }
+    for (Trailer trailer : trailersInfo) {
+      System.out.println(trailer);
+      trailers.add(new UISearchTrailerResult(trailer, scraper));
     }
 
     Sorter.sort(trailers, title);
+    TrailerInfoPanel panel = (TrailerInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.TRAILER_INFO);// FIXME
+    if (panel != null) {
+      panel.addTrailers(trailers);
+    }
 
     return trailers;
   }
@@ -78,7 +72,7 @@ public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
   @Override
   @SuppressWarnings("unchecked")
   protected void workerDone() throws Exception {
-    List<UITrailer> trailers = get();
+    List<UISearchTrailerResult> trailers = get();
 //    TrailerInfoPanel panel = (TrailerInfoPanel) mr.getMediaPanel().getPanel(InfoPanel.PanelType.TRAILER_INFO);
 //    if (panel != null) {
 //      panel.addTrailers(trailers);
@@ -86,12 +80,12 @@ public class SearchMediaTrailerWorker extends Worker<List<UITrailer>> {
   }
 
   @Override
-  public String getParam() {
-    return "";
+  public String getDisplayName() {
+    return ("Trailer");// FIXME i18n
   }
 
   @Override
-  public String getDisplayName() {
-    return ("Trailer");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.SEARCH_TRAILER;
   }
 }

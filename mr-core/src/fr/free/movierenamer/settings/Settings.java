@@ -75,8 +75,6 @@ public final class Settings extends XMLSettings {
     movieFilenameLimit(3, SettingsType.MEDIA, SettingsSubType.MOVIE),
     movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.MEDIA, SettingsSubType.MOVIE),
     // format
-    stringSizeUnit(StringUtils.SizeFormat.BYTE, SettingsType.FORMAT, SettingsSubType.SIZE),
-    stringSizeSi(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.SIZE),
     stringTimeHour("h ", SettingsType.FORMAT, SettingsSubType.TIME),
     stringTimeMinute("min ", SettingsType.FORMAT, SettingsSubType.TIME),
     stringTimeSeconde("s ", SettingsType.FORMAT, SettingsSubType.TIME),
@@ -104,7 +102,7 @@ public final class Settings extends XMLSettings {
     searchMovieScrapper(UniversalScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     searchScrapperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     searchGetTmdbTag(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    //searchGetOnlyLangDep(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
+    searchGetOnlyLangDep(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     //searchSetOrigTitle(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     //    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
     //    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
@@ -121,7 +119,14 @@ public final class Settings extends XMLSettings {
     // Extension
     fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL),
     //app lang
-    appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE);
+    appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),
+    // Scraper options
+    universalSearchScraper(IMDbScrapper.class),
+    universalSynopsys(IMDbScrapper.class),
+    universalCasting(IMDbScrapper.class),
+    universalRating(IMDbScrapper.class),
+    universalGenre(IMDbScrapper.class),
+    universalCountry(IMDbScrapper.class);
     private Class<?> vclass;
     private Object defaultValue;
     private SettingsType type;
@@ -240,14 +245,6 @@ public final class Settings extends XMLSettings {
     return Boolean.parseBoolean(get(SettingsProperty.filenameRomanUpper));
   }
 
-  public StringUtils.SizeFormat getStringSizeUnit() {
-    return StringUtils.SizeFormat.valueOf(get(SettingsProperty.stringSizeUnit));
-  }
-
-  public boolean isStringSizeSi() {
-    return Boolean.parseBoolean(get(SettingsProperty.stringSizeSi));
-  }
-
   public String getStringTimeHour() {
     return get(SettingsProperty.stringTimeHour);
   }
@@ -305,11 +302,13 @@ public final class Settings extends XMLSettings {
   }
 
   public boolean isGetOnlyLangDepInfo() {
-    return false ;/*Boolean.parseBoolean(get(SettingsProperty.searchGetOnlyLangDep));*/
+    return Boolean.parseBoolean(get(SettingsProperty.searchGetOnlyLangDep));
+
   }
 
   public boolean isSetOrigTitle() {
     return false; /*Boolean.parseBoolean(get(SettingsProperty.searchSetOrigTitle));*/
+
   }
 
   public boolean isSearchOrder() {
@@ -349,6 +348,41 @@ public final class Settings extends XMLSettings {
       return (Class<MovieScrapper>) Class.forName(get(SettingsProperty.searchMovieScrapper).replace("class ", ""));
     } catch (Exception ex) {
     }
+
+    return IMDbScrapper.class;
+  }
+
+  @SuppressWarnings("unchecked")
+  public Class<? extends MovieScrapper> getUniversalSearchMovieScrapper() {
+    try {
+      return (Class<MovieScrapper>) Class.forName(get(SettingsProperty.universalSearchScraper).replace("class ", ""));
+    } catch (Exception ex) {
+    }
+
+    return IMDbScrapper.class;
+  }
+
+  public Class<?> getOptionClass(SettingsProperty property) {
+    if (!(property.getDefaultValue() instanceof Class)) {
+      return null;
+    }
+
+    try {
+      return (Class<?>) Class.forName(get(property).replace("class ", ""));
+    } catch (ClassNotFoundException ex) {
+    }
+
+    return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  public Class<? extends MovieScrapper> getMovieScrapperOptionClass(SettingsProperty property) {
+
+    Class<?> clazz = getOptionClass(property);
+    if (clazz != null) {
+      return (Class<? extends MovieScrapper>) clazz;
+    }
+
     return IMDbScrapper.class;
   }
 

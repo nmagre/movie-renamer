@@ -160,7 +160,7 @@ public final class URIRequest {
     return (JSONArray) JSONValue.parse(reader);
   }
 
-  private static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
+  public static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {
     boolean isHttpRequest = Proxy.Type.HTTP.name().equalsIgnoreCase(uri.getScheme());
     URLConnection connection;
     if (isHttpRequest && Settings.getInstance().isProxyIsOn()) {
@@ -211,7 +211,7 @@ public final class URIRequest {
     return getInputStream(openConnection(uri, properties));
   }
 
-  private static InputStream getInputStream(URLConnection connection) throws IOException {
+  public static InputStream getInputStream(URLConnection connection) throws IOException {
     if (Settings.LINUX) {
       // getContentEncoding() crash JVM under linux in multiThreaded context
       return getInputStreamSync(connection);

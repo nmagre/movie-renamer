@@ -19,7 +19,6 @@ package fr.free.movierenamer.scrapper.impl;
 
 import fr.free.movierenamer.scrapper.impl.tvshow.TheTVDBScrapper;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.Assert;
 
@@ -74,7 +73,7 @@ public final class TheTVDBScrapperTest extends TvShowScrapperTest {
 
   @Override
   public void getCasting() throws Exception {
-    List<CastingInfo> cast = thetvdb.getCasting(new TvShow(null, new IdInfo(82066, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1));
+    List<CastingInfo> cast = thetvdb.getCasting(new TvShow(null, new IdInfo(82066, ScrapperUtils.AvailableApiIds.TVDB), null, null, -1), new IdInfo(82066, ScrapperUtils.AvailableApiIds.TVDB));
     for (CastingInfo info : cast) {
       if (info.isActor()) {
         Assert.assertEquals("Anna Torv", info.getName());

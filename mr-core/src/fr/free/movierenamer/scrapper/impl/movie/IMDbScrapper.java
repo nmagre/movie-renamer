@@ -46,10 +46,10 @@ import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import org.w3c.dom.NodeList;
 
@@ -84,6 +84,26 @@ public class IMDbScrapper extends MovieScrapper {
   @Override
   protected String getHost() {
     return host;
+  }
+
+  @Override
+  public IdInfo getIdfromURL(URL url) {
+    try {
+      return new IdInfo(findImdbId(url.toExternalForm()), supportedId);
+    } catch (Exception ex) {
+    }
+
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {
+    try {
+      return new URL("http", host, String.format("/title/%s/combined", id));
+    } catch (MalformedURLException ex) {
+    }
+
+    return null;
   }
 
   @Override
@@ -233,7 +253,7 @@ public class IMDbScrapper extends MovieScrapper {
 
     // Original title
     String originalTitle = XPathUtils.selectString("//SPAN[@class='title-extra']/I[contains(., '(original title)')]/preceding-sibling::text()", node);
-    ScrapperUtils.addValue(fields, MovieProperty.originalTitle, originalTitle);
+    ScrapperUtils.addValue(mediaFields, MediaProperty.originalTitle, originalTitle);
 
     // Rating
     String rate = XPathUtils.selectString("//DIV[@class='starbar-meta']/B", dom);
@@ -492,7 +512,7 @@ public class IMDbScrapper extends MovieScrapper {
   }
 
   private Map<ImageInfo.ImageProperty, String> getImageUrl(String picture) {
-    Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
+    Map<ImageInfo.ImageProperty, String> fields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
     fields.put(ImageProperty.url, picture);
     fields.put(ImageProperty.urlMid, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX214.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX214.jpg"));
     fields.put(ImageProperty.urlTumb, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX70.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX70.jpg"));
@@ -545,4 +565,5 @@ public class IMDbScrapper extends MovieScrapper {
   public ScrapperUtils.InfoQuality getInfoQuality() {
     return ScrapperUtils.InfoQuality.AWESOME;
   }
+
 }

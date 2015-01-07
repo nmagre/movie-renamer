@@ -81,7 +81,7 @@ public class Nfo {// TODO
 
     xbmcMovieNFOLayout.put(MediaProperty.title, "title");
     xbmcMovieNFOLayout.put(MediaProperty.rating, "rating");
-    xbmcMovieNFOLayout.put(MovieProperty.originalTitle, "originaltitle");
+    xbmcMovieNFOLayout.put(MediaProperty.originalTitle, "originaltitle");
     xbmcMovieNFOLayout.put(MovieProperty.sortTitle, "sorttitle");
     xbmcMovieNFOLayout.put(MovieProperty.collection, "set");
     xbmcMovieNFOLayout.put(MovieProperty.releasedDate, "year");

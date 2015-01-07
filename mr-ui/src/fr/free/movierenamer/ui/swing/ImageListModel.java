@@ -31,7 +31,7 @@ import javax.swing.AbstractListModel;
  *
  * @author Nicolas Magré
  */
-public final class ImageListModel<T extends IImage> extends AbstractListModel {
+public final class ImageListModel<T extends IImage> extends AbstractListModel<T> {
 
   private static final long serialVersionUID = 1L;
   private Map<Integer, T> model;
@@ -83,12 +83,12 @@ public final class ImageListModel<T extends IImage> extends AbstractListModel {
 
   @SuppressWarnings("unchecked")
   public T firstElement() {
-    return (T) getElementAt(0);
+    return getElementAt(0);
   }
 
   @SuppressWarnings("unchecked")
   public T lastElement() {
-    return (T) getElementAt(model.size() - 1);
+    return getElementAt(model.size() - 1);
   }
 
   public boolean removeElement(T element) {
@@ -99,9 +99,9 @@ public final class ImageListModel<T extends IImage> extends AbstractListModel {
     }
     return removed;
   }
-  
+
   public List<T> getAll() {
-    return new ArrayList(model.values());
+    return new ArrayList<>(model.values());
   }
 
   public T getElementById(int id) {
@@ -114,7 +114,7 @@ public final class ImageListModel<T extends IImage> extends AbstractListModel {
   }
 
   @Override
-  public Object getElementAt(int index) {
+  public T getElementAt(int index) {
     if (index >= model.size()) {
       return null;
     }

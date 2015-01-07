@@ -19,11 +19,10 @@ package fr.free.movierenamer.ui.swing.panel;
 
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
-import fr.free.movierenamer.ui.bean.UIPersonImage;
+import fr.free.movierenamer.ui.swing.panel.info.TrailerInfoPanel;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieCastingInfoPanel;
-import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
+import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieInfoPanel;
-import java.util.List;
 
 /**
  * Class MoviePanel
@@ -31,10 +30,10 @@ import java.util.List;
  * @author Nicolas Magré
  */
 public class MoviePanel extends VideoPanel<UIMovieInfo> {
+  private static final long serialVersionUID = 1L;
 
-  @SuppressWarnings("unchecked")
   public MoviePanel(MovieRenamer mr) {
-    super(new MovieInfoPanel(mr), new MovieCastingInfoPanel()/*, new MovieIdPanel(mr), new TrailerInfoPanel()*/);
+    super(new MovieInfoPanel(mr), new MovieCastingInfoPanel(mr), new MovieIdPanel(mr), new TrailerInfoPanel());
   }
 
   @Override
@@ -59,19 +58,6 @@ public class MoviePanel extends VideoPanel<UIMovieInfo> {
   @Override
   protected boolean addEditButton() {
     return true;
-  }
-
-  @Override
-  public UIMovieInfo getInfo() {
-    return (UIMovieInfo) panels.get(InfoPanel.PanelType.INFO).getInfo();
-  }
-
-  @Override
-  public void setInfo(UIMovieInfo info) {
-    super.setInfo(info);
-
-    ((InfoPanel<List<UIPersonImage>>) panels.get(InfoPanel.PanelType.CASTING_INFO)).setInfo(info.getCasting());
-    //panels.get(InfoPanel.PanelType.ID_INFO).setInfo(info.getIds());
   }
 
   @Override

@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,12 +89,12 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {// No
   }
 
   @Override
-  public String getParam() {
-    return "";
+  public String getDisplayName() {
+    return ("worker.searchCasting");// FIXME i18n
   }
 
   @Override
-  public String getDisplayName() {
-    return ("worker.searchCasting");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.SEARCH_CASTING;
   }
 }

@@ -17,9 +17,11 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.scrapper.ScrapperOptions;
 import fr.free.movierenamer.scrapper.SearchScrapper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -43,11 +45,20 @@ public class UIScraper implements IIconList {
     if (icon == null) {
       icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scraper.getName().toLowerCase())));
     }
+    
     return icon;
   }
 
   public SearchScrapper<? extends Hyperlink> getScraper() {
     return scraper;
+  }
+
+  public List<ScrapperOptions> getOptions() {
+    return scraper.getScraperOptions();
+  }
+
+  public boolean hasOptions() {
+    return !scraper.getScraperOptions().isEmpty();
   }
 
   @Override

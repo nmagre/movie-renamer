@@ -18,9 +18,9 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
-import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.renamer.MoveFile;
 import fr.free.movierenamer.renamer.Nfo;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEvent;
@@ -28,15 +28,16 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.bean.UIRename;
+import fr.free.movierenamer.ui.bean.UIRenamer;
 import fr.free.movierenamer.ui.exception.CancelException;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.dialog.FileConflictDialog;
 import fr.free.movierenamer.ui.swing.dialog.FileConflictDialog.Action;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.ControlWorker;
-import fr.free.movierenamer.ui.worker.impl.RenamerWorker.ConflitFile;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.awt.Image;
@@ -46,6 +47,14 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -57,17 +66,19 @@ import org.w3c.dom.Document;
  *
  * @author Nicolas Magré
  */
-public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile> {
+public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile> {
 
   private final UIRename uirename;
   private final UIFile uiFile;
   private UIFile newUiFile;
-  private final UIMediaInfo info;
+  private final UIMediaInfo<?> info;
   private final TaskPanel taskPanel;
   private Action action = Action.none;
   private static final UISettings settings = UISettings.getInstance();
   private static final String fileToRename = "fanart|thumb|poster|cdart|logo|clearart|banner|front|back|discart|clearlogo|season|saison|movieset|set|saga";
   private static final int RETRY = 3;
+  private final List<RenameFile> toMove;
+  public static final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images/thumb");
 
   private static enum GenerateImage {
 
@@ -136,11 +147,12 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
   public RenamerWorker(MovieRenamer mr, UIFile uiFile, TaskPanel taskPanel, UIRename uirename) {
     super(mr);
 
+    toMove = new ArrayList<>();
     this.uirename = uirename;
     this.uiFile = uiFile;
     this.info = mr.getMediaPanel().getInfo();
     this.taskPanel = taskPanel;
-    newUiFile = null;
+    newUiFile = uiFile;
   }
 
   @Override
@@ -177,86 +189,147 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
       return null;
     }
 
-    File newMediaFile = new File(destFolder, renamedTitle + "." + mediaSourceExt);
-    if (!mediaSourceFile.equals(newMediaFile) && newMediaFile.exists()) {
-      publishPause(new ConflitFile(mediaSourceFile, newMediaFile));
+    // Create destination folder
+    if (!destFolderExists) {
+      if (!destFolder.mkdirs()) {
+        publish(i18n.getLanguage("error.rename.unableCreateFolder", false, destFolder.getName()));
+        UISettings.LOGGER.warning(i18n.getLanguage("error.rename.unableCreateFolder", false, destFolder.getName()));
+        return null;
+      }
     }
 
+    // Media file
+    File newMediaFile = new File(destFolder, renamedTitle + "." + mediaSourceExt);
+    if (!newMediaFile.equals(mediaSourceFile)) {
+      toMove.add(new RenameFile(mediaSourceFile, newMediaFile));
+    }
+
+    // Create NFO
+    if (uirename.getOption(UIRename.RenameOption.NFO)) {
+      RenameFile mfile = generateNFO(renamedTitle, destFolder);
+      if (mfile != null) {
+        toMove.add(mfile);
+      }
+    }
+
+    // Find all files with same name as media
+    File[] files = mediaSourceFolder.listFiles(new FilenameFilter() {
+
+      @Override
+      public boolean accept(File dir, String name) {
+        Pattern pattern = Pattern.compile("^" + Pattern.quote(mediaSourceFileNameNoExt) + "([ \\._-](" + fileToRename + "))?\\..{3}$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);//FIXME
+        return pattern.matcher(name).find();
+      }
+    });
+
+    File dfile;
+    for (File sfile : files) {
+      dfile = new File(destFolder, sfile.getName().replaceAll("(?i)" + mediaSourceFileNameNoExt, renamedTitle));
+
+      if (sfile.equals(mediaSourceFile) || sfile.equals(dfile)) {
+        continue;
+      }
+
+      toMove.add(new RenameFile(sfile, dfile));
+    }
+
+    // Download images
+    ExecutorService service = Executors.newFixedThreadPool(5);
+    CompletionService<RenameFile> pool = new ExecutorCompletionService<>(service);
+
+    final String rtitle = renamedTitle;
+    final File dFolder = destFolder;
+    int nbThread = 0;
+    for (final GenerateImage gimage : GenerateImage.values()) {
+      if (uirename.getOption(gimage.getRenameOption())) {
+        final UIMediaImage mimage = uirename.getSelectedImage(gimage.getCategory());
+        if (mimage == null) {
+          continue;
+        }
+
+        pool.submit(new Callable<RenameFile>() {
+
+          @Override
+          public RenameFile call() {
+            return downloadImage(rtitle, dFolder, gimage, mimage);
+          }
+        });
+        nbThread++;
+      }
+    }
+
+    for (int i = 0; i < nbThread; i++) {
+      RenameFile mfile = pool.take().get();
+      if (mfile != null) {
+        toMove.add(mfile);
+      }
+    }
+    service.shutdownNow();
+
     try {
-      newUiFile = uiFile;
-      // Rename/move media file
-      switch (action) {
-        case cancel:
-          throw new CancelException();
-        case replace:
-          action = Action.none;
-        case replaceAll:
-          if (newMediaFile.delete()) {
-            UISettings.LOGGER.info(String.format("Delete [%s]", newMediaFile));
-          }
-        case none:
-          if (!destFolderExists) {
-            if (!destFolder.mkdirs()) {
-              publish(i18n.getLanguage("error.rename.unableCreateFolder", false, destFolder.getName()));
-              UISettings.LOGGER.warning(i18n.getLanguage("error.rename.unableCreateFolder", false, destFolder.getName()));
-              return null;
-            }
+      Iterator<RenameFile> it = toMove.iterator();
+      RenameFile mfile;
+      while (it.hasNext()) {
+        mfile = it.next();
+        if (mfile.isDestinationExist()) {
+
+          // Ask user what to do if we do not skip
+          if (!action.equals(Action.skipAll) && !action.equals(Action.replaceAll)) {
+            publishPause(mfile);
           }
 
-          if (moveFile(mediaSourceFile, newMediaFile, destFolder, false)) {
-            newUiFile = new UIFile(newMediaFile, newMediaFile.getName().substring(0, 1), uiFile.getMtype());// FIXME for tvshow
-            UISettings.LOGGER.info(String.format("Move [%s] to [%s]", mediaSourceFile, newMediaFile));
-          }
-          break;
-      }
-
-      File[] files = mediaSourceFolder.listFiles(new FilenameFilter() {
-
-        @Override
-        public boolean accept(File dir, String name) {
-          Pattern pattern = Pattern.compile("^" + Pattern.quote(mediaSourceFileNameNoExt) + "([ \\._-](" + fileToRename + "))?\\..{3}$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);//FIXME
-          return pattern.matcher(name).find();
-        }
-      });
-
-      // Move/rename other files next to the media
-      File ofile;
-      for (File file : files) {
-        ofile = new File(destFolder, file.getName().replace(mediaSourceFileNameNoExt, renamedTitle));
-
-        if (ofile.equals(file)) {
-          continue;
-        }
-
-        if (!updateAction(file, ofile)) {
-          continue;
-        }
-
-        if (moveFile(file, ofile, destFolder, false)) {
-          UISettings.LOGGER.info(String.format("Move [%s] to [%s]", file, ofile));
-        }
-      }
-
-      // Generate NFO file
-      if (uirename.getOption(UIRename.RenameOption.NFO)) {
-        if (generateNFO(renamedTitle, destFolder) == null) {
-          return null;
-        }
-      }
-
-      // Generate images
-      for (GenerateImage gimage : GenerateImage.values()) {
-        if (uirename.getOption(gimage.getRenameOption())) {
-          UIMediaImage mimage = uirename.getSelectedImage(gimage.getCategory());
-          if (mimage == null) {
-            continue;
-          }
-
-          if (generateImage(renamedTitle, destFolder, gimage, mimage) == null) {
-            return null;
+          switch (action) {
+            case cancel:
+              clean();
+              throw new CancelException();
+            case replace:
+            case replaceAll:
+              if (mfile.getDestination().delete()) {
+                UISettings.LOGGER.info(String.format("Delete [%s]", mfile.getDestination()));
+              }
+              mfile.setReplace(true);
+              break;
+            case skip:
+            case skipAll:
+              // Delete tmp file
+              if (mfile.isTmpFile()) {
+                mfile.getSource().delete();
+                UISettings.LOGGER.info(String.format("Delete [%s]", mfile.getSource()));
+              }
+              it.remove();
+              break;
           }
         }
       }
+
+      // let's move files
+      for (RenameFile rfile : toMove) {
+        if (moveFile(rfile, destFolder)) {
+          newUiFile = new UIFile(newMediaFile, newMediaFile.getName().substring(0, 1), uiFile.getMtype());// FIXME for tvshow
+          UISettings.LOGGER.info(String.format("Move [%s] to [%s]", rfile.getSource(), rfile.getDestination()));
+        }
+      }
+
+      // Create thumb
+      UIMediaImage mimage = uirename.getSelectedImage(ImageCategoryProperty.thumb);
+      String thumb = null;
+      if (mimage != null) {
+        if (!imageCacheDir.exists()) {
+          imageCacheDir.mkdirs();
+        }
+        try {
+          File outputFile = new File(imageCacheDir, uiFile.getMd5Hash());
+          downloadAndScaleImage(mimage.getUri(ImageSize.small), outputFile, true, true, 45);
+          thumb = outputFile.toString();
+        } catch (Exception e) {
+        }
+      }
+
+      UIRenamer renamer = UIRenamer.getInstance();
+      renamer.addRenamed(uiFile, mediaSourceFile, newMediaFile, toMove, thumb);
+
+      clean();
+
     } catch (CancelException ex) {
       // User cancel
       UISettings.LOGGER.info(String.format("User cancel rename of [%s]", uiFile));
@@ -265,71 +338,17 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
     return null;
   }
 
-  private boolean updateAction(File srcFile, File destFile) throws CancelException {
-    if (!(action.equals(Action.skipAll) || action.equals(Action.replaceAll))) {
-      action = Action.none;
-
-      if (destFile.exists()) {
-        publishPause(new ConflitFile(destFile, srcFile));
+  private void clean() {
+    // Delete tmp file
+    for (RenameFile rfile : toMove) {
+      if (rfile.isTmpFile() && rfile.getSource().exists()) {
+        rfile.getSource().delete();
+        UISettings.LOGGER.info(String.format("Delete [%s]", rfile.getSource()));
       }
     }
-
-    if (action.equals(Action.cancel)) {
-      throw new CancelException();
-    }
-
-    return (action.equals(Action.none) || action.equals(Action.replace) || action.equals(Action.replaceAll));
   }
 
-  private Boolean generate(File tmpFile, File destFile, File destFolder) throws Exception {
-
-    switch (action) {
-      case replace:
-      case replaceAll:
-        if (destFile.delete()) {
-          UISettings.LOGGER.info(String.format("Delete [%s]", destFile));
-        }
-      case none:
-        if (moveFile(tmpFile, destFile, destFolder, true) == null) {
-          return null;
-        }
-        UISettings.LOGGER.info(String.format("Move [%s] to [%s]", tmpFile, destFile));
-        break;
-      default:
-        if (tmpFile.delete()) {
-          UISettings.LOGGER.info(String.format("Delete [%s]", tmpFile));
-        }
-    }
-
-    return false;
-  }
-
-  private Boolean generateImage(String renamedTitle, File destFolder, GenerateImage image, UIMediaImage mimage) throws Exception {
-
-    final String filename = image.getFilename().replace("<fileName>", renamedTitle);
-    final File tmpFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
-    final File destFile = new File(destFolder, filename);
-
-    for (int i = 0; i < RETRY; i++) {
-      try {
-        downloadImage(image, mimage, tmpFile);
-      } catch (Exception ex) {
-        UISettings.LOGGER.log(Level.SEVERE, null, ex);
-        if (i + 1 >= RETRY) {
-          publish(i18n.getLanguage("error.rename.downloadImageFailed", false, filename));
-          return false;
-        }
-      }
-    }
-
-    if (!updateAction(tmpFile, destFile)) {
-      return false;
-    }
-
-    return generate(tmpFile, destFile, destFolder);
-  }
-
-  private Boolean generateNFO(String renamedTitle, File destFolder) throws Exception {
+  private RenameFile generateNFO(String renamedTitle, File destFolder) throws Exception {
     String filename;
     File tmpFile;
     File destFile;
@@ -341,26 +360,98 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
       filename = settings.coreInstance.getNFOFileName().replace("<fileName>", renamedTitle);
       tmpFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
       FileUtils.writeXmlFile(nfoDom, tmpFile);
+      destFile = new File(destFolder, filename);
+
+      return new RenameFile(tmpFile, destFile, true);
     } catch (ParserConfigurationException ex) {
       publish(i18n.getLanguage("error.rename.createNfoFailed", false));
       UISettings.LOGGER.log(Level.SEVERE, null, ex);
-      return false;
     }
 
-    destFile = new File(destFolder, filename);
-
-    if (!updateAction(tmpFile, destFile)) {
-      return false;
-    }
-
-    return generate(tmpFile, destFile, destFolder);
+    return null;
   }
 
-  private Boolean moveFile(File sourceFile, File destFile, File destFolder, boolean isTempFile) throws Exception {
+  private RenameFile downloadImage(String renamedTitle, File destFolder, GenerateImage image, UIMediaImage mimage) {
 
-    if (destFile.equals(sourceFile)) {
-      return false;
+    final String filename = image.getFilename().replace("<fileName>", renamedTitle);
+    final File tmpFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
+    final File destFile = new File(destFolder, filename);
+
+    for (int i = 0; i < RETRY; i++) {
+      try {
+        downloadImage(image, mimage, tmpFile);
+        return new RenameFile(tmpFile, destFile, true);
+      } catch (Exception ex) {
+        UISettings.LOGGER.log(Level.SEVERE, null, ex);
+      }
     }
+
+    publish(i18n.getLanguage("error.rename.downloadImageFailed", false, filename));
+
+    return null;
+  }
+
+  private void downloadImage(GenerateImage image, UIMediaImage mediaImage, File tmpFile) throws Exception {
+
+    if (tmpFile.exists()) {
+      if (tmpFile.delete()) {
+        UISettings.LOGGER.info(String.format("Delete [%s]", tmpFile));
+      }
+    }
+
+    ImageSize size;
+    switch (image.getSize()) {
+      case ORIGINAL:
+        size = ImageSize.big;
+        break;
+      case MEDIUM:
+        size = ImageSize.medium;
+        break;
+      case SMALL:
+        size = ImageSize.small;
+        break;
+      default:
+        size = ImageSize.big;
+    }
+
+    URI uri = mediaImage.getUri(size);
+
+    if (uri.getScheme().toLowerCase().equals("file")) {// Local image
+      MoveFile moveThread = new MoveFile(new File(uri), tmpFile);
+      moveThread.start();
+      moveThread.join();
+    } else {
+      downloadAndScaleImage(uri, tmpFile, image.isResize(), image.isResizeHorizontal(), image.getResizeSize());
+    }
+  }
+
+  private void downloadAndScaleImage(URI uri, File outputFile, boolean resize, boolean horizontal, Integer size) throws Exception {
+    // TODO add cache
+    InputStream input = URIRequest.getInputStream(uri);
+    Image bimg = ImageIO.read(input);
+    if (resize) {
+      int width = size;
+      int height = size;
+      if (horizontal) {
+        height = width * bimg.getHeight(null) / bimg.getWidth(null);
+      } else {
+        width = height * bimg.getWidth(null) / bimg.getHeight(null);
+      }
+
+      bimg = bimg.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+    }
+
+    int imageType = settings.getImageFormat().name().equals("JPG") ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+    BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), imageType);
+    buffered.getGraphics().drawImage(bimg, 0, 0, null);
+
+    ImageIO.write(buffered, settings.getImageFormat().name(), outputFile);
+  }
+
+  private Boolean moveFile(RenameFile rfile, File destFolder) throws Exception {
+
+    File sourceFile = rfile.getSource();
+    File destFile = rfile.getDestination();
 
     // If FileSystem is not the same we use "MoveFile Thread" to get progress
     if (!Files.getFileStore(sourceFile.toPath()).equals(Files.getFileStore(destFolder.toPath()))) {
@@ -372,7 +463,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
       }
 
       try {
-        MoveFile moveThread = new MoveFile(sourceFile, destFile, isTempFile);
+        MoveFile moveThread = new MoveFile(sourceFile, destFile);
         moveThread.start();
         int progress;
         while (moveThread.isAlive()) {
@@ -414,58 +505,6 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
     return res;
   }
 
-  private void downloadImage(GenerateImage image, UIMediaImage mediaImage, File tmpFile) throws Exception {
-
-    if (tmpFile.exists()) {
-      if (tmpFile.delete()) {
-        UISettings.LOGGER.info(String.format("Delete [%s]", tmpFile));
-      }
-    }
-
-    ImageSize size;
-    switch (image.getSize()) {
-      case ORIGINAL:
-        size = ImageSize.big;
-        break;
-      case MEDIUM:
-        size = ImageSize.medium;
-        break;
-      case SMALL:
-        size = ImageSize.small;
-        break;
-      default:
-        size = ImageSize.big;
-    }
-
-    URI uri = mediaImage.getUri(size);
-
-    if (uri.getScheme().toLowerCase().equals("file")) {// Local image
-      MoveFile moveThread = new MoveFile(new File(uri), tmpFile);
-      moveThread.start();
-      moveThread.join();
-    } else {
-      // TODO add cache
-      InputStream input = URIRequest.getInputStream(uri);
-      Image bimg = ImageIO.read(input);
-      if (image.isResize()) {
-        int width = image.getResizeSize();
-        int height = width;
-        if (image.horizontalResize) {
-          height = (int) (width * bimg.getHeight(null)) / bimg.getWidth(null);
-        } else {
-          width = (int) (height * bimg.getWidth(null)) / bimg.getHeight(null);
-        }
-
-        bimg = bimg.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-      }
-
-      int imageType = settings.getImageFormat().name().equals("JPG") ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-      BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), imageType);
-      buffered.getGraphics().drawImage(bimg, 0, 0, null);
-      ImageIO.write(buffered, settings.getImageFormat().name(), tmpFile);
-    }
-  }
-
   @Override
   protected void workerStarted() {
     UIEvent.fireUIEvent(UIEvent.Event.RENAME_FILE, uiFile, null);
@@ -479,13 +518,8 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
   }
 
   @Override
-  public String getParam() {
-    return null;
-  }
-
-  @Override
-  protected void processPause(ConflitFile conflictFile) {
-    FileConflictDialog conflictDialog = new FileConflictDialog(mr, conflictFile.getSourceFile(), conflictFile.getDestFile());
+  protected void processPause(RenameFile conflictFile) {
+    FileConflictDialog conflictDialog = new FileConflictDialog(mr, conflictFile.getSource(), conflictFile.getDestination());
     conflictDialog.setVisible(true);
     action = conflictDialog.getAction();
   }
@@ -497,24 +531,68 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.ConflitFile
 
   @Override
   public String getDisplayName() {
-    return "Renamer";// FIXME i18n
+    return UIUtils.i18n.getLanguage("main.statusTb.renaming", false);
   }
 
-  public class ConflitFile {
+  @Override
+  public WorkerId getWorkerId() {
+    return WorkerId.RENAME;
+  }
 
-    private final File sourceFile, destFile;
+  public class RenameFile {
 
-    public ConflitFile(File sourceFile, File destFile) {
-      this.sourceFile = sourceFile;
-      this.destFile = destFile;
+    private final File source;
+    private final File destination;
+    private final boolean isTmpFile;
+    private boolean isReplace;
+
+    public RenameFile(File source, File destination) {
+      this(source, destination, false);
     }
 
-    public File getSourceFile() {
-      return sourceFile;
+    public RenameFile(File source, File destination, boolean isTmpFile) {
+      this.source = source;
+      this.destination = destination;
+      this.isTmpFile = isTmpFile;
+      isReplace = false;
     }
 
-    public File getDestFile() {
-      return destFile;
+    public File getSource() {
+      return source;
+    }
+
+    public File getDestination() {
+      return destination;
+    }
+
+    public boolean isTmpFile() {
+      return isTmpFile;
+    }
+
+    public boolean isDestinationExist() {
+      return destination.exists();
+    }
+
+    public boolean isReplace() {
+      return isReplace;
+    }
+
+    public void setReplace(boolean isReplace) {
+      this.isReplace = isReplace;
+    }
+
+    @Override
+    public String toString() {
+      String str = String.format("Source [%s] Destination [%s] ", source.toString(), destination.toString());
+      if (isTmpFile) {
+        str += " TEMPFILE";
+      }
+
+      if (isReplace) {
+        str += " REPLACE";
+      }
+
+      return str;
     }
 
   }

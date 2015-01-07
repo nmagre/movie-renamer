@@ -18,7 +18,9 @@
 package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.info.TrailerInfo;
-import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
+import fr.free.movierenamer.searchinfo.Trailer;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.CacheObject;
 import java.util.List;
@@ -32,22 +34,51 @@ import java.util.logging.Level;
  */
 public abstract class TrailerScrapper extends Scrapper {
 
-  public final List<TrailerInfo> getTrailer(Movie media) throws Exception {// TODO
+  public final List<Trailer> getTrailer(Media media) throws Exception {// TODO
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get trailer for '%s", getName(), media));
     CacheObject cache = getCache();
-    List<TrailerInfo> trailerList = (cache != null) ? cache.getList(media, Locale.ROOT, TrailerInfo.class) : null;
+    List<Trailer> trailerList = (cache != null) ? cache.getList(media, Locale.ROOT, Trailer.class) : null;
     if (trailerList != null) {
       return trailerList;
     }
 
     // perform actual search
     trailerList = searchTrailer(media);
-    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d trailer for '%s' in", getName(), trailerList.size(), media));
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d trailer for '%s'", getName(), trailerList.size(), media));
 
     // cache results and return
-    return (cache != null) ? cache.putList(media, Locale.ROOT, TrailerInfo.class, trailerList) : trailerList;
+    return (cache != null) ? cache.putList(media, Locale.ROOT, Trailer.class, trailerList) : trailerList;
   }
 
-  protected abstract List<TrailerInfo> searchTrailer(Movie movie) throws Exception;
+  public final TrailerInfo getInfo(Trailer search) throws Exception {
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get trailer info for '%s'", getName(), search));
+    CacheObject cache = getCache();
+
+    TrailerInfo info = (cache != null) ? cache.getData(search, Locale.ENGLISH, TrailerInfo.class) : null;
+    if (info != null) {
+      return info;
+    }
+
+    // perform actual search
+    info = fetchTrailerInfo(search);
+    Settings.LOGGER.log(Level.INFO, String.format("'%s' returns '%s' as info for '%s'", getName(), info, search));
+
+    if (info == null) {
+      return info;
+    }
+
+    // cache results
+    if (cache != null) {
+      cache.putData(search, Locale.ENGLISH, info);
+    }
+
+    return info;
+  }
+
+  protected abstract List<Trailer> searchTrailer(Media media) throws Exception;
+
+  protected abstract TrailerInfo fetchTrailerInfo(Trailer searchResult) throws Exception;
+  
+  public abstract List<MediaType> getSupportedMediaType();
 
 }

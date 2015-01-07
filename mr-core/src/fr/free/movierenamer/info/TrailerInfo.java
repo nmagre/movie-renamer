@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,12 @@
  */
 package fr.free.movierenamer.info;
 
+import fr.free.movierenamer.stream.AbstractStream.Quality;
 import fr.free.movierenamer.utils.Date;
-import java.net.URI;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.net.URL;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,23 +32,24 @@ import java.util.Map;
  */
 public class TrailerInfo extends Info {
 
+  protected final Map<Quality, URL> streams;
   protected final Map<TrailerProperty, String> fields;
+  protected final AvailableLanguages lang;
 
   public static enum TrailerProperty {
 
     title,
+    runtime,
     overview,
-    url,
-    streamUrl,
     releasedDate,
     rating,
-    posterPath,
-    runtime,
     provider;
   }
 
-  public TrailerInfo(Map<TrailerProperty, String> fields) {
+  public TrailerInfo(Map<TrailerProperty, String> fields, Map<Quality, URL> streams, AvailableLanguages lang) {
+    this.streams = streams != null ? streams : new EnumMap<Quality, URL>(Quality.class);
     this.fields = fields != null ? fields : new EnumMap<TrailerProperty, String>(TrailerProperty.class);
+    this.lang = lang;
   }
 
   public String get(final TrailerProperty key) {
@@ -54,7 +57,7 @@ public class TrailerInfo extends Info {
   }
 
   public void set(final TrailerProperty key, final String value) {
-    fields.put((TrailerProperty) key, value);
+    fields.put(key, value);
   }
 
   public String getTitle() {
@@ -65,28 +68,8 @@ public class TrailerInfo extends Info {
     return get(TrailerProperty.overview);
   }
 
-  public URI getUrl() {
-    try {
-      return new URL(get(TrailerProperty.url)).toURI();
-    } catch (Exception e) {
-    }
-    return null;
-  }
-
-  public URI getPosterPath() {
-    try {
-      return new URL(get(TrailerProperty.posterPath)).toURI();
-    } catch (Exception e) {
-    }
-    return null;
-  }
-
-  public URI getStreamUrl() {
-    try {
-      return new URL(get(TrailerProperty.streamUrl)).toURI();
-    } catch (Exception e) {
-    }
-    return null;
+  public AvailableLanguages getLanguage() {
+    return lang;
   }
 
   public Date getReleasedDate() {
@@ -115,6 +98,6 @@ public class TrailerInfo extends Info {
 
   @Override
   public String toString() {
-    return String.format("%s", fields.toString());
+    return String.format("Lang=%s %s", lang, fields.toString());
   }
 }

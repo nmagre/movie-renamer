@@ -28,13 +28,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class VideoPanel
  *
  * @author Nicolas Magré
  */
-public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
+public abstract class VideoPanel<T extends UIMediaInfo<?>> extends MediaPanel<T> {
 
   private final int nbStar = 5;
   private final WebPanel starPanel;
@@ -46,7 +47,7 @@ public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
    * @param panels
    */
   @SafeVarargs
-  protected VideoPanel(InfoPanel... panels) {
+  protected VideoPanel(InfoPanel<T>... panels) {
     super();
     initComponents();
 
@@ -61,8 +62,8 @@ public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
     }
     mainTb.addToEnd(starPanel);
 
-    Map<InfoPanel.PanelType, InfoPanel<?>> mediaPanels = new LinkedHashMap<>();
-    for (InfoPanel panel : panels) {
+    Map<InfoPanel.PanelType, InfoPanel<T>> mediaPanels = new LinkedHashMap<>();
+    for (InfoPanel<T> panel : panels) {
       mediaPanels.put(panel.getType(), panel);
     }
     createPanel(infoPanels, mediaPanels);
@@ -81,15 +82,9 @@ public abstract class VideoPanel<T extends UIMediaInfo> extends MediaPanel<T> {
   }
 
   @Override
-  public void addInfo(T info) {
-    InfoPanel<?> panel = panels.get(InfoPanel.PanelType.INFO);
-    if (panel != null) {
-      ((InfoPanel<T>) panel).setInfo(info);
-    }
-
-    //panel = panels.get(InfoPanel.PanelType.CASTING_INFO);
-    if (panel != null) {
-      //panel.setInfo(info);
+  public final void addInfo(T info) {
+    for (InfoPanel<T> panel : panels.values()) {
+      panel.setInfo(info);
     }
 
     mediaTitleLbl.setText(getTitle(info));

@@ -22,7 +22,9 @@ import fr.free.movierenamer.info.CastingInfo.PersonProperty;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
@@ -69,7 +71,7 @@ public class TMDbScrapper extends MovieScrapper {
   private static final String cacheImageBaseUrl = "tmdbimagebaseurl";
   private static String apikey;
   public static final String imageUrl = "http://image.tmdb.org/t/p/";
-  private static final AvailableApiIds supportedId = AvailableApiIds.TMDB;
+  private static final AvailableApiIds supportedId = AvailableApiIds.THEMOVIEDB;
 
   public TMDbScrapper() {
     super(AvailableLanguages.values());
@@ -98,6 +100,26 @@ public class TMDbScrapper extends MovieScrapper {
   @Override
   protected AvailableLanguages getDefaultLanguage() {
     return AvailableLanguages.en;
+  }
+
+  @Override
+  public IdInfo getIdfromURL(URL url) {
+    try {
+      return new IdInfo(findTmdbId(url.toExternalForm()), supportedId);
+    } catch (Exception ex) {
+    }
+
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {
+    try {
+      return new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey);
+    } catch (MalformedURLException ex) {
+    }
+
+    return null;
   }
 
   public String getTmdbImageBaseUrl() {
@@ -176,7 +198,7 @@ public class TMDbScrapper extends MovieScrapper {
         }
 
         if (!resultSet.containsKey(id)) {
-          resultSet.put(id, new Movie(null, new IdInfo(id, ScrapperUtils.AvailableApiIds.TMDB), title, originalTitle, thumb, year));
+          resultSet.put(id, new Movie(null, new IdInfo(id, ScrapperUtils.AvailableApiIds.THEMOVIEDB), title, originalTitle, thumb, year));
         }
       }
     } catch (Exception ex) {
@@ -189,7 +211,7 @@ public class TMDbScrapper extends MovieScrapper {
     if (resultSet.isEmpty()) {
       try {
         int tmdbid = findTmdbId(searchUrl.toString());
-        IdInfo id = new IdInfo(tmdbid, ScrapperUtils.AvailableApiIds.TMDB);
+        IdInfo id = new IdInfo(tmdbid, ScrapperUtils.AvailableApiIds.THEMOVIEDB);
         MovieInfo info = fetchMediaInfo(new Movie(null, id, null, null, null, -1), id, language);
         URL thumb;
         try {
@@ -232,7 +254,7 @@ public class TMDbScrapper extends MovieScrapper {
       JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
       String id = JSONUtils.selectString("id", json);
       if (id != null && !id.isEmpty()) {
-        return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.TMDB);
+        return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.THEMOVIEDB);
       }
     } catch (Exception ex) {
       // No id found
@@ -243,7 +265,7 @@ public class TMDbScrapper extends MovieScrapper {
 
   public static IdInfo imdbIdLookup(IdInfo tmdbId) {
 
-    if (tmdbId.getIdType() != ScrapperUtils.AvailableApiIds.TMDB) {
+    if (tmdbId.getIdType() != ScrapperUtils.AvailableApiIds.THEMOVIEDB) {
       return null;
     }
 
@@ -273,7 +295,7 @@ public class TMDbScrapper extends MovieScrapper {
 
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
+    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
 
     mediaFields.put(MediaInfo.MediaProperty.title, JSONUtils.selectString("title", json));
 
@@ -282,7 +304,7 @@ public class TMDbScrapper extends MovieScrapper {
       mediaFields.put(MediaInfo.MediaProperty.rating, rating);
     }
     fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
-    fields.put(MovieProperty.originalTitle, JSONUtils.selectString("original_title", json));
+    mediaFields.put(MediaProperty.originalTitle, JSONUtils.selectString("original_title", json));
 
     String syear = JSONUtils.selectString("release_date", json);
     if (syear != null && !syear.isEmpty()) {
@@ -302,7 +324,7 @@ public class TMDbScrapper extends MovieScrapper {
     fields.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection).replace("(Collection)", "").trim() : "");
 
     List<IdInfo> ids = new ArrayList<IdInfo>();
-    ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.TMDB));
+    ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScrapperUtils.AvailableApiIds.THEMOVIEDB));
     String simdbId = JSONUtils.selectString("imdb_id", json);
     if (simdbId != null) {
       IdInfo imdbId = new IdInfo(Integer.parseInt(simdbId.substring(2)), ScrapperUtils.AvailableApiIds.IMDB);
@@ -343,10 +365,10 @@ public class TMDbScrapper extends MovieScrapper {
       }
     }
 
-    multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
-    multipleFields.put(MovieInfo.MovieMultipleProperty.tags, tags);
-    multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
-    multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
+    multipleFields.put(MovieMultipleProperty.studios, studios);
+    multipleFields.put(MovieMultipleProperty.tags, tags);
+    multipleFields.put(MovieMultipleProperty.countries, countries);
+    multipleFields.put(MovieMultipleProperty.genres, genres);
 
     MovieInfo movieInfo = new MovieInfo(mediaFields, ids, fields, multipleFields);
     return movieInfo;
@@ -373,9 +395,9 @@ public class TMDbScrapper extends MovieScrapper {
           int cid = JSONUtils.selectInteger("id", json);
 
           Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
-          fields.put(ImageInfo.ImageProperty.urlTumb, getTmdbImageBaseUrl() + TmdbImageSize.cast.getSmall()+ image);
+          fields.put(ImageInfo.ImageProperty.urlTumb, getTmdbImageBaseUrl() + TmdbImageSize.cast.getSmall() + image);
           fields.put(ImageInfo.ImageProperty.urlMid, getTmdbImageBaseUrl() + TmdbImageSize.cast.getMedium() + image);
-          fields.put(ImageInfo.ImageProperty.url, getTmdbImageBaseUrl() + TmdbImageSize.cast.getBig()+ image);
+          fields.put(ImageInfo.ImageProperty.url, getTmdbImageBaseUrl() + TmdbImageSize.cast.getBig() + image);
           imgInfo = new ImageInfo(cid, fields, ImageInfo.ImageCategoryProperty.actor);
         }
 

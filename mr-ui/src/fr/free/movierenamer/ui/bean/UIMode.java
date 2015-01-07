@@ -75,6 +75,23 @@ public enum UIMode {
     return (UIScraper) scrapperModel.getSelectedItem();
   }
 
+  public void setUniversalScraper() {
+    UIScraper scraper;
+    for (int i = 0; i < scrapperModel.getSize(); i++) {
+      scraper = scrapperModel.getElementAt(i);
+      if (scraper.getName().equals("Universal")) {
+        scrapperModel.setSelectedItem(scraper);
+        break;
+      }
+    }
+  }
+
+  public void setScraper(UIScraper scraper) {
+    if (scrapperModel.getIndexOf(scraper) >= 0) {
+      scrapperModel.setSelectedItem(scraper);
+    }
+  }
+
   public void addScrapper(UIScraper scraper) {
     scrapperModel.addElement(scraper);
   }

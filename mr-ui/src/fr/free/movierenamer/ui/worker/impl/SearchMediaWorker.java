@@ -81,12 +81,12 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
         results.add(new UISearchResult(res.get(i), scrapper));
       }
-    }
 
-    Settings settings = Settings.getInstance();
-    // Sort search results
-    if (settings.isSearchOrder()) {
-      Sorter.sortAccurate(results, media.getSearch(), media.getYear(), settings.getSearchOrderThreshold());
+      Settings settings = Settings.getInstance();
+      // Sort search results
+      if (settings.isSearchOrder()) {
+        Sorter.sortAccurate(results, search, media.getYear(), settings.getSearchOrderThreshold());
+      }
     }
 
     int nbres = Settings.getInstance().getSearchNbResult();
@@ -121,8 +121,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
         searchResultList.setSelectedIndex(0);
       }
 
-      List<UISearchResult> tmp = new ArrayList<>(results);
-      WorkerManager.fetchImages(searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
+      WorkerManager.fetchImages(WorkerId.IMAGE_SEARCH_RESULT, searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
     }
   }
 
@@ -132,12 +131,12 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   }
 
   @Override
-  public String getParam() {
-    return String.format("[%s]", media);
+  public String getDisplayName() {
+    return UIUtils.i18n.getLanguage("main.statusTb.searchmedia", false);
   }
 
   @Override
-  public String getDisplayName() {
-    return ("worker.searchMedia");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.SEARCH;
   }
 }

@@ -20,6 +20,7 @@ package fr.free.movierenamer.stream;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class Youtube extends AbstractStream {
     quality.put(137, new Video(Quality.HD, Codec.MPEG));
     quality.put(136, new Video(Quality.HD, Codec.MPEG));
     quality.put(37, new Video(Quality.HD, Codec.MPEG));
-    quality.put(22, new Video(Quality.HD, Codec.MPEG));
+    quality.put(22, new Video(Quality.HDR, Codec.MPEG));
     quality.put(135, new Video(Quality.SD, Codec.MPEG));
     quality.put(134, new Video(Quality.SD, Codec.MPEG));
     quality.put(18, new Video(Quality.SD, Codec.MPEG));
@@ -83,7 +84,7 @@ public class Youtube extends AbstractStream {
     quality.put(5, new Video(Quality.LD, Codec.FLV));
     // WEBM
     quality.put(46, new Video(Quality.HD, Codec.WEBM));
-    quality.put(45, new Video(Quality.HD, Codec.WEBM));
+    quality.put(45, new Video(Quality.HDR, Codec.WEBM));
     quality.put(44, new Video(Quality.SD, Codec.WEBM));
     quality.put(43, new Video(Quality.SD, Codec.WEBM));
     quality.put(44, new Video(Quality.SD, Codec.WEBM));
@@ -105,7 +106,7 @@ public class Youtube extends AbstractStream {
   @Override
   public Map<Quality, URL> getLinks(URL url) throws Exception {
     String html = URIRequest.getDocumentContent(url.toURI());
-    Map<Quality, URL> links = new HashMap<Quality, URL>();
+    Map<Quality, URL> links = new EnumMap<Quality, URL>(Quality.class);
 
     Pattern pattern = Pattern.compile("<script>(.*(?:\"adaptive_fmts\":|\"url_encoded_fmt_stream_map\":).*)</script>");
     Matcher matcher = pattern.matcher(html);

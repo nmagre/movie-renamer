@@ -21,7 +21,9 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
@@ -31,6 +33,7 @@ import fr.free.movierenamer.utils.ScrapperUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -92,6 +95,26 @@ public class KinopoiskScrapper extends MovieScrapper {
   }
 
   @Override
+  public IdInfo getIdfromURL(URL url) {
+    try {
+      return new IdInfo(findKinopoiskId(url.toExternalForm()), supportedId);
+    } catch (Exception ex) {
+    }
+
+    return null;
+  }
+
+  @Override
+  public URL getURL(IdInfo id) {
+    try {
+      return new URL("http", host, "/film/" + id);
+    } catch (MalformedURLException ex) {
+    }
+
+    return null;
+  }
+
+  @Override
   protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/s/type/film/list/1/find/" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
@@ -138,7 +161,7 @@ public class KinopoiskScrapper extends MovieScrapper {
 
     final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
     Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    Map<MovieInfo.MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieInfo.MovieMultipleProperty, List<String>>(MovieInfo.MovieMultipleProperty.class);
+    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
     List<String> genres = new ArrayList<String>();
     List<String> countries = new ArrayList<String>();
     List<String> studios = new ArrayList<String>();
@@ -152,9 +175,9 @@ public class KinopoiskScrapper extends MovieScrapper {
 
     titleNode = XPathUtils.selectNode("//SPAN[@itemprop='alternativeHeadline']", dom);
     if (titleNode != null) {
-      fields.put(MovieProperty.originalTitle, titleNode.getTextContent());
+      mediaFields.put(MediaProperty.originalTitle, titleNode.getTextContent());
     } else {
-      fields.put(MovieProperty.originalTitle, movie.getOriginalName());
+      mediaFields.put(MediaProperty.originalTitle, movie.getOriginalName());
     }
 
     List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='info']//TR", dom);
@@ -277,9 +300,9 @@ public class KinopoiskScrapper extends MovieScrapper {
     ids.add(movie.getMediaId());
     ids.add(id);
 
-    multipleFields.put(MovieInfo.MovieMultipleProperty.studios, studios);
-    multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
-    multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
+    multipleFields.put(MovieMultipleProperty.studios, studios);
+    multipleFields.put(MovieMultipleProperty.countries, countries);
+    multipleFields.put(MovieMultipleProperty.genres, genres);
 
     MovieInfo movieInfo = new MovieInfo(mediaFields, ids, fields, multipleFields);
     return movieInfo;

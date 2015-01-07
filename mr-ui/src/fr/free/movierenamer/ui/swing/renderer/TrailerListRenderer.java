@@ -17,7 +17,7 @@
 package fr.free.movierenamer.ui.swing.renderer;
 
 import com.alee.laf.label.WebLabel;
-import fr.free.movierenamer.ui.bean.UITrailer;
+import fr.free.movierenamer.ui.bean.UISearchTrailerResult;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
 
@@ -26,18 +26,18 @@ import javax.swing.SwingConstants;
  *
  * @author Nicolas Magré
  */
-public class TrailerListRenderer extends IconListRenderer<UITrailer> {
+public class TrailerListRenderer extends IconListRenderer<UISearchTrailerResult> {
 
   private static final long serialVersionUID = 1L;
 
   @Override
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
 
-    if (value instanceof UITrailer) {
-      UITrailer trailer = (UITrailer) value;
-      String providerImg = getClass().getResource("/image/scrapper/" + trailer.getProviderName().toLowerCase().replace(" ", "_") + ".png").toString();
-      String text = "<html><img src='" + providerImg + "'>&nbsp;&nbsp;<b>" + trailer.getName() + "</b><br><center><i>" + trailer.getDuration() + "</i></center></html>";
-      
+    if (value instanceof UISearchTrailerResult) {
+      UISearchTrailerResult trailer = (UISearchTrailerResult) value;
+      String providerImg = getClass().getResource("/image/scrapper/" + trailer.getProvider().toLowerCase().replace(" ", "_") + ".png").toString();
+      String text = "<html><body style='width:200px'><center><img src='" + providerImg + "'>&nbsp;&nbsp;<b>" + trailer.getName() + "</b><br><i>" + trailer.getDuration() + "</i></center></body></html>";
+
       label.setHorizontalTextPosition(SwingConstants.CENTER);
       label.setVerticalAlignment(SwingConstants.BOTTOM);
       label.setHorizontalAlignment(SwingConstants.CENTER);

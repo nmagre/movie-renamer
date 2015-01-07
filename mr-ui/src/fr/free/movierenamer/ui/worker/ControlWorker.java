@@ -43,7 +43,7 @@ public abstract class ControlWorker<T, V> extends Worker<T> {
           try {
             processPause(chunk);
           } catch (Exception ex) {
-            // Prevent any bug, sometimes weblaf notification thrown an exception (i hope it will be fixed)
+            // Prevent any bugs, sometimes weblaf notification thrown an exception (i hope it will be fixed)
             UISettings.LOGGER.log(Level.SEVERE, null, ex);
           }
         }

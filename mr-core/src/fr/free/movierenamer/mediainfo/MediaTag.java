@@ -147,7 +147,7 @@ public class MediaTag implements Serializable {
     mediaInfo = null;
   }
 
-  private synchronized MediaInfo getMediaInfo() {
+  private synchronized MediaInfo getMediaInfo() throws Exception {
 
     if (mediaInfo == null) {
       final MediaInfo newMediaInfo = new MediaInfo();
@@ -169,30 +169,33 @@ public class MediaTag implements Serializable {
 
     String value, nvalue;
 
-    for (String key : tag.getKeys()) {
-      value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
+    try {
+      for (String key : tag.getKeys()) {
+        value = getMediaInfo().get(tag.getStreamKind(), streamNumber, key);
 
-      if (value.isEmpty()) {
-        continue;
+        if (value.isEmpty()) {
+          continue;
+        }
+
+        nvalue = new Scanner(value).next();
+
+        if (tag.getVClass().equals(Integer.class)) {
+          return NumberUtils.isNumeric(nvalue) ? Integer.parseInt(nvalue) : 0;
+        } else if (tag.getVClass().equals(Float.class)) {
+          return NumberUtils.isNumeric(nvalue) ? Float.parseFloat(nvalue) : 0.0F;
+        } else if (tag.getVClass().equals(Double.class)) {
+          return NumberUtils.isNumeric(nvalue) ? Double.parseDouble(nvalue) : 0.0;
+        } else if (tag.getVClass().equals(Long.class)) {
+          return NumberUtils.isNumeric(nvalue) ? Long.parseLong(nvalue) : 0L;
+        }
+
+        if (tag.isGetFirst()) {
+          return nvalue.toLowerCase();
+        }
+
+        return value.replaceAll("\\p{Punct}", StringUtils.EMPTY);
       }
-
-      nvalue = new Scanner(value).next();
-
-      if (tag.getVClass().equals(Integer.class)) {
-        return NumberUtils.isNumeric(nvalue) ? Integer.parseInt(nvalue) : 0;
-      } else if (tag.getVClass().equals(Float.class)) {
-        return NumberUtils.isNumeric(nvalue) ? Float.parseFloat(nvalue) : 0.0F;
-      } else if (tag.getVClass().equals(Double.class)) {
-        return NumberUtils.isNumeric(nvalue) ? Double.parseDouble(nvalue) : 0.0;
-      } else if (tag.getVClass().equals(Long.class)) {
-        return NumberUtils.isNumeric(nvalue) ? Long.parseLong(nvalue) : 0L;
-      }
-
-      if (tag.isGetFirst()) {
-        return nvalue.toLowerCase();
-      }
-
-      return value.replaceAll("\\p{Punct}", StringUtils.EMPTY);
+    } catch (Exception ex) {
     }
 
     return StringUtils.EMPTY;
@@ -317,6 +320,7 @@ public class MediaTag implements Serializable {
       intObj = getMediaInfo(Tags.AudioChannels, i);
       if (intObj instanceof Integer) {
         String value = String.valueOf((Integer) intObj);
+        maudio.setNbChannel(value);
         try {
           value = ConvertChannels.valueOf("_" + intObj).getFormat();
         } catch (Exception e) {

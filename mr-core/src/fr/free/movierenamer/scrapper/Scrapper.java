@@ -19,6 +19,8 @@ package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.CacheObject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class Scrapper
@@ -50,4 +52,9 @@ public abstract class Scrapper {
   public final String toString() {
     return String.format("%s", getName());
   }
+
+  public List<ScrapperOptions> getScraperOptions() {
+    return new ArrayList<ScrapperOptions>();
+  }
+ 
 }

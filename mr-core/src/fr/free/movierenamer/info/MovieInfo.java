@@ -27,7 +27,6 @@ import fr.free.movierenamer.utils.Date;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
-import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
@@ -53,7 +52,6 @@ public class MovieInfo extends VideoInfo {
 
   public static enum MovieProperty implements InfoProperty {
 
-    originalTitle,
     sortTitle,
     overview(true),
     tagline(true),
@@ -81,7 +79,7 @@ public class MovieInfo extends VideoInfo {
     }
   }
 
-  public static enum MovieMultipleProperty implements InfoProperty {
+  public static enum MovieMultipleProperty implements MultipleInfoProperty {
 
     genres(true),
     countries(true),
@@ -161,9 +159,15 @@ public class MovieInfo extends VideoInfo {
   }
 
   public MovieInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo, Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<String>> multipleFields) {
+    this(mediaFields, idsInfo, fields, multipleFields, null);
+  }
+
+  public MovieInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo, Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<String>> multipleFields, List<CastingInfo> casting) {
     super(mediaFields, idsInfo);
     this.fields = (fields != null) ? fields : new EnumMap<MovieProperty, String>(MovieProperty.class);
     this.multipleFields = (multipleFields != null) ? multipleFields : new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
+    this.casting = (casting != null) ? casting.toArray(new CastingInfo[0]) : new CastingInfo[0];
+    setMediaCasting();
   }
 
   public String get(final MovieProperty key) {
@@ -214,11 +218,7 @@ public class MovieInfo extends VideoInfo {
   }
 
   public List<String> get(final MovieMultipleProperty key) {
-    return (List<String>) ((multipleFields != null && multipleFields.get(key) != null) ? multipleFields.get(key) : new ArrayList<String>());
-  }
-
-  public String getOriginalTitle() {
-    return get(MovieProperty.originalTitle);
+    return (multipleFields != null && multipleFields.get(key) != null) ? multipleFields.get(key) : new ArrayList<String>();
   }
 
   public URI getPosterPath() {
@@ -325,130 +325,22 @@ public class MovieInfo extends VideoInfo {
   }
 
   @Override
-  public String getRenamedTitle(String filename, String format) {
-    final Settings settings = Settings.getInstance();
-    return getRenamedTitle(filename, format, settings.getMovieFilenameCase(), settings.getMovieFilenameSeparator(), settings.getMovieFilenameLimit(),
-            settings.isReservedCharacter(), settings.isFilenameRmDupSpace(), settings.isFilenameTrim());
-  }
-
-  @Override
-  public String getRenamedTitle(String filename, final String format, final StringUtils.CaseConversionType renameCase, final String filenameSeparator,
-          final int filenameLimit, final boolean reservedCharacter, final boolean rmDupSpace, final boolean trim) {
-
-    String titlePrefix = "";
-    String shortTitle = this.getTitle();
-
-    Pattern pattern;
-    Matcher matcher;
-
-    if (shortTitle != null) {
-      pattern = Pattern.compile("^((le|la|les|the)\\s|(l\\'))(.*)", Pattern.CASE_INSENSITIVE);
-      matcher = pattern.matcher(shortTitle);
-      if (matcher.find() && matcher.groupCount() >= 2) {
-        titlePrefix = matcher.group(1).trim();
-        shortTitle = matcher.group(matcher.groupCount()).trim();
-      }
-    }
-
-    final Map<String, Object> replace = new HashMap<String, Object>();
-    replace.put("<fn>", FileUtils.getNameWithoutExtension(filename));
-    replace.put("<t>", this.getTitle());
-    replace.put("<tp>", titlePrefix);
-    replace.put("<st>", shortTitle);
-    replace.put("<ot>", this.getOriginalTitle());
-    replace.put("<tt>", this.getIdString(AvailableApiIds.IMDB));
-    replace.put("<y>", this.getYear());
-    replace.put("<rt>", this.getRuntime());
-    replace.put("<ra>", this.getRating());
-    replace.put("<a>", this.getActors());
-    replace.put("<d>", this.getDirectors());
-    replace.put("<g>", this.getGenres());
-    replace.put("<c>", this.getCountries());
-    replace.put("<mpaa>", this.getCertification(MotionPictureRating.USA));
-
-    // Media info
-    if (mtag != null && mtag.libMediaInfo) {
-      final MediaVideo video = mtag.getMediaVideo();
-      final List<MediaAudio> audios = mtag.getMediaAudios();
-      final List<MediaSubTitle> subTitles = mtag.getMediaSubTitles();
-      // Audio
-      final List<String> aChannels = new ArrayList<String>();
-      final List<String> aCodecs = new ArrayList<String>();
-      final List<String> aLanguages = new ArrayList<String>();
-      final List<String> aTitles = new ArrayList<String>();
-      final List<Integer> aBitrates = new ArrayList<Integer>();
-      final List<String> aRatemodes = new ArrayList<String>();
-      // Subtitle
-      final List<String> sTitles = new ArrayList<String>();
-      final List<String> sLanguages = new ArrayList<String>();
-
-      for (MediaAudio audio : audios) {
-        aChannels.add(audio.getChannel());
-        aCodecs.add(audio.getCodec());
-        aLanguages.add(audio.getLanguage().getLanguage());
-        aTitles.add(audio.getTitle());
-        aBitrates.add(audio.getBitRate());
-        aRatemodes.add(audio.getBitRateMode());
-      }
-
-      for (MediaSubTitle subTitle : subTitles) {
-        sTitles.add(subTitle.getTitle());
-        sLanguages.add(subTitle.getLanguage() != null ? subTitle.getLanguage().getLanguage() : StringUtils.EMPTY);
-      }
-
-      // General
-      replace.put("<vrt>", mtag.getDuration());
-      replace.put("<vcf>", mtag.getContainerFormat());
-//      replace.put("<mfs>", mtag.getFileSize());
-      // Video
-      replace.put("<vc>", video.getCodec());
-      replace.put("<vd>", video.getVideoDefinition());
-      replace.put("<vr>", video.getVideoResolution());
-      replace.put("<vfr>", video.getFrameRate());
-      replace.put("<vst>", video.getScanType());
-      replace.put("<vfc>", video.getFrameCount());
-      replace.put("<vh>", video.getHeight());
-      replace.put("<vw>", video.getWidth());
-      replace.put("<var>", video.getAspectRatio());
-      // Audio
-      replace.put("<ach>", aChannels);
-      replace.put("<ac>", aCodecs);
-      replace.put("<al>", aLanguages);
-      replace.put("<att>", aTitles);
-      replace.put("<ab>", aBitrates);
-      replace.put("<abm>", aRatemodes);
-      // Subtitle
-      replace.put("<stt>", sTitles);
-      replace.put("<stl>", sLanguages);
-    }
-
-    final FormatReplacing freplace = new FormatReplacing(replace, renameCase, filenameSeparator, filenameLimit);
-    String res = freplace.getReplacedString(format);
-
-    if (reservedCharacter) {
-      for (String c : StringUtils.reservedCharacterList) {
-        if (!c.equals(File.separator)) {
-          if (":".equals(c) && Settings.WINDOWS) {
-            // Replace all colon except for hard drive if there are at the beginning of the string
-            // E.g: D:\.... -> not replaced
-            // E.g: file D:\... -> replaced
-            res = res.replaceAll("(?<!(^\\p{Lu}))" + c + "(?<!(\\\\))", "");
-          } else {
-            res = res.replace(c, "");
-          }
-        }
-      }
-    }
-
-    if (rmDupSpace) {
-      res = res.replaceAll("\\s+", " ");
-    }
-
-    if (trim) {
-      res = res.trim();
-    }
-
-    return res;
+  protected void setReplaceMap(Map<String, Object> replace) {
+    replace.put("ot", this.getOriginalTitle());
+    replace.put("tt", this.getIdString(AvailableApiIds.IMDB));
+    replace.put("imdb", this.getIdString(AvailableApiIds.IMDB));
+    replace.put("allo", this.getIdString(AvailableApiIds.ALLOCINE));
+    replace.put("kino", this.getIdString(AvailableApiIds.KINOPOISK));
+    replace.put("rotten", this.getIdString(AvailableApiIds.ROTTENTOMATOES));
+    replace.put("moviedb", this.getIdString(AvailableApiIds.THEMOVIEDB));
+    replace.put("y", this.getYear());
+    replace.put("rt", this.getRuntime());
+    replace.put("ra", this.getRating());
+    replace.put("a", this.getActors());
+    replace.put("d", this.getDirectors());
+    replace.put("g", this.getGenres());
+    replace.put("c", this.getCountries());
+    replace.put("mpaa", this.getCertification(MotionPictureRating.USA));
   }
 
   @Override

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.searchinfo;
 
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.net.URL;
 
 /**
@@ -30,16 +31,22 @@ public class Trailer extends Hyperlink {
   private String runtime;
   private String providerName;
   private URL turl;
+  private AvailableLanguages lang;
 
   protected Trailer() {
     // used by serializer
   }
 
   public Trailer(String title, String runtime, String providerName, URL thumb, URL turl) {
+    this(title, runtime, providerName, thumb, turl, null);
+  }
+
+  public Trailer(String title, String runtime, String providerName, URL thumb, URL turl, AvailableLanguages lang) {
     super(title, null, 0, thumb);
     this.runtime = runtime;
     this.providerName = providerName;
     this.turl = turl;
+    this.lang = lang;
   }
 
   public String getRuntime() {
@@ -48,6 +55,10 @@ public class Trailer extends Hyperlink {
 
   public URL getTrailerUrl() {
     return turl;
+  }
+  
+  public AvailableLanguages getLang() {
+    return lang;
   }
 
   public String getProviderName() {

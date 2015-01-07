@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
       result = executeInBackground();
     } catch (InvalidUrlException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(String.format("InvalidUrlException %s failed\n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
+      publish(String.format("InvalidUrlException %s failed%n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
     } catch (UnknownHostException ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
       publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getMessage()));

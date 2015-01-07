@@ -18,9 +18,8 @@
 package fr.free.movierenamer.scrapper.impl;
 
 import fr.free.movierenamer.info.IdInfo;
-import fr.free.movierenamer.info.TrailerInfo;
 import fr.free.movierenamer.scrapper.TrailerScrapperTest;
-import fr.free.movierenamer.scrapper.impl.trailer.YoutubeScrapper;
+import fr.free.movierenamer.scrapper.impl.trailer.YoutubeTrailerScrapper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.searchinfo.Trailer;
 import fr.free.movierenamer.utils.ScrapperUtils;
@@ -33,12 +32,12 @@ import java.util.List;
  */
 public class YoutubeScrapperTest extends TrailerScrapperTest {
 
-  private YoutubeScrapper youtube = null;
+  private YoutubeTrailerScrapper youtube = null;
   private List<Trailer> trailers = null;
 
   @Override
   public void init() throws Exception {
-    youtube = new YoutubeScrapper();
+    youtube = new YoutubeTrailerScrapper();
   }
 
   @Override
@@ -55,8 +54,8 @@ public class YoutubeScrapperTest extends TrailerScrapperTest {
     trailers = youtube.getTrailer(new Movie(null, new IdInfo(19776, ScrapperUtils.AvailableApiIds.ALLOCINE), "avatar", "harry potter", null, 1999));
 
     for (Trailer trailer : trailers) {
-      TrailerInfo info = youtube.fetchTrailerInfo(trailer);
-      System.out.println(info);
+      //TrailerInfo info = youtube.fetchTrailerInfo(trailer);
+      System.out.println(trailer);
       break;
     }
   }

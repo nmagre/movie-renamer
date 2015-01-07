@@ -73,7 +73,7 @@ public class TMDbImagesScrapper extends ImageScrapper<Movie> {
       case IMDB:
         id = tmdbIDLookUp(id);
         break;
-      case TMDB:
+      case THEMOVIEDB:
         break;
       default:
         throw new UnsupportedOperationException(movie.getMediaId().getIdType() + " is not supported by " + getName() + " image scrapper");

@@ -26,7 +26,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils.InfoQuality;
 import java.io.FileNotFoundException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -75,7 +75,7 @@ public abstract class MovieScrapper extends MediaScrapper<Movie, MovieInfo> {
 
     // If there is no images, we try to add image from search
     if (imagesInfo.isEmpty()) {
-      URL thumb = movie.getURL();
+      URI thumb = movie.getURL();
       if (thumb != null) {
         Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
         imageFields.put(ImageInfo.ImageProperty.url, thumb.toString());

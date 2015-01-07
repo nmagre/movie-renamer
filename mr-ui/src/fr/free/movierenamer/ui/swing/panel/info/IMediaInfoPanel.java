@@ -26,4 +26,6 @@ import fr.free.movierenamer.ui.bean.UIMediaInfo;
  */
 public interface IMediaInfoPanel<T extends UIMediaInfo> extends IInfo<T> {
 
+  public abstract T getInfo();
+
 }

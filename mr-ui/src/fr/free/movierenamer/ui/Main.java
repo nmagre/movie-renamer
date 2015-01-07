@@ -47,7 +47,9 @@ public class Main {
     if (System.getProperty("jna.nosys") == null) {
       System.setProperty("jna.nosys", "true");
     }
-
+    
+    System.setProperty("net.sf.ehcache.enableShutdownHook","true");
+    
     final List<File> files = new ArrayList<>();
     for (String arg : args) {
       files.add(new File(arg));

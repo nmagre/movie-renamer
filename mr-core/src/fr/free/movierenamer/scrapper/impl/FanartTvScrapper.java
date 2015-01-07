@@ -62,7 +62,7 @@ public abstract class FanartTvScrapper<M extends Video> extends ImageScrapper<M>
     switch (mid.getIdType()) {
       case IMDB:
         break;
-      case TMDB:
+      case THEMOVIEDB:
         break;
       default:
         throw new UnsupportedOperationException(mid.getIdType() + " is not supported by " + getName() + " image scrapper");

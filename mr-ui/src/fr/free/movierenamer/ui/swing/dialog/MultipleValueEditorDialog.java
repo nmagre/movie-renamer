@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.swing.dialog;
 
 import com.alee.laf.optionpane.WebOptionPane;
-import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
@@ -26,6 +26,7 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.util.List;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
+import fr.free.movierenamer.utils.StringUtils;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -42,7 +43,7 @@ public class MultipleValueEditorDialog extends AbstractDialog {// TODO check and
 
   private final DefaultListModel<String> listModel = new DefaultListModel<>();
   private int index = -1;
-  private final MovieInfo.MovieMultipleProperty property;
+  private final InfoProperty property;
 
   /**
    * Creates new form MultipleValueEditorDialog
@@ -51,7 +52,8 @@ public class MultipleValueEditorDialog extends AbstractDialog {// TODO check and
    * @param objectList
    * @param property
    */
-  public MultipleValueEditorDialog(MovieRenamer mr, List<?> objectList, MovieInfo.MovieMultipleProperty property) {
+  @SuppressWarnings("unchecked")
+  public MultipleValueEditorDialog(MovieRenamer mr, List<?> objectList, InfoProperty property) {
     super(mr, i18n.getLanguageKey("dialog.editor", false));
     this.property = property;
     initComponents();
@@ -200,7 +202,7 @@ public class MultipleValueEditorDialog extends AbstractDialog {// TODO check and
       values.add(model.getElementAt(i));
     }
 
-    UIEvent.fireUIEvent(UIEvent.Event.EDITED, InfoEditorPanel.class, null, property, values);
+    UIEvent.fireUIEvent(UIEvent.Event.EDITED, InfoEditorPanel.class, null, property, StringUtils.arrayToString(values, ", ", 0));
     dispose();
   }//GEN-LAST:event_applyBtnActionPerformed
 

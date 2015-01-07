@@ -74,7 +74,7 @@ public abstract class XMLSettings {
   static {
     LOGGER = Logger.getLogger(XMLSettings.class.getSimpleName());
     SYSPOP = new String[]{"sun.arch.data.model", "os.arch"};
-    
+
     String appName = getApplicationProperty("application.name");
     String appNameNospace = appName.replace(' ', '_');
 
@@ -176,13 +176,21 @@ public abstract class XMLSettings {
     Document settingsDocument;
     Node settingsNode;
     String appSettingsNodeName = getAppSettingsNodeName();
+    boolean savesettings = false;
+
     try {
       File confRoot = new File(APPFOLDER, "conf");
       File file = new File(confRoot, configFileName);
       settingsDocument = URIRequest.getXmlDocument(file.toURI());
       Node appSettingsNode = XPathUtils.selectNode(appSettingsNodeName, settingsDocument);
-      if (!version.equals(XPathUtils.getAttribute("Version", appSettingsNode))) {// TODO convert
-        // throw new NullPointerException("App version is different");
+      String xmlVersion = XPathUtils.getAttribute("Version", appSettingsNode);
+
+      if (!version.equals(xmlVersion)) {// TODO convert
+        LOGGER.info(String.format("Config file version mismatch app version \"%s\" , %s file version \"%s\"", version, configFileName, xmlVersion));
+        Attr xversion = settingsDocument.createAttribute("Version");
+        xversion.setValue(version);
+        settingsDocument.getDocumentElement().setAttributeNode(xversion);
+        savesettings = true;
       }
       settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
     } catch (Exception ex) {
@@ -213,7 +221,7 @@ public abstract class XMLSettings {
     this.settingsDocument = settingsDocument;
     this.settingsNode = settingsNode;
 
-    if (autosave) {
+    if (savesettings) {
       saveSetting();
     }
   }
@@ -319,6 +327,7 @@ public abstract class XMLSettings {
       LOGGER.log(Level.SEVERE, ex.getMessage());
       saveSuccess = false;
     }
+
     return saveSuccess;
   }
 
@@ -396,6 +405,7 @@ public abstract class XMLSettings {
         mediaInfo = Boolean.TRUE;
       } catch (LinkageError e) {
         mediaInfo = Boolean.FALSE;
+        LOGGER.log(Level.WARNING, e.getMessage());
       }
     }
 

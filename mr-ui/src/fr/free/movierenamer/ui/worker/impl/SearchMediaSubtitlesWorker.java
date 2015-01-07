@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.worker.Worker;
-import fr.free.movierenamer.utils.LocaleUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,12 +75,12 @@ public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
   }
 
   @Override
-  public String getParam() {
-    return String.format("[%s]", media);
+  public String getDisplayName() {
+    return ("worker.searchSubtitle");// FIXME i18n
   }
 
   @Override
-  public String getDisplayName() {
-    return ("worker.searchSubtitle");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.SEARCH_SUBTITLE;
   }
 }

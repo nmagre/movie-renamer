@@ -32,6 +32,7 @@ import fr.free.movierenamer.ui.swing.renderer.ZoomListRenderer;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.worker.IWorker.WorkerId;
 import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -60,6 +61,7 @@ public class GalleryDialog extends AbstractDialog {
   private final ImageListModel<UIMediaImage> imageListModel;
   private final ZoomListRenderer zoomListRenderer;
   private final DefaultComboBoxModel<UILang> languagesModel;
+  private final WorkerId wid;
   private boolean useLanguage;
   private List<UIMediaImage> images;
   private List<UIMediaImage> imagesByLang;
@@ -96,27 +98,34 @@ public class GalleryDialog extends AbstractDialog {
     switch (property) {
       case banner:
         imgSize = 300;
+        wid = WorkerId.IMAGE_GALLERY_BANNER;
         break;
       case cdart:
         imgSize = 80;
+        wid = WorkerId.IMAGE_GALLERY_CDART;
         break;
       case clearart:
         imgSize = 200;
         useLanguage = false;
+        wid = WorkerId.IMAGE_GALLERY_CLEARART;
         break;
       case logo:
         imgSize = 250;
+        wid = WorkerId.IMAGE_GALLERY_LOGO;
         break;
       case thumb:
         imgSize = 70;
+        wid = WorkerId.IMAGE_GALLERY_THUMB;
         break;
       case fanart:
         imgSize = 200;
         useLanguage = false;
+        wid = WorkerId.IMAGE_GALLERY_FANART;
         break;
       default:
         imgSize = 70;
         defaultRatio = 0.75F;
+        wid = WorkerId.IMAGE_GALLERY_THUMB;
     }
 
     zoomListRenderer = new ZoomListRenderer(imgSize, defaultRatio);
@@ -235,7 +244,7 @@ public class GalleryDialog extends AbstractDialog {
     supportedImage.getLabel().setIcon(ImageUtils.LOAD_24);
     List<UIMediaImage> imgs = new ArrayList<>();
     imgs.add(image);
-    WorkerManager.fetchGalleryImages(imgs, this, null, ImageUtils.NO_IMAGE,
+    WorkerManager.fetchGalleryImages(WorkerId.IMAGE_GALLERY_REMOTE, imgs, this, null, ImageUtils.NO_IMAGE,
             property.equals(ImageInfo.ImageCategoryProperty.thumb) ? ImageInfo.ImageSize.medium : ImageInfo.ImageSize.small);
   }
 
@@ -247,7 +256,7 @@ public class GalleryDialog extends AbstractDialog {
             ? ImageUtils.NO_IMAGE_H : ImageUtils.NO_IMAGE);
 
     if (!imgs.isEmpty()) {
-      WorkerManager.fetchGalleryImages(imgs, this, null, ImageUtils.NO_IMAGE,
+      WorkerManager.fetchGalleryImages(wid, imgs, this, null, ImageUtils.NO_IMAGE,
               property.equals(ImageInfo.ImageCategoryProperty.thumb) ? ImageInfo.ImageSize.medium : ImageInfo.ImageSize.small);
     }
   }

@@ -18,13 +18,17 @@
 package fr.free.movierenamer.ui.swing.contextmenu;
 
 import com.alee.laf.list.WebList;
+import com.alee.laf.menu.WebPopupMenu;
+import fr.free.movierenamer.ui.bean.IImage;
+import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JPopupMenu;
 
 /**
  * Class ContextMenuImageMouseListener
@@ -33,20 +37,73 @@ import javax.swing.JPopupMenu;
  */
 public class ContextMenuImage extends MouseAdapter {
 
-  private final JPopupMenu popup = new JPopupMenu();
+  private final WebPopupMenu menu = new WebPopupMenu();
 
+  private final Action add;
+  private final Action edit;
   private final Action delete;
   private WebList list;
+  private IImage iimage = null;
 
   public ContextMenuImage() {
-    delete = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.delete", false), ImageUtils.DELETE_16) {
+
+    add = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.add", false), ImageUtils.PLUS_16) {
       private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(ActionEvent ae) {
-        
+        //list.remove(index);
       }
     };
+
+    edit = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.edit", false), ImageUtils.EDIT_16) {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        //list.remove(index);
+      }
+    };
+
+    delete = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.delete", false), ImageUtils.DELETE_16) {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      @SuppressWarnings("unchecked")
+      public void actionPerformed(ActionEvent ae) {
+        ImageListModel<IImage> model = (ImageListModel<IImage>) list.getModel();
+        model.removeElement(iimage);
+      }
+    };
+
+    menu.add(add);
+    menu.add(edit);
+    menu.addSeparator();
+    menu.add(delete);
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent e) {
+
+    if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
+      if (!(e.getSource() instanceof WebList)) {
+        return;
+      }
+
+      list = (WebList) e.getSource();
+
+      if (list.getModel().getSize() <= 0) {
+        return;
+      }
+
+      int index = list.locationToIndex(e.getPoint());
+      if (index >= 0) {
+        list.setSelectedIndex(index);
+        iimage = (IImage) list.getSelectedValue();
+        menu.show(e.getComponent(), e.getX(), e.getY());
+      }
+    }
+
   }
 
 }

@@ -17,9 +17,12 @@
  */
 package fr.free.movierenamer.ui.swing.panel.generator;
 
+import com.alee.extended.panel.GroupPanel;
+import com.alee.extended.panel.GroupingType;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.filechooser.WebFileChooser;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.panel.WebPanel;
@@ -29,16 +32,22 @@ import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.language.LanguageManager;
+import com.alee.managers.popup.PopupWay;
+import com.alee.managers.popup.WebButtonPopup;
 import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.scrapper.MovieScrapper;
 import fr.free.movierenamer.scrapper.ScrapperManager;
+import fr.free.movierenamer.scrapper.ScrapperOptions;
 import fr.free.movierenamer.scrapper.SubtitleScrapper;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;
+import fr.free.movierenamer.ui.bean.UILang;
+import fr.free.movierenamer.ui.bean.UIPathSettings;
 import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.utils.FlagUtils;
@@ -57,6 +66,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,8 +94,10 @@ public class SettingPanelGen extends PanelGenerator {
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebPasswordField> passFields;
   private Map<IProperty, WebComboBox> comboboxs;
+  private Map<IProperty, WebComboBox> scraperOptComboboxs;
   private static final String settingsi18n = "settings.";
   private final MovieRenamer mr;
+  private final WebFileChooser fileChooser = new WebFileChooser();
 
   private static enum TabbedSettings {
 
@@ -105,6 +118,11 @@ public class SettingPanelGen extends PanelGenerator {
     super();
     this.mr = mr;
     setLayout(new GridBagLayout());
+
+    fileChooser.setGenerateThumbnails(true);
+    fileChooser.setMultiSelectionEnabled(false);
+    fileChooser.getWebUI().getFileChooserPanel().setViewType(UISettings.getInstance().getFileChooserViewType());
+    fileChooser.setFileSelectionMode(WebFileChooser.DIRECTORIES_ONLY);
   }
 
   @SuppressWarnings("unchecked")
@@ -114,6 +132,7 @@ public class SettingPanelGen extends PanelGenerator {
     fields = new HashMap<>();
     comboboxs = new HashMap<>();
     passFields = new HashMap<>();
+    scraperOptComboboxs = new HashMap<>();
     WebTabbedPane tabbedPane = null;
     TabbedSettings tabbed = null;
 
@@ -169,6 +188,7 @@ public class SettingPanelGen extends PanelGenerator {
             }
 
           });
+
           GridBagConstraints ctr = getGroupConstraint(0, false, false, level);
           ctr.insets.top += 25;
           if (tabbedPane != null && panel != null) {
@@ -191,7 +211,39 @@ public class SettingPanelGen extends PanelGenerator {
         final JComponent component;
         String title = (settingsi18n + property.name().toLowerCase());
 
-        if (property.getVclass().equals(Boolean.class)) {
+        if (property instanceof UIPathSettings) {
+          WebButton button = (WebButton) createComponent(Component.BUTTON, null);
+          button.setIcon(ImageUtils.FOLDERVIDEO_16);
+          button.setPreferredSize(null);
+          button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+              File file = new File(fields.get(property).getText());
+              fileChooser.setCurrentDirectory(file);
+              int r = fileChooser.showOpenDialog(SettingPanelGen.this);
+              if (r == 0) {
+                try {
+                  String f = fileChooser.getSelectedFile().toString();
+                  property.setValue(f);
+                  fields.get(property).setText(f);
+                } catch (IOException ex) {
+                }
+              }
+            }
+          });
+
+          // Create text field for String and number value
+          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+          component = createComponent(Component.FIELD, null);
+
+          add(label, getGroupConstraint(0, false, false, level));
+          add(button, getGroupConstraint(2, false, false, level));
+
+          constraint = getGroupConstraint(1, true, true, level);
+          fields.put(property, (WebTextField) component);
+
+        } else if (property.getVclass().equals(Boolean.class)) {
 
           // Create checkbox for boolean value
           component = createComponent(Component.CHECKBOX, null);
@@ -286,12 +338,34 @@ public class SettingPanelGen extends PanelGenerator {
             add(label, getGroupConstraint(0, false, false, level));
           }
 
-          constraint = getGroupConstraint(1, true, /*false*/ true, level);
-
           if (MovieScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
               model.addElement(new UIScraper(scrapper));
             }
+
+            final WebButton button = UIUtils.createSettingButton(null);
+            button.setRolloverDecoratedOnly(false);
+            button.setInnerShadeWidth(3);
+            final WebButtonPopup buttonPopup = UIUtils.createPopup(button, PopupWay.downLeft);
+
+            ((WebComboBox) component).addActionListener(new ActionListener() {
+
+              @Override
+              public void actionPerformed(ActionEvent ae) {
+                setScraperPopupOptions(button, buttonPopup, (UIScraper) ((WebComboBox) ae.getSource()).getSelectedItem());
+              }
+            });
+
+//            button.addActionListener(new ActionListener() {
+//
+//              @Override
+//              public void actionPerformed(ActionEvent ae) {
+//                setScraperPopupOptions(button, buttonPopup, (UIScraper) ((WebComboBox) component).getSelectedItem());
+//              }
+//            });
+
+            add(button, getGroupConstraint(2, false, false, level));
+
           } else if (TvShowScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
             for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
               model.addElement(new UIScraper(scrapper));
@@ -305,13 +379,15 @@ public class SettingPanelGen extends PanelGenerator {
             continue;
           }
 
+          constraint = getGroupConstraint(1, false, true, level);
+
           ((WebComboBox) component).setModel(model);
           ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
           comboboxs.put(property, ((WebComboBox) component));
 
         } else if (property.getDefaultValue() instanceof List) {
           WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          DefaultListModel<Object> listModel = new DefaultListModel();
+          DefaultListModel<Object> listModel = new DefaultListModel<>();
           List<Object> list = (List<Object>) property.getDefaultValue();
           WebList wlist = new WebList();
           component = new WebScrollPane(wlist);
@@ -418,6 +494,55 @@ public class SettingPanelGen extends PanelGenerator {
     }
   }
 
+  // TODO
+  private void setScraperPopupOptions(WebButton button, WebButtonPopup buttonPopup, UIScraper scraper) {
+    button.setEnabled(false);
+    if (!scraper.hasOptions()) {
+      return;
+    }
+
+    button.setEnabled(true);
+
+    UILang lng = (UILang) comboboxs.get(SettingsProperty.searchScrapperLang).getSelectedItem();
+    scraperOptComboboxs.clear();
+    
+    Settings settings = Settings.getInstance();
+    List<JComponent> cbboxs = new ArrayList<>();
+    List<MovieScrapper> scrappers = ScrapperManager.getMovieScrapperList();
+    List<MovieScrapper> scrappersLang = ScrapperManager.getMovieScrapperList((LocaleUtils.AvailableLanguages) lng.getLanguage());
+    UIScraper uiscrapper;
+    
+    for (ScrapperOptions option : scraper.getOptions()) {
+      WebLabel label = (WebLabel) createComponent(Component.LABEL, settingsi18n + option.getProperty().name().toLowerCase());
+      WebComboBox cbb = new WebComboBox();
+      DefaultComboBoxModel<UIScraper> model = new DefaultComboBoxModel<>();
+      cbb.setModel(model);
+
+      for (MovieScrapper scrapper : option.isIsLangdep() ? scrappersLang : scrappers) {
+        if (scrapper.getClass().equals(scraper.getScraper().getClass())) {
+          continue;
+        }
+
+        uiscrapper = new UIScraper(scrapper);
+        model.addElement(uiscrapper);
+        if(settings.getMovieScrapperOptionClass(option.getProperty()).equals(scrapper.getClass())) {
+          cbb.setSelectedItem(uiscrapper);
+        }
+      }
+
+      cbb.setRenderer(new IconComboRenderer<>(cbb));
+      cbboxs.add(new GroupPanel(GroupingType.fillAll, 5, label, cbb));
+      scraperOptComboboxs.put(option.getProperty(), cbb);
+    }
+
+    GroupPanel content = new GroupPanel(5, false, cbboxs.toArray(new JComponent[cbboxs.size()]));
+    content.setMargin(15);
+    WebScrollPane wsp = new WebScrollPane(content);
+    wsp.setPreferredHeight(200);
+    wsp.setPreferredWidth(500);
+    buttonPopup.setContent(wsp);
+  }
+
   /**
    * Create title toolbar with help button
    *
@@ -457,6 +582,10 @@ public class SettingPanelGen extends PanelGenerator {
 
   public Map<IProperty, WebComboBox> getCombobox() {
     return Collections.unmodifiableMap(comboboxs);
+  }
+  
+  public Map<IProperty, WebComboBox> getScraperOptCombobox() {
+    return Collections.unmodifiableMap(scraperOptComboboxs);
   }
 
   public Map<IProperty, WebPasswordField> getPassField() {

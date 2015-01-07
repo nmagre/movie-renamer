@@ -80,6 +80,33 @@
     <value lang="en">Movie</value>
     <value lang="fr">Film</value>
   </record>
+  
+  <!-- No translation needed -->
+  <record key="imdb">
+    <value lang="en">Imdb</value>
+    <value lang="fr">Imdb</value>
+  </record>
+  
+  <record key="themoviedb">
+    <value lang="en">The movie db</value>
+    <value lang="fr">The movie db</value>
+  </record> 
+  
+  <record key="allocine">
+    <value lang="en">Allocine</value>
+    <value lang="fr">Allocine</value>
+  </record>
+  
+  <record key="rottentomatoes">
+    <value lang="en">Rotten Tomatoes</value>
+    <value lang="fr">Rotten Tomatoes</value>
+  </record>
+  
+  <record key="kinopoisk">
+    <value lang="en">Kinopoisk</value>
+    <value lang="fr">Kinopoisk</value>
+  </record>
+  <!-- END : No translation needed -->
 
   <Dictionary name="Right click menu" prefix="rmenu">
 
@@ -131,7 +158,12 @@
         <value lang="en">Open</value>
         <value lang="fr">Ouvrir</value>
       </record>
-
+      
+      <record key="history">
+        <value lang="en">History</value>
+        <value lang="fr">Historique</value>
+      </record>
+      
       <record key="movieMode">
         <value lang="en">Mode movie</value>
         <value lang="fr">Mode film</value>
@@ -343,6 +375,21 @@
 
       </Dictionary><!-- END info -->
     </Dictionary><!-- END moviepnl -->
+    
+    <Dictionary name="Casting panel" prefix="castingpnl">
+      
+      <record key="director">
+        <value lang="en">Director / Writer</value>
+        <value lang="fr">Réalisateur / Scénariste</value>
+      </record>
+      
+      <record key="actor">
+      <value lang="en">Actor</value>
+        <value lang="fr">Acteur</value>
+      </record>
+      
+    </Dictionary><!-- END castingpnl -->
+      
 
     <Dictionary name="Image Panel/dialog" prefix="image">
 
@@ -397,10 +444,73 @@
           <value lang="fr">Afficher le format</value>
         </record>
 
-
       </Dictionary><!-- END settingspopup -->
 
     </Dictionary><!-- END renametb -->
+    
+    <Dictionary name="Status Toolbar" prefix="statusTb">
+      
+      <record key="downloading">
+        <value lang="en">Downloading</value>
+        <value lang="fr">Téléchargement</value>
+      </record>
+      
+      <record key="more">
+        <value lang="en">%s... more</value>
+        <value lang="fr">%s... plus</value>
+      </record>
+      
+      <record key="fileinfo">
+        <value lang="en">Files infos</value>
+        <value lang="fr">Infos des fichiers</value>
+      </record>
+      
+      <record key="actor">
+        <value lang="en">Actor</value>
+        <value lang="fr">Acteur</value>
+      </record>
+      
+      <record key="directorwriter">
+        <value lang="en">Director/Writer</value>
+        <value lang="fr">Réalisateur/Scénariste</value>
+      </record>
+      
+      <record key="trailer">
+        <value lang="en">Trailer</value>
+        <value lang="fr">Trailer</value>
+      </record>
+      
+      <record key="search">
+        <value lang="en">Search</value>
+        <value lang="fr">Recherche</value>
+      </record>
+      
+      <record key="listfiles">
+        <value lang="en">List files</value>
+        <value lang="fr">Liste des fichiers</value>
+      </record>
+      
+      <record key="renaming">
+        <value lang="en">Renaming</value>
+        <value lang="fr">Renommage</value>
+      </record>
+      
+      <record key="searchimages">
+        <value lang="en">Search images</value>
+        <value lang="fr">Recherche des images</value>
+      </record>
+      
+      <record key="searchinfo">
+        <value lang="en">Search infos</value>
+        <value lang="fr">Recherche des infos</value>
+      </record>
+      
+      <record key="searchmedia">
+        <value lang="en">Search media</value>
+        <value lang="fr">Recherche du média</value>
+      </record>
+      
+    </Dictionary><!-- END statusTb -->
 
   </Dictionary><!-- END main -->
 
@@ -1201,6 +1311,11 @@
       <value lang="en">Movie Renamer is already up-to-date.</value>
       <value lang="fr">Movie Renamer est déjà à jour.</value>
     </record>
+    
+    <record key="imdbidfound">
+      <value lang="en">An imdb id was found (%s).\nDo you want to use it instead of classic search ?</value>
+      <value lang="fr">Un id imdb a été trouvé (%s).\nVoulez-vous l'utiliser à la place de la recherche classique ?</value>
+    </record>
 
   </Dictionary><!-- END dialog -->
 
@@ -1239,7 +1354,7 @@
       <value lang="en">Unable to write in :\n%s\nPlease allow Movie Renamer to write in this folder.</value>
       <value lang="fr">Impossible d'écrire dans:\n%s\nS'il vous plaît autoriser Movie Renamer à écrire dans ce dossier.</value>
     </record>
-
+    
     <Dictionary name="Network Error" prefix="network">
       <record key="connection">
         <value lang="en">Unable to contact server.\nPlease check your network settings.\n\nError : %s</value>
@@ -1255,10 +1370,10 @@
         <value lang="en">Service unavailable.\nWait a few moments and then retry.</value>
         <value lang="fr">Service non disponible.\nAttendez quelques instants, puis réessayez.</value>
       </record>
-
+      
     </Dictionary><!-- END network -->
 
-    <Dictionary name="Rename,move,.. file error" prefix="rename">
+    <Dictionary name="Rename, move,.. file error" prefix="rename">
 
       <record key="fileNotExists">
         <value lang="en">File "%s" does not exists.</value>

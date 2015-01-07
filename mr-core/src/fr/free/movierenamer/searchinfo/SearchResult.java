@@ -60,6 +60,10 @@ public abstract class SearchResult extends Sorter.ISort implements Serializable 
     return originalName;
   }
 
+  public void setOriginalName(String originalName) {
+    this.originalName = originalName;
+  }
+
   @Override
   public int getYear() {
     return year;
@@ -70,7 +74,7 @@ public abstract class SearchResult extends Sorter.ISort implements Serializable 
     if (year > 0) {
       return name + String.format(" (%04d)", year);
     }
-    
+
     return name;
   }
 }

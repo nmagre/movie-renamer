@@ -28,7 +28,9 @@ import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class SearchMediaInfosWorker
@@ -36,7 +38,7 @@ import fr.free.movierenamer.ui.worker.Worker;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
+public class SearchMediaInfoWorker extends Worker<UIMediaInfo<?>> {
 
   private final MediaScrapper<Media, MediaInfo> scrapper;
   private final UISearchResult searchResult;
@@ -55,14 +57,14 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
   }
 
   @Override
-  public UIMediaInfo executeInBackground() throws Exception {
-    UIMediaInfo info = null;
+  public UIMediaInfo<?> executeInBackground() throws Exception {
+    UIMediaInfo<?> info = null;
     if (searchResult != null && scrapper != null) {
       MediaInfo inf = scrapper.getInfo(searchResult.getSearchResult());
-      
+
       if (inf instanceof VideoInfo) {
-        FileInfo fileInfo = mr.getFile().getFileInfo();
-        ((VideoInfo) inf).setMediaTag(fileInfo.getMediaTag());
+       // FileInfo fileInfo = mr.getFile().getFileInfo();
+      //  ((VideoInfo) inf).setMediaTag(fileInfo.getMediaTag());
       }
 
       if (inf instanceof MovieInfo) {
@@ -76,7 +78,7 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
 
   @Override
   protected void workerDone() throws Exception {
-    UIMediaInfo info = get();
+    UIMediaInfo<?> info = get();
 
     // Search info failed, we let the user try again by clearing selection
     if (info == null) {
@@ -84,7 +86,8 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
       return;
     }
 
-    MediaPanel mediaPanel = mr.getMediaPanel();
+    @SuppressWarnings("unchecked")
+    MediaPanel<UIMediaInfo<?>> mediaPanel = (MediaPanel<UIMediaInfo<?>>) mr.getMediaPanel();
     if (mediaPanel != null) {
       mediaPanel.setInfo(info);
     }
@@ -95,12 +98,12 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo> {
   }
 
   @Override
-  public String getParam() {
-    return String.format("[%s]", searchResult);
+  public String getDisplayName() {
+    return UIUtils.i18n.getLanguage("main.statusTb.searchinfo", false);
   }
 
   @Override
-  public String getDisplayName() {
-    return ("worker.searchMediaInfo");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.SEARCH_INFO;
   }
 }

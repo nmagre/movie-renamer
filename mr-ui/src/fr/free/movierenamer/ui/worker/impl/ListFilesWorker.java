@@ -21,16 +21,14 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
-import fr.free.movierenamer.info.FileInfo;
-import fr.free.movierenamer.namematcher.NameMatcher;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
-import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
-import static fr.free.movierenamer.settings.XMLSettings.SettingsSubType.MOVIE;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.ControlWorker;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -87,6 +85,8 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
     }
 
     try {
+      int total = files.size();
+      int count = 0;
       for (File file : files) {
         if (isCancelled()) {
           return new ArrayList<>();
@@ -101,6 +101,9 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
           }
         }
       }
+
+      count++;
+      setProgress((count * 100) / total);
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
     }
@@ -152,7 +155,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
       if (isCancelled()) {
         return;
       }
-      
+
       if (listFile.isDirectory() && subFolder) {
         addFiles(medias, listFile);
       } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFile)) {
@@ -163,17 +166,19 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
 
   private void addUIfile(List<UIFile> medias, File file) {
     String groupName = "";
-    MediaType mtype = FileInfo.getMediaType(file);
-    switch (mtype) {
-      case MOVIE:
-        groupName = file.getName().trim().substring(0, 1);
-        break;
-      case TVSHOW:// TODO
-        groupName = NameMatcher.extractName(file.getName());
-        break;
-    }
+//    MediaType mtype = FileInfo.getMediaType(file);
+//    switch (mtype) {
+//      case MOVIE:
+//        groupName = file.getName().trim().substring(0, 1);
+//        break;
+//      case TVSHOW:// TODO
+//        groupName = NameMatcher.extractName(file.getName());
+//        break;
+//    }
 
-    medias.add(new UIFile(file, groupName, mtype));
+    groupName = file.getName().trim().substring(0, 1);
+
+    medias.add(new UIFile(file, groupName, MediaType.MOVIE));
   }
 
   @Override
@@ -191,7 +196,7 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
     }
 
     mr.setMediaCount(medias.size());
-    
+
     if (UISettings.getInstance().isSelectFirstMedia()) {
       int index = 0;
       if (list.getValueAt(index) instanceof SeparatorList.Separator) {
@@ -199,6 +204,8 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
       }
       list.setSelectedIndex(index);
     }
+
+    WorkerManager.getFilesInfo(medias);
 
     mr.setClearMediaFileListBtnEnabled();
   }
@@ -212,19 +219,19 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
   @Override
   public final void processPause(String v) {
     int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v, false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
-    
+
     if (res == WebOptionPane.YES_OPTION) {
       subFolder = true;
     }
   }
 
   @Override
-  public String getParam() {
-    return String.format("%s", files);
+  public String getDisplayName() {
+    return UIUtils.i18n.getLanguage("main.statusTb.listfiles", false);
   }
 
   @Override
-  public String getDisplayName() {
-    return ("worker.listFile");// FIXME i18n
+  public WorkerId getWorkerId() {
+    return WorkerId.LIST_FILE;
   }
 }

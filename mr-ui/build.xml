@@ -9,6 +9,7 @@
 
   <target name="-pre-init" depends="jar-core,jar-updater">
     <property file="src/fr/free/movierenamer/ui/settings/UISettings.properties"/>
+    <property file="../mr-core/src/fr/free/movierenamer/settings/XMLSettings.properties"/>
     <property name="dist.jar" value="dist/${application.name}.jar" />
   </target>
 

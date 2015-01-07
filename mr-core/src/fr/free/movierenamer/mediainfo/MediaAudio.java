@@ -30,6 +30,7 @@ public class MediaAudio {
   private String title;
   private String codec;
   private String channel;
+  private String nbchannel;
   private String bitRateMode;
   private Locale language;
   private int bitRate;
@@ -52,8 +53,16 @@ public class MediaAudio {
     return channel;
   }
 
+  public String getNbChannel() {
+    return nbchannel;
+  }
+
   public void setChannel(final String channel) {
     this.channel = channel;
+  }
+
+  public void setNbChannel(final String nbchannel) {
+    this.nbchannel = nbchannel;
   }
 
   public String getCodec() {

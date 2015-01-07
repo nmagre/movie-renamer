@@ -18,6 +18,8 @@
 package fr.free.movierenamer.searchinfo;
 
 import fr.free.movierenamer.utils.ObjectUtils;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -30,7 +32,7 @@ import java.util.Arrays;
 public abstract class Hyperlink extends SearchResult {
 
   private static final long serialVersionUID = 1L;
-  protected URL url;
+  private URI url;
 
   protected Hyperlink() {
     // used by serializer
@@ -46,7 +48,13 @@ public abstract class Hyperlink extends SearchResult {
    */
   public Hyperlink(String name, String originalName, int year, URL url) {
     super(name, originalName, year);
-    this.url = url;
+    this.url = null;
+    if (url != null) {
+      try {
+        this.url = url.toURI();
+      } catch (URISyntaxException ex) {
+      }
+    }
   }
 
   /**
@@ -54,7 +62,7 @@ public abstract class Hyperlink extends SearchResult {
    *
    * @return Hyperlink URL or null
    */
-  public URL getURL() {
+  public URI getURL() {
     return url;
   }
 
@@ -79,7 +87,7 @@ public abstract class Hyperlink extends SearchResult {
   @Override
   public String toString() {
     if (url != null) {
-      return super.toString() + String.format(" (url:%s)", url.toExternalForm());
+      return super.toString() + String.format(" (url:%s)", url.toASCIIString());
     }
 
     return super.toString();

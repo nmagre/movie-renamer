@@ -78,7 +78,7 @@ public final class StringUtils {
   public static final String EXCLA = "!";
   public static final Pattern romanSymbol = Pattern.compile("(\\s+(?:M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})|[IDCXMLV])(\\s|$))", Pattern.CASE_INSENSITIVE);
   private static final Pattern apostrophe = Pattern.compile("[`´‘’ʻ]");
-  private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^:']]");
+  private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^']]");
   private static final Pattern[] brackets = new Pattern[]{
     Pattern.compile("\\([^\\(]*\\)"), Pattern.compile("\\[[^\\[]*\\]"), Pattern.compile("\\{[^\\{]*\\}")
   };
@@ -153,6 +153,7 @@ public final class StringUtils {
     boolean toUpper = true;
     prevCh = '.';
     str = str.toLowerCase();
+
     for (int i = 0; i < str.length(); i++) {
       ch = str.charAt(i);
       if (ch == 's' && prevCh == '\'') {
@@ -220,28 +221,29 @@ public final class StringUtils {
     return res;
   }
 
-//  /**
-//   * Check if string is uppercase
-//   *
-//   * @param str
-//   * @return True if all letter are uppercase except I,II,III,..., false
-//   * otherwise
-//   */
-//  private static boolean isUpperCase(String str) {
-//
-////    for (String number : romanNumber) {
-////      if (str.equals(number)) {
-////        return false;
-////      }
-////    }
-//    for (int i = 0; i < str.length(); i++) {
-//      char ch = str.charAt(i);
-//      if (ch < 32 || ch > 96) {
-//        return false;
-//      }
-//    }
-//    return true;
-//  }
+  /**
+   * Check if string is uppercase Note: this is not efficient but must work with
+   * space, colon, ... characters
+   *
+   * @param str
+   * @return True if all letter are uppercase
+   */
+  public static boolean isUpperCase(String str) {
+    return str.equals(str.toUpperCase());
+  }
+
+  public static int nbUpperCase(String str) {
+    int nb = 0;
+
+    for (int i = 0; i < str.length(); i++) {
+      if (Character.isUpperCase(str.charAt(i))) {
+        nb++;
+      }
+    }
+
+    return nb;
+  }
+
   /**
    * Get an array from a string separated by separator
    *
@@ -423,14 +425,19 @@ public final class StringUtils {
 
   public static String humanReadableByteCount(long bytes) {
     Settings settings = Settings.getInstance();
-    boolean si = settings.isStringSizeSi();
+    boolean si = true;
     int unit = si ? 1000 : 1024;
     if (bytes < unit) {
       return bytes + " B";
     }
+
     int exp = (int) (Math.log(bytes) / Math.log(unit));
-    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
-    return String.format("%.1f %s" + settings.getStringSizeUnit().getFormat(), bytes / Math.pow(unit, exp), pre);
+    String pre = "KMGTPE".charAt(exp - 1) + (si ? "" : "i");
+    String format = SizeFormat.BYTE.getFormat();
+    if (settings.getAppLanguage().equals(LocaleUtils.AppLanguages.fr)) {
+      format = SizeFormat.OCTET.getFormat();
+    }
+    return String.format("%.1f %s" + format, bytes / Math.pow(unit, exp), pre);
   }
 
   public static String humanReadableDate(long date) {// in ms
@@ -541,6 +548,35 @@ public final class StringUtils {
     }
 
     return count;
+  }
+
+  public static boolean containsIgnoreCase(String str, String search) {
+
+    if (search.isEmpty()) {
+      return true;
+    }
+
+    if (str.equals(search)) {
+      return true;
+    }
+
+    final char firstLo = Character.toLowerCase(search.charAt(0));
+    final char firstUp = Character.toUpperCase(search.charAt(0));
+
+    int length = str.length();
+    int slength = search.length();
+    for (int i = length - slength; i >= 0; i--) {
+      final char ch = str.charAt(i);
+      if (ch != firstLo && ch != firstUp) {
+        continue;
+      }
+
+      if (str.regionMatches(true, i, search, 0, slength)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private StringUtils() {

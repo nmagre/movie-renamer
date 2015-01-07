@@ -85,7 +85,7 @@ public class I18n {
     String str = LanguageManager.get(lkey);
     if (str.equals(lkey)) {
       StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-      UISettings.LOGGER.log(Level.WARNING, String.format("Language Key \"%s\" does not exist.\n%s", lkey, ClassUtils.getStackTrace(stackTraceElements)));
+      UISettings.LOGGER.log(Level.WARNING, String.format("Language Key \"%s\" does not exist.%n%s", lkey, ClassUtils.getStackTrace(stackTraceElements)));
     }
 
     return value ? String.format(str, (Object[]) replace) : lkey;

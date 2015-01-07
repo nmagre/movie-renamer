@@ -44,10 +44,9 @@ public class ContextMenuField extends MouseAdapter {
   private final Action selectAll;
   private final Action delete;
   private JTextComponent textComponent;
-  
 
   public ContextMenuField() {
-    
+
     cut = new AbstractAction(UIUtils.i18n.getLanguage("rmenu.cut", false), ImageUtils.CUT_16) {
       private static final long serialVersionUID = 1L;
 
@@ -92,7 +91,7 @@ public class ContextMenuField extends MouseAdapter {
         textComponent.selectAll();
       }
     };
-       
+
     menu.add(copy);
     menu.add(cut);
     menu.add(paste);
@@ -124,11 +123,7 @@ public class ContextMenuField extends MouseAdapter {
       delete.setEnabled(enabled && editable && nonempty);
       selectAll.setEnabled(enabled && nonempty);
 
-      int x, y;
-      x = e.getX();
-      y = e.getY();
-
-      menu.show(e.getComponent(), x, y);
+      menu.show(e.getComponent(), e.getX(), e.getY());
     }
   }
 }

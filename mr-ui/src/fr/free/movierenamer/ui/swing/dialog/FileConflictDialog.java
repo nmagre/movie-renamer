@@ -37,7 +37,6 @@ import javax.swing.ImageIcon;
  */
 public class FileConflictDialog extends AbstractDialog {
 
-  private final File oldFile, newFile;
   private Action action = Action.cancel;
 
   public static enum Action {
@@ -52,8 +51,6 @@ public class FileConflictDialog extends AbstractDialog {
 
   public FileConflictDialog(MovieRenamer mr, File oldFile, File newFile) {
     super(mr, i18n.getLanguageKey("dialog.fileconflict", false));
-    this.oldFile = oldFile;
-    this.newFile = newFile;
 
     initComponents();
 
@@ -63,8 +60,8 @@ public class FileConflictDialog extends AbstractDialog {
     setFileIcon(oldFile, origIconLbl);
     setFileIcon(newFile, newIconLbl);
 
-    replaceTitleLbl.setLanguage(i18n.getLanguageKey("dialog.replacefile", false), oldFile.getName());
-    alreadyExistLbl.setLanguage(i18n.getLanguageKey("dialog.alreadyexist", false), oldFile.getParentFile().getName());
+    replaceTitleLbl.setLanguage(i18n.getLanguageKey("dialog.replacefile", false), newFile.getName());
+    alreadyExistLbl.setLanguage(i18n.getLanguageKey("dialog.alreadyexist", false), newFile.getParentFile().getName());
     origLbl.setLanguage(i18n.getLanguageKey("dialog.origfile", false));
     newLbl.setLanguage(i18n.getLanguageKey("dialog.replacewith", false));
     origSizeLbl.setLanguage(i18n.getLanguageKey("dialog.size", false), StringUtils.humanReadableByteCount(oldFile.length()));
@@ -95,7 +92,7 @@ public class FileConflictDialog extends AbstractDialog {
           if (icon != null) {
             Image img = ((ImageIcon) icon).getImage();
             int width = 100;
-            int height = (int) (width * icon.getIconHeight()) / icon.getIconWidth();
+            int height = width * icon.getIconHeight() / icon.getIconWidth();
             Image newimg = img.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
             label.setIcon(new ImageIcon(newimg));
           }

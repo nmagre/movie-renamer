@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import fr.free.movierenamer.utils.Date;
-import fr.free.movierenamer.utils.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
@@ -90,7 +89,7 @@ public class TvShowInfo extends MediaInfo {
 
   @Override
   protected void unsetUnsupportedLanguageInfo() {// TODO
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
@@ -185,20 +184,13 @@ public class TvShowInfo extends MediaInfo {
   }
 
   @Override
-  public String getRenamedTitle(String filename, final String format) {// TODO
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
   protected void setMediaCasting() {// TODO
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public String getRenamedTitle(String filename, String format, StringUtils.CaseConversionType renameCase, String filenameSeparator, int filenameLimit,
-          boolean reservedCharacter, boolean rmDupSpace, boolean trim) {// TODO
-    // TODO Auto-generated method stub
-    return getName();
+  protected void setReplaceMap(Map<String, Object> replace) {
+    // TODO
   }
 
   @Override

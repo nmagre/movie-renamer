@@ -43,11 +43,15 @@ public class UIPersonImage implements IImage {
     return icon;
   }
 
+  public void setDefaultIcon() {
+    icon = ImageUtils.LOAD_24;
+  }
+
   @Override
   public String getName() {
     return person.getName();
   }
-  
+
   public String getJob() {
     return person.getJob();
   }
@@ -62,19 +66,19 @@ public class UIPersonImage implements IImage {
   }
 
   @Override
-  public String toString() {
-    return (person != null) ? person.getName() : null;
-  }
-
-  @Override
   public void setIcon(Icon icon) {
     this.icon = icon;
   }
 
   @Override
   public int getId() {
-    String id = getName() + person.getCharacter() + ((person != null) ? person.getId() : -1);// FIXME
+    String id = getName() + person.getCharacter() + person.getId();
     return id.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return person.getName();
   }
 
 }

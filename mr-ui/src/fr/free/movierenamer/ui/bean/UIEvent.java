@@ -45,6 +45,7 @@ public final class UIEvent {
     WORKER_ALL_DONE,// All workers done
     WORKER_STARTED,
     WORKER_RUNNING,
+    WORKER_PROGRESS,
     SETTINGS,
     EDIT,
     EDITED,

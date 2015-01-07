@@ -40,7 +40,6 @@ public class MoveFile extends Thread {
   private boolean cancel;
   private Status status;
   private String errorStr;
-  private boolean isTempFile;
 
   public static enum Status {
 
@@ -51,16 +50,11 @@ public class MoveFile extends Thread {
   }
 
   public MoveFile(File source, File dest) {
-    this(source, dest, false);
-  }
-
-  public MoveFile(File source, File dest, boolean isTempFile) {
     this.source = source;
     this.dest = dest;
     this.done = false;
     this.progress = 0;
     this.cancel = false;
-    this.isTempFile = isTempFile;
     errorStr = "";
   }
 
@@ -127,13 +121,7 @@ public class MoveFile extends Thread {
         status = Status.CHECK_FAILED;
         dest.delete();
       } else {
-
-        if (isTempFile) {//FIXME dirty fix
-          status = Status.OK;
-          source.deleteOnExit();
-        } else {
-          status = source.delete() ? Status.OK : Status.REMOVE_FAILED;
-        }
+        status = source.delete() ? Status.OK : Status.REMOVE_FAILED;
       }
     }
 
