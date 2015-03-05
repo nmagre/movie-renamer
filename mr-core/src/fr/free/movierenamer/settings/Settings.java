@@ -34,6 +34,7 @@ import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Class Settings , Movie Renamer settings
@@ -65,17 +66,17 @@ public final class Settings extends XMLSettings {
 
   public enum SettingsProperty implements IProperty {
 
-    reservedCharacter(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
-    filenameTrim(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
-    filenameRmDupSpace(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
-    filenameRomanUpper(Boolean.TRUE, SettingsType.MEDIA, SettingsSubType.GENERAL),
+    reservedCharacter(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
+    filenameTrim(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
+    filenameRmDupSpace(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
+    filenameRomanUpper(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
     // movie filename
-    movieFilenameFormat("<t> (<y>)", SettingsType.MEDIA, SettingsSubType.MOVIE),
-    movieFilenameSeparator(", ", SettingsType.MEDIA, SettingsSubType.MOVIE),
-    movieFilenameLimit(3, SettingsType.MEDIA, SettingsSubType.MOVIE),
-    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.MEDIA, SettingsSubType.MOVIE),
+    movieFilenameFormat("<t> (<y>)", SettingsType.FORMAT, SettingsSubType.MOVIE),
+    movieFilenameSeparator(", ", SettingsType.FORMAT, SettingsSubType.MOVIE),
+    movieFilenameLimit(3, SettingsType.FORMAT, SettingsSubType.MOVIE),
+    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.FORMAT, SettingsSubType.MOVIE),
     // format
-    stringTimeHour("h ", SettingsType.FORMAT, SettingsSubType.TIME),
+    stringTimeHour("h", SettingsType.FORMAT, SettingsSubType.TIME),
     stringTimeMinute("min ", SettingsType.FORMAT, SettingsSubType.TIME),
     stringTimeSeconde("s ", SettingsType.FORMAT, SettingsSubType.TIME),
     stringTimeMilliSeconde("ms", SettingsType.FORMAT, SettingsSubType.TIME),
@@ -107,8 +108,7 @@ public final class Settings extends XMLSettings {
     //    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
     //    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
     // http param
-    httpRequestTimeOut(30, SettingsType.NETWORK, SettingsSubType.GENERAL),
-    httpCustomUserAgent("", SettingsType.NETWORK, SettingsSubType.GENERAL),
+
     // Proxy
     proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, true),
     proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY),
@@ -120,6 +120,15 @@ public final class Settings extends XMLSettings {
     fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL),
     //app lang
     appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),
+    formatTokenStart("<", SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
+    formatTokenEnd(">", SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
+    formatOptionSeparator(':', SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
+    formatEqualsSeparator('=', SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
+    formatNotEqualsSeparator('!', SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
+    formatValueIndex(Pattern.compile("[a-z]+(\\d+)"), SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
+    matcherNfofileExt(Arrays.asList(new String[]{"nfo", "xml"}), SettingsType.ADVANCED),
+    httpRequestTimeOut(30, SettingsType.ADVANCED, SettingsSubType.NETWORK),
+    httpCustomUserAgent("", SettingsType.ADVANCED, SettingsSubType.NETWORK),
     // Scraper options
     universalSearchScraper(IMDbScrapper.class),
     universalSynopsys(IMDbScrapper.class),
@@ -127,6 +136,7 @@ public final class Settings extends XMLSettings {
     universalRating(IMDbScrapper.class),
     universalGenre(IMDbScrapper.class),
     universalCountry(IMDbScrapper.class);
+
     private Class<?> vclass;
     private Object defaultValue;
     private SettingsType type;
@@ -135,6 +145,10 @@ public final class Settings extends XMLSettings {
 
     private SettingsProperty(Object defaultValue) {
       this(defaultValue, null, null);
+    }
+
+    private SettingsProperty(Object defaultValue, SettingsType type) {
+      this(defaultValue, type, null);
     }
 
     private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
@@ -439,8 +453,38 @@ public final class Settings extends XMLSettings {
     return get(SettingsProperty.httpCustomUserAgent);
   }
 
+  public String getFormatTokenStart() {
+    return get(SettingsProperty.formatTokenStart);
+  }
+
+  public String getFormatTokenEnd() {
+    return get(SettingsProperty.formatTokenEnd);
+  }
+
+  public char getFormatOptionSeparator() {
+    return get(SettingsProperty.formatOptionSeparator).charAt(0);
+  }
+
+  public char getFormatEqualsSeparator() {
+    return get(SettingsProperty.formatEqualsSeparator).charAt(0);
+  }
+
+  public char getFormatNotEqualsSeparator() {
+    return get(SettingsProperty.formatNotEqualsSeparator).charAt(0);
+  }
+
+  public Pattern getFormatValueIndex() {
+    return Pattern.compile(get(SettingsProperty.formatValueIndex));
+  }
+
   public List<String> getfileExtension() {
     String ext = get(SettingsProperty.fileExtension);
+    ext = ext.substring(1, ext.length() - 1);
+    return Arrays.asList(ext.split(", "));
+  }
+
+  public List<String> getMatcherNfofileExt() {
+    String ext = get(SettingsProperty.matcherNfofileExt);
     ext = ext.substring(1, ext.length() - 1);
     return Arrays.asList(ext.split(", "));
   }

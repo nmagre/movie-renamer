@@ -27,6 +27,7 @@ import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
+import fr.free.movierenamer.ui.swing.WebTextFieldLimit;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import java.awt.GridBagConstraints;
@@ -40,7 +41,7 @@ import javax.swing.JComponent;
  * @author Nicolas Magré
  */
 public abstract class PanelGenerator extends WebPanel {
-
+  
   private static final long serialVersionUID = 1L;
   // Inset size
   protected final int smallMargin = 3;
@@ -57,11 +58,12 @@ public abstract class PanelGenerator extends WebPanel {
   private int gridy = 0;
   private int maxgridx = 0;
   private boolean endGroup = true;
-
+  
   protected enum Component {
-
+    
     CHECKBOX,
     FIELD,
+    CHARFIELD,
     PASSWORD,
     BUTTON,
     TOOLBAR,
@@ -69,7 +71,7 @@ public abstract class PanelGenerator extends WebPanel {
     LINKLABEL,
     CUSTOM_LIST
   }
-
+  
   protected PanelGenerator() {
     super();
     setLayout(new GridBagLayout());
@@ -193,18 +195,18 @@ public abstract class PanelGenerator extends WebPanel {
       groupConstraint.gridwidth = level;
       groupConstraint.anchor = GridBagConstraints.WEST;
     }
-
+    
     if (right) {
       groupConstraint.fill = GridBagConstraints.NONE;
       groupConstraint.anchor = GridBagConstraints.NORTHEAST;
     }
-
+    
     if (!endGroup && last) {
       endGroup = true;
     }
-
+    
     maxgridx = Math.max(maxgridx, gridx);
-
+    
     return groupConstraint;
   }
 
@@ -229,7 +231,7 @@ public abstract class PanelGenerator extends WebPanel {
     endGroup = false;
     return getGroupConstraint(groupSeparationInsets, gridx, false, resize);
   }
-
+  
   protected GridBagConstraints getGroupSeparationConstraint(int gridx, boolean resize, boolean last) {
     endGroup = last;
     return getGroupConstraint(groupSeparationInsets, gridx, last, resize);
@@ -250,16 +252,16 @@ public abstract class PanelGenerator extends WebPanel {
     defaultConstraint.gridx = gridx;
     defaultConstraint.weightx = 0;
     defaultConstraint.gridwidth = 1;
-
+    
     if (resize) {
       defaultConstraint.weightx = 1.0;
       if (gridx == 0) {
         defaultConstraint.gridwidth = maxgridx + 1;
       }
     }
-
+    
     maxgridx = Math.max(maxgridx, gridx);
-
+    
     defaultConstraint.fill = resize ? GridBagConstraints.HORIZONTAL : GridBagConstraints.NONE;
     if (last) {
       gridy++;
@@ -279,12 +281,12 @@ public abstract class PanelGenerator extends WebPanel {
     toolbar.setMargin(new Insets(0, 5, 0, 5));
     toolbar.setFloatable(false);
     toolbar.setRollover(true);
-
+    
     WebLabel label = new WebLabel();
     label.setLanguage(i18n.getLanguageKey(key.toLowerCase(), false), data);
     label.setFont(UIUtils.boldFont);
     toolbar.add(label);
-
+    
     return toolbar;
   }
 
@@ -310,11 +312,11 @@ public abstract class PanelGenerator extends WebPanel {
   protected JComponent createComponent(Component settingComponent, String title, String tooltip) {
     JComponent component = null;
     String i18nKey = null;
-
+    
     if (title != null) {
       i18nKey = i18n.getLanguageKey(title, false);
     }
-
+    
     switch (settingComponent) {
       case BUTTON:
         component = new WebButton();
@@ -330,6 +332,10 @@ public abstract class PanelGenerator extends WebPanel {
         break;
       case FIELD:
         component = new WebTextField();
+        break;
+      case CHARFIELD:
+        component = new WebTextField();
+        ((WebTextField) component).setDocument(new WebTextFieldLimit(1));
         break;
       case PASSWORD:
         component = new WebPasswordField();
@@ -350,15 +356,15 @@ public abstract class PanelGenerator extends WebPanel {
       default:
         break;
     }
-
+    
     if (component == null) {
       return null;
     }
-
+    
     if (tooltip != null) {
       TooltipManager.setTooltip(component, (tooltip), TooltipWay.down);// FIXME i18n
     }
-
+    
     return component;
   }
 }

@@ -32,6 +32,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -467,7 +469,9 @@ public final class StringUtils {
     }
 
     format = format.trim();
-    return new SimpleDateFormat(format).format(time);
+    SimpleDateFormat df = new SimpleDateFormat(format);
+    df.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+    return df.format(new Date(time));
   }
 
   private static String appendStringToTime(String format, String append) {

@@ -20,16 +20,21 @@ package fr.free.movierenamer.ui.bean;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
+import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
+import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.renderer.CompoundIcon;
+import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
+import java.util.List;
+import java.util.Locale;
 import javax.swing.Icon;
 
 /**
@@ -60,6 +65,7 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
     this.mtype = mtype;
     this.icon = null;
     fileInfo = null;
+
   }
 
   private synchronized FileInfo getSFileInfo() {
@@ -194,16 +200,18 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
   public String getHtmlTooltip() {
 
     MediaTag tag = getFileInfo().getMediaTag();
-    String str = "<html>";
+    String str = "<html><center>";
     str += "<img src =\"" + ImageUtils.getImagePath("ui/16/movie.png") + "\">&nbsp;";
-    str += "<font color=#4e89a4>" + toString() + "</font><br><hr>";
+    str += "<font color=#4e89a4>" + toString() + "</font><br></center><hr>";
+    str += "<center>";
     str += "<img src =\"" + ImageUtils.getImagePath("ui/16/search.png") + "\">&nbsp;";
-    str += getSearch() + "<br>";
+    str += getSearch();
 
     if (getYear() != -1) {
-      str += "<img src =\"" + ImageUtils.getImagePath("ui/16/ssearch.png") + "\">&nbsp;";
+      str += "&nbsp;<img src =\"" + ImageUtils.getImagePath("ui/16/ssearch.png") + "\">&nbsp;";
       str += getYear() + "<br>";
     }
+    str += "<br>";
 
     if (getImdbId() != null) {
       str += "<img src =\"" + ImageUtils.getImagePath("scrapper/imdb.png") + "\">&nbsp;";
@@ -212,21 +220,79 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
 
     str += "<img src =\"" + ImageUtils.getImagePath("ui/16/other.png") + "\">&nbsp;";
     str += StringUtils.humanReadableByteCount(getLength()) + "<br>";
+
     if (tag != null) {
       MediaVideo mvideo = tag.getMediaVideo();
-      MediaAudio maudio = tag.getMediaAudios().get(0);
-      mvideo.getAspectRatio();
-      
-      
-      
-      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/video/" + mvideo.getCodec().toLowerCase() + ".png") + "\">&nbsp;";
-      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/video/" + mvideo.getVideoDefinition().toLowerCase() + ".png") + "\">&nbsp;";
-      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/audio/" + maudio.getCodec().toLowerCase() + ".png") + "\">&nbsp;";
-      str += "<img width =\"82\" height=\"40\" src =\"" + ImageUtils.getImagePath("mediaflags/audio/" + maudio.getNbChannel() + ".png") + "\">&nbsp;";
+      List<MediaAudio> maudios = tag.getMediaAudios();
+      List<MediaSubTitle> msubtitles = tag.getMediaSubTitles();
+      long duration = tag.getDuration();
+
+      if (duration > 0L) {
+        str += "&nbsp;<img src =\"" + ImageUtils.getImagePath("ui/16/history.png") + "\">&nbsp;";
+        str += StringUtils.humanReadableTime(duration) + "<br>";
+      }
+
+      if (maudios != null && !maudios.isEmpty()) {
+        String audioHtml = "";
+        for (MediaAudio audio : maudios) {
+          audioHtml += getHtmlLang(audio.getLanguage());
+        }
+
+        if (!audioHtml.isEmpty()) {
+          str += "<img src =\"" + ImageUtils.getImagePath("ui/16/sound.png") + "\">";
+          str += audioHtml + "<br>";
+        }
+      }
+
+      if (msubtitles != null && !msubtitles.isEmpty()) {
+        String subtitleHtml = "";
+        for (MediaSubTitle msubtitle : msubtitles) {
+          subtitleHtml += getHtmlLang(msubtitle.getLanguage());
+        }
+
+        if (!subtitleHtml.isEmpty()) {
+          str += "<img src =\"" + ImageUtils.getImagePath("ui/16/srt.png") + "\">";
+          str += subtitleHtml + "<br>";
+        }
+      }
+
+      str += "<br>";
+      str += getHtmlImage("mediaflags/video/" + mvideo.getCodec().toLowerCase() + ".png");
+      str += getHtmlImage("mediaflags/video/" + mvideo.getVideoDefinition().toLowerCase() + ".png");
+      if (maudios != null && !maudios.isEmpty()) {
+        str += getHtmlImage("mediaflags/audio/" + maudios.get(0).getCodec().toLowerCase() + ".png");
+        str += getHtmlImage("mediaflags/audio/" + maudios.get(0).getNbChannel() + ".png");
+      }
     }
-    str += "<html>";
+    str += "</center><html>";
 
     return str;
+  }
+
+  private String getHtmlImage(String image) {
+
+    String htmlimg = ImageUtils.getImagePath(image);
+    if (htmlimg != null) {
+      return "<img width =\"82\" height=\"40\" src =\"" + htmlimg + "\">&nbsp;";
+    }
+    UISettings.LOGGER.warning(String.format("No image %s", image));
+
+    return "";
+  }
+
+  private String getHtmlLang(Locale lang) {
+    String res = "";
+    if (lang != null && !lang.toString().isEmpty()) {
+      String country = FlagUtils.getCountryCodeByLang(lang.toString());
+      if (country != null) {
+        String imgPath = ImageUtils.getImagePath("country/" + country.toLowerCase() + ".png");
+        if (imgPath != null) {
+          res += "&nbsp;<img src =\"" + imgPath + "\">";
+        }
+      }
+    }
+
+    return res;
   }
 
 }

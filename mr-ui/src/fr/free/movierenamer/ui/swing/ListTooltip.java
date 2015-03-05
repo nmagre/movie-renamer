@@ -24,7 +24,9 @@ import com.alee.managers.tooltip.WebCustomTooltip;
 import fr.free.movierenamer.ui.bean.IHtmlListTooltip;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UILoader;
+import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -87,19 +89,23 @@ public class ListTooltip extends MouseAdapter {
               public void actionPerformed(ActionEvent e) {
                 int px = tooltipWay == TooltipWay.right ? list.getParent().getWidth() : list.getParent().getWidth() / 2;
                 int py = tooltipWay == TooltipWay.right ? rect.getLocation().y + rect.height / 2 : rect.getLocation().y + rect.height;
-                String str;
 
-                if (obj instanceof UILoader) {// FIXME i18n + run "getHtmlTooltip" in a thread
+                if (obj instanceof IHtmlListTooltip) {
+                  WebCustomTooltip wct = TooltipManager.showOneTimeTooltip(list, new Point(px, py), ImageUtils.LOAD_WHITE_24, "", tooltipWay);
+                  WorkerManager.setHtmlTooltip((IHtmlListTooltip) obj, wct);
+                  timer.stop();
+                  return;
+                }
+
+                String str;
+                if (obj instanceof UILoader) {// FIXME i18n 
                   str = UIUtils.i18n.getLanguage("clickToCancel", true);
-                } else if (obj instanceof IHtmlListTooltip) {
-                  IHtmlListTooltip ltt = (IHtmlListTooltip) obj;
-                  str = ltt.getHtmlTooltip();
                 } else {
                   str = obj.toString();
                 }
-                
+
                 WebCustomTooltip wct = TooltipManager.showOneTimeTooltip(list, new Point(px, py), str, tooltipWay);
-                wct.setToolTipText(str);
+
                 timer.stop();
               }
             });

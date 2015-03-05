@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.info;
 
-import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.DateFormat;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -65,8 +65,8 @@ public class EpisodeInfo extends Info {
     return get(EpisodeProperty.tvShowName);
   }
 
-  public Date getTvShowStartDate() {
-    return Date.parse(get(EpisodeProperty.tvShowStartDate), "yyyy-MM-dd");
+  public DateFormat getTvShowStartDate() {
+    return DateFormat.parse(get(EpisodeProperty.tvShowStartDate), "yyyy-MM-dd");
   }
 
   public Integer getSeason() {
@@ -105,8 +105,8 @@ public class EpisodeInfo extends Info {
     return null;
   }
 
-  public Date getAirdate() {
-    return Date.parse(get(EpisodeProperty.airdate), "yyyy-MM-dd");
+  public DateFormat getAirdate() {
+    return DateFormat.parse(get(EpisodeProperty.airdate), "yyyy-MM-dd");
   }
 
   @Override

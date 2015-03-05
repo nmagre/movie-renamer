@@ -42,7 +42,7 @@ import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.info.TvShowInfo.TvShowProperty;
 import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.searchinfo.TvShow;
-import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.EpisodeUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScrapperUtils;
@@ -121,7 +121,7 @@ public class TvRageScrapper extends TvShowScrapper {
     Node node = XPathUtils.selectNode("Showinfo", dom);
     fields.put(TvShowProperty.id, XPathUtils.getTextContent("showid", node));
     fields.put(TvShowProperty.name, XPathUtils.getTextContent("showname", node));
-    fields.put(TvShowProperty.firstAired, Date.parse(XPathUtils.getTextContent("startdate", node), "MMM/dd/yyyy", Locale.ENGLISH).toString());
+    fields.put(TvShowProperty.firstAired, DateFormat.parse(XPathUtils.getTextContent("startdate", node), "MMM/dd/yyyy", Locale.ENGLISH).toString());
     fields.put(TvShowProperty.status, XPathUtils.getTextContent("status", node));
     URL posterURL = getPosterURL(XPathUtils.getTextContent("showlink", node));
     if (posterURL != null) {

@@ -43,6 +43,8 @@ import fr.free.movierenamer.scrapper.TvShowScrapper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
+import fr.free.movierenamer.settings.XMLSettings.SettingsSubType;
+import fr.free.movierenamer.settings.XMLSettings.SettingsType;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;
@@ -76,6 +78,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -90,6 +93,7 @@ import javax.swing.ListSelectionModel;
 public class SettingPanelGen extends PanelGenerator {
 
   private static final long serialVersionUID = 1L;
+  private static final WebFileChooser fileChooser = new WebFileChooser();
   private Map<IProperty, WebCheckBox> checkboxs;
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebPasswordField> passFields;
@@ -97,21 +101,28 @@ public class SettingPanelGen extends PanelGenerator {
   private Map<IProperty, WebComboBox> scraperOptComboboxs;
   private static final String settingsi18n = "settings.";
   private final MovieRenamer mr;
-  private final WebFileChooser fileChooser = new WebFileChooser();
 
-  private static enum TabbedSettings {
+  private enum SettingsClazz {
 
-    MEDIA("file"),
-    IMAGE("file");
-    private final String titleKey;
+    String,
+    Boolean,
+    Character,
+    Integer,
+    Class,
+    ArrayList,
+    Pattern,
+    Subfolder,
+    AppLanguages,
+    AvailableLanguages,
+    CaseConversionType,
+    ImageFormat,
+    ImageSize,
+    NFOtype,
+    FileChooserViewType,
+    UITestSettings,
+    UIPathSettings,
+    UIPasswordSettings
 
-    private TabbedSettings(final String titleKey) {
-      this.titleKey = settingsi18n + titleKey;
-    }
-
-    public String getTitleKey() {
-      return titleKey;
-    }
   }
 
   public SettingPanelGen(MovieRenamer mr) {
@@ -125,332 +136,335 @@ public class SettingPanelGen extends PanelGenerator {
     fileChooser.setFileSelectionMode(WebFileChooser.DIRECTORIES_ONLY);
   }
 
-  @SuppressWarnings("unchecked")
-  public void addSettings(Settings.SettingsType type, Map<Settings.SettingsSubType, List<IProperty>> settingsDef) {
+  public void generatePanel(SettingsType type, Map<SettingsSubType, List<IProperty>> mapProperties, boolean helpBtn) {
 
     checkboxs = new HashMap<>();
     fields = new HashMap<>();
     comboboxs = new HashMap<>();
     passFields = new HashMap<>();
     scraperOptComboboxs = new HashMap<>();
-    WebTabbedPane tabbedPane = null;
-    TabbedSettings tabbed = null;
 
-    try {
-      tabbed = TabbedSettings.valueOf(type.name());
-      tabbedPane = new WebTabbedPane();
-      LanguageManager.registerComponent(tabbedPane, "mrui.settings.tab");
-      tabbedPane.setFont(UIUtils.titleFont);
-    } catch (Exception ex) {
-    }
+    int level;
+    boolean charField;
+    boolean hasChild;
+    boolean isEnabled;
+    boolean createTitle;
+    JComponent cmp = this;// Will be used for tabbedPane
+    String title;
+    SettingsClazz clazz;
+    GridBagComponent gbComponent;
+    final List<JComponent> childs = new ArrayList<>();
 
-    for (List<IProperty> group : settingsDef.values()) {
-      int level = 1;
-      WebPanel panel = null;
-      boolean hasChild = false;
-      boolean isEnabled = false;
-      boolean createTitle = true;
-      final List<JComponent> childs = new ArrayList<>();
+    for (List<IProperty> properties : mapProperties.values()) {
 
-      for (final IProperty property : group) {
+      level = 1;
+      hasChild = false;
+      isEnabled = false;
+      createTitle = true;
+
+      for (IProperty property : properties) {
+
+        charField = false;
+        gbComponent = null;
 
         // Create title toolbar (SettingsSubType)
         if (createTitle) {
           Settings.SettingsSubType subType = property.getSubType();
-          String ssubType = subType.name();
-          if (tabbedPane != null && !subType.equals(Settings.SettingsSubType.GENERAL)) {
-            panel = new WebPanel();
-            panel.setLayout(new GridBagLayout());
-            panel.setName(subType.name().toLowerCase());
-            if (tabbedPane.getTabCount() == 0) {
-              add(createTitle(tabbed.getTitleKey(), type, subType), getTitleConstraint());
-            }
-          } else {
-            add(createTitle(settingsi18n + ssubType.toLowerCase(), type, subType), getTitleConstraint());
+          if (subType != null) {
+            add(createTitle(settingsi18n + subType.name().toLowerCase(), type, subType, helpBtn), getTitleConstraint());
           }
           createTitle = false;
         }
 
-        // Create settings test button + textfield
-        if (property instanceof UITestSettings) {
-          WebButton button = (WebButton) createComponent(Component.BUTTON, settingsi18n + "test");
-          button.setIcon(ImageUtils.TEST_16);
-          final JComponent component = createComponent(Component.FIELD, null);
-          button.addActionListener(new ActionListener() {
+        try {
+          title = settingsi18n + property.name().toLowerCase();
+          clazz = SettingsClazz.valueOf(property.getVclass().getSimpleName());
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              UITestSettings testSettings = (UITestSettings) property;
-              ITestActionListener actionListener = testSettings.getActionListener();
-              actionListener.actionPerformed(e);
-              ((WebTextField) component).setText(actionListener.getResult());
-              ((WebTextField) component).setEditable(false);
-            }
+          switch (clazz) {
+            case Character:
+              charField = true;
+            case String:
+            case Integer:
+            case Pattern:
+              gbComponent = createTextField(cmp, title, level, charField);
+              fields.put(property, (WebTextField) gbComponent.getComponent());
+              break;
 
-          });
+            case Boolean:
+              gbComponent = createCheckbox(title, level);
+              checkboxs.put(property, (WebCheckBox) gbComponent.getComponent());
+              break;
 
-          GridBagConstraints ctr = getGroupConstraint(0, false, false, level);
-          ctr.insets.top += 25;
-          if (tabbedPane != null && panel != null) {
-            panel.add(button, ctr);
-          } else {
-            add(button, ctr);
+            case Class:
+              gbComponent = createClassCombobox(property, cmp, title, level);
+              comboboxs.put(property, (WebComboBox) gbComponent.getComponent());
+              break;
+
+            case UITestSettings:
+              gbComponent = createTestField(property, cmp, level);
+              // Test field is not saved
+              break;
+
+            case UIPathSettings:
+              gbComponent = createPathField(property, cmp, title, level);
+              fields.put(property, (WebTextField) gbComponent.getComponent());
+              break;
+
+            case ArrayList:
+              gbComponent = createList(property, cmp, title, level);
+              // TODO edit/save list
+              break;
+
+            case UIPasswordSettings:
+              gbComponent = createPasswordField(cmp, title, level);
+              passFields.put(property, (WebPasswordField) gbComponent.getComponent());
+              break;
+
+            // ENUM
+            case Subfolder:
+            case AppLanguages:
+            case AvailableLanguages:
+            case CaseConversionType:
+            case ImageFormat:
+            case ImageSize:
+            case NFOtype:
+            case FileChooserViewType:
+              gbComponent = createEnumCombobox(property, cmp, title, level);
+              comboboxs.put(property, (WebComboBox) gbComponent.getComponent());
+              break;
           }
 
-          ctr = getGroupConstraint(1, true, true, level);
-          ctr.insets.top += 25;
-          if (tabbedPane != null && panel != null) {
-            panel.add(component, ctr);
-          } else {
-            add(component, ctr);
-          }
-          continue;
-        }
-
-        GridBagConstraints constraint = getGroupConstraint(level);
-        final JComponent component;
-        String title = (settingsi18n + property.name().toLowerCase());
-
-        if (property instanceof UIPathSettings) {
-          WebButton button = (WebButton) createComponent(Component.BUTTON, null);
-          button.setIcon(ImageUtils.FOLDERVIDEO_16);
-          button.setPreferredSize(null);
-          button.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-              File file = new File(fields.get(property).getText());
-              fileChooser.setCurrentDirectory(file);
-              int r = fileChooser.showOpenDialog(SettingPanelGen.this);
-              if (r == 0) {
-                try {
-                  String f = fileChooser.getSelectedFile().toString();
-                  property.setValue(f);
-                  fields.get(property).setText(f);
-                } catch (IOException ex) {
-                }
-              }
-            }
-          });
-
-          // Create text field for String and number value
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          component = createComponent(Component.FIELD, null);
-
-          add(label, getGroupConstraint(0, false, false, level));
-          add(button, getGroupConstraint(2, false, false, level));
-
-          constraint = getGroupConstraint(1, true, true, level);
-          fields.put(property, (WebTextField) component);
-
-        } else if (property.getVclass().equals(Boolean.class)) {
-
-          // Create checkbox for boolean value
-          component = createComponent(Component.CHECKBOX, null);
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          label.setMargin(0, 25, 0, 0);
-          ((WebCheckBox) component).add(label);
-          checkboxs.put(property, (WebCheckBox) component);
-
-        } else if (property.getDefaultValue() instanceof char[]) {
-          //Password
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          component = createComponent(Component.PASSWORD, null);
-
-          if (tabbedPane != null && panel != null) {
-            panel.add(label, getGroupConstraint(0, false, false, level));
-          } else {
-            add(label, getGroupConstraint(0, false, false, level));
-          }
-          constraint = getGroupConstraint(1, true, true, level);
-          passFields.put(property, (WebPasswordField) component);
-
-        } else if (property.getVclass().equals(String.class) || property.getDefaultValue() instanceof Number) {
-
-          // Create text field for String and number value
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          component = createComponent(Component.FIELD, null);
-
-          if (tabbedPane != null && panel != null) {
-            panel.add(label, getGroupConstraint(0, false, false, level));
-          } else {
-            add(label, getGroupConstraint(0, false, false, level));
-          }
-          constraint = getGroupConstraint(1, true, true, level);
-          fields.put(property, (WebTextField) component);
-
-        } else if (property.getVclass().isEnum()) {
-
-          // Enum
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          component = new WebComboBox();
-
-          DefaultComboBoxModel<IIconList> model = new DefaultComboBoxModel<>();
-
-          if (tabbedPane != null && panel != null) {
-            panel.add(label, getGroupConstraint(0, false, false, level));
-          } else {
-            add(label, getGroupConstraint(0, false, false, level));
-          }
-
-          constraint = getGroupConstraint(1, true, /*false*/ true, level);
-
-          @SuppressWarnings("unchecked")
-          Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) property.getVclass();
-
-          for (Enum<?> e : clazz.getEnumConstants()) {
-            IIconList iicon;
-            if (property.getDefaultValue() instanceof LocaleUtils.Language) {
-              iicon = FlagUtils.getFlagByLang(e.name());
-            } else {
-              String imgfolder = null;
-              if (property.getDefaultValue() instanceof Nfo.NFOtype) {
-                imgfolder = "mediacenter";
-              } else if (property.getDefaultValue() instanceof CaseConversionType) {
-                imgfolder = "case";
-              } else if (property.getDefaultValue() instanceof ImageFormat) {
-                imgfolder = "image";
-              } else if (property.getDefaultValue() instanceof UISettings.Subfolder) {
-                imgfolder = "subfolder";
-              }
-              iicon = new UIEnum(e, imgfolder);
-            }
-
-            model.addElement(iicon);
-
-            if (e.name().equals(property.getValue())) {
-              model.setSelectedItem(iicon);
-            }
-          }
-          ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
-          ((WebComboBox) component).setModel(model);
-          comboboxs.put(property, ((WebComboBox) component));
-
-        } else if (property.getDefaultValue() instanceof Class) {
-          // Class (Scrapper)
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          component = new WebComboBox();
-          DefaultComboBoxModel<UIScraper> model = new DefaultComboBoxModel<>();
-
-          if (tabbedPane != null && panel != null) {
-            panel.add(label, getGroupConstraint(0, false, false, level));
-          } else {
-            add(label, getGroupConstraint(0, false, false, level));
-          }
-
-          if (MovieScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
-            for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
-              model.addElement(new UIScraper(scrapper));
-            }
-
-            final WebButton button = UIUtils.createSettingButton(null);
-            button.setRolloverDecoratedOnly(false);
-            button.setInnerShadeWidth(3);
-            final WebButtonPopup buttonPopup = UIUtils.createPopup(button, PopupWay.downLeft);
-
-            ((WebComboBox) component).addActionListener(new ActionListener() {
-
-              @Override
-              public void actionPerformed(ActionEvent ae) {
-                setScraperPopupOptions(button, buttonPopup, (UIScraper) ((WebComboBox) ae.getSource()).getSelectedItem());
-              }
-            });
-
-//            button.addActionListener(new ActionListener() {
-//
-//              @Override
-//              public void actionPerformed(ActionEvent ae) {
-//                setScraperPopupOptions(button, buttonPopup, (UIScraper) ((WebComboBox) component).getSelectedItem());
-//              }
-//            });
-
-            add(button, getGroupConstraint(2, false, false, level));
-
-          } else if (TvShowScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
-            for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
-              model.addElement(new UIScraper(scrapper));
-            }
-          } else if (SubtitleScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
-            for (SubtitleScrapper scrapper : ScrapperManager.getSubtitleScrapperList()) {
-              model.addElement(new UIScraper(scrapper));
-            }
-          } else {
-            UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getDefaultValue()));
+          if (gbComponent == null) {
+            UISettings.LOGGER.severe(String.format("GridBag component is null for %s", property.name()));
             continue;
           }
 
-          constraint = getGroupConstraint(1, false, true, level);
-
-          ((WebComboBox) component).setModel(model);
-          ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
-          comboboxs.put(property, ((WebComboBox) component));
-
-        } else if (property.getDefaultValue() instanceof List) {
-          WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
-          DefaultListModel<Object> listModel = new DefaultListModel<>();
-          List<Object> list = (List<Object>) property.getDefaultValue();
-          WebList wlist = new WebList();
-          component = new WebScrollPane(wlist);
-
-          for (Object obj : list) {
-            listModel.addElement(obj);
-          }
-
-          GridBagConstraints gcontrainte = getGroupConstraint(0, true, false, level);
-          gcontrainte.insets.top += 10;
-          if (tabbedPane != null && panel != null) {
-            panel.add(label, gcontrainte);
+          if (hasChild) {// FIXME
+            gbComponent.getComponent().setEnabled(isEnabled);
+            childs.add(gbComponent.getComponent());
           } else {
-            add(label, gcontrainte);
-          }
-
-          wlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-          wlist.setLayoutOrientation(WebList.HORIZONTAL_WRAP);
-
-          constraint = getGroupConstraint(0, true, true, level);
-          wlist.setModel(listModel);
-        } else {
-          UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getVclass()));
-          continue;
-        }
-
-        if (hasChild) {
-          component.setEnabled(isEnabled);
-          childs.add(component);
-        } else {
-          hasChild = property.hasChild();
-          if (hasChild) {
-            level++;
-            ((WebCheckBox) component).addActionListener(new ActionListener() {
-              @Override
-              public void actionPerformed(ActionEvent ae) {
-                boolean enabled = ((WebCheckBox) ae.getSource()).isSelected();
-                for (JComponent child : childs) {
-                  child.setEnabled(enabled);
+            hasChild = property.hasChild();
+            if (hasChild) {// FIXME
+              level++;
+              ((WebCheckBox) gbComponent.getComponent()).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                  boolean enabled = ((WebCheckBox) ae.getSource()).isSelected();
+                  for (JComponent child : childs) {
+                    child.setEnabled(enabled);
+                  }
                 }
-              }
-            });
+              });
+            }
           }
+
+          cmp.add(gbComponent.getComponent(), gbComponent.getConstraint());
+        } catch (Exception ex) {
+          UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getVclass()));
         }
 
-        if (tabbedPane != null && panel != null) {
-          panel.add(component, constraint);
-        } else {
-          add(component, constraint);
-        }
       }
 
-      if (tabbedPane != null && panel != null) {
-        tabbedPane.add(panel);
-      }
-    }
-
-    if (tabbedPane != null) {
-      add(tabbedPane, getGroupConstraint(0, true, true, 1));
     }
 
     // Add a dummy panel to avoid centering
     add(new JPanel(), getDummyPanelConstraint());
+  }
+
+  private GridBagComponent createTextField(JComponent cmp, String title, int level, boolean charField) {
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    JComponent component = createComponent(charField ? Component.CHARFIELD : Component.FIELD, null);
+    cmp.add(label, getGroupConstraint(0, false, false, level));
+
+    return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
+  }
+
+  private GridBagComponent createCheckbox(String title, int level) {
+    JComponent component = createComponent(Component.CHECKBOX, null);
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    label.setMargin(0, 25, 0, 0);
+    ((WebCheckBox) component).add(label);
+
+    return new GridBagComponent(component, getGroupConstraint(level));
+  }
+
+  @SuppressWarnings("unchecked")
+  private GridBagComponent createClassCombobox(IProperty property, JComponent cmp, String title, int level) {
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    JComponent component = new WebComboBox();
+    DefaultComboBoxModel<UIScraper> model = new DefaultComboBoxModel<>();
+
+    cmp.add(label, getGroupConstraint(0, false, false, level));
+
+    if (MovieScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
+      for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
+        model.addElement(new UIScraper(scrapper));
+      }
+
+      final WebButton button = UIUtils.createSettingButton(null);
+      button.setRolloverDecoratedOnly(false);
+      button.setInnerShadeWidth(3);
+      final WebButtonPopup buttonPopup = UIUtils.createPopup(button, PopupWay.downLeft);
+
+      ((WebComboBox) component).addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+          setScraperPopupOptions(button, buttonPopup, (UIScraper) ((WebComboBox) ae.getSource()).getSelectedItem());
+        }
+      });
+
+      cmp.add(button, getGroupConstraint(2, false, false, level));
+
+    } else if (TvShowScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
+      for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
+        model.addElement(new UIScraper(scrapper));
+      }
+    } else if (SubtitleScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
+      for (SubtitleScrapper scrapper : ScrapperManager.getSubtitleScrapperList()) {
+        model.addElement(new UIScraper(scrapper));
+      }
+    } else {
+      UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getDefaultValue()));
+    }
+
+    ((WebComboBox) component).setModel(model);
+    ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
+
+    return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
+  }
+
+  private GridBagComponent createEnumCombobox(IProperty property, JComponent cmp, String title, int level) {// FIXME
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    JComponent component = new WebComboBox();
+
+    DefaultComboBoxModel<IIconList> model = new DefaultComboBoxModel<>();
+
+    cmp.add(label, getGroupConstraint(0, false, false, level));
+
+    @SuppressWarnings("unchecked")
+    Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) property.getVclass();
+
+    for (Enum<?> e : clazz.getEnumConstants()) {
+      IIconList iicon;
+      if (property.getDefaultValue() instanceof LocaleUtils.Language) {
+        iicon = FlagUtils.getFlagByLang(e.name());
+      } else {
+        String imgfolder = null;
+        if (property.getDefaultValue() instanceof Nfo.NFOtype) {
+          imgfolder = "mediacenter";
+        } else if (property.getDefaultValue() instanceof CaseConversionType) {
+          imgfolder = "case";
+        } else if (property.getDefaultValue() instanceof ImageFormat) {
+          imgfolder = "image";
+        } else if (property.getDefaultValue() instanceof UISettings.Subfolder) {
+          imgfolder = "subfolder";
+        }
+        iicon = new UIEnum(e, imgfolder != null ? "settings/" + imgfolder : imgfolder);
+      }
+
+      model.addElement(iicon);
+
+      if (e.name().equals(property.getValue())) {
+        model.setSelectedItem(iicon);
+      }
+    }
+    ((WebComboBox) component).setRenderer(new IconComboRenderer<>(component));
+    ((WebComboBox) component).setModel(model);
+
+    return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
+  }
+
+  private GridBagComponent createTestField(final IProperty property, JComponent cmp, int level) {
+    WebButton button = (WebButton) createComponent(Component.BUTTON, settingsi18n + "test");
+    button.setIcon(ImageUtils.TEST_16);
+    final JComponent component = createComponent(Component.FIELD, null);
+    button.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        UITestSettings testSettings = (UITestSettings) property;
+        ITestActionListener actionListener = testSettings.getActionListener();
+        actionListener.actionPerformed(e);
+        ((WebTextField) component).setText(actionListener.getResult());
+        ((WebTextField) component).setEditable(false);
+      }
+
+    });
+
+    GridBagConstraints ctr = getGroupConstraint(0, false, false, level);
+    ctr.insets.top += 25;
+    cmp.add(button, ctr);
+
+    ctr = getGroupConstraint(1, true, true, level);
+    ctr.insets.top += 25;
+
+    return new GridBagComponent(component, ctr);
+  }
+
+  private GridBagComponent createPathField(final IProperty property, JComponent cmp, String title, int level) {
+    WebButton button = (WebButton) createComponent(Component.BUTTON, null);
+    button.setIcon(ImageUtils.FOLDERVIDEO_16);
+    button.setPreferredSize(null);
+    button.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        File file = new File(fields.get(property).getText());
+        fileChooser.setCurrentDirectory(file);
+        int r = fileChooser.showOpenDialog(SettingPanelGen.this);
+        if (r == 0) {
+          try {
+            String f = fileChooser.getSelectedFile().toString();
+            property.setValue(f);
+            fields.get(property).setText(f);
+          } catch (IOException ex) {
+          }
+        }
+      }
+    });
+
+    // Create text field for String and number value
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    JComponent component = createComponent(Component.FIELD, null);
+
+    cmp.add(label, getGroupConstraint(0, false, false, level));
+    cmp.add(button, getGroupConstraint(2, false, false, level));
+
+    return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
+  }
+
+  private GridBagComponent createPasswordField(JComponent cmp, String title, int level) {
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    JComponent component = createComponent(Component.PASSWORD, null);
+    cmp.add(label, getGroupConstraint(0, false, false, level));
+
+    return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
+  }
+
+  @SuppressWarnings("unchecked")
+  private GridBagComponent createList(IProperty property, JComponent cmp, String title, int level) {
+    WebLabel label = (WebLabel) createComponent(Component.LABEL, title);
+    DefaultListModel<Object> listModel = new DefaultListModel<>();
+    List<Object> list = (List<Object>) property.getDefaultValue();
+    WebList wlist = new WebList();
+    JComponent component = new WebScrollPane(wlist);
+
+    for (Object obj : list) {
+      listModel.addElement(obj);
+    }
+
+    GridBagConstraints gcontrainte = getGroupConstraint(0, true, false, level);
+    gcontrainte.insets.top += 10;
+
+    cmp.add(label, gcontrainte);
+
+    wlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    wlist.setLayoutOrientation(WebList.HORIZONTAL_WRAP);
+
+    wlist.setModel(listModel);
+
+    return new GridBagComponent(component, getGroupConstraint(0, true, true, level));
   }
 
   public void reset() {
@@ -505,13 +519,13 @@ public class SettingPanelGen extends PanelGenerator {
 
     UILang lng = (UILang) comboboxs.get(SettingsProperty.searchScrapperLang).getSelectedItem();
     scraperOptComboboxs.clear();
-    
+
     Settings settings = Settings.getInstance();
     List<JComponent> cbboxs = new ArrayList<>();
     List<MovieScrapper> scrappers = ScrapperManager.getMovieScrapperList();
     List<MovieScrapper> scrappersLang = ScrapperManager.getMovieScrapperList((LocaleUtils.AvailableLanguages) lng.getLanguage());
     UIScraper uiscrapper;
-    
+
     for (ScrapperOptions option : scraper.getOptions()) {
       WebLabel label = (WebLabel) createComponent(Component.LABEL, settingsi18n + option.getProperty().name().toLowerCase());
       WebComboBox cbb = new WebComboBox();
@@ -525,7 +539,7 @@ public class SettingPanelGen extends PanelGenerator {
 
         uiscrapper = new UIScraper(scrapper);
         model.addElement(uiscrapper);
-        if(settings.getMovieScrapperOptionClass(option.getProperty()).equals(scrapper.getClass())) {
+        if (settings.getMovieScrapperOptionClass(option.getProperty()).equals(scrapper.getClass())) {
           cbb.setSelectedItem(uiscrapper);
         }
       }
@@ -537,6 +551,7 @@ public class SettingPanelGen extends PanelGenerator {
 
     GroupPanel content = new GroupPanel(5, false, cbboxs.toArray(new JComponent[cbboxs.size()]));
     content.setMargin(15);
+
     WebScrollPane wsp = new WebScrollPane(content);
     wsp.setPreferredHeight(200);
     wsp.setPreferredWidth(500);
@@ -549,25 +564,28 @@ public class SettingPanelGen extends PanelGenerator {
    * @param title
    * @param type
    * @param subType
+   * @param help
    * @return WebToolBar
    */
-  protected WebToolBar createTitle(String title, final Settings.SettingsType type, final Settings.SettingsSubType subType) {
+  protected WebToolBar createTitle(String title, final Settings.SettingsType type, final Settings.SettingsSubType subType, boolean help) {
     WebToolBar toolbar = createTitle(title);
 
-    final WebButton button = UIUtils.createButton(i18n.getLanguageKey(settingsi18n + "help", false), ImageUtils.HELP_16, false, false);
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        try {
-          SettingsHelpDialog dialog = new SettingsHelpDialog(mr, type, subType);
-          dialog.getHelp();
-          dialog.setVisible(true);
-        } catch (MalformedURLException ex) {
-          Logger.getLogger(SettingPanelGen.class.getName()).log(Level.SEVERE, null, ex);
+    if (help) {
+      final WebButton button = UIUtils.createButton(i18n.getLanguageKey(settingsi18n + "help", false), ImageUtils.HELP_16, false, false);
+      button.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+          try {
+            SettingsHelpDialog dialog = new SettingsHelpDialog(mr, type, subType);
+            dialog.getHelp();
+            dialog.setVisible(true);
+          } catch (MalformedURLException ex) {
+            Logger.getLogger(SettingPanelGen.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
-      }
-    });
-    toolbar.addToEnd(button);
+      });
+      toolbar.addToEnd(button);
+    }
 
     return toolbar;
   }
@@ -583,12 +601,32 @@ public class SettingPanelGen extends PanelGenerator {
   public Map<IProperty, WebComboBox> getCombobox() {
     return Collections.unmodifiableMap(comboboxs);
   }
-  
+
   public Map<IProperty, WebComboBox> getScraperOptCombobox() {
     return Collections.unmodifiableMap(scraperOptComboboxs);
   }
 
   public Map<IProperty, WebPasswordField> getPassField() {
     return Collections.unmodifiableMap(passFields);
+  }
+
+  private class GridBagComponent {
+
+    private final GridBagConstraints constraint;
+    private final JComponent component;
+
+    public GridBagComponent(JComponent component, GridBagConstraints constraint) {
+      this.component = component;
+      this.constraint = constraint;
+    }
+
+    public JComponent getComponent() {
+      return component;
+    }
+
+    public GridBagConstraints getConstraint() {
+      return constraint;
+    }
+
   }
 }

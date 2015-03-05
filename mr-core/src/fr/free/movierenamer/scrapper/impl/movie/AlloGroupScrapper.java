@@ -214,7 +214,7 @@ public abstract class AlloGroupScrapper extends MovieScrapper {
       Node infoNode = XPathUtils.selectNode("TD[@class='totalwidth']//DIV[@style='margin-top:-5px;']", node);
       String title = XPathUtils.selectNode("A", infoNode).getTextContent().trim();
       String originalTitle = XPathUtils.selectNode("A/following-sibling::text()", infoNode).getTextContent().trim();
-      String year = XPathUtils.selectNode("SPAN/BR[1]/preceding-sibling::text()", infoNode).getTextContent().trim();
+      String year = XPathUtils.selectString("SPAN/BR[1]/preceding-sibling::node()", infoNode).trim();
 
       originalTitle = originalTitle.replace("(", "").replace(")", "");
       originalTitle = originalTitle.equals("") ? title : originalTitle;

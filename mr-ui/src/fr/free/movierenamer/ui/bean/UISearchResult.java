@@ -42,7 +42,7 @@ public class UISearchResult extends AbstractSearchResult<Media, SearchScrapper<?
   public String print(boolean showId, boolean showYear) {
     String toString = getName();
 
-    if (showYear) {
+    if (showYear && result.getYear() > 0) {
       toString += " (" + result.getYear() + ")";
     }
 

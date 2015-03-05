@@ -34,8 +34,8 @@ public class UIPathSettings implements XMLSettings.IProperty {
   }
 
   @Override
-  public Class<?> getVclass() {
-    return property.getVclass();
+  public Class<?> getVclass() {// A little bit tricky :-(
+    return UIPathSettings.class;
   }
 
   @Override

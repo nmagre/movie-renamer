@@ -38,7 +38,6 @@ import javax.swing.Icon;
 public class AboutDialog extends AbstractDialog {
 
   private static final Icon banner = getIcon((URL) null, new Dimension(505, 130), "ui/mr-ban.png");
-  private static final UISettings settings = UISettings.getInstance();
 
   /**
    * Creates new form AboutDialog

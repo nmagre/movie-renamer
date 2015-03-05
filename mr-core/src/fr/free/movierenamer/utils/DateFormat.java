@@ -37,7 +37,7 @@ import java.util.logging.Level;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public final class Date implements Serializable {
+public final class DateFormat implements Serializable {
 
   private static final long serialVersionUID = 1L;
   private int year;
@@ -45,12 +45,12 @@ public final class Date implements Serializable {
   private int day;
 
 
-  protected Date() {
+  protected DateFormat() {
     // used by serializer
   }
 
 
-  public Date(int year, int month, int day) {
+  public DateFormat(int year, int month, int day) {
     this.year = year;
     this.month = month;
     this.day = day;
@@ -74,8 +74,8 @@ public final class Date implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof Date) {
-      Date other = (Date) obj;
+    if (obj instanceof DateFormat) {
+      DateFormat other = (DateFormat) obj;
       return year == other.year && month == other.month && day == other.day;
     }
 
@@ -105,12 +105,12 @@ public final class Date implements Serializable {
   }
 
 
-  public static Date parse(String string, String pattern) {
+  public static DateFormat parse(String string, String pattern) {
     return parse(string, pattern, Locale.ROOT);
   }
 
 
-  public static Date parse(String string, String pattern, Locale locale) {
+  public static DateFormat parse(String string, String pattern, Locale locale) {
     if (string == null || string.isEmpty())
       return null;
 
@@ -120,7 +120,7 @@ public final class Date implements Serializable {
     try {
       Calendar date = new GregorianCalendar(locale);
       date.setTime(formatter.parse(string));
-      return new Date(date.get(YEAR), date.get(MONTH) + 1, date.get(DAY_OF_MONTH)); // Calendar months start at 0
+      return new DateFormat(date.get(YEAR), date.get(MONTH) + 1, date.get(DAY_OF_MONTH)); // Calendar months start at 0
     } catch (ParseException e) {
       // no result if date is invalid
       Settings.LOGGER.log(Level.WARNING, e.getMessage());

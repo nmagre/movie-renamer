@@ -81,6 +81,16 @@
     <value lang="fr">Film</value>
   </record>
   
+  <record key="resetSettings">
+    <value lang="en">Reset Settings</value>
+    <value lang="fr">Réinitialiser les options</value>
+  </record>
+  
+   <record key="warning">
+    <value lang="en">Warning</value>
+    <value lang="fr">Attention</value>
+  </record>
+  
   <!-- No translation needed -->
   <record key="imdb">
     <value lang="en">Imdb</value>
@@ -384,7 +394,7 @@
       </record>
       
       <record key="actor">
-      <value lang="en">Actor</value>
+        <value lang="en">Actor</value>
         <value lang="fr">Acteur</value>
       </record>
       
@@ -516,49 +526,54 @@
 
   <Dictionary name="Settings Dialog" prefix="settings">
 
-    <record key="maintab.general">
+    <record key="general">
       <value lang="en">General</value>
       <value lang="fr">Général</value>
     </record>
 
-    <record key="maintab.media">
+    <record key="media">
       <value lang="en">Media</value>
       <value lang="fr">Média</value>
     </record>
 
-    <record key="maintab.search">
+    <record key="search">
       <value lang="en">Search</value>
       <value lang="fr">Recherche</value>
     </record>
 
-    <record key="maintab.interface">
+    <record key="interface">
       <value lang="en">Interface</value>
       <value lang="fr">Interface</value>
     </record>
 
-    <record key="maintab.format">
+    <record key="format">
       <value lang="en">Format</value>
       <value lang="fr">Format</value>
     </record>
 
-    <record key="maintab.image">
+    <record key="image">
       <value lang="en">Image</value>
       <value lang="fr">Image</value>
     </record>
 
-    <record key="maintab.nfo">
+    <record key="nfo">
       <value lang="en">NFO</value>
       <value lang="fr">NFO</value>
     </record>
 
-    <record key="maintab.extension">
+    <record key="extension">
       <value lang="en">Extension</value>
       <value lang="fr">Extension</value>
     </record>
 
-    <record key="maintab.network">
+    <record key="network">
       <value lang="en">Network</value>
       <value lang="fr">Réseau</value>
+    </record>
+    
+    <record key="advanced">
+      <value lang="en">Advanced</value>
+      <value lang="fr">Avancé</value>
     </record>
 
     <record key="test">
@@ -639,6 +654,16 @@
     <record key="time">
       <value lang="en">Time</value>
       <value lang="fr">Temps</value>
+    </record>
+    
+    <record key="panel">
+      <value lang="en">Panel</value>
+      <value lang="fr">Panneau</value>
+    </record>
+    
+    <record key="list">
+      <value lang="en">List</value>
+      <value lang="fr">Liste</value>
     </record>
 
     <!-- We do not use specific key for each panel to avoid change of this file if we moved an option-->
@@ -898,8 +923,66 @@
       <value lang="fr">Garder les infos seulement dans la langue actuelle</value>
     </record>
     
+    <record key="universalsearchscraper">
+      <value lang="en">Search scrapper</value>
+      <value lang="fr">Scraper de recherche</value>
+    </record>
     
+    <record key="universalsynopsys">
+      <value lang="en">Synopsis from</value>
+      <value lang="fr">Synopsis de</value>
+    </record>
 
+    <record key="universalcasting">
+      <value lang="en">Casting from</value>
+      <value lang="fr">Casting de</value>
+    </record>
+
+    <record key="universalrating">
+      <value lang="en">Rate from</value>
+      <value lang="fr">Note de</value>
+    </record>
+    
+    <record key="universalgenre">
+      <value lang="en">Genre from</value>
+      <value lang="fr">Genre de</value>
+    </record>
+    
+    <record key="universalcountry">
+      <value lang="en">Country from</value>
+      <value lang="fr">Pays de</value>
+    </record>  
+    
+    <record key="stringtimehour">
+      <value lang="en">String for hours</value>
+      <value lang="fr">Chaîne des heures</value>
+    </record>  
+    
+    <record key="stringtimeminute">
+      <value lang="en">String for minutes</value>
+      <value lang="fr">Chaîne des minutes</value>
+    </record>  
+    
+    <record key="stringtimeseconde">
+      <value lang="en">String for seconds</value>
+      <value lang="fr">Chaîne des secondes</value>
+    </record>  
+        
+    <record key="stringtimemilliseconde">
+      <value lang="en">String for milliseconds</value>
+      <value lang="fr">Chaîne des millisecondes</value>
+    </record>  
+            
+    <record key="stringtimeshowseconde">
+      <value lang="en">Show seconds</value>
+      <value lang="fr">Afficher les secondes</value>
+    </record>  
+                
+    <record key="stringtimeshowmillis">
+      <value lang="en">Show milliseconds</value>
+      <value lang="fr">Afficher les millisecondes</value>
+    </record>  
+    
     <!-- Image panel -->
 
     <record key="generatethumb">
@@ -1151,6 +1234,11 @@
       <value lang="en">Password</value>
       <value lang="fr">Mot de passe</value>
     </record>
+    
+    <record key="advancedWarning">
+      <value lang="en">Do not change anything in advanced settings if you don't know what your are doing.%n</value>
+      <value lang="fr">Ne changer rien dans les paramètres avancés si vous ne savez pas ce que vous faites.%n</value>
+    </record>
 
   </Dictionary><!-- END settings -->
 
@@ -1303,8 +1391,8 @@
     </record>
 
     <record key="updateAvailable">
-      <value lang="en">An update is available.\nDo you want to update Movie Renamer to %s ?\n\n%s</value>
-      <value lang="fr">Une mise à jour est disponible.\nVoulez-vous mettre à jour Movie Renamer en %s ?\n\n%s</value>
+      <value lang="en">An update is available.%nDo you want to update Movie Renamer to %s ?%n%n%s</value>
+      <value lang="fr">Une mise à jour est disponible.%nVoulez-vous mettre à jour Movie Renamer en %s ?%n%n%s</value>
     </record>
 
     <record key="alreadyUptodate">
@@ -1313,8 +1401,8 @@
     </record>
     
     <record key="imdbidfound">
-      <value lang="en">An imdb id was found (%s).\nDo you want to use it instead of classic search ?</value>
-      <value lang="fr">Un id imdb a été trouvé (%s).\nVoulez-vous l'utiliser à la place de la recherche classique ?</value>
+      <value lang="en">An imdb id was found (%s).%nDo you want to use it instead of classic search ?</value>
+      <value lang="fr">Un id imdb a été trouvé (%s).%nVoulez-vous l'utiliser à la place de la recherche classique ?</value>
     </record>
 
   </Dictionary><!-- END dialog -->
@@ -1334,6 +1422,11 @@
       <value lang="en">Unable to save folder path.</value>
       <value lang="fr">Impossible de sauvegarder le chemin du dossier.</value>
     </record>
+    
+    <record key="saveSettingsFailed">
+      <value lang="en">Error while saving settings.</value>
+      <value lang="fr">Erreur lors de la sauvegarde des paramètres.</value>
+    </record>
 
     <record key="unknown">
       <value lang="en">Unknown Error: %s\n\n %s</value>
@@ -1343,6 +1436,11 @@
     <record key="nan">
       <value lang="en">The parameter %s must be a number.</value>
       <value lang="fr">Le paramètre %s doit être un chiffre.</value>
+    </record>
+    
+    <record key="invalidPattern">
+      <value lang="en">The parameter %s must be a valid pattern.</value>
+      <value lang="fr">Le paramètre %s doit être un pattern valide.</value>
     </record>
 
     <record key="searchempty">

@@ -23,7 +23,7 @@ import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.renamer.FormatReplacing;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
@@ -241,9 +241,9 @@ public class MovieInfo extends VideoInfo {
     return null;
   }
 
-  public Date getReleasedDate() {
+  public DateFormat getReleasedDate() {
     try {
-      return Date.parse(get(MovieProperty.releasedDate), "yyyy-MM-dd");
+      return DateFormat.parse(get(MovieProperty.releasedDate), "yyyy-MM-dd");
     } catch (Exception e) {
     }
     return null;

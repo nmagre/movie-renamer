@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.renamer;
 
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.util.ArrayList;
@@ -37,12 +38,13 @@ import java.util.regex.Pattern;
  */
 public class FormatReplacing {
 
-  private static final String tokenStart = "<";
-  private static final String tokenEnd = ">";
-  private static final char optionSeparator = ':';
-  private static final char equalsSeparator = '=';
-  private static final char notEqualsSeparator = '!';
-  private static final Pattern valueIndex = Pattern.compile("[a-z]+(\\d+)");
+  private static final Settings settings = Settings.getInstance();
+  private final String tokenStart;
+  private final String tokenEnd;
+  private final char optionSeparator;
+  private final char equalsSeparator;
+  private final char notEqualsSeparator;
+  private final Pattern valueIndex;
   private final Map<String, Object> replace;
 
   /**
@@ -65,6 +67,12 @@ public class FormatReplacing {
    */
   public FormatReplacing(Map<String, Object> replace) {
     this.replace = replace;
+    tokenStart = settings.getFormatTokenStart();
+    tokenEnd = settings.getFormatTokenEnd();
+    optionSeparator = settings.getFormatOptionSeparator();
+    equalsSeparator = settings.getFormatEqualsSeparator();
+    notEqualsSeparator = settings.getFormatNotEqualsSeparator();
+    valueIndex = settings.getFormatValueIndex();
   }
 
   /**
@@ -187,48 +195,46 @@ public class FormatReplacing {
         c = data.charAt(i);
 
         switch (c) {
-          case notEqualsSeparator:
-            if (isOption) {
-              isOption = false;
-            }
-            break;
-          case equalsSeparator:
-            isOption = false;
-            if (equalsOption == null) {
-
-              if (lastC == notEqualsSeparator) {
-                equals = false;
-                tag.deleteCharAt(index - 1);
-                index--;
-              }
-
-              equalsOption = "";
-              if (index + 1 < tag.length()) {
-                equalsOption = tag.substring(index + 1, tag.length());
-                tag = new StringBuilder(tag.subSequence(0, index + 1));
-              }
-
-              tag.deleteCharAt(index);
-              index--;
-            }
-            break;
           case '?':
             isOption = false;
             isIfCondition = true;
             tag.deleteCharAt(index);
             index--;
             break;
-          case optionSeparator:
-
-            if (isIfCondition) {
-              isIfCondition = false;
-            } else {
-              isOption = true;
-            }
-            tag.deleteCharAt(index);
-            index--;
-            break;
           default:
+            if (c == notEqualsSeparator) {
+              if (isOption) {
+                isOption = false;
+              }
+            } else if (c == equalsSeparator) {
+              isOption = false;
+              if (equalsOption == null) {
+
+                if (lastC == notEqualsSeparator) {
+                  equals = false;
+                  tag.deleteCharAt(index - 1);
+                  index--;
+                }
+
+                equalsOption = "";
+                if (index + 1 < tag.length()) {
+                  equalsOption = tag.substring(index + 1, tag.length());
+                  tag = new StringBuilder(tag.subSequence(0, index + 1));
+                }
+
+                tag.deleteCharAt(index);
+                index--;
+              }
+            } else if (c == optionSeparator) {
+              if (isIfCondition) {
+                isIfCondition = false;
+              } else {
+                isOption = true;
+              }
+              tag.deleteCharAt(index);
+              index--;
+            }
+
         }
 
         if (isOption && c != optionSeparator) {

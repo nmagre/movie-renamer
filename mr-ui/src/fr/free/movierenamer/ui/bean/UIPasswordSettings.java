@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2014 Nicolas Magré
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,65 +17,59 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.XMLSettings;
-import fr.free.movierenamer.ui.swing.ITestActionListener;
 import java.io.IOException;
 
 /**
- * Class UITestSettings
- *
+ * Class UIPasswordSettings
  * @author Nicolas Magré
  */
-public abstract class UITestSettings implements XMLSettings.IProperty {
+public class UIPasswordSettings implements XMLSettings.IProperty {
 
-  private final XMLSettings.SettingsType type;
-  private final XMLSettings.SettingsSubType subType;
+  private final XMLSettings.IProperty property;
 
-  public UITestSettings(XMLSettings.SettingsType type, XMLSettings.SettingsSubType subType) {
-    this.type = type;
-    this.subType = subType;
+  public UIPasswordSettings(XMLSettings.IProperty property) {
+    this.property = property;
   }
 
-  public abstract ITestActionListener getActionListener();
-
   @Override
-  public Class<?> getVclass() {
-    return UITestSettings.class;
+  public Class<?> getVclass() {// A little bit tricky :-(
+    return UIPasswordSettings.class;
   }
 
   @Override
   public Object getDefaultValue() {
-    return null;
+    return property.getDefaultValue();
   }
 
   @Override
   public String getValue() {
-    return null;
+    return property.getValue();
   }
 
   @Override
   public String name() {
-    return "test";
+    return property.name();
   }
 
   @Override
-  public Settings.SettingsType getType() {
-    return type;
+  public XMLSettings.SettingsType getType() {
+    return property.getType();
   }
 
   @Override
-  public Settings.SettingsSubType getSubType() {
-    return subType;
+  public XMLSettings.SettingsSubType getSubType() {
+    return property.getSubType();
   }
 
   @Override
   public boolean hasChild() {
-    return false;
+    return property.hasChild();
   }
 
   @Override
   public void setValue(Object value) throws IOException {
+    property.setValue(value);
   }
 
 }

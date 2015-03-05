@@ -95,20 +95,24 @@ public abstract class XMLSettings {
     settingNodeName = "settings";
   }
 
-  public enum SettingsType {
+  public interface ISettingsType {
+    
+  }
+  
+  public enum SettingsType implements ISettingsType {
 
     GENERAL,
     INTERFACE,
-    MEDIA,
     SEARCH,
     FORMAT,
     IMAGE,
     NFO,
     EXTENSION,
-    NETWORK
+    NETWORK,
+    ADVANCED
   }
 
-  public enum SettingsSubType {
+  public enum SettingsSubType implements ISettingsType {
 
     GENERAL,
     NFO,
@@ -127,7 +131,12 @@ public abstract class XMLSettings {
     PROXY,
     MEDIACENTER,
     SIZE,
-    TIME
+    TIME,
+    PANEL,
+    LIST,
+    NETWORK,
+    FORMATPARSER,
+    INTERFACE
   }
 
   public interface IProperty {

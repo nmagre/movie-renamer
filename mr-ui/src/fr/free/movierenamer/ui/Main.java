@@ -24,7 +24,6 @@ import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +40,7 @@ public class Main {
 
   private static final UISettings setting = UISettings.getInstance();
 
-  public static void main(String args[]) throws InterruptedException, InvocationTargetException {
+  public static void main(String args[]) {
 
     // Fixe JNA crash under 64 bit unix system
     if (System.getProperty("jna.nosys") == null) {

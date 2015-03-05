@@ -18,7 +18,7 @@
 package fr.free.movierenamer.info;
 
 import fr.free.movierenamer.stream.AbstractStream.Quality;
-import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.net.URL;
 import java.util.EnumMap;
@@ -72,9 +72,9 @@ public class TrailerInfo extends Info {
     return lang;
   }
 
-  public Date getReleasedDate() {
+  public DateFormat getReleasedDate() {
     try {
-      return Date.parse(get(TrailerProperty.releasedDate), "yyyy-MM-dd");
+      return DateFormat.parse(get(TrailerProperty.releasedDate), "yyyy-MM-dd");
     } catch (Exception e) {
     }
     return null;

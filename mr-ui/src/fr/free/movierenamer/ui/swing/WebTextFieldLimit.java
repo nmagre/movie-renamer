@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2014 Nicolas Magré
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,44 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.worker;
+package fr.free.movierenamer.ui.swing;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 /**
- * Interface IWorker
+ * Class WebTextFieldLimit
  *
  * @author Nicolas Magré
  */
-public interface IWorker {
+public class WebTextFieldLimit extends PlainDocument {
 
-  public enum WorkerId {
+  private final int limit;
+  private static final long serialVersionUID = 1L;
 
-    LIST_FILE,
-    GET_FILE_INFO,
-    SEARCH,
-    SEARCH_INFO,
-    SEARCH_IMAGE,
-    SEARCH_TRAILER,
-    SEARCH_SUBTITLE,
-    SEARCH_CASTING,
-    SEARCH_ID,
-    SEARCH_SET,
-    RENAME,
-    HELP,
-    DOWNLOAD,
-    UPDATE,
-    TOOLTIP,
-    IMAGE_SEARCH_RESULT,
-    IMAGE_INFO_ACTOR,
-    IMAGE_INFO_DIRECTOR,
-    IMAGE_INFO_TRAILER,
-    IMAGE_GALLERY_REMOTE,
-    IMAGE_GALLERY_BANNER,
-    IMAGE_GALLERY_CDART,
-    IMAGE_GALLERY_CLEARART,
-    IMAGE_GALLERY_LOGO,
-    IMAGE_GALLERY_THUMB,
-    IMAGE_GALLERY_FANART
+  public WebTextFieldLimit(int limit) {
+    super();
+    this.limit = limit;
   }
 
-  public abstract WorkerId getWorkerId();
+  @Override
+  public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+    if (str == null) {
+      return;
+    }
+
+    if ((getLength() + str.length()) <= limit) {
+      super.insertString(offset, str, attr);
+    }
+  }
+
 }

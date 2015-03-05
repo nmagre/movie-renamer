@@ -50,10 +50,16 @@ public class SpinningDial implements Icon {
   private final int h;
   private final Image[] frames;
   private final Set<RepaintArea> repaints = new HashSet<>();
+  private Color color;
 
   public SpinningDial(int w, int h) {
+    this(w, h, new Color(0, 0, 0, 255));
+  }
+
+  public SpinningDial(int w, int h, Color color) {
     this.w = w;
     this.h = h;
+    this.color = color;
     frames = new Image[SPOKES];
     setFrameInterval(DEFAULT_INTERVAL);
   }
@@ -291,7 +297,8 @@ public class SpinningDial implements Icon {
         x2 = (int) (radius * cos);
         y1 = (int) (radius * fraction * sin);
         y2 = (int) (radius * sin);
-        g.setColor(new Color(0, 0, 0, Math.min(255, alpha)));
+        color = new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, alpha));
+        g.setColor(color);
         g.drawLine(x1, y1, x2, y2);
         alpha = Math.max(MIN_ALPHA, alpha * 3 / 4);
       }

@@ -19,10 +19,12 @@ package fr.free.movierenamer.ui.worker;
 
 import ca.odell.glazedlists.EventList;
 import com.alee.laf.list.WebList;
+import com.alee.managers.tooltip.WebCustomTooltip;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.IHtmlListTooltip;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
@@ -40,6 +42,7 @@ import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFilesInfoWorker;
 import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
+import fr.free.movierenamer.ui.worker.impl.ListTooltipWorker;
 import fr.free.movierenamer.ui.worker.impl.RenameThread;
 import fr.free.movierenamer.ui.worker.impl.RenamerWorker;
 import fr.free.movierenamer.ui.worker.impl.SearchMediaCastingWorker;
@@ -99,7 +102,7 @@ public final class WorkerManager {
     SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
     start(imagesWorker);
   }
-  
+
   public final static void searchIds(MovieIdPanel panel, UIMovieInfo mediaInfo, UISearchResult searchResult, Media.MediaType mediaType) {
     SearchMediaIdWorker idsWorker = new SearchMediaIdWorker(panel, mediaInfo, searchResult, mediaType);
     start(idsWorker);
@@ -128,6 +131,11 @@ public final class WorkerManager {
   public final static void fetchGalleryImages(WorkerId wid, List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
     AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(wid, images, gallery, size, resize, defaultImage);
     start(GalleryWorker);
+  }
+
+  public final static void setHtmlTooltip(IHtmlListTooltip htmlToolTip, WebCustomTooltip wct) {
+    ListTooltipWorker ltpw = new ListTooltipWorker(htmlToolTip, wct);
+    start(ltpw, false, null);
   }
 
   public static void rename(MovieRenamer mr, UIFile file, TaskPanel taskPanel, UIRename uirename) throws InterruptedException {
@@ -190,7 +198,10 @@ public final class WorkerManager {
       if (addToQueue) {
         workerQueue.add(worker);
       }
-      UIEvent.fireUIEvent(event, worker);
+
+      if (event != null) {
+        UIEvent.fireUIEvent(event, worker);
+      }
     }
     worker.execute();
   }

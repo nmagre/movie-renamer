@@ -141,13 +141,9 @@ public class Sorter {
     str = StringUtils.normaliseClean(str);
     AbstractStringMetric algorithm;
     Float res = 0.0F;
-    algorithm = new Jaro();
-    res += algorithm.getSimilarity(search, str);
     algorithm = new JaroWinkler();
     res += algorithm.getSimilarity(search, str);
     algorithm = new Levenshtein();
-    res += algorithm.getSimilarity(search, str);
-    algorithm = new JaccardSimilarity();
     res += algorithm.getSimilarity(search, str);
 
     return Math.round((res) * 100) + bonus;

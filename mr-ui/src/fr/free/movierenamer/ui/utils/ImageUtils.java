@@ -24,6 +24,7 @@ import fr.free.movierenamer.ui.swing.renderer.CompoundIcon;
 import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -73,6 +74,7 @@ public final class ImageUtils {
   public static final Icon NORESULT_24 = getIconFromJar("ui/24/zoom_out.png");
   public static final Icon HISTORY_24 = getIconFromJar("ui/24/history.png");
   public static final Icon LOAD_24 = new SpinningDial(24, 24);
+  public static final Icon LOAD_WHITE_24 = new SpinningDial(24, 24, Color.WHITE);
   // 16 pixel icon
   public static final Icon CANCEL_16 = getIconFromJar("ui/16/cancel.png");
   public static final Icon FILEVIEW_16 = getIconFromJar("ui/16/fileview.png");
@@ -122,6 +124,7 @@ public final class ImageUtils {
   public static final Icon ID_16 = getIconFromJar("ui/16/id.png");
   public static final Icon HISTORY_16 = getIconFromJar("ui/16/history.png");
   public static final Icon USER_16 = getIconFromJar("ui/16/user.png");
+  public static final Icon WARNING_16 = getIconFromJar("ui/16/warning.png");
 
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");

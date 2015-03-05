@@ -149,6 +149,17 @@ public abstract class FlagUtils {
     return new UILang(null, Unknown);
   }
 
+  public static String getCountryCodeByLang(String lang) {
+
+    for (FlagsIcon lFlag : FlagsIcon.values()) {
+      if (lFlag.isDefaultFlag() && lFlag.getLanguage().equals(lang)) {
+        return lFlag.name();
+      }
+    }
+
+    return null;
+  }
+
   public static Icon getFlagByCountry(String code) {
     if (code == null || code.length() == 0 || code.equals("xx")) {// tmdb return xx if there is no language
       return Unknown;

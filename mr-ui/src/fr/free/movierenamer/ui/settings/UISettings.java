@@ -60,11 +60,6 @@ public final class UISettings extends XMLSettings {
   private static final UISettings instance = new UISettings();
   public final Settings coreInstance = Settings.getInstance();
 
-  @Override
-  protected String getAppSettingsNodeName() {
-    return APPNAME_NOSPACE;
-  }
-
   public static enum ImageSize {
 
     ORIGINAL,
@@ -99,18 +94,18 @@ public final class UISettings extends XMLSettings {
     loadFilePath(userFolder, SettingsType.GENERAL, SettingsSubType.FOLDER),
     checkupdate(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.UPDATE),
     // Interface
-    mainFrameSaveState(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showStartupAnim(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    mainFrameSaveState(Boolean.FALSE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showFormatField(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showIdResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showYearResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    showOrigTitleResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
     showThumbResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
-    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showActorImage(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.GENERAL),
+    showMediaPanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.PANEL),
+    showImagePanel(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.PANEL),
+    showIdResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.LIST),
+    showYearResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.LIST),
+    showOrigTitleResultList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.LIST),
+    groupMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.LIST),
+    showIconMediaList(Boolean.TRUE, SettingsType.INTERFACE, SettingsSubType.LIST),
     // Extension
     useExtensionFilter(Boolean.TRUE, SettingsType.EXTENSION, SettingsSubType.GENERAL),
     // Image
@@ -141,16 +136,16 @@ public final class UISettings extends XMLSettings {
     // Search
     useImdbIdInSearch(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.GENERAL),
     // Misc
-    fileChooserPath(userFolder),
-    fileChooserViewType(FileChooserViewType.tiles),
-    mainFrameLocationX(0),
-    mainFrameLocationY(0),
-    mainFrameSizeWidth(900),
-    mainFrameSizeHeight(830),
-    mainFrameState(WebFrame.NORMAL),
-    mainFrameFileDivider(180),
-    mainFrameMediaDivider(200),
-    mainFrameScreen(0);
+    fileChooserPath(userFolder, SettingsType.ADVANCED),
+    fileChooserViewType(FileChooserViewType.tiles, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameLocationX(0, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameLocationY(0, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameSizeWidth(900, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameSizeHeight(830, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameState(WebFrame.NORMAL, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameFileDivider(180, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameMediaDivider(200, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+    mainFrameScreen(0, SettingsType.ADVANCED, SettingsSubType.INTERFACE);
     private Class<?> vclass;
     private Object defaultValue;
     private SettingsType type;
@@ -159,6 +154,10 @@ public final class UISettings extends XMLSettings {
 
     private UISettingsProperty(Object defaultValue) {
       this(defaultValue, null, null);
+    }
+
+    private UISettingsProperty(Object defaultValue, SettingsType type) {
+      this(defaultValue, type, null);
     }
 
     private UISettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
@@ -223,6 +222,11 @@ public final class UISettings extends XMLSettings {
    */
   private UISettings() {
     super(LOGGER, APPNAME_NOSPACE + ".log", APPNAME_NOSPACE + ".conf", VERSION);
+  }
+
+  @Override
+  protected String getAppSettingsNodeName() {
+    return APPNAME_NOSPACE;
   }
 
   @Override

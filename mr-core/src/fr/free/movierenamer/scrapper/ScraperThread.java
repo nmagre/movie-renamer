@@ -19,7 +19,6 @@ package fr.free.movierenamer.scrapper;
 
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.searchinfo.Media;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.util.concurrent.Callable;
 
@@ -32,8 +31,7 @@ public class ScraperThread<M extends Media, MI extends MediaInfo> implements Cal
 
   private final MediaScrapper<M, MI> scraper;
   private final M result;
-  private final AvailableLanguages lang;
-  private static final Settings settings = Settings.getInstance();
+  protected final AvailableLanguages lang;
 
   public ScraperThread(MediaScrapper<M, MI> scraper, M result, AvailableLanguages lang) {
     this.scraper = scraper;

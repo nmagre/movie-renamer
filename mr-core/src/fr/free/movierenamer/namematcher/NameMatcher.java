@@ -22,6 +22,7 @@ import fr.free.movierenamer.renamer.NameCleaner;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
@@ -42,7 +43,6 @@ import java.util.regex.Pattern;
  */
 public abstract class NameMatcher {// TODO
 
-  private static final List<String> fileExts = Arrays.asList(new String[]{"nfo", "xml"});
   private static final Pattern imdbIdPattern = Pattern.compile("tt(\\d{7})");
 
   public static Map<FileProperty, String> getProperty(final File file, final MediaType type) {
@@ -157,7 +157,7 @@ public abstract class NameMatcher {// TODO
       public boolean accept(File dir, String name) {
         if (fileName.equalsIgnoreCase(FileUtils.getNameWithoutExtension(name)) || dir.getName().equalsIgnoreCase(name)) {
           String fext = FileUtils.getExtension(name);
-          if (fext != null && fileExts.contains(fext)) {
+          if (fext != null && Settings.getInstance().getMatcherNfofileExt().contains(fext)) {
             return true;
           }
         }

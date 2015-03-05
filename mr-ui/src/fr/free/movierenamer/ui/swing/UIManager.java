@@ -45,7 +45,6 @@ import fr.free.movierenamer.ui.swing.dialog.AbstractDialog;
 import fr.free.movierenamer.ui.swing.dialog.HistoryDialog;
 import fr.free.movierenamer.ui.swing.dialog.LoggerDialog;
 import fr.free.movierenamer.ui.swing.dialog.MediaInfoDownloadDialog;
-import fr.free.movierenamer.ui.swing.dialog.SettingDialog;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.swing.panel.MoviePanel;
@@ -80,7 +79,6 @@ import javax.swing.Timer;
  */
 public final class UIManager {
 
-  private static SettingDialog settingsDialog;
   private static AboutDialog aboutDialog;
   private static LoggerDialog logDialog;
   private static ImagePanel imagePanel;
@@ -121,7 +119,6 @@ public final class UIManager {
   public static void init(MovieRenamer mr) {
 
     // Create dialogs
-    settingsDialog = new SettingDialog(mr);
     aboutDialog = new AboutDialog(mr);
     imagePanel = new ImagePanel(mr);
     logDialog = new LoggerDialog(mr);
@@ -194,10 +191,6 @@ public final class UIManager {
       panels.put(mode, panel);
     }
     return panels;
-  }
-
-  public static void showSettingsDialog() {
-    showDialog(settingsDialog);
   }
 
   public static void showAboutDialog() {

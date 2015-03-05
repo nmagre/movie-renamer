@@ -49,6 +49,7 @@ import com.alee.managers.language.LanguageManager;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
+import com.alee.utils.SwingUtils;
 import com.alee.utils.swing.AncestorAdapter;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.settings.Settings;
@@ -89,6 +90,7 @@ import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFilesInfoWorker;
+import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.FileUtils;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -117,6 +119,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private final WebPanel mainPanelNoImage;
   private final WebPanel mainPanelMini;
   private final WebPanel mainPanelMiniWithImage;
+  private final SettingsPanel settingsPanel;
   
   private ComponentTransition containerTransitionMediaPanel;// Media Panel container
   private final WebFileChooser fileChooser = new WebFileChooser();
@@ -166,6 +169,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     loadingDial = new LoadingDialog();
     mediaFileSeparatorModel = new EventListModel<>(mediaFileSeparator);
 
+    Cache.clearAllCache();// FIXME remove
+    
     // Set Movie Renamer mode
     currentMode = UIMode.MOVIEMODE;
 
@@ -173,6 +178,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     mainPanelNoImage = new WebPanel(new BorderLayout());
     mainPanelMini = new WebPanel(new BorderLayout());
     mainPanelMiniWithImage = new WebPanel(new BorderLayout());
+    settingsPanel = new SettingsPanel(this);
     
     initComponents();
     
@@ -183,6 +189,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     
     setSize(frameSize);
     init();
+
     LanguageManager.setLanguage(lcode); // FIXME remove
   }
   
@@ -347,7 +354,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     // Set panel
     setMediaPanel();
     
-    statusBar.setVisible(false);
+    //statusBar.setVisible(false);
 
     // Font
     mediaLbl.setFont(UIUtils.titleFont);
@@ -414,7 +421,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         workerProgress.setVisible(false);
         workersDone = true;
         if (workersDone && renameWorkerDone) {
-          statusBar.setVisible(false);
+         // statusBar.setVisible(false);
         }
         break;
       case DOWNLOAD_START:
@@ -713,8 +720,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
    */
   @SuppressWarnings("unchecked")
   private void loadMediaPanel() {
+    
+    SwingUtils.setEnabledRecursively(mainTb, true);
+    renameTb.setVisible(true);
+    
     movieModeBtn.setEnabled(false);
     tvShowModeBtn.setEnabled(false);
+    
+    setMediaPanel();
     
     switch (currentMode) {
       case MOVIEMODE:
@@ -733,10 +746,12 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     // Remove setting button
     Component cmp = renameTb.getLastComponent();
-    if (cmp instanceof WebButton) {
+    do {
       renameTb.remove(cmp);
+      cmp = renameTb.getLastComponent();
     }
-    
+    while((cmp instanceof WebButton));// FIXME find why we need to remove twice
+        
     List<JComponent> components = UIManager.getRenameSettingsComponents(currentMode);
     components.add(showFormatFieldChk);
     // Add settings button in toolbar
@@ -1080,7 +1095,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       
       renameWorkerDone = true;
       if (workersDone && renameWorkerDone) {
-        statusBar.setVisible(false);
+        //statusBar.setVisible(false);
       }
       return;
     }
@@ -1472,7 +1487,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   }//GEN-LAST:event_exitBtnActionPerformed
 
   private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
-    UIManager.showSettingsDialog();
+    //UIManager.showSettingsDialog();
+    
+    SwingUtils.setEnabledRecursively(mainTb, false);
+    renameTb.setVisible(false);
+    movieModeBtn.setEnabled(true);
+    tvShowModeBtn.setEnabled(true);
+    exitBtn.setEnabled(true);
+    settingsPanel.reset();
+    mainContainerTransition.performTransition(settingsPanel);
   }//GEN-LAST:event_settingBtnActionPerformed
 
   private void updateBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed

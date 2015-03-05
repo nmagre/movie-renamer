@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.DateFormat;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
@@ -122,8 +122,8 @@ public class TvShowInfo extends MediaInfo {
     return items;
   }
 
-  public Date getFirstAired() {
-    return Date.parse(get(TvShowProperty.firstAired), "yyyy-MM-dd");
+  public DateFormat getFirstAired() {
+    return DateFormat.parse(get(TvShowProperty.firstAired), "yyyy-MM-dd");
   }
 
   public Integer getImdbId() {

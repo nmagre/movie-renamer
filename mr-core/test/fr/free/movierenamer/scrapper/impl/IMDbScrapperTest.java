@@ -30,7 +30,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scrapper.MovieScrapperTest;
 import fr.free.movierenamer.searchinfo.Movie;
-import fr.free.movierenamer.utils.Date;
+import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScrapperUtils;
 
@@ -56,7 +56,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Movie movie = results.get(0);
 
     Assert.assertEquals("Il était une fois dans l'ouest", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTEyODQzNDkzNjVeQTJeQWpwZ15BbWU4MDgyODk1NDEx._V1_SX32_CR0,0,32,44_AL_.jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTEyODQzNDkzNjVeQTJeQWpwZ15BbWU4MDgyODk1NDEx._V1_SX32_CR0,0,32,44_AL_.jpg", movie.getURL());
     Assert.assertEquals(1968, movie.getYear());
     Assert.assertEquals(64116, movie.getImdbId().getId());
   }
@@ -69,7 +69,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Movie movie = results.get(0);
 
     Assert.assertEquals("Le pont de la rivière Kwaï", movie.getName());
-    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@..jpg", movie.getURL().toExternalForm());
+    Assert.assertEquals("http://ia.media-imdb.com/images/M/MV5BMTc2NzA0NTEwNF5BMl5BanBnXkFtZTcwMzA0MTk3OA@@..jpg", movie.getURL());
     Assert.assertEquals(1957, movie.getYear());
     Assert.assertEquals(50212, movie.getImdbId().getId());
 
@@ -83,7 +83,7 @@ public class IMDbScrapperTest extends MovieScrapperTest {
     Assert.assertEquals("C'era una volta il West", movie.getTitle());
     Assert.assertEquals(Integer.valueOf(175), Integer.valueOf(movie.getRuntime()));
     Assert.assertEquals("There were three men in her life. One to take her... one to love her... and one to kill her.", movie.getTagline());// language restriction
-    Assert.assertEquals(new Date(1968, 12, 21), movie.getReleasedDate());
+    Assert.assertEquals(new DateFormat(1968, 12, 21), movie.getReleasedDate());
     Assert.assertEquals("Rated PG-13 for western violence and brief sensuality (Mpaa re-rating) (2003)", movie.getCertification());
     Assert.assertEquals("-12", movie.getCertification(MovieInfo.MotionPictureRating.FRANCE));
   }
