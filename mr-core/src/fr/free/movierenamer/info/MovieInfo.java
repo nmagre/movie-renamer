@@ -17,22 +17,14 @@
  */
 package fr.free.movierenamer.info;
 
-import fr.free.movierenamer.mediainfo.MediaAudio;
-import fr.free.movierenamer.mediainfo.MediaSubTitle;
-import fr.free.movierenamer.mediainfo.MediaVideo;
-import fr.free.movierenamer.renamer.FormatReplacing;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.DateFormat;
-import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
-import fr.free.movierenamer.utils.StringUtils;
+import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Class MovieInfo

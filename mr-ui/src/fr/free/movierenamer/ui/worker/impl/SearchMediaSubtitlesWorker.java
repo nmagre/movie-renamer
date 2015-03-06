@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import fr.free.movierenamer.scrapper.SubtitleScrapper;
+import fr.free.movierenamer.scraper.SubtitleScraper;
 import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
@@ -34,28 +34,28 @@ import java.util.List;
 public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
 
   private final UIFile media;
-  private final SubtitleScrapper scrapper;
+  private final SubtitleScraper scraper;
 
   /**
    * Constructor arguments
    *
    * @param mr
    * @param media
-   * @param scrapper
+   * @param scraper
    */
-  public SearchMediaSubtitlesWorker(MovieRenamer mr, UIFile media, SubtitleScrapper scrapper) {
+  public SearchMediaSubtitlesWorker(MovieRenamer mr, UIFile media, SubtitleScraper scraper) {
     super(mr);
     this.media = media;
-    this.scrapper = scrapper;
+    this.scraper = scraper;
   }
 
   @Override
   public List<Subtitle> executeInBackground() throws Exception {
     List<Subtitle> results = new ArrayList<Subtitle>();
 
-    if (media != null && scrapper != null) {
+    if (media != null && scraper != null) {
       String search = media.getSearch();
-      results = scrapper.search(search);
+      results = scraper.search(search);
       int count = results.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {

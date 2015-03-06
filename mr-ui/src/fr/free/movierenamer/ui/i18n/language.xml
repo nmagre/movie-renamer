@@ -774,7 +774,7 @@
       <value lang="fr">Vérifier les mises à jour au démarrage</value>
     </record>
 
-    <record key="searchscrapperlang">
+    <record key="searchscraperlang">
       <value lang="en">Informations language</value>
       <value lang="fr">Langue des informations</value>
     </record>
@@ -903,7 +903,7 @@
       <value lang="fr">Seuil de tri</value>
     </record>
 
-    <record key="searchmoviescrapper">
+    <record key="searchmoviescraper">
       <value lang="en">Movie scraper</value>
       <value lang="fr">Scraper de film</value>
     </record>
@@ -924,7 +924,7 @@
     </record>
     
     <record key="universalsearchscraper">
-      <value lang="en">Search scrapper</value>
+      <value lang="en">Search scraper</value>
       <value lang="fr">Scraper de recherche</value>
     </record>
     

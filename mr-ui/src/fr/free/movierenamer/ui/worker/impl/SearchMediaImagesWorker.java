@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
+import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
@@ -42,7 +42,7 @@ import java.util.logging.Level;
 public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
 
   private final UISearchResult searchResult;
-  private final MediaScrapper<Media, MediaInfo> scrapper;
+  private final MediaScraper<Media, MediaInfo> scraper;
   private List<ImageInfo> infos;
 
   /**
@@ -55,7 +55,7 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
   public SearchMediaImagesWorker(MovieRenamer mr, UISearchResult searchResult) {
     super(mr);
     this.searchResult = searchResult;
-    this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
+    this.scraper = (searchResult != null) ? (MediaScraper<Media, MediaInfo>) searchResult.getScraper() : null;
   }
 
   @Override
@@ -68,8 +68,8 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
     }
 
     Media media = searchResult.getSearchResult();
-    if (scrapper != null && media != null) {
-      infos = scrapper.getImages(media);
+    if (scraper != null && media != null) {
+      infos = scraper.getImages(media);
       if (infos != null) {
         int count = infos.size();
         for (int i = 0; i < count; i++) {

@@ -21,7 +21,7 @@ import fr.free.movierenamer.renamer.FormatReplacing;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.io.File;
@@ -49,7 +49,6 @@ public abstract class MediaInfo extends Info {
   protected String title;
   protected Integer year;
   protected Double rating;
-  protected CastingInfo[] casting;
   protected List<IdInfo> idsInfo;
 
   public interface InfoProperty {
@@ -139,14 +138,7 @@ public abstract class MediaInfo extends Info {
     return null;
   }
 
-  public List<CastingInfo> getCasting() {
-    return casting != null ? Arrays.asList(casting) : new ArrayList<CastingInfo>();
-  }
 
-  public void setCasting(final List<CastingInfo> persons) {
-    this.casting = (persons == null) ? null : persons.toArray(new CastingInfo[persons.size()]);
-    setMediaCasting();
-  }
 
   public List<IdInfo> getIdsInfo() {
     return idsInfo;
@@ -156,7 +148,7 @@ public abstract class MediaInfo extends Info {
     this.idsInfo = idsInfo;
   }
 
-  public String getIdString(final ScrapperUtils.AvailableApiIds idType) {
+  public String getIdString(final ScraperUtils.AvailableApiIds idType) {
 
     for (IdInfo id : idsInfo) {
       if (id.getIdType().equals(idType)) {
@@ -167,7 +159,7 @@ public abstract class MediaInfo extends Info {
     return null;
   }
 
-  public Integer getId(final ScrapperUtils.AvailableApiIds idType) {
+  public Integer getId(final ScraperUtils.AvailableApiIds idType) {
 
     for (IdInfo id : idsInfo) {
       if (id.getIdType().equals(idType)) {

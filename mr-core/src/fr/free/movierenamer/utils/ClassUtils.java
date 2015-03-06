@@ -122,6 +122,17 @@ public final class ClassUtils {
 
     return genericClazz;
   }
+  
+  public static <T> List<List<T>> trunc(List<T> list, final int L) {// TODO move should be in a ArrayUtils.java file
+    List<List<T>> parts = new ArrayList<List<T>>();
+    final int N = list.size();
+    for (int i = 0; i < N; i += L) {
+        parts.add(new ArrayList<T>(
+            list.subList(i, Math.min(N, i + L)))
+        );
+    }
+    return parts;
+}
 
   private ClassUtils() {
     throw new UnsupportedOperationException();

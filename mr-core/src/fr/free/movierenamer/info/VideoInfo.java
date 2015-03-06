@@ -23,6 +23,7 @@ import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import java.util.Map;
 public abstract class VideoInfo extends MediaInfo {
 
   protected MediaTag mtag;
+  protected CastingInfo[] casting;
 
   public VideoInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo) {
     super(mediaFields, idsInfo);
@@ -46,6 +48,15 @@ public abstract class VideoInfo extends MediaInfo {
 
   public void setMediaTag(final MediaTag mtag) {
     this.mtag = mtag;
+  }
+
+  public List<CastingInfo> getCasting() {
+    return casting != null ? Arrays.asList(casting) : new ArrayList<CastingInfo>();
+  }
+
+  public void setCasting(final List<CastingInfo> persons) {
+    this.casting = (persons == null) ? null : persons.toArray(new CastingInfo[persons.size()]);
+    setMediaCasting();
   }
 
   @Override

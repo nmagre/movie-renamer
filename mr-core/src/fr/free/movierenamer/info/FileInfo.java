@@ -24,7 +24,7 @@ import fr.free.movierenamer.namematcher.TvShowEpisodeNumMatcher;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.FileUtils;
-import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScraperUtils;
 import java.io.File;
 import java.net.URI;
 import java.util.Calendar;
@@ -67,7 +67,7 @@ public class FileInfo extends Info {
   public IdInfo getImdbId() {
     final String id = get(FileProperty.imdbId);
     if (id != null && id.length() > 0) {
-      return new IdInfo(Integer.parseInt(id), ScrapperUtils.AvailableApiIds.IMDB);
+      return new IdInfo(Integer.parseInt(id), ScraperUtils.AvailableApiIds.IMDB);
     }
     return null;
   }

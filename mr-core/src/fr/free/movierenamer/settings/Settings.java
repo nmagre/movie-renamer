@@ -26,9 +26,9 @@ import javax.xml.bind.DatatypeConverter;
 import fr.free.movierenamer.renamer.Nfo;
 
 import fr.free.movierenamer.renamer.NameCleaner;
-import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.impl.movie.IMDbScrapper;
-import fr.free.movierenamer.scrapper.impl.movie.UniversalScrapper;
+import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.impl.movie.IMDbScraper;
+import fr.free.movierenamer.scraper.impl.movie.UniversalScraper;
 import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.StringUtils;
@@ -100,13 +100,13 @@ public final class Settings extends XMLSettings {
     searchNbResult(15, SettingsType.SEARCH, SettingsSubType.GENERAL),
     searchOrder(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL, true),
     searchOrderThreshold(280, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    searchMovieScrapper(UniversalScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    searchScrapperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.SCRAPER),
+    searchMovieScraper(UniversalScraper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER),
+    searchScraperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     searchGetTmdbTag(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     searchGetOnlyLangDep(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
     //searchSetOrigTitle(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    //    searchTvshowScrapper(TheTVDBScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (TheTVDBScrapper.class.toString()),
-    //    searchSubtitleScrapper(OpenSubtitlesScrapper.class, SettingsType.SEARCH, SettingsSubType.SCRAPPER), // (IMDbScrapper.class.toString()),// FIXME
+    //    searchTvshowScraper(TheTVDBScraper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER), // (TheTVDBScraper.class.toString()),
+    //    searchSubtitleScraper(OpenSubtitlesScraper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER), // (IMDbScraper.class.toString()),// FIXME
     // http param
 
     // Proxy
@@ -130,12 +130,12 @@ public final class Settings extends XMLSettings {
     httpRequestTimeOut(30, SettingsType.ADVANCED, SettingsSubType.NETWORK),
     httpCustomUserAgent("", SettingsType.ADVANCED, SettingsSubType.NETWORK),
     // Scraper options
-    universalSearchScraper(IMDbScrapper.class),
-    universalSynopsys(IMDbScrapper.class),
-    universalCasting(IMDbScrapper.class),
-    universalRating(IMDbScrapper.class),
-    universalGenre(IMDbScrapper.class),
-    universalCountry(IMDbScrapper.class);
+    universalSearchScraper(IMDbScraper.class),
+    universalSynopsys(IMDbScraper.class),
+    universalCasting(IMDbScraper.class),
+    universalRating(IMDbScraper.class),
+    universalGenre(IMDbScraper.class),
+    universalCountry(IMDbScraper.class);
 
     private Class<?> vclass;
     private Object defaultValue;
@@ -357,23 +357,23 @@ public final class Settings extends XMLSettings {
 //    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
 //  }
   @SuppressWarnings("unchecked")
-  public Class<? extends MovieScrapper> getSearchMovieScrapper() {
+  public Class<? extends MovieScraper> getSearchMovieScraper() {
     try {
-      return (Class<MovieScrapper>) Class.forName(get(SettingsProperty.searchMovieScrapper).replace("class ", ""));
+      return (Class<MovieScraper>) Class.forName(get(SettingsProperty.searchMovieScraper).replace("class ", ""));
     } catch (Exception ex) {
     }
 
-    return IMDbScrapper.class;
+    return IMDbScraper.class;
   }
 
   @SuppressWarnings("unchecked")
-  public Class<? extends MovieScrapper> getUniversalSearchMovieScrapper() {
+  public Class<? extends MovieScraper> getUniversalSearchMovieScraper() {
     try {
-      return (Class<MovieScrapper>) Class.forName(get(SettingsProperty.universalSearchScraper).replace("class ", ""));
+      return (Class<MovieScraper>) Class.forName(get(SettingsProperty.universalSearchScraper).replace("class ", ""));
     } catch (Exception ex) {
     }
 
-    return IMDbScrapper.class;
+    return IMDbScraper.class;
   }
 
   public Class<?> getOptionClass(SettingsProperty property) {
@@ -390,35 +390,35 @@ public final class Settings extends XMLSettings {
   }
 
   @SuppressWarnings("unchecked")
-  public Class<? extends MovieScrapper> getMovieScrapperOptionClass(SettingsProperty property) {
+  public Class<? extends MovieScraper> getMovieScraperOptionClass(SettingsProperty property) {
 
     Class<?> clazz = getOptionClass(property);
     if (clazz != null) {
-      return (Class<? extends MovieScrapper>) clazz;
+      return (Class<? extends MovieScraper>) clazz;
     }
 
-    return IMDbScrapper.class;
+    return IMDbScraper.class;
   }
 
 //  @SuppressWarnings("unchecked")
-//  public Class<? extends TvShowScrapper> getSearchTvshowScrapper() {
+//  public Class<? extends TvShowScraper> getSearchTvshowScraper() {
 //    try {
-//      return (Class<TvShowScrapper>) Class.forName(get(SettingsProperty.searchTvshowScrapper).replace("class ", ""));
+//      return (Class<TvShowScraper>) Class.forName(get(SettingsProperty.searchTvshowScraper).replace("class ", ""));
 //    } catch (Exception ex) {
-//      return TheTVDBScrapper.class;
+//      return TheTVDBScraper.class;
 //    }
 //  }
 //
 //  @SuppressWarnings("unchecked")
-//  public Class<? extends SubtitleScrapper> getSearchSubtitleScrapper() {
+//  public Class<? extends SubtitleScraper> getSearchSubtitleScraper() {
 //    try {
-//      return (Class<SubtitleScrapper>) Class.forName(get(SettingsProperty.searchSubtitleScrapper).replace("class ", ""));
+//      return (Class<SubtitleScraper>) Class.forName(get(SettingsProperty.searchSubtitleScraper).replace("class ", ""));
 //    } catch (Exception ex) {
-//      return SubsceneSubtitleScrapper.class;
+//      return SubsceneSubtitleScraper.class;
 //    }
 //  }
-  public AvailableLanguages getSearchScrapperLang() {
-    return AvailableLanguages.valueOf(get(SettingsProperty.searchScrapperLang));
+  public AvailableLanguages getSearchScraperLang() {
+    return AvailableLanguages.valueOf(get(SettingsProperty.searchScraperLang));
   }
 
   public boolean isProxyIsOn() {

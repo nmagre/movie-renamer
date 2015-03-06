@@ -135,7 +135,7 @@ public final class ImageUtils {
   public static final Icon LOGO_48 = getIconFromJar("ui/icon-48.png");
   public static final Icon LOGO_72 = getIconFromJar("ui/icon-72.png");
   // Misc
-  public static final Icon IMDB_16 = getIconFromJar("scrapper/imdb.png");
+  public static final Icon IMDB_16 = getIconFromJar("scraper/imdb.png");
   public static final Icon BAN = getIconFromJar("ui/mr-ban.png");
   public static final Icon NO_IMAGE = getIconFromJar("ui/nothumb.png");
   public static final Icon NO_IMAGE_H = flipImageHorizontally(NO_IMAGE);

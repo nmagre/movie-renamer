@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.info;
 
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
+import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;

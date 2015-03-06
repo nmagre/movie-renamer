@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.scrapper.ScrapperOptions;
-import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.scraper.ScraperOptions;
+import fr.free.movierenamer.scraper.SearchScraper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.util.List;
@@ -26,7 +26,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
- * Class UIScrapper
+ * Class UIScraper
  *
  * @author Simon QUÉMÉNEUR
  * @author Nicolas Magré
@@ -34,26 +34,26 @@ import javax.swing.ImageIcon;
 public class UIScraper implements IIconList {
 
   private Icon icon;
-  private final SearchScrapper<? extends Hyperlink> scraper;
+  private final SearchScraper<? extends Hyperlink> scraper;
 
-  public UIScraper(SearchScrapper<? extends Hyperlink> scraper) {
+  public UIScraper(SearchScraper<? extends Hyperlink> scraper) {
     this.scraper = scraper;
   }
 
   @Override
   public Icon getIcon() {
     if (icon == null) {
-      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", scraper.getName().toLowerCase())));
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scraper/%s.png", scraper.getName().toLowerCase())));
     }
     
     return icon;
   }
 
-  public SearchScrapper<? extends Hyperlink> getScraper() {
+  public SearchScraper<? extends Hyperlink> getScraper() {
     return scraper;
   }
 
-  public List<ScrapperOptions> getOptions() {
+  public List<ScraperOptions> getOptions() {
     return scraper.getScraperOptions();
   }
 
@@ -67,7 +67,12 @@ public class UIScraper implements IIconList {
       return false;
     }
     UIScraper other = (UIScraper) obj;
-    return scraper.getName().equals(other.getScraper().getName());
+    SearchScraper<?> osscraper = other.getScraper();
+    if(osscraper == null) {
+      return false;
+    }
+    
+    return scraper.getName().equals(osscraper.getName());
   }
 
   @Override

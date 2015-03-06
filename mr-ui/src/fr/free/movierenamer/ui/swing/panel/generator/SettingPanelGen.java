@@ -25,21 +25,18 @@ import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.filechooser.WebFileChooser;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
-import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
-import com.alee.managers.language.LanguageManager;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
 import fr.free.movierenamer.renamer.Nfo;
-import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.ScrapperManager;
-import fr.free.movierenamer.scrapper.ScrapperOptions;
-import fr.free.movierenamer.scrapper.SubtitleScrapper;
-import fr.free.movierenamer.scrapper.TvShowScrapper;
+import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.ScraperManager;
+import fr.free.movierenamer.scraper.ScraperOptions;
+import fr.free.movierenamer.scraper.SubtitleScraper;
+import fr.free.movierenamer.scraper.TvShowScraper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
@@ -49,7 +46,6 @@ import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IIconList;
 import fr.free.movierenamer.ui.bean.UIEnum;
 import fr.free.movierenamer.ui.bean.UILang;
-import fr.free.movierenamer.ui.bean.UIPathSettings;
 import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UITestSettings;
 import fr.free.movierenamer.ui.utils.FlagUtils;
@@ -78,7 +74,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -296,9 +291,9 @@ public class SettingPanelGen extends PanelGenerator {
 
     cmp.add(label, getGroupConstraint(0, false, false, level));
 
-    if (MovieScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
-      for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
-        model.addElement(new UIScraper(scrapper));
+    if (MovieScraper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {// FIXME if, else if, ...
+      for (MovieScraper scraper : ScraperManager.getMovieScraperList()) {
+        model.addElement(new UIScraper(scraper));
       }
 
       final WebButton button = UIUtils.createSettingButton(null);
@@ -316,13 +311,13 @@ public class SettingPanelGen extends PanelGenerator {
 
       cmp.add(button, getGroupConstraint(2, false, false, level));
 
-    } else if (TvShowScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
-      for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
-        model.addElement(new UIScraper(scrapper));
+    } else if (TvShowScraper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
+      for (TvShowScraper scraper : ScraperManager.getTvShowScraperList()) {
+        model.addElement(new UIScraper(scraper));
       }
-    } else if (SubtitleScrapper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
-      for (SubtitleScrapper scrapper : ScrapperManager.getSubtitleScrapperList()) {
-        model.addElement(new UIScraper(scrapper));
+    } else if (SubtitleScraper.class.isAssignableFrom((Class<?>) property.getDefaultValue())) {
+      for (SubtitleScraper scraper : ScraperManager.getSubtitleScraperList()) {
+        model.addElement(new UIScraper(scraper));
       }
     } else {
       UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown component for %s : Class %s", property.name(), property.getDefaultValue()));
@@ -517,30 +512,30 @@ public class SettingPanelGen extends PanelGenerator {
 
     button.setEnabled(true);
 
-    UILang lng = (UILang) comboboxs.get(SettingsProperty.searchScrapperLang).getSelectedItem();
+    UILang lng = (UILang) comboboxs.get(SettingsProperty.searchScraperLang).getSelectedItem();
     scraperOptComboboxs.clear();
 
     Settings settings = Settings.getInstance();
     List<JComponent> cbboxs = new ArrayList<>();
-    List<MovieScrapper> scrappers = ScrapperManager.getMovieScrapperList();
-    List<MovieScrapper> scrappersLang = ScrapperManager.getMovieScrapperList((LocaleUtils.AvailableLanguages) lng.getLanguage());
-    UIScraper uiscrapper;
+    List<MovieScraper> scrapers = ScraperManager.getMovieScraperList();
+    List<MovieScraper> scrapersLang = ScraperManager.getMovieScraperList((LocaleUtils.AvailableLanguages) lng.getLanguage());
+    UIScraper uiscraper;
 
-    for (ScrapperOptions option : scraper.getOptions()) {
+    for (ScraperOptions option : scraper.getOptions()) {
       WebLabel label = (WebLabel) createComponent(Component.LABEL, settingsi18n + option.getProperty().name().toLowerCase());
       WebComboBox cbb = new WebComboBox();
       DefaultComboBoxModel<UIScraper> model = new DefaultComboBoxModel<>();
       cbb.setModel(model);
 
-      for (MovieScrapper scrapper : option.isIsLangdep() ? scrappersLang : scrappers) {
-        if (scrapper.getClass().equals(scraper.getScraper().getClass())) {
+      for (MovieScraper movieScraper : option.isIsLangdep() ? scrapersLang : scrapers) {
+        if (movieScraper.getClass().equals(scraper.getScraper().getClass())) {
           continue;
         }
 
-        uiscrapper = new UIScraper(scrapper);
-        model.addElement(uiscrapper);
-        if (settings.getMovieScrapperOptionClass(option.getProperty()).equals(scrapper.getClass())) {
-          cbb.setSelectedItem(uiscrapper);
+        uiscraper = new UIScraper(movieScraper);
+        model.addElement(uiscraper);
+        if (settings.getMovieScraperOptionClass(option.getProperty()).equals(movieScraper.getClass())) {
+          cbb.setSelectedItem(uiscraper);
         }
       }
 

@@ -18,7 +18,7 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.IdInfo;
-import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.scraper.SearchScraper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
@@ -29,14 +29,14 @@ import fr.free.movierenamer.searchinfo.Media.MediaType;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class UISearchResult extends AbstractSearchResult<Media, SearchScrapper<? extends Hyperlink>> {
+public class UISearchResult extends AbstractSearchResult<Media, SearchScraper<? extends Hyperlink>> {
 
   /**
    * @param searchResult
-   * @param scrapper
+   * @param scraper
    */
-  public UISearchResult(Media searchResult, SearchScrapper<? extends Hyperlink> scrapper) {
-    super(searchResult, scrapper);
+  public UISearchResult(Media searchResult, SearchScraper<? extends Hyperlink> scraper) {
+    super(searchResult, scraper);
   }
 
   public String print(boolean showId, boolean showYear) {

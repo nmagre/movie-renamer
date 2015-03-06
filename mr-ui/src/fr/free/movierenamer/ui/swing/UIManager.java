@@ -24,9 +24,10 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scrapper.MovieScrapper;
-import fr.free.movierenamer.scrapper.ScrapperManager;
-import fr.free.movierenamer.scrapper.TvShowScrapper;
+import fr.free.movierenamer.scraper.MediaScraper;
+import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.ScraperManager;
+import fr.free.movierenamer.scraper.TvShowScraper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
@@ -123,28 +124,6 @@ public final class UIManager {
     imagePanel = new ImagePanel(mr);
     logDialog = new LoggerDialog(mr);
     historyDialog = new HistoryDialog(mr);
-
-    for (UIMode mode : UIMode.values()) {
-      switch (mode) {
-        case MOVIEMODE:
-          // Init Movie Scrapper model
-          for (MovieScrapper scrapper : ScrapperManager.getMovieScrapperList()) {
-            mode.addScrapper(new UIScraper(scrapper));
-          }
-          mode.getScraperModel().setSelectedItem(new UIScraper(ScrapperManager.getMovieScrapper()));
-          mode.setFileformat(setting.coreInstance.getMovieFilenameFormat());
-          break;
-        case TVSHOWMODE:// TODO TvShow
-          // Init TvShow Scrapper model
-          for (TvShowScrapper scrapper : ScrapperManager.getTvShowScrapperList()) {
-            mode.addScrapper(new UIScraper(scrapper));
-          }
-          //mode.getScrapperModel().setSelectedItem(new UIScrapper(ScrapperManager.getTvShowScrapper()));
-          //mode.setFileformat(setting.coreInstance.gettvShowFilenameFormat());
-          break;
-
-      }
-    }
 
     nfoChk.setText("NFO");
     thumbChk.setLanguage(i18n.getLanguageKey("image.thumb"));

@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.scrapper.TrailerScrapper;
+import fr.free.movierenamer.scraper.TrailerScraper;
 import fr.free.movierenamer.searchinfo.Trailer;
 import java.net.URL;
 
@@ -26,10 +26,10 @@ import java.net.URL;
  *
  * @author Nicolas Magré
  */
-public class UISearchTrailerResult extends AbstractSearchResult<Trailer, TrailerScrapper> {
+public class UISearchTrailerResult extends AbstractSearchResult<Trailer, TrailerScraper> {
 
-  public UISearchTrailerResult(Trailer result, TrailerScrapper scrapper) {
-    super(result, scrapper);
+  public UISearchTrailerResult(Trailer result, TrailerScraper scraper) {
+    super(result, scraper);
   }
   
   public String getDuration() {

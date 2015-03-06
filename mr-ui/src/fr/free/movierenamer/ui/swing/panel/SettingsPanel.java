@@ -59,7 +59,7 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.utils.NumberUtils;
-import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -424,7 +424,7 @@ public class SettingsPanel extends WebPanel {
                   multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
 
                   List<IdInfo> ids = new ArrayList<>();
-                  ids.add(new IdInfo(133093, ScrapperUtils.AvailableApiIds.IMDB));
+                  ids.add(new IdInfo(133093, ScraperUtils.AvailableApiIds.IMDB));
                   info = new MovieInfo(mediaFields, ids, fields, multipleFields);
 
                   List<MediaAudio> audios = new ArrayList<>();
@@ -564,10 +564,10 @@ public class SettingsPanel extends WebPanel {
           UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, oldValue.equals(property.getValue()) ? property : null, property);
 
         } else if (combobox.getValue().getSelectedItem() instanceof UIScraper) {
-          UIScraper scrapper = (UIScraper) combobox.getValue().getSelectedItem();
+          UIScraper scraper = (UIScraper) combobox.getValue().getSelectedItem();
           Class<?> clazz = Class.forName(property.getValue().replace("class ", ""));
-          settings.coreInstance.set((Settings.SettingsProperty) property, scrapper.getScraper().getClass());
-          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scrapper.getScraper().getClass()) ? property : null, property);
+          settings.coreInstance.set((Settings.SettingsProperty) property, scraper.getScraper().getClass());
+          UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, clazz.equals(scraper.getScraper().getClass()) ? property : null, property);
         } else {
           UISettings.LOGGER.log(Level.SEVERE, String.format("Unknown property %s : Class %s", property.name(), property.getDefaultValue()));
         }

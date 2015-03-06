@@ -61,17 +61,17 @@ public class SearchMediaCastingWorker extends Worker<List<UIPersonImage>> {// No
     List<UIPersonImage> persons = new ArrayList<>();
     List<CastingInfo> infos;
 
-    if (info != null) {
-      infos = info.getCasting();
-      int count = infos.size();
-      for (int i = 0; i < count; i++) {
-        if (isCancelled()) {
-          return new ArrayList<>();
-        }
-
-        persons.add(new UIPersonImage(infos.get(i)));
-      }
-    }
+//    if (info != null) {
+//      infos = info.getCasting();
+//      int count = infos.size();
+//      for (int i = 0; i < count; i++) {
+//        if (isCancelled()) {
+//          return new ArrayList<>();
+//        }
+//
+//        persons.add(new UIPersonImage(infos.get(i)));
+//      }
+//    }
 
     return persons;
   }

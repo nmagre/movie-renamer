@@ -35,7 +35,7 @@ public class TrailerListRenderer extends IconListRenderer<UISearchTrailerResult>
 
     if (value instanceof UISearchTrailerResult) {
       UISearchTrailerResult trailer = (UISearchTrailerResult) value;
-      String providerImg = getClass().getResource("/image/scrapper/" + trailer.getProvider().toLowerCase().replace(" ", "_") + ".png").toString();
+      String providerImg = getClass().getResource("/image/scraper/" + trailer.getProvider().toLowerCase().replace(" ", "_") + ".png").toString();
       String text = "<html><body style='width:200px'><center><img src='" + providerImg + "'>&nbsp;&nbsp;<b>" + trailer.getName() + "</b><br><i>" + trailer.getDuration() + "</i></center></body></html>";
 
       label.setHorizontalTextPosition(SwingConstants.CENTER);

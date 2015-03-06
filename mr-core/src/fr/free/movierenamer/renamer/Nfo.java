@@ -30,7 +30,7 @@ import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.ScrapperUtils;
+import fr.free.movierenamer.utils.ScraperUtils;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -279,7 +279,7 @@ public class Nfo {// TODO
 
     if (infoType.equals(MediaType.MOVIE)) {
       if (settings.isMovieImdbId()) {
-        addNode("id", ((MovieInfo) mediaInfo).getIdString(ScrapperUtils.AvailableApiIds.IMDB));
+        addNode("id", ((MovieInfo) mediaInfo).getIdString(ScraperUtils.AvailableApiIds.IMDB));
       }
     }
 

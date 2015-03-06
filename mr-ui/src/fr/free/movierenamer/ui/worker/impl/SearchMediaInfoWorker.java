@@ -17,11 +17,10 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.VideoInfo;
-import fr.free.movierenamer.scrapper.MediaScrapper;
+import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
@@ -30,7 +29,6 @@ import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class SearchMediaInfosWorker
@@ -40,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SearchMediaInfoWorker extends Worker<UIMediaInfo<?>> {
 
-  private final MediaScrapper<Media, MediaInfo> scrapper;
+  private final MediaScraper<Media, MediaInfo> scraper;
   private final UISearchResult searchResult;
 
   /**
@@ -53,14 +51,14 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo<?>> {
   public SearchMediaInfoWorker(final MovieRenamer mr, final UISearchResult searchResult) {
     super(mr);
     this.searchResult = searchResult;
-    this.scrapper = (searchResult != null) ? (MediaScrapper<Media, MediaInfo>) searchResult.getScrapper() : null;
+    this.scraper = (searchResult != null) ? (MediaScraper<Media, MediaInfo>) searchResult.getScraper() : null;
   }
 
   @Override
   public UIMediaInfo<?> executeInBackground() throws Exception {
     UIMediaInfo<?> info = null;
-    if (searchResult != null && scrapper != null) {
-      MediaInfo inf = scrapper.getInfo(searchResult.getSearchResult());
+    if (searchResult != null && scraper != null) {
+      MediaInfo inf = scraper.getInfo(searchResult.getSearchResult());
 
       if (inf instanceof VideoInfo) {
        // FileInfo fileInfo = mr.getFile().getFileInfo();

@@ -267,7 +267,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     WebButton button = UIUtils.createSettingButton(null);
     mediaFileListsettingBtn = UIUtils.createPopup(button, PopupWay.downRight, toggleGroup, showIconMediaListChk, showMediaPanelChk, showImagePanelChk);
     
-    scrapperCb.setRenderer(new IconComboRenderer<>(scrapperCb));
+    scraperCb.setRenderer(new IconComboRenderer<>(scraperCb));
     
     loadMediaPanel();
     
@@ -484,8 +484,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
               case reservedCharacter:
                 updateRenamedTitle();
                 break;
-              case searchMovieScrapper:
-                //case searchTvshowScrapper:
+              case searchMovieScraper:
+                //case searchTvshowScraper:
                 break;
               case appLanguage:
                 LanguageManager.setLanguage(sproperty.getValue());
@@ -738,7 +738,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         break;
     }
     
-    scrapperCb.setModel(currentMode.getScraperModel());
+    scraperCb.setModel(currentMode.getScraperModel());
     fileFormatField.setText(currentMode.getFileFormat());
     containerTransitionMediaPanel.performTransition(mediaPanels.get(currentMode));
     
@@ -1182,7 +1182,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchField = new WebTextField();
     searchResultListSp = new JScrollPane();
     searchResultList = new WebList();
-    scrapperCb = new WebComboBox();
+    scraperCb = new WebComboBox();
     renamePnl = new WebPanel();
     renameTb = new WebToolBar();
     renameBtn = new WebButton();
@@ -1304,13 +1304,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     GroupLayout mediaFilePnlLayout = new GroupLayout(mediaFilePnl);
     mediaFilePnl.setLayout(mediaFilePnlLayout);
-    mediaFilePnlLayout.setHorizontalGroup(
-      mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
+    mediaFilePnlLayout.setHorizontalGroup(mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
       .addComponent(mediaFileTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
     );
-    mediaFilePnlLayout.setVerticalGroup(
-      mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
+    mediaFilePnlLayout.setVerticalGroup(mediaFilePnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(mediaFilePnlLayout.createSequentialGroup()
         .addComponent(mediaFileTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
@@ -1359,31 +1357,29 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     searchResultList.setFocusable(false);
     searchResultListSp.setViewportView(searchResultList);
 
-    scrapperCb.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
-    scrapperCb.setDrawFocus(false);
+    scraperCb.setBorder(BorderFactory.createEmptyBorder(0, 1, 0, 1));
+    scraperCb.setDrawFocus(false);
 
     GroupLayout searchPnlLayout = new GroupLayout(searchPnl);
     searchPnl.setLayout(searchPnlLayout);
-    searchPnlLayout.setHorizontalGroup(
-      searchPnlLayout.createParallelGroup(Alignment.LEADING)
+    searchPnlLayout.setHorizontalGroup(searchPnlLayout.createParallelGroup(Alignment.LEADING)
       .addComponent(searchTb, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       .addGroup(searchPnlLayout.createSequentialGroup()
         .addComponent(searchField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addPreferredGap(ComponentPlacement.UNRELATED)
-        .addComponent(scrapperCb, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
+        .addComponent(scraperCb, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addComponent(searchBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
       .addComponent(searchResultListSp, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 766, Short.MAX_VALUE)
     );
-    searchPnlLayout.setVerticalGroup(
-      searchPnlLayout.createParallelGroup(Alignment.LEADING)
+    searchPnlLayout.setVerticalGroup(searchPnlLayout.createParallelGroup(Alignment.LEADING)
       .addGroup(searchPnlLayout.createSequentialGroup()
         .addComponent(searchTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(ComponentPlacement.RELATED)
         .addGroup(searchPnlLayout.createParallelGroup(Alignment.LEADING)
           .addComponent(searchField, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
           .addComponent(searchBtn, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addComponent(scrapperCb, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+          .addComponent(scraperCb, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(ComponentPlacement.UNRELATED)
         .addComponent(searchResultListSp, GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))
     );
@@ -1600,7 +1596,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
   private JTextField renameField;
   private WebPanel renamePnl;
   private WebToolBar renameTb;
-  private WebComboBox scrapperCb;
+  private WebComboBox scraperCb;
   private WebButton searchBtn;
   private WebTextField searchField;
   private WebLabel searchLbl;

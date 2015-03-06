@@ -18,6 +18,7 @@
 package fr.free.movierenamer.searchinfo;
 
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.settings.Settings;
 import java.net.URL;
 
 /**
@@ -29,12 +30,24 @@ import java.net.URL;
 public abstract class Media extends Hyperlink {
 
   private static final long serialVersionUID = 1L;
+  protected static final Settings settings = Settings.getInstance();
   protected IdInfo idInfo;
 
   public enum MediaType {
 
-    MOVIE,
-    TVSHOW
+    MOVIE(settings.getMovieFilenameFormat()),
+    TVSHOW("");// FIXME tvshow file format
+
+    private final String fileFormat;
+
+    private MediaType(String fileFormat) {
+      this.fileFormat = fileFormat;
+    }
+
+    public String getFileFormat() {
+      return fileFormat;
+    }
+
   }
 
   protected Media() {

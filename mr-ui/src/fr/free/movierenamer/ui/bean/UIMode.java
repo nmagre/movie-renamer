@@ -17,10 +17,13 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.scraper.MediaScraper;
+import fr.free.movierenamer.scraper.ScraperManager;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 
@@ -34,11 +37,12 @@ public enum UIMode {
 
   MOVIEMODE(UIUtils.i18n.getLanguageKey("movieMode", "toptb"), "movieMode", MediaType.MOVIE, "ui/24/movie.png"),
   TVSHOWMODE(UIUtils.i18n.getLanguageKey("tvshowMode", "toptb"), "tvshowMode", MediaType.TVSHOW, "ui/24/tv.png");
+  //GAMEMODE(UIUtils.i18n.getLanguageKey("gameMode", "toptb"), "gameMode", MediaType.GAME, "ui/24/games.png");
   private final MediaType mediaType;
   private final String title;
   private final String titleMode;
   private final ImageIcon icon;
-  private final DefaultComboBoxModel<UIScraper> scrapperModel = new DefaultComboBoxModel<>();
+  private final DefaultComboBoxModel<UIScraper> scraperModel = new DefaultComboBoxModel<>();
   private final IProperty[] renameOptions;
   private String fileFormat;
 
@@ -48,7 +52,13 @@ public enum UIMode {
     this.mediaType = mediaType;
     this.renameOptions = renameOptions;
     this.icon = new ImageIcon(ImageUtils.getImageFromJAR(imgName));
-    fileFormat = "";
+    fileFormat = mediaType.getFileFormat();
+
+    List<MediaScraper<?, ?>> mediaScrapers = ScraperManager.getMediaScraperList(mediaType);
+    for (MediaScraper<?, ?> mediaScraper : mediaScrapers) {
+      scraperModel.addElement(new UIScraper(mediaScraper));
+    }
+    scraperModel.setSelectedItem(new UIScraper(ScraperManager.getMediaScraper(mediaType)));
   }
 
   public String getTitle() {
@@ -68,32 +78,28 @@ public enum UIMode {
   }
 
   public DefaultComboBoxModel<UIScraper> getScraperModel() {
-    return scrapperModel;
+    return scraperModel;
   }
 
   public UIScraper getSelectedScraper() {
-    return (UIScraper) scrapperModel.getSelectedItem();
+    return (UIScraper) scraperModel.getSelectedItem();
   }
 
   public void setUniversalScraper() {
     UIScraper scraper;
-    for (int i = 0; i < scrapperModel.getSize(); i++) {
-      scraper = scrapperModel.getElementAt(i);
+    for (int i = 0; i < scraperModel.getSize(); i++) {
+      scraper = scraperModel.getElementAt(i);
       if (scraper.getName().equals("Universal")) {
-        scrapperModel.setSelectedItem(scraper);
+        scraperModel.setSelectedItem(scraper);
         break;
       }
     }
   }
 
   public void setScraper(UIScraper scraper) {
-    if (scrapperModel.getIndexOf(scraper) >= 0) {
-      scrapperModel.setSelectedItem(scraper);
+    if (scraperModel.getIndexOf(scraper) >= 0) {
+      scraperModel.setSelectedItem(scraper);
     }
-  }
-
-  public void addScrapper(UIScraper scraper) {
-    scrapperModel.addElement(scraper);
   }
 
   public String getFileFormat() {
@@ -103,5 +109,5 @@ public enum UIMode {
   public void setFileformat(String fileFormat) {
     this.fileFormat = fileFormat;
   }
-
+  
 }

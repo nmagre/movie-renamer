@@ -40,7 +40,7 @@ import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.worker.IWorker.WorkerId;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFilesInfoWorker;
-import fr.free.movierenamer.ui.worker.impl.ImageWorker;
+import fr.free.movierenamer.ui.worker.impl.ImageThreadedWorker;
 import fr.free.movierenamer.ui.worker.impl.ListFilesWorker;
 import fr.free.movierenamer.ui.worker.impl.ListTooltipWorker;
 import fr.free.movierenamer.ui.worker.impl.RenameThread;
@@ -119,12 +119,12 @@ public final class WorkerManager {
   }
 
   public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, resize, defaultImage, downloadImage);
+    ImageThreadedWorker<T> imagesWorker = new ImageThreadedWorker<>(wid, model, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 
   public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, size, resize, defaultImage, downloadImage);
+    ImageThreadedWorker<T> imagesWorker = new ImageThreadedWorker<>(wid, model, size, resize, defaultImage, downloadImage);
     start(imagesWorker);
   }
 

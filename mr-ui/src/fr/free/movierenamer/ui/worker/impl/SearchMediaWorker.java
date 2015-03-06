@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.scrapper.SearchScrapper;
+import fr.free.movierenamer.scraper.SearchScraper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
@@ -45,7 +45,7 @@ import java.util.List;
 public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
   private final UIFile media;
-  private final SearchScrapper<? extends Hyperlink> scrapper;
+  private final SearchScraper<? extends Hyperlink> scraper;
   private final WebList searchResultList;
   private final ImageListModel<UISearchResult> searchResultModel;
 
@@ -58,7 +58,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
   public SearchMediaWorker(MovieRenamer mr, UIFile media) {
     super(mr);
     this.media = media;
-    this.scrapper = mr.getUIScraper().getScraper();
+    this.scraper = mr.getUIScraper().getScraper();
     this.searchResultList = mr.getSearchResultList();
     this.searchResultModel = mr.getSearchResultListModel();
   }
@@ -69,9 +69,9 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
     List<UISearchResult> results = new ArrayList<>();
     List<? extends Media> res;
 
-    if (media != null && scrapper != null) {
+    if (media != null && scraper != null) {
       String search = media.getSearch();
-      res = (List<? extends Media>) scrapper.search(search);
+      res = (List<? extends Media>) scraper.search(search);
       int count = res.size();
 
       for (int i = 0; i < count; i++) {
@@ -79,7 +79,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
           return new ArrayList<>();
         }
 
-        results.add(new UISearchResult(res.get(i), scrapper));
+        results.add(new UISearchResult(res.get(i), scraper));
       }
 
       Settings settings = Settings.getInstance();

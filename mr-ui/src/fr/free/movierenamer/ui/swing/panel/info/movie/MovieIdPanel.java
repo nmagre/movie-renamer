@@ -29,7 +29,7 @@ import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.WorkerManager;
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
+import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,7 +56,7 @@ public class MovieIdPanel extends InfoEditorPanel<UIMovieInfo> {
     Icon icon;
 
     for (final AvailableApiIds apiId : AvailableApiIds.getAvailableApiIds(Media.MediaType.MOVIE)) {
-      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scrapper/%s.png", apiId.name().toLowerCase())));
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format("scraper/%s.png", apiId.name().toLowerCase())));
       button = new WebButton(icon);
 
       if (apiId.equals(AvailableApiIds.ROTTENTOMATOES)) {// Rotten tomatoes id cannot reference movie web page

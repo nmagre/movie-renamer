@@ -23,8 +23,8 @@ import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
-import fr.free.movierenamer.utils.ScrapperUtils;
-import fr.free.movierenamer.utils.ScrapperUtils.AvailableApiIds;
+import fr.free.movierenamer.utils.ScraperUtils;
+import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.util.List;
 
 /**
@@ -52,7 +52,7 @@ public class SearchMediaIdWorker extends AbstractWorker<List<IdInfo>, Void> {
 
     for (AvailableApiIds apiId : AvailableApiIds.getAvailableApiIds(mediaType)) {
       if (!isInList(idInfos, apiId)) {
-        IdInfo inf = ScrapperUtils.idLookup(apiId, idInfos.get(0), searchResult.getSearchResult());
+        IdInfo inf = ScraperUtils.idLookup(apiId, idInfos.get(0), searchResult.getSearchResult());
         if (inf != null) {
           idInfos.add(inf);
         }

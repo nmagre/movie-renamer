@@ -57,6 +57,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
   private static final long delay = 2628000L;
 
   public AbstractImageWorker(WorkerId wid, List<T> images, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    super();
     this.wid = wid;
     this.images = images;
     this.defaultImage = defaultImage;
@@ -130,7 +131,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
         publish(new ImageChunk(img, image.getId()));
         count++;
 
-        setProgress((count * 100) / total);
+        setProgress((count * 100) / total);// FIXME remove
       }
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("%s%n%n%s", getName(), ClassUtils.getStackTrace(ex)));

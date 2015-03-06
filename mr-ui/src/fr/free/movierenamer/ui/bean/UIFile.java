@@ -214,7 +214,7 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
     str += "<br>";
 
     if (getImdbId() != null) {
-      str += "<img src =\"" + ImageUtils.getImagePath("scrapper/imdb.png") + "\">&nbsp;";
+      str += "<img src =\"" + ImageUtils.getImagePath("scraper/imdb.png") + "\">&nbsp;";
       str += getImdbId() + "<br>";
     }
 

@@ -17,7 +17,7 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.scrapper.Scrapper;
+import fr.free.movierenamer.scraper.Scraper;
 import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.utils.Sorter;
@@ -28,19 +28,19 @@ import javax.swing.Icon;
  *
  * @author duffy
  */
-public class AbstractSearchResult<M extends Hyperlink, T extends Scrapper> extends Sorter.ISort implements IImage {
+public class AbstractSearchResult<M extends Hyperlink, T extends Scraper> extends Sorter.ISort implements IImage {
 
   protected final M result;
-  protected final T scrapper;
+  protected final T scraper;
   private Icon icon = ImageUtils.LOAD_24;
 
-  protected AbstractSearchResult(M result, T scrapper) {
+  protected AbstractSearchResult(M result, T scraper) {
     this.result = result;
-    this.scrapper = scrapper;
+    this.scraper = scraper;
   }
 
-  public T getScrapper() {
-    return scrapper;
+  public T getScraper() {
+    return scraper;
   }
 
   public M getSearchResult() {

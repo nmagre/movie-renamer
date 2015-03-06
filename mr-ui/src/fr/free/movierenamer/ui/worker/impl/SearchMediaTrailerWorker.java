@@ -16,7 +16,7 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import fr.free.movierenamer.scrapper.impl.trailer.UniversalTrailerScrapper;
+import fr.free.movierenamer.scraper.impl.trailer.UniversalTrailerScraper;
 import fr.free.movierenamer.searchinfo.Trailer;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UISearchResult;
@@ -46,7 +46,7 @@ public class SearchMediaTrailerWorker extends Worker<List<UISearchTrailerResult>
   @Override
   public List<UISearchTrailerResult> executeInBackground() throws Exception {
     List<UISearchTrailerResult> trailers = new ArrayList<>();
-    UniversalTrailerScrapper scraper = new UniversalTrailerScrapper();
+    UniversalTrailerScraper scraper = new UniversalTrailerScraper();
     List<Trailer> trailersInfo = scraper.getTrailer(searchResult.getSearchResult());
 
     String title = searchResult.getOriginalName();

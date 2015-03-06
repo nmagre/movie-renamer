@@ -326,7 +326,7 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="searchField" max="32767" attributes="0"/>
                                           <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                                          <Component id="scrapperCb" min="-2" pref="173" max="-2" attributes="0"/>
+                                          <Component id="scraperCb" min="-2" pref="173" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
                                           <Component id="searchBtn" min="-2" max="-2" attributes="0"/>
                                       </Group>
@@ -341,7 +341,7 @@
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="searchField" alignment="1" min="-2" max="-2" attributes="0"/>
                                               <Component id="searchBtn" alignment="1" min="-2" max="-2" attributes="0"/>
-                                              <Component id="scrapperCb" alignment="1" min="-2" pref="25" max="-2" attributes="0"/>
+                                              <Component id="scraperCb" alignment="1" min="-2" pref="25" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                                           <Component id="searchResultListSp" pref="143" max="32767" attributes="0"/>
@@ -420,7 +420,7 @@
                                     </Component>
                                   </SubComponents>
                                 </Container>
-                                <Component class="com.alee.laf.combobox.WebComboBox" name="scrapperCb">
+                                <Component class="com.alee.laf.combobox.WebComboBox" name="scraperCb">
                                   <Properties>
                                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                       <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">

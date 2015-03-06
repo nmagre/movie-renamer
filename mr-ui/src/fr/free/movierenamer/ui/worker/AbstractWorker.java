@@ -37,6 +37,8 @@ import javax.swing.SwingWorker;
  */
 public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener, IEventInfo, IWorker {
 
+  protected boolean sendEvent = true;
+
   protected AbstractWorker() {
     addPropertyChangeListener(this);
   }
@@ -58,7 +60,9 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
   public void propertyChange(PropertyChangeEvent evt) {
 
     if ("progress".equals(evt.getPropertyName())) {
-      workerProgress((Integer) evt.getNewValue());
+      if (sendEvent) {
+        workerProgress((Integer) evt.getNewValue());
+      }
       return;
     }
 
@@ -103,7 +107,9 @@ public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements 
   }
 
   protected void workerProgress(int progress) {
-    UIEvent.fireUIEvent(UIEvent.Event.WORKER_PROGRESS, this);
+    if (sendEvent) {
+      UIEvent.fireUIEvent(UIEvent.Event.WORKER_PROGRESS, this);
+    }
   }
 
   @Override

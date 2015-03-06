@@ -40,8 +40,11 @@ import java.awt.dnd.DropTarget;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -61,7 +64,9 @@ public class GalleryDialog extends AbstractDialog {
   private final ImageListModel<UIMediaImage> imageListModel;
   private final ZoomListRenderer zoomListRenderer;
   private final DefaultComboBoxModel<UILang> languagesModel;
+  private final ItemListener languageChangeListener;
   private final WorkerId wid;
+  private final Map<UILang, Integer> selectedIndex;
   private boolean useLanguage;
   private List<UIMediaImage> images;
   private List<UIMediaImage> imagesByLang;
@@ -69,15 +74,7 @@ public class GalleryDialog extends AbstractDialog {
   private SupportedImages supportedImage;
   private final DropTarget dt;
   private int userAdId = -1;
-  private final ItemListener languageChangeListener = new ItemListener() {
-    @Override
-    public void itemStateChanged(ItemEvent event) {
-      if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
-        imageListModel.clear();
-        fetchImages(getImageByLanguage((UILang) languagesModel.getSelectedItem()));
-      }
-    }
-  };
+  private UILang currentLanguage;
 
   @SuppressWarnings("unchecked")
   public GalleryDialog(MovieRenamer mr, SupportedImages supportedImage) {
@@ -91,6 +88,8 @@ public class GalleryDialog extends AbstractDialog {
     languagesModel = new DefaultComboBoxModel<>();
     images = new ArrayList<>();
     languages = new ArrayList<>();
+    selectedIndex = new HashMap<>();
+    currentLanguage = null;
 
     initComponents();
 
@@ -133,6 +132,7 @@ public class GalleryDialog extends AbstractDialog {
     languageCbb.setVisible(useLanguage);
     languageCbb.setModel(languagesModel);
     languageCbb.setRenderer(new IconComboRenderer<>(languageCbb));
+    languageChangeListener = createLanguageListener();
 
     imageList.setCellRenderer(zoomListRenderer);
     imageList.setModel(imageListModel);
@@ -176,6 +176,24 @@ public class GalleryDialog extends AbstractDialog {
     };
   }
 
+  private ItemListener createLanguageListener() {
+    return new ItemListener() {
+      @Override
+      public void itemStateChanged(ItemEvent event) {
+        if (event.getStateChange() == ItemEvent.SELECTED && languagesModel.getSize() > 0) {
+          imageListModel.clear();
+          selectedIndex.put(currentLanguage, getSelectedIndex());
+          currentLanguage = (UILang) languagesModel.getSelectedItem();
+          fetchImages(getImageByLanguage(currentLanguage));
+
+          // Select image
+          Integer prevIndex = selectedIndex.get(currentLanguage);
+          imageList.setSelectedIndex(prevIndex != null ? prevIndex : 0);
+        }
+      }
+    };
+  }
+
   public int getUserAdId() {
     return userAdId--;
   }
@@ -189,7 +207,7 @@ public class GalleryDialog extends AbstractDialog {
   public void addImages(List<UIMediaImage> images) {
     UILang imglang = null;
     this.images = images;
-    
+
     dt.setActive(true);
 
     if (useLanguage) {
@@ -205,12 +223,12 @@ public class GalleryDialog extends AbstractDialog {
         if (!languages.contains(lng)) {
           languages.add(lng);
           languagesModel.addElement(lng);
-          if (lng.getLang().getLanguage().equals(UISettings.getInstance().coreInstance.getSearchScrapperLang().getLocale().getLanguage())) {
+          if (lng.getLang().getLanguage().equals(UISettings.getInstance().coreInstance.getSearchScraperLang().getLocale().getLanguage())) {
             languagesModel.setSelectedItem(lng);
             imglang = lng;
           }
 
-          // Select English images, if search scrapper language is not found
+          // Select English images, if search scraper language is not found
           if (imglang == null && lng.getLang().getLanguage().equals("en")) {
             languagesModel.setSelectedItem(lng);
             imglang = lng;
@@ -229,8 +247,12 @@ public class GalleryDialog extends AbstractDialog {
       languageCbb.addItemListener(languageChangeListener);
     }
 
+    currentLanguage = imglang;
     fetchImages(getImageByLanguage(imglang));
-    imageList.setSelectedIndex(0);
+
+    // Select image
+    Integer prevIndex = selectedIndex.get(imglang);
+    imageList.setSelectedIndex(prevIndex != null ? prevIndex : 0);
   }
 
   public void addLocaleImage(UIMediaImage image) {
@@ -262,7 +284,7 @@ public class GalleryDialog extends AbstractDialog {
   }
 
   public List<UIMediaImage> getImageByLanguage() {
-    return imagesByLang;
+    return Collections.unmodifiableList(imagesByLang);
   }
 
   private List<UIMediaImage> getImageByLanguage(UILang lang) {
@@ -313,7 +335,12 @@ public class GalleryDialog extends AbstractDialog {
   }
 
   private void setThumb() {
-    Icon icon = ((UIMediaImage) imageList.getSelectedValue()).getIcon();
+    UIMediaImage mediaImage = getSelectedValue();
+    if (mediaImage == null) {
+      return;
+    }
+
+    Icon icon = mediaImage.getIcon();
     if (icon instanceof ImageIcon) {
       Image img = ((ImageIcon) icon).getImage();
       Image newimg = img.getScaledInstance(ImagePanel.pwidth, (int) (ImagePanel.pwidth / supportedImage.getRatio()),
@@ -326,11 +353,17 @@ public class GalleryDialog extends AbstractDialog {
     return (UIMediaImage) imageList.getSelectedValue();
   }
 
+  private int getSelectedIndex() {
+    int index = imageList.getSelectedIndex();
+    return index > 0 ? index : 0;
+  }
+
   public ImageCategoryProperty getImageProperty() {
     return property;
   }
 
   public void clear() {
+    selectedIndex.clear();
     languageCbb.removeItemListener(languageChangeListener);
     imageListModel.clear();
     languagesModel.removeAllElements();

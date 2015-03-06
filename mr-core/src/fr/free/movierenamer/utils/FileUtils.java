@@ -35,7 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 
-import fr.free.movierenamer.scrapper.impl.utils.OpenSubtitlesHasher;
+import fr.free.movierenamer.scraper.impl.utils.OpenSubtitlesHasher;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
