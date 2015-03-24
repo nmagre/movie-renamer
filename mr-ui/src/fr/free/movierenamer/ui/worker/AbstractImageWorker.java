@@ -17,7 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker;
 
-import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.settings.UISettings;
@@ -49,14 +49,14 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
 
   protected final List<T> images;
   protected final Icon defaultImage;
-  protected final ImageInfo.ImageSize size;
+  protected final ImageSize size;
   protected final WorkerId wid;
   private final boolean downloadImage;
   private final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images");
   private final Dimension resize;
   private static final long delay = 2628000L;
 
-  public AbstractImageWorker(WorkerId wid, List<T> images, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+  public AbstractImageWorker(WorkerId wid, List<T> images, ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
     super();
     this.wid = wid;
     this.images = images;

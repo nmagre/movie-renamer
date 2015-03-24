@@ -18,7 +18,6 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.VideoInfo;
-import fr.free.movierenamer.mediainfo.MediaTag;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +36,6 @@ public class UIVideoInfo<T extends VideoInfo> extends UIMediaInfo<T> {
     for (CastingInfo casting : info.getCasting()) {
       castings.add(new UIPersonImage(casting));
     }
-  }
-
-  public void setMediaTag(MediaTag mediaTag) {
-    ((T) info).setMediaTag(mediaTag);
   }
 
   @Override

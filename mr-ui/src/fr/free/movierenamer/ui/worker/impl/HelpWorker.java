@@ -17,7 +17,6 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
-import dw.xmlrpc.DokuJClient;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.dialog.SettingsHelpDialog;
@@ -60,12 +59,12 @@ public class HelpWorker extends Worker<String> {
       return html;
     }
 
-    DokuJClient client = new DokuJClient(host, user, pwd);
-    html = client.getPageHTML(id);
-    if (html.isEmpty() && !id.startsWith("wiki")) {
-      id = "wiki" + id.substring(2);
-      html = client.getPageHTML(id);
-    }
+//    DokuJClient client = new DokuJClient(host, user, pwd);
+//    html = client.getPageHTML(id);
+//    if (html.isEmpty() && !id.startsWith("wiki")) {
+//      id = "wiki" + id.substring(2);
+//      html = client.getPageHTML(id);
+//    }
 
     return cache.putData(id, Locale.ENGLISH, html);
   }

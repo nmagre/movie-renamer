@@ -48,7 +48,7 @@ public final class AllocineScraper extends AlloGroupScraper {
   }
 
   // Only most common country for video media
-  private enum Nationality {
+  private static enum Nationality {
 
     N_5025("Argentine"),
     N_5029("Australie"),

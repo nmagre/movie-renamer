@@ -18,10 +18,13 @@
 package fr.free.movierenamer.utils;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Class JSONUtils
@@ -36,18 +39,21 @@ public final class JSONUtils {
       JSONObject toSearch = rootObject;
       String[] nodes = path.split("/");
       for (String node : nodes) {
-        toSearch = (JSONObject) toSearch.get(node);
+        toSearch = toSearch.getJSONObject(node);
       }
       return toSearch;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      
     }
+    
+    return null;
   }
 
   public static JSONObject selectFirstObject(final JSONObject rootObject) {
     try {
       JSONObject toSearch = rootObject;
-      Iterator<String> it = toSearch.keySet().iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<String> it = (Iterator<String>) toSearch.keys();
       while (it.hasNext()) {
         String key = it.next();
         if (key != null) {
@@ -69,7 +75,7 @@ public final class JSONUtils {
   public static JSONObject selectNextObject(final JSONObject rootObject) {
     try {
       JSONObject toSearch = rootObject;
-      return (JSONObject) toSearch.get(toSearch.entrySet().iterator().next());
+      return (JSONObject) toSearch.get((String) toSearch.keys().next());
     } catch (Exception e) {
       //
     }
@@ -86,8 +92,9 @@ public final class JSONUtils {
       JSONArray array = (JSONArray) toSearch.get(path.substring(last + 1, path.length()));
       return jsonList(array);
     } catch (Exception e) {
-      throw new RuntimeException(e);
     }
+    
+    return new ArrayList<>();
   }
 
   public static String selectString(String attribute, final JSONObject node) {
@@ -103,8 +110,9 @@ public final class JSONUtils {
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException(e);
     }
+    
+    return null;
   }
 
   public static Integer selectInteger(String attribute, final JSONObject node) {
@@ -124,7 +132,13 @@ public final class JSONUtils {
           return null;
         }
         
-        return (JSONObject) ((JSONArray) array).get(index);
+        try {
+          return (JSONObject) ((JSONArray) array).get(index);
+        } catch (JSONException ex) {
+
+        }
+        
+        return null;
       }
 
       @Override
@@ -132,7 +146,7 @@ public final class JSONUtils {
         if (array == null) {
           return 0;
         }
-        return ((JSONArray) array).size();
+        return ((JSONArray) array).length();
       }
     };
   }

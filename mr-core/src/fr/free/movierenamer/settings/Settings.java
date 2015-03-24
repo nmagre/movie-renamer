@@ -122,10 +122,6 @@ public final class Settings extends XMLSettings {
     appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),
     formatTokenStart("<", SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
     formatTokenEnd(">", SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
-    formatOptionSeparator(':', SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
-    formatEqualsSeparator('=', SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
-    formatNotEqualsSeparator('!', SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
-    formatValueIndex(Pattern.compile("[a-z]+(\\d+)"), SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
     matcherNfofileExt(Arrays.asList(new String[]{"nfo", "xml"}), SettingsType.ADVANCED),
     httpRequestTimeOut(30, SettingsType.ADVANCED, SettingsSubType.NETWORK),
     httpCustomUserAgent("", SettingsType.ADVANCED, SettingsSubType.NETWORK),
@@ -459,22 +455,6 @@ public final class Settings extends XMLSettings {
 
   public String getFormatTokenEnd() {
     return get(SettingsProperty.formatTokenEnd);
-  }
-
-  public char getFormatOptionSeparator() {
-    return get(SettingsProperty.formatOptionSeparator).charAt(0);
-  }
-
-  public char getFormatEqualsSeparator() {
-    return get(SettingsProperty.formatEqualsSeparator).charAt(0);
-  }
-
-  public char getFormatNotEqualsSeparator() {
-    return get(SettingsProperty.formatNotEqualsSeparator).charAt(0);
-  }
-
-  public Pattern getFormatValueIndex() {
-    return Pattern.compile(get(SettingsProperty.formatValueIndex));
   }
 
   public List<String> getfileExtension() {

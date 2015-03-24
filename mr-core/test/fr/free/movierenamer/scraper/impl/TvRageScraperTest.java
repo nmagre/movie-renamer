@@ -53,7 +53,7 @@ public final class TvRageScraperTest extends TvShowScraperTest {
     TvShow tvShow = results.get(0);
 
     Assert.assertEquals("Buffy the Vampire Slayer", tvShow.getName());
-    Assert.assertEquals("http://images.tvrage.com/shows/3/2930.jpg", tvShow.getURL().toExternalForm());
+    Assert.assertEquals("http://images.tvrage.com/shows/3/2930.jpg", tvShow.getURL());
     Assert.assertEquals(1997, tvShow.getYear());
     Assert.assertEquals(2930, tvShow.getMediaId());
   }

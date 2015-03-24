@@ -68,7 +68,7 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
 
   }
 
-  private synchronized FileInfo getSFileInfo() {
+  public synchronized FileInfo getFileInfo() {
     if (fileInfo == null) {
       setFileInfo(new FileInfo(file));
     }
@@ -76,12 +76,8 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
     return fileInfo;
   }
 
-  public FileInfo getFileInfo() {
-    return getSFileInfo();
-  }
-
   public IdInfo getImdbId() {
-    return getSFileInfo().getImdbId();
+    return getFileInfo().getImdbId();
   }
 
   public void setFile(File file) {
@@ -96,7 +92,7 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
 
   public String getSearch() {
     if (search == null || search.isEmpty()) {
-      search = getSFileInfo().getSearch();
+      search = getFileInfo().getSearch();
     }
 
     return search;
@@ -117,7 +113,7 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
 
   @Override
   public int getYear() {
-    return getSFileInfo().getYear();
+    return getFileInfo().getYear();
   }
 
   /**
@@ -185,14 +181,18 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
   }
 
   public String getMd5Hash() {
-    return fileInfo.get(FileInfo.FileProperty.md5);
+    return getFileInfo().get(FileInfo.FileProperty.md5);
   }
 
   public void setGroupName(String groupName) {
     this.groupName = groupName;
   }
 
-  public MediaType getMtype() {
+  public synchronized MediaType getMtype() {
+    if (mtype == null) {
+      mtype = getFileInfo().getType();
+    }
+
     return mtype;
   }
 
@@ -233,12 +233,12 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
       }
 
       if (maudios != null && !maudios.isEmpty()) {
-        String audioHtml = "";
+        StringBuilder audioHtml = new StringBuilder();
         for (MediaAudio audio : maudios) {
-          audioHtml += getHtmlLang(audio.getLanguage());
+          audioHtml.append(getHtmlLang(audio.getLanguage()));
         }
-
-        if (!audioHtml.isEmpty()) {
+        
+        if (audioHtml.length() > 0) {
           str += "<img src =\"" + ImageUtils.getImagePath("ui/16/sound.png") + "\">";
           str += audioHtml + "<br>";
         }

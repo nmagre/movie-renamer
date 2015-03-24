@@ -21,6 +21,7 @@ import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.ui.settings.UISettings.ImageFormat;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
+import java.util.Locale;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
@@ -47,7 +48,7 @@ public class UIEnum implements IIconList {
   @Override
   public Icon getIcon() {
     if (icon == null && imgFolder != null) {
-      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format(imgFolder + "/%s.png", enumValue.name().toLowerCase())));
+      icon = new ImageIcon(ImageUtils.getImageFromJAR(String.format(imgFolder + "/%s.png", enumValue.name().toLowerCase(Locale.ENGLISH))));
     }
     return icon;
   }
@@ -57,7 +58,7 @@ public class UIEnum implements IIconList {
     if (enumValue instanceof Nfo.NFOtype || enumValue instanceof ImageFormat) {
       return enumValue.name();
     }
-    return UIUtils.i18n.getLanguage("settings." + enumValue.name().toLowerCase(), false);
+    return UIUtils.i18n.getLanguage("settings." + enumValue.name().toLowerCase(Locale.ENGLISH), false);
   }
 
   @Override

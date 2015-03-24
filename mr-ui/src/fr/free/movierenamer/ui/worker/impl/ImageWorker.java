@@ -36,12 +36,12 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
 
   private final ImageListModel<T> model;
 
-  public ImageWorker(WorkerId wid, List<T> images, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    this(wid, images, model, ImageInfo.ImageSize.small, resize, defaultImage, downloadImage);
+  public ImageWorker(WorkerId wid, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    this(wid, model, ImageInfo.ImageSize.small, resize, defaultImage, downloadImage);
   }
 
-  public ImageWorker(WorkerId wid, List<T> images, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    super(wid, images, size, resize, defaultImage, downloadImage);
+  public ImageWorker(WorkerId wid, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+    super(wid, model.getAll(), size, resize, defaultImage, downloadImage);
     this.model = model;
     this.sendEvent = false;
   }

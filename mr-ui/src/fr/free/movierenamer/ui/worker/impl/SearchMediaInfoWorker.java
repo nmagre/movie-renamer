@@ -85,7 +85,7 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    MediaPanel<UIMediaInfo<?>> mediaPanel = (MediaPanel<UIMediaInfo<?>>) mr.getMediaPanel();
+    MediaPanel<UIMediaInfo<?>, ?> mediaPanel = (MediaPanel<UIMediaInfo<?>, ?>) mr.getMediaPanel();
     if (mediaPanel != null) {
       mediaPanel.setInfo(info);
     }

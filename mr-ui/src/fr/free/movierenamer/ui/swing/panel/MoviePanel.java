@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing.panel;
 
+import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.swing.panel.info.TrailerInfoPanel;
@@ -29,7 +30,7 @@ import fr.free.movierenamer.ui.swing.panel.info.movie.MovieInfoPanel;
  *
  * @author Nicolas Magré
  */
-public class MoviePanel extends VideoPanel<UIMovieInfo> {
+public class MoviePanel extends VideoPanel<UIMovieInfo, MovieInfo> {
   private static final long serialVersionUID = 1L;
 
   public MoviePanel(MovieRenamer mr) {

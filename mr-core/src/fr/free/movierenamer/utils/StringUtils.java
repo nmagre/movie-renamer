@@ -78,6 +78,8 @@ public final class StringUtils {
   public static final String EMPTY = "";
   public static final String DOT = ".";
   public static final String EXCLA = "!";
+  public static final String PIPE = "|";
+  public static final String COMMA = ",";
   public static final Pattern romanSymbol = Pattern.compile("(\\s+(?:M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})|[IDCXMLV])(\\s|$))", Pattern.CASE_INSENSITIVE);
   private static final Pattern apostrophe = Pattern.compile("[`´‘’ʻ]");
   private static final Pattern punctuation = Pattern.compile("[\\p{Punct}+&&[^']]");

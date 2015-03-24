@@ -2,9 +2,7 @@
 /mr-ui/nbproject/private/
 /mr-ui/dist
 /mr-ui/build/
-/mr-ui/lib/Mr-updater.jar
 /mr-core/build/
 /mr-core/javadoc/
-/mr-core/lib/Mr-core.jar
 /mr-updater/build
-
+/ivy/

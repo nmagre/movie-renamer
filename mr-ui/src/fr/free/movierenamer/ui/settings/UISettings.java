@@ -454,7 +454,7 @@ public final class UISettings extends XMLSettings {
   public static String getApplicationVersionNumber() {
     String version = VERSION;
     if (version.contains("_")) {
-      version = version.substring(0, version.indexOf("_"));
+      version = version.substring(0, version.indexOf('_'));
     }
     return version;
   }

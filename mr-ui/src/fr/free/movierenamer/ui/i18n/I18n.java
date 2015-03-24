@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.i18n;
 
 import com.alee.managers.language.LanguageManager;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.utils.ClassUtils;
 import java.util.logging.Level;
 
 /**
@@ -29,7 +28,7 @@ import java.util.logging.Level;
  */
 public class I18n {
 
-  private final String mruiDictionary = "mrui";
+  private static final String mruiDictionary = "mrui";
   private final String classDictionary;
 
   public I18n(String classDictionary) {

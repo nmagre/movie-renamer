@@ -46,10 +46,25 @@ You can send a pull request or directly join the project, just send me an email 
 ### How to build
 
 The project is in 3 parts (core, ui, updater) and you can compile it with "ant"  
+
+#### Install ivy and download dependencies
+
+```
+ant init
+```
+
+#### Build Movie Renamer
+
 `ant` or  `ant mr`
 
 List of target :  
 
-  * `ant core` Build core part
-  * `ant updater` Build updater part
-  * `ant installer` Build and create installer /!\ [IzPack](http://izpack.org/) is required
+  * init        --> Install ivy and download all dependencies
+  * mr          --> Build Movie Renamer
+  * core        --> Build Movie Renamer Core
+  * updater     --> Build Movie Renamer Updater
+  * standalone  --> Build Movie Renamer Standalone
+  * installer   --> Build Movie Renamer Installer /!\ [IzPack](http://izpack.org/) is required // Need to be fixed
+  * clean       --> Clean all
+  * clean-ivy   --> Clean the ivy cache and remove all dependencies
+

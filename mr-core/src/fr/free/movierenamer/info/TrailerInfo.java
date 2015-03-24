@@ -22,7 +22,6 @@ import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.net.URL;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,6 +30,8 @@ import java.util.Map;
  * @author Nicolas Magré
  */
 public class TrailerInfo extends Info {
+
+  private static final long serialVersionUID = 1L;
 
   protected final Map<Quality, URL> streams;
   protected final Map<TrailerProperty, String> fields;

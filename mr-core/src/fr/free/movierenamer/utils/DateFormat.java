@@ -44,11 +44,9 @@ public final class DateFormat implements Serializable {
   private int month;
   private int day;
 
-
   protected DateFormat() {
     // used by serializer
   }
-
 
   public DateFormat(int year, int month, int day) {
     this.year = year;
@@ -56,21 +54,17 @@ public final class DateFormat implements Serializable {
     this.day = day;
   }
 
-
   public int getYear() {
     return year;
   }
-
 
   public int getMonth() {
     return month;
   }
 
-
   public int getDay() {
     return day;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -82,37 +76,32 @@ public final class DateFormat implements Serializable {
     return super.equals(obj);
   }
 
-
   @Override
   public int hashCode() {
-    return Arrays.hashCode(new Object[] { year, month, day });
+    return Arrays.hashCode(new Object[]{year, month, day});
   }
-
 
   @Override
   public String toString() {
     return String.format("%04d-%02d-%02d", year, month, day);
   }
 
-
   public String format(String pattern) {
     return format(pattern, Locale.ROOT);
   }
-
 
   public String format(String pattern, Locale locale) {
     return new SimpleDateFormat(pattern, locale).format(new GregorianCalendar(year, month - 1, day).getTime()); // Calendar months start at 0
   }
 
-
   public static DateFormat parse(String string, String pattern) {
     return parse(string, pattern, Locale.ROOT);
   }
 
-
   public static DateFormat parse(String string, String pattern, Locale locale) {
-    if (string == null || string.isEmpty())
+    if (string == null || string.isEmpty()) {
       return null;
+    }
 
     SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale);
     formatter.setLenient(false); // enable strict mode (e.g. fail on invalid dates like 0000-00-00)

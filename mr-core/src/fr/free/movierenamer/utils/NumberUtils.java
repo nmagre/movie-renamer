@@ -19,6 +19,7 @@ package fr.free.movierenamer.utils;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.Calendar;
 
 /**
  * Class NumberUtils
@@ -27,6 +28,8 @@ import java.text.ParsePosition;
  * @author Simon QUÉMÉNEUR
  */
 public class NumberUtils {
+  
+  private static final int YEAR = Calendar.getInstance().get(Calendar.YEAR);
 
   /**
    * Check if string is a digit
@@ -86,6 +89,10 @@ public class NumberUtils {
     @SuppressWarnings("unchecked")
     T toRet = (T) num;
     return toRet;
+  }
+  
+  public static boolean isYearValid(int year) {
+    return year >= 1900 && year <= YEAR;
   }
 
   private NumberUtils() {

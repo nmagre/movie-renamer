@@ -33,7 +33,7 @@ public class LogsTableModel extends AbstractTableModel {
 
   private final List<LogRecord> logs;
 
-  private enum Tablefield {
+  private static enum Tablefield {
 
     ID,
     Level,

@@ -246,7 +246,7 @@ public class UIEditor {
 
       setEnableComponents(value != null ? !value.isEmpty() : false);
 
-      ((JTextComponent) editableComponent).setText(value != null ? value.toString() : "");
+      ((JTextComponent) editableComponent).setText(value != null ? value : "");
       ((JTextComponent) editableComponent).setCaretPosition(0);
       ((JTextComponent) editableComponent).getDocument().addDocumentListener(docListener);
       ((JTextComponent) editableComponent).setCaretPosition(0);

@@ -23,10 +23,12 @@ import fr.free.movierenamer.scraper.TrailerScraper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.searchinfo.Trailer;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,7 +113,42 @@ public class ImdbTrailerScraper extends TrailerScraper {
 
   @Override
   protected TrailerInfo fetchTrailerInfo(Trailer searchResult) throws Exception {
-    return null;
+    
+    URL url = searchResult.getTrailerUrl();
+    Pattern p = Pattern.compile("(vi\\d+)");
+    Matcher matcher  = p.matcher(url.toExternalForm());
+    if(!matcher.find()) {
+      System.out.println("Url do not match : " + url);
+      return null;
+    }
+    
+    // TODO SD
+    Document dom = URIRequest.getHtmlDocument(new URI(String.format("http://www.imdb.com/video/imdb/%s/player?uff=3", matcher.group(1))));
+    Node node = XPathUtils.selectNode("//SCRIPT[@type = 'text/javascript']", dom);
+    if(node == null) {
+      System.out.println("JS is null");
+      return null;
+    }
+    
+    String vplayJs = node.getTextContent();
+    if(!vplayJs.contains("IMDbPlayer.playerKey")) {
+      System.out.println("NO IMDbPlayer.playerKey");
+      return null;
+    }
+    
+    p = Pattern.compile("IMDbPlayer.playerKey = \"(.*)\";");
+    matcher = p.matcher(vplayJs);
+    if(!matcher.find()) {
+      System.out.println("Pattern do not match IMDbPlayer.playerKey");
+      return null;
+    }
+    
+    TrailerInfo tinfo = new TrailerInfo(null, null, LocaleUtils.AvailableLanguages.en);
+    
+    System.out.println(tinfo);
+    
+    
+    return tinfo;
   }
 
 }

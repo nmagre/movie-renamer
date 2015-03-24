@@ -40,15 +40,20 @@ public class Main {
 
   private static final UISettings setting = UISettings.getInstance();
 
+  /**
+   * main method
+   *
+   * @param args List of file to load (file, folder or both)
+   */
   public static void main(String args[]) {
 
     // Fixe JNA crash under 64 bit unix system
     if (System.getProperty("jna.nosys") == null) {
       System.setProperty("jna.nosys", "true");
     }
-    
-    System.setProperty("net.sf.ehcache.enableShutdownHook","true");
-    
+
+    System.setProperty("net.sf.ehcache.enableShutdownHook", "true");
+
     final List<File> files = new ArrayList<>();
     for (String arg : args) {
       files.add(new File(arg));
@@ -102,8 +107,10 @@ public class Main {
         if (!files.isEmpty()) {
           mr.loadFiles(files);
         }
+
       }
     });
+
   }
 
 }

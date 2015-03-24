@@ -54,6 +54,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
+import java.util.Enumeration;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
@@ -362,7 +363,8 @@ public final class UIUtils {
 
   public static void setUIFont() {
     FontUIResource f = new FontUIResource(defaultFont);
-    java.util.Enumeration keys = UIManager.getDefaults().keys();
+    Enumeration<Object> keys = UIManager.getDefaults().keys();
+    
     while (keys.hasMoreElements()) {
       Object key = keys.nextElement();
       Object value = UIManager.get(key);

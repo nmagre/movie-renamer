@@ -104,14 +104,14 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
    * @return Converted url or null
    */
   private URL convertUrl(URL url) {
-    MediaScraper<?, ?> scraper = ScraperUtils.getScraperFor(url, getSupportedMediaType());
+    MediaScraper<? extends Media, ? extends MediaInfo> scraper = ScraperUtils.getScraperFor(url, getSupportedMediaType());
     if (scraper == null) {
       return null;
     }
 
-    List<Media> results = null;
+    List<? extends Media> results = null;
     try {
-      results = (List<Media>) scraper.search(url.toExternalForm());
+      results = scraper.search(url.toExternalForm());
     } catch (Exception ex) {
 
     }
@@ -150,7 +150,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
       if (origtitle != null && !origtitle.isEmpty()) {
         search.setOriginalName(origtitle);
       }
-      
+
       if (!hasSupportedLanguage(language) && settings.isGetOnlyLangDepInfo()) {
         info.unsetUnsupportedLangInfo();
       }
@@ -173,9 +173,9 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
     if (info == null) {
       return info;
     }
-    
+
     addCutomInfo(info, search, id, language);
-    
+
     // cache results
     if (cache != null) {
       cache.putData(search, lang, info);
@@ -194,7 +194,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
   }
 
   protected abstract MI fetchMediaInfo(M searchResult, IdInfo id, AvailableLanguages language) throws Exception;
-  
+
   protected void addCutomInfo(MI info, M search, IdInfo id, AvailableLanguages language) {
     // do nothing
   }
@@ -237,7 +237,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
   protected abstract List<CastingInfo> fetchCastingInfo(M search, IdInfo id, AvailableLanguages language) throws Exception;
 
   public abstract AvailableApiIds getSupportedId();
-  
+
   public abstract MediaType getSupportedMediaType();
 
 }

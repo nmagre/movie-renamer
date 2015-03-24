@@ -154,8 +154,8 @@ public final class Cache {
   public <T> T get(Object key, Class<T> type) {
     try {
       Element element = cache.get(key);
-      if (element != null && key.equals(element.getKey())) {
-        return type.cast(element.getValue());
+      if (element != null && key.equals(element.getObjectKey())) {
+        return type.cast(element.getObjectValue());
       }
     } catch (Exception e) {
       Settings.LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -174,12 +174,7 @@ public final class Cache {
   }
 
   public long getSize() {
-    long size = 0;
-    size = cache.getMemoryStoreSize();
-    size = cache.getDiskStoreSize();
-    size = cache.getSize();
-    size = cache.calculateInMemorySize();
-    return size;
+    return cache.getSize();
   }
 
   public static class CacheKey implements Serializable {

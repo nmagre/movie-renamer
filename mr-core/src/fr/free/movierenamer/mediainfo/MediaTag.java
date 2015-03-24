@@ -36,6 +36,8 @@ import java.util.Scanner;
  */
 public class MediaTag implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   private MediaInfo mediaInfo;
   private final File mediaFile;
   private String containerFormat;
@@ -43,7 +45,6 @@ public class MediaTag implements Serializable {
   private MediaVideo mediaVideo;
   private List<MediaAudio> mediaAudio;
   private List<MediaSubTitle> subTitles;
-  public final boolean libMediaInfo = Settings.MEDIAINFO;
 
   public enum TagType {
 
@@ -206,7 +207,7 @@ public class MediaTag implements Serializable {
       return containerFormat;
     }
 
-    if (!libMediaInfo) {
+    if (!Settings.MEDIAINFO) {
       return StringUtils.EMPTY;
     }
     containerFormat = getMediaInfo(Tags.ContainerFormat).toString();
@@ -223,7 +224,7 @@ public class MediaTag implements Serializable {
     }
 
     long rvalue = 0L;
-    if (!libMediaInfo) {
+    if (!Settings.MEDIAINFO) {
       return rvalue;
     }
 
@@ -247,7 +248,7 @@ public class MediaTag implements Serializable {
 
     mediaVideo = new MediaVideo();
 
-    if (!libMediaInfo) {
+    if (!Settings.MEDIAINFO) {
       return mediaVideo;
     }
 
@@ -292,7 +293,7 @@ public class MediaTag implements Serializable {
     }
 
     mediaAudio = new ArrayList<MediaAudio>();
-    if (!libMediaInfo) {
+    if (!Settings.MEDIAINFO) {
       return mediaAudio;
     }
 
@@ -352,7 +353,7 @@ public class MediaTag implements Serializable {
     }
 
     subTitles = new ArrayList<MediaSubTitle>();
-    if (!libMediaInfo) {
+    if (!Settings.MEDIAINFO) {
       return subTitles;
     }
 
@@ -379,7 +380,7 @@ public class MediaTag implements Serializable {
   }
 
   public String getTagString(final Tags tag, final String separator, final int limit) {
-    if (!libMediaInfo) {
+    if (!Settings.MEDIAINFO) {
       return StringUtils.EMPTY;
     }
 

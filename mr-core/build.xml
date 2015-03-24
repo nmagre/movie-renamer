@@ -44,7 +44,7 @@
     </uptodate>
   </target>
 
-  <target name="compile-core" depends="init-core" description="compile the source">
+  <target name="compile-core" depends="init-core">
     <javac destdir="${build-core}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
       <src path="${src-core}" />
       <classpath refid="classpath" />

@@ -23,7 +23,6 @@ import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,20 +31,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class FormatReplacing, simple tag replace for naming scheme
+ * Class FormatReplacing, simple tag tokens for naming scheme
  *
  * @author Nicolas Magré
  */
 public class FormatReplacing {
 
   private static final Settings settings = Settings.getInstance();
+  private static final String pipe = "|";
+  private static final char optionSeparator = ':';
+  private static final char equalsSeparator = '=';
+  private static final char notEqualsSeparator = '!';
+  //private static final Pattern containsPattern = Pattern.compile(".*%.*%.*");
+  private static final Pattern arrayPattern = Pattern.compile(".*\\|.*\\|.*");
+  private static final Pattern valueIndex = Pattern.compile("[a-z]+(\\d+)");
   private final String tokenStart;
   private final String tokenEnd;
-  private final char optionSeparator;
-  private final char equalsSeparator;
-  private final char notEqualsSeparator;
-  private final Pattern valueIndex;
-  private final Map<String, Object> replace;
+  private final Map<String, Object> tokens;
 
   /**
    * Tag options
@@ -61,18 +63,18 @@ public class FormatReplacing {
   }
 
   /**
-   * Simple tag replace for naming scheme
+   * Simple tag tokens for naming scheme
    *
-   * @param replace Map of tags and replace values
+   * @param tokens Map of tags and tokens values
    */
-  public FormatReplacing(Map<String, Object> replace) {
-    this.replace = replace;
-    tokenStart = settings.getFormatTokenStart();
-    tokenEnd = settings.getFormatTokenEnd();
-    optionSeparator = settings.getFormatOptionSeparator();
-    equalsSeparator = settings.getFormatEqualsSeparator();
-    notEqualsSeparator = settings.getFormatNotEqualsSeparator();
-    valueIndex = settings.getFormatValueIndex();
+  public FormatReplacing(Map<String, Object> tokens) {
+    this(tokens, settings.getFormatTokenStart(), settings.getFormatTokenEnd());
+  }
+
+  public FormatReplacing(Map<String, Object> tokens, String tokenStart, String tokenEnd) {
+    this.tokens = tokens;
+    this.tokenStart = tokenStart;
+    this.tokenEnd = tokenEnd;
   }
 
   /**
@@ -97,10 +99,10 @@ public class FormatReplacing {
   public String getReplacedString(String format, CaseConversionType caseType, String separator, int limit) {
 
     // Split format
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     list.addAll(Arrays.asList(format.split("(((?=[" + tokenStart + "])|(?<=" + tokenStart + "))|((?=" + tokenEnd + ")|(?<=" + tokenEnd + ")))")));
 
-    TreeNode charaTree = new TreeNode("");
+    TreeNode charaTree = new TreeNode("root");
     TreeNode currentTree = charaTree;
     boolean append = false;
 
@@ -149,40 +151,46 @@ public class FormatReplacing {
 
     }
 
-    // Flat the tree if tokenEnd is missing
+    // Flat the tree where "tokenEnd" is missing
     flatNoEndToken(charaTree);
-    String result = getTagString(charaTree, caseType, separator, limit);
-    System.out.println("Format : " + format);
+    System.out.println("\n\nDEBUG FORMAT : " + format);
+    System.out.println("DEBUG TREE --------------------------");
     System.out.println(charaTree.printTree(0));
+    System.out.println("-------------------------------------");
 
-    return result;
+    return getTagString(charaTree, caseType, separator, limit);
   }
 
   private String getTagString(TreeNode tree, CaseConversionType caseType, String separator, int limit) {
 
-    StringBuilder data = new StringBuilder(tree.getData());
+    StringBuilder data = new StringBuilder(tree.isRoot() ? "" : tree.getData());
     String childtokenData;
-    for (TreeNode child : tree.getChilds()) {
-      if (child.isToken() && child.containsToken()) {
-        childtokenData = getTagString(child.getTokenChild(), caseType, separator, limit);
-        System.out.println("child data for [" + child.getData() + "] = |" + childtokenData + "|");
-        if (childtokenData.isEmpty()) {
-          return "";
-        }
+
+    // If first token (or expression) is empty or null we return nothing
+    TreeNode firstTokenChild = tree.getTokenChild();
+    if (!tree.isRoot() && firstTokenChild != null) {
+      childtokenData = getTagString(firstTokenChild, caseType, separator, limit);
+      if (childtokenData.isEmpty()) {
+        System.out.println("CHILD IS EMPTY return void");
+        return "";
       }
+    }
+
+    // Append all childs values
+    for (TreeNode child : tree.getChilds()) {
       data.append(getTagString(child, caseType, separator, limit));
     }
 
-    if (!tree.isToken() || !tree.isClosed()) {
+    // If it's not a token return value unchanged
+    if (!tree.isToken()) {
+      System.out.println("NOT TOKEN return : " + data);
       return data.toString();
     }
 
-    System.out.println("Tag : " + data);
-
-    List<Option> options = new ArrayList<Option>();
-    String equalsOption = null;
+    // Let's parse options/equals/...
+    List<Option> options = new ArrayList<>();
+    String equalsValue = null;
     boolean equals = true;
-    boolean isIfCondition = false;
     boolean isOption = false;
 
     char lastC = '\0';
@@ -195,45 +203,45 @@ public class FormatReplacing {
         c = data.charAt(i);
 
         switch (c) {
-          case '?':
-            isOption = false;
-            isIfCondition = true;
-            tag.deleteCharAt(index);
-            index--;
-            break;
-          default:
-            if (c == notEqualsSeparator) {
-              if (isOption) {
-                isOption = false;
-              }
-            } else if (c == equalsSeparator) {
+
+          case notEqualsSeparator:
+            if (isOption) {
               isOption = false;
-              if (equalsOption == null) {
+            }
+            break;
 
-                if (lastC == notEqualsSeparator) {
-                  equals = false;
-                  tag.deleteCharAt(index - 1);
-                  index--;
-                }
+          case equalsSeparator:
+            isOption = false;
+            if (equalsValue == null) {
 
-                equalsOption = "";
-                if (index + 1 < tag.length()) {
-                  equalsOption = tag.substring(index + 1, tag.length());
-                  tag = new StringBuilder(tag.subSequence(0, index + 1));
-                }
-
-                tag.deleteCharAt(index);
+              if (lastC == notEqualsSeparator) {
+                equals = false;
+                tag.deleteCharAt(index - 1);
                 index--;
               }
-            } else if (c == optionSeparator) {
-              if (isIfCondition) {
-                isIfCondition = false;
-              } else {
-                isOption = true;
+
+              equalsValue = "";
+              if (index + 1 < tag.length()) {
+                equalsValue = tag.substring(index + 1, tag.length());
+                tag = new StringBuilder(tag.subSequence(0, index + 1));
               }
+
               tag.deleteCharAt(index);
               index--;
             }
+            break;
+
+          case optionSeparator:
+
+            if (equalsValue == null) {
+              isOption = true;
+
+              tag.deleteCharAt(index);
+              index--;
+            }
+            break;
+
+          default:
 
         }
 
@@ -249,13 +257,13 @@ public class FormatReplacing {
         lastC = c;
         index++;
       }
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      System.err.println(tag);
-      System.err.println(equalsOption);
+    } catch (Exception ex) {// should never happen
+      Settings.LOGGER.severe(ex.getMessage());
     }
-
-    return getValue(tag.toString(), caseType, separator, limit, equalsOption, equals, options.toArray(new Option[options.size()]));
+    System.out.println("TAG : " + tag.toString() + " |" + equalsValue + "| : " + options);
+    String res = getValue(tag.toString(), caseType, separator, limit, equalsValue, equals, options.toArray(new Option[options.size()]));
+    System.out.println("VALUE : " + res);
+    return res;
   }
 
   /**
@@ -265,7 +273,7 @@ public class FormatReplacing {
    * @param tree
    */
   private void flatNoEndToken(TreeNode tree) {
-    List<TreeNode> childs = new ArrayList<TreeNode>(tree.getChilds());
+    List<TreeNode> childs = new ArrayList<>(tree.getChilds());
     Iterator<TreeNode> it = childs.iterator();
     TreeNode child;
     while (it.hasNext()) {
@@ -283,7 +291,8 @@ public class FormatReplacing {
    * Get tag value
    *
    * @param token Tag
-   * @param equalsValue
+   * @param equalsValue Value to compare
+   * @param equals Equals if true, otherwise not equals
    * @param options Tag options
    * @return Value or token if tag is not found
    */
@@ -291,47 +300,53 @@ public class FormatReplacing {
 
     int index = -1;
     final Matcher matcher = valueIndex.matcher(token);
+    String value = token;
+    CaseConversionType scase = null;
+    Object obj;
 
     // Get index for multiple value Tag (ex: <a1>)
     if (matcher.find()) {
       index = Integer.parseInt(matcher.group(1)) - 1;
-      token = token.replaceAll("\\d+", "");
+      value = token.replaceAll("\\d+", "");
     }
 
     // Get token value
-    final Object obj = replace.get(token);
-    if (obj == null) {
-      if (replace.containsKey(token)) {
+    if (tokens.containsKey(value)) {
+      obj = tokens.get(value);
+      if (obj == null) {
         return "";
       }
 
-      return token;
-    }
-
-    String value = obj.toString();
-    if (obj instanceof List) {
-      final List<?> list = (List<?>) obj;
-      value = "";
-      if (index >= 0) {
-        if (index < list.size()) {
-          value = list.get(index).toString();
+      value = obj.toString();
+      if (obj instanceof List) {
+        final List<?> list = (List<?>) obj;
+        if (index >= 0) {
+          value = index >= list.size() ? "" : list.get(index).toString();
+        } else {
+          value = StringUtils.arrayToString(list, separator, limit);
         }
-      } else {
-        value = StringUtils.arrayToString(list, separator, limit);
       }
+    } else {
+      scase = CaseConversionType.NONE;
+      value = token;// Reset value (Fix token end with a number)
     }
 
     if (equalsValue != null) {
-      if (value.equalsIgnoreCase(equalsValue)) {
-        if (!equals) {
+
+      if (arrayPattern.matcher(equalsValue).find()) {
+
+        String arrValues = equalsValue.substring(equalsValue.indexOf(StringUtils.PIPE) + 1, equalsValue.lastIndexOf(StringUtils.PIPE));
+        final List<String> values = Arrays.asList(arrValues.toLowerCase().split(StringUtils.COMMA));
+
+        if (equals ^ values.contains(value.toLowerCase())) {
           value = "";
         }
-      } else if (equals) {
+
+      } else if (equals ^ value.equalsIgnoreCase(equalsValue)) {
         value = "";
       }
     }
 
-    CaseConversionType scase = null;
     for (Option option : options) {
       switch (option) {
         case d:
@@ -363,7 +378,7 @@ public class FormatReplacing {
    */
   private class TreeNode {
 
-    private final List<TreeNode> children = new LinkedList<TreeNode>();
+    private final List<TreeNode> children = new LinkedList<>();
     private TreeNode parent = null;
     private String data;
     private boolean isToken;
@@ -378,6 +393,10 @@ public class FormatReplacing {
       this.parent = parent;
       isToken = false;
       isClosed = false;
+    }
+
+    public boolean isRoot() {
+      return parent == null;
     }
 
     public TreeNode getParent() {
@@ -468,8 +487,9 @@ public class FormatReplacing {
     }
 
     /**
+     * Get first token child
      *
-     * @return
+     * @return First token child or null
      */
     public TreeNode getTokenChild() {
       for (TreeNode child : children) {
@@ -501,52 +521,6 @@ public class FormatReplacing {
       }
       return s;
     }
-  }
-
-  public static void main(String[] args) {
-    final Map<String, Object> replace = new HashMap<String, Object>();
-    replace.put("fn", "Matrix.mkv");
-    replace.put("t", "Matrix");
-    replace.put("tp", "Matrix");
-    replace.put("st", "The");
-    replace.put("ot", "The matrix");
-    replace.put("y", "1999");
-    replace.put("test", "");
-    replace.put("vr", "720P");
-
-    FormatReplacing pm = new FormatReplacing(replace);
-    System.out.println("Result : " + pm.getReplacedString("<tp> ou pas <fn> <st>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<tp!=<fn>> <st>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<ot!=<fn> <st>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<t!=<fn:i=<ot>>>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<t:u!=<ot>>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<t> <(<ot=!=3=2>)> (<y>)"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<t> <(<test:u>) ><(<y>)>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<t> <(<vr:l=720p>) ><(<y>)>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<t> <(<test? - <tt> -:|<ot>|) ><(<y>)>"));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<Foo <<test><y>> Bar>", CaseConversionType.FIRSTLO, ", ", 0));
-    System.out.println();
-    System.out.println();
-    System.out.println("Result : " + pm.getReplacedString("<Foo <humm!!!> Bar>"));
-
   }
 
 }

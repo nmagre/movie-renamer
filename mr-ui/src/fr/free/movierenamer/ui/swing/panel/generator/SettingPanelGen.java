@@ -89,15 +89,15 @@ public class SettingPanelGen extends PanelGenerator {
 
   private static final long serialVersionUID = 1L;
   private static final WebFileChooser fileChooser = new WebFileChooser();
+  private static final String settingsi18n = "settings.";
   private Map<IProperty, WebCheckBox> checkboxs;
   private Map<IProperty, WebTextField> fields;
   private Map<IProperty, WebPasswordField> passFields;
   private Map<IProperty, WebComboBox> comboboxs;
   private Map<IProperty, WebComboBox> scraperOptComboboxs;
-  private static final String settingsi18n = "settings.";
   private final MovieRenamer mr;
 
-  private enum SettingsClazz {
+  private static enum SettingsClazz {
 
     String,
     Boolean,

@@ -159,7 +159,7 @@ public final class FileUtils {
    * @return True if file extension is in array
    */
   public static boolean checkFileExt(String fileName, String[] extensions) {
-    if (extensions == null | extensions.length == 0) {
+    if (extensions == null || extensions.length == 0) {
       return false;
     }
 

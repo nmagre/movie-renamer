@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.swing.panel.info.InfoPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -28,14 +29,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class VideoPanel
  *
  * @author Nicolas Magré
  */
-public abstract class VideoPanel<T extends UIMediaInfo<?>> extends MediaPanel<T> {
+public abstract class VideoPanel<T extends UIMediaInfo<M>, M extends MediaInfo> extends MediaPanel<T, M> {
 
   private final int nbStar = 5;
   private final WebPanel starPanel;

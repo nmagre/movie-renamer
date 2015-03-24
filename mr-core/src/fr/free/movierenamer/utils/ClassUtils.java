@@ -102,16 +102,18 @@ public final class ClassUtils {
 
   /**
    * Get generic class type argument
+   *
    * @param <T>
-   * @param clazz 
-   * @param arg 
-   * @return Class 
+   * @param clazz
+   * @param arg
+   * @return Class
    */
-  public static <T> Class<T> getGenericSuperClassArg(Class clazz, int arg) {
+  @SuppressWarnings("unchecked")
+  public static <T> Class<T> getGenericSuperClassArg(Class<?> clazz, int arg) {
     Class<T> genericClazz = null;
-    Class superClazz = clazz;
+    Class<?> superClazz = clazz;
     int count = 0;
-    while(genericClazz == null && count < 10) {
+    while (genericClazz == null && count < 10) {
       try {
         superClazz = superClazz.getSuperclass();
         genericClazz = (Class<T>) ((ParameterizedType) superClazz.getGenericSuperclass()).getActualTypeArguments()[arg];
@@ -122,17 +124,6 @@ public final class ClassUtils {
 
     return genericClazz;
   }
-  
-  public static <T> List<List<T>> trunc(List<T> list, final int L) {// TODO move should be in a ArrayUtils.java file
-    List<List<T>> parts = new ArrayList<List<T>>();
-    final int N = list.size();
-    for (int i = 0; i < N; i += L) {
-        parts.add(new ArrayList<T>(
-            list.subList(i, Math.min(N, i + L)))
-        );
-    }
-    return parts;
-}
 
   private ClassUtils() {
     throw new UnsupportedOperationException();

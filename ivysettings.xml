@@ -1,0 +1,16 @@
+<ivysettings>
+  <settings defaultResolver="ibiblio" />
+
+  <resolvers>
+      <ibiblio name="ibiblio" m2compatible="true"/>
+      <url name="sourcesim" checksums="">
+        <artifact pattern="http://sourceforge.net/projects/simmetrics/files/latest/download" />
+      </url>
+  </resolvers>
+
+  <modules>
+    <module organisation="uk.ac.shef.wit" name="simmetrics" resolver="sourcesim"/>
+  </modules>
+
+</ivysettings>
+

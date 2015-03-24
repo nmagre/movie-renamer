@@ -32,7 +32,6 @@ import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,8 +42,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 /**
  * Class TrackTvScraper
@@ -113,46 +113,46 @@ public class TracktScraper extends MovieScraper {
   @Override
   protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
-    JSONArray json = URIRequest.getJsonArrayDocument(searchUrl.toURI());
-    Iterator<JSONObject> iterator = json.iterator();
-
-    JSONObject node;
-    while (iterator.hasNext()) {
-      node = iterator.next();
-      int id = JSONUtils.selectInteger("tmdb_id", node);
-      String imId = JSONUtils.selectString("imdb_id", node);
-      IdInfo imdbId = null;
-      if (imId != null && !imId.equals("")) {
-        imdbId = new IdInfo(Integer.parseInt(imId.replace("tt", "")), ScraperUtils.AvailableApiIds.IMDB);
-      }
-      String title = JSONUtils.selectString("title", node);
-
-      Integer year = -1;
-      String syear = JSONUtils.selectString("year", node);
-      if (syear != null && !syear.equals("")) {
-        year = Integer.parseInt(syear);
-      }
-
-      JSONObject posterNode = JSONUtils.selectObject("images", node);
-
-      String imageNode = null;
-      if (posterNode != null) {
-        imageNode = JSONUtils.selectString("poster", posterNode);
-      }
-
-      URL thumb = null;
-      try {
-        if (imageNode != null) {
-          thumb = new URL(imageNode);
-        }
-      } catch (Exception e) {
-        Settings.LOGGER.log(Level.WARNING, "Invalid image: " + imageNode, e);
-      }
-
-      if (!resultSet.containsKey(id)) {
-        resultSet.put(id, new Movie(imdbId, new IdInfo(id, ScraperUtils.AvailableApiIds.THEMOVIEDB), title, title, thumb, year));
-      }
-    }
+//    JSONArray json = URIRequest.getJsonArrayDocument(searchUrl.toURI());
+//    Iterator<JSONObject> iterator = json.iterator();
+//
+//    JSONObject node;
+//    while (iterator.hasNext()) {
+//      node = iterator.next();
+//      int id = JSONUtils.selectInteger("tmdb_id", node);
+//      String imId = JSONUtils.selectString("imdb_id", node);
+//      IdInfo imdbId = null;
+//      if (imId != null && !imId.equals("")) {
+//        imdbId = new IdInfo(Integer.parseInt(imId.replace("tt", "")), ScraperUtils.AvailableApiIds.IMDB);
+//      }
+//      String title = JSONUtils.selectString("title", node);
+//
+//      Integer year = -1;
+//      String syear = JSONUtils.selectString("year", node);
+//      if (syear != null && !syear.equals("")) {
+//        year = Integer.parseInt(syear);
+//      }
+//
+//      JSONObject posterNode = JSONUtils.selectObject("images", node);
+//
+//      String imageNode = null;
+//      if (posterNode != null) {
+//        imageNode = JSONUtils.selectString("poster", posterNode);
+//      }
+//
+//      URL thumb = null;
+//      try {
+//        if (imageNode != null) {
+//          thumb = new URL(imageNode);
+//        }
+//      } catch (Exception e) {
+//        Settings.LOGGER.log(Level.WARNING, "Invalid image: " + imageNode, e);
+//      }
+//
+//      if (!resultSet.containsKey(id)) {
+//        resultSet.put(id, new Movie(imdbId, new IdInfo(id, ScraperUtils.AvailableApiIds.THEMOVIEDB), title, title, thumb, year));
+//      }
+//    }
 
     return new ArrayList<Movie>(resultSet.values());
   }

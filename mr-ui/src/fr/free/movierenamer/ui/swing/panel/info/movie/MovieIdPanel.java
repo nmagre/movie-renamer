@@ -44,6 +44,8 @@ import javax.swing.text.JTextComponent;
  */
 public class MovieIdPanel extends InfoEditorPanel<UIMovieInfo> {
 
+  private static final long serialVersionUID = 1L;
+
   private UIMovieInfo movieInfo;
   private WebButton searchBtn;
 
@@ -127,7 +129,7 @@ public class MovieIdPanel extends InfoEditorPanel<UIMovieInfo> {
       }
     }
   }
-  
+
   public void setSearchButton(boolean enabled) {
     searchBtn.setEnabled(enabled);
   }

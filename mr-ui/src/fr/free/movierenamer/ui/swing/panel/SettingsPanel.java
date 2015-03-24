@@ -470,7 +470,7 @@ public class SettingsPanel extends WebPanel {
                   mediaTag.setMediaAudio(audios);
                   mediaTag.setMediaSubtitles(subtitles);
                   mediaTag.setMediaVideo(mvideo);
-                  info.setMediaTag(mediaTag);
+
 
                   Map<CastingInfo.PersonProperty, String> d = new HashMap<>();
                   Map<CastingInfo.PersonProperty, String> d1 = new HashMap<>();
@@ -520,13 +520,13 @@ public class SettingsPanel extends WebPanel {
                       Map<IProperty, WebTextField> fields = panels.get(mti).getField();
                       Map<IProperty, WebCheckBox> checkbox = panels.get(mti).getCheckbox();
                       Map<IProperty, WebComboBox> combobox = panels.get(mti).getCombobox();
-                      result = info.getRenamedTitle("Default filename.avi", fields.get(Settings.SettingsProperty.movieFilenameFormat).getText(),
+                      result = info.getRenamedTitle(null, fields.get(Settings.SettingsProperty.movieFilenameFormat).getText(),
                               (StringUtils.CaseConversionType) ((UIEnum) combobox.get(Settings.SettingsProperty.movieFilenameCase).getSelectedItem()).getValue(),
                               fields.get(Settings.SettingsProperty.movieFilenameSeparator).getText(),
                               Integer.parseInt(fields.get(Settings.SettingsProperty.movieFilenameLimit).getText()),// FIXME check if it is an integer before
                               checkbox.get(Settings.SettingsProperty.reservedCharacter).isSelected(),
                               checkbox.get(Settings.SettingsProperty.filenameRmDupSpace).isSelected(),
-                              checkbox.get(Settings.SettingsProperty.filenameTrim).isSelected());
+                              checkbox.get(Settings.SettingsProperty.filenameTrim).isSelected());// FIXME add a dummy fileinfo
                     }
                   };
                 }

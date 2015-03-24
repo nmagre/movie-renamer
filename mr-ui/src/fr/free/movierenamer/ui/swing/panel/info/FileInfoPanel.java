@@ -41,8 +41,10 @@ import javax.swing.JPanel;
  */
 public final class FileInfoPanel extends InfoPanel<FileInfo> {
 
+  private static final long serialVersionUID = 1L;
+
   private final int level = 1;
-  private FileInfo info;
+  private FileInfo info;// FIXME 
 
   @Override
   public void setInfo(FileInfo info) {

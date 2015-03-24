@@ -45,7 +45,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Class RottenTomatoes, search movie on RottenTomatoes
@@ -197,6 +199,8 @@ public class RottenTomatoesScraper extends MovieScraper {
     } catch (URISyntaxException ex) {
       Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
+      Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (JSONException ex) {
       Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
     }
 

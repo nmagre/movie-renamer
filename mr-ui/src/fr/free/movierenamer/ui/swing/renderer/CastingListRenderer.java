@@ -19,7 +19,6 @@ package fr.free.movierenamer.ui.swing.renderer;
 import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
-import fr.free.movierenamer.ui.settings.UISettings;
 import javax.swing.JList;
 
 /**
@@ -29,9 +28,10 @@ import javax.swing.JList;
  */
 public class CastingListRenderer extends IconListRenderer<UIPersonImage> {
 
-  private static final UISettings settings = UISettings.getInstance();
+  private static final long serialVersionUID = 1L;
 
   @Override
+  @SuppressWarnings("rawtypes")
   protected WebLabel getListCellRendererComponent(JList list, WebLabel label, Object value, int index) {
 
     if (value instanceof UIPersonImage) {

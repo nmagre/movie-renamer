@@ -45,6 +45,8 @@ import javax.swing.Icon;
  */
 public class MovieCastingInfoPanel extends InfoEditorPanel<UIMovieInfo> {
 
+  private static final long serialVersionUID = 1L;
+
   private List<UIPersonImage> casts;
   private final List<UIPersonImage> actorsList;
   private final List<UIPersonImage> directorsList;
@@ -65,7 +67,7 @@ public class MovieCastingInfoPanel extends InfoEditorPanel<UIMovieInfo> {
     actorList.setCellRenderer(new CastingListRenderer());
     directorList.setVisibleRowCount(0);
     actorList.setVisibleRowCount(0);
-    
+
     actorList.addMouseListener(new ContextMenuImage());
   }
 
@@ -114,7 +116,7 @@ public class MovieCastingInfoPanel extends InfoEditorPanel<UIMovieInfo> {
   public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object oldObj, Object newObj) {
 
     super.UIEventHandler(event, info, oldObj, newObj);
-    
+
     switch (event) {
       case SETTINGS:
         if (newObj instanceof XMLSettings.IProperty) {

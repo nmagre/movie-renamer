@@ -33,7 +33,7 @@
     </uptodate>
   </target>
 
-  <target name="compile-updater" depends="init-updater" description="compile the source">
+  <target name="compile-updater" depends="init-updater">
     <javac destdir="${build-updater}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
       <src path="${src-updater}" />
       <classpath refid="classpath" />

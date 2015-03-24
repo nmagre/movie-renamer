@@ -40,7 +40,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 

@@ -154,8 +154,8 @@ public final class ScraperUtils {
   }
 
   public static MediaScraper<?, ?> getScraperFor(URL url, MediaType mtype) {
-    List<MediaScraper<?, ?> > scrapers = ScraperManager.getMediaScraperList(mtype);
-    for (MediaScraper<?, ?>  scraper : scrapers) {
+    List<MediaScraper<?, ?>> scrapers = ScraperManager.getMediaScraperList(mtype);
+    for (MediaScraper<?, ?> scraper : scrapers) {
       if (scraper.hasUrlSupported(url)) {
         return scraper;
       }
@@ -467,6 +467,7 @@ public final class ScraperUtils {
               if (info == null || info.getId() == Integer.parseInt(id)) {
                 return new IdInfo(Integer.parseInt(lid), AvailableApiIds.ALLOCINE);
               }
+              break;
 
             case IMDB:
               if (info == null || info.getId() == Integer.parseInt(id)) {

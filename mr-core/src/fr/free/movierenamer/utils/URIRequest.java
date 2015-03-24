@@ -41,8 +41,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.cyberneko.html.parsers.DOMParser;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -54,7 +53,10 @@ import java.net.PasswordAuthentication;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.json.simple.JSONArray;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  * Class URIRequest
@@ -136,28 +138,28 @@ public final class URIRequest {
     }
   }
 
-  public static JSONObject getJsonDocument(URI uri, RequestProperty... properties) throws IOException {
+  public static JSONObject getJsonDocument(URI uri, RequestProperty... properties) throws IOException, JSONException {
     return getJsonDocument(openConnection(uri, properties));
   }
 
-  private static JSONObject getJsonDocument(URLConnection connection) throws IOException {
+  private static JSONObject getJsonDocument(URLConnection connection) throws IOException, JSONException {
     return getJsonDocument(getReader(connection));
   }
 
-  private static JSONObject getJsonDocument(Reader reader) {
-    return (JSONObject) JSONValue.parse(reader);
+  private static JSONObject getJsonDocument(Reader reader) throws JSONException {
+    return new JSONObject(new JSONTokener(reader));
   }
 
-  public static JSONArray getJsonArrayDocument(URI uri, RequestProperty... properties) throws IOException {
+  public static JSONArray getJsonArrayDocument(URI uri, RequestProperty... properties) throws IOException, JSONException {
     return getJsonArrayDocument(openConnection(uri, properties));
   }
 
-  private static JSONArray getJsonArrayDocument(URLConnection connection) throws IOException {
+  private static JSONArray getJsonArrayDocument(URLConnection connection) throws IOException, JSONException {
     return getJsonArrayDocument(getReader(connection));
   }
 
-  private static JSONArray getJsonArrayDocument(Reader reader) {
-    return (JSONArray) JSONValue.parse(reader);
+  private static JSONArray getJsonArrayDocument(Reader reader) throws JSONException {
+    return new JSONArray(new JSONTokener(reader));
   }
 
   public static URLConnection openConnection(URI uri, RequestProperty... properties) throws IOException {

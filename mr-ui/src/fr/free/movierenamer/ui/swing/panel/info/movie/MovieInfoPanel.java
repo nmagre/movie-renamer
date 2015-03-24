@@ -52,6 +52,8 @@ import javax.swing.Icon;
  */
 public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
 
+  private static final long serialVersionUID = 1L;
+
   private UIMovieInfo info;
   private final int smallFieldSize = 4;
   private final int fieldSize = 10;
@@ -183,7 +185,7 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
           InfoProperty property = (InfoProperty) object;
           UIEditor editor = map.get(property);
           if (editor != null) {
-            if(object instanceof MultipleInfoProperty) {
+            if (object instanceof MultipleInfoProperty) {
               editor.setValue(param.toString());
             }
             info.set(property, editor.getValue());
@@ -205,7 +207,7 @@ public class MovieInfoPanel extends InfoEditorPanel<UIMovieInfo> {
   public void setInfo(UIMovieInfo info) {
     try {
       this.info = info;
-      
+
       for (MediaProperty property : MediaProperty.values()) {
         if (map.containsKey(property)) {
           map.get(property).setValue(info.get(property));

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
 
 /**
@@ -24,7 +25,7 @@ import fr.free.movierenamer.ui.bean.UIMediaInfo;
  *
  * @author Nicolas Magré
  */
-public interface IMediaInfoPanel<T extends UIMediaInfo> extends IInfo<T> {
+public interface IMediaInfoPanel<T extends UIMediaInfo<M>, M extends MediaInfo> extends IInfo<T> {
 
   public abstract T getInfo();
 

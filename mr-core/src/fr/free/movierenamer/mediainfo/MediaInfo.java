@@ -46,6 +46,8 @@ import java.io.Serializable;
  */
 public class MediaInfo implements Closeable, Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   static {
     try {
       // libmediainfo for linux depends on libzen

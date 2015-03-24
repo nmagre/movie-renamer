@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Movie_Renamer_app" default="mr" basedir=".">
+<project name="Movie_Renamer_app" xmlns:ivy="antlib:org.apache.ivy.ant" default="mr" basedir=".">
   <description>Build the project Movie Renamer</description>
 
+  <import file="ivy-build.xml"/>
   <import file="mr-core/build.xml"/>
   <import file="mr-updater/build.xml"/>
 
-  <target name="mr" depends="jar-core,jar-updater">
+  <target name="init" depends="download-ivy,core-deps,ui-deps" description="--> Install ivy and download all dependencies">
+    <echo>Init</echo>
+  </target>
+
+  <target name="mr" depends="jar-core,jar-updater" description="--> Build Movie Renamer">
     <subant target="jar">
       <fileset dir="mr-ui" includes="build.xml"/>
     </subant>
   </target>
 
-  <target name="core" depends="jar-core">
+  <target name="standalone" depends="mr" description="--> Build Movie Renamer Standalone">
+    <subant target="jar-standalone">
+      <fileset dir="mr-ui" includes="build.xml"/>
+    </subant>
+  </target>
+
+  <target name="core" depends="jar-core" description="--> Build Movie Renamer Core">
     <echo>Build core done</echo>
   </target>
 
-  <target name="updater" depends="jar-updater">
+  <target name="updater" depends="jar-updater" description="--> Build Movie Renamer Updater">
     <echo>Build updater done</echo>
   </target>
 
-  <target name="clean">
+  <target name="clean" description="--> Clean all">
     <echo>Clean all Movie Renamer project</echo>
     <subant target="clean">
       <fileset dir="mr-core" includes="build.xml"/>
@@ -28,10 +39,44 @@
     </subant>
   </target>
 
-  <target name="installer">
+  <target name="installer" description="--> Build Movie Renamer Installer">
     <subant target="installer">
       <fileset dir="mr-ui" includes="build.xml"/>
     </subant>
   </target>
+
+<!-- 
+=========================================
+=               DEPENDS                 =
+=========================================
+-->
+
+  <target name="core-deps" depends="set-path-ivy">
+    <ivy:resolve conf="core"/>
+    <ivy:retrieve conf="core" pattern="${lib-core}/[artifact](-[classifier]).[ext]"/>
+    <ivy:retrieve conf="test" pattern="${lib-core}/test/[artifact](-[classifier]).[ext]"/>
+
+    <pathconvert property="ivy.classpath.computed" dirsep="/" pathsep=":">
+      <path>
+        <fileset dir="${lib-core}" includes="*.jar"/>
+      </path>
+      <map from="${basedir}${file.separator}" to=""/>
+    </pathconvert>
+  </target>
+
+  <target name="ui-deps" depends="set-path-ivy">
+    <ivy:resolve conf="core"/>
+    <ivy:resolve conf="ui"/>
+    <ivy:retrieve conf="ui" pattern="${lib-ui}/[artifact](-[classifier]).[ext]"/>
+    <ivy:retrieve conf="core" pattern="${lib-ui}/[artifact](-[classifier]).[ext]"/>
+
+    <pathconvert property="ivy.classpath.computed" dirsep="/" pathsep=":">
+      <path>
+        <fileset dir="${lib-ui}" includes="*.jar"/>
+      </path>
+      <map from="${basedir}${file.separator}" to=""/>
+    </pathconvert>
+  </target>
+
 
 </project>

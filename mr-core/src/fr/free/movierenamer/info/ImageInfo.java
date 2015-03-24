@@ -100,6 +100,7 @@ public class ImageInfo extends Info {
     return null;
   }
 
+  @SuppressWarnings("fallthrough")
   public URL getHref(final ImageSize size) {
     String url = null;
 
@@ -109,11 +110,13 @@ public class ImageInfo extends Info {
         if (url != null && url.length() > 0) {
           break;
         }
+
       case medium:
         url = get(ImageProperty.urlMid);
         if (url != null && url.length() > 0) {
           break;
         }
+
       case big:
         url = get(ImageProperty.url);
         break;

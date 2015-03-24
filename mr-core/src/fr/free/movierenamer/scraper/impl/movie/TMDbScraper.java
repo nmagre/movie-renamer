@@ -53,7 +53,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Class TMDbScraper : search movie on TMDb
@@ -142,6 +144,8 @@ public class TMDbScraper extends MovieScraper {
       }
     } catch (URISyntaxException ex) {
     } catch (IOException ex) {
+    } catch (JSONException ex) {
+      Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
     }
 
     return basurl;
@@ -281,6 +285,8 @@ public class TMDbScraper extends MovieScraper {
     } catch (URISyntaxException ex) {
       Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IOException ex) {
+      Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (JSONException ex) {
       Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
     }
 

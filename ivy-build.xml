@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ivy" default="download-ivy" xmlns:ivy="antlib:org.apache.ivy.ant" basedir=".">
+
+  <property name="ivy.install.version" value="2.0.0-beta1" />
+  <property name="ivy.jar.dir" value="${basedir}/ivy" />
+  <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+
+  <target name="download-ivy" unless="skip.download">
+    <mkdir dir="${ivy.jar.dir}"/>
+    <echo message="installing ivy..."/>
+    <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+         dest="${ivy.jar.file}" usetimestamp="true"/>
+  </target>
+
+  <target name="set-path-ivy">
+    <path id="ivy.lib.path">
+      <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+    </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    <ivy:configure file="ivysettings.xml" />
+  </target>
+
+  <target name="clean-ivy" depends="set-path-ivy" description="--> Clean the ivy cache">
+    <ivy:cleancache />
+    <echo message="Delete core lib"/>
+    <delete>
+      <fileset dir="${lib-core}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </delete>
+    <delete dir="${lib-core}/test" />
+
+    <echo message="Delete ui lib"/>
+    <delete>
+      <fileset dir="${lib-ui}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </delete>
+  </target>
+</project>
+

@@ -26,6 +26,8 @@ import fr.free.movierenamer.settings.Settings;
  */
 public class SettingsSaveFailedException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   private transient final Settings defaultSettings;
 
   public SettingsSaveFailedException(final Settings config, final String message) {

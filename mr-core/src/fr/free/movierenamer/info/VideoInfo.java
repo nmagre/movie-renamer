@@ -21,6 +21,7 @@ import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,19 +36,10 @@ import java.util.Map;
  */
 public abstract class VideoInfo extends MediaInfo {
 
-  protected MediaTag mtag;
   protected CastingInfo[] casting;
 
   public VideoInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo) {
     super(mediaFields, idsInfo);
-  }
-
-  public MediaTag getMediaTag() {
-    return mtag;
-  }
-
-  public void setMediaTag(final MediaTag mtag) {
-    this.mtag = mtag;
   }
 
   public List<CastingInfo> getCasting() {
@@ -60,25 +52,26 @@ public abstract class VideoInfo extends MediaInfo {
   }
 
   @Override
-  protected Map<String, Object> getReplaceMap(String fileName) {
+  protected Map<String, Object> getFormatTokens(FileInfo fileInfo) {
 
-    Map<String, Object> replace = super.getReplaceMap(fileName);
+    Map<String, Object> tokens = super.getFormatTokens(fileInfo);
 
+    MediaTag mtag = fileInfo.getMediaTag();
     // Media info
-    if (mtag != null && mtag.libMediaInfo) {
+    if (mtag != null && Settings.MEDIAINFO) {
       final MediaVideo video = mtag.getMediaVideo();
       final List<MediaAudio> audios = mtag.getMediaAudios();
       final List<MediaSubTitle> subTitles = mtag.getMediaSubTitles();
       // Audio
-      final List<String> aChannels = new ArrayList<String>();
-      final List<String> aCodecs = new ArrayList<String>();
-      final List<String> aLanguages = new ArrayList<String>();
-      final List<String> aTitles = new ArrayList<String>();
-      final List<Integer> aBitrates = new ArrayList<Integer>();
-      final List<String> aRatemodes = new ArrayList<String>();
+      final List<String> aChannels = new ArrayList<>();
+      final List<String> aCodecs = new ArrayList<>();
+      final List<String> aLanguages = new ArrayList<>();
+      final List<String> aTitles = new ArrayList<>();
+      final List<Integer> aBitrates = new ArrayList<>();
+      final List<String> aRatemodes = new ArrayList<>();
       // Subtitle
-      final List<String> sTitles = new ArrayList<String>();
-      final List<String> sLanguages = new ArrayList<String>();
+      final List<String> sTitles = new ArrayList<>();
+      final List<String> sLanguages = new ArrayList<>();
 
       for (MediaAudio audio : audios) {
         aChannels.add(audio.getChannel());
@@ -95,32 +88,32 @@ public abstract class VideoInfo extends MediaInfo {
       }
 
       // General
-      replace.put("vrt", mtag.getDuration());
-      replace.put("vcf", mtag.getContainerFormat());
+      tokens.put("vrt", mtag.getDuration());
+      tokens.put("vcf", mtag.getContainerFormat());
 //      replace.put("<mfs>", mtag.getFileSize());
       // Video
-      replace.put("vc", video.getCodec());
-      replace.put("vd", video.getVideoDefinition());
-      replace.put("vr", video.getVideoResolution());
-      replace.put("vfr", video.getFrameRate());
-      replace.put("vst", video.getScanType());
-      replace.put("vfc", video.getFrameCount());
-      replace.put("vh", video.getHeight());
-      replace.put("vw", video.getWidth());
-      replace.put("var", video.getAspectRatio());
+      tokens.put("vc", video.getCodec());
+      tokens.put("vd", video.getVideoDefinition());
+      tokens.put("vr", video.getVideoResolution());
+      tokens.put("vfr", video.getFrameRate());
+      tokens.put("vst", video.getScanType());
+      tokens.put("vfc", video.getFrameCount());
+      tokens.put("vh", video.getHeight());
+      tokens.put("vw", video.getWidth());
+      tokens.put("var", video.getAspectRatio());
       // Audio
-      replace.put("ach", aChannels);
-      replace.put("ac", aCodecs);
-      replace.put("al", aLanguages);
-      replace.put("att", aTitles);
-      replace.put("ab", aBitrates);
-      replace.put("abm", aRatemodes);
+      tokens.put("ach", aChannels);
+      tokens.put("ac", aCodecs);
+      tokens.put("al", aLanguages);
+      tokens.put("att", aTitles);
+      tokens.put("ab", aBitrates);
+      tokens.put("abm", aRatemodes);
       // Subtitle
-      replace.put("stt", sTitles);
-      replace.put("stl", sLanguages);
+      tokens.put("stt", sTitles);
+      tokens.put("stl", sLanguages);
     }
 
-    return replace;
+    return tokens;
   }
 
 }

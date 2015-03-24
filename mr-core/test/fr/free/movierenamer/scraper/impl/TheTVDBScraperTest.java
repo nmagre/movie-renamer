@@ -56,7 +56,7 @@ public final class TheTVDBScraperTest extends TvShowScraperTest {
     TvShow tvShow = results.get(0);
 
     Assert.assertEquals("Desperate Housewives", tvShow.getName());
-    Assert.assertEquals("http://www.thetvdb.com/banners/graphical/73800-g15.jpg", tvShow.getURL().toExternalForm());
+    Assert.assertEquals("http://www.thetvdb.com/banners/graphical/73800-g15.jpg", tvShow.getURL());
     Assert.assertEquals(2004, tvShow.getYear());
     Assert.assertEquals(73800, tvShow.getMediaId());
   }

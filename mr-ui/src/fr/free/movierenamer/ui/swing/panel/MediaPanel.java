@@ -28,6 +28,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.utils.SwingUtils;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UIEvent;
@@ -45,7 +46,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
@@ -55,7 +55,7 @@ import javax.swing.SwingConstants;
  * @param <T>
  * @author Nicolas Magré
  */
-public abstract class MediaPanel<T extends UIMediaInfo<?>> extends PanelGenerator implements IMediaInfoPanel<T> {
+public abstract class MediaPanel<T extends UIMediaInfo<M>, M extends MediaInfo> extends PanelGenerator implements IMediaInfoPanel<T, M> {
   private static final long serialVersionUID = 1L;
 
   protected T info;

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Class TMDbImagesScraper : search images on TMDb

@@ -17,16 +17,20 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
+import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.ui.bean.UIHistory;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 
-/**d
+/**
+ * d
  * Class HistoryPanel
  *
  * @author Nicolas Magré
  */
-public class HistoryPanel extends javax.swing.JPanel {
+public class HistoryPanel extends WebPanel {
+
+  private static final long serialVersionUID = 1L;
 
   public HistoryPanel(UIHistory history) {
     initComponents();

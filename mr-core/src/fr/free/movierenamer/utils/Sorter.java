@@ -30,6 +30,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.JaccardSimilarity;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Jaro;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.SmithWaterman;
 
 /**
  * Class Sorter
@@ -62,6 +63,7 @@ public class Sorter {
     protected boolean hasImage() {
       return false;
     }
+
   }
 
   public enum SorterType {
@@ -81,21 +83,26 @@ public class Sorter {
     throw new UnsupportedOperationException();
   }
 
-  public static <T extends ISort> void sortAccurate(List<T> list, String tocompare, int year, int threshold) {
+  /**
+   *
+   * @param <T>
+   * @param list
+   * @param str
+   * @param year
+   * @param threshold
+   */
+  public static <T extends ISort> void sortAccurate(List<T> list, String str, int year, int threshold) {
 
-    tocompare = StringUtils.normaliseClean(tocompare);
-    Map<Integer, List<T>> values = new TreeMap<Integer, List<T>>(new IntegerDescending());
+    final String toCompare = StringUtils.normaliseClean(str);
+    Map<Integer, List<T>> values = new TreeMap<Integer, List<T>>(Collections.reverseOrder());
     for (T object : list) {
 
-      // if year match we add a "bonus"
+      // If year is (almost) the same, we add a "bonus"
       int bonus = 0;
-      if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {
-        final int oyear = object.getYear();
-        if (year == oyear) {
-          bonus = 75;
-        } else if (oyear == (year - 1) || oyear == (year + 1)) {
-          bonus = 50;
-        }
+      if (NumberUtils.isYearValid(year)) {
+        final int oYear = object.getYear();
+        int yearDiff = Math.abs(oYear - year);
+        bonus = 50 / (yearDiff + 1);
       }
 
       // if there is an image we add a "bonus"
@@ -104,49 +111,71 @@ public class Sorter {
       }
 
       // Get best similarity between title and orig title
-      int sim = simCompare(tocompare, object.getName(), bonus);
+      System.out.print(object.getName() + "(" + object.getYear() + ") ");
+      int sim = getSimilarity(toCompare, object.getName());
       if (object.getOriginalName() != null && !ObjectUtils.compare(object.getName(), object.getOriginalName())) {
-        sim = Math.max(sim, simCompare(tocompare, object.getName(), bonus));
+        sim = Math.max(sim, getSimilarity(toCompare, object.getOriginalName()));
       }
+      sim += bonus;
+      System.out.println(" | sim:  " + sim);
 
       // We use a list cause 2 (or more) can have the same "sim" number
       List<T> listObj = values.get(sim);
       if (listObj == null) {
         listObj = new ArrayList<T>();
+        values.put(sim, listObj);
       }
 
       listObj.add(object);
-      values.put(sim, listObj);
     }
 
-    // Get the best match sim number
-    int sim = 0;
-    for (Integer msim : values.keySet()) {
-      sim = msim;
-      break;
+    // Get the higher "sim number"
+    int maxSim = 0;
+    if (!values.isEmpty()) {
+      maxSim = values.keySet().iterator().next();
     }
 
-    // If sim number is greater than threshold we sort list
-    if (sim >= threshold) {
+    // If "sim number" is greater than threshold we sort the list
+    YearSort<T> ys = new YearSort<>();
+    YearDiffSort<T> yds = new YearDiffSort<>(year);
+    if (maxSim >= threshold) {
       list.clear();
       for (List<T> olist : values.values()) {
-        for (T o : olist) {
-          list.add(o);
-        }
+
+        Comparator<T> cmp = NumberUtils.isYearValid(year) ? yds : ys;
+        Collections.sort(olist, cmp);
+        list.addAll(olist);
       }
     }
   }
 
-  private static <T extends ISort> int simCompare(String search, String str, int bonus) {
-    str = StringUtils.normaliseClean(str);
+  private static int getSimilarity(String search, String str) {
+    String toCompare = StringUtils.normaliseClean(str);// Clean the string to get best result (search is already cleaned)
     AbstractStringMetric algorithm;
+
+    System.out.print(" [Jar:");
+
     Float res = 0.0F;
     algorithm = new JaroWinkler();
-    res += algorithm.getSimilarity(search, str);
-    algorithm = new Levenshtein();
-    res += algorithm.getSimilarity(search, str);
+    Float pres;
+    pres = algorithm.getSimilarity(search, toCompare);// Return a float ([0 - 1] , 1 => exact match)
+    res += pres;
 
-    return Math.round((res) * 100) + bonus;
+    System.out.print(pres + ", Leven:");
+
+    algorithm = new Levenshtein();
+    pres = algorithm.getSimilarity(search, toCompare);// Return a float ([0 - 1] , 1 => exact match)
+    res += pres;
+
+    System.out.print(pres + ", Smith:");
+
+    algorithm = new SmithWaterman();
+    pres = algorithm.getSimilarity(search, toCompare);// Return a float ([0 - 1] , 1 => exact match)
+    res += pres;
+
+    int tres = Math.round((res) * 100);
+    System.out.print(pres + "] -> " + tres);
+    return Math.round((res) * 100);
   }
 
   public static void sort(List<? extends ISort> list, SorterType type) {
@@ -162,6 +191,7 @@ public class Sorter {
         break;
       case LANGUAGE:
         Collections.sort(list, new LanguageSort());
+        break;
       default:
         Settings.LOGGER.log(Level.SEVERE, String.format("Sorter type %s is not supported", type.name()));
     }
@@ -194,14 +224,6 @@ public class Sorter {
     return res;
   }
 
-  private static class IntegerDescending implements Comparator<Integer> {
-
-    @Override
-    public int compare(Integer t, Integer t1) {
-      return t1.compareTo(t);
-    }
-  }
-
   /**
    * Sort list by YEAR, first exact YEAR then YEAR + 1 , YEAR - 1 If search is
    * not null group of YEAR are sorted by COMPARATOR (only for YEAR, YEAR + 1,
@@ -226,6 +248,30 @@ public class Sorter {
       //Collections.sort(tmpList, new YearSort());
     }
     list.addAll(tmpList);
+  }
+
+  private static class YearSort<T extends ISort> implements Comparator<T> {
+
+    @Override
+    public int compare(ISort t, ISort t1) {
+      return -Integer.compare(t.getYear(), t1.getYear());
+    }
+
+  }
+
+  private static class YearDiffSort<T extends ISort> implements Comparator<T> {
+
+    private final int year;
+    
+    public YearDiffSort(int year) {
+      this.year = year;
+    }
+    
+    @Override
+    public int compare(ISort t, ISort t1) {
+      return Integer.compare(Math.abs(t.getYear() - year), Math.abs(t1.getYear() - year));
+    }
+
   }
 
   private static class SimmetricsSort implements Comparator<ISort> {
@@ -277,13 +323,13 @@ public class Sorter {
     }
   }
 
-  private static class YearSort implements Comparator<ISort> {
-
-    @Override
-    public int compare(ISort t, ISort t1) {
-      return t1.getYear() - t.getYear();
-    }
-  }
+//  private static class YearSort implements Comparator<ISort> {
+//
+//    @Override
+//    public int compare(ISort t, ISort t1) {
+//      return t1.getYear() - t.getYear();
+//    }
+//  }
 
   private static class AlphabeticSort implements Comparator<ISort> {
 

@@ -24,10 +24,6 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.scraper.MediaScraper;
-import fr.free.movierenamer.scraper.MovieScraper;
-import fr.free.movierenamer.scraper.ScraperManager;
-import fr.free.movierenamer.scraper.TvShowScraper;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
@@ -37,7 +33,6 @@ import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UIRename;
-import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
@@ -152,9 +147,9 @@ public final class UIManager {
     imagePanel.clearPanel();
   }
 
-  public static Map<UIMode, MediaPanel<? extends UIMediaInfo<?>>> createMediaPanel(MovieRenamer mr) {
-    Map<UIMode, MediaPanel<? extends UIMediaInfo<?>>> panels = new HashMap<>();
-    MediaPanel<? extends UIMediaInfo<? extends MediaInfo>> panel;
+  public static Map<UIMode, MediaPanel<? extends UIMediaInfo<? extends MediaInfo>, ? extends MediaInfo>> createMediaPanel(MovieRenamer mr) {
+    Map<UIMode, MediaPanel<? extends UIMediaInfo<? extends MediaInfo>, ? extends MediaInfo>> panels = new HashMap<>();
+    MediaPanel<? extends UIMediaInfo<? extends MediaInfo>, ? extends MediaInfo> panel;
     for (UIMode mode : UIMode.values()) {
       switch (mode) {
         case MOVIEMODE:
@@ -193,7 +188,7 @@ public final class UIManager {
     });
   }
 
-  public static void update(MovieRenamer mr, UIUpdate update) {
+  public static void update(MovieRenamer mr, UIUpdate update) {// TODO Check if it's standalone version
     String description = setting.coreInstance.getAppLanguage().equals(AppLanguages.fr) ? update.getDescfr() : update.getDescen();
     String str = "<html>" + i18n.getLanguage("dialog.updateAvailable", false, update.getUpdateVersion(), description).replace("\n", "<br>").replace("\\n", "<br>") + "<br><br></html>";
     int n = WebOptionPane.showConfirmDialog(mr, str, UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
@@ -212,7 +207,7 @@ public final class UIManager {
       UISettings.LOGGER.log(Level.SEVERE, null, ex);
     }
 
-    // TODO check if "installDir" is writable
+    // TODO check if "installDir" is writable. 
     try {
       String javaBin = System.getProperty("java.home") + "/bin/java";
       File jarFile = new File(installDir + File.separator + "lib" + File.separator + "Mr-updater.jar");

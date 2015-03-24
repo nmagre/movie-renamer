@@ -39,7 +39,10 @@ import javax.swing.event.ListSelectionListener;
  *
  * @author Nicolas Magré
  */
-public class MultipleValueEditorDialog extends AbstractDialog {// TODO check and finish editor
+public class MultipleValueEditorDialog extends AbstractDialog {
+
+  private static final long serialVersionUID = 1L;
+// TODO check and finish editor
 
   private final DefaultListModel<String> listModel = new DefaultListModel<>();
   private int index = -1;

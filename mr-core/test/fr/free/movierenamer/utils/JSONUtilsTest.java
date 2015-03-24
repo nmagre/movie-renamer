@@ -27,9 +27,11 @@ import java.net.URL;
 import java.util.List;
 
 import junit.framework.Assert;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -44,11 +46,11 @@ public class JSONUtilsTest {
   private static JSONObject json;
 
   @BeforeClass
-  public static void init() throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
+  public static void init() throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException, JSONException {
     URL url = JSONUtilsTest.class.getResource("json.txt");
     File file = new File(url.toURI());
     Reader reader = new FileReader(file);
-    json = (JSONObject) JSONValue.parse(reader);
+    json = new JSONObject(new JSONTokener(reader));
   }
 
   @Test

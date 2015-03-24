@@ -167,11 +167,11 @@ public class MovieInfo extends VideoInfo {
   }
 
   public void set(MovieProperty key, String value) {
-    fields.put((MovieProperty) key, value);
+    fields.put(key, value);
   }
 
   public void set(MovieMultipleProperty key, String value) {
-    multipleFields.put((MovieMultipleProperty) key, Arrays.asList(value.split(", ")));
+    multipleFields.put(key, Arrays.asList(value.split(", ")));
   }
 
   @Override
@@ -299,9 +299,9 @@ public class MovieInfo extends VideoInfo {
 
   @Override
   protected void setMediaCasting() {
-    actors = new ArrayList<CastingInfo>();
-    directors = new ArrayList<CastingInfo>();
-    writers = new ArrayList<CastingInfo>();
+    actors = new ArrayList<>();
+    directors = new ArrayList<>();
+    writers = new ArrayList<>();
 
     if (casting != null) {
       for (CastingInfo cast : casting) {
@@ -317,22 +317,22 @@ public class MovieInfo extends VideoInfo {
   }
 
   @Override
-  protected void setReplaceMap(Map<String, Object> replace) {
-    replace.put("ot", this.getOriginalTitle());
-    replace.put("tt", this.getIdString(AvailableApiIds.IMDB));
-    replace.put("imdb", this.getIdString(AvailableApiIds.IMDB));
-    replace.put("allo", this.getIdString(AvailableApiIds.ALLOCINE));
-    replace.put("kino", this.getIdString(AvailableApiIds.KINOPOISK));
-    replace.put("rotten", this.getIdString(AvailableApiIds.ROTTENTOMATOES));
-    replace.put("moviedb", this.getIdString(AvailableApiIds.THEMOVIEDB));
-    replace.put("y", this.getYear());
-    replace.put("rt", this.getRuntime());
-    replace.put("ra", this.getRating());
-    replace.put("a", this.getActors());
-    replace.put("d", this.getDirectors());
-    replace.put("g", this.getGenres());
-    replace.put("c", this.getCountries());
-    replace.put("mpaa", this.getCertification(MotionPictureRating.USA));
+  protected void addFormatTokens(Map<String, Object> tokens) {
+    tokens.put("ot", this.getOriginalTitle());
+    tokens.put("tt", this.getIdString(AvailableApiIds.IMDB));
+    tokens.put("imdb", this.getIdString(AvailableApiIds.IMDB));
+    tokens.put("allo", this.getIdString(AvailableApiIds.ALLOCINE));
+    tokens.put("kino", this.getIdString(AvailableApiIds.KINOPOISK));
+    tokens.put("rotten", this.getIdString(AvailableApiIds.ROTTENTOMATOES));
+    tokens.put("tmdb", this.getIdString(AvailableApiIds.THEMOVIEDB));
+    tokens.put("y", this.getYear());
+    tokens.put("rt", this.getRuntime());
+    tokens.put("ra", this.getRating());
+    tokens.put("a", this.getActors());
+    tokens.put("d", this.getDirectors());
+    tokens.put("g", this.getGenres());
+    tokens.put("c", this.getCountries());
+    tokens.put("mpaa", this.getCertification(MotionPictureRating.USA));
   }
 
   @Override

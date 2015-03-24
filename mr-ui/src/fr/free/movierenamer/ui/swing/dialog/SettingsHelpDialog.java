@@ -36,6 +36,8 @@ import javax.swing.text.html.StyleSheet;
  */
 public class SettingsHelpDialog extends AbstractDialog {
 
+  private static final long serialVersionUID = 1L;
+
   private String id;
 
   /**

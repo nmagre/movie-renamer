@@ -189,7 +189,7 @@ public class TvShowInfo extends MediaInfo {
   }
 
   @Override
-  protected void setReplaceMap(Map<String, Object> replace) {
+  protected void addFormatTokens(Map<String, Object> tokens) {
     // TODO
   }
 

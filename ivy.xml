@@ -1,0 +1,33 @@
+<ivy-module version="2.0">
+  <!--
+      to find more entries to put here use:
+
+      http://mvnrepository.com/
+      http://search.maven.org/
+
+  -->
+  <info organisation="fr.free.movierenamer" module="movirenamer" />
+  <configurations>
+    <conf name="core" description="Core lib jars"/>
+    <conf name="ui" description="UI lib jars"/>
+    <conf name="test" description="Test lib jars"/>
+  </configurations>
+
+  <dependencies>
+    <!-- CORE -->
+    <dependency org="net.java.dev.jna" name="jna" rev="4.1.0" conf="core->default" />
+    <dependency org="net.java.dev.jna" name="jna-platform" rev="4.1.0" conf="core->default" />
+    <dependency org="net.sf.ehcache" name="ehcache" rev="2.9.1" conf="core->default" />
+    <dependency org="org.jdom" name="jdom2" rev="2.0.6" conf="core->default" />
+    <dependency org="org.json" name="json" rev="20090211" conf="core->default" />
+    <dependency org="net.sourceforge.nekohtml" name="nekohtml" rev="1.9.21" conf="core->default" />
+    <dependency org="uk.ac.shef.wit" name="simmetrics" rev="lastest" conf="core->default" />
+    <dependency org="junit" name="junit" rev="4.12" conf="test->default" />
+
+    <!-- UI -->
+    <dependency org="de.sciss" name="weblaf" rev="1.28" conf="ui->default"/>
+    <dependency org="net.java.dev.glazedlists" name="glazedlists_java15" rev="1.9.1" conf="ui->default"/>
+    <dependency org="uk.co.caprica" name="vlcj" rev="3.5.0" conf="ui->default"/>
+
+  </dependencies>
+</ivy-module>

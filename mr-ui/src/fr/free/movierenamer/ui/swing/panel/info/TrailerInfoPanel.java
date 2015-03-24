@@ -46,6 +46,8 @@ import javax.swing.event.ListSelectionListener;
  */
 public class TrailerInfoPanel extends InfoPanel<UIMovieInfo> {
 
+  private static final long serialVersionUID = 1L;
+
   private final ImageListModel<UISearchTrailerResult> listModel;
   private final List<UISearchTrailerResult> trailers;
   private static final Dimension imageSize = new Dimension(160, 120);

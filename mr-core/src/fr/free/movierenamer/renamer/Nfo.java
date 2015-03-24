@@ -58,8 +58,8 @@ public class Nfo {// TODO
   private final List<ImageInfo> images;
   private static final Map<MediaInfo.InfoProperty, String> xbmcMovieNFOLayout;
   private static final Map<MediaInfo.InfoProperty, String> boxeeMovieNFOLayout;
-  private static final Map<MediaType, Map> xbmcNFOLayout;
-  private static final Map<MediaType, Map> BoxeeNFOLayout;
+  private static final Map<MediaType, Map<MediaInfo.InfoProperty, String>> xbmcNFOLayout;
+  private static final Map<MediaType, Map<MediaInfo.InfoProperty, String>> BoxeeNFOLayout;
   private static final Settings settings = Settings.getInstance();
   private final String[] boxeeGenre = new String[]{"ACTION", " ADVENTURE", " ANIMATION", " COMEDY", " CRIME", " DOCUMENTARY", " DRAMA", " FAMILY", " FANTASY", " FILM_NOIR", " HISTORY", " MUSIC", " MUSICAL", " MYSTERY", " NEWS", " ROMANCE", " SCI_FI", " SHORT", " SPORT", " THRILLER", " WAR", " WESTERN"};
   private Element rootElement;
@@ -74,10 +74,10 @@ public class Nfo {// TODO
   }
 
   static {
-    xbmcNFOLayout = new EnumMap<MediaType, Map>(MediaType.class);
-    BoxeeNFOLayout = new EnumMap<MediaType, Map>(MediaType.class);
-    xbmcMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
-    boxeeMovieNFOLayout = new LinkedHashMap<MediaInfo.InfoProperty, String>();
+    xbmcNFOLayout = new EnumMap<>(MediaType.class);
+    BoxeeNFOLayout = new EnumMap<>(MediaType.class);
+    xbmcMovieNFOLayout = new LinkedHashMap<>();
+    boxeeMovieNFOLayout = new LinkedHashMap<>();
 
     xbmcMovieNFOLayout.put(MediaProperty.title, "title");
     xbmcMovieNFOLayout.put(MediaProperty.rating, "rating");
