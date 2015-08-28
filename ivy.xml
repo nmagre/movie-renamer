@@ -25,7 +25,9 @@
     <dependency org="junit" name="junit" rev="4.12" conf="test->default" />
 
     <!-- UI -->
-    <dependency org="de.sciss" name="weblaf" rev="1.28" conf="ui->default"/>
+    <dependency org="de.sciss" name="weblaf" rev="1.28" conf="ui->default">
+      <exclude ext="pom" />
+    </dependency>
     <dependency org="net.java.dev.glazedlists" name="glazedlists_java15" rev="1.9.1" conf="ui->default"/>
     <dependency org="uk.co.caprica" name="vlcj" rev="3.5.0" conf="ui->default"/>
 
