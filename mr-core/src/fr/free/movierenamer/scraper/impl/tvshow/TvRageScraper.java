@@ -230,4 +230,10 @@ public class TvRageScraper extends TvShowScraper {
     }
     return posterURL;
   }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
+  }
+
 }

@@ -73,7 +73,7 @@ public abstract class FanartTvScraper<M extends Video> extends ImageScraper<M> {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
     JSONObject jmedia = JSONUtils.selectFirstObject(json);
 
-    List<ImageInfo> imagesInfos = new ArrayList<ImageInfo>();
+    List<ImageInfo> imagesInfos = new ArrayList<>();
     if (jmedia == null) {
       return imagesInfos;
     }
@@ -86,7 +86,7 @@ public abstract class FanartTvScraper<M extends Video> extends ImageScraper<M> {
       }
 
       for (JSONObject image : images) {
-        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<>(ImageInfo.ImageProperty.class);
         int id = JSONUtils.selectInteger("id", image);
         imageFields.put(ImageInfo.ImageProperty.url, JSONUtils.selectString("url", image));
         imageFields.put(ImageInfo.ImageProperty.urlTumb, JSONUtils.selectString("url", image).replace("/fanart/", "/preview/"));

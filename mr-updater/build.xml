@@ -6,11 +6,11 @@
 
   <!-- set global properties for this build -->
   <property name="dir-updater" location="${imported.basedir}/mr-updater" />
-  <property name="src-updater" location="${dir-updater}/src" relative="yes" />
-  <property name="lib-ui" location="${imported.basedir}/mr-ui/lib" relative="yes" />
-  <property name="build-updater" location="${dir-updater}/build" relative="yes" />
-  <property name="javadoc-updater" location="${dir-updater}/javadoc" relative="yes" />
-  <property name="jarfile-updater" location="${lib-ui}/Mr-updater.jar" relative="yes" />
+  <property name="src-updater" location="${dir-updater}/src" />
+  <property name="lib-ui" location="${imported.basedir}/mr-ui/lib" />
+  <property name="build-updater" location="${dir-updater}/build" />
+  <property name="javadoc-updater" location="${dir-updater}/javadoc" />
+  <property name="jarfile-updater" location="${lib-ui}/Mr-updater.jar" />
 
   <target name="init-javadoc-updater">
     <mkdir dir="${javadoc-updater}" />
@@ -36,7 +36,7 @@
   <target name="compile-updater" depends="init-updater">
     <javac destdir="${build-updater}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
       <src path="${src-updater}" />
-      <classpath refid="classpath" />
+      
     </javac>
   </target>
 

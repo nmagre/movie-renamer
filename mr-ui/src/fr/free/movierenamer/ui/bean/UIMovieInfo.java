@@ -17,12 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
-import fr.free.movierenamer.info.MediaInfo.InfoProperty;
-import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
-import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
-import fr.free.movierenamer.info.MovieInfo.MovieProperty;
-import fr.free.movierenamer.utils.StringUtils;
 import java.util.List;
 
 /**
@@ -32,36 +27,20 @@ import java.util.List;
  */
 public class UIMovieInfo extends UIVideoInfo<MovieInfo> {
 
-  public UIMovieInfo(MovieInfo info) {
-    super(info);
-  }
-
-  public String get(InfoProperty key) {
-    String value = null;
-    if (key instanceof MediaProperty) {
-      value = info.get((MediaProperty) key);
-    } else if (key instanceof MovieProperty) {
-      value = info.get((MovieProperty) key);
-    } else if (key instanceof MovieMultipleProperty) {
-      List<String> values = info.get((MovieMultipleProperty) key);
-      value = StringUtils.arrayToString(values, ", ", 0);
+    public UIMovieInfo(MovieInfo info) {
+        super(info);
     }
 
-    return value;
-  }
-
-  public void set(InfoProperty key, String value) {
-    if (key instanceof MediaProperty) {
-      info.set((MediaProperty) key, value);
-    } else if (key instanceof MovieProperty) {
-      info.set((MovieProperty) key, value);
-    } else if (key instanceof MovieMultipleProperty) {
-      info.set((MovieMultipleProperty) key, value != null ? value : "");
+    public List<String> get(MovieInfo.MovieMultipleProperty key) {
+        return info.get(key);
     }
-  }
 
-  public List<String> getCountries() {
-    return ((MovieInfo) info).getCountries();
-  }
+    public void set(MovieInfo.MovieMultipleProperty key, List<String> value) {
+        info.set(key, value);
+    }
+
+    public List<String> getCountries() {
+        return info.getCountries();
+    }
 
 }

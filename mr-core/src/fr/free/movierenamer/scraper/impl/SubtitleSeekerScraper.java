@@ -78,4 +78,10 @@ public class SubtitleSeekerScraper extends SubtitleScraper {// TODO
   protected String getHost() {
     return host;
   }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AVERAGE;// TODO
+  }
+
 }

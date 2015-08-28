@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nicolas Magré
+ * Copyright (C) 2013-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,28 +33,32 @@ import javax.swing.JList;
  */
 public class IconComboRenderer<T extends IIconList> extends WebComboBoxCellRenderer {
 
-  public IconComboRenderer(Component component) {
-    super();
-  }
-
-  @Override
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-    WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-    label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
-
-    T obj;
-    try {
-      obj = (T) value;
-      Icon icon = obj.getIcon();
-
-      if (icon != null && true) {
-        label.setIcon(icon);
-      }
-    } catch (ClassCastException e) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("IconListRenderer ClassCastException : IIconList != %s", value.getClass().getSimpleName()));
+    public IconComboRenderer(Component component) {
+        super();
     }
 
-    return label;
-  }
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        WebLabel label = (WebLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        label.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
+
+        if (value == null) {
+            return label;
+        }
+
+        T obj;
+        try {
+            obj = (T) value;
+            Icon icon = obj.getIcon();
+
+            if (icon != null && true) {
+                label.setIcon(icon);
+            }
+        } catch (ClassCastException e) {
+            UISettings.LOGGER.log(Level.SEVERE, String.format("IconListRenderer ClassCastException : IIconList != %s", value.getClass().getSimpleName()));
+        }
+
+        return label;
+    }
 }

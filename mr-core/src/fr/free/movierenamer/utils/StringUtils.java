@@ -256,7 +256,7 @@ public final class StringUtils {
    * @return An array of strings
    */
   public static List<String> stringToArray(String str, String separator) {
-    ArrayList<String> array = new ArrayList<String>();
+    ArrayList<String> array = new ArrayList<>();
     if (str == null) {
       return array;
     }
@@ -451,7 +451,7 @@ public final class StringUtils {
   public static String humanReadableTime(long time) {// in ms
     Settings settings = Settings.getInstance();
     return humanReadableTime(time, settings.getStringTimeHour(), settings.getStringTimeMinute(), settings.getStringTimeSeconde(),
-            settings.getStringTimeMilliSeconde(), settings.isStringTimeShowSeconde(), settings.isStringTimeShowMillis());
+      settings.getStringTimeMilliSeconde(), settings.isStringTimeShowSeconde(), settings.isStringTimeShowMillis());
   }
 
   public static String humanReadableTime(long time, String hour, String minute, String seconde, String milli, boolean showSeconde, boolean showMilli) {// in ms
@@ -484,8 +484,15 @@ public final class StringUtils {
   }
 
   public static String durationInMinute(String duration) {// in second
-    int runtime = Integer.parseInt(duration);
-    return String.format("%02d:%02d", (runtime % 3600) / 60, (runtime % 60));
+    return durationInMinute(Integer.parseInt(duration));
+  }
+
+  public static String durationInMinute(int duration) {// in second
+    return String.format("%02d:%02d", (duration % 3600) / 60, (duration % 60));
+  }
+
+  public static String durationMsInMinute(long time) {// in ms
+    return durationInMinute((int) time / 1000);
   }
 
   public static String encrypt(byte[] property) {

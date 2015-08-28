@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.ui.swing.UIManager;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import java.util.HashMap;
@@ -31,75 +32,82 @@ import java.util.Map;
  */
 public class UIRename {
 
-  private final UIFile file;
-  private final String renamedTitle;
-  private final Map<RenameOption, Boolean> options;
-  private final List<ImageInfo> images;
-  private final Map<ImageInfo.ImageCategoryProperty, UIMediaImage> selectedImages;
+    private final UIFile file;
+    private final String renamedTitle;
+    private final Map<RenameOption, Boolean> options;
+    private final List<ImageInfo> images;
+    private final Map<ImageInfo.ImageCategoryProperty, UIMediaImage> selectedImages;
+    private final MediaType mediaType;
 
-  public static enum RenameOption {
+    public static enum RenameOption {
 
-    NFO(false),
-    THUMB(false),
-    FANART(false),
-    CDART(false),
-    LOGO(false),
-    CLEARART(false),
-    BANNER(false);
+        NFO(false),
+        THUMB(false),
+        FANART(false),
+        CDART(false),
+        LOGO(false),
+        CLEARART(false),
+        BANNER(false);
 
-    private final boolean defaultValue;
+        private final boolean defaultValue;
 
-    private RenameOption(boolean defaultValue) {
-      this.defaultValue = defaultValue;
+        private RenameOption(boolean defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+
+        public boolean getDefaultValue() {
+            return defaultValue;
+        }
     }
 
-    public boolean getDefaultValue() {
-      return defaultValue;
-    }
-  }
+    public UIRename(UIFile file, String renamedTitle, Map<RenameOption, Boolean> options, MediaType mediaType) {
+        this.file = file;
+        this.renamedTitle = renamedTitle;
+        this.options = options;
+        this.mediaType = mediaType;
+        ImagePanel imagePanel = UIManager.getImagePanel();
+        this.images = imagePanel.getImages();
+        selectedImages = new HashMap<>();
 
-  public UIRename(UIFile file, String renamedTitle, Map<RenameOption, Boolean> options) {
-    this.file = file;
-    this.renamedTitle = renamedTitle;
-    this.options = options;
-    ImagePanel imagePanel = UIManager.getImagePanel();
-    this.images = imagePanel.getImages();
-    selectedImages = new HashMap<>();
-    UIMediaImage selectedImage;
-    for (ImageInfo.ImageCategoryProperty property : ImageInfo.ImageCategoryProperty.values()) {
-      selectedImage = imagePanel.getSelectedImage(property);
-      if (selectedImage != null) {
-        selectedImages.put(property, selectedImage);
-      }
-    }
-  }
-
-  public UIFile getFile() {
-    return file;
-  }
-
-  public String getRenamedTitle() {
-    return renamedTitle;
-  }
-
-  public List<ImageInfo> getImages() {
-    return images;
-  }
-
-  public UIMediaImage getSelectedImage(ImageInfo.ImageCategoryProperty property) {
-    return selectedImages.get(property);
-  }
-
-  public boolean getOption(RenameOption option) {
-
-    if (options != null && options.containsKey(option)) {
-      return options.get(option);
+        UIMediaImage selectedImage;
+        for (ImageInfo.ImageCategoryProperty property : ImageInfo.ImageCategoryProperty.values()) {
+            selectedImage = imagePanel.getSelectedImage(property);
+            if (selectedImage != null) {
+                selectedImages.put(property, selectedImage);
+            }
+        }
     }
 
-    return option.getDefaultValue();
-  }
+    public UIFile getFile() {
+        return file;
+    }
 
-  public Map<RenameOption, Boolean> getOptions() {
-    return options;
-  }
+    public String getRenamedTitle() {
+        return renamedTitle;
+    }
+
+    public List<ImageInfo> getImages() {
+        return images;
+    }
+
+    public UIMediaImage getSelectedImage(ImageInfo.ImageCategoryProperty property) {
+        return selectedImages.get(property);
+    }
+
+    public boolean getOption(RenameOption option) {
+
+        if (options != null && options.containsKey(option)) {
+            return options.get(option);
+        }
+
+        return option.getDefaultValue();
+    }
+
+    public Map<RenameOption, Boolean> getOptions() {
+        return options;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
 }

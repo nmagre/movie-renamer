@@ -43,6 +43,7 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
   public CheckUpdateWorker(MovieRenamer mr, boolean showNoUpdate) {
     super(mr);
     this.showNoUpdate = showNoUpdate;
+    sendEvent = false;
   }
 
   private CacheObject getCache() {
@@ -88,7 +89,7 @@ public class CheckUpdateWorker extends Worker<UIUpdate> {
 
   @Override
   public String getDisplayName() {
-    return "Update worker";// FIXME i18n
+    return "";
   }
 
   @Override

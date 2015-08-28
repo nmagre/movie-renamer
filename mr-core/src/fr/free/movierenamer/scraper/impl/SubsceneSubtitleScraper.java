@@ -128,4 +128,9 @@ public class SubsceneSubtitleScraper extends SubtitleScraper {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AVERAGE;// TODO
+  }
+
 }

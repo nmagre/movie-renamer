@@ -30,7 +30,6 @@ import fr.free.movierenamer.ui.swing.dialog.MultipleValueEditorDialog;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
-import fr.free.movierenamer.utils.StringUtils;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -231,6 +230,10 @@ public class UIEditor {
     return components.length;
   }
 
+  public boolean isMultipleValue() {
+      return multipleValue;
+  }
+  
   private void setEnableComponents(boolean enabled) {
     for (JComponent component : components) {
       component.setEnabled(enabled);

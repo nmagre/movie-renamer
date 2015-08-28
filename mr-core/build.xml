@@ -6,11 +6,11 @@
 
   <!-- set global properties for this build -->
   <property name="dir-core" location="${imported.basedir}/mr-core" />
-  <property name="src-core" location="${dir-core}/src" relative="yes" />
-  <property name="lib-core" location="${dir-core}/lib" relative="yes" />
-  <property name="build-core" location="${dir-core}/build" relative="yes" />
-  <property name="javadoc-core" location="${dir-core}/javadoc" relative="yes" />
-  <property name="jarfile-core" location="${lib-core}/Mr-core.jar" relative="yes" />
+  <property name="src-core" location="${dir-core}/src" />
+  <property name="lib-core" location="${dir-core}/lib" />
+  <property name="build-core" location="${dir-core}/build" />
+  <property name="javadoc-core" location="${dir-core}/javadoc" />
+  <property name="jarfile-core" location="${lib-core}/Mr-core.jar" />
 
   <path id="classpath">
     <fileset dir="${lib-core}">

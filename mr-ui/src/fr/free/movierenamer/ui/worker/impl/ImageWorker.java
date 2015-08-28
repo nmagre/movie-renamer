@@ -43,11 +43,11 @@ public class ImageWorker<T extends IImage> extends AbstractImageWorker<T> {
   public ImageWorker(WorkerId wid, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
     super(wid, model.getAll(), size, resize, defaultImage, downloadImage);
     this.model = model;
-    this.sendEvent = false;
+   // this.sendEvent = false;
   }
 
   @Override
-  public final void process(List<AbstractImageWorker<T>.ImageChunk> chunks) {
+  public final void process(List<AbstractImageWorker<T>.ImageChunk> chunks) {// TODO remove image on error
     if (model == null) {
       return;
     }

@@ -47,6 +47,8 @@ import fr.free.movierenamer.scraper.impl.trailer.YoutubeTrailerScraper;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Class ScraperManager
@@ -59,7 +61,7 @@ public class ScraperManager {
   /**
    * <code>map</code> existing scraper list
    */
-  private static final Map<Class<? extends Scraper>, Scraper> map = new LinkedHashMap<Class<? extends Scraper>, Scraper>(0);
+  private static final Map<Class<? extends Scraper>, Scraper> map = new LinkedHashMap<>(0);
   private static final Settings settings = Settings.getInstance();
 
   static {
@@ -114,82 +116,28 @@ public class ScraperManager {
     return scraper;
   }
 
-  public static MediaScraper<?, ?> getMediaScraper(MediaType mtype) {
-    switch (mtype) {
-
-      case MOVIE:
-        return getMovieScraper();
-
-      case TVSHOW:
-        return getTvShowScraper(); 
-    }
-
-    return null;
+  public static MediaScraper getMediaScraper(MediaType mtype) {
+    return (MediaScraper) map.get(settings.getInfoScraper(mtype));
   }
 
-  public static List<MediaScraper<?, ?>> getMediaScraperList(MediaType mtype) {
-    return getMediaScraperList(mtype, null);
+  public static List<MediaScraper> getMediaScrapers(Class<? extends MediaScraper> sclazz) {
+    return getMediaScrapers(sclazz, null);
   }
 
-  @SuppressWarnings("unchecked")
-  public static List<MediaScraper<?, ?>> getMediaScraperList(MediaType mtype, AvailableLanguages language) {
-    List<MediaScraper<?, ?>> mediaScrapers = new ArrayList<MediaScraper<?, ?>>();
-    Class<? extends MediaScraper<?, ?>> clazz = getScraperClass(mtype);
-
-    if (clazz != null) {
-      mediaScrapers = getScrapers((Class<MediaScraper<?, ?>>) clazz, language);
-    }
-
-    return mediaScrapers;
+  public static List<MediaScraper> getMediaScrapers(MediaType mtype) {
+    return getMediaScrapers(mtype.getScraperTypeClass(), null);
   }
 
-  private static Class<? extends MediaScraper<?, ?>> getScraperClass(MediaType mtype) {
-    Class<? extends MediaScraper<?, ?>> clazz = null;
-
-    switch (mtype) {
-
-      case MOVIE:
-        clazz = MovieScraper.class;
-        break;
-
-      case TVSHOW:
-        clazz = TvShowScraper.class;
-        break;
-    }
-
-    return clazz;
-  }
-
-  public static MovieScraper getMovieScraper() {
-    return (MovieScraper) map.get(settings.getSearchMovieScraper());
-  }
-
-  public static List<MovieScraper> getMovieScraperList() {
-    return getMovieScraperList(null);
-  }
-
-  public static List<MovieScraper> getMovieScraperList(AvailableLanguages language) {
-    return getScrapers(MovieScraper.class, language);
-  }
-
-  public static TvShowScraper getTvShowScraper() {// TODO return tvshow scraper
-    return null; //(TvShowScraper) map.get(settings.getSearchTvShowScraper());
-  }
-
-  public static List<TvShowScraper> getTvShowScraperList() {
-    return getTvShowScraperList(null);
-  }
-
-  public static List<TvShowScraper> getTvShowScraperList(AvailableLanguages language) {
-    return getScrapers(TvShowScraper.class, language);
+  public static List<MediaScraper> getMediaScrapers(MediaType mtype, AvailableLanguages language) {
+    return getMediaScrapers(mtype.getScraperTypeClass(), language);
   }
 
   @SuppressWarnings("unchecked")
-  private static <T extends SearchScraper<?>> List<T> getScrapers(Class<T> sclazz, AvailableLanguages language) {
-    List<T> toRet = new ArrayList<T>();
+  private static List<MediaScraper> getMediaScrapers(Class<? extends MediaScraper> sclazz, AvailableLanguages language) {
+    List<MediaScraper> toRet = new ArrayList<>();
     for (Class<?> clazz : map.keySet()) {
       if (sclazz.isAssignableFrom(clazz)) {
-        T scraper = (T) map.get(clazz);
+        MediaScraper scraper = (MediaScraper) map.get(clazz);
         if (language != null && !scraper.hasSupportedLanguage(language)) {
           continue;
         }
@@ -201,8 +149,25 @@ public class ScraperManager {
     return toRet;
   }
 
+  public static List<MediaScraper> getScrapersByQuality(MediaType mtype) {
+    return getScrapersByQuality(mtype, null);
+  }
+
+  public static List<MediaScraper> getScrapersByQuality(MediaType mtype, AvailableLanguages language) {
+    List<MediaScraper> scrapers = ScraperManager.getMediaScrapers(mtype, language);
+    Collections.sort(scrapers, new Comparator<MediaScraper>() {
+
+      @Override
+      public int compare(MediaScraper o1, MediaScraper o2) {
+        return o1.getQuality().ordinal() - o2.getQuality().ordinal();
+      }
+    });
+    
+    return scrapers;
+  }
+
   public static List<TrailerScraper> getTrailerScraperList(MediaType type) {
-    List<TrailerScraper> toRet = new ArrayList<TrailerScraper>();
+    List<TrailerScraper> toRet = new ArrayList<>();
     for (Class<?> clazz : map.keySet()) {
       if (TrailerScraper.class.isAssignableFrom(clazz)) {
         if (type != null && !((TrailerScraper) map.get(clazz)).getSupportedMediaType().contains(type)) {
@@ -216,16 +181,9 @@ public class ScraperManager {
     return toRet;
   }
 
-  public static List<SubtitleScraper> getSubtitleScraperList() {
-    List<SubtitleScraper> toRet = new ArrayList<SubtitleScraper>();
-    for (Class<?> clazz : map.keySet()) {
-      if (SubtitleScraper.class.isAssignableFrom(clazz)) {
-        toRet.add((SubtitleScraper) map.get(clazz));
-      }
-    }
-    return getScrapers(SubtitleScraper.class, null);
-  }
-
+//  public static List<SubtitleScraper> getSubtitleScraperList() {
+//    return getScrapers(SubtitleScraper.class, null);
+//  }
   // @SuppressWarnings("unchecked")
   // private static List<Class<Scraper>> getScrapers() {
   // List<Class<Scraper>> toRet = new ArrayList<Class<Scraper>>();

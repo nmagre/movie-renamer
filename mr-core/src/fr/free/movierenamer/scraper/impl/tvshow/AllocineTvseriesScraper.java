@@ -113,4 +113,10 @@ public class AllocineTvseriesScraper extends TvShowScraper {
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AVERAGE;
+  }
+
 }

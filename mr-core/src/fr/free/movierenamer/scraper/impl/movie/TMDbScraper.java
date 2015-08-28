@@ -22,10 +22,12 @@ import fr.free.movierenamer.info.CastingInfo.PersonProperty;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
+import fr.free.movierenamer.info.VideoInfo;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
@@ -55,7 +57,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 /**
  * Class TMDbScraper : search movie on TMDb
@@ -142,9 +143,7 @@ public class TMDbScraper extends MovieScraper {
         basurl = burl;
         cache.putData(cacheImageBaseUrl, Locale.ROOT, basurl);
       }
-    } catch (URISyntaxException ex) {
-    } catch (IOException ex) {
-    } catch (JSONException ex) {
+    } catch (URISyntaxException | IOException | JSONException ex) {
       Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
     }
 
@@ -154,15 +153,15 @@ public class TMDbScraper extends MovieScraper {
   @Override
   protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/" + version + "/search/movie"
-            + "?api_key=" + apikey + "&language=" + language.name() + "&query="
-            + URIRequest.encode(query));
+      + "?api_key=" + apikey + "&language=" + language.name() + "&query="
+      + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
   protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
+    Map<Integer, Movie> resultSet = new LinkedHashMap<>();
 
     try {
       List<JSONObject> jsonObj = JSONUtils.selectList("results", json);
@@ -225,7 +224,7 @@ public class TMDbScraper extends MovieScraper {
         }
 
         Movie movie = new Movie(null, id, info.getTitle(), info.getOriginalTitle(),
-                thumb, info.getYear());
+          thumb, info.getYear());
 
         resultSet.put(tmdbid, movie);
 
@@ -234,7 +233,7 @@ public class TMDbScraper extends MovieScraper {
       }
     }
 
-    return new ArrayList<Movie>(resultSet.values());
+    return new ArrayList<>(resultSet.values());
   }
 
   protected int findTmdbId(String source) {
@@ -282,11 +281,7 @@ public class TMDbScraper extends MovieScraper {
       }
     } catch (MalformedURLException ex) {
       Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
-      Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (JSONException ex) {
+    } catch (URISyntaxException | JSONException | IOException ex) {
       Logger.getLogger(TMDbScraper.class.getName()).log(Level.SEVERE, null, ex);
     }
 
@@ -299,37 +294,36 @@ public class TMDbScraper extends MovieScraper {
     URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "?api_key=" + apikey + "&language=" + language.name() + "&append_to_response=releases,keywords");
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
-    Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
+    Map<MediaInfo.MediaInfoProperty, String> info = new HashMap<>();
+    Map<MovieMultipleProperty, List<String>> multipleInfo = new EnumMap<>(MovieMultipleProperty.class);
 
-    mediaFields.put(MediaInfo.MediaProperty.title, JSONUtils.selectString("title", json));
+    info.put(MediaInfo.MediaProperty.title, JSONUtils.selectString("title", json));
 
     String rating = JSONUtils.selectString("vote_average", json);
     if (rating != null && !rating.isEmpty()) {
-      mediaFields.put(MediaInfo.MediaProperty.rating, rating);
+      info.put(MediaInfo.MediaProperty.rating, rating);
     }
-    fields.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
-    mediaFields.put(MediaProperty.originalTitle, JSONUtils.selectString("original_title", json));
+    info.put(MovieProperty.votes, JSONUtils.selectString("vote_count", json));
+    info.put(MediaProperty.originalTitle, JSONUtils.selectString("original_title", json));
 
     String syear = JSONUtils.selectString("release_date", json);
     if (syear != null && !syear.isEmpty()) {
       Pattern pattern = Pattern.compile("(\\d{4})-\\d{2}-\\d{2}");
       Matcher matcher = pattern.matcher(syear);
       if (matcher.find()) {
-        mediaFields.put(MediaInfo.MediaProperty.year, matcher.group(1));
+        info.put(MediaInfo.MediaProperty.year, matcher.group(1));
       }
-      fields.put(MovieProperty.releasedDate, syear);
+      info.put(VideoInfo.VideoProperty.releasedDate, syear);
     }
 
-    fields.put(MovieProperty.overview, JSONUtils.selectString("overview", json));
-    fields.put(MovieProperty.runtime, JSONUtils.selectString("runtime", json));
-    fields.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
-    fields.put(MovieProperty.tagline, JSONUtils.selectString("tagline", json));
+    info.put(MovieProperty.overview, JSONUtils.selectString("overview", json));
+    info.put(VideoInfo.VideoProperty.runtime, JSONUtils.selectString("runtime", json));
+    info.put(MovieProperty.budget, JSONUtils.selectString("budget", json));
+    info.put(MovieProperty.tagline, JSONUtils.selectString("tagline", json));
     JSONObject collection = JSONUtils.selectObject("belongs_to_collection", json);
-    fields.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection).replace("(Collection)", "").trim() : "");
+    info.put(MovieProperty.collection, collection != null ? JSONUtils.selectString("name", collection).replace("(Collection)", "").trim() : "");
 
-    List<IdInfo> ids = new ArrayList<IdInfo>();
+    List<IdInfo> ids = new ArrayList<>();
     ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScraperUtils.AvailableApiIds.THEMOVIEDB));
     String simdbId = JSONUtils.selectString("imdb_id", json);
     if (simdbId != null) {
@@ -339,45 +333,44 @@ public class TMDbScraper extends MovieScraper {
 
     for (JSONObject jsonObj : JSONUtils.selectList("countries", json)) {
       if (JSONUtils.selectString("iso_3166_1", jsonObj).equals("US")) {
-        fields.put(MovieProperty.certificationCode, JSONUtils.selectString("certification", jsonObj));
+        info.put(MovieProperty.certificationCode, JSONUtils.selectString("certification", jsonObj));
         break;
       }
     }
 
-    List<String> genres = new ArrayList<String>();
+    List<String> genres = new ArrayList<>();
     for (JSONObject jsonObj : JSONUtils.selectList("genres", json)) {
       genres.add(JSONUtils.selectString("name", jsonObj));
     }
 
-    List<String> countries = new ArrayList<String>();
+    List<String> countries = new ArrayList<>();
     for (JSONObject jsonObj : JSONUtils.selectList("production_countries", json)) {
       String iso_3166_1 = JSONUtils.selectString("iso_3166_1", jsonObj);
       Locale locale = new Locale("", iso_3166_1);
       countries.add(locale.getDisplayCountry(language.getLocale()));
     }
 
-    List<String> studios = new ArrayList<String>();
+    List<String> studios = new ArrayList<>();
     for (JSONObject jsonObj : JSONUtils.selectList("production_companies", json)) {
       studios.add(JSONUtils.selectString("name", jsonObj));
     }
 
-    List<String> tags = new ArrayList<String>();
-    if (Settings.getInstance().isGetTmdbTagg()) {
-      JSONObject keywords = JSONUtils.selectObject("keywords", json);
-      if (keywords != null) {
-        for (JSONObject jsonObj : JSONUtils.selectList("keywords", keywords)) {
-          tags.add(JSONUtils.selectString("name", jsonObj));
-        }
+    List<String> tags = new ArrayList<>();
+    //if (Settings.getInstance().isGetTmdbTagg()) {
+    JSONObject keywords = JSONUtils.selectObject("keywords", json);
+    if (keywords != null) {
+      for (JSONObject jsonObj : JSONUtils.selectList("keywords", keywords)) {
+        tags.add(JSONUtils.selectString("name", jsonObj));
       }
     }
+    //}
 
-    multipleFields.put(MovieMultipleProperty.studios, studios);
-    multipleFields.put(MovieMultipleProperty.tags, tags);
-    multipleFields.put(MovieMultipleProperty.countries, countries);
-    multipleFields.put(MovieMultipleProperty.genres, genres);
+    multipleInfo.put(MovieMultipleProperty.studios, studios);
+    multipleInfo.put(MovieMultipleProperty.tags, tags);
+    multipleInfo.put(MovieMultipleProperty.countries, countries);
+    multipleInfo.put(MovieMultipleProperty.genres, genres);
 
-    MovieInfo movieInfo = new MovieInfo(mediaFields, ids, fields, multipleFields);
-    return movieInfo;
+    return new MovieInfo(info, multipleInfo, ids);
   }
 
   @Override
@@ -385,14 +378,14 @@ public class TMDbScraper extends MovieScraper {
     URL searchUrl = new URL("http", apiHost, "/" + version + "/movie/" + id + "/casts?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    List<CastingInfo> casting = new ArrayList<CastingInfo>();
+    List<CastingInfo> casting = new ArrayList<>();
 
     for (String section : new String[]{
       "cast", "crew"
     }) {
       List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
       for (JSONObject jsonObj : jsonObjs) {
-        Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
+        Map<PersonProperty, String> personFields = new EnumMap<>(PersonProperty.class);
         personFields.put(PersonProperty.name, JSONUtils.selectString("name", jsonObj));
         personFields.put(PersonProperty.character, JSONUtils.selectString("character", jsonObj));
         String image = JSONUtils.selectString("profile_path", jsonObj);
@@ -400,7 +393,7 @@ public class TMDbScraper extends MovieScraper {
         if (image != null && image.length() > 0) {
           int cid = JSONUtils.selectInteger("id", json);
 
-          Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
+          Map<ImageInfo.ImageProperty, String> fields = new HashMap<>();
           fields.put(ImageInfo.ImageProperty.urlTumb, getTmdbImageBaseUrl() + TmdbImageSize.cast.getSmall() + image);
           fields.put(ImageInfo.ImageProperty.urlMid, getTmdbImageBaseUrl() + TmdbImageSize.cast.getMedium() + image);
           fields.put(ImageInfo.ImageProperty.url, getTmdbImageBaseUrl() + TmdbImageSize.cast.getBig() + image);
@@ -421,7 +414,8 @@ public class TMDbScraper extends MovieScraper {
   }
 
   @Override
-  public ScraperUtils.InfoQuality getInfoQuality() {
-    return ScraperUtils.InfoQuality.GREAT;
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
   }
+
 }

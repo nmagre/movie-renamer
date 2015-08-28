@@ -28,6 +28,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -125,6 +126,10 @@ public final class ImageUtils {
   public static final Icon HISTORY_16 = getIconFromJar("ui/16/history.png");
   public static final Icon USER_16 = getIconFromJar("ui/16/user.png");
   public static final Icon WARNING_16 = getIconFromJar("ui/16/warning.png");
+  public static final Icon CD_16 = getIconFromJar("ui/16/cd.png");
+  public static final Icon CLOSE_16 = getIconFromJar("ui/16/close.png");
+  public static final Icon UP_16 = getIconFromJar("ui/16/up.png");
+  public static final Icon DOWN_16 = getIconFromJar("ui/16/down.png");
 
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");
@@ -295,6 +300,25 @@ public final class ImageUtils {
   public Icon resizeIcon(Icon icon, Dimension dim) {
     Image img = iconToImage(icon);
     return new ImageIcon(img.getScaledInstance(dim.width, dim.height, Image.SCALE_DEFAULT));
+  }
+
+  public BufferedImage resizeBufferedImage(BufferedImage src, Dimension dim) {
+    
+    int width = dim.width;
+    int height = dim.height;
+    
+    if(src.getWidth() > dim.width) {
+      height = dim.width * (height / width);
+    } else {
+      width = dim.height * (width / height);
+    }
+    
+    BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+    Graphics2D g2 = resizedImg.createGraphics();
+    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    g2.drawImage(src, 0, 0, width, height, null);
+    g2.dispose();
+    return resizedImg;
   }
 
   public static Icon flipImageHorizontally(Icon icon) {

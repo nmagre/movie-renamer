@@ -35,6 +35,7 @@ import javax.swing.Timer;
  * @author Timothy Wall
  * @see http://abbot.sourceforge.net/doc/overview.shtml
  */
+
 /**
  * Provides a spinning disk of hash marks.
  */

@@ -18,17 +18,19 @@
 package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.VideoInfo;
 import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
+import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
-import fr.free.movierenamer.ui.bean.UIMovieInfo;
+import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.MediaPanel;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
+import fr.free.movierenamer.utils.StringUtils;
 
 /**
  * Class SearchMediaInfosWorker
@@ -38,70 +40,73 @@ import fr.free.movierenamer.ui.worker.Worker;
  */
 public class SearchMediaInfoWorker extends Worker<UIMediaInfo<?>> {
 
-  private final MediaScraper<Media, MediaInfo> scraper;
-  private final UISearchResult searchResult;
+    private final MediaScraper<Media, MediaInfo> scraper;
+    private final UISearchResult searchResult;
+    private final UIMode mode;
 
-  /**
-   * Constructor arguments
-   *
-   * @param mr
-   * @param searchResult
-   */
-  @SuppressWarnings("unchecked")
-  public SearchMediaInfoWorker(final MovieRenamer mr, final UISearchResult searchResult) {
-    super(mr);
-    this.searchResult = searchResult;
-    this.scraper = (searchResult != null) ? (MediaScraper<Media, MediaInfo>) searchResult.getScraper() : null;
-  }
-
-  @Override
-  public UIMediaInfo<?> executeInBackground() throws Exception {
-    UIMediaInfo<?> info = null;
-    if (searchResult != null && scraper != null) {
-      MediaInfo inf = scraper.getInfo(searchResult.getSearchResult());
-
-      if (inf instanceof VideoInfo) {
-       // FileInfo fileInfo = mr.getFile().getFileInfo();
-      //  ((VideoInfo) inf).setMediaTag(fileInfo.getMediaTag());
-      }
-
-      if (inf instanceof MovieInfo) {
-        info = new UIMovieInfo((MovieInfo) inf);
-      }
-
-    }
-
-    return info;
-  }
-
-  @Override
-  protected void workerDone() throws Exception {
-    UIMediaInfo<?> info = get();
-
-    // Search info failed, we let the user try again by clearing selection
-    if (info == null) {
-      mr.getSearchResultList().clearSelection();
-      return;
-    }
-
+    /**
+     * Constructor arguments
+     *
+     * @param mr
+     * @param searchResult
+     */
     @SuppressWarnings("unchecked")
-    MediaPanel<UIMediaInfo<?>, ?> mediaPanel = (MediaPanel<UIMediaInfo<?>, ?>) mr.getMediaPanel();
-    if (mediaPanel != null) {
-      mediaPanel.setInfo(info);
+    public SearchMediaInfoWorker(final MovieRenamer mr, final UISearchResult searchResult, UIMode mode) {
+        super(mr);
+        this.searchResult = searchResult;
+        this.scraper = (searchResult != null) ? (MediaScraper<Media, MediaInfo>) searchResult.getScraper() : null;
+        this.mode = mode;
     }
 
-    mr.updateRenamedTitle();
-    mr.setRenameFieldEnabled();
-    mr.setRenamebuttonEnabled();
-  }
+    @Override
+    public UIMediaInfo<?> executeInBackground() throws Exception {
+        UIMediaInfo<?> info = null;
+        if (searchResult != null && scraper != null) {
+            MediaInfo minfo = scraper.getInfo(searchResult.getSearchResult());
+            info = mode.toUIInfo(minfo);
 
-  @Override
-  public String getDisplayName() {
-    return UIUtils.i18n.getLanguage("main.statusTb.searchinfo", false);
-  }
+            if (minfo instanceof VideoInfo) {// FIXME should not be here
+                if (Settings.MEDIAINFO && Settings.getInstance().isUseFileRuntime(searchResult.getMediaType())) {
+                    UIFile uifile = (UIFile) mr.getMediaList().getSelectedValue();
+                    Long runtime = uifile.getFileInfo().getMediaTag().getDuration();
+                    if (runtime != null && runtime > 0) {
+                        info.set(VideoInfo.VideoProperty.runtime, StringUtils.durationMsInMinute(runtime));
+                    }
+                }
+            }
+        }
 
-  @Override
-  public WorkerId getWorkerId() {
-    return WorkerId.SEARCH_INFO;
-  }
+        return info;
+    }
+
+    @Override
+    protected void workerDone() throws Exception {
+        UIMediaInfo<?> info = get();
+
+        // Search info failed, we let the user try again by clearing selection
+        if (info == null) {
+            mr.getSearchResultList().clearSelection();
+            return;
+        }
+
+        @SuppressWarnings("unchecked")
+        MediaPanel<UIMediaInfo<?>, ?> mediaPanel = (MediaPanel<UIMediaInfo<?>, ?>) mr.getMediaPanel();
+        if (mediaPanel != null) {
+            mediaPanel.setInfo(info);
+        }
+
+        mr.updateRenamedTitle();
+        mr.setRenameFieldEnabled();
+        mr.setRenamebuttonEnabled();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return UIUtils.i18n.getLanguage("main.statusTb.searchinfo", false);
+    }
+
+    @Override
+    public WorkerId getWorkerId() {
+        return WorkerId.SEARCH_INFO;
+    }
 }

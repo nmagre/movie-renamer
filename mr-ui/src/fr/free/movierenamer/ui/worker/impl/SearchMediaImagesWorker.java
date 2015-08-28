@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2014 Nicolas Magré
+ * Copyright (C) 2012-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,91 +41,87 @@ import java.util.logging.Level;
  */
 public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
 
-  private final UISearchResult searchResult;
-  private final MediaScraper<Media, MediaInfo> scraper;
-  private List<ImageInfo> infos;
+    private final UISearchResult searchResult;
+    private final MediaScraper<Media, MediaInfo> scraper;
+    private List<ImageInfo> infos;
 
-  /**
-   * Constructor arguments
-   *
-   * @param mr
-   * @param searchResult
-   */
-  @SuppressWarnings("unchecked")
-  public SearchMediaImagesWorker(MovieRenamer mr, UISearchResult searchResult) {
-    super(mr);
-    this.searchResult = searchResult;
-    this.scraper = (searchResult != null) ? (MediaScraper<Media, MediaInfo>) searchResult.getScraper() : null;
-  }
-
-  @Override
-  public List<UIMediaImage> executeInBackground() throws Exception {
-
-    List<UIMediaImage> mediaImages = new ArrayList<>();
-
-    if (searchResult == null) {
-      return mediaImages;
+    /**
+     * Constructor arguments
+     *
+     * @param mr
+     * @param searchResult
+     */
+    @SuppressWarnings("unchecked")
+    public SearchMediaImagesWorker(MovieRenamer mr, UISearchResult searchResult) {
+        super(mr);
+        this.searchResult = searchResult;
+        this.scraper = (searchResult != null) ? (MediaScraper<Media, MediaInfo>) searchResult.getScraper() : null;
     }
 
-    Media media = searchResult.getSearchResult();
-    if (scraper != null && media != null) {
-      infos = scraper.getImages(media);
-      if (infos != null) {
-        int count = infos.size();
-        for (int i = 0; i < count; i++) {
-          if (isCancelled()) {
-            UISettings.LOGGER.log(Level.INFO, "SearchMediaImagesWorker Cancelled");
-            return new ArrayList<>();
-          }
+    @Override
+    public List<UIMediaImage> executeInBackground() throws Exception {
 
-          mediaImages.add(new UIMediaImage(infos.get(i)));
+        List<UIMediaImage> mediaImages = new ArrayList<>();
+
+        if (searchResult == null) {
+            return mediaImages;
         }
-      }
+
+        Media media = searchResult.getSearchResult();
+        if (scraper != null && media != null) {
+            infos = scraper.getImages(media);
+            if (infos != null) {
+                int count = infos.size();
+                for (int i = 0; i < count; i++) {
+                    if (isCancelled()) {
+                        UISettings.LOGGER.log(Level.INFO, "SearchMediaImagesWorker Cancelled");
+                        return new ArrayList<>();
+                    }
+
+                    mediaImages.add(new UIMediaImage(infos.get(i)));
+                }
+            }
+        }
+
+        return mediaImages;
     }
 
-    return mediaImages;
-  }
+    @Override
+    protected void workerDone() throws Exception {
+        List<UIMediaImage> images = get();
 
-  @Override
-  protected void workerDone() throws Exception {
-    List<UIMediaImage> images = get();
+        if (images == null) {
+            return;
+        }
 
-    if (images == null) {
-      return;
+        ImagePanel panel = UIManager.getImagePanel();
+        for (ImageInfo.ImageCategoryProperty key : panel.getSupportedImages()) {
+            List<UIMediaImage> mimages = getImagesByType(images, key);
+            panel.addImages(mimages, key);
+        }
+        panel.enabledListener();
+
+        mr.setRenamebuttonEnabled();
     }
 
-    ImagePanel panel = UIManager.getImagePanel();
-    for (ImageInfo.ImageCategoryProperty key : panel.getSupportedImages()) {
-      List<UIMediaImage> mimages = getImagesByType(images, key);
-      panel.addImages(mimages, key);
-    }
-    panel.enabledListener();
+    private List<UIMediaImage> getImagesByType(List<UIMediaImage> images, ImageInfo.ImageCategoryProperty property) {
+        List<UIMediaImage> res = new ArrayList<>();
+        for (UIMediaImage image : images) {
+            if (image.getType().equals(property)) {
+                res.add(image);
+            }
+        }
 
-    if (infos != null) {
-      mr.setImageInfo(infos);
-    }
-
-    mr.setRenamebuttonEnabled();
-  }
-
-  private List<UIMediaImage> getImagesByType(List<UIMediaImage> images, ImageInfo.ImageCategoryProperty property) {
-    List<UIMediaImage> res = new ArrayList<>();
-    for (UIMediaImage image : images) {
-      if (image.getType().equals(property)) {
-        res.add(image);
-      }
+        return res;
     }
 
-    return res;
-  }
+    @Override
+    public String getDisplayName() {
+        return UIUtils.i18n.getLanguage("main.statusTb.searchimages", false);
+    }
 
-  @Override
-  public String getDisplayName() {
-    return UIUtils.i18n.getLanguage("main.statusTb.searchimages", false);
-  }
-
-  @Override
-  public WorkerId getWorkerId() {
-    return WorkerId.SEARCH_IMAGE;
-  }
+    @Override
+    public WorkerId getWorkerId() {
+        return WorkerId.SEARCH_IMAGE;
+    }
 }

@@ -32,6 +32,7 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.IEventInfo;
 import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.bean.UIEventInfo;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
@@ -56,188 +57,189 @@ import javax.swing.SwingConstants;
  * @author Nicolas Magré
  */
 public abstract class MediaPanel<T extends UIMediaInfo<M>, M extends MediaInfo> extends PanelGenerator implements IMediaInfoPanel<T, M> {
-  private static final long serialVersionUID = 1L;
 
-  protected T info;
-  private ComponentTransition transitionPanel;
-  private WebPanel mediaPanel;
-  private WebToggleButton editButton;
-  private WebBreadcrumb infoPanelBc;
-  private WebButton refreshButton;
-  private WebLabel loadingLbl;
-  protected Map<PanelType, InfoPanel<T>> panels;
+    private static final long serialVersionUID = 1L;
 
-  protected MediaPanel() {
-    super();
-    UIEvent.addEventListener(this.getClass(), this);
-  }
+    protected T info;
+    private ComponentTransition transitionPanel;
+    private WebPanel mediaPanel;
+    private WebToggleButton editButton;
+    private WebBreadcrumb infoPanelBc;
+    private WebButton refreshButton;
+    private WebLabel loadingLbl;
+    protected Map<PanelType, InfoPanel<T>> panels;
 
-  protected void createPanel(Map<PanelType, InfoPanel<T>> panels) {
-    createPanel(null, panels);
-  }
-
-  protected void createPanel(WebPanel mpanel, final Map<PanelType, InfoPanel<T>> panels) {
-
-    mediaPanel = mpanel != null ? mpanel : this;
-
-    this.panels = panels;
-    int pos = 0;
-
-    // Bread crumb buttons for navigate between panels
-    infoPanelBc = new WebBreadcrumb();
-    infoPanelBc.setFocusable(false);
-    for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
-      WebBreadcrumbToggleButton bcButton = createbuttonPanel(entry.getValue());
-      if (pos == 0) {
-        bcButton.setSelected(true);
-      }
-      infoPanelBc.add(bcButton);
+    protected MediaPanel() {
+        super();
+        UIEvent.addEventListener(this.getClass(), this);
     }
 
-    SwingUtils.groupButtons(infoPanelBc);// Group breadcrumb button
-    SwingUtils.setEnabledRecursively(infoPanelBc, false);
+    protected void createPanel(Map<PanelType, InfoPanel<T>> panels) {
+        createPanel(null, panels);
+    }
 
-    boolean addEditButton = addEditButton();
-    boolean addRefreshButton = addRefreshButton();
+    protected void createPanel(WebPanel mpanel, final Map<PanelType, InfoPanel<T>> panels) {
 
-    int gwith = 2 + (addEditButton ? 1 : 0) + (addRefreshButton ? 1 : 0);
+        mediaPanel = mpanel != null ? mpanel : this;
 
-    mediaPanel.add(infoPanelBc, getGroupConstraint(0, false, false));
+        this.panels = panels;
+        int pos = 0;
 
-    loadingLbl = new WebLabel();
-    mediaPanel.add(loadingLbl, getGroupConstraint(addRefreshButton ? 2 : 1, !addEditButton && !addRefreshButton, false));
-
-    if (addRefreshButton) {
-      refreshButton = new WebButton(ImageUtils.REFRESH_16);
-      refreshButton.setRolloverShadeOnly(true);
-      refreshButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          UIEvent.fireUIEvent(UIEvent.Event.REFRESH_MEDIAINFO, MovieRenamer.class);// Fire event on mr
+        // Bread crumb buttons for navigate between panels
+        infoPanelBc = new WebBreadcrumb();
+        infoPanelBc.setFocusable(false);
+        for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
+            WebBreadcrumbToggleButton bcButton = createbuttonPanel(entry.getValue());
+            if (pos == 0) {
+                bcButton.setSelected(true);
+            }
+            infoPanelBc.add(bcButton);
         }
-      });
-      refreshButton.setEnabled(false);
 
-      TooltipManager.setTooltip(refreshButton, new WebLabel("mediapanel.refresh", refreshButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
-      mediaPanel.add(refreshButton, getGroupConstraint(1, !addEditButton, false));
-    }
+        SwingUtils.groupButtons(infoPanelBc);// Group breadcrumb button
+        SwingUtils.setEnabledRecursively(infoPanelBc, false);
 
-    if (addEditButton) {
-      editButton = new WebToggleButton(ImageUtils.EDIT_16);
-      editButton.setRolloverDarkBorderOnly(true);
-      editButton.setRolloverDecoratedOnly(true);
-      editButton.setRolloverShadeOnly(true);
-      editButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          UIEvent.fireUIEvent(UIEvent.Event.EDIT, InfoPanel.class);// Fire event on all info panel (wich are register to UI event)
+        boolean addEditButton = addEditButton();
+        boolean addRefreshButton = addRefreshButton();
+
+        int gwith = 2 + (addEditButton ? 1 : 0) + (addRefreshButton ? 1 : 0);
+
+        mediaPanel.add(infoPanelBc, getGroupConstraint(0, false, false));
+
+        loadingLbl = new WebLabel();
+        mediaPanel.add(loadingLbl, getGroupConstraint(addRefreshButton ? 2 : 1, !addEditButton && !addRefreshButton, false));
+
+        if (addRefreshButton) {
+            refreshButton = new WebButton(ImageUtils.REFRESH_16);
+            refreshButton.setRolloverShadeOnly(true);
+            refreshButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    UIEvent.fireUIEvent(UIEvent.Event.REFRESH_MEDIAINFO, MovieRenamer.class);// Fire event on mr
+                }
+            });
+            refreshButton.setEnabled(false);
+
+            TooltipManager.setTooltip(refreshButton, new WebLabel("mediapanel.refresh", refreshButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
+            mediaPanel.add(refreshButton, getGroupConstraint(1, !addEditButton, false));
         }
-      });
-      editButton.setEnabled(false);
 
-      TooltipManager.setTooltip(editButton, new WebLabel("mediapanel.edit", editButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
-      mediaPanel.add(editButton, getGroupConstraint(addRefreshButton ? 3 : 2, true, false, true, 1));
-    }
+        if (addEditButton) {
+            editButton = new WebToggleButton(ImageUtils.EDIT_16);
+            editButton.setRolloverDarkBorderOnly(true);
+            editButton.setRolloverDecoratedOnly(true);
+            editButton.setRolloverShadeOnly(true);
+            editButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    UIEvent.fireUIEvent(UIEvent.Event.EDIT, InfoPanel.class, new UIEventInfo("", e));// Fire event on all info panel (wich are register to UI event)
+                }
+            });
+            editButton.setEnabled(false);
 
-    transitionPanel = new ComponentTransition(panels.values().iterator().next());
-    transitionPanel.setTransitionEffect(new FadeTransitionEffect());
-
-    JScrollPane scrollpane = new JScrollPane(transitionPanel);
-    scrollpane.setBorder(null);
-    scrollpane.setAutoscrolls(true);
-    GridBagConstraints gbc = getGroupConstraint();
-    gbc.anchor = GridBagConstraints.PAGE_START;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.weightx = 1;
-    gbc.weighty = 1;
-    gbc.gridheight = 1;
-    gbc.gridwidth = gwith;
-
-    // Fixe random scroll when resize
-    scrollpane.setPreferredSize(new Dimension(1, 1));
-
-    mediaPanel.add(scrollpane, gbc);
-  }
-  
-  public InfoPanel<T> getPanel(PanelType type) {
-    return panels.get(type);
-  }
-
-  private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<?> panel) {
-    WebBreadcrumbToggleButton bcButton = new WebBreadcrumbToggleButton();
-    bcButton.setIcon(panel.getIcon());
-    bcButton.setFocusable(false);
-    bcButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent evt) {
-        transitionPanel.performTransition(panel);
-      }
-    });
-    TooltipManager.setTooltip(bcButton, new WebLabel(panel.getPanelName(), panel.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
-    return bcButton;
-  }
-
-  protected void setLoading(boolean loading) {
-    loadingLbl.setIcon(loading ? ImageUtils.LOAD_16 : null);
-  }
-
-  @Override
-  public final void UIEventHandler(UIEvent.Event event, IEventInfo info, Object object, Object param) {
-    UISettings.LOGGER.finer(String.format("%s receive event %s %s", getClass().getSimpleName(), event, (info != null ? info : "")));
-
-    switch (event) {
-      case WORKER_STARTED:
-        if (info.getClass().equals(SearchMediaInfoWorker.class)) {
-          setLoading(true);
+            TooltipManager.setTooltip(editButton, new WebLabel("mediapanel.edit", editButton.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
+            mediaPanel.add(editButton, getGroupConstraint(addRefreshButton ? 3 : 2, true, false, true, 1));
         }
-        break;
-      case WORKER_DONE:
-        if (info.getClass().equals(SearchMediaInfoWorker.class)) {
-          setLoading(false);
+
+        transitionPanel = new ComponentTransition(panels.values().iterator().next());
+        transitionPanel.setTransitionEffect(new FadeTransitionEffect());
+
+        JScrollPane scrollpane = new JScrollPane(transitionPanel);
+        scrollpane.setBorder(null);
+        scrollpane.setAutoscrolls(true);
+        GridBagConstraints gbc = getGroupConstraint();
+        gbc.anchor = GridBagConstraints.PAGE_START;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.gridheight = 1;
+        gbc.gridwidth = gwith;
+
+        // Fixe random scroll when resize
+        scrollpane.setPreferredSize(new Dimension(1, 1));
+
+        mediaPanel.add(scrollpane, gbc);
+    }
+
+    public InfoPanel<T> getPanel(PanelType type) {
+        return panels.get(type);
+    }
+
+    private WebBreadcrumbToggleButton createbuttonPanel(final InfoPanel<?> panel) {
+        WebBreadcrumbToggleButton bcButton = new WebBreadcrumbToggleButton();
+        bcButton.setIcon(panel.getIcon());
+        bcButton.setFocusable(false);
+        bcButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                transitionPanel.performTransition(panel);
+            }
+        });
+        TooltipManager.setTooltip(bcButton, new WebLabel(panel.getPanelName(), panel.getIcon(), SwingConstants.TRAILING), TooltipWay.down);
+        return bcButton;
+    }
+
+    protected void setLoading(boolean loading) {
+        loadingLbl.setIcon(loading ? ImageUtils.LOAD_16 : null);
+    }
+
+    @Override
+    public final void UIEventHandler(UIEvent.Event event, IEventInfo eventInfo, Object object, Object newObject) {
+        UISettings.LOGGER.finer(String.format("%s receive event %s %s", getClass().getSimpleName(), event, (eventInfo != null ? eventInfo : "")));
+
+        switch (event) {
+            case WORKER_STARTED:
+                if (eventInfo != null && eventInfo.getEventObject() instanceof SearchMediaInfoWorker) {
+                    setLoading(true);
+                }
+                break;
+            case WORKER_DONE:
+                if (eventInfo != null && eventInfo.getEventObject() instanceof SearchMediaInfoWorker) {
+                    setLoading(false);
+                }
+                break;
         }
-        break;
-    }
-  }
-
-  public abstract void clearPanel();
-
-  protected abstract boolean addEditButton();
-
-  protected abstract boolean addRefreshButton();
-
-  @Override
-  public final void setInfo(T info) {
-    this.info = info;
-
-    addInfo(info);
-
-    SwingUtils.setEnabledRecursively(infoPanelBc, true);
-    if (addEditButton()) {
-      editButton.setEnabled(true);
     }
 
-    if (addRefreshButton()) {
-      refreshButton.setEnabled(true);
+    public abstract void clearPanel();
+
+    protected abstract boolean addEditButton();
+
+    protected abstract boolean addRefreshButton();
+
+    @Override
+    public final void setInfo(T info) {
+        this.info = info;
+
+        addInfo(info);
+
+        SwingUtils.setEnabledRecursively(infoPanelBc, true);
+        if (addEditButton()) {
+            editButton.setEnabled(true);
+        }
+
+        if (addRefreshButton()) {
+            refreshButton.setEnabled(true);
+        }
     }
-  }
 
-  @Override
-  public T getInfo() {
-    return info;
-  }
-
-  protected abstract void addInfo(T info);
-
-  @Override
-  public void clear() {
-    for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
-      entry.getValue().clear();
+    @Override
+    public T getInfo() {
+        return info;
     }
 
-    SwingUtils.setEnabledRecursively(infoPanelBc, false);
-    if (addEditButton()) {
-      editButton.setEnabled(false);
+    protected abstract void addInfo(T info);
+
+    @Override
+    public void clear() {
+        for (Entry<PanelType, InfoPanel<T>> entry : panels.entrySet()) {
+            entry.getValue().clear();
+        }
+
+        SwingUtils.setEnabledRecursively(infoPanelBc, false);
+        if (addEditButton()) {
+            editButton.setEnabled(false);
+        }
+        clearPanel();
     }
-    clearPanel();
-  }
 }

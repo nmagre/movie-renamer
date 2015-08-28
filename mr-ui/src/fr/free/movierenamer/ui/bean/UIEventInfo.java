@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 duffy
+ * Movie Renamer
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +18,28 @@
 package fr.free.movierenamer.ui.bean;
 
 /**
+ * Class UIEventInfo
  *
  * @author Nicolas Magré
  */
-public interface UIInfo {
+public class UIEventInfo implements IEventInfo {
+
+    private final String name;
+    private final Object obj;
+
+    public UIEventInfo(String name, Object obj) {
+        this.name = name;
+        this.obj = obj;
+    }
+
+    @Override
+    public Object getEventObject() {
+        return obj;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return name;
+    }
 
 }

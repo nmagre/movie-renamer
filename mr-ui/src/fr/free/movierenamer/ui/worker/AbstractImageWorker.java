@@ -68,7 +68,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
 
   @Override
   @SuppressWarnings("unchecked")
-  protected Icon executeInBackground() throws Exception {
+  protected Icon executeInBackground() throws Exception {// TODO add a retry
     Icon res = defaultImage;
     if (!imageCacheDir.exists()) {
       if (!imageCacheDir.mkdirs()) {
@@ -131,7 +131,7 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
         publish(new ImageChunk(img, image.getId()));
         count++;
 
-        setProgress((count * 100) / total);// FIXME remove
+        setProgress((count * 100) / total);
       }
     } catch (Exception ex) {
       UISettings.LOGGER.log(Level.SEVERE, String.format("%s%n%n%s", getName(), ClassUtils.getStackTrace(ex)));
@@ -140,6 +140,11 @@ public abstract class AbstractImageWorker<T extends IImage> extends AbstractWork
     return res;
   }
 
+  @Override
+  public Object getEventObject() {
+      return this;
+  }
+  
   protected abstract String getName();
 
   @Override

@@ -39,6 +39,7 @@ public class SetSearchWorker extends ControlWorker<String, IdInfo> {
   public SetSearchWorker(MovieRenamer mr, UIFile mediaFile) {
     super(mr);
     this.mediaFile = mediaFile;
+    sendEvent = false;
     useImdb = false;
   }
 

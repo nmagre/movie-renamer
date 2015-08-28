@@ -19,7 +19,6 @@ package fr.free.movierenamer.scraper.impl;
 
 import fr.free.movierenamer.info.IdInfo;
 import java.util.List;
-import java.util.Locale;
 
 import fr.free.movierenamer.info.SubtitleInfo;
 import fr.free.movierenamer.scraper.SubtitleScraper;
@@ -82,6 +81,11 @@ public class OpenSubtitlesScraper extends SubtitleScraper {
   @Override
   protected List<Subtitle> searchSubtitlesById(IdInfo id, AvailableLanguages language) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AVERAGE;// TODO
   }
 
 }

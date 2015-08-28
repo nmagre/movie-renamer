@@ -109,7 +109,7 @@ public class YoutubeTrailerScraper extends TrailerScraper {
     Document dom = URIRequest.getXmlDocument(trailer.getURL());
 
     Node node = XPathUtils.selectNode("entry", dom);
-    Map<TrailerProperty, String> fields = new EnumMap<TrailerProperty, String>(TrailerProperty.class);
+    Map<TrailerProperty, String> fields = new EnumMap<>(TrailerProperty.class);
 
     fields.put(TrailerProperty.title, XPathUtils.selectString("title", node));
     fields.put(TrailerProperty.overview, XPathUtils.selectString("content", node));
@@ -126,6 +126,11 @@ public class YoutubeTrailerScraper extends TrailerScraper {
     Map<Quality, URL> streamUrl = youtube.getLinks(new URL(XPathUtils.selectString("//*[local-name()='player']/@url", node)));// FIXME get all urls
 
     return new TrailerInfo(fields, streamUrl, null);
+  }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.POOR;
   }
 
 }

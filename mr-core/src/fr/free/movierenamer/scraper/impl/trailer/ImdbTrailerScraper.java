@@ -67,10 +67,10 @@ public class ImdbTrailerScraper extends TrailerScraper {
 
   @Override
   protected List<Trailer> searchTrailer(Media media) throws Exception {
-    List<Trailer> trailers = new ArrayList<Trailer>();
+    List<Trailer> trailers = new ArrayList<>();
 
     // Get id
-    IdInfo id = ScraperUtils.idLookup(AvailableApiIds.IMDB, null, media);
+    IdInfo id = media.getMediaType().idLookup(AvailableApiIds.IMDB, null, media);
     if (id == null) {
       return trailers;
     }
@@ -113,42 +113,46 @@ public class ImdbTrailerScraper extends TrailerScraper {
 
   @Override
   protected TrailerInfo fetchTrailerInfo(Trailer searchResult) throws Exception {
-    
+
     URL url = searchResult.getTrailerUrl();
     Pattern p = Pattern.compile("(vi\\d+)");
-    Matcher matcher  = p.matcher(url.toExternalForm());
-    if(!matcher.find()) {
+    Matcher matcher = p.matcher(url.toExternalForm());
+    if (!matcher.find()) {
       System.out.println("Url do not match : " + url);
       return null;
     }
-    
+
     // TODO SD
     Document dom = URIRequest.getHtmlDocument(new URI(String.format("http://www.imdb.com/video/imdb/%s/player?uff=3", matcher.group(1))));
     Node node = XPathUtils.selectNode("//SCRIPT[@type = 'text/javascript']", dom);
-    if(node == null) {
+    if (node == null) {
       System.out.println("JS is null");
       return null;
     }
-    
+
     String vplayJs = node.getTextContent();
-    if(!vplayJs.contains("IMDbPlayer.playerKey")) {
+    if (!vplayJs.contains("IMDbPlayer.playerKey")) {
       System.out.println("NO IMDbPlayer.playerKey");
       return null;
     }
-    
+
     p = Pattern.compile("IMDbPlayer.playerKey = \"(.*)\";");
     matcher = p.matcher(vplayJs);
-    if(!matcher.find()) {
+    if (!matcher.find()) {
       System.out.println("Pattern do not match IMDbPlayer.playerKey");
       return null;
     }
-    
+
     TrailerInfo tinfo = new TrailerInfo(null, null, LocaleUtils.AvailableLanguages.en);
-    
+
     System.out.println(tinfo);
-    
-    
+
     return tinfo;
+  }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
   }
 
 }

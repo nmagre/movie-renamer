@@ -35,7 +35,8 @@ public abstract class InfoPanel<T> extends PanelGenerator implements IInfoPanel<
     CASTING_INFO,
     TRAILER_INFO,
     FILE_INFO,
-    ID_INFO
+    ID_INFO,
+    NFO_INFO
   }
 
   public abstract Icon getIcon();

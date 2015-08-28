@@ -16,8 +16,10 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import com.alee.managers.popup.WebPopup;
-import fr.free.movierenamer.ui.MovieRenamer;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
+import com.alee.managers.popup.PopupWay;
+import com.alee.managers.popup.WebButtonPopup;
 import fr.free.movierenamer.ui.swing.panel.TaskPanel;
 import java.awt.AWTEvent;
 import java.awt.Toolkit;
@@ -33,68 +35,72 @@ import javax.swing.BoxLayout;
  *
  * @author Nicolas Magré
  */
-public class TaskPopup extends WebPopup {
+public class TaskPopup extends WebButtonPopup {
 
-  private final MovieRenamer mr;
+    private final WebPanel panel = new WebPanel();
+    
+    public TaskPopup(WebButton button) {
+        super(button, PopupWay.upLeft);
 
-  public TaskPopup(MovieRenamer mr) {
-    super();
-    this.mr = mr;
+        setFocusable(true);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setMargin(10);
 
-    setFocusable(true);
-    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    setMargin(10);
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    hidePopup();
+                }
+            }
+        });
+        
+        setContent(panel);
+        setCloseOnFocusLoss(true);
+    }
 
-    addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-          hidePopup();
-        }
-      }
-    });
-    setCloseOnFocusLoss(true);
-  }
+    public void addTaskPanel(TaskPanel taskPanel) {
+        panel.add(taskPanel);
+        panel.revalidate();
+        updateBounds();
+        //revalidate();
+    }
 
-  public void addTaskPanel(TaskPanel taskPanel) {
-    add(taskPanel);
+    public void removeTaskPanel(TaskPanel taskPanel) {
+        panel.remove(taskPanel);
+        panel.revalidate();
+        updateBounds();
+        //revalidate();
+    }
+    
+    public void clearTask() {
+        panel.removeAll();
+    }
 
-    revalidate();
-  }
+    /**
+     * Add listener to close popup when click outside
+     */
+    public void armPopup() {
+        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+            @Override
+            public void eventDispatched(AWTEvent event) {
 
-  public void removeTaskPanel(TaskPanel taskPanel) {
-    remove(taskPanel);
+                if (event instanceof MouseEvent) {
+                    MouseEvent m = (MouseEvent) event;
+                    if (m.getID() == MouseEvent.MOUSE_RELEASED) {
+                        hidePopup();
+                        Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+                    }
+                }
 
-    revalidate();
-//    if (WorkerManager.renameQueue.isEmpty()) {
-//      hidePopup();
-//    }
-  }
-
-  /**
-   * Add listener to close popup when click outside
-   */
-  public void armPopup() {
-    Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-      @Override
-      public void eventDispatched(AWTEvent event) {
-
-        if (event instanceof MouseEvent) {
-          MouseEvent m = (MouseEvent) event;
-          if (m.getID() == MouseEvent.MOUSE_RELEASED) {
-            hidePopup();
-            Toolkit.getDefaultToolkit().removeAWTEventListener(this);
-          }
-        }
-
-        if (event instanceof WindowEvent) {
-          WindowEvent we = (WindowEvent) event;
-          if (we.getID() == WindowEvent.WINDOW_DEACTIVATED || we.getID() == WindowEvent.WINDOW_STATE_CHANGED) {
-            hidePopup();
-            Toolkit.getDefaultToolkit().removeAWTEventListener(this);
-          }
-        }
-      }
-    }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.WINDOW_EVENT_MASK);
-  }
+                if (event instanceof WindowEvent) {
+                    WindowEvent we = (WindowEvent) event;
+                    if (we.getID() == WindowEvent.WINDOW_DEACTIVATED || we.getID() == WindowEvent.WINDOW_STATE_CHANGED) {
+                        hidePopup();
+                        Toolkit.getDefaultToolkit().removeAWTEventListener(this);
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.WINDOW_EVENT_MASK);
+    }
 }

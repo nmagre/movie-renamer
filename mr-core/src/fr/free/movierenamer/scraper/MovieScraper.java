@@ -25,7 +25,6 @@ import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.ScraperUtils.InfoQuality;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -106,5 +105,4 @@ public abstract class MovieScraper extends VideoScraper<Movie, MovieInfo> {
     return MediaType.MOVIE;
   }
   
-  public abstract InfoQuality getInfoQuality();
 }

@@ -21,7 +21,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.renamer.MoveFile;
 import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.XMLSettings.IProperty;
+import fr.free.movierenamer.settings.XMLSettings.ISimpleProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
@@ -72,7 +72,6 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
   private final UIFile uiFile;
   private UIFile newUiFile;
   private final UIMediaInfo<?> info;
-  private final TaskPanel taskPanel;
   private Action action = Action.none;
   private static final UISettings settings = UISettings.getInstance();
   private static final String fileToRename = "fanart|thumb|poster|cdart|logo|clearart|banner|front|back|discart|clearlogo|season|saison|movieset|set|saga";
@@ -80,7 +79,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
   private final List<RenameFile> toMove;
   public static final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images/thumb");
 
-  private static enum GenerateImage {
+  private static enum DownloadImage {
 
     thumb(ImageCategoryProperty.thumb, UIRename.RenameOption.THUMB, UISettingsProperty.imageThumbName, UISettingsProperty.imageThumbSize,
             UISettingsProperty.imageThumbResize, false, UISettingsProperty.imageThumbHeight),
@@ -92,19 +91,19 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     banner(ImageCategoryProperty.banner, UIRename.RenameOption.BANNER, UISettingsProperty.imageBannerName, UISettingsProperty.imageBannerSize);
 
     private final ImageCategoryProperty cat;
-    private final IProperty propertyFileName;
-    private final IProperty uisize;
-    private final IProperty resize;
+    private final ISimpleProperty propertyFileName;
+    private final ISimpleProperty uisize;
+    private final ISimpleProperty resize;
     private final boolean horizontalResize;
-    private final IProperty rsize;
+    private final ISimpleProperty rsize;
     private final UIRename.RenameOption renameOption;
 
-    private GenerateImage(ImageCategoryProperty cat, UIRename.RenameOption renameOption, IProperty propertyFileName, IProperty uisize) {
+    private DownloadImage(ImageCategoryProperty cat, UIRename.RenameOption renameOption, ISimpleProperty propertyFileName, ISimpleProperty uisize) {
       this(cat, renameOption, propertyFileName, uisize, null, false, null);
     }
 
-    private GenerateImage(ImageCategoryProperty cat, UIRename.RenameOption renameOption, IProperty propertyFileName, IProperty uisize, IProperty resize,
-            boolean horizontalResize, IProperty rsize) {
+    private DownloadImage(ImageCategoryProperty cat, UIRename.RenameOption renameOption, ISimpleProperty propertyFileName, ISimpleProperty uisize, ISimpleProperty resize,
+            boolean horizontalResize, ISimpleProperty rsize) {
       this.cat = cat;
       this.renameOption = renameOption;
       this.propertyFileName = propertyFileName;
@@ -144,14 +143,13 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
 
   }
 
-  public RenamerWorker(MovieRenamer mr, UIFile uiFile, TaskPanel taskPanel, UIRename uirename) {
+  public RenamerWorker(MovieRenamer mr, UIFile uiFile, UIRename uirename) {
     super(mr);
 
     toMove = new ArrayList<>();
     this.uirename = uirename;
     this.uiFile = uiFile;
     this.info = mr.getMediaPanel().getInfo();
-    this.taskPanel = taskPanel;
     newUiFile = uiFile;
   }
 
@@ -234,15 +232,15 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     }
 
     // Download images
-    ExecutorService service = Executors.newFixedThreadPool(5);
+    ExecutorService service = Executors.newFixedThreadPool(1);// FIXME multithread is worse. need to find how many request can be made for each API
     CompletionService<RenameFile> pool = new ExecutorCompletionService<>(service);
 
     final String rtitle = renamedTitle;
     final File dFolder = destFolder;
     int nbThread = 0;
-    for (final GenerateImage gimage : GenerateImage.values()) {
-      if (uirename.getOption(gimage.getRenameOption())) {
-        final UIMediaImage mimage = uirename.getSelectedImage(gimage.getCategory());
+    for (final DownloadImage dimage : DownloadImage.values()) {
+      if (uirename.getOption(dimage.getRenameOption())) {
+        final UIMediaImage mimage = uirename.getSelectedImage(dimage.getCategory());
         if (mimage == null) {
           continue;
         }
@@ -251,7 +249,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
 
           @Override
           public RenameFile call() {
-            return downloadImage(rtitle, dFolder, gimage, mimage);
+            return downloadImage(rtitle, dFolder, dimage, mimage);
           }
         });
         nbThread++;
@@ -357,7 +355,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
       Nfo nfo = new Nfo(info.getInfo(), uirename.getImages());
       Document nfoDom = nfo.getNFO();
 
-      filename = settings.coreInstance.getNFOFileName().replace("<fileName>", renamedTitle);
+      filename = settings.coreInstance.getMediaNFOFileName(uirename.getMediaType()).replace("<fileName>", renamedTitle);
       tmpFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
       FileUtils.writeXmlFile(nfoDom, tmpFile);
       destFile = new File(destFolder, filename);
@@ -371,7 +369,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     return null;
   }
 
-  private RenameFile downloadImage(String renamedTitle, File destFolder, GenerateImage image, UIMediaImage mimage) {
+  private RenameFile downloadImage(String renamedTitle, File destFolder, DownloadImage image, UIMediaImage mimage) {
 
     final String filename = image.getFilename().replace("<fileName>", renamedTitle);
     final File tmpFile = new File(System.getProperty("java.io.tmpdir") + File.separator + filename);
@@ -391,7 +389,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     return null;
   }
 
-  private void downloadImage(GenerateImage image, UIMediaImage mediaImage, File tmpFile) throws Exception {
+  private void downloadImage(DownloadImage image, UIMediaImage mediaImage, File tmpFile) throws Exception {
 
     if (tmpFile.exists()) {
       if (tmpFile.delete()) {
@@ -429,6 +427,7 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     // TODO add cache
     InputStream input = URIRequest.getInputStream(uri);
     Image bimg = ImageIO.read(input);
+    
     if (resize) {
       int width = size;
       int height = size;
@@ -444,7 +443,6 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     int imageType = settings.getImageFormat().name().equals("JPG") ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
     BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), imageType);
     buffered.getGraphics().drawImage(bimg, 0, 0, null);
-
     ImageIO.write(buffered, settings.getImageFormat().name(), outputFile);
   }
 
@@ -522,11 +520,6 @@ public class RenamerWorker extends ControlWorker<Void, RenamerWorker.RenameFile>
     FileConflictDialog conflictDialog = new FileConflictDialog(mr, conflictFile.getSource(), conflictFile.getDestination());
     conflictDialog.setVisible(true);
     action = conflictDialog.getAction();
-  }
-
-  @Override
-  protected void workerProgress(int progress) {
-    taskPanel.setProgress(progress);
   }
 
   @Override

@@ -18,7 +18,13 @@
 package fr.free.movierenamer.searchinfo;
 
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.scraper.MediaScraper;
+import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.TvShowScraper;
+import fr.free.movierenamer.scraper.impl.movie.TMDbScraper;
+import fr.free.movierenamer.scraper.impl.movie.UniversalScraper;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.ScraperUtils;
 import java.net.URL;
 
 /**
@@ -35,19 +41,36 @@ public abstract class Media extends Hyperlink {
 
   public enum MediaType {
 
-    MOVIE(settings.getMovieFilenameFormat()),
-    TVSHOW("");// FIXME tvshow file format
+    MOVIE(MovieScraper.class, UniversalScraper.class) {
+        @Override
+        public IdInfo idLookup(ScraperUtils.AvailableApiIds lookupType, IdInfo id, Media searchResult) {
+          return ScraperUtils.movieIdLookup(lookupType, id, (Movie) searchResult);
+        }
+      },
+    TVSHOW(TvShowScraper.class, TMDbScraper.class) {
+        @Override
+        public IdInfo idLookup(ScraperUtils.AvailableApiIds lookupType, IdInfo id, Media searchResult) {
+          return null;
+        }
+      };
 
-    private final String fileFormat;
+    private final Class<? extends MediaScraper> scraperClazz;
+    private final Class<? extends MediaScraper> scraperTypeClazz;
 
-    private MediaType(String fileFormat) {
-      this.fileFormat = fileFormat;
+    private MediaType(Class<? extends MediaScraper> scraperTypeClazz, Class<? extends MediaScraper> scraperClazz) {
+      this.scraperTypeClazz = scraperTypeClazz;
+      this.scraperClazz = scraperClazz;
     }
 
-    public String getFileFormat() {
-      return fileFormat;
+    public Class<? extends MediaScraper> getDefaultScraper() {
+      return scraperClazz;
     }
 
+    public Class<? extends MediaScraper> getScraperTypeClass() {
+      return scraperTypeClazz;
+    }
+
+    public abstract IdInfo idLookup(ScraperUtils.AvailableApiIds lookupType, IdInfo id, Media searchResult);
   }
 
   protected Media() {

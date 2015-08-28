@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 public class FormatReplacing {
 
   private static final Settings settings = Settings.getInstance();
-  private static final String pipe = "|";
   private static final char optionSeparator = ':';
   private static final char equalsSeparator = '=';
   private static final char notEqualsSeparator = '!';
@@ -144,7 +143,6 @@ public class FormatReplacing {
           currentTree.appendData(str);
           append = false;
         } else {
-
           currentTree = currentTree.addChild(new TreeNode(str));
         }
       }

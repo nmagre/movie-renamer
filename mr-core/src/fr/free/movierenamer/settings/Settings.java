@@ -23,18 +23,24 @@ import java.util.logging.Logger;
 
 import javax.xml.bind.DatatypeConverter;
 
-import fr.free.movierenamer.renamer.Nfo;
-
 import fr.free.movierenamer.renamer.NameCleaner;
+import fr.free.movierenamer.renamer.Nfo.NFOtype;
+import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.scraper.impl.movie.IMDbScraper;
 import fr.free.movierenamer.scraper.impl.movie.UniversalScraper;
+import fr.free.movierenamer.scraper.impl.tvshow.TheTVDBScraper;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.utils.LocaleUtils.AppLanguages;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.StringUtils;
+import fr.free.movierenamer.utils.StringUtils.CaseConversionType;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Class Settings , Movie Renamer settings
@@ -47,6 +53,21 @@ public final class Settings extends XMLSettings {
   public static final String APPMODULE;
   public static final String APPMODULE_NOSPACE;
   public static final String VERSION;
+  private static final Map<MediaType, Class> InfoScraper = new HashMap<>();
+  private static final Map<MediaType, String> FilenameFormat = new HashMap<>();
+  private static final Map<MediaType, String> FilenameSeparator = new HashMap<>();
+  private static final Map<MediaType, Integer> FilenameLimit = new HashMap<>();
+  private static final Map<MediaType, CaseConversionType> FilenameCase = new HashMap<>();
+  private static final Map<MediaType, String> NFOFilename = new HashMap<>();
+  private static final Map<MediaType, Boolean> NfoTag = new HashMap<>();
+  private static final Map<MediaType, Boolean> NfoImage = new HashMap<>();
+  private static final Map<MediaType, Boolean> NfoImdbId = new HashMap<>();
+  private static final Map<MediaType, Boolean> Nfogenerate = new HashMap<>();
+  private static final Map<MediaType, NFOtype> NfoType = new HashMap<>();
+  private static final Map<MediaType, Boolean> MediaRuntime = new HashMap<>();
+  private static final Map<MediaType, Boolean> TmdbTag = new HashMap<>();
+  private static final Map<MediaType, Boolean> FilenameReplaceSpace = new HashMap<>();
+  private static final Map<MediaType, String> FilenameReplaceSpaceBy = new HashMap<>();
 
   // Logger
   public static final Logger LOGGER;
@@ -59,65 +80,57 @@ public final class Settings extends XMLSettings {
     APPMODULE_NOSPACE = appModule.replace(' ', '_');
     VERSION = getApplicationProperty("application.module.version");
     LOGGER = Logger.getLogger(appModule);
+
+    InfoScraper.put(MediaType.MOVIE, UniversalScraper.class);
+    InfoScraper.put(MediaType.TVSHOW, TheTVDBScraper.class);
+    MediaRuntime.put(MediaType.MOVIE, Boolean.FALSE);
+    TmdbTag.put(MediaType.MOVIE, Boolean.TRUE);
+    FilenameFormat.put(MediaType.MOVIE, "<t> (<y>)");
+    FilenameFormat.put(MediaType.TVSHOW, "<Sx> (<y>)");
+    FilenameSeparator.put(MediaType.MOVIE, ", ");
+    FilenameLimit.put(MediaType.MOVIE, 3);
+    FilenameCase.put(MediaType.MOVIE, CaseConversionType.FIRSTLO);
+    FilenameReplaceSpace.put(MediaType.MOVIE, Boolean.FALSE);
+    FilenameReplaceSpaceBy.put(MediaType.MOVIE, ".");
+    FilenameReplaceSpace.put(MediaType.TVSHOW, Boolean.FALSE);
+    FilenameReplaceSpaceBy.put(MediaType.TVSHOW, ".");
+
+    NFOFilename.put(MediaType.MOVIE, "<fileName>.nfo");
+    NfoTag.put(MediaType.MOVIE, Boolean.TRUE);
+    NfoImage.put(MediaType.MOVIE, Boolean.TRUE);
+    NfoImdbId.put(MediaType.MOVIE, Boolean.TRUE);
+    Nfogenerate.put(MediaType.MOVIE, Boolean.TRUE);
+    NfoType.put(MediaType.MOVIE, NFOtype.XBMC);
   }
 
-  // Settings instance
-  private static final Settings instance = new Settings();
+  public enum SettingsProperty implements ISimpleProperty {
 
-  public enum SettingsProperty implements IProperty {
-
-    reservedCharacter(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
-    filenameTrim(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
-    filenameRmDupSpace(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
-    filenameRomanUpper(Boolean.TRUE, SettingsType.FORMAT, SettingsSubType.GENERAL),
-    // movie filename
-    movieFilenameFormat("<t> (<y>)", SettingsType.FORMAT, SettingsSubType.MOVIE),
-    movieFilenameSeparator(", ", SettingsType.FORMAT, SettingsSubType.MOVIE),
-    movieFilenameLimit(3, SettingsType.FORMAT, SettingsSubType.MOVIE),
-    movieFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.FORMAT, SettingsSubType.MOVIE),
+    reservedCharacter(Boolean.TRUE, SettingsType.FILE, SettingsSubType.GENERAL),
+    filenameTrim(Boolean.TRUE, SettingsType.FILE, SettingsSubType.GENERAL),
+    filenameRmDupSpace(Boolean.TRUE, SettingsType.FILE, SettingsSubType.GENERAL),
+    filenameRomanUpper(Boolean.TRUE, SettingsType.FILE, SettingsSubType.GENERAL),
     // format
-    stringTimeHour("h", SettingsType.FORMAT, SettingsSubType.TIME),
-    stringTimeMinute("min ", SettingsType.FORMAT, SettingsSubType.TIME),
-    stringTimeSeconde("s ", SettingsType.FORMAT, SettingsSubType.TIME),
-    stringTimeMilliSeconde("ms", SettingsType.FORMAT, SettingsSubType.TIME),
-    stringTimeShowSeconde(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.TIME),
-    stringTimeShowMillis(Boolean.FALSE, SettingsType.FORMAT, SettingsSubType.TIME),
-    // movie NFO
-    movieNFOFilename("<fileName>.nfo", SettingsType.NFO, SettingsSubType.GENERAL),
-    movieNfoTag(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
-    movieNfoImage(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
-    movieNfoImdbId(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
-    movieNfogenerate(Boolean.TRUE, SettingsType.NFO, SettingsSubType.GENERAL),
-    movieNfoType(Nfo.NFOtype.XBMC, SettingsType.NFO, SettingsSubType.MEDIACENTER),
-    // tvShow
-    //    tvShowFilenameFormat("<st> S<s>E<e> <et>", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // ("<st> S<s>E<e> <et>"),
-    //    tvShowFilenameSeparator(", ", SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (", "),
-    //    tvShowFilenameLimit(3, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Integer.decode("3").toString()),
-    //    tvShowFilenameCase(StringUtils.CaseConversionType.FIRSTLO, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (""),
-    //    tvShowFilenameTrim(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
-    //    tvShowFilenameRmDupSpace(Boolean.TRUE, SettingsType.RENAME, SettingsSubType.TVSHOWFILENAME), // (Boolean.TRUE.toString()),
+    stringTimeHour("h", SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
+    stringTimeMinute("min ", SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
+    stringTimeSeconde("s ", SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
+    stringTimeMilliSeconde("ms", SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
+    stringTimeShowSeconde(Boolean.FALSE, SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
+    stringTimeShowMillis(Boolean.FALSE, SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
     // Search
-    searchNbResult(15, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    searchOrder(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.GENERAL, true),
-    searchOrderThreshold(280, SettingsType.SEARCH, SettingsSubType.GENERAL),
-    searchMovieScraper(UniversalScraper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    searchScraperLang(AvailableLanguages.en, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    searchGetTmdbTag(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    searchGetOnlyLangDep(Boolean.TRUE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    //searchSetOrigTitle(Boolean.FALSE, SettingsType.SEARCH, SettingsSubType.SCRAPER),
-    //    searchTvshowScraper(TheTVDBScraper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER), // (TheTVDBScraper.class.toString()),
-    //    searchSubtitleScraper(OpenSubtitlesScraper.class, SettingsType.SEARCH, SettingsSubType.SCRAPER), // (IMDbScraper.class.toString()),// FIXME
-    // http param
-
+    searchNbResult(15, SettingsType.INFORMATION, SettingsSubType.SEARCH),
+    searchOrder(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SEARCH),
+    searchOrderThreshold(280, SettingsType.INFORMATION, SettingsSubType.SEARCH, searchOrder),
+    searchScraperLang(AvailableLanguages.en, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
+    searchGetOnlyLangDep(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
     // Proxy
-    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, true),
-    proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY),
-    proxyPort(80, SettingsType.NETWORK, SettingsSubType.PROXY),
-    proxyUser("", SettingsType.NETWORK, SettingsSubType.PROXY),
-    proxyPass(new char[0], SettingsType.NETWORK, SettingsSubType.PROXY),
-    proxyIsSocks(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY),
+    proxyIsOn(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY),
+    proxyUrl("", SettingsType.NETWORK, SettingsSubType.PROXY, proxyIsOn),
+    proxyPort(80, SettingsType.NETWORK, SettingsSubType.PROXY, proxyIsOn),
+    proxyUser("", SettingsType.NETWORK, SettingsSubType.PROXY, proxyIsOn),
+    proxyPass(new char[0], SettingsType.NETWORK, SettingsSubType.PROXY, proxyIsOn, SettingsPropertyType.PASSWORD),
+    proxyIsSocks(Boolean.FALSE, SettingsType.NETWORK, SettingsSubType.PROXY, proxyIsOn),
     // Extension
-    fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.EXTENSION, SettingsSubType.GENERAL),
+    fileExtension(Arrays.asList(NameCleaner.getCleanerProperty("file.extension").split("\\|")), SettingsType.MISCELLANEOUS, SettingsSubType.GENERAL),
     //app lang
     appLanguage(AppLanguages.en, SettingsType.GENERAL, SettingsSubType.LANGUAGE),
     formatTokenStart("<", SettingsType.ADVANCED, SettingsSubType.FORMATPARSER),
@@ -133,11 +146,13 @@ public final class Settings extends XMLSettings {
     universalGenre(IMDbScraper.class),
     universalCountry(IMDbScraper.class);
 
-    private Class<?> vclass;
-    private Object defaultValue;
-    private SettingsType type;
-    private SettingsSubType subType;
-    private boolean haschild;
+    private final Class<?> vclass;
+    private final Object defaultValue;
+    private final SettingsType type;
+    private final SettingsSubType subType;
+    private final SettingsProperty parent;
+    private final SettingsPropertyType pType;
+    private boolean haschild = false;
 
     private SettingsProperty(Object defaultValue) {
       this(defaultValue, null, null);
@@ -148,17 +163,30 @@ public final class Settings extends XMLSettings {
     }
 
     private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType) {
-      this(defaultValue, type, subType, false);
+      this(defaultValue, type, subType, (SettingsProperty) null);
     }
 
-    private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType, boolean haschild) {
+    private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType, SettingsPropertyType pType) {
+      this(defaultValue, type, subType, null, pType);
+    }
+
+    private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType, SettingsProperty parent) {
+      this(defaultValue, type, subType, parent, SettingsPropertyType.NONE);
+    }
+
+    private SettingsProperty(Object defaultValue, SettingsType type, SettingsSubType subType, SettingsProperty parent, SettingsPropertyType pType) {
       this.vclass = defaultValue.getClass();
       this.defaultValue = defaultValue;
       this.type = type;
       this.subType = subType;
-      this.haschild = haschild;
-      if (!(defaultValue instanceof Boolean) && haschild) {
-        throw new UnsupportedOperationException("Only boolean value can have a child");
+      this.parent = parent;
+      this.pType = pType;
+
+      if (parent != null) {
+        parent.setHasChild();
+        if (!(parent.getDefaultValue() instanceof Boolean)) {
+          throw new UnsupportedOperationException("Only boolean value can have a child");
+        }
       }
     }
 
@@ -193,10 +221,172 @@ public final class Settings extends XMLSettings {
     }
 
     @Override
+    public boolean isChild() {
+      return parent != null;
+    }
+
+    @Override
+    public IProperty getParent() {
+      return parent;
+    }
+
+    @Override
+    public SettingsPropertyType getPropertyType() {
+      return pType;
+    }
+
+    @Override
     public boolean hasChild() {
       return haschild;
     }
+
+    @Override
+    public void setHasChild() {
+      haschild = true;
+    }
+
   }
+
+  public enum SettingsMediaProperty implements IMediaProperty {
+
+    infoScraper(InfoScraper, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
+    infoUseFileRuntime(MediaRuntime, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
+    infoGetTmdbTag(TmdbTag, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
+    mediaFilenameFormat(FilenameFormat, SettingsType.FILE, SettingsSubType.GENERAL),
+    mediaFilenameSeparator(FilenameSeparator, SettingsType.FILE, SettingsSubType.GENERAL),
+    mediaFilenameLimit(FilenameLimit, SettingsType.FILE, SettingsSubType.GENERAL),
+    mediaFilenameCase(FilenameCase, SettingsType.FILE, SettingsSubType.GENERAL),
+    mediaFilenameReplaceSpace(FilenameReplaceSpace, SettingsType.FILE, SettingsSubType.GENERAL),
+    mediaFilenameReplaceSpaceBy(FilenameReplaceSpaceBy, SettingsType.FILE, SettingsSubType.GENERAL, mediaFilenameReplaceSpace),
+    mediaNFOFilename(NFOFilename, SettingsType.NFO, SettingsSubType.GENERAL),
+    mediaNfoTag(NfoTag, SettingsType.NFO, SettingsSubType.GENERAL),
+    mediaNfoImage(NfoImage, SettingsType.NFO, SettingsSubType.GENERAL),
+    mediaNfoImdbId(NfoImdbId, SettingsType.NFO, SettingsSubType.GENERAL),
+    mediaNfogenerate(Nfogenerate, SettingsType.NFO, SettingsSubType.GENERAL),
+    mediaNfoType(NfoType, SettingsType.NFO, SettingsSubType.MEDIACENTER);
+
+    private final Class<?> vclass;
+    private final Map<MediaType, ?> defaultValue;
+    private final SettingsType type;
+    private final SettingsSubType subType;
+    private final SettingsMediaProperty parent;
+    private final List<MediaType> mediatypes;
+    private boolean haschild = false;
+
+    private SettingsMediaProperty(Map<MediaType, ?> defaultValue) {
+      this(defaultValue, null, null);
+    }
+
+    private SettingsMediaProperty(Map<MediaType, ?> defaultValue, SettingsType type) {
+      this(defaultValue, type, null);
+    }
+
+    private SettingsMediaProperty(Map<MediaType, ?> defaultValue, SettingsType type, SettingsSubType subType) {
+      this(defaultValue, type, subType, null);
+    }
+
+    private SettingsMediaProperty(Map<MediaType, ?> defaultValue, SettingsType type, SettingsSubType subType, SettingsMediaProperty parent) {
+      Map.Entry<MediaType, ?> entry = defaultValue.entrySet().iterator().next();
+      mediatypes = new ArrayList<>(defaultValue.keySet());
+
+      this.vclass = entry.getValue().getClass();
+      this.defaultValue = defaultValue;
+      this.type = type;
+      this.subType = subType;
+      this.parent = parent;
+
+      if (parent != null) {
+        parent.setHasChild();
+        if (!(parent.getVclass().getSimpleName().equalsIgnoreCase("boolean"))) {
+          throw new UnsupportedOperationException("Only boolean value can have a child");
+        }
+      }
+    }
+
+    @Override
+    public Class<?> getVclass() {
+      return vclass;
+    }
+
+    @Override
+    public Class<?> getKclass() {
+      return MediaType.class;
+    }
+
+    @Override
+    public Object getDefaultValue(MediaType mediaType) {
+      return defaultValue.get(mediaType);
+    }
+
+    @Override
+    public String getValue(MediaType mediaType) {
+      return instance.get(this, mediaType);
+    }
+
+    @Override
+    public void setValue(MediaType mediaType, Object value) {
+      instance.set(this, mediaType, value);
+    }
+
+    @Override
+    public SettingsType getType() {
+      return type;
+    }
+
+    @Override
+    public SettingsSubType getSubType() {
+      return subType;
+    }
+
+    @Override
+    public boolean isChild() {
+      return parent != null;
+    }
+
+    @Override
+    public IProperty getParent() {
+      return parent;
+    }
+
+    @Override
+    public boolean hasMediaType(MediaType mediaType) {
+      return mediatypes.contains(mediaType);
+    }
+
+    @Override
+    public boolean hasChild() {
+      return haschild;
+    }
+
+    @Override
+    public void setHasChild() {
+      haschild = true;
+    }
+
+  }
+
+  public enum LogLevel {
+
+    SEVERE(Level.SEVERE),
+    WARNING(Level.WARNING),
+    INFO(Level.INFO),
+    CONFIG(Level.CONFIG),
+    FINE(Level.FINE),
+    FINER(Level.FINER),
+    FINEST(Level.FINEST);
+    private final Level level;
+
+    private LogLevel(Level level) {
+      this.level = level;
+    }
+
+    public Level getLevel() {
+      return level;
+    }
+  }
+
+  // Settings instance
+  private static final Settings instance = new Settings();
 
   /**
    * Constructor
@@ -214,6 +404,10 @@ public final class Settings extends XMLSettings {
     return instance;
   }
 
+  public static void setLogLevel(Level level) {
+    LOGGER.setLevel(level);
+  }
+
   @Override
   protected String getAppSettingsNodeName() {
     return APPNAME_NOSPACE + "_" + APPMODULE_NOSPACE;
@@ -227,20 +421,20 @@ public final class Settings extends XMLSettings {
     return Boolean.parseBoolean(get(SettingsProperty.reservedCharacter));
   }
 
-  public String getMovieFilenameFormat() {
-    return get(SettingsProperty.movieFilenameFormat);
+  public String getMediaFilenameFormat(MediaType mediaType) {
+    return get(SettingsMediaProperty.mediaFilenameFormat, mediaType);
   }
 
-  public String getMovieFilenameSeparator() {
-    return get(SettingsProperty.movieFilenameSeparator);
+  public String getMediaFilenameSeparator(MediaType mediaType) {
+    return get(SettingsMediaProperty.mediaFilenameSeparator, mediaType);
   }
 
-  public int getMovieFilenameLimit() {
-    return Integer.parseInt(get(SettingsProperty.movieFilenameLimit));
+  public int getMediaFilenameLimit(MediaType mediaType) {
+    return Integer.parseInt(get(SettingsMediaProperty.mediaFilenameLimit, mediaType));
   }
 
-  public StringUtils.CaseConversionType getMovieFilenameCase() {
-    return StringUtils.CaseConversionType.valueOf(get(SettingsProperty.movieFilenameCase));
+  public CaseConversionType getMediaFilenameCase(MediaType mediaType) {
+    return StringUtils.CaseConversionType.valueOf(get(SettingsMediaProperty.mediaFilenameCase, mediaType));
   }
 
   public boolean isFilenameTrim() {
@@ -253,6 +447,14 @@ public final class Settings extends XMLSettings {
 
   public boolean isFilenameRomanUpper() {
     return Boolean.parseBoolean(get(SettingsProperty.filenameRomanUpper));
+  }
+
+  public boolean isFilenameReplaceSpace(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.mediaFilenameReplaceSpace, mediaType));
+  }
+
+  public String getFilenameReplaceSpaceBy(MediaType mediaType) {
+    return get(SettingsMediaProperty.mediaFilenameReplaceSpaceBy, mediaType);
   }
 
   public String getStringTimeHour() {
@@ -279,41 +481,44 @@ public final class Settings extends XMLSettings {
     return Boolean.parseBoolean(get(SettingsProperty.stringTimeShowMillis));
   }
 
-  public Nfo.NFOtype getMovieNfoType() {
-    return Nfo.NFOtype.valueOf(get(SettingsProperty.movieNfoType));
+  public NFOtype getMediaNfoType(MediaType mediaType) {
+    return NFOtype.valueOf(get(SettingsMediaProperty.mediaNfoType, mediaType));
   }
 
-  public String getNFOFileName() {
-    return get(SettingsProperty.movieNFOFilename);
+  public String getMediaNFOFileName(MediaType mediaType) {
+    return get(SettingsMediaProperty.mediaNFOFilename, mediaType);
   }
 
-  public boolean isMovieNfoTag() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieNfoTag));
+  public boolean isMediaNfoTag(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.mediaNfoTag, mediaType));
   }
 
-  public boolean isMovieNfoImage() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieNfoImage));
+  public boolean isMediaNfoImage(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.mediaNfoImage, mediaType));
   }
 
-  public boolean isMovieImdbId() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieNfoImdbId));
+  public boolean isMediaImdbId(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.mediaNfoImdbId, mediaType));
   }
 
-  public boolean isMovieNfogenerate() {
-    return Boolean.parseBoolean(get(SettingsProperty.movieNfogenerate));
+  public boolean isMediaNfogenerate(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.mediaNfogenerate, mediaType));
   }
 
   public int getSearchNbResult() {
     return Integer.parseInt(get(SettingsProperty.searchNbResult));
   }
 
-  public boolean isGetTmdbTagg() {
-    return Boolean.parseBoolean(get(SettingsProperty.searchGetTmdbTag));
+  public boolean isGetTmdbTag(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.infoGetTmdbTag, mediaType));
   }
 
   public boolean isGetOnlyLangDepInfo() {
     return Boolean.parseBoolean(get(SettingsProperty.searchGetOnlyLangDep));
+  }
 
+  public boolean isUseFileRuntime(MediaType mediaType) {
+    return Boolean.parseBoolean(get(SettingsMediaProperty.infoUseFileRuntime, mediaType));
   }
 
   public boolean isSetOrigTitle() {
@@ -329,43 +534,22 @@ public final class Settings extends XMLSettings {
     return Integer.parseInt(get(SettingsProperty.searchOrderThreshold));
   }
 
-//  public String getTvShowFilenameFormat() {
-//    return get(SettingsProperty.tvShowFilenameFormat);
-//  }
-//
-//  public String getTvShowFilenameSeparator() {
-//    return get(SettingsProperty.tvShowFilenameSeparator);
-//  }
-//
-//  public int getTvShowFilenameLimit() {
-//    return Integer.parseInt(get(SettingsProperty.tvShowFilenameLimit));
-//  }
-//
-//  public String getTvShowFilenameCase() {
-//    return get(SettingsProperty.tvShowFilenameCase);
-//  }
-//
-//  public boolean isTvShowFilenameTrim() {
-//    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameTrim));
-//  }
-//
-//  public boolean isTvShowFilenameRmDupSpace() {
-//    return Boolean.parseBoolean(get(SettingsProperty.tvShowFilenameRmDupSpace));
-//  }
   @SuppressWarnings("unchecked")
-  public Class<? extends MovieScraper> getSearchMovieScraper() {
+  public Class<? extends MediaScraper> getInfoScraper(MediaType mediaType) {
     try {
-      return (Class<MovieScraper>) Class.forName(get(SettingsProperty.searchMovieScraper).replace("class ", ""));
+      return (Class<MediaScraper>) Class.forName(get(SettingsMediaProperty.infoScraper, mediaType).replace("class ", ""));
+
     } catch (Exception ex) {
     }
 
-    return IMDbScraper.class;
+    return mediaType.getDefaultScraper();
   }
 
   @SuppressWarnings("unchecked")
   public Class<? extends MovieScraper> getUniversalSearchMovieScraper() {
     try {
       return (Class<MovieScraper>) Class.forName(get(SettingsProperty.universalSearchScraper).replace("class ", ""));
+
     } catch (Exception ex) {
     }
 
@@ -391,28 +575,12 @@ public final class Settings extends XMLSettings {
     Class<?> clazz = getOptionClass(property);
     if (clazz != null) {
       return (Class<? extends MovieScraper>) clazz;
+
     }
 
     return IMDbScraper.class;
   }
 
-//  @SuppressWarnings("unchecked")
-//  public Class<? extends TvShowScraper> getSearchTvshowScraper() {
-//    try {
-//      return (Class<TvShowScraper>) Class.forName(get(SettingsProperty.searchTvshowScraper).replace("class ", ""));
-//    } catch (Exception ex) {
-//      return TheTVDBScraper.class;
-//    }
-//  }
-//
-//  @SuppressWarnings("unchecked")
-//  public Class<? extends SubtitleScraper> getSearchSubtitleScraper() {
-//    try {
-//      return (Class<SubtitleScraper>) Class.forName(get(SettingsProperty.searchSubtitleScraper).replace("class ", ""));
-//    } catch (Exception ex) {
-//      return SubsceneSubtitleScraper.class;
-//    }
-//  }
   public AvailableLanguages getSearchScraperLang() {
     return AvailableLanguages.valueOf(get(SettingsProperty.searchScraperLang));
   }
@@ -473,8 +641,10 @@ public final class Settings extends XMLSettings {
     return new String(DatatypeConverter.parseBase64Binary(StringUtils.rot13(apkkey)));
   }
 
-  public static String getApplicationProperty(String key) {
-    return ResourceBundle.getBundle(Settings.class.getName(), Locale.ROOT).getString(key);
+  public static String
+    getApplicationProperty(String key) {
+    return ResourceBundle.getBundle(Settings.class
+      .getName(), Locale.ROOT).getString(key);
   }
 
 }

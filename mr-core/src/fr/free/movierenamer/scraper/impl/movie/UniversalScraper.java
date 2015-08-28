@@ -21,26 +21,27 @@ import fr.free.movierenamer.scraper.ScraperThread;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import fr.free.movierenamer.info.MediaInfo.MediaInfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
+import fr.free.movierenamer.info.VideoInfo.VideoProperty;
+import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.scraper.ScraperManager;
 import fr.free.movierenamer.scraper.ScraperOptions;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 
 /**
  * Class UniversalScraper : Search movie on several scraper
@@ -72,7 +74,7 @@ public class UniversalScraper extends MovieScraper {
     new ScraperOptions(SettingsProperty.universalGenre, true),
     new ScraperOptions(SettingsProperty.universalCountry, true)
   });
-  private final static Map<InfoProperty, SettingsProperty> scraperOptions = new HashMap<InfoProperty, SettingsProperty>();
+  private final static Map<InfoProperty, SettingsProperty> scraperOptions = new HashMap<>();
 
   static {
     scraperOptions.put(MovieProperty.overview, SettingsProperty.universalSynopsys);
@@ -141,10 +143,10 @@ public class UniversalScraper extends MovieScraper {
     }
 
     if (movies.isEmpty()) {
-      List<MovieScraper> scrapers = getScrapersByQuality(language);
+      List<MediaScraper> scrapers = ScraperManager.getScrapersByQuality(MediaType.MOVIE, language);
 
       // Search on any scraper that support current language
-      for (MovieScraper scraper : scrapers) {
+      for (MediaScraper scraper : scrapers) {// FIXME seems to be weird. Need to be check
         if (scraper instanceof UniversalScraper || scraper instanceof TMDbScraper || scraper instanceof IMDbScraper) {
           continue;
         }
@@ -161,36 +163,34 @@ public class UniversalScraper extends MovieScraper {
 
   @Override
   protected MovieInfo fetchMediaInfo(final Movie searchResult, IdInfo id, AvailableLanguages language) throws Exception {
-    final Map<MediaProperty, String> defaultMediaFields = new EnumMap<MediaProperty, String>(MediaProperty.class);
-    final Map<MovieProperty, String> defaultFields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    final Map<MovieMultipleProperty, List<String>> defaultMultipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
-    final List<CastingInfo> defaultCastings = new ArrayList<CastingInfo>();
+    Map<MediaInfoProperty, String> defaultInfo = new HashMap<>();
+    Map<MovieMultipleProperty, List<String>> defaultMultipleInfo = new EnumMap<>(MovieMultipleProperty.class);
+    List<CastingInfo> defaultCastings = new ArrayList<>();
 
-    final Map<MediaProperty, String> mediaFields = new EnumMap<MediaProperty, String>(MediaProperty.class);
-    final Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    final Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
+    Map<MediaInfoProperty, String> info = new HashMap<>();
+    Map<MovieMultipleProperty, List<String>> multipleInfo = new EnumMap<>(MovieMultipleProperty.class);
 
-    final List<MovieScraper> scrapers = getScrapersByQuality(language);
-    final List<IdInfo> idsInfo = new ArrayList<IdInfo>();
-    final Map<Future<MovieInfo>, Class<?>> futureProvider = new HashMap<Future<MovieInfo>, Class<?>>();
-    final List<CastingInfo> castings = new ArrayList<CastingInfo>();
+    List<MediaScraper> scrapers = ScraperManager.getScrapersByQuality(MediaType.MOVIE, language);
+    List<IdInfo> idsInfo = new ArrayList<>();
+    Map<Future<MovieInfo>, Class<?>> futureProvider = new HashMap<>();
+    List<CastingInfo> castings = new ArrayList<>();
 
     addIdInfo(idsInfo, id);
 
     // Launch each scraper in his own thread
     int nbthread = 1;
     ExecutorService service = Executors.newFixedThreadPool(POOL_SIZE);
-    CompletionService<MovieInfo> pool = new ExecutorCompletionService<MovieInfo>(service);
+    CompletionService<MovieInfo> pool = new ExecutorCompletionService<>(service);
 
-    futureProvider.put(pool.submit(new ScraperThread<Movie, MovieInfo>(searchScraper, searchResult)), searchScraper.getClass());
+    futureProvider.put(pool.submit(new ScraperThread<>(searchScraper, searchResult)), searchScraper.getClass());
 
-    for (MovieScraper scraper : scrapers) {
+    for (MediaScraper scraper : scrapers) {
       // We do not add current scraper (Universal) and search Scraper
       if (scraper.getName().equals(getName()) || searchScraper.getName().equals(scraper.getName())) {
         continue;
       }
 
-      futureProvider.put(pool.submit(new ScraperThread<Movie, MovieInfo>(scraper, searchResult)), scraper.getClass());
+      futureProvider.put(pool.submit(new ScraperThread<>((MovieScraper) scraper, searchResult)), scraper.getClass());
       nbthread++;
     }
 
@@ -199,40 +199,25 @@ public class UniversalScraper extends MovieScraper {
 
       try {
         Future<MovieInfo> future = pool.take();
-        MovieInfo info = future.get();
+        MovieInfo movieInfo = future.get();
 
-        if (info == null) {// FIXME should not be null
-          System.out.println("INFO IS NULL : " + searchScraper.getClass());
+        if (movieInfo == null) {// FIXME should not be null
+          Settings.LOGGER.log(Level.SEVERE, String.format("INFO IS NULL : %s", searchScraper.getClass()));
           continue;
         }
 
-        for (IdInfo idInf : info.getIdsInfo()) {
+        for (IdInfo idInf : movieInfo.getIdsInfo()) {
           addIdInfo(idsInfo, idInf);
         }
 
         // Store search scraper infos as default values
         Class<?> provider = futureProvider.get(future);
-        if (provider.equals(searchScraper.getClass())) {
-
-          setMediaFieldsInfo(defaultMediaFields, mediaFields, info, provider);
-
-          setFieldsValue(defaultFields, fields, info, provider);
-          setMultipleFieldsValue(defaultMultipleFields, multipleFields, info, provider);
-
-          // Set casting
-          List<CastingInfo> casting = info.getCasting();
-          setCasting(defaultCastings, castings, casting, provider);
-
-          continue;
-        }
-
-        setMediaFieldsInfo(defaultMediaFields, mediaFields, info, provider);
-
-        setFieldsValue(defaultFields, fields, info, provider);
-        setMultipleFieldsValue(defaultMultipleFields, multipleFields, info, provider);
+        boolean asDefault = provider.equals(searchScraper.getClass());
+        setInfoValue(defaultInfo, info, movieInfo, provider, asDefault);
+        setMultipleFieldsValue(defaultMultipleInfo, multipleInfo, movieInfo, provider, asDefault);
 
         // Set casting
-        List<CastingInfo> casting = info.getCasting();
+        List<CastingInfo> casting = movieInfo.getCasting();
         setCasting(defaultCastings, castings, casting, provider);
 
       } catch (Exception ex) {
@@ -241,29 +226,14 @@ public class UniversalScraper extends MovieScraper {
     }
 
     // Merge
-    String value, nvalue;
+    mergeInfoValue(defaultInfo, info);
+
     List<String> values, nvalues;
-    for (MediaProperty property : MediaProperty.values()) {
-      value = defaultMediaFields.get(property);
-      nvalue = mediaFields.get(property);
-      if ((value == null || value.isEmpty()) && nvalue != null && !nvalue.isEmpty()) {
-        defaultMediaFields.put(property, nvalue);
-      }
-    }
-
-    for (MovieProperty property : MovieProperty.values()) {
-      value = defaultFields.get(property);
-      nvalue = fields.get(property);
-      if ((value == null || value.isEmpty()) && nvalue != null && !nvalue.isEmpty()) {
-        defaultFields.put(property, nvalue);
-      }
-    }
-
     for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
-      values = defaultMultipleFields.get(property);
-      nvalues = multipleFields.get(property);
+      values = defaultMultipleInfo.get(property);
+      nvalues = multipleInfo.get(property);
       if ((values == null || values.isEmpty()) && nvalues != null && !nvalues.isEmpty()) {
-        defaultMultipleFields.put(property, nvalues);
+        defaultMultipleInfo.put(property, nvalues);
       }
     }
 
@@ -273,65 +243,78 @@ public class UniversalScraper extends MovieScraper {
 
     service.shutdownNow();
 
-    return new MovieInfo(defaultMediaFields, idsInfo, defaultFields, defaultMultipleFields, defaultCastings);
+    return new MovieInfo(defaultInfo, defaultMultipleInfo, idsInfo);
   }
 
-  private void setFieldsValue(Map<MovieProperty, String> defaultsFields, Map<MovieProperty, String> fields, MovieInfo info, Class<?> provider) {
+  private void setInfoValue(Map<MediaInfoProperty, String> defaultInfo, Map<MediaInfoProperty, String> info, MovieInfo movieInfo, Class<?> provider, boolean asDefault) {
+    setInfo(defaultInfo, info, movieInfo, MediaProperty.class, provider, asDefault);
+    setInfo(defaultInfo, info, movieInfo, VideoProperty.class, provider, asDefault);
+    setInfo(defaultInfo, info, movieInfo, MovieProperty.class, provider, asDefault);
+  }
+
+  private <T extends Enum<T> & MediaInfoProperty> void setInfo(Map<MediaInfoProperty, String> defaultInfo, Map<MediaInfoProperty, String> info,
+    MovieInfo movieInfo, Class<T> clazz, Class<?> provider, boolean asDefault) {
+
     SettingsProperty sprop;
     String cvalue, nvalue;
-    for (MovieProperty property : MovieProperty.values()) {
-
-      cvalue = fields.get(property);
-      nvalue = info.get(property);
+    for (T property : clazz.getEnumConstants()) {
+      cvalue = info.get(property);
+      nvalue = movieInfo.get(property);
 
       sprop = scraperOptions.get(property);
-      if (sprop != null && settings.getMovieScraperOptionClass(sprop).equals(provider)) {
-        defaultsFields.put(property, nvalue);
+      if (sprop != null && (asDefault || settings.getMovieScraperOptionClass(sprop).equals(provider))) {
+        if (asDefault && defaultInfo.get(property) != null) {
+          continue;
+        }
+
+        defaultInfo.put(property, nvalue);
         continue;
       }
 
       if ((cvalue == null || cvalue.equals("")) && nvalue != null && !nvalue.equals("")) {
-        fields.put(property, nvalue);
+        info.put(property, nvalue);
       }
     }
   }
 
-  private void setMultipleFieldsValue(Map<MovieMultipleProperty, List<String>> defaultsFields,
-          Map<MovieMultipleProperty, List<String>> fields, MovieInfo info, Class<?> provider) {
+  private void setMultipleFieldsValue(Map<MovieMultipleProperty, List<String>> defaultInfo,
+    Map<MovieMultipleProperty, List<String>> info, MovieInfo movieInfo, Class<?> provider, boolean asDefault) {
 
     SettingsProperty sprop;
     List<String> cvalue, nvalue;
     for (MovieMultipleProperty property : MovieMultipleProperty.values()) {
-      cvalue = fields.get(property);
-      nvalue = info.get(property);
+      cvalue = info.get(property);
+      nvalue = movieInfo.get(property);
 
       sprop = scraperOptions.get(property);
-      if (sprop != null && settings.getMovieScraperOptionClass(sprop).equals(provider)) {
-        defaultsFields.put(property, nvalue);
+      if (sprop != null && (asDefault || settings.getMovieScraperOptionClass(sprop).equals(provider))) {
+        if (asDefault && defaultInfo.get(property) != null) {
+          continue;
+        }
+
+        defaultInfo.put(property, nvalue);
         continue;
       }
 
       if ((cvalue == null || cvalue.isEmpty()) && nvalue != null && !nvalue.isEmpty()) {
-        fields.put(property, nvalue);
+        info.put(property, nvalue);
       }
     }
   }
 
-  private void setMediaFieldsInfo(Map<MediaProperty, String> defaultsMediaFields, Map<MediaProperty, String> mediaFields,
-          MovieInfo info, Class<?> provider) {
+  private void mergeInfoValue(Map<MediaInfoProperty, String> defaultInfo, Map<MediaInfoProperty, String> info) {
+    mergeInfo(defaultInfo, info, MediaProperty.class);
+    mergeInfo(defaultInfo, info, VideoProperty.class);
+    mergeInfo(defaultInfo, info, MovieProperty.class);
+  }
 
-    String value;
-    SettingsProperty sprop;
-    for (MediaProperty property : MediaProperty.values()) {
-      sprop = scraperOptions.get(property);
-      if (sprop != null && settings.getMovieScraperOptionClass(sprop).equals(provider)) {
-        defaultsMediaFields.put(property, info.get(property));
-        continue;
-      }
-
-      value = mediaFields.get(property);
-      if (value == null || value.isEmpty()) {
-        mediaFields.put(property, info.get(property));
+  private <T extends Enum<T> & MediaInfoProperty> void mergeInfo(Map<MediaInfoProperty, String> defaultInfo, Map<MediaInfoProperty, String> info, Class<T> clazz) {
+    String value, nvalue;
+    for (T property : clazz.getEnumConstants()) {
+      value = defaultInfo.get(property);
+      nvalue = info.get(property);
+      if ((value == null || value.isEmpty()) && nvalue != null && !nvalue.isEmpty()) {
+        defaultInfo.put(property, nvalue);
       }
     }
   }
@@ -372,20 +355,8 @@ public class UniversalScraper extends MovieScraper {
   }
 
   @Override
-  public ScraperUtils.InfoQuality getInfoQuality() {
-    return ScraperUtils.InfoQuality.AVERAGE;
+  public InfoQuality getQuality() {
+    return InfoQuality.AWESOME;
   }
 
-  private List<MovieScraper> getScrapersByQuality(AvailableLanguages lang) {
-    List<MovieScraper> scrapers = ScraperManager.getMovieScraperList(lang);
-    Collections.sort(scrapers, new Comparator<MovieScraper>() {
-
-      @Override
-      public int compare(MovieScraper o1, MovieScraper o2) {
-        return o1.getInfoQuality().ordinal() - o2.getInfoQuality().ordinal();
-      }
-    });
-
-    return scrapers;
-  }
 }

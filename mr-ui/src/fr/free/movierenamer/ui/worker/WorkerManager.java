@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2014 Nicolas Magré
+ * Copyright (C) 2012-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,13 @@ import fr.free.movierenamer.ui.bean.IImage;
 import fr.free.movierenamer.ui.bean.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
+import fr.free.movierenamer.ui.bean.UIMode;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.ImageListModel;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
-import fr.free.movierenamer.ui.swing.panel.TaskPanel;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.worker.IWorker.WorkerId;
 import fr.free.movierenamer.ui.worker.impl.GalleryWorker;
@@ -69,223 +69,223 @@ import javax.swing.Icon;
  */
 public final class WorkerManager {
 
-  private static final Queue<AbstractWorker<?, ?>> workerQueue = new ConcurrentLinkedQueue<>();
-  private static final BlockingQueue<RenamerWorker> renameQueue = new LinkedBlockingQueue<>();
-  private static final Thread renameThread = new RenameThread(renameQueue);
+    private static final Queue<AbstractWorker<?, ?>> workerQueue = new ConcurrentLinkedQueue<>();
+    private static final BlockingQueue<RenamerWorker> renameQueue = new LinkedBlockingQueue<>();
+    private static final Thread renameThread = new RenameThread(renameQueue);
 
-  public final static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
-    ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList);
-    start(listFileWorker);
-  }
-
-  public final static void getFilesInfo(List<UIFile> files) {
-    GetFilesInfoWorker filesInfoWorker = new GetFilesInfoWorker(files);
-    start(filesInfoWorker);
-  }
-
-  public final static void setSearch(MovieRenamer mr, UIFile media) {
-    SetSearchWorker searchWorker = new SetSearchWorker(mr, media);
-    start(searchWorker);
-  }
-
-  public final static void search(MovieRenamer mr, UIFile media) {
-    SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media);
-    start(searchWorker);
-  }
-
-  public final static void searchInfo(MovieRenamer mr, UISearchResult searchResult) {
-    SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(mr, searchResult);
-    start(infoWorker);
-  }
-
-  public final static void searchImage(MovieRenamer mr, UISearchResult searchResult) {
-    SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
-    start(imagesWorker);
-  }
-
-  public final static void searchIds(MovieIdPanel panel, UIMovieInfo mediaInfo, UISearchResult searchResult, Media.MediaType mediaType) {
-    SearchMediaIdWorker idsWorker = new SearchMediaIdWorker(panel, mediaInfo, searchResult, mediaType);
-    start(idsWorker);
-  }
-
-  public final static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {// not used
-    SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
-    start(castingWorker);
-  }
-
-  public final static void searchTrailer(MovieRenamer mr, UISearchResult searchResult) {
-    SearchMediaTrailerWorker trailerWorker = new SearchMediaTrailerWorker(mr, searchResult);
-    start(trailerWorker);
-  }
-
-  public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, resize, defaultImage, downloadImage);
-    start(imagesWorker);
-  }
-
-  public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, size, resize, defaultImage, downloadImage);
-    start(imagesWorker);
-  }
-
-  public final static void fetchGalleryImages(WorkerId wid, List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
-    AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(wid, images, gallery, size, resize, defaultImage);
-    start(GalleryWorker);
-  }
-
-  public final static void setHtmlTooltip(IHtmlListTooltip htmlToolTip, WebCustomTooltip wct) {
-    ListTooltipWorker ltpw = new ListTooltipWorker(htmlToolTip, wct);
-    start(ltpw, false, null);
-  }
-
-  public static void rename(MovieRenamer mr, UIFile file, TaskPanel taskPanel, UIRename uirename) throws InterruptedException {
-    RenamerWorker renameworker = new RenamerWorker(mr, file, taskPanel, uirename);
-    renameQueue.put(renameworker);
-  }
-
-  public final static void startRenameThread() {
-    if (!renameThread.isAlive()) {
-      renameThread.start();
-    }
-  }
-
-  public final static void stopRenameThread() {
-    renameQueue.clear();
-    if (renameThread.isAlive()) {
-      renameThread.interrupt();
-    }
-  }
-
-  /**
-   * Update worker queue
-   */
-  public static synchronized void updateWorkerQueue() {
-    boolean isEmpty = workerQueue.isEmpty();
-    Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
-    while (iterator.hasNext()) {
-      AbstractWorker<?, ?> worker = iterator.next();
-      if (worker.isDone()) {
-        iterator.remove();
-        UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, worker);
-      }
+    public final static void listFiles(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
+        ListFilesWorker listFileWorker = new ListFilesWorker(mr, files, eventList);
+        start(listFileWorker);
     }
 
-    if (workerQueue.isEmpty()) {
-      if (!isEmpty) {
-        UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
-      }
-    } else {
-      UIEvent.fireUIEvent(UIEvent.Event.WORKER_RUNNING, MovieRenamer.class, workerQueue.peek());
+    public final static void getFilesInfo(List<UIFile> files) {
+        GetFilesInfoWorker filesInfoWorker = new GetFilesInfoWorker(files);
+        start(filesInfoWorker);
     }
-  }
 
-  /**
-   * Start worker
-   *
-   * @param worker Worker to start
-   */
-  private static void start(AbstractWorker<?, ?> worker) {
-    start(worker, true, UIEvent.Event.WORKER_STARTED);
-  }
-
-  /**
-   * Start worker
-   *
-   * @param worker Worker to start
-   */
-  private static void start(AbstractWorker<?, ?> worker, boolean addToQueue, UIEvent.Event event) {
-    synchronized (WorkerManager.class) {
-      if (addToQueue) {
-        workerQueue.add(worker);
-      }
-
-      if (event != null) {
-        UIEvent.fireUIEvent(event, worker);
-      }
+    public final static void setSearch(MovieRenamer mr, UIFile media) {
+        SetSearchWorker searchWorker = new SetSearchWorker(mr, media);
+        start(searchWorker);
     }
-    worker.execute();
-  }
 
-  /**
-   * Stop all running worker
-   */
-  public static void stop() {
-    synchronized (WorkerManager.class) {
-      boolean isEmpty = workerQueue.isEmpty();
-      AbstractWorker<?, ?> worker = workerQueue.poll();
-      while (worker != null) {
-        if (!worker.isDone()) {
-          worker.cancel(true);
+    public final static void search(MovieRenamer mr, UIFile media) {
+        SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media);
+        start(searchWorker);
+    }
+
+    public final static void searchInfo(MovieRenamer mr, UISearchResult searchResult, UIMode mode) {
+        SearchMediaInfoWorker infoWorker = new SearchMediaInfoWorker(mr, searchResult, mode);
+        start(infoWorker);
+    }
+
+    public final static void searchImage(MovieRenamer mr, UISearchResult searchResult) {
+        SearchMediaImagesWorker imagesWorker = new SearchMediaImagesWorker(mr, searchResult);
+        start(imagesWorker);
+    }
+
+    public final static void searchIds(MovieIdPanel panel, UIMovieInfo mediaInfo, UISearchResult searchResult, Media.MediaType mediaType) {
+        SearchMediaIdWorker idsWorker = new SearchMediaIdWorker(panel, mediaInfo, searchResult, mediaType);
+        start(idsWorker);
+    }
+
+    public final static void searchCasting(MovieRenamer mr, MediaInfo info, WebList castingList, ImageListModel<UIPersonImage> model) {// not used
+        SearchMediaCastingWorker castingWorker = new SearchMediaCastingWorker(mr, info, castingList, model);
+        start(castingWorker);
+    }
+
+    public final static void searchTrailer(MovieRenamer mr, UISearchResult searchResult) {
+        SearchMediaTrailerWorker trailerWorker = new SearchMediaTrailerWorker(mr, searchResult);
+        start(trailerWorker);
+    }
+
+    public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, Dimension resize, Icon defaultImage, boolean downloadImage) {
+        ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, resize, defaultImage, downloadImage);
+        start(imagesWorker);
+    }
+
+    public final static <T extends IImage> void fetchImages(WorkerId wid, ImageListModel<T> model, ImageInfo.ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+        ImageWorker<T> imagesWorker = new ImageWorker<>(wid, model, size, resize, defaultImage, downloadImage);
+        start(imagesWorker);
+    }
+
+    public final static void fetchGalleryImages(WorkerId wid, List<UIMediaImage> images, GalleryDialog gallery, Dimension resize, Icon defaultImage, ImageInfo.ImageSize size) {
+        AbstractImageWorker<UIMediaImage> GalleryWorker = new GalleryWorker(wid, images, gallery, size, resize, defaultImage);
+        start(GalleryWorker);
+    }
+
+    public final static void setHtmlTooltip(IHtmlListTooltip htmlToolTip, WebCustomTooltip wct) {
+        ListTooltipWorker ltpw = new ListTooltipWorker(htmlToolTip, wct);
+        start(ltpw, false, null);
+    }
+
+    public static void rename(MovieRenamer mr, UIFile file, UIRename uirename) throws InterruptedException {
+        RenamerWorker renameworker = new RenamerWorker(mr, file, uirename);
+        renameQueue.put(renameworker);
+    }
+
+    public final static void startRenameThread() {
+        if (!renameThread.isAlive()) {
+            renameThread.start();
         }
-        worker = workerQueue.poll();
-      }
-
-      if (!isEmpty) {
-        UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
-      }
     }
-  }
 
-  public static AbstractWorker<?, ?> getFirstWorker() {
-    synchronized (WorkerManager.class) {
-      return workerQueue.peek();
-    }
-  }
-
-  public static int getNbRunningWorkers() {
-    synchronized (WorkerManager.class) {
-      return workerQueue.size();
-    }
-  }
-
-  /**
-   * Stop worker with id wid
-   *
-   * @param wid Worker id
-   */
-  public static void stop(WorkerId wid) {
-    synchronized (WorkerManager.class) {
-      Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
-      while (iterator.hasNext()) {
-        AbstractWorker<?, ?> worker = iterator.next();
-        if (worker.getWorkerId() == wid && !worker.isDone()) {
-          worker.cancel(true);
+    public final static void stopRenameThread() {
+        renameQueue.clear();
+        if (renameThread.isAlive()) {
+            renameThread.interrupt();
         }
-      }
     }
-    updateWorkerQueue();
-  }
 
-  /**
-   * Stop all running workers except worker with class "clazz" and generic super
-   * class "genSuperClazz"
-   *
-   * @param clazz Worker class to keep running
-   * @param genSuperClazz Generic super class (object class)
-   */
-  public static void stopExcept(Class<?> clazz, Class<?> genSuperClazz) {
-    synchronized (WorkerManager.class) {
-      Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
-      while (iterator.hasNext()) {
-        AbstractWorker<?, ?> rworker = iterator.next();
-        if (rworker.getClass().equals(clazz)) {
-          if (genSuperClazz != null && clazz.getGenericSuperclass() != null) {
-            if (!genSuperClazz.equals(rworker.getClass().getEnclosingClass())) {
-              if (!rworker.isDone()) {
-                rworker.cancel(true);
-              }
+    /**
+     * Update worker queue
+     */
+    public static synchronized void updateWorkerQueue() {
+        boolean isEmpty = workerQueue.isEmpty();
+        Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
+        while (iterator.hasNext()) {
+            AbstractWorker<?, ?> worker = iterator.next();
+            if (worker.isDone()) {
+                iterator.remove();
+                UIEvent.fireUIEvent(UIEvent.Event.WORKER_DONE, worker);
             }
-          } else if (rworker.isDone()) {
-            rworker.cancel(true);
-          }
         }
-      }
-    }
-    updateWorkerQueue();
-  }
 
-  private WorkerManager() {
-    throw new UnsupportedOperationException();
-  }
+        if (workerQueue.isEmpty()) {
+            if (!isEmpty) {
+                UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
+            }
+        } else {
+            UIEvent.fireUIEvent(UIEvent.Event.WORKER_RUNNING, MovieRenamer.class, workerQueue.peek());
+        }
+    }
+
+    /**
+     * Start worker
+     *
+     * @param worker Worker to start
+     */
+    private static void start(AbstractWorker<?, ?> worker) {
+        start(worker, true, UIEvent.Event.WORKER_STARTED);
+    }
+
+    /**
+     * Start worker
+     *
+     * @param worker Worker to start
+     */
+    private static void start(AbstractWorker<?, ?> worker, boolean addToQueue, UIEvent.Event event) {
+        synchronized (WorkerManager.class) {
+            if (addToQueue) {
+                workerQueue.add(worker);
+            }
+
+            if (event != null) {
+                UIEvent.fireUIEvent(event, worker);
+            }
+        }
+        worker.execute();
+    }
+
+    /**
+     * Stop all running worker
+     */
+    public static void stop() {
+        synchronized (WorkerManager.class) {
+            boolean isEmpty = workerQueue.isEmpty();
+            AbstractWorker<?, ?> worker = workerQueue.poll();
+            while (worker != null) {
+                if (!worker.isDone()) {
+                    worker.cancel(true);
+                }
+                worker = workerQueue.poll();
+            }
+
+            if (!isEmpty) {
+                UIEvent.fireUIEvent(UIEvent.Event.WORKER_ALL_DONE, MovieRenamer.class);
+            }
+        }
+    }
+
+    public static AbstractWorker<?, ?> getFirstWorker() {
+        synchronized (WorkerManager.class) {
+            return workerQueue.peek();
+        }
+    }
+
+    public static int getNbRunningWorkers() {
+        synchronized (WorkerManager.class) {
+            return workerQueue.size();
+        }
+    }
+
+    /**
+     * Stop worker with id wid
+     *
+     * @param wid Worker id
+     */
+    public static void stop(WorkerId wid) {
+        synchronized (WorkerManager.class) {
+            Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
+            while (iterator.hasNext()) {
+                AbstractWorker<?, ?> worker = iterator.next();
+                if (worker.getWorkerId() == wid && !worker.isDone()) {
+                    worker.cancel(true);
+                }
+            }
+        }
+        updateWorkerQueue();
+    }
+
+    /**
+     * Stop all running workers except worker with class "clazz" and generic
+     * super class "genSuperClazz"
+     *
+     * @param clazz Worker class to keep running
+     * @param genSuperClazz Generic super class (object class)
+     */
+    public static void stopExcept(Class<?> clazz, Class<?> genSuperClazz) {
+        synchronized (WorkerManager.class) {
+            Iterator<AbstractWorker<?, ?>> iterator = workerQueue.iterator();
+            while (iterator.hasNext()) {
+                AbstractWorker<?, ?> rworker = iterator.next();
+                if (rworker.getClass().equals(clazz)) {
+                    if (genSuperClazz != null && clazz.getGenericSuperclass() != null) {
+                        if (!genSuperClazz.equals(rworker.getClass().getEnclosingClass())) {
+                            if (!rworker.isDone()) {
+                                rworker.cancel(true);
+                            }
+                        }
+                    } else if (rworker.isDone()) {
+                        rworker.cancel(true);
+                    }
+                }
+            }
+        }
+        updateWorkerQueue();
+    }
+
+    private WorkerManager() {
+        throw new UnsupportedOperationException();
+    }
 
 }

@@ -121,7 +121,12 @@ public class MoveFile extends Thread {
         status = Status.CHECK_FAILED;
         dest.delete();
       } else {
-        status = source.delete() ? Status.OK : Status.REMOVE_FAILED;
+        if (Settings.WINDOWS && !source.renameTo(source)) {// Windows permissions sucks
+          status = Status.OK;
+          source.deleteOnExit();
+        } else {
+          status = source.delete() ? Status.OK : Status.REMOVE_FAILED;
+        }
       }
     }
 

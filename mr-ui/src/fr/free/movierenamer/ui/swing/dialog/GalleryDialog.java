@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing.dialog;
 
+import com.alee.laf.button.WebButton;
 import fr.free.movierenamer.info.ImageInfo;
 import static fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -37,6 +38,8 @@ import fr.free.movierenamer.ui.worker.WorkerManager;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.dnd.DropTarget;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -48,8 +51,11 @@ import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -60,6 +66,8 @@ import javax.swing.event.ListSelectionListener;
  */
 public class GalleryDialog extends AbstractDialog {
 
+  //private static final WebButton generateBtn = UIUtils.createButton("Generate", ImageUtils.CD_16);
+  private static final WebButton closeBtn = UIUtils.createButton("Close", ImageUtils.CLOSE_16, false, true);// FIXME i18n
   private final ImageInfo.ImageCategoryProperty property;
   private final ImageListModel<UIMediaImage> imageListModel;
   private final ZoomListRenderer zoomListRenderer;
@@ -67,6 +75,7 @@ public class GalleryDialog extends AbstractDialog {
   private final ItemListener languageChangeListener;
   private final WorkerId wid;
   private final Map<UILang, Integer> selectedIndex;
+
   private boolean useLanguage;
   private List<UIMediaImage> images;
   private List<UIMediaImage> imagesByLang;
@@ -92,6 +101,8 @@ public class GalleryDialog extends AbstractDialog {
     currentLanguage = null;
 
     initComponents();
+    
+    topTb.addToEnd(closeBtn);
 
     int imgSize;
     switch (property) {
@@ -102,6 +113,8 @@ public class GalleryDialog extends AbstractDialog {
       case cdart:
         imgSize = 80;
         wid = WorkerId.IMAGE_GALLERY_CDART;
+        //topTb.addToEnd(generateBtn);
+        //generateBtn.addActionListener(createGenCDArtListener());
         break;
       case clearart:
         imgSize = 200;
@@ -138,6 +151,7 @@ public class GalleryDialog extends AbstractDialog {
     imageList.setModel(imageListModel);
     imageList.setVisibleRowCount(0);
     imageList.addListSelectionListener(createImageListListener());
+    imageList.addListDataListener(createDataListener());
 
     zoomSlider.setMinimum(0);
     zoomSlider.setMaximum(100);
@@ -154,6 +168,14 @@ public class GalleryDialog extends AbstractDialog {
     });
 
     bottomTb.addToEnd(nbImagesLbl);
+    closeBtn.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        setVisible(false);
+      }
+    });
+    
 
     setPreferredSize(new Dimension(600, 550));
     pack();
@@ -176,6 +198,26 @@ public class GalleryDialog extends AbstractDialog {
     };
   }
 
+  private ListDataListener createDataListener() {
+    return new ListDataListener() {
+
+      @Override
+      public void intervalAdded(ListDataEvent lde) {
+
+      }
+
+      @Override
+      public void intervalRemoved(ListDataEvent lde) {
+
+      }
+
+      @Override
+      public void contentsChanged(ListDataEvent lde) {
+        nbImagesLbl.setText(imageListModel.getSize() + " Images");// FIXME i18n
+      }
+    };
+  }
+
   private ItemListener createLanguageListener() {
     return new ItemListener() {
       @Override
@@ -193,6 +235,21 @@ public class GalleryDialog extends AbstractDialog {
       }
     };
   }
+
+//  private ActionListener createGenCDArtListener() {
+//    return new ActionListener() {
+//
+//      @Override
+//      public void actionPerformed(ActionEvent ae) {
+//        SwingUtilities.invokeLater(new Runnable() {
+//          @Override
+//          public void run() {
+//            fakeCdDial.setVisible(true);
+//          }
+//        });
+//      }
+//    };
+//  }
 
   public int getUserAdId() {
     return userAdId--;

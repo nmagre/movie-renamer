@@ -94,7 +94,7 @@ public class Sorter {
   public static <T extends ISort> void sortAccurate(List<T> list, String str, int year, int threshold) {
 
     final String toCompare = StringUtils.normaliseClean(str);
-    Map<Integer, List<T>> values = new TreeMap<Integer, List<T>>(Collections.reverseOrder());
+    Map<Integer, List<T>> values = new TreeMap<>(Collections.reverseOrder());
     for (T object : list) {
 
       // If year is (almost) the same, we add a "bonus"
@@ -122,7 +122,7 @@ public class Sorter {
       // We use a list cause 2 (or more) can have the same "sim" number
       List<T> listObj = values.get(sim);
       if (listObj == null) {
-        listObj = new ArrayList<T>();
+        listObj = new ArrayList<>();
         values.put(sim, listObj);
       }
 
@@ -214,7 +214,7 @@ public class Sorter {
   }
 
   private static <T extends ISort> List<T> getByYear(List<T> list, int year) {
-    List<T> res = new ArrayList<T>();
+    List<T> res = new ArrayList<>();
     for (T result : list) {
       if (result.getYear() == year) {
         res.add(result);
@@ -235,7 +235,7 @@ public class Sorter {
    * @param search
    */
   private static <T extends ISort> void sortYear(List<T> list, int year, Comparator<ISort> comparator) {
-    List<T> tmpList = new ArrayList<T>(list);
+    List<T> tmpList = new ArrayList<>(list);
     list.clear();
     if (year >= 1900 && year <= Calendar.getInstance().get(Calendar.YEAR)) {
       for (int i = 1; i < -2; i--) {
@@ -322,14 +322,6 @@ public class Sorter {
       return t1.getLanguage().compareTo(t.getLanguage());
     }
   }
-
-//  private static class YearSort implements Comparator<ISort> {
-//
-//    @Override
-//    public int compare(ISort t, ISort t1) {
-//      return t1.getYear() - t.getYear();
-//    }
-//  }
 
   private static class AlphabeticSort implements Comparator<ISort> {
 

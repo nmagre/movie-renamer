@@ -33,9 +33,9 @@ import fr.free.movierenamer.ui.utils.UIUtils;
 public class LoadingDialog extends WebDialog {
 
   private static final long serialVersionUID = 1L;
-  private WebPanel jPanel1;
+  private WebPanel panel;
   private WebLabel logoLbl;
-  private WebLabel webLabel1;
+  private WebLabel spinning;
 
   public LoadingDialog() {
 
@@ -53,27 +53,27 @@ public class LoadingDialog extends WebDialog {
 
   private void initComponents() {
 
-    jPanel1 = new WebPanel();
-    webLabel1 = new WebLabel();
+    panel = new WebPanel();
+    spinning = new WebLabel();
     logoLbl = new WebLabel();
 
     setAlwaysOnTop(true);
 
-    webLabel1.setIcon(new SpinningDial(24, 43));
-    webLabel1.setLanguage(UIUtils.i18n.getLanguageKey("loading", false));
-    webLabel1.setDrawShade(true);
+    spinning.setIcon(new SpinningDial(24, 43));
+    spinning.setLanguage(UIUtils.i18n.getLanguageKey("loading", false));
+    spinning.setDrawShade(true);
 
     logoLbl.setIcon(ImageUtils.LOGO_72);
 
-    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-    jPanel1.setLayout(jPanel1Layout);
+    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(panel);
+    panel.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(logoLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(18, 18, 18)
-                    .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinning, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()));
 
     jPanel1Layout.setVerticalGroup(
@@ -81,11 +81,11 @@ public class LoadingDialog extends WebDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(webLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(spinning, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(logoLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addContainerGap()));
 
-    getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+    getContentPane().add(panel, java.awt.BorderLayout.CENTER);
 
     pack();
   }

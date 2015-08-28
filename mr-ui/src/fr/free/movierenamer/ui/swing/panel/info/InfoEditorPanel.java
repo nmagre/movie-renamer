@@ -42,116 +42,116 @@ import javax.swing.JScrollPane;
  */
 public abstract class InfoEditorPanel<T> extends InfoPanel<T> {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  protected Map<InfoProperty, UIEditor> map;
-  protected final MovieRenamer mr;
-  private int pos;
-  protected static final int EDIT_WIDTH = 3;// label + component + edit/cancel button
+    protected Map<InfoProperty, UIEditor> map;
+    protected final MovieRenamer mr;
+    private int pos;
+    protected static final int EDIT_WIDTH = 3;// label + component + edit/cancel button
 
-  protected InfoEditorPanel(MovieRenamer mr) {
-    super();
-    this.mr = mr;
-    map = new HashMap<>();
-    pos = 0;
+    protected InfoEditorPanel(MovieRenamer mr) {
+        super();
+        this.mr = mr;
+        map = new HashMap<>();
+        pos = 0;
 
-    // Register to UI event
-    regiterUIEvent();
-  }
-
-  protected void createEditableField(String lbl, UIEditor editor, int gridWidth) {
-    pos = 0;
-    createEditableField(lbl, editor, gridWidth, 1, true);
-  }
-
-  protected void createEditableField(String i18nkey, UIEditor editor, int gridWidth, int nbElement, boolean last) {
-    WebLabel label = (WebLabel) createComponent(Component.LABEL, i18nkey);
-    label.setDrawShade(true);
-
-    JComponent component = editor.getEditableComponent();
-    component.setEnabled(false);
-
-    if (editor.hasMoreComponents()) {
-      nbElement += editor.nbMoreComponents();
+        // Register to UI event
+        regiterUIEvent();
     }
 
-    add(label, getGroupConstraint(pos++, false, false));
-
-    GridBagConstraints c = getGroupConstraint(pos, false, true);
-    c.gridwidth = gridWidth - EDIT_WIDTH + 1;// Resize to fit grid width
-
-    if (nbElement > 1) {
-      c.gridwidth = 1;
-      if (pos == 1 && nbElement * EDIT_WIDTH < gridWidth) {// Resize first element to fit empty spaces
-        c.gridwidth = gridWidth - (nbElement * EDIT_WIDTH) + 1;
-      }
+    protected void createEditableField(String lbl, UIEditor editor, int gridWidth) {
+        pos = 0;
+        createEditableField(lbl, editor, gridWidth, 1, true);
     }
 
-    pos += c.gridwidth;
+    protected void createEditableField(String i18nkey, UIEditor editor, int gridWidth, int nbElement, boolean last) {
+        WebLabel label = (WebLabel) createComponent(Component.LABEL, i18nkey);
+        label.setDrawShade(true);
 
-    // Add a scrollpane if needed
-    if (!(component instanceof WebTextField)) {
-      component = new WebScrollPane(component);
-      component.setEnabled(false);
+        JComponent component = editor.getEditableComponent();
+        component.setEnabled(false);
+
+        if (editor.hasMoreComponents()) {
+            nbElement += editor.nbMoreComponents();
+        }
+
+        add(label, getGroupConstraint(pos++, false, false));
+
+        GridBagConstraints c = getGroupConstraint(pos, false, true);
+        c.gridwidth = gridWidth - EDIT_WIDTH + 1;// Resize to fit grid width
+
+        if (nbElement > 1) {
+            c.gridwidth = 1;
+            if (pos == 1 && nbElement * EDIT_WIDTH < gridWidth) {// Resize first element to fit empty spaces
+                c.gridwidth = gridWidth - (nbElement * EDIT_WIDTH) + 1;
+            }
+        }
+
+        pos += c.gridwidth;
+
+        // Add a scrollpane if needed
+        if (!(component instanceof WebTextField)) {
+            component = new WebScrollPane(component);
+            component.setEnabled(false);
+        }
+
+        add(component, c);
+
+        if (editor.hasMoreComponents()) {
+            List<JComponent> components = editor.getComponents();
+            for (JComponent cp : components) {
+                add(cp, getGroupConstraint(pos++, false, false));
+            }
+        }
+
+        add(editor.getButton(), getGroupConstraint(pos++, last, false));
+
+        if (last) {
+            pos = 0;
+        }
     }
 
-    add(component, c);
+    @Override
+    public void UIEventHandler(UIEvent.Event event, IEventInfo eventInfo, Object object, Object newObject) {
+        UISettings.LOGGER.finer(String.format("%s receive event %s %s", getClass().getSimpleName(), event, (eventInfo != null ? eventInfo : "")));
 
-    if (editor.hasMoreComponents()) {
-      List<JComponent> components = editor.getComponents();
-      for (JComponent cp : components) {
-        add(cp, getGroupConstraint(pos++, false, false));
-      }
+        switch (event) {
+            case EDIT:
+                for (UIEditor editor : map.values()) {
+                    editor.setEditable();
+                }
+                break;
+            case WORKER_STARTED:
+                if (eventInfo != null && eventInfo.getEventObject() instanceof SearchMediaInfoWorker) {
+                    setPanelEnabled(false);
+                }
+                break;
+            case WORKER_DONE:
+                if (eventInfo != null && eventInfo.getEventObject() instanceof SearchMediaInfoWorker) {
+                    setPanelEnabled(true);
+                }
+                break;
+        }
     }
 
-    add(editor.getButton(), getGroupConstraint(pos++, last, false));
-
-    if (last) {
-      pos = 0;
-    }
-  }
-
-  @Override
-  public void UIEventHandler(UIEvent.Event event, IEventInfo info, Object object, Object param) {
-    UISettings.LOGGER.finer(String.format("%s receive event %s %s", getClass().getSimpleName(), event, (info != null ? info : "")));
-
-    switch (event) {
-      case EDIT:
+    private void setPanelEnabled(boolean enabled) {
         for (UIEditor editor : map.values()) {
-          editor.setEditable();
+            editor.setEnabled(enabled);
         }
-        break;
-      case WORKER_STARTED:
-        if (info.getClass().equals(SearchMediaInfoWorker.class)) {
-          setPanelEnabled(false);
-        }
-        break;
-      case WORKER_DONE:
-        if (info.getClass().equals(SearchMediaInfoWorker.class)) {
-          setPanelEnabled(true);
-        }
-        break;
-    }
-  }
 
-  private void setPanelEnabled(boolean enabled) {
-    for (UIEditor editor : map.values()) {
-      editor.setEnabled(enabled);
+        java.awt.Component[] components = getComponents();
+        for (java.awt.Component component : components) {
+            if (component instanceof JScrollPane) {
+                component.setEnabled(enabled);
+            }
+        }
     }
 
-    java.awt.Component[] components = getComponents();
-    for (java.awt.Component component : components) {
-      if (component instanceof JScrollPane) {
-        component.setEnabled(enabled);
-      }
+    @Override
+    public void clear() {
+        for (UIEditor editor : map.values()) {
+            editor.reset();
+        }
+        setPanelEnabled(false);
     }
-  }
-
-  @Override
-  public void clear() {
-    for (UIEditor editor : map.values()) {
-      editor.reset();
-    }
-    setPanelEnabled(false);
-  }
 }

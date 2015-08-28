@@ -19,9 +19,9 @@ package fr.free.movierenamer.ui;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
-import com.alee.managers.language.updaters.LanguageUpdaterSettings;
 import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
+import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.io.File;
 import java.util.ArrayList;
@@ -38,79 +38,90 @@ import javax.swing.SwingUtilities;
 public class Main {
 // vm option : -Xmx256m -verbose:gc
 
-  private static final UISettings setting = UISettings.getInstance();
-
-  /**
-   * main method
-   *
-   * @param args List of file to load (file, folder or both)
-   */
-  public static void main(String args[]) {
-
-    // Fixe JNA crash under 64 bit unix system
-    if (System.getProperty("jna.nosys") == null) {
-      System.setProperty("jna.nosys", "true");
-    }
-
-    System.setProperty("net.sf.ehcache.enableShutdownHook", "true");
-
-    final List<File> files = new ArrayList<>();
-    for (String arg : args) {
-      files.add(new File(arg));
-    }
-
-    // Add language support to tabbedPane
-    LanguageUpdaterSettings.useTabComponentNames = true;
+    private static final UISettings setting = UISettings.getInstance();
+    private static LoadingDialog loadingDial;
 
     /**
-     * Should be in EDT, but loading dialog will not works
+     * main method
+     *
+     * @param args List of file to load (file, folder or both)
      */
-    // Install look and feel
-    WebLookAndFeel.install();
+    public static void main(String args[]) {
 
-    // Set font
-    UIUtils.setUIFont();
-
-    // Set locale
-    Locale.setDefault(setting.coreInstance.getAppLanguage().getLocale());
-
-    // Set UI locale file
-    File languageFile = new File(UISettings.APPFOLDER, UISettings.languageFile);
-    if (languageFile.exists()) {
-      LanguageManager.addDictionary(languageFile);
-    } else {
-      LanguageManager.addDictionary(Main.class, "i18n/" + UISettings.languageFile);
-    }
-
-    // Set look and feel locale
-    String lcode = "en";
-    List<String> languages = LanguageManager.getSupportedLanguages();
-    for (String language : languages) {
-      if (language.equals(setting.coreInstance.getAppLanguage().getLocale().getLanguage())) {
-        lcode = language;
-        break;
-      }
-    }
-    LanguageManager.setLanguage("fr".equals(lcode) ? "en" : "fr"); // FIXME remove
-
-    TooltipManager.setDefaultDelay(1500);
-
-    if (files.isEmpty() && setting.isLoadFileAtStartup()) {
-      files.add(new File(setting.getLoadFilePath()));
-    }
-
-    final MovieRenamer mr = new MovieRenamer(lcode);
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        mr.setVisible(true);
-        if (!files.isEmpty()) {
-          mr.loadFiles(files);
+        // Set logger level
+        //UISettings.setAppLogLevel(setting.getLogLevel().getLevel());
+        
+        // Fixe JNA crash under 64 bit unix system
+        if (System.getProperty("jna.nosys") == null) {
+            System.setProperty("jna.nosys", "true");
         }
 
-      }
-    });
+        System.setProperty("net.sf.ehcache.enableShutdownHook", "true");
 
-  }
+        final List<File> files = new ArrayList<>();
+        for (String arg : args) {
+            files.add(new File(arg));
+        }
+
+        if (files.isEmpty() && setting.isLoadFileAtStartup()) {
+            files.add(new File(setting.getLoadFilePath()));
+        }
+        
+        // Set font
+        UIUtils.setUIFont();
+
+        // Set locale
+        Locale locale = setting.coreInstance.getAppLanguage().getLocale();
+        Locale.setDefault(locale);
+        LanguageManager.setDefaultLanguage(LanguageManager.ENGLISH);
+
+        TooltipManager.setDefaultDelay(1500);
+
+        // Install look and feel
+        WebLookAndFeel.install();
+
+        // Set look and feel locale
+        String lcode = "en";
+        List<String> languages = LanguageManager.getSupportedLanguages();
+        for (String language : languages) {
+            if (language.equals(locale.getLanguage())) {
+                lcode = language;
+                break;
+            }
+        }
+        LanguageManager.setLanguage(lcode);
+
+        // Set UI locale file
+        File languageFile = new File(UISettings.APPFOLDER, UISettings.languageFile);
+        if (languageFile.exists()) {
+            LanguageManager.addDictionary(languageFile);
+        } else {
+            LanguageManager.addDictionary(Main.class, "i18n/" + UISettings.languageFile);
+        }
+
+        // Loading dialog
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                loadingDial = new LoadingDialog();
+            }
+        });
+
+        final MovieRenamer mr = new MovieRenamer();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mr.setVisible(true);
+                loadingDial.hideDial();
+                loadingDial = null;
+
+                if (!files.isEmpty()) {
+                    mr.loadFiles(files);
+                }
+
+            }
+        });
+
+    }
 
 }

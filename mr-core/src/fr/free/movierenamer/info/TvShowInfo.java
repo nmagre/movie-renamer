@@ -36,7 +36,7 @@ import java.net.URISyntaxException;
  * @author Nicolas Magré
  * @author Simon QUÉMÉNEUR
  */
-public class TvShowInfo extends MediaInfo {
+public class TvShowInfo extends VideoInfo {
 
   private static final long serialVersionUID = 1L;
 
@@ -80,7 +80,7 @@ public class TvShowInfo extends MediaInfo {
 
   public TvShowInfo(final Map<TvShowProperty, String> fields, List<IdInfo> idsInfo) {
     super(null, null);// FIXME
-    this.fields = (fields != null) ? new EnumMap<TvShowProperty, String>(fields) : new EnumMap<TvShowProperty, String>(TvShowProperty.class);
+    this.fields = (fields != null) ? new EnumMap<>(fields) : new EnumMap<TvShowProperty, String>(TvShowProperty.class);
   }
 
   private String get(final TvShowProperty key) {
@@ -110,7 +110,7 @@ public class TvShowInfo extends MediaInfo {
   }
 
   protected List<String> split(final String values) {// FIXME ya pas déjà ça dans StringUtils ?
-    final List<String> items = new ArrayList<String>();
+    final List<String> items = new ArrayList<>();
     if (values != null && values.length() > 0) {
       for (String it : values.split("[|]")) {
         it = it.trim();
@@ -162,10 +162,6 @@ public class TvShowInfo extends MediaInfo {
     return null;
   }
 
-  public String getRuntime() {
-    return get(TvShowProperty.runtime);
-  }
-
   public String getName() {
     return get(TvShowProperty.name);
   }
@@ -177,8 +173,7 @@ public class TvShowInfo extends MediaInfo {
   public URI getPosterPath() {
     try {
       return new URL(get(TvShowProperty.posterPath)).toURI();
-    } catch (MalformedURLException e) {
-    } catch (URISyntaxException e) {
+    } catch (MalformedURLException | URISyntaxException e) {
     }
     return null;
   }

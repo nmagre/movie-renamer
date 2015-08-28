@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import java.util.List;
 
 /**
@@ -26,40 +27,48 @@ import java.util.List;
  *
  * @author Nicolas Magré
  */
-public class UIMediaInfo<T extends MediaInfo> implements UIInfo {
-
-  protected T info;
-
-  public UIMediaInfo(T info) {
-    this.info = info;
-  }
-
-  public void setInfo(T info) {
-    this.info = info;
-  }
-
-  public void setIdsInfo(List<IdInfo> ids) {
-    info.setIdsInfo(ids);
-  }
-
-  public List<IdInfo> getIds() {
-    return info.getIdsInfo();
-  }
-
-  public String getTitle() {
-    return info.getTitle();
-  }
-
-  public Integer getYear() {
-    return info.getYear();
-  }
-
-  public Double getRating() {
-    return info.getRating();
-  }
-
-  public MediaInfo getInfo() {
-    return info;
-  }
-
+abstract public class UIMediaInfo<T extends MediaInfo> {
+    
+    protected T info;
+    
+    public UIMediaInfo(T info) {
+        this.info = info;
+    }
+    
+    public void setInfo(T info) {
+        this.info = info;
+    }
+    
+    public void setIdsInfo(List<IdInfo> ids) {
+        info.setIdsInfo(ids);
+    }
+    
+    public List<IdInfo> getIds() {
+        return info.getIdsInfo();
+    }
+    
+    public String getTitle() {
+        return info.getTitle();
+    }
+    
+    public Integer getYear() {
+        return info.getYear();
+    }
+    
+    public Double getRating() {
+        return info.getRating();
+    }
+    
+    public MediaInfo getInfo() {
+        return info;
+    }
+    
+    public String get(MediaInfo.MediaInfoProperty key) {
+        return info.get(key);
+    }
+    
+    public void set(MediaInfo.MediaInfoProperty key, String value) {
+        info.set(key, value);
+    }
+    
 }

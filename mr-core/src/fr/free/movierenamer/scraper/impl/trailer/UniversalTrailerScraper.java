@@ -85,4 +85,9 @@ public class UniversalTrailerScraper extends TrailerScraper {
     return null;
   }
 
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
+  }
+
 }

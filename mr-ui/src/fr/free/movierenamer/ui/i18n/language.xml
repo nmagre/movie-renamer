@@ -21,1504 +21,1529 @@
 -->
 <Dictionary name="Movie Renamer UI language" prefix="mrui" id="mrui">
 
-  <record key="ok">
-    <value lang="en">Ok</value>
-    <value lang="fr">Ok</value>
-  </record>
+    <record key="ok">
+        <value lang="en">Ok</value>
+        <value lang="fr">Ok</value>
+    </record>
 
-  <record key="apply">
-    <value lang="en">Apply</value>
-    <value lang="fr">Appliquer</value>
-  </record>
+    <record key="apply">
+        <value lang="en">Apply</value>
+        <value lang="fr">Appliquer</value>
+    </record>
 
-  <record key="save">
-    <value lang="en">Save</value>
-    <value lang="fr">Sauvegarder</value>
-  </record>
+    <record key="save">
+        <value lang="en">Save</value>
+        <value lang="fr">Sauvegarder</value>
+    </record>
 
-  <record key="remove">
-    <value lang="en">Remove</value>
-    <value lang="fr">Supprimer</value>
-  </record>
+    <record key="remove">
+        <value lang="en">Remove</value>
+        <value lang="fr">Supprimer</value>
+    </record>
 
-  <record key="add">
-    <value lang="en">Add</value>
-    <value lang="fr">Ajouter</value>
-  </record>
-
-  <record key="cancel">
-    <value lang="en">Cancel</value>
-    <value lang="fr">Annuler</value>
-  </record>
-
-  <record key="replace">
-    <value lang="en">Replace</value>
-    <value lang="fr">Remplacer</value>
-  </record>
-
-  <record key="skip">
-    <value lang="en">Skip</value>
-    <value lang="fr">Passer</value>
-  </record>
-
-  <record key="yes">
-    <value lang="en">Yes</value>
-    <value lang="fr">Oui</value>
-  </record>
-
-  <record key="no">
-    <value lang="en">No</value>
-    <value lang="fr">Non</value>
-  </record>
-
-  <record key="loading">
-    <value lang="en">Loading</value>
-    <value lang="fr">Chargement</value>
-  </record>
-
-  <record key="movie">
-    <value lang="en">Movie</value>
-    <value lang="fr">Film</value>
-  </record>
+    <record key="up">
+        <value lang="en">Up</value>
+        <value lang="fr">Haut</value>
+    </record>
   
-  <record key="resetSettings">
-    <value lang="en">Reset Settings</value>
-    <value lang="fr">Réinitialiser les options</value>
-  </record>
+    <record key="down">
+        <value lang="en">Down</value>
+        <value lang="fr">Bas</value>
+    </record>
+
+    <record key="add">
+        <value lang="en">Add</value>
+        <value lang="fr">Ajouter</value>
+    </record>
+
+    <record key="cancel">
+        <value lang="en">Cancel</value>
+        <value lang="fr">Annuler</value>
+    </record>
+
+    <record key="replace">
+        <value lang="en">Replace</value>
+        <value lang="fr">Remplacer</value>
+    </record>
+
+    <record key="skip">
+        <value lang="en">Skip</value>
+        <value lang="fr">Passer</value>
+    </record>
+
+    <record key="yes">
+        <value lang="en">Yes</value>
+        <value lang="fr">Oui</value>
+    </record>
+
+    <record key="no">
+        <value lang="en">No</value>
+        <value lang="fr">Non</value>
+    </record>
+
+    <record key="loading">
+        <value lang="en">Loading</value>
+        <value lang="fr">Chargement</value>
+    </record>
+
+    <record key="movie">
+        <value lang="en">Movie</value>
+        <value lang="fr">Film</value>
+    </record>
   
-   <record key="warning">
-    <value lang="en">Warning</value>
-    <value lang="fr">Attention</value>
-  </record>
+    <record key="tvshow">
+        <value lang="en">TV show</value>
+        <value lang="fr">Série</value>
+    </record>
   
-  <!-- No translation needed -->
-  <record key="imdb">
-    <value lang="en">Imdb</value>
-    <value lang="fr">Imdb</value>
-  </record>
+    <record key="resetSettings">
+        <value lang="en">Reset Settings</value>
+        <value lang="fr">Réinitialiser les options</value>
+    </record>
   
-  <record key="themoviedb">
-    <value lang="en">The movie db</value>
-    <value lang="fr">The movie db</value>
-  </record> 
+    <record key="warning">
+        <value lang="en">Warning</value>
+        <value lang="fr">Attention</value>
+    </record>
   
-  <record key="allocine">
-    <value lang="en">Allocine</value>
-    <value lang="fr">Allocine</value>
-  </record>
+    <!-- No translation needed -->
+    <record key="imdb">
+        <value lang="en">Imdb</value>
+        <value lang="fr">Imdb</value>
+    </record>
   
-  <record key="rottentomatoes">
-    <value lang="en">Rotten Tomatoes</value>
-    <value lang="fr">Rotten Tomatoes</value>
-  </record>
+    <record key="themoviedb">
+        <value lang="en">The movie db</value>
+        <value lang="fr">The movie db</value>
+    </record> 
   
-  <record key="kinopoisk">
-    <value lang="en">Kinopoisk</value>
-    <value lang="fr">Kinopoisk</value>
-  </record>
-  <!-- END : No translation needed -->
-
-  <Dictionary name="Right click menu" prefix="rmenu">
-
-    <record key="cut">
-      <value lang="en">Cut</value>
-      <value lang="fr">Couper</value>
+    <record key="allocine">
+        <value lang="en">Allocine</value>
+        <value lang="fr">Allocine</value>
     </record>
-
-    <record key="copy">
-      <value lang="en">Copy</value>
-      <value lang="fr">Copier</value>
+  
+    <record key="rottentomatoes">
+        <value lang="en">Rotten Tomatoes</value>
+        <value lang="fr">Rotten Tomatoes</value>
     </record>
-
-    <record key="paste">
-      <value lang="en">Paste</value>
-      <value lang="fr">Coller</value>
+  
+    <record key="kinopoisk">
+        <value lang="en">Kinopoisk</value>
+        <value lang="fr">Kinopoisk</value>
     </record>
+    <!-- END : No translation needed -->
 
-    <record key="delete">
-      <value lang="en">Delete</value>
-      <value lang="fr">Supprimer</value>
-    </record>
+    <Dictionary name="Right click menu" prefix="rmenu">
 
-    <record key="selectAll">
-      <value lang="en">Select all</value>
-      <value lang="fr">Tout sélectionner</value>
-    </record>
-  </Dictionary><!-- END rmenu -->
-
-  <Dictionary name="Movie Renamer Main Frame" prefix="main">
-
-    <record key="title">
-      <value lang="en">%s-%s</value>
-      <value lang="fr">%s-%s</value>
-    </record>
-
-    <record key="image">
-      <value lang="en">Image</value>
-      <value lang="fr">Image</value>
-    </record>
-
-    <record key="clickToCancel">
-      <value lang="en">Click to cancel</value>
-      <value lang="fr">Cliquer pour annuler</value>
-    </record>
-
-    <Dictionary name="Top toolbar" prefix="toptb">
-      <record key="open">
-        <value lang="en">Open</value>
-        <value lang="fr">Ouvrir</value>
-      </record>
-      
-      <record key="history">
-        <value lang="en">History</value>
-        <value lang="fr">Historique</value>
-      </record>
-      
-      <record key="movieMode">
-        <value lang="en">Mode movie</value>
-        <value lang="fr">Mode film</value>
-      </record>
-
-      <record key="tvshowMode">
-        <value lang="en">Mode tvshow</value>
-        <value lang="fr">Mode série</value>
-      </record>
-
-      <record key="update">
-        <value lang="en">Update</value>
-        <value lang="fr">Mise à jour</value>
-      </record>
-
-      <record key="settings">
-        <value lang="en">Settings</value>
-        <value lang="fr">Options</value>
-      </record>
-
-      <record key="quit">
-        <value lang="en">Quit</value>
-        <value lang="fr">Quitter</value>
-      </record>
-
-      <record key="about">
-        <value lang="en">About</value>
-        <value lang="fr">A propos</value>
-      </record>
-
-      <record key="log">
-        <value lang="en">Logs</value>
-        <value lang="fr">Logs</value>
-      </record>
-
-      <record key="movieMode">
-        <value lang="en">Movie Mode</value>
-        <value lang="fr">Mode Film</value>
-      </record>
-
-      <record key="tvshowMode">
-        <value lang="en">TvShow Mode</value>
-        <value lang="fr">Mode Série</value>
-      </record>
-    </Dictionary><!-- END toptb -->
-
-    <Dictionary name="Media File List Toolbar" prefix="mediatb">
-      <record key="media">
-        <value lang="en">Media</value>
-        <value lang="fr">Média</value>
-      </record>
-
-      <record key="clear">
-        <value lang="en">Clear</value>
-        <value lang="fr">Vider</value>
-      </record>
-
-      <Dictionary name="Settings popup" prefix="settingspopup">
-        <record key="group">
-          <value lang="en">Group</value>
-          <value lang="fr">Grouper</value>
+        <record key="cut">
+            <value lang="en">Cut</value>
+            <value lang="fr">Couper</value>
         </record>
 
-        <record key="showIcon">
-          <value lang="en">Show icons</value>
-          <value lang="fr">Afficher les icônes</value>
+        <record key="copy">
+            <value lang="en">Copy</value>
+            <value lang="fr">Copier</value>
         </record>
 
-        <record key="showMediaPanel">
-          <value lang="en">Show media panel</value>
-          <value lang="fr">Afficher le panneau média</value>
+        <record key="paste">
+            <value lang="en">Paste</value>
+            <value lang="fr">Coller</value>
         </record>
 
-        <record key="showImagePanel">
-          <value lang="en">Show image panel</value>
-          <value lang="fr">Afficher le panneau image</value>
+        <record key="delete">
+            <value lang="en">Delete</value>
+            <value lang="fr">Supprimer</value>
         </record>
 
-      </Dictionary><!-- END settingspopup -->
-
-    </Dictionary><!-- END mediatb -->
-
-    <Dictionary name="Search Toolbar" prefix="searchtb">
-      <record key="search">
-        <value lang="en">Search</value>
-        <value lang="fr">Recherche</value>
-      </record>
-
-      <Dictionary name="Settings popup" prefix="settingspopup">
-
-        <record key="showIcon">
-          <value lang="en">Show images</value>
-          <value lang="fr">Afficher les images</value>
+        <record key="selectAll">
+            <value lang="en">Select all</value>
+            <value lang="fr">Tout sélectionner</value>
         </record>
+    </Dictionary><!-- END rmenu -->
 
-        <record key="showId">
-          <value lang="en">Show id</value>
-          <value lang="fr">Afficher l'id</value>
-        </record>
-
-        <record key="showYear">
-          <value lang="en">Show year</value>
-          <value lang="fr">Afficher l'année</value>
-        </record>
-
-        <record key="showOrigTitle">
-          <value lang="en">Show original title</value>
-          <value lang="fr">Afficher le titre original</value>
-        </record>
-
-
-      </Dictionary><!-- END settingspopup -->
-
-    </Dictionary><!-- END searchtb -->
-
-    <Dictionary name="Movies panel" prefix="moviepnl">
-
-      <Dictionary name="Movie info panel" prefix="info">
+    <Dictionary name="Movie Renamer Main Frame" prefix="main">
 
         <record key="title">
-          <value lang="en">Title</value>
-          <value lang="fr">Titre</value>
+            <value lang="en">%s-%s</value>
+            <value lang="fr">%s-%s</value>
         </record>
 
-        <record key="originalTitle">
-          <value lang="en">Original title</value>
-          <value lang="fr">Titre original</value>
+        <record key="image">
+            <value lang="en">Image</value>
+            <value lang="fr">Image</value>
         </record>
 
-        <record key="sortTitle">
-          <value lang="en">Sort title</value>
-          <value lang="fr">Titre de tri</value>
+        <record key="clickToCancel">
+            <value lang="en">Click to cancel</value>
+            <value lang="fr">Cliquer pour annuler</value>
         </record>
 
-        <record key="tagline">
-          <value lang="en">Tagline</value>
-          <value lang="fr">Slogan</value>
+        <Dictionary name="Top toolbar" prefix="toptb">
+            <record key="open">
+                <value lang="en">Open</value>
+                <value lang="fr">Ouvrir</value>
+            </record>
+      
+            <record key="history">
+                <value lang="en">History</value>
+                <value lang="fr">Historique</value>
+            </record>
+      
+            <record key="movieMode">
+                <value lang="en">Mode movie</value>
+                <value lang="fr">Mode film</value>
+            </record>
+
+            <record key="tvshowMode">
+                <value lang="en">Mode tvshow</value>
+                <value lang="fr">Mode série</value>
+            </record>
+
+            <record key="update">
+                <value lang="en">Update</value>
+                <value lang="fr">Mise à jour</value>
+            </record>
+
+            <record key="settings">
+                <value lang="en">Settings</value>
+                <value lang="fr">Options</value>
+            </record>
+
+            <record key="quit">
+                <value lang="en">Quit</value>
+                <value lang="fr">Quitter</value>
+            </record>
+
+            <record key="about">
+                <value lang="en">About</value>
+                <value lang="fr">A propos</value>
+            </record>
+
+            <record key="log">
+                <value lang="en">Logs</value>
+                <value lang="fr">Logs</value>
+            </record>
+
+            <record key="movieMode">
+                <value lang="en">Movie Mode</value>
+                <value lang="fr">Mode Film</value>
+            </record>
+
+            <record key="tvshowMode">
+                <value lang="en">TvShow Mode</value>
+                <value lang="fr">Mode Série</value>
+            </record>
+        </Dictionary><!-- END toptb -->
+
+        <Dictionary name="Media File List Toolbar" prefix="mediatb">
+            <record key="media">
+                <value lang="en">Media</value>
+                <value lang="fr">Média</value>
+            </record>
+
+            <record key="clear">
+                <value lang="en">Clear</value>
+                <value lang="fr">Vider</value>
+            </record>
+
+            <Dictionary name="Settings popup" prefix="settingspopup">
+                <record key="group">
+                    <value lang="en">Group</value>
+                    <value lang="fr">Grouper</value>
+                </record>
+
+                <record key="showIcon">
+                    <value lang="en">Show icons</value>
+                    <value lang="fr">Afficher les icônes</value>
+                </record>
+
+                <record key="showMediaPanel">
+                    <value lang="en">Show media panel</value>
+                    <value lang="fr">Afficher le panneau média</value>
+                </record>
+
+                <record key="showImagePanel">
+                    <value lang="en">Show image panel</value>
+                    <value lang="fr">Afficher le panneau image</value>
+                </record>
+
+            </Dictionary><!-- END settingspopup -->
+
+        </Dictionary><!-- END mediatb -->
+
+        <Dictionary name="Search Toolbar" prefix="searchtb">
+            <record key="search">
+                <value lang="en">Search</value>
+                <value lang="fr">Recherche</value>
+            </record>
+
+            <Dictionary name="Settings popup" prefix="settingspopup">
+
+                <record key="showIcon">
+                    <value lang="en">Show images</value>
+                    <value lang="fr">Afficher les images</value>
+                </record>
+
+                <record key="showId">
+                    <value lang="en">Show id</value>
+                    <value lang="fr">Afficher l'id</value>
+                </record>
+
+                <record key="showYear">
+                    <value lang="en">Show year</value>
+                    <value lang="fr">Afficher l'année</value>
+                </record>
+
+                <record key="showOrigTitle">
+                    <value lang="en">Show original title</value>
+                    <value lang="fr">Afficher le titre original</value>
+                </record>
+
+
+            </Dictionary><!-- END settingspopup -->
+
+        </Dictionary><!-- END searchtb -->
+
+        <Dictionary name="Movies panel" prefix="moviepnl">
+
+            <Dictionary name="Movie info panel" prefix="info">
+
+                <record key="title">
+                    <value lang="en">Title</value>
+                    <value lang="fr">Titre</value>
+                </record>
+
+                <record key="originalTitle">
+                    <value lang="en">Original title</value>
+                    <value lang="fr">Titre original</value>
+                </record>
+
+                <record key="sortTitle">
+                    <value lang="en">Sort title</value>
+                    <value lang="fr">Titre de tri</value>
+                </record>
+
+                <record key="tagline">
+                    <value lang="en">Tagline</value>
+                    <value lang="fr">Slogan</value>
+                </record>
+
+                <record key="collection">
+                    <value lang="en">Collection</value>
+                    <value lang="fr">Collection</value>
+                </record>
+
+                <record key="genres">
+                    <value lang="en">Genre</value>
+                    <value lang="fr">Genre</value>
+                </record>
+
+                <record key="studios">
+                    <value lang="en">Studio</value>
+                    <value lang="fr">Studio</value>
+                </record>
+
+                <record key="tags">
+                    <value lang="en">Tag</value>
+                    <value lang="fr">Tag</value>
+                </record>
+
+                <record key="countries">
+                    <value lang="en">Country</value>
+                    <value lang="fr">Pays</value>
+                </record>
+
+                <record key="releasedDate">
+                    <value lang="en">Date</value>
+                    <value lang="fr">Date</value>
+                </record>
+        
+                <record key="year">
+                    <value lang="en">Year</value>
+                    <value lang="fr">Année</value>
+                </record>
+
+                <record key="runtime">
+                    <value lang="en">Runtime</value>
+                    <value lang="fr">Durée</value>
+                </record>
+
+                <record key="certification">
+                    <value lang="en">Certification</value>
+                    <value lang="fr">Certification</value>
+                </record>
+
+                <record key="certificationCode">
+                    <value lang="en">MPAA</value>
+                    <value lang="fr">MPAA</value>
+                </record>
+
+                <record key="rating">
+                    <value lang="en">Rating</value>
+                    <value lang="fr">Note</value>
+                </record>
+
+                <record key="votes">
+                    <value lang="en">Vote</value>
+                    <value lang="fr">Vote</value>
+                </record>
+
+                <record key="budget">
+                    <value lang="en">Budget</value>
+                    <value lang="fr">Budget</value>
+                </record>
+
+                <record key="overview">
+                    <value lang="en">Synopsis</value>
+                    <value lang="fr">Synopsis</value>
+                </record>
+
+            </Dictionary><!-- END info -->
+        </Dictionary><!-- END moviepnl -->
+    
+        <Dictionary name="Casting panel" prefix="castingpnl">
+      
+            <record key="director">
+                <value lang="en">Director / Writer</value>
+                <value lang="fr">Réalisateur / Scénariste</value>
+            </record>
+      
+            <record key="actor">
+                <value lang="en">Actor</value>
+                <value lang="fr">Acteur</value>
+            </record>
+      
+        </Dictionary><!-- END castingpnl -->
+      
+
+        <Dictionary name="Image Panel/dialog" prefix="image">
+
+            <record key="thumb">
+                <value lang="en">Poster</value>
+                <value lang="fr">Affiche</value>
+            </record>
+
+            <record key="fanart">
+                <value lang="en">Fanart</value>
+                <value lang="fr">Fanart</value>
+            </record>
+
+            <record key="logo">
+                <value lang="en">Logo</value>
+                <value lang="fr">Logo</value>
+            </record>
+
+            <record key="cdart">
+                <value lang="en">CDart</value>
+                <value lang="fr">CDart</value>
+            </record>
+
+            <record key="clearart">
+                <value lang="en">Clearart</value>
+                <value lang="fr">Clearart</value>
+            </record>
+
+            <record key="banner">
+                <value lang="en">Banner</value>
+                <value lang="fr">Bannière</value>
+            </record>
+
+            <record key="gallery">
+                <value lang="en">Gallery</value>
+                <value lang="fr">Galerie</value>
+            </record>
+
+        </Dictionary><!-- END image -->
+
+        <Dictionary name="Rename Toolbar" prefix="renametb">
+
+            <record key="rename">
+                <value lang="en">Rename</value>
+                <value lang="fr">Renommer</value>
+            </record>
+
+            <Dictionary name="Settings popup" prefix="settingspopup">
+
+                <record key="showFormatField">
+                    <value lang="en">Show format</value>
+                    <value lang="fr">Afficher le format</value>
+                </record>
+
+            </Dictionary><!-- END settingspopup -->
+
+        </Dictionary><!-- END renametb -->
+    
+        <Dictionary name="Status Toolbar" prefix="statusTb">
+      
+            <record key="downloading">
+                <value lang="en">Downloading</value>
+                <value lang="fr">Téléchargement</value>
+            </record>
+      
+            <record key="more">
+                <value lang="en">%s... more</value>
+                <value lang="fr">%s... plus</value>
+            </record>
+      
+            <record key="fileinfo">
+                <value lang="en">Files infos</value>
+                <value lang="fr">Infos des fichiers</value>
+            </record>
+      
+            <record key="actor">
+                <value lang="en">Actor</value>
+                <value lang="fr">Acteur</value>
+            </record>
+      
+            <record key="directorwriter">
+                <value lang="en">Director/Writer</value>
+                <value lang="fr">Réalisateur/Scénariste</value>
+            </record>
+      
+            <record key="trailer">
+                <value lang="en">Trailer</value>
+                <value lang="fr">Trailer</value>
+            </record>
+      
+            <record key="search">
+                <value lang="en">Search</value>
+                <value lang="fr">Recherche</value>
+            </record>
+      
+            <record key="listfiles">
+                <value lang="en">List files</value>
+                <value lang="fr">Liste des fichiers</value>
+            </record>
+      
+            <record key="renaming">
+                <value lang="en">Renaming</value>
+                <value lang="fr">Renommage</value>
+            </record>
+      
+            <record key="searchimages">
+                <value lang="en">Search images</value>
+                <value lang="fr">Recherche des images</value>
+            </record>
+      
+            <record key="searchinfo">
+                <value lang="en">Search infos</value>
+                <value lang="fr">Recherche des infos</value>
+            </record>
+      
+            <record key="searchmedia">
+                <value lang="en">Search media</value>
+                <value lang="fr">Recherche du média</value>
+            </record>
+      
+        </Dictionary><!-- END statusTb -->
+
+    </Dictionary><!-- END main -->
+
+    <Dictionary name="Settings Dialog" prefix="settings">
+
+        <record key="general">
+            <value lang="en">General</value>
+            <value lang="fr">Général</value>
         </record>
 
-        <record key="collection">
-          <value lang="en">Collection</value>
-          <value lang="fr">Collection</value>
+        <record key="media">
+            <value lang="en">Media</value>
+            <value lang="fr">Média</value>
         </record>
 
-        <record key="genres">
-          <value lang="en">Genre</value>
-          <value lang="fr">Genre</value>
+        <record key="file">
+            <value lang="en">File</value>
+            <value lang="fr">Fichier</value>
         </record>
 
-        <record key="studios">
-          <value lang="en">Studio</value>
-          <value lang="fr">Studio</value>
+        <record key="interface">
+            <value lang="en">Interface</value>
+            <value lang="fr">Interface</value>
         </record>
 
-        <record key="tags">
-          <value lang="en">Tag</value>
-          <value lang="fr">Tag</value>
+        <record key="information">
+            <value lang="en">Information</value>
+            <value lang="fr">Information</value>
         </record>
 
-        <record key="countries">
-          <value lang="en">Country</value>
-          <value lang="fr">Pays</value>
+        <record key="image">
+            <value lang="en">Image</value>
+            <value lang="fr">Image</value>
         </record>
 
-        <record key="releasedDate">
-          <value lang="en">Date</value>
-          <value lang="fr">Date</value>
+        <record key="nfo">
+            <value lang="en">NFO</value>
+            <value lang="fr">NFO</value>
+        </record>
+
+        <record key="miscellaneous">
+            <value lang="en">Miscellaneous</value>
+            <value lang="fr">Divers</value>
+        </record>
+
+        <record key="network">
+            <value lang="en">Network</value>
+            <value lang="fr">Réseau</value>
+        </record>
+    
+        <record key="advanced">
+            <value lang="en">Advanced</value>
+            <value lang="fr">Avancé</value>
+        </record>
+
+        <record key="test">
+            <value lang="en">Test</value>
+            <value lang="fr">Tester</value>
+        </record>
+
+        <record key="help">
+            <value lang="en">Help</value>
+            <value lang="fr">Aide</value>
+        </record>
+
+        <record key="general">
+            <value lang="en">General</value>
+            <value lang="fr">Général</value>
+        </record>
+
+        <record key="nfo">
+            <value lang="en">NFO</value>
+            <value lang="fr">NFO</value>
+        </record>
+
+        <record key="update">
+            <value lang="en">Update</value>
+            <value lang="fr">Mise à jour</value>
+        </record>
+
+        <record key="folder">
+            <value lang="en">Folder</value>
+            <value lang="fr">Dossier</value>
+        </record>
+
+        <record key="language">
+            <value lang="en">Language</value>
+            <value lang="fr">Langue</value>
+        </record>
+
+        <record key="scraper">
+            <value lang="en">Scraper</value>
+            <value lang="fr">Scraper</value>
+        </record>
+
+        <record key="interface">
+            <value lang="en">Interface</value>
+            <value lang="fr">Interface</value>
+        </record>
+
+        <record key="mediafilename">
+            <value lang="en">Media filename</value>
+            <value lang="fr">Nom du fichier media</value>
+        </record>
+
+        <record key="thumb">
+            <value lang="en">Poster</value>
+            <value lang="fr">Affiche</value>
+        </record>
+
+        <record key="fanart">
+            <value lang="en">Fanart</value>
+            <value lang="fr">Fanart</value>
+        </record>
+
+        <record key="proxy">
+            <value lang="en">Proxy</value>
+            <value lang="fr">Proxy</value>
+        </record>
+
+        <record key="mediacenter">
+            <value lang="en">Media center</value>
+            <value lang="fr">Centre multimédia</value>
+        </record>
+
+        <record key="size">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
+
+        <record key="time">
+            <value lang="en">Time</value>
+            <value lang="fr">Temps</value>
+        </record>
+    
+        <record key="panel">
+            <value lang="en">Panel</value>
+            <value lang="fr">Panneau</value>
+        </record>
+    
+        <record key="list">
+            <value lang="en">List</value>
+            <value lang="fr">Liste</value>
+        </record>
+
+        <!-- We do not use specific key for each panel to avoid change of this file if we moved an option-->
+        <!-- General panel -->
+
+        <record key="selectfirstmedia">
+            <value lang="en">Select first media automatically</value>
+            <value lang="fr">Sélectionner le premier média automatiquement</value>
+        </record>
+
+        <record key="selectfirstresult">
+            <value lang="en">Select first result automatically</value>
+            <value lang="fr">Sélectionner le premier résultat automatiquement</value>
+        </record>
+
+        <record key="scansubfolder">
+            <value lang="en">Sub-folders</value>
+            <value lang="fr">Sous-dossiers</value>
+        </record>
+
+        <record key="browse">
+            <value lang="en">Browse</value>
+            <value lang="fr">Parcourir</value>
+        </record>
+
+        <record key="notbrowse">
+            <value lang="en">Do not browse</value>
+            <value lang="fr">Ne pas parcourir</value>
+        </record>
+
+        <record key="ask">
+            <value lang="en">Ask</value>
+            <value lang="fr">Demander</value>
+        </record>
+
+        <record key="browse">
+            <value lang="en">Browse</value>
+            <value lang="fr">Parcourir</value>
+        </record>
+
+        <record key="showstartupanim">
+            <value lang="en">Show startup animation</value>
+            <value lang="fr">Afficher l'animation au démarrage</value>
+        </record>
+
+        <record key="movefileonebyone">
+            <value lang="en">Move files one by one</value>
+            <value lang="fr">Déplacer les fichiers un par un</value>
+        </record>
+
+        <record key="debug">
+            <value lang="en">Debug</value>
+            <value lang="fr">Debug</value>
+        </record>
+
+        <record key="loadfileatstartup">
+            <value lang="en">Load files on startup</value>
+            <value lang="fr">Charger des fichiers au démarrage</value>
+        </record>
+
+        <record key="loadfilepath">
+            <value lang="en">Folder path</value>
+            <value lang="fr">Chemin du dossier</value>
+        </record>
+
+        <record key="mediainfowarning">
+            <value lang="en">Show "media info is not installed" warning</value>
+            <value lang="fr">Afficher l'avertissement "media info n'est pas installé"</value>
+        </record>
+
+        <record key="mainframesavestate">
+            <value lang="en">Save application position on screen</value>
+            <value lang="fr">Sauvegarde la position de l'application sur l'écran</value>
+        </record>
+
+        <record key="showmediapanel">
+            <value lang="en">Show media information panel</value>
+            <value lang="fr">Afficher le panneau média information</value>
+        </record>
+
+        <record key="showimagepanel">
+            <value lang="en">Show image panel</value>
+            <value lang="fr">Afficher le panneau d'image</value>
+        </record>
+
+        <record key="showactorimage">
+            <value lang="en">Show actors images</value>
+            <value lang="fr">Afficher les images des acteurs</value>
+        </record>
+
+        <record key="showiconmedialist">
+            <value lang="en">Show icons in media list</value>
+            <value lang="fr">Afficher les icônes dans la liste des médias</value>
+        </record>
+
+        <record key="showformatfield">
+            <value lang="en">Show format field</value>
+            <value lang="fr">Afficher le champ format</value>
+        </record>
+
+        <record key="groupmedialist">
+            <value lang="en">Group medias by first letter</value>
+            <value lang="fr">Grouper les médias par leur première lettre</value>
+        </record>
+
+        <record key="checkupdate">
+            <value lang="en">Check for update on startup</value>
+            <value lang="fr">Vérifier les mises à jour au démarrage</value>
+        </record>
+
+        <record key="searchscraperlang">
+            <value lang="en">Informations language</value>
+            <value lang="fr">Langue des informations</value>
+        </record>
+
+        <record key="applanguage">
+            <value lang="en">Application language</value>
+            <value lang="fr">Langue de l'application</value>
+        </record>
+
+        <!-- Media panel -->
+
+        <record key="reservedcharacter">
+            <value lang="en">Remove reserved characters</value>
+            <value lang="fr">Supprimer les caractères réservés</value>
+        </record>
+
+        <record key="file">
+            <value lang="en">File</value>
+            <value lang="fr">Fichier</value>
+        </record>
+
+        <record key="tab.movie">
+            <value lang="en">Movie</value>
+            <value lang="fr">Film</value>
+        </record>
+
+        <record key="mediafilenameformat">
+            <value lang="en">Format</value>
+            <value lang="fr">Format</value>
+        </record>
+
+        <record key="mediafilenameseparator">
+            <value lang="en">Separator</value>
+            <value lang="fr">Séparateur</value>
+        </record>
+
+        <record key="mediafilenamelimit">
+            <value lang="en">Limit</value>
+            <value lang="fr">Limite</value>
+        </record>
+
+        <record key="mediafilenamecase">
+            <value lang="en">Case</value>
+            <value lang="fr">Casse</value>
         </record>
         
-        <record key="year">
-          <value lang="en">Year</value>
-          <value lang="fr">Année</value>
+        <record key="mediafilenamereplacespace">
+            <value lang="en">Replace spaces</value>
+            <value lang="fr">Remplacer les espaces</value>
         </record>
-
-        <record key="runtime">
-          <value lang="en">Runtime</value>
-          <value lang="fr">Durée</value>
-        </record>
-
-        <record key="certification">
-          <value lang="en">Certification</value>
-          <value lang="fr">Certification</value>
-        </record>
-
-        <record key="certificationCode">
-          <value lang="en">MPAA</value>
-          <value lang="fr">MPAA</value>
-        </record>
-
-        <record key="rating">
-          <value lang="en">Rating</value>
-          <value lang="fr">Note</value>
-        </record>
-
-        <record key="votes">
-          <value lang="en">Vote</value>
-          <value lang="fr">Vote</value>
-        </record>
-
-        <record key="budget">
-          <value lang="en">Budget</value>
-          <value lang="fr">Budget</value>
-        </record>
-
-        <record key="overview">
-          <value lang="en">Synopsis</value>
-          <value lang="fr">Synopsis</value>
-        </record>
-
-      </Dictionary><!-- END info -->
-    </Dictionary><!-- END moviepnl -->
-    
-    <Dictionary name="Casting panel" prefix="castingpnl">
-      
-      <record key="director">
-        <value lang="en">Director / Writer</value>
-        <value lang="fr">Réalisateur / Scénariste</value>
-      </record>
-      
-      <record key="actor">
-        <value lang="en">Actor</value>
-        <value lang="fr">Acteur</value>
-      </record>
-      
-    </Dictionary><!-- END castingpnl -->
-      
-
-    <Dictionary name="Image Panel/dialog" prefix="image">
-
-      <record key="thumb">
-        <value lang="en">Poster</value>
-        <value lang="fr">Affiche</value>
-      </record>
-
-      <record key="fanart">
-        <value lang="en">Fanart</value>
-        <value lang="fr">Fanart</value>
-      </record>
-
-      <record key="logo">
-        <value lang="en">Logo</value>
-        <value lang="fr">Logo</value>
-      </record>
-
-      <record key="cdart">
-        <value lang="en">CDart</value>
-        <value lang="fr">CDart</value>
-      </record>
-
-      <record key="clearart">
-        <value lang="en">Clearart</value>
-        <value lang="fr">Clearart</value>
-      </record>
-
-      <record key="banner">
-        <value lang="en">Banner</value>
-        <value lang="fr">Bannière</value>
-      </record>
-
-      <record key="gallery">
-        <value lang="en">Gallery</value>
-        <value lang="fr">Galerie</value>
-      </record>
-
-    </Dictionary><!-- END image -->
-
-    <Dictionary name="Rename Toolbar" prefix="renametb">
-
-      <record key="rename">
-        <value lang="en">Rename</value>
-        <value lang="fr">Renommer</value>
-      </record>
-
-      <Dictionary name="Settings popup" prefix="settingspopup">
-
-        <record key="showFormatField">
-          <value lang="en">Show format</value>
-          <value lang="fr">Afficher le format</value>
-        </record>
-
-      </Dictionary><!-- END settingspopup -->
-
-    </Dictionary><!-- END renametb -->
-    
-    <Dictionary name="Status Toolbar" prefix="statusTb">
-      
-      <record key="downloading">
-        <value lang="en">Downloading</value>
-        <value lang="fr">Téléchargement</value>
-      </record>
-      
-      <record key="more">
-        <value lang="en">%s... more</value>
-        <value lang="fr">%s... plus</value>
-      </record>
-      
-      <record key="fileinfo">
-        <value lang="en">Files infos</value>
-        <value lang="fr">Infos des fichiers</value>
-      </record>
-      
-      <record key="actor">
-        <value lang="en">Actor</value>
-        <value lang="fr">Acteur</value>
-      </record>
-      
-      <record key="directorwriter">
-        <value lang="en">Director/Writer</value>
-        <value lang="fr">Réalisateur/Scénariste</value>
-      </record>
-      
-      <record key="trailer">
-        <value lang="en">Trailer</value>
-        <value lang="fr">Trailer</value>
-      </record>
-      
-      <record key="search">
-        <value lang="en">Search</value>
-        <value lang="fr">Recherche</value>
-      </record>
-      
-      <record key="listfiles">
-        <value lang="en">List files</value>
-        <value lang="fr">Liste des fichiers</value>
-      </record>
-      
-      <record key="renaming">
-        <value lang="en">Renaming</value>
-        <value lang="fr">Renommage</value>
-      </record>
-      
-      <record key="searchimages">
-        <value lang="en">Search images</value>
-        <value lang="fr">Recherche des images</value>
-      </record>
-      
-      <record key="searchinfo">
-        <value lang="en">Search infos</value>
-        <value lang="fr">Recherche des infos</value>
-      </record>
-      
-      <record key="searchmedia">
-        <value lang="en">Search media</value>
-        <value lang="fr">Recherche du média</value>
-      </record>
-      
-    </Dictionary><!-- END statusTb -->
-
-  </Dictionary><!-- END main -->
-
-  <Dictionary name="Settings Dialog" prefix="settings">
-
-    <record key="general">
-      <value lang="en">General</value>
-      <value lang="fr">Général</value>
-    </record>
-
-    <record key="media">
-      <value lang="en">Media</value>
-      <value lang="fr">Média</value>
-    </record>
-
-    <record key="search">
-      <value lang="en">Search</value>
-      <value lang="fr">Recherche</value>
-    </record>
-
-    <record key="interface">
-      <value lang="en">Interface</value>
-      <value lang="fr">Interface</value>
-    </record>
-
-    <record key="format">
-      <value lang="en">Format</value>
-      <value lang="fr">Format</value>
-    </record>
-
-    <record key="image">
-      <value lang="en">Image</value>
-      <value lang="fr">Image</value>
-    </record>
-
-    <record key="nfo">
-      <value lang="en">NFO</value>
-      <value lang="fr">NFO</value>
-    </record>
-
-    <record key="extension">
-      <value lang="en">Extension</value>
-      <value lang="fr">Extension</value>
-    </record>
-
-    <record key="network">
-      <value lang="en">Network</value>
-      <value lang="fr">Réseau</value>
-    </record>
-    
-    <record key="advanced">
-      <value lang="en">Advanced</value>
-      <value lang="fr">Avancé</value>
-    </record>
-
-    <record key="test">
-      <value lang="en">Test</value>
-      <value lang="fr">Tester</value>
-    </record>
-
-    <record key="help">
-      <value lang="en">Help</value>
-      <value lang="fr">Aide</value>
-    </record>
-
-    <record key="general">
-      <value lang="en">General</value>
-      <value lang="fr">Général</value>
-    </record>
-
-    <record key="nfo">
-      <value lang="en">NFO</value>
-      <value lang="fr">NFO</value>
-    </record>
-
-    <record key="update">
-      <value lang="en">Update</value>
-      <value lang="fr">Mise à jour</value>
-    </record>
-
-    <record key="folder">
-      <value lang="en">Folder</value>
-      <value lang="fr">Dossier</value>
-    </record>
-
-    <record key="language">
-      <value lang="en">Language</value>
-      <value lang="fr">Langue</value>
-    </record>
-
-    <record key="scraper">
-      <value lang="en">Scraper</value>
-      <value lang="fr">Scraper</value>
-    </record>
-
-    <record key="interface">
-      <value lang="en">Interface</value>
-      <value lang="fr">Interface</value>
-    </record>
-
-    <record key="moviefilename">
-      <value lang="en">Movie filename</value>
-      <value lang="fr">Nom du fichier film</value>
-    </record>
-
-    <record key="thumb">
-      <value lang="en">Poster</value>
-      <value lang="fr">Affiche</value>
-    </record>
-
-    <record key="fanart">
-      <value lang="en">Fanart</value>
-      <value lang="fr">Fanart</value>
-    </record>
-
-    <record key="proxy">
-      <value lang="en">Proxy</value>
-      <value lang="fr">Proxy</value>
-    </record>
-
-    <record key="mediacenter">
-      <value lang="en">Media center</value>
-      <value lang="fr">Centre multimédia</value>
-    </record>
-
-    <record key="size">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
-
-    <record key="time">
-      <value lang="en">Time</value>
-      <value lang="fr">Temps</value>
-    </record>
-    
-    <record key="panel">
-      <value lang="en">Panel</value>
-      <value lang="fr">Panneau</value>
-    </record>
-    
-    <record key="list">
-      <value lang="en">List</value>
-      <value lang="fr">Liste</value>
-    </record>
-
-    <!-- We do not use specific key for each panel to avoid change of this file if we moved an option-->
-    <!-- General panel -->
-
-    <record key="selectfirstmedia">
-      <value lang="en">Select first media automatically</value>
-      <value lang="fr">Sélectionner le premier média automatiquement</value>
-    </record>
-
-    <record key="selectfirstresult">
-      <value lang="en">Select first result automatically</value>
-      <value lang="fr">Sélectionner le premier résultat automatiquement</value>
-    </record>
-
-    <record key="scansubfolder">
-      <value lang="en">Sub-folders</value>
-      <value lang="fr">Sous-dossiers</value>
-    </record>
-
-    <record key="browse">
-      <value lang="en">Browse</value>
-      <value lang="fr">Parcourir</value>
-    </record>
-
-    <record key="notbrowse">
-      <value lang="en">Do not browse</value>
-      <value lang="fr">Ne pas parcourir</value>
-    </record>
-
-    <record key="ask">
-      <value lang="en">Ask</value>
-      <value lang="fr">Demander</value>
-    </record>
-
-    <record key="browse">
-      <value lang="en">Browse</value>
-      <value lang="fr">Parcourir</value>
-    </record>
-
-    <record key="showstartupanim">
-      <value lang="en">Show startup animation</value>
-      <value lang="fr">Afficher l'animation au démarrage</value>
-    </record>
-
-    <record key="movefileonebyone">
-      <value lang="en">Move files one by one</value>
-      <value lang="fr">Déplacer les fichiers un par un</value>
-    </record>
-
-    <record key="debug">
-      <value lang="en">Debug</value>
-      <value lang="fr">Debug</value>
-    </record>
-
-    <record key="loadfileatstartup">
-      <value lang="en">Load files on startup</value>
-      <value lang="fr">Charger des fichiers au démarrage</value>
-    </record>
-
-    <record key="loadfilepath">
-      <value lang="en">Folder path</value>
-      <value lang="fr">Chemin du dossier</value>
-    </record>
-
-    <record key="mediainfowarning">
-      <value lang="en">Show "media info is not installed" warning</value>
-      <value lang="fr">Afficher l'avertissement "media info n'est pas installé"</value>
-    </record>
-
-    <record key="mainframesavestate">
-      <value lang="en">Save application position on screen</value>
-      <value lang="fr">Sauvegarde la position de l'application sur l'écran</value>
-    </record>
-
-    <record key="showmediapanel">
-      <value lang="en">Show media information panel</value>
-      <value lang="fr">Afficher le panneau média information</value>
-    </record>
-
-    <record key="showimagepanel">
-      <value lang="en">Show image panel</value>
-      <value lang="fr">Afficher le panneau d'image</value>
-    </record>
-
-    <record key="showactorimage">
-      <value lang="en">Show actors images</value>
-      <value lang="fr">Afficher les images des acteurs</value>
-    </record>
-
-    <record key="showiconmedialist">
-      <value lang="en">Show icons in media list</value>
-      <value lang="fr">Afficher les icônes dans la liste des médias</value>
-    </record>
-
-    <record key="showformatfield">
-      <value lang="en">Show format field</value>
-      <value lang="fr">Afficher le champ format</value>
-    </record>
-
-    <record key="groupmedialist">
-      <value lang="en">Group medias by first letter</value>
-      <value lang="fr">Grouper les médias par leur première lettre</value>
-    </record>
-
-    <record key="checkupdate">
-      <value lang="en">Check for update on startup</value>
-      <value lang="fr">Vérifier les mises à jour au démarrage</value>
-    </record>
-
-    <record key="searchscraperlang">
-      <value lang="en">Informations language</value>
-      <value lang="fr">Langue des informations</value>
-    </record>
-
-    <record key="applanguage">
-      <value lang="en">Application language</value>
-      <value lang="fr">Langue de l'application</value>
-    </record>
-
-    <!-- Media panel -->
-
-    <record key="reservedcharacter">
-      <value lang="en">Remove reserved characters</value>
-      <value lang="fr">Supprimer les caractères réservés</value>
-    </record>
-
-    <record key="file">
-      <value lang="en">File</value>
-      <value lang="fr">Fichier</value>
-    </record>
-
-    <record key="tab.movie">
-      <value lang="en">Movie</value>
-      <value lang="fr">Film</value>
-    </record>
-
-    <record key="moviefilenameformat">
-      <value lang="en">Format</value>
-      <value lang="fr">Format</value>
-    </record>
-
-    <record key="moviefilenameseparator">
-      <value lang="en">Separator</value>
-      <value lang="fr">Séparateur</value>
-    </record>
-
-    <record key="moviefilenamelimit">
-      <value lang="en">Limit</value>
-      <value lang="fr">Limite</value>
-    </record>
-
-    <record key="moviefilenamecase">
-      <value lang="en">Case</value>
-      <value lang="fr">Casse</value>
-    </record>
-
-    <record key="firstlo">
-      <value lang="en">First letter uppercase</value>
-      <value lang="fr">Première lettre en majuscule</value>
-    </record>
-
-    <record key="firstla">
-      <value lang="en">All First Letters Uppercase</value>
-      <value lang="fr">Toutes Les Première Lettres En Majuscule</value>
-    </record>
-
-    <record key="upper">
-      <value lang="en">UPPER</value>
-      <value lang="fr">MAJUSCULE</value>
-    </record>
-
-    <record key="lower">
-      <value lang="en">lower</value>
-      <value lang="fr">minuscule</value>
-    </record>
-
-    <record key="none">
-      <value lang="en">None</value>
-      <value lang="fr">Aucun</value>
-    </record>
-
-    <record key="filenametrim">
-      <value lang="en">Remove leading and trailing white space</value>
-      <value lang="fr">Supprimer les espaces en début et fin</value>
-    </record>
-
-    <record key="filenamermdupspace">
-      <value lang="en">Remove extra white spaces</value>
-      <value lang="fr">Supprimer les espaces en trop</value>
-    </record>
-
-    <record key="filenameromanupper">
-      <value lang="en">Keep roman numerals upper</value>
-      <value lang="fr">Garder les chiffres romains en majuscules</value>
-    </record>
-
-    <!-- Search panel -->
-
-    <record key="useimdbidinsearch">
-      <value lang="en">Use imdbid in search</value>
-      <value lang="fr">Utiliser l'id imdb dans la recherche</value>
-    </record>
-
-    <record key="showidresultlist">
-      <value lang="en">Show scraper id in result list</value>
-      <value lang="fr">Afficher l'id du scraper dans la liste de résultats</value>
-    </record>
-
-    <record key="showyearresultlist">
-      <value lang="en">Show year in result list</value>
-      <value lang="fr">Afficher l'année dans la liste de résultats</value>
-    </record>
-
-    <record key="showorigtitleresultlist">
-      <value lang="en">Show original title in result list</value>
-      <value lang="fr">Afficher le titre original dans la liste de résultats</value>
-    </record>
-
-    <record key="showthumbresultlist">
-      <value lang="en">Show poster in result list</value>
-      <value lang="fr">Afficher l'affiche dans la liste de résultats</value>
-    </record>
-
-    <record key="searchnbresult">
-      <value lang="en">Number of results</value>
-      <value lang="fr">Nombre de résultats</value>
-    </record>
-
-    <record key="searchorder">
-      <value lang="en">Sort results</value>
-      <value lang="fr">Trier les résultats</value>
-    </record>
-
-    <record key="searchorderthreshold">
-      <value lang="en">Sort threshold</value>
-      <value lang="fr">Seuil de tri</value>
-    </record>
-
-    <record key="searchmoviescraper">
-      <value lang="en">Movie scraper</value>
-      <value lang="fr">Scraper de film</value>
-    </record>
-
-    <record key="searchgettmdbtag">
-      <value lang="en">Get TMDB tags</value>
-      <value lang="fr">Récupérer les tags de TMDB</value>
-    </record>
-    
-    <record key="searchsetorigtitle">
-      <value lang="en">Use title as original title if it is empty</value>
-      <value lang="fr">Utiliser le titre comme titre original si il est vide</value>
-    </record>
-    
-    <record key="searchgetonlylangdep">
-      <value lang="en">Keep only infos in current language</value>
-      <value lang="fr">Garder les infos seulement dans la langue actuelle</value>
-    </record>
-    
-    <record key="universalsearchscraper">
-      <value lang="en">Search scraper</value>
-      <value lang="fr">Scraper de recherche</value>
-    </record>
-    
-    <record key="universalsynopsys">
-      <value lang="en">Synopsis from</value>
-      <value lang="fr">Synopsis de</value>
-    </record>
-
-    <record key="universalcasting">
-      <value lang="en">Casting from</value>
-      <value lang="fr">Casting de</value>
-    </record>
-
-    <record key="universalrating">
-      <value lang="en">Rate from</value>
-      <value lang="fr">Note de</value>
-    </record>
-    
-    <record key="universalgenre">
-      <value lang="en">Genre from</value>
-      <value lang="fr">Genre de</value>
-    </record>
-    
-    <record key="universalcountry">
-      <value lang="en">Country from</value>
-      <value lang="fr">Pays de</value>
-    </record>  
-    
-    <record key="stringtimehour">
-      <value lang="en">String for hours</value>
-      <value lang="fr">Chaîne des heures</value>
-    </record>  
-    
-    <record key="stringtimeminute">
-      <value lang="en">String for minutes</value>
-      <value lang="fr">Chaîne des minutes</value>
-    </record>  
-    
-    <record key="stringtimeseconde">
-      <value lang="en">String for seconds</value>
-      <value lang="fr">Chaîne des secondes</value>
-    </record>  
         
-    <record key="stringtimemilliseconde">
-      <value lang="en">String for milliseconds</value>
-      <value lang="fr">Chaîne des millisecondes</value>
-    </record>  
+        <record key="mediafilenamereplacespaceby">
+            <value lang="en">By</value>
+            <value lang="fr">Par</value>
+        </record>
+
+        <record key="firstlo">
+            <value lang="en">First letter uppercase</value>
+            <value lang="fr">Première lettre en majuscule</value>
+        </record>
+
+        <record key="firstla">
+            <value lang="en">All First Letters Uppercase</value>
+            <value lang="fr">Toutes Les Première Lettres En Majuscule</value>
+        </record>
+
+        <record key="upper">
+            <value lang="en">UPPER</value>
+            <value lang="fr">MAJUSCULE</value>
+        </record>
+
+        <record key="lower">
+            <value lang="en">lower</value>
+            <value lang="fr">minuscule</value>
+        </record>
+
+        <record key="none">
+            <value lang="en">None</value>
+            <value lang="fr">Aucun</value>
+        </record>
+
+        <record key="filenametrim">
+            <value lang="en">Remove leading and trailing white space</value>
+            <value lang="fr">Supprimer les espaces en début et fin</value>
+        </record>
+
+        <record key="filenamermdupspace">
+            <value lang="en">Remove extra white spaces</value>
+            <value lang="fr">Supprimer les espaces en trop</value>
+        </record>
+
+        <record key="filenameromanupper">
+            <value lang="en">Keep roman numerals upper</value>
+            <value lang="fr">Garder les chiffres romains en majuscules</value>
+        </record>
+    
+        <!-- Search panel -->
+
+        <record key="useimdbidinsearch">
+            <value lang="en">Use imdbid in search</value>
+            <value lang="fr">Utiliser l'id imdb dans la recherche</value>
+        </record>
+
+        <record key="showidresultlist">
+            <value lang="en">Show scraper id in result list</value>
+            <value lang="fr">Afficher l'id du scraper dans la liste de résultats</value>
+        </record>
+
+        <record key="showyearresultlist">
+            <value lang="en">Show year in result list</value>
+            <value lang="fr">Afficher l'année dans la liste de résultats</value>
+        </record>
+
+        <record key="showorigtitleresultlist">
+            <value lang="en">Show original title in result list</value>
+            <value lang="fr">Afficher le titre original dans la liste de résultats</value>
+        </record>
+
+        <record key="showthumbresultlist">
+            <value lang="en">Show poster in result list</value>
+            <value lang="fr">Afficher l'affiche dans la liste de résultats</value>
+        </record>
+
+        <record key="searchnbresult">
+            <value lang="en">Number of results</value>
+            <value lang="fr">Nombre de résultats</value>
+        </record>
+
+        <record key="searchorder">
+            <value lang="en">Sort results</value>
+            <value lang="fr">Trier les résultats</value>
+        </record>
+
+        <record key="searchorderthreshold">
+            <value lang="en">Sort threshold</value>
+            <value lang="fr">Seuil de tri</value>
+        </record>
+
+        <record key="searchmoviescraper">
+            <value lang="en">Movie scraper</value>
+            <value lang="fr">Scraper de film</value>
+        </record>
+
+        <record key="searchgettmdbtag">
+            <value lang="en">Get TMDB tags</value>
+            <value lang="fr">Récupérer les tags de TMDB</value>
+        </record>
+    
+        <record key="searchsetorigtitle">
+            <value lang="en">Use title as original title if it is empty</value>
+            <value lang="fr">Utiliser le titre comme titre original si il est vide</value>
+        </record>
+    
+        <record key="searchgetonlylangdep">
+            <value lang="en">Keep only infos in current language</value>
+            <value lang="fr">Garder les infos seulement dans la langue actuelle</value>
+        </record>
+    
+        <record key="universalsearchscraper">
+            <value lang="en">Search scraper</value>
+            <value lang="fr">Scraper de recherche</value>
+        </record>
+    
+        <record key="universalsynopsys">
+            <value lang="en">Synopsis from</value>
+            <value lang="fr">Synopsis de</value>
+        </record>
+
+        <record key="universalcasting">
+            <value lang="en">Casting from</value>
+            <value lang="fr">Casting de</value>
+        </record>
+
+        <record key="universalrating">
+            <value lang="en">Rate from</value>
+            <value lang="fr">Note de</value>
+        </record>
+    
+        <record key="universalgenre">
+            <value lang="en">Genre from</value>
+            <value lang="fr">Genre de</value>
+        </record>
+    
+        <record key="universalcountry">
+            <value lang="en">Country from</value>
+            <value lang="fr">Pays de</value>
+        </record>  
+    
+        <record key="stringtimehour">
+            <value lang="en">String for hours</value>
+            <value lang="fr">Chaîne des heures</value>
+        </record>  
+    
+        <record key="stringtimeminute">
+            <value lang="en">String for minutes</value>
+            <value lang="fr">Chaîne des minutes</value>
+        </record>  
+    
+        <record key="stringtimeseconde">
+            <value lang="en">String for seconds</value>
+            <value lang="fr">Chaîne des secondes</value>
+        </record>  
+        
+        <record key="stringtimemilliseconde">
+            <value lang="en">String for milliseconds</value>
+            <value lang="fr">Chaîne des millisecondes</value>
+        </record>  
             
-    <record key="stringtimeshowseconde">
-      <value lang="en">Show seconds</value>
-      <value lang="fr">Afficher les secondes</value>
-    </record>  
+        <record key="stringtimeshowseconde">
+            <value lang="en">Show seconds</value>
+            <value lang="fr">Afficher les secondes</value>
+        </record>  
                 
-    <record key="stringtimeshowmillis">
-      <value lang="en">Show milliseconds</value>
-      <value lang="fr">Afficher les millisecondes</value>
-    </record>  
+        <record key="stringtimeshowmillis">
+            <value lang="en">Show milliseconds</value>
+            <value lang="fr">Afficher les millisecondes</value>
+        </record>  
     
-    <!-- Image panel -->
+        <!-- Image panel -->
 
-    <record key="generatethumb">
-      <value lang="en">Generate Poster</value>
-      <value lang="fr">Générer l'Affiche</value>
-    </record>
+        <record key="downloadthumb">
+            <value lang="en">Download Poster</value>
+            <value lang="fr">Télécharger l'Affiche</value>
+        </record>
 
-    <record key="generatefanart">
-      <value lang="en">Generate Fanart</value>
-      <value lang="fr">Générer le Fanart</value>
-    </record>
+        <record key="downloadfanart">
+            <value lang="en">Download Fanart</value>
+            <value lang="fr">Télécharger le Fanart</value>
+        </record>
 
-    <record key="generatecdart">
-      <value lang="en">Generate CDart</value>
-      <value lang="fr">Générer le CDart</value>
-    </record>
+        <record key="downloadcdart">
+            <value lang="en">Download CDart</value>
+            <value lang="fr">Télécharger le CDart</value>
+        </record>
 
-    <record key="generateclearart">
-      <value lang="en">Generate Clearart</value>
-      <value lang="fr">Générer le Clearart</value>
-    </record>
+        <record key="downloadclearart">
+            <value lang="en">Download Clearart</value>
+            <value lang="fr">Télécharger le Clearart</value>
+        </record>
 
-    <record key="generatelogo">
-      <value lang="en">Generate Logo</value>
-      <value lang="fr">Générer le Logo</value>
-    </record>
+        <record key="downloadlogo">
+            <value lang="en">Download Logo</value>
+            <value lang="fr">Télécharger le Logo</value>
+        </record>
 
-    <record key="generatebanner">
-      <value lang="en">Generate Banner</value>
-      <value lang="fr">Générer la Bannière</value>
-    </record>
+        <record key="downloadbanner">
+            <value lang="en">Download Banner</value>
+            <value lang="fr">Télécharger la Bannière</value>
+        </record>
 
-    <record key="imageformat">
-      <value lang="en">Images format</value>
-      <value lang="fr">Format des images</value>
-    </record>
+        <record key="imageformat">
+            <value lang="en">Images format</value>
+            <value lang="fr">Format des images</value>
+        </record>
 
-    <record key="numberimagegallery">
-      <value lang="en">Number of images by gallery</value>
-      <value lang="fr">Nombre d'images par galerie</value>
-    </record>
+        <record key="numberimagegallery">
+            <value lang="en">Number of images by gallery</value>
+            <value lang="fr">Nombre d'images par galerie</value>
+        </record>
 
-    <record key="tab.thumb">
-      <value lang="en">Poster</value>
-      <value lang="fr">Affiche</value>
-    </record>
+        <record key="tab.thumb">
+            <value lang="en">Poster</value>
+            <value lang="fr">Affiche</value>
+        </record>
 
-    <record key="tab.fanart">
-      <value lang="en">Fanart</value>
-      <value lang="fr">Fanart</value>
-    </record>
+        <record key="tab.fanart">
+            <value lang="en">Fanart</value>
+            <value lang="fr">Fanart</value>
+        </record>
 
-    <record key="tab.logo">
-      <value lang="en">Logo</value>
-      <value lang="fr">Logo</value>
-    </record>
+        <record key="tab.logo">
+            <value lang="en">Logo</value>
+            <value lang="fr">Logo</value>
+        </record>
 
-    <record key="tab.cdart">
-      <value lang="en">CDart</value>
-      <value lang="fr">CDart</value>
-    </record>
+        <record key="tab.cdart">
+            <value lang="en">CDart</value>
+            <value lang="fr">CDart</value>
+        </record>
 
-    <record key="tab.clearart">
-      <value lang="en">ClearArt</value>
-      <value lang="fr">ClearArt</value>
-    </record>
+        <record key="tab.clearart">
+            <value lang="en">ClearArt</value>
+            <value lang="fr">ClearArt</value>
+        </record>
 
-    <record key="tab.banner">
-      <value lang="en">Banner</value>
-      <value lang="fr">Bannière</value>
-    </record>
+        <record key="tab.banner">
+            <value lang="en">Banner</value>
+            <value lang="fr">Bannière</value>
+        </record>
 
-    <record key="original">
-      <value lang="en">Original</value>
-      <value lang="fr">Originale</value>
-    </record>
+        <record key="original">
+            <value lang="en">Original</value>
+            <value lang="fr">Originale</value>
+        </record>
 
-    <record key="medium">
-      <value lang="en">Medium</value>
-      <value lang="fr">Moyenne</value>
-    </record>
+        <record key="medium">
+            <value lang="en">Medium</value>
+            <value lang="fr">Moyenne</value>
+        </record>
 
-    <record key="small">
-      <value lang="en">Small</value>
-      <value lang="fr">Petite</value>
-    </record>
+        <record key="small">
+            <value lang="en">Small</value>
+            <value lang="fr">Petite</value>
+        </record>
 
-    <record key="imagethumbname">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="imagethumbname">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="imagethumbsize">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
+        <record key="imagethumbsize">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
 
-    <record key="imagethumbresize">
-      <value lang="en">Resize</value>
-      <value lang="fr">Redimensionner</value>
-    </record>
+        <record key="imagethumbresize">
+            <value lang="en">Resize</value>
+            <value lang="fr">Redimensionner</value>
+        </record>
 
-    <record key="imagethumbheight">
-      <value lang="en">Height</value>
-      <value lang="fr">Hauteur</value>
-    </record>
+        <record key="imagethumbheight">
+            <value lang="en">Height</value>
+            <value lang="fr">Hauteur</value>
+        </record>
 
-    <record key="imagefanartname">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="imagefanartname">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="imagefanartsize">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
+        <record key="imagefanartsize">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
 
-    <record key="imagefanartresize">
-      <value lang="en">Resize</value>
-      <value lang="fr">Redimensionner</value>
-    </record>
+        <record key="imagefanartresize">
+            <value lang="en">Resize</value>
+            <value lang="fr">Redimensionner</value>
+        </record>
 
-    <record key="imagefanartwidth">
-      <value lang="en">With</value>
-      <value lang="fr">Largeur</value>
-    </record>
+        <record key="imagefanartwidth">
+            <value lang="en">Width</value>
+            <value lang="fr">Largeur</value>
+        </record>
 
-    <record key="imagelogoname">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="imagelogoname">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="imagelogosize">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
-    <record key="imagecdartname">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="imagelogosize">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
+        <record key="imagecdartname">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="imagecdartsize">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
+        <record key="imagecdartsize">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
 
-    <record key="imageclearartname">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="imageclearartname">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="imageclearartsize">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
+        <record key="imageclearartsize">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
 
-    <record key="imagebannername">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="imagebannername">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="imagebannersize">
-      <value lang="en">Size</value>
-      <value lang="fr">Taille</value>
-    </record>
+        <record key="imagebannersize">
+            <value lang="en">Size</value>
+            <value lang="fr">Taille</value>
+        </record>
 
-    <!-- NFO panel -->
+        <!-- NFO panel -->
 
-    <record key="movienfofilename">
-      <value lang="en">Filename</value>
-      <value lang="fr">Nom du fichier</value>
-    </record>
+        <record key="medianfofilename">
+            <value lang="en">Filename</value>
+            <value lang="fr">Nom du fichier</value>
+        </record>
 
-    <record key="movienfotag">
-      <value lang="en">Include tags</value>
-      <value lang="fr">Inclure les tags</value>
-    </record>
+        <record key="medianfotag">
+            <value lang="en">Include tags</value>
+            <value lang="fr">Inclure les tags</value>
+        </record>
 
-    <record key="movienfoimage">
-      <value lang="en">Include images</value>
-      <value lang="fr">Inclure les images</value>
-    </record>
+        <record key="medianfoimage">
+            <value lang="en">Include images</value>
+            <value lang="fr">Inclure les images</value>
+        </record>
 
-    <record key="movienfoimdbid">
-      <value lang="en">Include imdb id</value>
-      <value lang="fr">Inclure l'id imdb</value>
-    </record>
+        <record key="medianfoimdbid">
+            <value lang="en">Include imdb id</value>
+            <value lang="fr">Inclure l'id imdb</value>
+        </record>
 
-    <record key="movienfogenerate">
-      <value lang="en">Generate NFO</value>
-      <value lang="fr">Générer le NFO</value>
-    </record>
+        <record key="medianfogenerate">
+            <value lang="en">Generate NFO</value>
+            <value lang="fr">Générer le NFO</value>
+        </record>
 
-    <record key="movienfotype">
-      <value lang="en">Media center</value>
-      <value lang="fr">Centre multimédia</value>
-    </record>
+        <record key="medianfotype">
+            <value lang="en">Media center</value>
+            <value lang="fr">Centre multimédia</value>
+        </record>
 
-    <!-- Extension panel -->
+        <!-- Extension panel -->
 
-    <record key="useextensionfilter">
-      <value lang="en">Use extension filter</value>
-      <value lang="fr">Utiliser le filtre par extensions</value>
-    </record>
+        <record key="useextensionfilter">
+            <value lang="en">Use extension filter</value>
+            <value lang="fr">Utiliser le filtre par extensions</value>
+        </record>
 
-    <record key="fileextension">
-      <value lang="en">File extension</value>
-      <value lang="fr">Extension de fichier</value>
-    </record>
+        <record key="fileextension">
+            <value lang="en">File extension</value>
+            <value lang="fr">Extension de fichier</value>
+        </record>
 
-    <!-- Network panel -->
+        <!-- Network panel -->
 
-    <record key="httprequesttimeout">
-      <value lang="en">Request timed out</value>
-      <value lang="fr">Délai d'attente de la demande</value>
-    </record>
+        <record key="httprequesttimeout">
+            <value lang="en">Request timed out</value>
+            <value lang="fr">Délai d'attente de la demande</value>
+        </record>
 
-    <record key="httpcustomuseragent">
-      <value lang="en">User agent</value>
-      <value lang="fr">User agent</value>
-    </record>
+        <record key="httpcustomuseragent">
+            <value lang="en">User agent</value>
+            <value lang="fr">User agent</value>
+        </record>
 
-    <record key="proxyison">
-      <value lang="en">Enable proxy</value>
-      <value lang="fr">Activer le proxy</value>
-    </record>
+        <record key="proxyison">
+            <value lang="en">Enable proxy</value>
+            <value lang="fr">Activer le proxy</value>
+        </record>
     
-    <record key="proxyissocks">
-      <value lang="en">Use SOCKS proxy</value>
-      <value lang="fr">Utiliser un proxy SOCKS</value>
-    </record>
+        <record key="proxyissocks">
+            <value lang="en">Use SOCKS proxy</value>
+            <value lang="fr">Utiliser un proxy SOCKS</value>
+        </record>
 
-    <record key="proxyurl">
-      <value lang="en">Url</value>
-      <value lang="fr">Url</value>
-    </record>
+        <record key="proxyurl">
+            <value lang="en">Url</value>
+            <value lang="fr">Url</value>
+        </record>
 
-    <record key="proxyport">
-      <value lang="en">Port</value>
-      <value lang="fr">Port</value>
-    </record>
+        <record key="proxyport">
+            <value lang="en">Port</value>
+            <value lang="fr">Port</value>
+        </record>
     
-    <record key="proxyuser">
-      <value lang="en">User</value>
-      <value lang="fr">Utilisateur</value>
-    </record>
+        <record key="proxyuser">
+            <value lang="en">User</value>
+            <value lang="fr">Utilisateur</value>
+        </record>
     
-    <record key="proxypass">
-      <value lang="en">Password</value>
-      <value lang="fr">Mot de passe</value>
-    </record>
+        <record key="proxypass">
+            <value lang="en">Password</value>
+            <value lang="fr">Mot de passe</value>
+        </record>
     
-    <record key="advancedWarning">
-      <value lang="en">Do not change anything in advanced settings if you don't know what your are doing.%n</value>
-      <value lang="fr">Ne changer rien dans les paramètres avancés si vous ne savez pas ce que vous faites.%n</value>
-    </record>
+        <record key="advancedWarning">
+            <value lang="en">Do not change anything in advanced settings if you don't know what your are doing.%n</value>
+            <value lang="fr">Ne changer rien dans les paramètres avancés si vous ne savez pas ce que vous faites.%n</value>
+        </record>
 
-  </Dictionary><!-- END settings -->
+    </Dictionary><!-- END settings -->
 
-  <Dictionary name="About dialog" prefix="aboutDialog">
+    <Dictionary name="About dialog" prefix="aboutDialog">
 
-    <record key="appname">
-      <value lang="en">Application : %s</value>
-      <value lang="fr">Application : %s</value>
-    </record>
+        <record key="appname">
+            <value lang="en">Application : %s</value>
+            <value lang="fr">Application : %s</value>
+        </record>
 
-    <record key="appversion">
-      <value lang="en">Version : %s</value>
-      <value lang="fr">Version : %s</value>
-    </record>
+        <record key="appversion">
+            <value lang="en">Version : %s</value>
+            <value lang="fr">Version : %s</value>
+        </record>
 
-    <record key="author">
-      <value lang="en">Author : %s</value>
-      <value lang="fr">Auteur : %s</value>
-    </record>
+        <record key="author">
+            <value lang="en">Author : %s</value>
+            <value lang="fr">Auteur : %s</value>
+        </record>
 
-    <record key="contributor">
-      <value lang="en">Contributor : %s</value>
-      <value lang="fr">Contributeur : %s</value>
-    </record>
+        <record key="contributor">
+            <value lang="en">Contributor : %s</value>
+            <value lang="fr">Contributeur : %s</value>
+        </record>
 
-    <record key="license">
-      <value lang="en">License : %s</value>
-      <value lang="fr">Licence : %s</value>
-    </record>
+        <record key="license">
+            <value lang="en">License : %s</value>
+            <value lang="fr">Licence : %s</value>
+        </record>
 
-    <record key="provider">
-      <value lang="en">Provider :</value>
-      <value lang="fr">Fournisseur :</value>
-    </record>
+        <record key="provider">
+            <value lang="en">Provider :</value>
+            <value lang="fr">Fournisseur :</value>
+        </record>
 
-    <record key="website">
-      <value lang="en">Website :</value>
-      <value lang="fr">Site web :</value>
-    </record>
+        <record key="website">
+            <value lang="en">Website :</value>
+            <value lang="fr">Site web :</value>
+        </record>
 
-    <record key="contact">
-      <value lang="en">Contact : %s</value>
-      <value lang="fr">Contact : %s</value>
-    </record>
+        <record key="contact">
+            <value lang="en">Contact : %s</value>
+            <value lang="fr">Contact : %s</value>
+        </record>
 
-  </Dictionary><!-- END aboutDialog -->
+    </Dictionary><!-- END aboutDialog -->
 
-  <Dictionary name="notification (question/information/error)" prefix="notification">
+    <Dictionary name="notification (question/information/error)" prefix="notification">
 
-    <record key="noresult">
-      <value lang="en">No media found for "%s"</value>
-      <value lang="fr">Aucun media trouvé pour "%s"</value>
-    </record>
+        <record key="noresult">
+            <value lang="en">No media found for "%s"</value>
+            <value lang="fr">Aucun media trouvé pour "%s"</value>
+        </record>
 
-  </Dictionary><!-- END notification -->
+    </Dictionary><!-- END notification -->
 
-  <Dictionary name="Dialog (question/information/...)" prefix="dialog">
+    <Dictionary name="Dialog (question/information/...)" prefix="dialog">
 
-    <record key="question">
-      <value lang="en">Question</value>
-      <value lang="fr">Question</value>
-    </record>
+        <record key="question">
+            <value lang="en">Question</value>
+            <value lang="fr">Question</value>
+        </record>
 
-    <record key="information">
-      <value lang="en">Information</value>
-      <value lang="fr">Information</value>
-    </record>
+        <record key="information">
+            <value lang="en">Information</value>
+            <value lang="fr">Information</value>
+        </record>
 
-    <record key="help">
-      <value lang="en">Help</value>
-      <value lang="fr">Aide</value>
-    </record>
+        <record key="help">
+            <value lang="en">Help</value>
+            <value lang="fr">Aide</value>
+        </record>
 
-    <record key="editor">
-      <value lang="en">Editor</value>
-      <value lang="fr">Editeur</value>
-    </record>
+        <record key="editor">
+            <value lang="en">Editor</value>
+            <value lang="fr">Editeur</value>
+        </record>
 
-    <record key="wantrestart">
-      <value lang="en">Some processes are running.\n\nAre you sure you want to quit %s ?</value>
-      <value lang="fr">Des processus sont en cours d'exécution.\n\nEtes-vous sûr de vouloir quitter %s ?</value>
-    </record>
+        <record key="wantrestart">
+            <value lang="en">Some processes are running.\n\nAre you sure you want to quit %s ?</value>
+            <value lang="fr">Des processus sont en cours d'exécution.\n\nEtes-vous sûr de vouloir quitter %s ?</value>
+        </record>
 
-    <record key="fileconflict">
-      <value lang="en">File conflict</value>
-      <value lang="fr">Conflit de fichier</value>
-    </record>
+        <record key="fileconflict">
+            <value lang="en">File conflict</value>
+            <value lang="fr">Conflit de fichier</value>
+        </record>
 
-    <record key="replacefile">
-      <value lang="en">Replace file "%s" ?</value>
-      <value lang="fr">Remplacer le fichier "%s" ?</value>
-    </record>
+        <record key="replacefile">
+            <value lang="en">Replace file "%s" ?</value>
+            <value lang="fr">Remplacer le fichier "%s" ?</value>
+        </record>
 
-    <record key="alreadyexist">
-      <value lang="en">A file with the same name already exists in "%s".</value>
-      <value lang="fr">Un fichier avec le même nom existe déja dans "%s".</value>
-    </record>
+        <record key="alreadyexist">
+            <value lang="en">A file with the same name already exists in "%s".</value>
+            <value lang="fr">Un fichier avec le même nom existe déja dans "%s".</value>
+        </record>
 
-    <record key="origfile">
-      <value lang="en">Original file</value>
-      <value lang="fr">Fichier original</value>
-    </record>
+        <record key="origfile">
+            <value lang="en">Original file</value>
+            <value lang="fr">Fichier original</value>
+        </record>
 
-    <record key="replacewith">
-      <value lang="en">Replace with</value>
-      <value lang="fr">Remplacer par</value>
-    </record>
+        <record key="replacewith">
+            <value lang="en">Replace with</value>
+            <value lang="fr">Remplacer par</value>
+        </record>
 
-    <record key="size">
-      <value lang="en">Size: %s</value>
-      <value lang="fr">Taille: %s</value>
-    </record>
+        <record key="size">
+            <value lang="en">Size: %s</value>
+            <value lang="fr">Taille: %s</value>
+        </record>
 
-    <record key="lastmodified">
-      <value lang="en">Last modified: %s</value>
-      <value lang="fr">Dernière modification: %s</value>
-    </record>
+        <record key="lastmodified">
+            <value lang="en">Last modified: %s</value>
+            <value lang="fr">Dernière modification: %s</value>
+        </record>
 
-    <record key="applytoall">
-      <value lang="en">Apply this action to all files</value>
-      <value lang="fr">Appliquer cette action sur tous les fichiers</value>
-    </record>
+        <record key="applytoall">
+            <value lang="en">Apply this action to all files</value>
+            <value lang="fr">Appliquer cette action sur tous les fichiers</value>
+        </record>
 
-    <record key="installMediaInfo">
-      <value lang="en">Do you want to install media info ?</value>
-      <value lang="fr">Voulez-vous installer media info ?</value>
-    </record>
+        <record key="installMediaInfo">
+            <value lang="en">Do you want to install media info ?</value>
+            <value lang="fr">Voulez-vous installer media info ?</value>
+        </record>
 
-    <record key="infoMediaInfo">
-      <value lang="en">Media info is optional
-        You do not need to install it for using this application
+        <record key="infoMediaInfo">
+            <value lang="en">Media info is optional
+                You do not need to install it for using this application
 
-        It is used only in some filename Tags like Video Codec (&lt;vc&gt;),...
-      </value>
-      <value lang="fr">Media info  est optionel
-        Vous n'avez pas besoin de l'installer pour utiliser cette application
+                It is used only in some filename Tags like Video Codec (&lt;vc&gt;),...
+            </value>
+            <value lang="fr">Media info  est optionel
+                Vous n'avez pas besoin de l'installer pour utiliser cette application
 
-        Il est seulement utilisé dans certain Tags pour le nom du fichier comme le Codec Video (&lt;vc&gt;),...
-      </value>
-    </record>
+                Il est seulement utilisé dans certain Tags pour le nom du fichier comme le Codec Video (&lt;vc&gt;),...
+            </value>
+        </record>
 
-    <record key="doNotAskAgain">
-      <value lang="en">Do not ask again</value>
-      <value lang="fr">Ne pas demander à nouveau</value>
-    </record>
+        <record key="doNotAskAgain">
+            <value lang="en">Do not ask again</value>
+            <value lang="fr">Ne pas demander à nouveau</value>
+        </record>
 
-    <record key="scanSubFolder">
-      <value lang="en">Do you want to scan subfolders ?</value>
-      <value lang="fr">Voulez-vous parcourir les sous-dossiers ?</value>
-    </record>
+        <record key="scanSubFolder">
+            <value lang="en">Do you want to scan subfolders ?</value>
+            <value lang="fr">Voulez-vous parcourir les sous-dossiers ?</value>
+        </record>
 
-    <record key="updateAvailable">
-      <value lang="en">An update is available.%nDo you want to update Movie Renamer to %s ?%n%n%s</value>
-      <value lang="fr">Une mise à jour est disponible.%nVoulez-vous mettre à jour Movie Renamer en %s ?%n%n%s</value>
-    </record>
+        <record key="updateAvailable">
+            <value lang="en">An update is available.%nDo you want to update Movie Renamer to %s ?%n%n%s</value>
+            <value lang="fr">Une mise à jour est disponible.%nVoulez-vous mettre à jour Movie Renamer en %s ?%n%n%s</value>
+        </record>
 
-    <record key="alreadyUptodate">
-      <value lang="en">Movie Renamer is already up-to-date.</value>
-      <value lang="fr">Movie Renamer est déjà à jour.</value>
-    </record>
+        <record key="alreadyUptodate">
+            <value lang="en">Movie Renamer is already up-to-date.</value>
+            <value lang="fr">Movie Renamer est déjà à jour.</value>
+        </record>
     
-    <record key="imdbidfound">
-      <value lang="en">An imdb id was found (%s).%nDo you want to use it instead of classic search ?</value>
-      <value lang="fr">Un id imdb a été trouvé (%s).%nVoulez-vous l'utiliser à la place de la recherche classique ?</value>
-    </record>
+        <record key="imdbidfound">
+            <value lang="en">An imdb id was found (%s).%nDo you want to use it instead of classic search ?</value>
+            <value lang="fr">Un id imdb a été trouvé (%s).%nVoulez-vous l'utiliser à la place de la recherche classique ?</value>
+        </record>
 
-  </Dictionary><!-- END dialog -->
+    </Dictionary><!-- END dialog -->
 
-  <Dictionary name="Movie Renamer Error" prefix="error">
-    <record key="error">
-      <value lang="en">Error</value>
-      <value lang="fr">Erreur</value>
-    </record>
+    <Dictionary name="Movie Renamer Error" prefix="error">
+        <record key="error">
+            <value lang="en">Error</value>
+            <value lang="fr">Erreur</value>
+        </record>
 
-    <record key="mediaInfoNotInstalled">
-      <value lang="en">Media info is not installed.</value>
-      <value lang="fr">Media info n'est pas installé.</value>
-    </record>
+        <record key="mediaInfoNotInstalled">
+            <value lang="en">Media info is not installed.</value>
+            <value lang="fr">Media info n'est pas installé.</value>
+        </record>
 
-    <record key="failSaveFolderPath">
-      <value lang="en">Unable to save folder path.</value>
-      <value lang="fr">Impossible de sauvegarder le chemin du dossier.</value>
-    </record>
+        <record key="failSaveFolderPath">
+            <value lang="en">Unable to save folder path.</value>
+            <value lang="fr">Impossible de sauvegarder le chemin du dossier.</value>
+        </record>
     
-    <record key="saveSettingsFailed">
-      <value lang="en">Error while saving settings.</value>
-      <value lang="fr">Erreur lors de la sauvegarde des paramètres.</value>
-    </record>
+        <record key="saveSettingsFailed">
+            <value lang="en">Error while saving settings.</value>
+            <value lang="fr">Erreur lors de la sauvegarde des paramètres.</value>
+        </record>
 
-    <record key="unknown">
-      <value lang="en">Unknown Error: %s\n\n %s</value>
-      <value lang="fr">Erreur inconnue: %s\n\n %s</value>
-    </record>
+        <record key="unknown">
+            <value lang="en">Unknown Error: %s\n\n %s</value>
+            <value lang="fr">Erreur inconnue: %s\n\n %s</value>
+        </record>
 
-    <record key="nan">
-      <value lang="en">The parameter %s must be a number.</value>
-      <value lang="fr">Le paramètre %s doit être un chiffre.</value>
-    </record>
+        <record key="nan">
+            <value lang="en">The parameter %s must be a number.</value>
+            <value lang="fr">Le paramètre %s doit être un chiffre.</value>
+        </record>
     
-    <record key="invalidPattern">
-      <value lang="en">The parameter %s must be a valid pattern.</value>
-      <value lang="fr">Le paramètre %s doit être un pattern valide.</value>
-    </record>
+        <record key="invalidPattern">
+            <value lang="en">The parameter %s must be a valid pattern.</value>
+            <value lang="fr">Le paramètre %s doit être un pattern valide.</value>
+        </record>
 
-    <record key="searchempty">
-      <value lang="en">Search field is empty.\nYou need to provide at least one character.</value>
-      <value lang="fr">Le champ de recherche est vide.\nVous devez fournir au moins un charactère.</value>
-    </record>
+        <record key="searchempty">
+            <value lang="en">Search field is empty.\nYou need to provide at least one character.</value>
+            <value lang="fr">Le champ de recherche est vide.\nVous devez fournir au moins un charactère.</value>
+        </record>
 
-    <record key="noWritePermission">
-      <value lang="en">Unable to write in :\n%s\nPlease allow Movie Renamer to write in this folder.</value>
-      <value lang="fr">Impossible d'écrire dans:\n%s\nS'il vous plaît autoriser Movie Renamer à écrire dans ce dossier.</value>
-    </record>
+        <record key="noWritePermission">
+            <value lang="en">Unable to write in :\n%s\nPlease allow Movie Renamer to write in this folder.</value>
+            <value lang="fr">Impossible d'écrire dans:\n%s\nS'il vous plaît autoriser Movie Renamer à écrire dans ce dossier.</value>
+        </record>
     
-    <Dictionary name="Network Error" prefix="network">
-      <record key="connection">
-        <value lang="en">Unable to contact server.\nPlease check your network settings.\n\nError : %s</value>
-        <value lang="fr">Impossible de contacter le serveur.\nS'il vous plaît vérifier vos paramètres réseau.\n\nErreur : %s</value>
-      </record>
+        <Dictionary name="Network Error" prefix="network">
+            <record key="connection">
+                <value lang="en">Unable to contact server.\nPlease check your network settings.\n\nError : %s</value>
+                <value lang="fr">Impossible de contacter le serveur.\nS'il vous plaît vérifier vos paramètres réseau.\n\nErreur : %s</value>
+            </record>
 
-      <record key="timeout">
-        <value lang="en">Connection timed out.\nYou can increase timeout in settings/network.</value>
-        <value lang="fr">Délai de connexion dépassé.\nVous pouvez augmenter délai d'attente dans Paramètres/Connexions réseau.</value>
-      </record>
+            <record key="timeout">
+                <value lang="en">Connection timed out.\nYou can increase timeout in settings/network.</value>
+                <value lang="fr">Délai de connexion dépassé.\nVous pouvez augmenter délai d'attente dans Paramètres/Connexions réseau.</value>
+            </record>
 
-      <record key="unavailable">
-        <value lang="en">Service unavailable.\nWait a few moments and then retry.</value>
-        <value lang="fr">Service non disponible.\nAttendez quelques instants, puis réessayez.</value>
-      </record>
+            <record key="unavailable">
+                <value lang="en">Service unavailable.\nWait a few moments and then retry.</value>
+                <value lang="fr">Service non disponible.\nAttendez quelques instants, puis réessayez.</value>
+            </record>
       
-    </Dictionary><!-- END network -->
+        </Dictionary><!-- END network -->
 
-    <Dictionary name="Rename, move,.. file error" prefix="rename">
+        <Dictionary name="Rename, move,.. file error" prefix="rename">
 
-      <record key="fileNotExists">
-        <value lang="en">File "%s" does not exists.</value>
-        <value lang="fr">Le fichier "%s" n'existe pas.</value>
-      </record>
+            <record key="fileNotExists">
+                <value lang="en">File "%s" does not exists.</value>
+                <value lang="fr">Le fichier "%s" n'existe pas.</value>
+            </record>
 
-      <record key="unableWriteFolder">
-        <value lang="en">Unable to write in folder "%s"</value>
-        <value lang="fr">Impossible d'écrire dans le dossier "%s"</value>
-      </record>
+            <record key="unableWriteFolder">
+                <value lang="en">Unable to write in folder "%s"</value>
+                <value lang="fr">Impossible d'écrire dans le dossier "%s"</value>
+            </record>
 
-      <record key="noSpaceLeft">
-        <value lang="en">No space left on device "%s"</value>
-        <value lang="fr">Espace insuffisant sur "%s"</value>
-      </record>
+            <record key="noSpaceLeft">
+                <value lang="en">No space left on device "%s"</value>
+                <value lang="fr">Espace insuffisant sur "%s"</value>
+            </record>
 
-      <record key="copyCheckFailed">
-        <value lang="en">Copy failed, wrong checksum for "%s"</value>
-        <value lang="fr">Échec de la copie, mauvaise somme de contrôle pour "%s"</value>
-      </record>
+            <record key="copyCheckFailed">
+                <value lang="en">Copy failed, wrong checksum for "%s"</value>
+                <value lang="fr">Échec de la copie, mauvaise somme de contrôle pour "%s"</value>
+            </record>
 
-      <record key="removeFailed">
-        <value lang="en">Remove failed for "%s"</value>
-        <value lang="fr">Échec de la suppression pour "%s"</value>
-      </record>
+            <record key="removeFailed">
+                <value lang="en">Remove failed for "%s"</value>
+                <value lang="fr">Échec de la suppression pour "%s"</value>
+            </record>
 
-      <record key="renameFailed">
-        <value lang="en">Rename failed for "%s"</value>
-        <value lang="fr">Échec du renommage pour "%s"</value>
-      </record>
+            <record key="renameFailed">
+                <value lang="en">Rename failed for "%s"</value>
+                <value lang="fr">Échec du renommage pour "%s"</value>
+            </record>
 
-      <record key="downloadImageFailed">
-        <value lang="en">Download image "%s" failed</value>
-        <value lang="fr">Échec du téléchargement de l'image "%s"</value>
-      </record>
+            <record key="downloadImageFailed">
+                <value lang="en">Download image "%s" failed</value>
+                <value lang="fr">Échec du téléchargement de l'image "%s"</value>
+            </record>
 
-      <record key="unableCreateFolder">
-        <value lang="en">Unable to create folder "%s"</value>
-        <value lang="fr">Impossible de créer le dossier "%s"</value>
-      </record>
+            <record key="unableCreateFolder">
+                <value lang="en">Unable to create folder "%s"</value>
+                <value lang="fr">Impossible de créer le dossier "%s"</value>
+            </record>
 
-      <record key="createNfoFailed">
-        <value lang="en">Creation of nfo failed.</value>
-        <value lang="fr">La création du nfo à échoué.</value>
-      </record>
+            <record key="createNfoFailed">
+                <value lang="en">Creation of nfo failed.</value>
+                <value lang="fr">La création du nfo à échoué.</value>
+            </record>
 
-    </Dictionary><!-- END rename -->
+        </Dictionary><!-- END rename -->
 
-  </Dictionary><!-- END error -->
+    </Dictionary><!-- END error -->
 </Dictionary><!-- END mrui -->

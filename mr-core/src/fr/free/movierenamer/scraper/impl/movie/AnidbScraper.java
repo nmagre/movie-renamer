@@ -100,8 +100,8 @@ public class AnidbScraper extends MovieScraper {
   }
 
   @Override
-  public ScraperUtils.InfoQuality getInfoQuality() {
-    return ScraperUtils.InfoQuality.GREAT;
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
   }
 
   @Override

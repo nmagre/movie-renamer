@@ -18,6 +18,7 @@
 package fr.free.movierenamer.utils;
 
 import fr.free.movierenamer.info.IdInfo;
+import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.scraper.MediaScraper;
@@ -124,7 +125,7 @@ public final class ScraperUtils {
     }
 
     public static List<AvailableApiIds> getAvailableApiIds(MediaType mediaType) {
-      List<AvailableApiIds> list = new ArrayList<AvailableApiIds>();
+      List<AvailableApiIds> list = new ArrayList<>();
 
       for (AvailableApiIds apiId : AvailableApiIds.values()) {
         if (apiId.getMediaType() == mediaType) {
@@ -145,17 +146,16 @@ public final class ScraperUtils {
     }
   }
 
-  public static enum InfoQuality {
-
-    AWESOME,
-    GREAT,
-    AVERAGE,
-    POOR
-  }
-
+  /**
+   * Search which scraper support url
+   *
+   * @param url Url
+   * @param mtype Media type
+   * @return A Media scraper or null
+   */
   public static MediaScraper<?, ?> getScraperFor(URL url, MediaType mtype) {
-    List<MediaScraper<?, ?>> scrapers = ScraperManager.getMediaScraperList(mtype);
-    for (MediaScraper<?, ?> scraper : scrapers) {
+    List<MediaScraper> scrapers = (List<MediaScraper>) ScraperManager.getMediaScrapers(mtype.getScraperTypeClass());
+    for (MediaScraper scraper : scrapers) {
       if (scraper.hasUrlSupported(url)) {
         return scraper;
       }
@@ -164,20 +164,8 @@ public final class ScraperUtils {
     return null;
   }
 
-  public static IdInfo idLookup(AvailableApiIds lookupType, IdInfo id, Media searchResult) {
-
-    switch (searchResult.getMediaType()) {
-      case MOVIE:
-        return movieIdLookup(lookupType, id, (Movie) searchResult);
-      case TVSHOW:
-      // TODO
-    }
-
-    return null;
-  }
-
   public static IdInfo movieIdLookup(AvailableApiIds lookupType, IdInfo id, Movie searchResult) {
-    final List<IdInfo> ids = new ArrayList<IdInfo>();
+    final List<IdInfo> ids = new ArrayList<>();
     if (searchResult != null) {
       final IdInfo mid = searchResult.getMediaId();
       if (mid != null) {
@@ -488,7 +476,7 @@ public final class ScraperUtils {
     return null;
   }
 
-  public static void setTitle(Map<MediaProperty, String> mediaProperties, Media media, Node node) {
+  public static void setTitle(Map<MediaInfo.MediaInfoProperty, String> mediaProperties, Media media, Node node) {
     String title = media.getName();
     mediaProperties.put(MediaProperty.title, title);
 

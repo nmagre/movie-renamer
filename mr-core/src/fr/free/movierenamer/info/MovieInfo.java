@@ -19,7 +19,6 @@ package fr.free.movierenamer.info;
 
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.net.URI;
 import java.net.URL;
@@ -35,26 +34,24 @@ import java.util.Map.Entry;
 public class MovieInfo extends VideoInfo {
 
   private static final long serialVersionUID = 1L;
-  protected final Map<MovieProperty, String> fields;
-  protected final Map<MovieMultipleProperty, List<String>> multipleFields;
+  protected final Map<MovieProperty, String> movieInfo;
+  protected final Map<MovieMultipleProperty, List<String>> movieMultipleInfo;
   protected List<CastingInfo> directors;
   protected List<CastingInfo> actors;
   protected List<CastingInfo> writers;
   protected List<TrailerInfo> trailers;
 
-  public static enum MovieProperty implements InfoProperty {
+  public static enum MovieProperty implements MediaInfoProperty {
 
     sortTitle,
     overview(true),
     tagline(true),
     certification(true),
     certificationCode,// MotionPictureRating can transfrom it
-    releasedDate,
     votes,
     budget,
     posterPath,
-    collection,
-    runtime;
+    collection;
     private final boolean languageDepends;
 
     private MovieProperty() {
@@ -145,33 +142,65 @@ public class MovieInfo extends VideoInfo {
 
   protected MovieInfo() {
     // used by serializer
-    super(null, null);
-    this.fields = null;
-    this.multipleFields = null;
+    this(null, null, null);
   }
 
-  public MovieInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo, Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<String>> multipleFields) {
-    this(mediaFields, idsInfo, fields, multipleFields, null);
+  public MovieInfo(Map<MediaInfoProperty, String> info, Map<MovieMultipleProperty, List<String>> multipleInfo, List<IdInfo> idsInfo) {
+    this(info, multipleInfo, idsInfo, null);
   }
 
-  public MovieInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo, Map<MovieProperty, String> fields, Map<MovieMultipleProperty, List<String>> multipleFields, List<CastingInfo> casting) {
-    super(mediaFields, idsInfo);
-    this.fields = (fields != null) ? fields : new EnumMap<MovieProperty, String>(MovieProperty.class);
-    this.multipleFields = (multipleFields != null) ? multipleFields : new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
-    this.casting = (casting != null) ? casting.toArray(new CastingInfo[0]) : new CastingInfo[0];
+  public MovieInfo(Map<MediaInfoProperty, String> info, Map<MovieMultipleProperty, List<String>> multipleInfo, List<IdInfo> idsInfo, List<CastingInfo> casting) {
+    super(info, idsInfo);
+    movieInfo = new EnumMap<>(MovieProperty.class);
+    movieMultipleInfo = (multipleInfo != null) ? multipleInfo : new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
+    this.casting = (casting != null) ? casting.toArray(new CastingInfo[casting.size()]) : new CastingInfo[0];
+
+    if (info == null) {
+      info = new HashMap<>();
+    }
+
+    Iterator<Map.Entry<MediaInfoProperty, String>> it = info.entrySet().iterator();
+    Map.Entry<MediaInfoProperty, String> entry;
+    MediaInfoProperty property;
+    while (it.hasNext()) {
+      entry = it.next();
+      property = entry.getKey();
+      if (property instanceof MovieProperty) {
+        movieInfo.put((MovieProperty) property, entry.getValue());
+        it.remove();
+      }
+    }
+
     setMediaCasting();
   }
 
-  public String get(final MovieProperty key) {
-    return (fields != null) ? fields.get(key) : null;
+  public List<String> get(final MovieMultipleProperty key) {
+    return movieMultipleInfo.get(key);
   }
 
-  public void set(MovieProperty key, String value) {
-    fields.put(key, value);
+  @Override
+  public String get(MediaInfoProperty key) {
+    String res = super.get(key);
+    if (res != null) {
+      return res;
+    }
+
+    if (!(key instanceof MovieProperty)) {
+      return null;
+    }
+    return movieInfo.get((MovieProperty) key);
   }
 
-  public void set(MovieMultipleProperty key, String value) {
-    multipleFields.put(key, Arrays.asList(value.split(", ")));
+  @Override
+  public void set(MediaInfoProperty key, String value) {
+    if (!(key instanceof MovieProperty)) {
+      return;
+    }
+    movieInfo.put((MovieProperty) key, value);
+  }
+
+  public void set(MovieMultipleProperty key, List<String> values) {
+    movieMultipleInfo.put(key, values);
   }
 
   @Override
@@ -182,7 +211,7 @@ public class MovieInfo extends VideoInfo {
   @Override
   protected void unsetUnsupportedLanguageInfo() {
     Settings settings = Settings.getInstance();
-    Iterator<Entry<MovieProperty, String>> it = fields.entrySet().iterator();
+    Iterator<Entry<MovieProperty, String>> it = movieInfo.entrySet().iterator();
     Entry<MovieProperty, String> entry;
 
     while (it.hasNext()) {
@@ -192,14 +221,14 @@ public class MovieInfo extends VideoInfo {
       }
     }
 
-    Iterator<Entry<MovieMultipleProperty, List<String>>> iterator = multipleFields.entrySet().iterator();
+    Iterator<Entry<MovieMultipleProperty, List<String>>> iterator = movieMultipleInfo.entrySet().iterator();
     Entry<MovieMultipleProperty, List<String>> mentry;
     MovieMultipleProperty key;
 
     while (iterator.hasNext()) {
       mentry = iterator.next();
       key = mentry.getKey();
-      if (key.equals(MovieMultipleProperty.tags) && settings.isGetTmdbTagg()) {
+      if (key.equals(MovieMultipleProperty.tags) && settings.isGetTmdbTag(MediaType.MOVIE)) {
         continue;
       }
 
@@ -207,10 +236,6 @@ public class MovieInfo extends VideoInfo {
         iterator.remove();
       }
     }
-  }
-
-  public List<String> get(final MovieMultipleProperty key) {
-    return (multipleFields != null && multipleFields.get(key) != null) ? multipleFields.get(key) : new ArrayList<String>();
   }
 
   public URI getPosterPath() {
@@ -233,28 +258,16 @@ public class MovieInfo extends VideoInfo {
     return null;
   }
 
-  public DateFormat getReleasedDate() {
-    try {
-      return DateFormat.parse(get(MovieProperty.releasedDate), "yyyy-MM-dd");
-    } catch (Exception e) {
-    }
-    return null;
-  }
-
-  public Integer getRuntime() {
-    try {
-      return Integer.valueOf(get(MovieProperty.runtime));
-    } catch (Exception e) {
-    }
-    return null;
-  }
-
   public String getTagline() {
     return get(MovieProperty.tagline);
   }
 
   public String getCertification() {
     return get(MovieProperty.certification);
+  }
+
+  public String getCollection() {
+    return get(MovieProperty.collection);
   }
 
   public String getCertification(final MotionPictureRating type) {
@@ -333,10 +346,11 @@ public class MovieInfo extends VideoInfo {
     tokens.put("g", this.getGenres());
     tokens.put("c", this.getCountries());
     tokens.put("mpaa", this.getCertification(MotionPictureRating.USA));
+    tokens.put("co", this.getCollection());
   }
 
   @Override
   public String toString() {
-    return super.toString() + String.format(" %s %s", fields.toString(), multipleFields.toString());
+    return super.toString() + String.format(" %s %s", movieInfo.toString(), movieMultipleInfo.toString());
   }
 }

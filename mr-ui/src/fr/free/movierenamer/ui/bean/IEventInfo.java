@@ -24,7 +24,8 @@ package fr.free.movierenamer.ui.bean;
  */
 public interface IEventInfo {
 
-  public String getParam();
-
+  public Object getEventObject();
+  
   public String getDisplayName();
+
 }

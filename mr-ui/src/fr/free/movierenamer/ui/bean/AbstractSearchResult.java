@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 duffy
+ * Movie Renamer
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,81 +26,82 @@ import java.net.URI;
 import javax.swing.Icon;
 
 /**
+ * Class AbstractSearchResult
  *
- * @author duffy
+ * @author Nicolas Magré
  */
 public class AbstractSearchResult<M extends Hyperlink, T extends Scraper> extends Sorter.ISort implements IImage {
 
-  protected final M result;
-  protected final T scraper;
-  private Icon icon = ImageUtils.LOAD_24;
+    protected final M result;
+    protected final T scraper;
+    private Icon icon = ImageUtils.LOAD_24;
 
-  protected AbstractSearchResult(M result, T scraper) {
-    this.result = result;
-    this.scraper = scraper;
-  }
-
-  public T getScraper() {
-    return scraper;
-  }
-
-  public M getSearchResult() {
-    return result;
-  }
-
-  @Override
-  public Icon getIcon() {
-    return icon;
-  }
-
-  @Override
-  public String getName() {
-    return result.getName();
-  }
-
-  @Override
-  public int getYear() {
-    return result.getYear();
-  }
-
-  @Override
-  public String getOriginalName() {
-    return result.getOriginalName();
-  }
-
-  @Override
-  public long getLength() {
-    return getName().length();
-  }
-
-  @Override
-  public URI getUri(ImageInfo.ImageSize size) {// FIXME size ???
-    if (result.getURL() != null) {
-      return result.getURL();
+    protected AbstractSearchResult(M result, T scraper) {
+        this.result = result;
+        this.scraper = scraper;
     }
-    return null;
-  }
 
-  @Override
-  public int getId() {
-    return result.getURL().hashCode();
-  }
+    public T getScraper() {
+        return scraper;
+    }
 
-  @Override
-  protected boolean hasImage() {
-    return getUri(null) != null;
-  }
+    public M getSearchResult() {
+        return result;
+    }
 
-  @Override
-  public String toString() {
-    String toString = getName();
+    @Override
+    public Icon getIcon() {
+        return icon;
+    }
 
-    return toString;
-  }
+    @Override
+    public String getName() {
+        return result.getName();
+    }
 
-  @Override
-  public void setIcon(Icon icon) {
-    this.icon = icon;
-  }
+    @Override
+    public int getYear() {
+        return result.getYear();
+    }
+
+    @Override
+    public String getOriginalName() {
+        return result.getOriginalName();
+    }
+
+    @Override
+    public long getLength() {
+        return getName().length();
+    }
+
+    @Override
+    public URI getUri(ImageInfo.ImageSize size) {// FIXME size ???
+        if (result.getURL() != null) {
+            return result.getURL();
+        }
+        return null;
+    }
+
+    @Override
+    public int getId() {
+        return result.getURL().hashCode();
+    }
+
+    @Override
+    protected boolean hasImage() {
+        return getUri(null) != null;
+    }
+
+    @Override
+    public String toString() {
+        String toString = getName();
+
+        return toString;
+    }
+
+    @Override
+    public void setIcon(Icon icon) {
+        this.icon = icon;
+    }
 
 }

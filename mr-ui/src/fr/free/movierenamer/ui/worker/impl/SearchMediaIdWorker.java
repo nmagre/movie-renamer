@@ -19,11 +19,11 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
+import fr.free.movierenamer.ui.bean.UIMediaInfo;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
-import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.util.List;
 
@@ -35,11 +35,11 @@ import java.util.List;
 public class SearchMediaIdWorker extends AbstractWorker<List<IdInfo>, Void> {
 
   private final MovieIdPanel panel;
-  private final UIMovieInfo mediaInfo;
+  private final UIMediaInfo mediaInfo;
   private final UISearchResult searchResult;
   private final MediaType mediaType;
 
-  public SearchMediaIdWorker(MovieIdPanel panel, UIMovieInfo mediaInfo, UISearchResult searchResult, MediaType mediaType) {
+  public SearchMediaIdWorker(MovieIdPanel panel, UIMediaInfo mediaInfo, UISearchResult searchResult, MediaType mediaType) {// FIXME MovieIdPanel to MediaIdPanel
     this.panel = panel;
     this.mediaInfo = mediaInfo;
     this.searchResult = searchResult;
@@ -51,8 +51,8 @@ public class SearchMediaIdWorker extends AbstractWorker<List<IdInfo>, Void> {
     List<IdInfo> idInfos = mediaInfo.getIds();
 
     for (AvailableApiIds apiId : AvailableApiIds.getAvailableApiIds(mediaType)) {
-      if (!isInList(idInfos, apiId)) {
-        IdInfo inf = ScraperUtils.idLookup(apiId, idInfos.get(0), searchResult.getSearchResult());
+      if (!isInList(idInfos, apiId)) {          
+        IdInfo inf = searchResult.getMediaType().idLookup(apiId, idInfos.get(0), searchResult.getSearchResult());
         if (inf != null) {
           idInfos.add(inf);
         }
@@ -76,7 +76,7 @@ public class SearchMediaIdWorker extends AbstractWorker<List<IdInfo>, Void> {
   protected void workerDone() throws Exception {
     List<IdInfo> info = get();
     mediaInfo.setIdsInfo(info);
-    panel.setInfo(mediaInfo);
+    panel.setInfo((UIMovieInfo) mediaInfo);
     panel.setSearchButton(true);
   }
 

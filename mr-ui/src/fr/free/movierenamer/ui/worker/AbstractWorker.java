@@ -37,85 +37,96 @@ import javax.swing.SwingWorker;
  */
 public abstract class AbstractWorker<T, V> extends SwingWorker<T, V> implements PropertyChangeListener, IEventInfo, IWorker {
 
-  protected boolean sendEvent = true;
+    protected boolean sendEvent = true;
 
-  protected AbstractWorker() {
-    addPropertyChangeListener(this);
-  }
-
-  @Override
-  protected T doInBackground() {
-    T result = null;
-    try {
-      result = executeInBackground();
-    } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-    }
-    return result;
-  }
-
-  protected abstract T executeInBackground() throws Exception;
-
-  @Override
-  public void propertyChange(PropertyChangeEvent evt) {
-
-    if ("progress".equals(evt.getPropertyName())) {
-      if (sendEvent) {
-        workerProgress((Integer) evt.getNewValue());
-      }
-      return;
+    protected AbstractWorker() {
+        addPropertyChangeListener(this);
     }
 
-    if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
-      return;
-    }
-
-    switch ((SwingWorker.StateValue) evt.getNewValue()) {
-      case STARTED:
-        workerStarted();
-        break;
-      case PENDING:
-        workerPending();
-        break;
-      case DONE:
-        WorkerManager.updateWorkerQueue();
-
+    @Override
+    protected T doInBackground() {
+        T result = null;
         try {
-          workerDone();
-        } catch (CancellationException e) {// Worker canceled
-          UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getClass().getSimpleName()));
-          workerCanceled();
+            result = executeInBackground();
         } catch (Exception ex) {
-          UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
         }
-        break;
-      default:
-        break;
+        return result;
     }
-  }
 
-  protected void workerCanceled() {
-    // DO nothing
-  }
+    protected abstract T executeInBackground() throws Exception;
 
-  protected void workerStarted() {
-    // DO nothing
-  }
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
 
-  protected void workerPending() {
-    // DO nothing
-  }
+        if ("progress".equals(evt.getPropertyName())) {
+            if (sendEvent) {
+                workerProgress((Integer) evt.getNewValue());
+            }
+            return;
+        }
 
-  protected void workerProgress(int progress) {
-    if (sendEvent) {
-      UIEvent.fireUIEvent(UIEvent.Event.WORKER_PROGRESS, this);
+        if (!(evt.getNewValue() instanceof SwingWorker.StateValue)) {
+            return;
+        }
+
+        switch ((SwingWorker.StateValue) evt.getNewValue()) {
+            case STARTED:
+                workerStarted();
+                break;
+            case PENDING:
+                workerPending();
+                break;
+            case DONE:
+                WorkerManager.updateWorkerQueue();
+                UIEvent.Event event = UIEvent.Event.WORKER_DONE;
+                
+                try {
+                    workerDone();
+                } catch (CancellationException e) {// Worker canceled
+                    UISettings.LOGGER.log(Level.INFO, String.format("Worker %s canceled", getClass().getSimpleName()));
+                    workerCanceled();
+                    event = UIEvent.Event.WORKER_CANCEL;
+                } catch (Exception ex) {
+                    UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+                    event = UIEvent.Event.WORKER_DONE_ERROR;
+                }
+                
+                if (sendEvent) {
+                    UIEvent.fireUIEvent(event, this);
+                }
+                break;
+            default:
+                break;
+        }
     }
-  }
 
-  @Override
-  public String getParam() {
-    return "";
-  }
+    @Override
+    public Object getEventObject() {
+        return this;
+    }
 
-  protected abstract void workerDone() throws Exception;
+    protected void workerCanceled() {
+        // DO nothing
+    }
+
+    protected void workerStarted() {
+        // DO nothing
+    }
+
+    protected void workerPending() {
+        // DO nothing
+    }
+    
+    public boolean isEventEnable() {
+        return sendEvent;
+    }
+
+    protected final void workerProgress(int progress) {
+        if (sendEvent) {
+            UIEvent.fireUIEvent(UIEvent.Event.WORKER_PROGRESS, this);
+        }
+    }
+
+    protected abstract void workerDone() throws Exception;
 }

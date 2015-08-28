@@ -91,4 +91,10 @@ public class FanartTVImagesScraper extends FanartTvScraper<Movie> {
 
     return category;
   }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AWESOME;
+  }
+
 }

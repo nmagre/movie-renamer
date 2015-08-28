@@ -20,6 +20,7 @@ package fr.free.movierenamer.settings;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
 import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.utils.FileUtils;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
@@ -36,10 +37,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Class XMLSettings , Movie Renamer settings
@@ -96,19 +98,19 @@ public abstract class XMLSettings {
   }
 
   public interface ISettingsType {
-    
+
   }
-  
+
   public enum SettingsType implements ISettingsType {
 
     GENERAL,
     INTERFACE,
-    SEARCH,
-    FORMAT,
+    FILE,
+    INFORMATION,
     IMAGE,
     NFO,
-    EXTENSION,
     NETWORK,
+    MISCELLANEOUS,
     ADVANCED
   }
 
@@ -120,8 +122,6 @@ public abstract class XMLSettings {
     FOLDER,
     LANGUAGE,
     SCRAPER,
-    MOVIE,
-    //TVSHOW,
     THUMB,
     FANART,
     LOGO,
@@ -136,16 +136,20 @@ public abstract class XMLSettings {
     LIST,
     NETWORK,
     FORMATPARSER,
-    INTERFACE
+    INTERFACE,
+    SEARCH
+  }
+
+  public enum SettingsPropertyType {
+
+    NONE,
+    PASSWORD,
+    PATH
   }
 
   public interface IProperty {
 
     public Class<?> getVclass();
-
-    public Object getDefaultValue();
-
-    public String getValue();
 
     public String name();
 
@@ -153,9 +157,37 @@ public abstract class XMLSettings {
 
     public SettingsSubType getSubType();
 
+    public boolean isChild();
+    
+    public IProperty getParent();
+    
     public boolean hasChild();
+    
+    public void setHasChild();
+  }
+
+  public interface ISimpleProperty extends IProperty {
+
+    public Object getDefaultValue();
+
+    public String getValue();
 
     public void setValue(Object value) throws IOException;
+
+    public SettingsPropertyType getPropertyType();
+  }
+
+  public interface IMediaProperty extends IProperty {
+
+    public Class<?> getKclass();
+
+    public Object getDefaultValue(MediaType mediaType);
+
+    public String getValue(MediaType mediaType);
+
+    public void setValue(MediaType mediaType, Object value) throws IOException;
+
+    public boolean hasMediaType(MediaType mediaType);
   }
 
   protected XMLSettings(Logger logger, String logFileName, String configFileName, String version) {
@@ -173,9 +205,7 @@ public abstract class XMLSettings {
       }
       FileHandler fh = new FileHandler(logsRoot.getAbsolutePath() + File.separator + logFileName);
       logger.addHandler(fh);
-    } catch (SecurityException e) {
-      LOGGER.log(Level.SEVERE, e.getMessage());
-    } catch (IOException e) {
+    } catch (SecurityException | IOException e) {
       LOGGER.log(Level.SEVERE, e.getMessage());
     }
   }
@@ -202,7 +232,8 @@ public abstract class XMLSettings {
         savesettings = true;
       }
       settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
-    } catch (Exception ex) {
+    } catch (IOException | SAXException | DOMException ex) {
+
       try {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
@@ -225,6 +256,7 @@ public abstract class XMLSettings {
         settingsDocument = null;
         settingsNode = null;
       }
+
     }
 
     this.settingsDocument = settingsDocument;
@@ -249,49 +281,113 @@ public abstract class XMLSettings {
     this.autosave = autosave;
   }
 
-  protected final synchronized String get(IProperty key) {
+  protected final String get(ISimpleProperty key) {
     String value = null;
     if (key == null) {
       return value;
     }
 
-    Node found = XPathUtils.selectNode(key.name(), settingsNode);
-    if (found != null) {
-      value = XPathUtils.getTextContent(found);
-    }
+    synchronized (settingsNode) {
+      Node found = XPathUtils.selectNode(key.name(), settingsNode);
+      if (found != null) {
+        value = XPathUtils.getTextContent(found);
+      }
 
-    if (value == null) {
-      if (key.getDefaultValue() instanceof char[]) {
-        value = "";
-      } else {
-        value = key.getDefaultValue().toString();
+      if (value == null) {
+        if (key.getDefaultValue() instanceof char[]) {
+          value = "";
+        } else {
+          value = key.getDefaultValue().toString();
+        }
       }
     }
 
     return value;
   }
 
-  public synchronized void set(IProperty key, Object value) {
-    if (value != null && key != null) {
-      Object savedValue = key.getValue();
+  protected final String get(IMediaProperty key, MediaType mediaType) {
+    String value = null;
+    if (key == null || mediaType == null) {
+      return value;
+    }
 
-      if (savedValue.toString().equals(value.toString())) {
-        return;
-      }
-
+    synchronized (settingsNode) {
       Node found = XPathUtils.selectNode(key.name(), settingsNode);
-      if (found == null) {
-        found = settingsDocument.createElement(key.name());
-        // param.appendChild(settingsDocument.createTextNode(value.toString()));
-        settingsNode.appendChild(found);
+      if (found != null) {
+        Node node = XPathUtils.selectNode(mediaType.name().toLowerCase(), found);
+        if (node != null) {
+          value = XPathUtils.getTextContent(node);
+        }
       }
 
-      // Pass
-      if (key.getDefaultValue() instanceof char[]) {
-        found.setTextContent(StringUtils.encrypt(value.toString().getBytes()));
-      } else {
-        found.setTextContent(value.toString());
+      if (value == null || value.isEmpty()) {
+        Object obj = key.getDefaultValue(mediaType);
+        if (obj != null) {
+          value = obj.toString();
+        }
       }
+    }
+
+    return value;
+  }
+
+  protected final void set(ISimpleProperty key, Object value) {
+    if (value != null && key != null) {
+
+      synchronized (settingsNode) {
+
+        Object savedValue = key.getValue();
+
+        if (savedValue.toString().equals(value.toString())) {
+          return;
+        }
+
+        Node found = XPathUtils.selectNode(key.name(), settingsNode);
+        if (found == null) {
+          found = settingsDocument.createElement(key.name());
+          settingsNode.appendChild(found);
+        }
+
+        // Pass
+        if (key.getDefaultValue() instanceof char[]) {
+          found.setTextContent(StringUtils.encrypt(value.toString().getBytes()));
+        } else {
+          found.setTextContent(value.toString());
+        }
+      }
+
+      if (autosave) {
+        saveSetting();
+      }
+    }
+  }
+
+  protected final void set(IMediaProperty key, MediaType mediaType, Object value) {
+    if (value != null && key != null && mediaType != null) {
+
+      synchronized (settingsNode) {
+        Object savedValue = key.getValue(mediaType);
+
+        if (savedValue.toString().equals(value.toString())) {
+          return;
+        }
+
+        Node found = XPathUtils.selectNode(key.name(), settingsNode);
+        if (found == null) {
+          found = settingsDocument.createElement(key.name());
+          settingsNode.appendChild(found);
+        }
+
+        String mtype = mediaType.name().toLowerCase();
+        Node node = XPathUtils.selectNode(mtype, found);
+        if (node == null) {
+          node = settingsDocument.createElement(mtype);
+          found.appendChild(node);
+        }
+
+        node.setTextContent(value.toString());
+      }
+
       if (autosave) {
         saveSetting();
       }
@@ -300,10 +396,9 @@ public abstract class XMLSettings {
 
   public synchronized void clear() {
     LOGGER.log(Level.INFO, String.format("Clear Settings"));
-    NodeList list = settingsNode.getChildNodes();
-    for (int i = 0; i < list.getLength(); i++) {
-      settingsNode.removeChild(list.item(i));
-    }
+    settingsDocument.getFirstChild().removeChild(settingsNode);
+    settingsNode = settingsDocument.createElement(settingNodeName);
+    settingsDocument.getFirstChild().appendChild(settingsNode);
 
     if (autosave) {
       saveSetting();
@@ -422,6 +517,7 @@ public abstract class XMLSettings {
       mediaInfo = Boolean.FALSE;
     }
 
-    return mediaInfo.equals(Boolean.TRUE);
+    return mediaInfo;
   }
+
 }

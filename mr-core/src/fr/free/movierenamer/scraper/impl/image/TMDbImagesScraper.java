@@ -126,4 +126,10 @@ public class TMDbImagesScraper extends ImageScraper<Movie> {
   protected String getHost() {
     return host;
   }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
+  }
+
 }

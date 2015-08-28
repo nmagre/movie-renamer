@@ -30,6 +30,14 @@ import java.util.List;
  */
 public abstract class Scraper {
 
+  public static enum InfoQuality {
+
+    AWESOME,
+    GREAT,
+    AVERAGE,
+    POOR
+  }
+
   public abstract String getName();
 
   protected abstract String getHost();
@@ -54,7 +62,9 @@ public abstract class Scraper {
   }
 
   public List<ScraperOptions> getScraperOptions() {
-    return new ArrayList<ScraperOptions>();
+    return new ArrayList<>();
   }
- 
+
+  public abstract InfoQuality getQuality();
+
 }

@@ -3,7 +3,7 @@
   <description>Build Movie Renamer</description>
     
   <property name="ant.file.imported" location="." />
-  <property name="dir-ui" location="${imported.basedir}/mr-ui" />
+  <property name="dir-ui" location="mr-ui" />
   <property name="lib-ui" location="${dir-ui}/lib" />
 
   <import file="../mr-core/build.xml"/>
@@ -13,6 +13,11 @@
     <property file="src/fr/free/movierenamer/ui/settings/UISettings.properties"/>
     <property file="../mr-core/src/fr/free/movierenamer/settings/XMLSettings.properties"/>
     <property name="dist.jar" value="dist/${application.name}.jar" />
+  </target>
+  
+  <target name="-post-jar">
+    <echo>Copying Movie Renamer updater</echo>
+    <copy file="lib/Mr-updater.jar" tofile="dist/lib/Mr-updater.jar" />
   </target>
 
   <import file="nbproject/build-impl.xml"/>

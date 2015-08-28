@@ -125,7 +125,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
       return null;
     }
 
-    IdInfo lookupId = ScraperUtils.idLookup(getSupportedId(), idinfo, results.get(0));
+    IdInfo lookupId = getSupportedMediaType().idLookup(getSupportedId(), idinfo, results.get(0));
     if (lookupId == null) {
       return null;
     }
@@ -160,7 +160,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
     // Fetch id
     IdInfo id = search.getMediaId();
     if (id != null && id.getIdType() != getSupportedId()) {
-      id = ScraperUtils.idLookup(getSupportedId(), id, search);
+      id = search.getMediaType().idLookup(getSupportedId(), id, search);
       if (id == null) {
         return info;
       }

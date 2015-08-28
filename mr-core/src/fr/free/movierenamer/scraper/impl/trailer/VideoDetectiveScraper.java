@@ -164,8 +164,8 @@ public class VideoDetectiveScraper extends TrailerScraper {
       throw new Exception("No id found for " + searchResult);
     }
 
-    Map<TrailerProperty, String> info = new EnumMap<TrailerProperty, String>(TrailerProperty.class);
-    Map<Quality, URL> streams = new EnumMap<Quality, URL>(Quality.class);
+    Map<TrailerProperty, String> info = new EnumMap<>(TrailerProperty.class);
+    Map<Quality, URL> streams = new EnumMap<>(Quality.class);
 
     String id = matcher.group(1);
 
@@ -230,6 +230,11 @@ public class VideoDetectiveScraper extends TrailerScraper {
     motitle = StringUtils.normaliseClean(motitle);
 
     return title.equals(mtitle) || (motitle != null && title.equals(motitle)) || title.contains(mtitle) || (motitle != null && title.contains(motitle));
+  }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
   }
 
 }

@@ -43,8 +43,8 @@ public class AnidbTvseriesScraper extends TvShowScraper {
   public AnidbTvseriesScraper() {
     super(AvailableLanguages.en);
   }
-  
-    @Override
+
+  @Override
   public AvailableApiIds getSupportedId() {
     return null;
   }
@@ -101,5 +101,10 @@ public class AnidbTvseriesScraper extends TvShowScraper {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
+  }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AVERAGE;
   }
 }

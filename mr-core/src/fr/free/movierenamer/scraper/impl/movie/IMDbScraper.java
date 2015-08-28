@@ -34,10 +34,13 @@ import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
+import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
+import fr.free.movierenamer.info.VideoInfo.VideoProperty;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
@@ -50,6 +53,7 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import org.w3c.dom.NodeList;
 
@@ -144,7 +148,7 @@ public class IMDbScraper extends MovieScraper {
 
     // select movie results
     List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='findList']//TR", dom);
-    List<Movie> results = new ArrayList<Movie>(nodes.size());
+    List<Movie> results = new ArrayList<>(nodes.size());
 
     for (Node node : nodes) {
       try {
@@ -210,20 +214,19 @@ public class IMDbScraper extends MovieScraper {
   @Override
   protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
 
-    final Map<MediaProperty, String> mediaFields = new EnumMap<MediaProperty, String>(MediaProperty.class);
-    final Map<MovieProperty, String> fields = new EnumMap<MovieProperty, String>(MovieProperty.class);
-    final Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
-    final List<String> genres = new ArrayList<String>();
-    final List<String> countries = new ArrayList<String>();
-    final List<String> studios = new ArrayList<String>();
-    final List<String> tags = new ArrayList<String>();
-    final List<IdInfo> ids = new ArrayList<IdInfo>();
+    Map<MediaInfo.MediaInfoProperty, String> info = new HashMap<>();
+    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<>(MovieMultipleProperty.class);
+    List<String> genres = new ArrayList<>();
+    List<String> countries = new ArrayList<>();
+    List<String> studios = new ArrayList<>();
+    List<String> tags = new ArrayList<>();
+    List<IdInfo> ids = new ArrayList<>();
 
     URL searchUrl = new URL("http", host, String.format("/title/%s/combined", id));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     Node node = XPathUtils.selectNode("//H1", dom);
-    ScraperUtils.setTitle(mediaFields, movie, node);
+    ScraperUtils.setTitle(info, movie, node);
 
     // Year
     String syear = XPathUtils.selectString("//SPAN/A[contains(@href,'year')]", node);
@@ -231,7 +234,7 @@ public class IMDbScraper extends MovieScraper {
       Pattern pattern = Pattern.compile("\\d{4}");
       Matcher matcher = pattern.matcher(syear);
       if (matcher.find()) {
-        ScraperUtils.addValue(mediaFields, MediaProperty.year, syear);
+        ScraperUtils.addValue(info, MediaProperty.year, syear);
       }
     }
 
@@ -246,28 +249,28 @@ public class IMDbScraper extends MovieScraper {
         SimpleDateFormat sformat = new SimpleDateFormat("dd MMMM yyyy", Locale.US);
         Date date = sformat.parse(rdate);
         sformat.applyPattern("yyyy-MM-dd");
-        ScraperUtils.addValue(fields, MovieProperty.releasedDate, sformat.format(date).toString());
+        ScraperUtils.addValue(info, VideoProperty.releasedDate, sformat.format(date));
       } catch (ParseException ex) {
       }
     }
 
     // Original title
     String originalTitle = XPathUtils.selectString("//SPAN[@class='title-extra']/I[contains(., '(original title)')]/preceding-sibling::text()", node);
-    ScraperUtils.addValue(mediaFields, MediaProperty.originalTitle, originalTitle);
+    ScraperUtils.addValue(info, MediaProperty.originalTitle, originalTitle);
 
     // Rating
     String rate = XPathUtils.selectString("//DIV[@class='starbar-meta']/B", dom);
     if (rate.contains("/")) {
       String[] rateVal = rate.split("\\/");
       if (rateVal.length > 0) {
-        ScraperUtils.addValue(mediaFields, MediaProperty.rating, rateVal[0]);
+        ScraperUtils.addValue(info, MediaProperty.rating, rateVal[0]);
       }
     }
 
     // Votes
     String votes = XPathUtils.selectString("//DIV[@class='starbar-meta']/A[@href='ratings']", dom);
     if (votes != null && votes.contains(" votes")) {
-      ScraperUtils.addValue(fields, MovieProperty.votes, votes.replaceAll(" .*", ""));
+      ScraperUtils.addValue(info, MovieProperty.votes, votes.replaceAll(" .*", ""));
     }
 
     // Runtime
@@ -276,26 +279,26 @@ public class IMDbScraper extends MovieScraper {
       Pattern pattern = Pattern.compile("(\\d{2,3}) min");
       Matcher matcher = pattern.matcher(runtime);
       if (matcher.find()) {
-        ScraperUtils.addValue(fields, MovieProperty.runtime, matcher.group(1));
+        ScraperUtils.addValue(info, VideoProperty.runtime, matcher.group(1));
       }
     }
 
     // Mpaa
     String mpaa = getH5Content(dom, "MPAA", null);
     if (mpaa != null && !mpaa.isEmpty()) {
-      fields.put(MovieProperty.certification, mpaa);
+      info.put(MovieProperty.certification, mpaa);
       Matcher matcher = mpaaCodePattern.matcher(mpaa);
       if (matcher.find()) {
-        ScraperUtils.addValue(fields, MovieProperty.certificationCode, matcher.group(1));
-        ScraperUtils.addValue(fields, MovieProperty.certification, mpaa);
+        ScraperUtils.addValue(info, MovieProperty.certificationCode, matcher.group(1));
+        ScraperUtils.addValue(info, MovieProperty.certification, mpaa);
       }
     } else {// TODO certification (for france, russia, ...)
       List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='info']/H5[contains(., 'Certification')]/parent::node()//DIV/descendant::text()"
-              + "[not(ancestor::I) and normalize-space(.) != '\n' and normalize-space(.) != '|' and . != ' ']", dom);
+        + "[not(ancestor::I) and normalize-space(.) != '\n' and normalize-space(.) != '|' and . != ' ']", dom);
       for (Node pnode : nodes) {
         String cert = pnode.getTextContent();
         if (cert != null && cert.contains("USA:")) {
-          ScraperUtils.addValue(fields, MovieProperty.certificationCode, cert.split(":")[1]);
+          ScraperUtils.addValue(info, MovieProperty.certificationCode, cert.split(":")[1]);
           break;
         }
       }
@@ -317,13 +320,13 @@ public class IMDbScraper extends MovieScraper {
     // Thumb
     try {
       String posterPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("//DIV[@class='photo']/A[@name='poster']/IMG", dom));
-      ScraperUtils.addValue(fields, MovieProperty.posterPath, createImgPath(posterPath));
+      ScraperUtils.addValue(info, MovieProperty.posterPath, createImgPath(posterPath));
     } catch (Exception ex) {
       // No thumb
     }
 
     // Tagline
-    ScraperUtils.addValue(fields, MovieProperty.tagline, getH5Content(dom, "Tagline", "/text()"));
+    ScraperUtils.addValue(info, MovieProperty.tagline, getH5Content(dom, "Tagline", "/text()"));
 
     // Overview
     String overview = getH5Content(dom, "Plot", "/text()");
@@ -332,7 +335,7 @@ public class IMDbScraper extends MovieScraper {
         overview = overview.substring(0, overview.length() - 2);
       }
       overview = overview.replaceAll("\\t", "").replaceAll("^\\n", "").trim();
-      ScraperUtils.addValue(fields, MovieProperty.overview, overview);
+      ScraperUtils.addValue(info, MovieProperty.overview, overview);
     }
 
     // Genre
@@ -353,7 +356,7 @@ public class IMDbScraper extends MovieScraper {
       if (node != null) {
         overview = node.getTextContent();
         overview = overview.replaceAll("\\t", "").replaceAll("^\\n", "");
-        ScraperUtils.addValue(fields, MovieProperty.overview, overview);
+        ScraperUtils.addValue(info, MovieProperty.overview, overview);
       }
     }
 
@@ -364,7 +367,7 @@ public class IMDbScraper extends MovieScraper {
     multipleFields.put(MovieInfo.MovieMultipleProperty.countries, countries);
     multipleFields.put(MovieInfo.MovieMultipleProperty.genres, genres);
 
-    return new MovieInfo(mediaFields, ids, fields, multipleFields);
+    return new MovieInfo(info, multipleFields, ids);
   }
 
   private String getH5Content(Node dom, String text, String path) {
@@ -404,13 +407,13 @@ public class IMDbScraper extends MovieScraper {
     Node node = XPathUtils.selectNode("//A[@href = '?refine=poster']", dom);
     if (node != null) {
       images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=poster", movie.getImdbId())),
-              ImageCategoryProperty.thumb, getDefaultLanguage()));
+        ImageCategoryProperty.thumb, getDefaultLanguage()));
     }
 
     node = XPathUtils.selectNode("//A[@href = '?refine=still_frame']", dom);
     if (node != null) {
       images.addAll(getImages(new URL("http", host, String.format("/title/%s/mediaindex?refine=still_frame", movie.getImdbId())),
-              ImageCategoryProperty.fanart, getDefaultLanguage()));
+        ImageCategoryProperty.fanart, getDefaultLanguage()));
     }
 
     return images;
@@ -562,8 +565,8 @@ public class IMDbScraper extends MovieScraper {
   }
 
   @Override
-  public ScraperUtils.InfoQuality getInfoQuality() {
-    return ScraperUtils.InfoQuality.AWESOME;
+  public InfoQuality getQuality() {
+    return InfoQuality.AWESOME;
   }
 
 }

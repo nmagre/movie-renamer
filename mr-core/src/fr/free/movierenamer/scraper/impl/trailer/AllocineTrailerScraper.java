@@ -63,10 +63,10 @@ public class AllocineTrailerScraper extends TrailerScraper {
   @Override
   protected List<Trailer> searchTrailer(Media media) throws Exception {
 
-    List<Trailer> trailers = new ArrayList<Trailer>();
+    List<Trailer> trailers = new ArrayList<>();
 
     // Get id
-    IdInfo id = ScraperUtils.idLookup(AvailableApiIds.ALLOCINE, null, media);
+    IdInfo id = media.getMediaType().idLookup(AvailableApiIds.ALLOCINE, null, media);
     if (id == null) {
       return trailers;
     }
@@ -107,6 +107,11 @@ public class AllocineTrailerScraper extends TrailerScraper {
   @Override
   protected TrailerInfo fetchTrailerInfo(Trailer searchResult) throws Exception {
     return null;
+  }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.GREAT;
   }
 
 }

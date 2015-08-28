@@ -22,9 +22,13 @@ import fr.free.movierenamer.mediainfo.MediaSubTitle;
 import fr.free.movierenamer.mediainfo.MediaTag;
 import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.DateFormat;
 import fr.free.movierenamer.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +41,48 @@ import java.util.Map;
 public abstract class VideoInfo extends MediaInfo {
 
   protected CastingInfo[] casting;
+  protected final Map<VideoProperty, String> videoInfo;
 
-  public VideoInfo(Map<MediaProperty, String> mediaFields, List<IdInfo> idsInfo) {
-    super(mediaFields, idsInfo);
+  public static enum VideoProperty implements MediaInfoProperty {
+
+    runtime,
+    releasedDate;
+
+    private final boolean languageDepends;
+
+    private VideoProperty() {
+      languageDepends = false;
+    }
+
+    private VideoProperty(final boolean languageDepends) {
+      this.languageDepends = languageDepends;
+    }
+
+    @Override
+    public boolean isLanguageDepends() {
+      return languageDepends;
+    }
+  }
+
+  public VideoInfo(Map<MediaInfoProperty, String> info, List<IdInfo> idsInfo) {
+    super(info, idsInfo);
+    videoInfo = new EnumMap<>(VideoProperty.class);
+
+    if (info == null) {
+      info = new HashMap<>();
+    }
+
+    Iterator<Map.Entry<MediaInfoProperty, String>> it = info.entrySet().iterator();
+    Map.Entry<MediaInfoProperty, String> entry;
+    InfoProperty property;
+    while (it.hasNext()) {
+      entry = it.next();
+      property = entry.getKey();
+      if (property instanceof VideoProperty) {
+        videoInfo.put((VideoProperty) property, entry.getValue());
+        it.remove();
+      }
+    }
   }
 
   public List<CastingInfo> getCasting() {
@@ -49,6 +92,43 @@ public abstract class VideoInfo extends MediaInfo {
   public void setCasting(final List<CastingInfo> persons) {
     this.casting = (persons == null) ? null : persons.toArray(new CastingInfo[persons.size()]);
     setMediaCasting();
+  }
+
+  @Override
+  public String get(MediaInfoProperty key) {
+    String res = super.get(key);
+    if (res != null) {
+      return res;
+    }
+    
+    if (!(key instanceof VideoProperty)) {
+      return null;
+    }
+    return videoInfo.get((VideoProperty) key);
+  }
+
+  @Override
+  public void set(MediaInfoProperty key, String value) {
+    if (!(key instanceof VideoProperty)) {
+      return;
+    }
+    videoInfo.put((VideoProperty) key, value);
+  }
+
+  public Integer getRuntime() {
+    try {
+      return Integer.valueOf(get(VideoProperty.runtime));
+    } catch (Exception e) {
+    }
+    return null;
+  }
+
+  public DateFormat getReleasedDate() {
+    try {
+      return DateFormat.parse(get(VideoProperty.releasedDate), "yyyy-MM-dd");
+    } catch (Exception e) {
+    }
+    return null;
   }
 
   @Override
@@ -114,6 +194,11 @@ public abstract class VideoInfo extends MediaInfo {
     }
 
     return tokens;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + String.format(" %s", videoInfo.toString());
   }
 
 }

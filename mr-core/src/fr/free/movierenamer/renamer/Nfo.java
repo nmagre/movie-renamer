@@ -22,10 +22,12 @@ import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import fr.free.movierenamer.info.MediaInfo.MediaInfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
+import fr.free.movierenamer.info.VideoInfo.VideoProperty;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
@@ -84,11 +86,11 @@ public class Nfo {// TODO
     xbmcMovieNFOLayout.put(MediaProperty.originalTitle, "originaltitle");
     xbmcMovieNFOLayout.put(MovieProperty.sortTitle, "sorttitle");
     xbmcMovieNFOLayout.put(MovieProperty.collection, "set");
-    xbmcMovieNFOLayout.put(MovieProperty.releasedDate, "year");
+    xbmcMovieNFOLayout.put(VideoProperty.releasedDate, "year");// FIXME MediaProperty.year ?????
     xbmcMovieNFOLayout.put(MovieProperty.votes, "votes");
     xbmcMovieNFOLayout.put(MovieProperty.overview, "plot");
     xbmcMovieNFOLayout.put(MovieProperty.tagline, "tagline");
-    xbmcMovieNFOLayout.put(MovieProperty.runtime, "runtime");
+    xbmcMovieNFOLayout.put(VideoProperty.runtime, "runtime");
     xbmcMovieNFOLayout.put(MovieProperty.certification, "mpaa");
     xbmcMovieNFOLayout.put(MovieProperty.certificationCode, "mpaa");
     xbmcMovieNFOLayout.put(MovieMultipleProperty.genres, "genre");
@@ -98,9 +100,9 @@ public class Nfo {// TODO
 
     boxeeMovieNFOLayout.put(MediaProperty.title, "title");
     boxeeMovieNFOLayout.put(MediaProperty.rating, "rating");
-    boxeeMovieNFOLayout.put(MovieProperty.releasedDate, "year");
+    boxeeMovieNFOLayout.put(VideoProperty.releasedDate, "year");// FIXME MediaProperty.year ?????
     boxeeMovieNFOLayout.put(MovieProperty.overview, "outline");
-    boxeeMovieNFOLayout.put(MovieProperty.runtime, "runtime");
+    boxeeMovieNFOLayout.put(VideoProperty.runtime, "runtime");
 
     xbmcNFOLayout.put(MediaType.MOVIE, xbmcMovieNFOLayout);
     BoxeeNFOLayout.put(MediaType.MOVIE, boxeeMovieNFOLayout);
@@ -214,18 +216,18 @@ public class Nfo {// TODO
 
   }
 
-  private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, MediaType infoType) {
+  private void addSimpleInfo(final Map<InfoProperty, String> nfoLayout, MediaType mediaType) {
 
-    switch (infoType) {
+    switch (mediaType) {
       case MOVIE:
-        addSimpleMovieInfo(nfoLayout, (MovieInfo) mediaInfo);
+        addSimpleMovieInfo(nfoLayout, (MovieInfo) mediaInfo, mediaType);
         break;
       case TVSHOW:// TODO tvshow info
         break;
     }
   }
 
-  private void addSimpleMovieInfo(final Map<InfoProperty, String> nfoLayout, MovieInfo movieInfo) {
+  private void addSimpleMovieInfo(final Map<InfoProperty, String> nfoLayout, MovieInfo movieInfo, MediaType mediaType) {
     InfoProperty property;
     List<String> values;
 
@@ -235,18 +237,16 @@ public class Nfo {// TODO
         continue;
       }
 
-      if (property == MovieMultipleProperty.tags && !settings.isMovieNfoTag()) {
+      if (property == MovieMultipleProperty.tags && !settings.isMediaNfoTag(mediaType)) {
         continue;
       }
 
-      values = new ArrayList<String>();
+      values = new ArrayList<>();
 
-      if (entry.getKey() instanceof MovieProperty) {
-        values.add(movieInfo.get((MovieProperty) entry.getKey()));
-      } else if (entry.getKey() instanceof MediaProperty) {
-        values.add(movieInfo.get((MediaProperty) entry.getKey()));
-      } else {
+      if (entry.getKey() instanceof MovieMultipleProperty) {
         values = movieInfo.get((MovieMultipleProperty) entry.getKey());
+      } else {
+        values.add(movieInfo.get((MediaInfoProperty) entry.getKey()));
       }
 
       for (String value : values) {
@@ -278,12 +278,12 @@ public class Nfo {// TODO
     MediaType infoType = mediaInfo.getMediaType();
 
     if (infoType.equals(MediaType.MOVIE)) {
-      if (settings.isMovieImdbId()) {
+      if (settings.isMediaImdbId(mediaInfo.getMediaType())) {
         addNode("id", ((MovieInfo) mediaInfo).getIdString(ScraperUtils.AvailableApiIds.IMDB));
       }
     }
 
-    switch (Settings.getInstance().getMovieNfoType()) {
+    switch (Settings.getInstance().getMediaNfoType(mediaInfo.getMediaType())) {
       case BOXEE:
         addSimpleInfo(BoxeeNFOLayout.get(infoType), infoType);
         addBoxeeInfo(infoType);
@@ -387,31 +387,72 @@ public class Nfo {// TODO
       }
     }
 
-    if (settings.isMovieNfoImage() && images != null) {
-      final List<ImageInfo> fanarts = new ArrayList<ImageInfo>();
+    if (settings.isMediaNfoImage(mediaInfo.getMediaType()) && images != null) {
+      final List<ImageInfo> fanarts = new ArrayList<>();
+      final List<ImageInfo> discs = new ArrayList<>();
+      final List<ImageInfo> logos = new ArrayList<>();
+      final List<ImageInfo> cleararts = new ArrayList<>();
+      final List<ImageInfo> banners = new ArrayList<>();
       Attr preview;
 
       for (ImageInfo image : images) {
-        if (image.getCategory() == ImageInfo.ImageCategoryProperty.thumb) {
-          node = createNode(rootElement, "thumb");
-          preview = nfoDocument.createAttribute("preview");
-          preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
-          ((Element) node).setAttributeNode(preview);
-          ((Element) node).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
-        } else if (image.getCategory() == ImageInfo.ImageCategoryProperty.fanart) {
-          fanarts.add(image);
+
+        switch (image.getCategory()) {
+          case banner:
+            banners.add(image);
+            break;
+
+          case cdart:
+            discs.add(image);
+            break;
+
+          case clearart:
+            cleararts.add(image);
+            break;
+
+          case logo:
+            logos.add(image);
+            break;
+
+          case thumb:
+            node = createNode(rootElement, "thumb");
+            preview = nfoDocument.createAttribute("preview");
+            preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
+            ((Element) node).setAttributeNode(preview);
+            ((Element) node).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
+            break;
+
+          case fanart:
+            fanarts.add(image);
+            break;
         }
+
       }
 
-      node = createNode(rootElement, "fanart");
-      Node fnode;
-      for (ImageInfo image : fanarts) {
-        fnode = createNode(node, "thumb");
-        preview = nfoDocument.createAttribute("preview");
-        preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
-        ((Element) fnode).setAttributeNode(preview);
-        ((Element) fnode).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
-      }
+      createImageNode("fanart", fanarts);
+      createImageNode("clearlogo", logos);
+      createImageNode("banner", banners);
+      createImageNode("discart", discs);
+      createImageNode("clearart", cleararts);
+    }
+  }
+
+  private void createImageNode(String type, List<ImageInfo> images) {
+
+    if (images.isEmpty()) {
+      return;
+    }
+
+    Node fnode;
+    Attr preview;
+    Node node = createNode(rootElement, type);
+
+    for (ImageInfo image : images) {
+      fnode = createNode(node, "thumb");
+      preview = nfoDocument.createAttribute("preview");
+      preview.setValue(image.getHref(ImageInfo.ImageSize.medium).toString());
+      ((Element) fnode).setAttributeNode(preview);
+      ((Element) fnode).setTextContent(image.getHref(ImageInfo.ImageSize.big).toString());
     }
   }
 

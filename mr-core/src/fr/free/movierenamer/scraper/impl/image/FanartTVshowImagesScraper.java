@@ -85,4 +85,10 @@ public class FanartTVshowImagesScraper extends FanartTvScraper<TvShow> {
 
     return category;
   }
+
+  @Override
+  public InfoQuality getQuality() {
+    return InfoQuality.AWESOME;
+  }
+
 }

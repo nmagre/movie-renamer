@@ -35,6 +35,7 @@ public class ListTooltipWorker extends AbstractWorker<String, Void> {
   public ListTooltipWorker(IHtmlListTooltip htmlToolTip, WebCustomTooltip wct) {
     this.htmlToolTip = htmlToolTip;
     this.wct = wct;
+    sendEvent = false;
   }
 
   @Override
@@ -50,7 +51,7 @@ public class ListTooltipWorker extends AbstractWorker<String, Void> {
 
   @Override
   public String getDisplayName() {
-    return "tooltip";// FIXME i18n
+    return "";
   }
 
   @Override

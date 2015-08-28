@@ -20,9 +20,11 @@ package fr.free.movierenamer.scraper.impl.movie;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
+import fr.free.movierenamer.info.VideoInfo;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
@@ -38,6 +40,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +50,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 /**
  * Class RottenTomatoes, search movie on RottenTomatoes
@@ -106,14 +108,14 @@ public class RottenTomatoesScraper extends MovieScraper {
   @Override
   protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies.json"
-            + "?apikey=" + apikey + "&q=" + URIRequest.encode(query));
+      + "?apikey=" + apikey + "&q=" + URIRequest.encode(query));
     return searchMedia(searchUrl, language);
   }
 
   @Override
   protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    Map<Integer, Movie> resultSet = new LinkedHashMap<Integer, Movie>();
+    Map<Integer, Movie> resultSet = new LinkedHashMap<>();
     List<JSONObject> jsonObj = JSONUtils.selectList("movies", json);
     for (JSONObject node : jsonObj) {
       if (node == null) {
@@ -157,7 +159,7 @@ public class RottenTomatoesScraper extends MovieScraper {
       }
     }
 
-    return new ArrayList<Movie>(resultSet.values());
+    return new ArrayList<>(resultSet.values());
   }
 
   public static IdInfo rottenTomatoesIdLookUp(IdInfo imdbId) {
@@ -196,11 +198,7 @@ public class RottenTomatoesScraper extends MovieScraper {
       }
     } catch (MalformedURLException ex) {
       Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (IOException ex) {
-      Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (JSONException ex) {
+    } catch (URISyntaxException | JSONException | IOException ex) {
       Logger.getLogger(RottenTomatoesScraper.class.getName()).log(Level.SEVERE, null, ex);
     }
 
@@ -213,9 +211,8 @@ public class RottenTomatoesScraper extends MovieScraper {
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + ".json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    final Map<MediaInfo.MediaProperty, String> mediaFields = new EnumMap<MediaInfo.MediaProperty, String>(MediaInfo.MediaProperty.class);
-    Map<MovieInfo.MovieProperty, String> fields = new EnumMap<MovieInfo.MovieProperty, String>(MovieInfo.MovieProperty.class);
-    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<MovieMultipleProperty, List<String>>(MovieMultipleProperty.class);
+    Map<MediaInfo.MediaInfoProperty, String> info = new HashMap<>();
+    Map<MovieMultipleProperty, List<String>> multipleInfo = new EnumMap<>(MovieMultipleProperty.class);
 
     String title = JSONUtils.selectString("title", json);
     String originaleTitle = null;
@@ -226,15 +223,15 @@ public class RottenTomatoesScraper extends MovieScraper {
         originaleTitle = StringUtils.removeBrackets(title);
       }
     }
-    mediaFields.put(MediaInfo.MediaProperty.title, title);
+    info.put(MediaInfo.MediaProperty.title, title);
 
     if (originaleTitle != null) {
-      mediaFields.put(MediaProperty.originalTitle, originaleTitle);
+      info.put(MediaProperty.originalTitle, originaleTitle);
     }
 
-    fields.put(MovieInfo.MovieProperty.overview, JSONUtils.selectString("synopsis", json));
-    fields.put(MovieInfo.MovieProperty.runtime, JSONUtils.selectString("runtime", json));
-    fields.put(MovieInfo.MovieProperty.tagline, JSONUtils.selectString("critics_consensus", json));
+    info.put(MovieInfo.MovieProperty.overview, JSONUtils.selectString("synopsis", json));
+    info.put(VideoInfo.VideoProperty.runtime, JSONUtils.selectString("runtime", json));
+    info.put(MovieInfo.MovieProperty.tagline, JSONUtils.selectString("critics_consensus", json));
 
     JSONObject jobject = JSONUtils.selectObject("release_dates", json);
     if (jobject != null) {
@@ -242,13 +239,13 @@ public class RottenTomatoesScraper extends MovieScraper {
       releaseDate = releaseDate == null ? JSONUtils.selectString("dvd", jobject) : releaseDate;
 
       if (releaseDate != null) {
-        fields.put(MovieInfo.MovieProperty.releasedDate, releaseDate);
+        info.put(VideoInfo.VideoProperty.releasedDate, releaseDate);
         Pattern pattern = Pattern.compile("(\\d{4})-\\d{2}-\\d{2}");
         Matcher matcher = pattern.matcher(releaseDate);
         if (matcher.find()) {
-          mediaFields.put(MediaInfo.MediaProperty.year, matcher.group(1));
+          info.put(MediaInfo.MediaProperty.year, matcher.group(1));
         }
-        fields.put(MovieInfo.MovieProperty.releasedDate, releaseDate);
+        info.put(VideoInfo.VideoProperty.releasedDate, releaseDate);
       }
 
     }
@@ -256,7 +253,7 @@ public class RottenTomatoesScraper extends MovieScraper {
     jobject = JSONUtils.selectObject("ratings", json);
     if (jobject != null) {
       Double rating = JSONUtils.selectInteger("audience_score", jobject).doubleValue() / 10;
-      mediaFields.put(MediaInfo.MediaProperty.rating, "" + rating);
+      info.put(MediaInfo.MediaProperty.rating, "" + rating);
     }
 
     String mpaa = JSONUtils.selectString("mpaa_rating", json);
@@ -264,10 +261,10 @@ public class RottenTomatoesScraper extends MovieScraper {
       if (mpaa.equalsIgnoreCase("UNRATED")) {
         mpaa = "NC-17";
       }
-      fields.put(MovieInfo.MovieProperty.certificationCode, mpaa);
+      info.put(MovieInfo.MovieProperty.certificationCode, mpaa);
     }
 
-    List<IdInfo> ids = new ArrayList<IdInfo>();
+    List<IdInfo> ids = new ArrayList<>();
     ids.add(new IdInfo(JSONUtils.selectInteger("id", json), ScraperUtils.AvailableApiIds.ROTTENTOMATOES));
     jobject = JSONUtils.selectObject("alternate_ids", json);
     if (jobject != null) {
@@ -277,7 +274,7 @@ public class RottenTomatoesScraper extends MovieScraper {
       }
     }
 
-    List<String> genres = new ArrayList<String>();
+    List<String> genres = new ArrayList<>();
     String sgenres = JSONUtils.selectString("genres", json);
     if (sgenres != null) {
       for (String genre : sgenres.split(",")) {
@@ -285,13 +282,14 @@ public class RottenTomatoesScraper extends MovieScraper {
       }
     }
 
-    List<String> studios = new ArrayList<String>();
+    List<String> studios = new ArrayList<>();
     studios.add(JSONUtils.selectString("studio", json));
 
-    multipleFields.put(MovieMultipleProperty.studios, studios);
-    multipleFields.put(MovieMultipleProperty.genres, genres);
+    multipleInfo.put(MovieMultipleProperty.studios, studios);
+    multipleInfo.put(MovieMultipleProperty.genres, genres);
+    //FIXME country ??????
 
-    return new MovieInfo(mediaFields, ids, fields, multipleFields);
+    return new MovieInfo(info, multipleInfo, ids);
   }
 
   @Override
@@ -300,13 +298,13 @@ public class RottenTomatoesScraper extends MovieScraper {
     URL searchUrl = new URL("http", apiHost, "/api/public/v" + version + "/movies/" + id + "/cast.json?apikey=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    List<CastingInfo> casting = new ArrayList<CastingInfo>();
+    List<CastingInfo> casting = new ArrayList<>();
 
     String section = "cast";
 
     List<JSONObject> jsonObjs = JSONUtils.selectList(section, json);
     for (JSONObject jsonObj : jsonObjs) {
-      Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<CastingInfo.PersonProperty, String>(CastingInfo.PersonProperty.class);
+      Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<>(CastingInfo.PersonProperty.class);
       personFields.put(CastingInfo.PersonProperty.name, JSONUtils.selectString("name", jsonObj));
       personFields.put(CastingInfo.PersonProperty.character, JSONUtils.selectString("character", jsonObj));
       personFields.put(CastingInfo.PersonProperty.job, CastingInfo.ACTOR);
@@ -318,7 +316,7 @@ public class RottenTomatoesScraper extends MovieScraper {
     json = URIRequest.getJsonDocument(searchUrl.toURI());
 
     for (JSONObject jsonObj : JSONUtils.selectList("abridged_director", json)) {
-      Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<CastingInfo.PersonProperty, String>(CastingInfo.PersonProperty.class);
+      Map<CastingInfo.PersonProperty, String> personFields = new EnumMap<>(CastingInfo.PersonProperty.class);
       personFields.put(CastingInfo.PersonProperty.name, JSONUtils.selectString("name", jsonObj));
       personFields.put(CastingInfo.PersonProperty.job, CastingInfo.DIRECTOR);
 
@@ -329,8 +327,8 @@ public class RottenTomatoesScraper extends MovieScraper {
   }
 
   @Override
-  public ScraperUtils.InfoQuality getInfoQuality() {
-    return ScraperUtils.InfoQuality.AVERAGE;
+  public InfoQuality getQuality() {
+    return InfoQuality.AVERAGE;
   }
 
 }
