@@ -72,9 +72,7 @@ public class IMDbScraper extends MovieScraper {
   private static final Pattern imageCropPattern = Pattern.compile("\\._.?V1.?_.?([US])([XY])(\\d+)_CR(\\d+),(\\d+),(\\d+),(\\d+)(.*\\.)");
   private static final Pattern imageXYPattern = Pattern.compile("\\._.?V1.?_.?[US]([XY])(\\d+)_[US]([XY])(\\d+)(.*\\.)");
   private static final Pattern imageXPattern = Pattern.compile("\\._.?V1.?_.?[US]([XY])(\\d+)(_.*\\.)");
-  private static final Pattern imageCRPattern = Pattern.compile("\\._.?V1.?_.?CR\\d+,\\d+,\\d+,\\d+_U");
-  // ._V1._CR93,97,1209,1861_UX32_CR0,0,32,44_AL_.jpg
-  
+  private static final Pattern imageCRPattern = Pattern.compile("\\._.?V1.?_.?CR\\d+,\\d+,\\d+,\\d+_U");  
 
   private enum ImageResize {
 
@@ -168,7 +166,7 @@ public class IMDbScraper extends MovieScraper {
         return mcrop.replaceAll("._V1_SX1024_SY1024_.");
       }
 
-      boolean invert = mcrop.group(1).equals("Y");
+      boolean invert = mcrop.group(2).equals("Y");
       int x = Integer.parseInt(invert ? mcrop.group(6) : mcrop.group(3));
       int y = Integer.parseInt(invert ? mcrop.group(3) : mcrop.group(7));
       int crop = Integer.parseInt(mcrop.group(4));
@@ -177,7 +175,7 @@ public class IMDbScraper extends MovieScraper {
 
       if (invert) {
         ny = rsize.getY();
-        nx = (int) (ny / ratio);
+        nx = (int) (ny * ratio);
         crop *= ny / y;
       } else {
         nx = rsize.getX();
@@ -265,6 +263,9 @@ public class IMDbScraper extends MovieScraper {
         try {
           String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("TD[@class='primary_photo']/A/IMG", node));
           if (!imgPath.contains("nopicture")) {
+              System.out.println(imgPath);
+              System.out.println(getImageLnk(imgPath, ImageResize.THUMB));
+              System.out.println();
             thumb = new URL(getImageLnk(imgPath, ImageResize.THUMB));
           } else {
             thumb = null;
