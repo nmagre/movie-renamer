@@ -23,7 +23,7 @@ import java.io.Serializable;
  *
  * @author Nicolas Magré
  */
-public class UIUpdate implements Serializable {
+public class UIUpdate implements Serializable {// FIXME Serializable ????? for what ?
 
   private final boolean updateAvailable;
   private final String updateVersion;
@@ -54,7 +54,7 @@ public class UIUpdate implements Serializable {
   }
 
   @Override
-  public String toString() {
+  public String toString() {// FIXME should be translated ?
     String str = "Update available : " + updateAvailable + "\n";
     str += "Update version : " + updateVersion + "\n";
     str += "Desc en : " + descen;

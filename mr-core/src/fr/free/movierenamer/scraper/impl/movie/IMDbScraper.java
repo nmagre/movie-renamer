@@ -1,6 +1,6 @@
 /*
  * movie-renamer-core
- * Copyright (C) 2012-2014 Nicolas Magré
+ * Copyright (C) 2012-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
@@ -70,6 +69,40 @@ public class IMDbScraper extends MovieScraper {
   private static final Pattern blacklist = Pattern.compile("\\((TV Series|Video Game|TV Mini-Series|TV Special|TV|TV Episode)\\)");
   private static final Pattern mpaaCodePattern = Pattern.compile("Rated ([RPGN][GC]?(?:-\\d{2})?)");
   private static final AvailableApiIds supportedId = AvailableApiIds.IMDB;
+  private static final Pattern imageCropPattern = Pattern.compile("\\._.?V1.?_.?([US])([XY])(\\d+)_CR(\\d+),(\\d+),(\\d+),(\\d+)(.*\\.)");
+  private static final Pattern imageXYPattern = Pattern.compile("\\._.?V1.?_.?[US]([XY])(\\d+)_[US]([XY])(\\d+)(.*\\.)");
+  private static final Pattern imageXPattern = Pattern.compile("\\._.?V1.?_.?[US]([XY])(\\d+)(_.*\\.)");
+  private static final Pattern imageCRPattern = Pattern.compile("\\._.?V1.?_.?CR\\d+,\\d+,\\d+,\\d+_U");
+  // ._V1._CR93,97,1209,1861_UX32_CR0,0,32,44_AL_.jpg
+  
+
+  private enum ImageResize {
+
+    THUMB(45, 70),
+    SMALL(92, 138),
+    MEDIUM(185, 278),
+    ORIG;
+
+    private final int x, y;
+
+    private ImageResize() {
+      this(0, 0);
+    }
+
+    private ImageResize(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+
+    public int getX() {
+      return x;
+    }
+
+    public int getY() {
+      return y;
+    }
+
+  }
 
   public IMDbScraper() {
     super(AvailableLanguages.en);
@@ -115,18 +148,78 @@ public class IMDbScraper extends MovieScraper {
     return AvailableLanguages.en;
   }
 
-  private String createImgPath(String imgPath) {
-    if (imgPath == null) {
-      return StringUtils.EMPTY;
+  private static String getImageLnk(String lnk, ImageResize rsize) {
+    if (lnk == null || lnk.isEmpty()) {
+      return "";
     }
-    return imgPath.replaceAll("@@\\._.*?\\.jpg", "@@.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", ".jpg");
-  }
+    
+    Matcher cr = imageCRPattern.matcher(lnk);
+    if(cr.find()) {
+        lnk = cr.replaceAll("._V1_U");
+    }
 
-  private String getThumb(String imgPath) {
-    if (imgPath == null) {
-      return StringUtils.EMPTY;
+    Matcher mcrop = imageCropPattern.matcher(lnk);
+    Matcher mxy = imageXYPattern.matcher(lnk);
+    Matcher mx = imageXPattern.matcher(lnk);
+
+    if (mcrop.find()) {
+
+      if (rsize == ImageResize.ORIG) {
+        return mcrop.replaceAll("._V1_SX1024_SY1024_.");
+      }
+
+      boolean invert = mcrop.group(1).equals("Y");
+      int x = Integer.parseInt(invert ? mcrop.group(6) : mcrop.group(3));
+      int y = Integer.parseInt(invert ? mcrop.group(3) : mcrop.group(7));
+      int crop = Integer.parseInt(mcrop.group(4));
+      float ratio = (float) x / y;
+      int nx, ny;
+
+      if (invert) {
+        ny = rsize.getY();
+        nx = (int) (ny / ratio);
+        crop *= ny / y;
+      } else {
+        nx = rsize.getX();
+        ny = (int) (nx / ratio);
+        crop *= nx / x;
+      }
+
+      StringBuffer strb = new StringBuffer();
+      mcrop.appendReplacement(strb, String.format("._V1_$1$2%s_CR%s,$5,%s,%s$8", invert ? ny : nx, crop, nx, ny));
+      mcrop.appendTail(strb);
+      return strb.toString();
+
+    } else if (mxy.find()) {
+
+      if (rsize == ImageResize.ORIG) {
+        return mx.replaceAll(".");
+      }
+
+      StringBuffer strb = new StringBuffer();
+      mxy.appendReplacement(strb, String.format("._V1_S$1%s_S$3%s$5", (mxy.group(1).equals("X") ? rsize.getX() : rsize.getY()), (mxy.group(1).equals("X") ? rsize.getY() : rsize.getX())));
+      mxy.appendTail(strb);
+      return strb.toString();
+
+    } else if (mx.find()) {
+
+      if (rsize == ImageResize.ORIG) {
+        return mx.replaceAll(".");
+      }
+
+      String nsize = "" + (mx.group(1).equals("X") ? rsize.getX() : rsize.getY());
+      StringBuffer strb = new StringBuffer();
+      mx.appendReplacement(strb, String.format("._V1_S$1%s$3", nsize));
+      mx.appendTail(strb);
+      return strb.toString();
+
+    } else {
+      String msg = String.format("No pattern found for image : %s", lnk);
+      System.err.println(msg);
+      System.exit(-1);// FIXME remove + logger
     }
-    return imgPath.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX70.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX70.jpg");
+
+    return lnk;
   }
 
   private URIRequest.RequestProperty getRequestProperties(AvailableLanguages language) {
@@ -172,7 +265,7 @@ public class IMDbScraper extends MovieScraper {
         try {
           String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("TD[@class='primary_photo']/A/IMG", node));
           if (!imgPath.contains("nopicture")) {
-            thumb = new URL(getThumb(imgPath));
+            thumb = new URL(getImageLnk(imgPath, ImageResize.THUMB));
           } else {
             thumb = null;
           }
@@ -195,7 +288,8 @@ public class IMDbScraper extends MovieScraper {
         URL thumb;
         try {
           String imgPath = info.getPosterPath().toURL().toExternalForm();
-          thumb = new URL(createImgPath(imgPath));
+          System.out.println(imgPath);
+          thumb = new URL(getImageLnk(imgPath, ImageResize.THUMB));
         } catch (Exception ex) {
           thumb = null;
         }
@@ -320,7 +414,7 @@ public class IMDbScraper extends MovieScraper {
     // Thumb
     try {
       String posterPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("//DIV[@class='photo']/A[@name='poster']/IMG", dom));
-      ScraperUtils.addValue(info, MovieProperty.posterPath, createImgPath(posterPath));
+      ScraperUtils.addValue(info, MovieProperty.posterPath, getImageLnk(posterPath, ImageResize.ORIG));
     } catch (Exception ex) {
       // No thumb
     }
@@ -402,7 +496,7 @@ public class IMDbScraper extends MovieScraper {
     URL searchUrl = new URL("http", host, String.format("/title/%s/mediaindex", movie.getImdbId()));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(getDefaultLanguage()));
 
-    List<ImageInfo> images = new ArrayList<ImageInfo>();
+    List<ImageInfo> images = new ArrayList<>();
 
     Node node = XPathUtils.selectNode("//A[@href = '?refine=poster']", dom);
     if (node != null) {
@@ -421,16 +515,17 @@ public class IMDbScraper extends MovieScraper {
 
   private List<ImageInfo> getImages(URL url, ImageCategoryProperty imgtype, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(url.toURI(), getRequestProperties(language));
-    List<ImageInfo> images = new ArrayList<ImageInfo>();
+    List<ImageInfo> images = new ArrayList<>();
     List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='thumb_list']//IMG", dom);
 
     int count = 0;
     for (Node inode : nodes) {
-      Map<ImageProperty, String> imageFields = new EnumMap<ImageProperty, String>(ImageProperty.class);
-      String imgUrl = XPathUtils.getAttribute("src", inode).replaceAll("CR[\\d,]+_SS\\d+", "SY214_SX314");
-      imageFields.put(ImageProperty.url, imgUrl.replaceAll("S[XY]\\d+(.)+\\.jpg", "SY_SX.jpg"));
-      imageFields.put(ImageProperty.urlMid, imgUrl);
-      imageFields.put(ImageProperty.urlTumb, createImgPath(imgUrl));
+      Map<ImageProperty, String> imageFields = new EnumMap<>(ImageProperty.class);
+      System.out.println(XPathUtils.getAttribute("src", inode));
+      String imgUrl = XPathUtils.getAttribute("src", inode);
+      imageFields.put(ImageProperty.url, getImageLnk(imgUrl, ImageResize.ORIG));
+      imageFields.put(ImageProperty.urlMid, getImageLnk(imgUrl, ImageResize.MEDIUM));
+      imageFields.put(ImageProperty.urlTumb, getImageLnk(imgUrl, ImageResize.SMALL));
       images.add(new ImageInfo(count++, imageFields, imgtype));
     }
     return images;
@@ -441,7 +536,7 @@ public class IMDbScraper extends MovieScraper {
     URL searchUrl = new URL("http", host, String.format("/title/%s/fullcredits", id));
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
-    List<CastingInfo> casting = new ArrayList<CastingInfo>();
+    List<CastingInfo> casting = new ArrayList<>();
 
     List<Node> castNodes = XPathUtils.selectNodes("//H4", dom);
     for (Node node : castNodes) {
@@ -477,15 +572,23 @@ public class IMDbScraper extends MovieScraper {
 
         ImageInfo imgInfo = null;
         if (cinfo.equals(CastingInfo.ACTOR)) {
+
           Node pictureNode = XPathUtils.selectNode("./TD[@class='primary_photo']/A/IMG", cnode);
-          String picture = (pictureNode != null) ? createImgPath(XPathUtils.getAttribute("loadlate", pictureNode)) : "";
-          if (!picture.contains("nopicture") && !picture.isEmpty()) {
-            Map<ImageInfo.ImageProperty, String> fields = getImageUrl(picture);
-            int cid = picture.hashCode();
-            if (personFields.get(PersonProperty.id) != null) {
-              cid = Integer.parseInt(personFields.get(PersonProperty.id));
+          if (pictureNode != null) {
+
+            String picture = XPathUtils.getAttribute("loadlate", pictureNode);
+            if (picture != null && !picture.contains("nopicture") && !picture.isEmpty()) {
+              Map<ImageInfo.ImageProperty, String> fields = new HashMap<>();
+              fields.put(ImageProperty.url, getImageLnk(picture, ImageResize.ORIG));
+              fields.put(ImageProperty.urlMid, getImageLnk(picture, ImageResize.MEDIUM));
+              fields.put(ImageProperty.urlTumb, getImageLnk(picture, ImageResize.SMALL));
+
+              int cid = picture.hashCode();
+              if (personFields.get(PersonProperty.id) != null) {
+                cid = Integer.parseInt(personFields.get(PersonProperty.id));
+              }
+              imgInfo = new ImageInfo(cid, fields, ImageCategoryProperty.actor);
             }
-            imgInfo = new ImageInfo(cid, fields, ImageCategoryProperty.actor);
           }
 
           Node characterNode = XPathUtils.selectNode("TD[@class='character']", cnode);
@@ -514,15 +617,15 @@ public class IMDbScraper extends MovieScraper {
     return casting;
   }
 
-  private Map<ImageInfo.ImageProperty, String> getImageUrl(String picture) {
-    Map<ImageInfo.ImageProperty, String> fields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
-    fields.put(ImageProperty.url, picture);
-    fields.put(ImageProperty.urlMid, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX214.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX214.jpg"));
-    fields.put(ImageProperty.urlTumb, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX70.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX70.jpg"));
-
-    return fields;
-  }
-
+//  private Map<ImageInfo.ImageProperty, String> getImageUrl(String picture) {
+//    Map<ImageInfo.ImageProperty, String> fields = new EnumMap<>(ImageInfo.ImageProperty.class);
+//    System.out.println(picture);
+//    fields.put(ImageProperty.url, picture);
+//    fields.put(ImageProperty.urlMid, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX214.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX214.jpg"));
+//    fields.put(ImageProperty.urlTumb, picture.replaceAll("@@\\._.*?\\.jpg", "@@._V1_SX70.jpg").replaceAll("._V1_S[XY]\\d+.*\\.jpg", "._V1_SX70.jpg"));
+//
+//    return fields;
+//  }
   private Map<PersonProperty, String> fetchPersonIdAndName(Node node) {
     if (node != null) {
       Node link = XPathUtils.selectNode(".//A", node);
@@ -531,7 +634,7 @@ public class IMDbScraper extends MovieScraper {
         if (pname.length() > 1) {
           int imdbId = findCastImdbId(XPathUtils.getAttribute("href", link));
           if (imdbId != 0) {
-            Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class);
+            Map<PersonProperty, String> personFields = new EnumMap<>(PersonProperty.class);
             personFields.put(PersonProperty.id, Integer.toString(imdbId));
             personFields.put(PersonProperty.name, pname.trim());
 
@@ -554,9 +657,13 @@ public class IMDbScraper extends MovieScraper {
 
     Node img = XPathUtils.selectNode("//TD[@id = 'img_primary']//IMG", dom);
     if (img != null) {
-      String picture = createImgPath(XPathUtils.getAttribute("src", img));
+      String picture = XPathUtils.getAttribute("src", img);
+      System.out.println(XPathUtils.getAttribute("src", img));
       if (!picture.contains("nopicture") && !picture.isEmpty()) {
-        Map<ImageInfo.ImageProperty, String> fields = getImageUrl(picture);
+        Map<ImageInfo.ImageProperty, String> fields = new HashMap<>();
+        fields.put(ImageProperty.url, getImageLnk(picture, ImageResize.ORIG));
+        fields.put(ImageProperty.urlMid, getImageLnk(picture, ImageResize.MEDIUM));
+        fields.put(ImageProperty.urlTumb, getImageLnk(picture, ImageResize.SMALL));
         return new ImageInfo(id, fields, ImageCategoryProperty.actor);
       }
     }

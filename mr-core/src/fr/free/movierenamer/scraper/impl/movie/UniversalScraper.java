@@ -137,9 +137,9 @@ public class UniversalScraper extends MovieScraper {
     searchScraper.setLanguage(language);
 
     if (searchUrl != null) {
-      movies = searchScraper.search(searchUrl.toString());
+      movies = searchScraper.search(searchUrl.toString(), 0);
     } else {
-      movies = searchScraper.search(query);
+      movies = searchScraper.search(query, 0);
     }
 
     if (movies.isEmpty()) {
@@ -151,7 +151,7 @@ public class UniversalScraper extends MovieScraper {
           continue;
         }
 
-        movies = scraper.search(query);
+        movies = scraper.search(query, 0);
         if (!movies.isEmpty()) {
           break;
         }

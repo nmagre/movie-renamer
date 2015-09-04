@@ -67,7 +67,7 @@ import javax.swing.event.ListSelectionListener;
 public class GalleryDialog extends AbstractDialog {
 
   //private static final WebButton generateBtn = UIUtils.createButton("Generate", ImageUtils.CD_16);
-  private static final WebButton closeBtn = UIUtils.createButton("Close", ImageUtils.CLOSE_16, false, true);// FIXME i18n
+  private final WebButton closeBtn = UIUtils.createButton("Close", ImageUtils.CLOSE_16, false, true);// FIXME i18n
   private final ImageInfo.ImageCategoryProperty property;
   private final ImageListModel<UIMediaImage> imageListModel;
   private final ZoomListRenderer zoomListRenderer;

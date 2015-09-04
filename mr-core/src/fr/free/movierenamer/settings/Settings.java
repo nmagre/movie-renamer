@@ -119,7 +119,7 @@ public final class Settings extends XMLSettings {
     // Search
     searchNbResult(15, SettingsType.INFORMATION, SettingsSubType.SEARCH),
     searchOrder(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SEARCH),
-    searchOrderThreshold(280, SettingsType.INFORMATION, SettingsSubType.SEARCH, searchOrder),
+    searchOrderThreshold(0.7F, SettingsType.INFORMATION, SettingsSubType.SEARCH, searchOrder),
     searchScraperLang(AvailableLanguages.en, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
     searchGetOnlyLangDep(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
     // Proxy
@@ -530,8 +530,8 @@ public final class Settings extends XMLSettings {
     return Boolean.parseBoolean(get(SettingsProperty.searchOrder));
   }
 
-  public int getSearchOrderThreshold() {
-    return Integer.parseInt(get(SettingsProperty.searchOrderThreshold));
+  public float getSearchOrderThreshold() {
+    return Float.parseFloat(get(SettingsProperty.searchOrderThreshold));
   }
 
   @SuppressWarnings("unchecked")

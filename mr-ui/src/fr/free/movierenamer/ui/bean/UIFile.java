@@ -245,12 +245,12 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
       }
 
       if (msubtitles != null && !msubtitles.isEmpty()) {
-        String subtitleHtml = "";
+        StringBuffer subtitleHtml = new StringBuffer();
         for (MediaSubTitle msubtitle : msubtitles) {
-          subtitleHtml += getHtmlLang(msubtitle.getLanguage());
+          subtitleHtml.append(getHtmlLang(msubtitle.getLanguage()));
         }
 
-        if (!subtitleHtml.isEmpty()) {
+        if (subtitleHtml.length() > 0) {
           str += "<img src =\"" + ImageUtils.getImagePath("ui/16/srt.png") + "\">";
           str += subtitleHtml + "<br>";
         }

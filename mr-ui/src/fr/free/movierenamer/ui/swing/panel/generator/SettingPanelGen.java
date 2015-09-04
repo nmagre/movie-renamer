@@ -26,6 +26,7 @@ import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.slider.WebSlider;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
@@ -59,7 +60,6 @@ import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.Language;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.StringUtils;
@@ -73,6 +73,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -100,6 +101,7 @@ public class SettingPanelGen extends PanelGenerator {
     private final ContextMenuField contextMenuField = new ContextMenuField();
     private Map<WebCheckBox, SettingsProperty> checkboxs;
     private Map<WebTextField, SettingsProperty> fields;
+    private Map<WebSlider, SettingsProperty> sliders;
     private Map<WebPasswordField, SettingsProperty> passFields;
     private Map<WebComboBox, SettingsProperty> comboboxs;
     private Map<WebComboBox, SettingsProperty> scraperOptComboboxs;
@@ -188,6 +190,7 @@ public class SettingPanelGen extends PanelGenerator {
         Boolean,
         Character,
         Integer,
+        Float,// Slider 0-1
         Class,
         ArrayList,
         Pattern,
@@ -221,6 +224,7 @@ public class SettingPanelGen extends PanelGenerator {
 
         checkboxs = new HashMap<>();
         fields = new HashMap<>();
+        sliders = new HashMap<>();
         comboboxs = new HashMap<>();
         passFields = new HashMap<>();
         scraperOptComboboxs = new HashMap<>();
@@ -360,6 +364,11 @@ public class SettingPanelGen extends PanelGenerator {
                     fields.put((WebTextField) gbComponent.getComponent(), new SettingsProperty(property, mediaType));
                     break;
 
+                case Float:
+                    gbComponent = createSlider(cmp, title, level);
+                    sliders.put((WebSlider) gbComponent.getComponent(), new SettingsProperty(property, mediaType));
+                    break;
+
                 case Boolean:
                     gbComponent = createCheckbox(cmp, title, level);
                     checkboxs.put((WebCheckBox) gbComponent.getComponent(), new SettingsProperty(property, mediaType));
@@ -429,6 +438,24 @@ public class SettingPanelGen extends PanelGenerator {
 
     private GridBagComponent createCheckbox(JComponent cmp, String title, int level) {
         JComponent component = createComponent(Component.CHECKBOX, null);
+        cmp.add(createComponent(Component.LABEL, title), getGroupConstraint(0, false, false, level));
+
+        return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
+    }
+
+    private GridBagComponent createSlider(JComponent cmp, String title, int level) {
+        JComponent component = createComponent(Component.SLIDER, null);
+        ((WebSlider) component).setMinimum(0);
+        ((WebSlider) component).setMaximum(10);
+        ((WebSlider) component).setMinorTickSpacing(1);
+        ((WebSlider) component).setPaintTicks(true);
+        ((WebSlider) component).setPaintTrack(true);
+        ((WebSlider) component).setPaintLabels(true);
+        Hashtable labelTable = new Hashtable();
+        labelTable.put(0, createComponent(Component.LABEL, settingsi18n + "poor"));
+        labelTable.put(10, createComponent(Component.LABEL, settingsi18n + "accurate"));
+        ((WebSlider) component).setLabelTable(labelTable);
+
         cmp.add(createComponent(Component.LABEL, title), getGroupConstraint(0, false, false, level));
 
         return new GridBagComponent(component, getGroupConstraint(1, true, true, level));
@@ -609,6 +636,7 @@ public class SettingPanelGen extends PanelGenerator {
         WebCheckBox checkbox;
         WebTextField field;
         WebPasswordField pField;
+        WebSlider slider;
         WebComboBox combobox;
 
         for (Entry<WebCheckBox, SettingsProperty> entry : checkboxs.entrySet()) {
@@ -645,6 +673,20 @@ public class SettingPanelGen extends PanelGenerator {
                 value = ((ISimpleProperty) property).getValue();
             }
             field.setText(value);
+        }
+
+        for (Entry<WebSlider, SettingsProperty> entry : sliders.entrySet()) {
+            settingsProperty = entry.getValue();
+            property = settingsProperty.getProperty();
+            slider = entry.getKey();
+
+            if (property instanceof IMediaProperty) {
+                value = ((IMediaProperty) property).getValue(settingsProperty.getMediaType());
+            } else {
+                value = ((ISimpleProperty) property).getValue();
+            }
+            slider.setValue((int) (Float.valueOf(value) * 10));
+            System.out.println("SLIDER SET VALUE TO " + ((int) (Float.valueOf(value) * 10)) + " ! " + value);
         }
 
         for (Entry<WebPasswordField, SettingsProperty> entry : passFields.entrySet()) {
@@ -769,6 +811,7 @@ public class SettingPanelGen extends PanelGenerator {
         SettingsProperty settingsProperty;
         IProperty property;
         String oldValue;
+        String value;
 
         try {
 
@@ -797,7 +840,7 @@ public class SettingPanelGen extends PanelGenerator {
                 settingsProperty = field.getValue();
                 property = settingsProperty.getProperty();
 
-                String value = field.getKey().getText();
+                value = field.getKey().getText();
                 Object defaultValue;
                 if (property instanceof ISimpleProperty) {
                     oldValue = ((ISimpleProperty) property).getValue();
@@ -830,11 +873,32 @@ public class SettingPanelGen extends PanelGenerator {
                 }
             }
 
+            // Save slider
+            for (Map.Entry<WebSlider, SettingsProperty> slider : sliders.entrySet()) {
+                settingsProperty = slider.getValue();
+                property = settingsProperty.getProperty();
+                float val = (float) slider.getKey().getValue() / 10;
+
+                if (property instanceof ISimpleProperty) {
+                    oldValue = ((ISimpleProperty) property).getValue();
+                    ((ISimpleProperty) property).setValue(val);
+                } else {
+                    oldValue = ((IMediaProperty) property).getValue(settingsProperty.getMediaType());
+                    ((IMediaProperty) property).setValue(settingsProperty.getMediaType(), val);
+                }
+
+                if (Float.valueOf(oldValue) != val) {
+                    UIEvent.fireUIEvent(UIEvent.Event.SETTINGS, new UIEventInfo("", settingsProperty.getMediaType()), null, property);
+                }
+
+            }
+
             // Save password field
             for (Map.Entry<WebPasswordField, SettingsProperty> field : passFields.entrySet()) {
                 settingsProperty = field.getValue();
                 property = settingsProperty.getProperty();
-                String value = new String(field.getKey().getPassword());
+                value = new String(field.getKey().getPassword());
+
                 if (property instanceof ISimpleProperty) {
                     oldValue = ((ISimpleProperty) property).getValue();
                     ((ISimpleProperty) property).setValue(value);
@@ -857,12 +921,6 @@ public class SettingPanelGen extends PanelGenerator {
         saveCombobox(comboboxs);
         saveCombobox(scraperOptComboboxs);
 
-        /*for (JComponent component : languageRBtns) {// TODO Ask for restart app
-         if (((WebRadioButton) component).isSelected()) {
-         SettingsProperty.appLanguage.setValue(new Locale(UISupportedLanguage.valueOf(component.getName()).name()).getLanguage());
-         break;
-         }
-         }*/
     }
 
     private void saveCombobox(Map<WebComboBox, SettingsProperty> comboboxs) {

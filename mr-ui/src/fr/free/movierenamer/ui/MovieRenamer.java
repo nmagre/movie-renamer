@@ -19,22 +19,17 @@ package fr.free.movierenamer.ui;
 
 import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
 import fr.free.movierenamer.ui.swing.UIManager;
-import fr.free.movierenamer.ui.swing.panel.VideoPlayer;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SeparatorList;
 import ca.odell.glazedlists.swing.DefaultEventListModel;
 import com.alee.extended.layout.ToolbarLayout;
-import com.alee.extended.layout.VerticalFlowLayout;
-import com.alee.extended.panel.GroupPanel;
-import com.alee.extended.panel.GroupingType;
 import com.alee.extended.statusbar.WebStatusBar;
 import com.alee.extended.transition.ComponentTransition;
 import com.alee.extended.transition.effects.Direction;
 import com.alee.extended.transition.effects.curtain.CurtainTransitionEffect;
 import com.alee.extended.transition.effects.curtain.CurtainType;
 import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
-import com.alee.extended.window.WebPopOver;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.combobox.WebComboBox;
@@ -44,7 +39,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.progressbar.WebProgressBar;
 import com.alee.laf.rootpane.WebFrame;
 import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.text.WebTextField;
@@ -57,7 +51,6 @@ import com.alee.managers.popup.WebButtonPopup;
 import com.alee.utils.SwingUtils;
 import com.alee.utils.swing.AncestorAdapter;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
-import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsMediaProperty;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
@@ -65,6 +58,8 @@ import fr.free.movierenamer.ui.bean.*;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.*;
+import fr.free.movierenamer.ui.swing.UIManager.UIMode;
+import static fr.free.movierenamer.ui.swing.UIManager.group;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
 import fr.free.movierenamer.ui.swing.panel.*;
 import fr.free.movierenamer.ui.swing.renderer.*;
@@ -78,8 +73,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -93,7 +86,6 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
-import fr.free.movierenamer.ui.worker.AbstractWorker;
 import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFilesInfoWorker;
 import fr.free.movierenamer.utils.Cache;
@@ -101,7 +93,6 @@ import fr.free.movierenamer.utils.FileUtils;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.filechooser.FileFilter;
 
@@ -115,7 +106,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     private static final long serialVersionUID = 1L;
     private static final Dimension frameSize = new Dimension(900, 830);
-    private final UISettings setting = UISettings.getInstance();
+    private static final UISettings setting = UISettings.getInstance();
     // Current variables
     private UIMode currentMode;
     private UIFile currentMedia;
@@ -162,7 +153,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     private final ContextMenuField contextMenuField = new ContextMenuField();
     private WebButtonPopup mediaFileListsettingBtn;
     private LoadingDialog loadingDial;
-    private boolean renameWorkerDone = true;
 
     public MovieRenamer() {
         super();
@@ -353,6 +343,14 @@ public class MovieRenamer extends WebFrame implements IEventListener {
             add(appearanceTransition, BorderLayout.CENTER);
         }
 
+        int index = mainTb.getComponentIndex(openSep) + 1;
+        // Add mode button
+        for (UIMode mode : UIMode.values()) {
+            mainTb.add(mode.getModebutton(this), index++);
+        }
+
+        //setSelected(true);
+        
         // Set panel
         setMediaPanel();
 
@@ -366,7 +364,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
         // Start timer (update, mediainfo)
         //UIManager.startInitTimer(this, mediainfoStatusLbl);
-
         // Start rename thread
         WorkerManager.startRenameThread();
 
@@ -669,28 +666,20 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         WorkerManager.listFiles(this, files, mediaFileEventList);
     }
 
+    public void setMode(UIMode mode) {
+        currentMode = mode;
+        loadMediaPanel();
+    }
+
     /*
      * Load media panel with fade effect
      */
     @SuppressWarnings("unchecked")
     private void loadMediaPanel() {
 
-        SwingUtils.setEnabledRecursively(mainTb, true);
         renameTb.setVisible(true);
 
-        movieModeBtn.setEnabled(false);
-        tvShowModeBtn.setEnabled(false);
-
         setMediaPanel();
-
-        switch (currentMode) {
-            case MOVIEMODE:
-                tvShowModeBtn.setEnabled(true);
-                break;
-         //   case TVSHOWMODE:
-         //       movieModeBtn.setEnabled(true);
-         //       break;
-        }
 
         scraperCb.setModel(currentMode.getScraperModel());
         fileFormatField.setText(currentMode.getFileFormat());
@@ -803,6 +792,10 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     }
 
+    public void closeSettings() {
+        currentMode.getModebutton(this).doClick();
+    }
+    
     /**
      * Update renamed title in rename field
      */
@@ -818,17 +811,16 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     /**
      * Close Movie Renamer
      */
-    private void closeApp() {
+    private void closeApp() {// FIXME check if rename worker is done
 
-        if (!renameWorkerDone) {
-            int n = WebOptionPane.showConfirmDialog(MovieRenamer.this, UIUtils.i18n.getLanguage("dialog.wantrestart", false, Settings.APPNAME),
-                    UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
-
-            if (n != 0) {
-                return;
-            }
-        }
-
+//        if (!renameWorkerDone) {
+//            int n = WebOptionPane.showConfirmDialog(MovieRenamer.this, UIUtils.i18n.getLanguage("dialog.wantrestart", false, Settings.APPNAME),
+//                    UIUtils.i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
+//
+//            if (n != 0) {
+//                return;
+//            }
+//        }
         clearInterface(CLEAR_MEDIALIST, CLEAR_SEARCHRESULTLIST);
         WorkerManager.stopRenameThread();
 
@@ -1047,8 +1039,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         renameTb.revalidate();
     }
 
- 
-
     public void setMediaCount(int count) {
         mediaCount.setText("(" + count + ")");
     }
@@ -1076,8 +1066,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         openBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.open"), ImageUtils.FOLDERVIDEO_24, ImageUtils.FOLDERVIDEO_16, Hotkey.CTRL_O, MovieRenamer.this);
         historyBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.history"), ImageUtils.HISTORY_24, ImageUtils.HISTORY_16, Hotkey.CTRL_P, MovieRenamer.this);
         openSep = new Separator();
-        movieModeBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.movieMode"), ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, Hotkey.CTRL_F, MovieRenamer.this);
-        tvShowModeBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.tvshowMode"), ImageUtils.TV_24, ImageUtils.TV_16, Hotkey.CTRL_T, MovieRenamer.this);
         modeSep = new Separator();
         mainContainerTransition = new ComponentTransition();
         mainPanel = new WebPanel();
@@ -1179,20 +1167,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         });
         mainTb.add(historyBtn);
         mainTb.add(openSep);
-
-        movieModeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                movieModeBtnActionPerformed(evt);
-            }
-        });
-        mainTb.add(movieModeBtn);
-
-        tvShowModeBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                tvShowModeBtnActionPerformed(evt);
-            }
-        });
-        mainTb.add(tvShowModeBtn);
         mainTb.add(modeSep);
 
         containerTransition.add(mainTb, BorderLayout.PAGE_START);
@@ -1372,56 +1346,16 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       }
   }//GEN-LAST:event_openBtnActionPerformed
 
-  private void movieModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_movieModeBtnActionPerformed
-      currentMode = UIMode.MOVIEMODE;
-      loadMediaPanel();
-  }//GEN-LAST:event_movieModeBtnActionPerformed
-
-  private void tvShowModeBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_tvShowModeBtnActionPerformed
-      //WebOptionPane.showMessageDialog(MovieRenamer.this, "Tv show is not available for the moment but will be added soon.", "Unavailable", JOptionPane.INFORMATION_MESSAGE);// FIXME i18n ou pas
-//    currentMode = UIMode.TVSHOWMODE;
-//    loadMediaPanel();
-      VideoPlayer vp = new VideoPlayer(this);
-      //setGlassPane(vp);    
-      vp.setVisible(true);
-      final WebPopOver popOver = new WebPopOver(this);
-      popOver.setCloseOnFocusLoss(false);
-      popOver.setLayout(new VerticalFlowLayout());
-      popOver.setResizable(true);
-      popOver.setAutoRequestFocus(true);
-      popOver.setShadeWidth(0);
-      // popOver.setModal(true);
-
-      popOver.setMovable(false);
-      popOver.setRound(40);
-      final WebButton closeButton = new WebButton(ImageUtils.CANCEL_16, new ActionListener() {
-          @Override
-          public void actionPerformed(final ActionEvent e) {
-              popOver.dispose();
-          }
-      });
-      closeButton.setRolloverDecoratedOnly(true);
-      popOver.add(new GroupPanel(GroupingType.fillFirst, 4, new WebLabel(), closeButton).setMargin(10, 0, 10, 20));
-      popOver.add(vp);
-
-      popOver.show(this);
-
-      vp.play("/mnt/Media/Divx HD/Matrix (1999).avi");
-
-  }//GEN-LAST:event_tvShowModeBtnActionPerformed
-
   private void exitBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
       closeApp();
   }//GEN-LAST:event_exitBtnActionPerformed
 
   private void settingBtnActionPerformed(ActionEvent evt) {//GEN-FIRST:event_settingBtnActionPerformed
-      //UIManager.showSettingsDialog();
 
-      SwingUtils.setEnabledRecursively(mainTb, false);
+      //SwingUtils.setEnabledRecursively(mainTb, false);
       renameTb.setVisible(false);
-      movieModeBtn.setEnabled(true);
-      tvShowModeBtn.setEnabled(true);
       exitBtn.setEnabled(true);
+      group.setSelected(settingBtn.getModel(), true);
       settingsPanel.reset();
       mainContainerTransition.performTransition(settingsPanel);
   }//GEN-LAST:event_settingBtnActionPerformed
@@ -1516,7 +1450,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     private WebLabel mediaLbl;
     private WebSplitPane mediaSp;
     private Separator modeSep;
-    private WebButton movieModeBtn;
     private WebButton openBtn;
     private Separator openSep;
     private WebButton renameBtn;
@@ -1534,7 +1467,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     private WebButton settingBtn;
     private WebStatusBar statusBar;
     private WebButton toggleGroup;
-    private WebButton tvShowModeBtn;
     private WebButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }

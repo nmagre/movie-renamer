@@ -68,7 +68,7 @@ public class ImageInfo extends Info {
 
   public ImageInfo(final int id, final Map<ImageProperty, String> fields, final ImageCategoryProperty category) {
     this.id = id;
-    this.fields = new EnumMap<ImageProperty, String>(fields);
+    this.fields = new EnumMap<>(fields);
     this.category = category == null ? ImageCategoryProperty.unknown : category;
   }
 

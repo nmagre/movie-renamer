@@ -41,8 +41,9 @@ import org.json.JSONObject;
  */
 public abstract class FanartTvScraper<M extends Video> extends ImageScraper<M> {
 
-  protected final String host = "api.fanart.tv/webservice";
+  protected final String host = "webservice.fanart.tv";
   protected final String name = "FanartTV";
+  protected final String version = "v3";
   protected final String apikey;
 
   protected FanartTvScraper() {
@@ -69,18 +70,17 @@ public abstract class FanartTvScraper<M extends Video> extends ImageScraper<M> {
         throw new UnsupportedOperationException(mid.getIdType() + " is not supported by " + getName() + " image scraper");
     }
 
-    URL searchUrl = new URL("http", host, "/" + getTypeName() + "/" + apikey + "/" + mid.toString() + "/");// Last slash is required
+    URL searchUrl = new URL("http", host, "/" + version + "/" + getTypeName() + "/" + mid.toString() + "?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
-    JSONObject jmedia = JSONUtils.selectFirstObject(json);
 
     List<ImageInfo> imagesInfos = new ArrayList<>();
-    if (jmedia == null) {
+    if (json == null) {
       return imagesInfos;
     }
 
     for (String tag : getTags()) {
 
-      List<JSONObject> images = JSONUtils.selectList(tag, jmedia);
+      List<JSONObject> images = JSONUtils.selectList(tag, json);
       if (images == null) {
         continue;
       }

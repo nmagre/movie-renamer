@@ -35,8 +35,6 @@ import fr.free.movierenamer.scraper.impl.movie.SensacineScraper;
 import fr.free.movierenamer.scraper.impl.movie.TMDbScraper;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
-import static fr.free.movierenamer.searchinfo.Media.MediaType.MOVIE;
-import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import java.io.IOException;
@@ -211,14 +209,13 @@ public final class ScraperUtils {
   private static IdInfo getIdBySearch(MovieScraper scraper, String search, int year) {
 
     try {
-      List<Movie> results;
+      List<Movie> results = scraper.search(search, year);
       String searchTitle = StringUtils.normaliseClean(search);
-      results = scraper.search(search);
 
       for (Movie result : results) {
         if (searchTitle.equals(StringUtils.normaliseClean(result.getOriginalName())) || searchTitle.equals(StringUtils.normaliseClean(result.getName()))) {
-          if (year > 1900) {
-            if (year == result.getYear() || year == result.getYear() + 1 || year == result.getYear() - 1) {
+          if (NumberUtils.isYearValid(year)) {
+            if (year == result.getYear() || Math.abs(year - result.getYear()) == 1) {
               return result.getImdbId() != null ? result.getImdbId() : result.getMediaId();
             }
           }

@@ -104,7 +104,7 @@ public class ListTooltip extends MouseAdapter {
                   str = obj.toString();
                 }
 
-                WebCustomTooltip wct = TooltipManager.showOneTimeTooltip(list, new Point(px, py), str, tooltipWay);
+                TooltipManager.showOneTimeTooltip(list, new Point(px, py), str, tooltipWay);
 
                 timer.stop();
               }

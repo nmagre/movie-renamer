@@ -22,6 +22,7 @@ import java.util.List;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.Sorter;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -71,8 +72,13 @@ public abstract class SearchScraper<SR extends SearchResult> extends Scraper {
     }
   }
 
-  public final List<SR> search(String query) throws Exception {
-    return search(query, getLanguage());
+  public final List<SR> search(String query, int year) throws Exception {
+    Settings settings = Settings.getInstance();
+    List<SR> searchResult = search(query, getLanguage());
+    if(settings.isSearchOrder()) {
+      Sorter.sortMedia(searchResult, query, year, settings.getSearchOrderThreshold());
+    }
+    return searchResult;
   }
 
   protected abstract List<SR> search(String query, AvailableLanguages language) throws Exception;

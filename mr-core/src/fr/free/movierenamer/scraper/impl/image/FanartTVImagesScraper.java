@@ -45,7 +45,7 @@ public class FanartTVImagesScraper extends FanartTvScraper<Movie> {
 
   @Override
   public List<String> getTags() {
-    List<String> tags = new ArrayList<String>();
+    List<String> tags = new ArrayList<>();
     for (ImageType imgtype : ImageType.values()) {
       tags.add(imgtype.name());
     }
@@ -60,7 +60,7 @@ public class FanartTVImagesScraper extends FanartTvScraper<Movie> {
 
   @Override
   protected String getTypeName() {
-    return "movie";
+    return "movies";
   }
 
   @Override

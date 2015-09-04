@@ -48,7 +48,7 @@ public abstract class MovieScraper extends VideoScraper<Movie, MovieInfo> {
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
 
-    List<ImageInfo> imagesInfo = new ArrayList<ImageInfo>();
+    List<ImageInfo> imagesInfo = new ArrayList<>();
     List<ImageInfo> tmpImagesInfo;
 
     try {
@@ -77,7 +77,7 @@ public abstract class MovieScraper extends VideoScraper<Movie, MovieInfo> {
     if (imagesInfo.isEmpty()) {
       URI thumb = movie.getURL();
       if (thumb != null) {
-        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<>(ImageInfo.ImageProperty.class);
         imageFields.put(ImageInfo.ImageProperty.url, thumb.toString());
         imagesInfo.add(new ImageInfo(0, imageFields, ImageInfo.ImageCategoryProperty.thumb));
       }

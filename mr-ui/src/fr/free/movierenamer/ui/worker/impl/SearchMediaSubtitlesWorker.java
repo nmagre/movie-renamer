@@ -51,11 +51,11 @@ public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
 
   @Override
   public List<Subtitle> executeInBackground() throws Exception {
-    List<Subtitle> results = new ArrayList<Subtitle>();
+    List<Subtitle> results = new ArrayList<>();
 
     if (media != null && scraper != null) {
       String search = media.getSearch();
-      results = scraper.search(search);
+      results = scraper.search(search, 0);
       int count = results.size();
       for (int i = 0; i < count; i++) {
         if (isCancelled()) {

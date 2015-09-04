@@ -83,7 +83,7 @@ public class TrailerInfo extends Info {
 
   public Double getRating() {
     try {
-      return new Double(get(TrailerProperty.rating));
+      return Double.parseDouble(get(TrailerProperty.rating));
     } catch (Exception e) {
     }
     return null;

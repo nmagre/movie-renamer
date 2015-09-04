@@ -71,7 +71,7 @@ public abstract class Worker<T> extends AbstractWorker<T, String> {
   protected void process(List<String> v) {
     try {
       UIUtils.showErrorNotification(v.get(0));
-    } catch (Exception ex) {
+    } catch (Exception ex) {// FIXME issue is solved in WebLaf 1.29+ 
       // Prevent any bug, sometimes weblaf notification thrown an exception (i hope it will be fixed)
       UISettings.LOGGER.log(Level.SEVERE, null, ex);
     }

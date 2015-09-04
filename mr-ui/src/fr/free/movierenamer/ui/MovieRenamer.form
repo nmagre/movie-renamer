@@ -153,22 +153,6 @@
             </Component>
             <Component class="javax.swing.JToolBar$Separator" name="openSep">
             </Component>
-            <Component class="com.alee.laf.button.WebButton" name="movieModeBtn">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="movieModeBtnActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.movieMode&quot;), ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, Hotkey.CTRL_F, MovieRenamer.this)"/>
-              </AuxValues>
-            </Component>
-            <Component class="com.alee.laf.button.WebButton" name="tvShowModeBtn">
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tvShowModeBtnActionPerformed"/>
-              </Events>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;toptb.tvshowMode&quot;), ImageUtils.TV_24, ImageUtils.TV_16, Hotkey.CTRL_T, MovieRenamer.this)"/>
-              </AuxValues>
-            </Component>
             <Component class="javax.swing.JToolBar$Separator" name="modeSep">
             </Component>
           </SubComponents>

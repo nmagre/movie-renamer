@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.scraper.ScraperOptions;
 import fr.free.movierenamer.scraper.SearchScraper;
-import fr.free.movierenamer.searchinfo.Hyperlink;
+import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import java.util.List;
 import javax.swing.Icon;
@@ -34,9 +34,9 @@ import javax.swing.ImageIcon;
 public class UIScraper implements IIconList {
 
   private Icon icon;
-  private final SearchScraper<? extends Hyperlink> scraper;
+  private final SearchScraper<? extends Media> scraper;
 
-  public UIScraper(SearchScraper<? extends Hyperlink> scraper) {
+  public UIScraper(SearchScraper<? extends Media> scraper) {
     this.scraper = scraper;
   }
 
@@ -49,7 +49,7 @@ public class UIScraper implements IIconList {
     return icon;
   }
 
-  public SearchScraper<? extends Hyperlink> getScraper() {
+  public SearchScraper<? extends Media> getScraper() {
     return scraper;
   }
 

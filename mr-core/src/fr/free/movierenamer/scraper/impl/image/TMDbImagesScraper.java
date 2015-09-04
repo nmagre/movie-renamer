@@ -82,7 +82,7 @@ public class TMDbImagesScraper extends ImageScraper<Movie> {
     URL searchUrl = new URL("http", host, "/" + version + "/movie/" + id + "/images?api_key=" + apikey);
     JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
 
-    List<ImageInfo> images = new ArrayList<ImageInfo>();
+    List<ImageInfo> images = new ArrayList<>();
     for (String section : new String[]{
       "backdrops", "posters"
     }) {
@@ -90,7 +90,7 @@ public class TMDbImagesScraper extends ImageScraper<Movie> {
       TmdbImageSize imageSize = section.equals("backdrops") ? TmdbImageSize.backdrop : TmdbImageSize.poster;
       int count = 0;
       for (JSONObject jsonObj : jsonObjs) {
-        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<ImageInfo.ImageProperty, String>(ImageInfo.ImageProperty.class);
+        Map<ImageInfo.ImageProperty, String> imageFields = new EnumMap<>(ImageInfo.ImageProperty.class);
         String file_path = JSONUtils.selectString("file_path", jsonObj);
 
         imageFields.put(ImageInfo.ImageProperty.url, TMDbScraper.imageUrl + imageSize.getBig() + file_path);

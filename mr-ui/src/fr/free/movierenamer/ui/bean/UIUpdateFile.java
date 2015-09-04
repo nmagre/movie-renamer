@@ -24,7 +24,7 @@ import java.net.URI;
  *
  * @author Nicolas Magré
  */
-public class UIUpdateFile implements Serializable {
+public class UIUpdateFile implements Serializable {// FIXME Serializable ????? for what ?
 
   private final URI url;
   private final String path;

@@ -16,6 +16,8 @@
  */
 package fr.free.movierenamer.utils;
 
+import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +32,6 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.JaccardSimilarity;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Jaro;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.SmithWaterman;
 
 /**
  * Class Sorter
@@ -87,37 +88,38 @@ public class Sorter {
    *
    * @param <T>
    * @param list
-   * @param str
+   * @param search
    * @param year
    * @param threshold
    */
-  public static <T extends ISort> void sortAccurate(List<T> list, String str, int year, int threshold) {
+  public static <T extends SearchResult> void sortMedia(List<T> list, String search, int year, float threshold) {
 
-    final String toCompare = StringUtils.normaliseClean(str);
-    Map<Integer, List<T>> values = new TreeMap<>(Collections.reverseOrder());
-    for (T object : list) {
+    final String toCompare = StringUtils.normaliseClean(search);
+    Map<Float, List<T>> values = new TreeMap<>(Collections.reverseOrder());
+    for (T media : list) {
 
       // If year is (almost) the same, we add a "bonus"
-      int bonus = 0;
+      float bonus = 0;
       if (NumberUtils.isYearValid(year)) {
-        final int oYear = object.getYear();
-        int yearDiff = Math.abs(oYear - year);
-        bonus = 50 / (yearDiff + 1);
+        final int oYear = media.getYear();
+        if (year == oYear) {
+          bonus = 0.1875F;
+        } else if (Math.abs(oYear - year) == 1) {
+          bonus = 0.125F;
+        }
       }
 
       // if there is an image we add a "bonus"
-      if (object.hasImage()) {
-        bonus += 10;
+      if (media.hasImage()) {
+        bonus += 0.025F;
       }
 
       // Get best similarity between title and orig title
-      System.out.print(object.getName() + "(" + object.getYear() + ") ");
-      int sim = getSimilarity(toCompare, object.getName());
-      if (object.getOriginalName() != null && !ObjectUtils.compare(object.getName(), object.getOriginalName())) {
-        sim = Math.max(sim, getSimilarity(toCompare, object.getOriginalName()));
+      float sim = getSimilarity(toCompare, media.getName());
+      if (media.getOriginalName() != null && media.getName().equals(media.getOriginalName())) {
+        sim = Math.max(sim, getSimilarity(toCompare, media.getOriginalName()));
       }
       sim += bonus;
-      System.out.println(" | sim:  " + sim);
 
       // We use a list cause 2 (or more) can have the same "sim" number
       List<T> listObj = values.get(sim);
@@ -126,56 +128,39 @@ public class Sorter {
         values.put(sim, listObj);
       }
 
-      listObj.add(object);
+      listObj.add(media);
     }
 
     // Get the higher "sim number"
-    int maxSim = 0;
+    double maxSim = 0;
     if (!values.isEmpty()) {
       maxSim = values.keySet().iterator().next();
     }
 
     // If "sim number" is greater than threshold we sort the list
-    YearSort<T> ys = new YearSort<>();
-    YearDiffSort<T> yds = new YearDiffSort<>(year);
     if (maxSim >= threshold) {
       list.clear();
-      for (List<T> olist : values.values()) {
-
-        Comparator<T> cmp = NumberUtils.isYearValid(year) ? yds : ys;
-        Collections.sort(olist, cmp);
-        list.addAll(olist);
+      for (List<T> sortedList : values.values()) {
+        list.addAll(sortedList);
       }
     }
   }
 
-  private static int getSimilarity(String search, String str) {
+  private static float getSimilarity(String search, String str) {
     String toCompare = StringUtils.normaliseClean(str);// Clean the string to get best result (search is already cleaned)
     AbstractStringMetric algorithm;
 
-    System.out.print(" [Jar:");
-
     Float res = 0.0F;
+    algorithm = new Jaro();
+    res += algorithm.getSimilarity(search, toCompare);
     algorithm = new JaroWinkler();
-    Float pres;
-    pres = algorithm.getSimilarity(search, toCompare);// Return a float ([0 - 1] , 1 => exact match)
-    res += pres;
-
-    System.out.print(pres + ", Leven:");
-
+    res += algorithm.getSimilarity(search, toCompare);
     algorithm = new Levenshtein();
-    pres = algorithm.getSimilarity(search, toCompare);// Return a float ([0 - 1] , 1 => exact match)
-    res += pres;
+    res += algorithm.getSimilarity(search, toCompare);
+    algorithm = new JaccardSimilarity();
+    res += algorithm.getSimilarity(search, toCompare);
 
-    System.out.print(pres + ", Smith:");
-
-    algorithm = new SmithWaterman();
-    pres = algorithm.getSimilarity(search, toCompare);// Return a float ([0 - 1] , 1 => exact match)
-    res += pres;
-
-    int tres = Math.round((res) * 100);
-    System.out.print(pres + "] -> " + tres);
-    return Math.round((res) * 100);
+    return res / 4;
   }
 
   public static void sort(List<? extends ISort> list, SorterType type) {
@@ -262,11 +247,11 @@ public class Sorter {
   private static class YearDiffSort<T extends ISort> implements Comparator<T> {
 
     private final int year;
-    
+
     public YearDiffSort(int year) {
       this.year = year;
     }
-    
+
     @Override
     public int compare(ISort t, ISort t1) {
       return Integer.compare(Math.abs(t.getYear() - year), Math.abs(t1.getYear() - year));

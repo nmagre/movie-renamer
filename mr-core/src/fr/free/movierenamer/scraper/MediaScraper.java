@@ -111,7 +111,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
 
     List<? extends Media> results = null;
     try {
-      results = scraper.search(url.toExternalForm());
+      results = scraper.search(url.toExternalForm(), 0);
     } catch (Exception ex) {
 
     }

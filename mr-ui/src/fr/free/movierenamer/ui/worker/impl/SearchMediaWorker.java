@@ -32,7 +32,6 @@ import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import fr.free.movierenamer.ui.worker.WorkerManager;
-import fr.free.movierenamer.utils.Sorter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ import java.util.List;
 public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
   private final UIFile media;
-  private final SearchScraper<? extends Hyperlink> scraper;
+  private final SearchScraper<? extends Media> scraper;
   private final WebList searchResultList;
   private final ImageListModel<UISearchResult> searchResultModel;
 
@@ -71,7 +70,7 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
     if (media != null && scraper != null) {
       String search = media.getSearch();
-      res = (List<? extends Media>) scraper.search(search);
+      res = scraper.search(search, media.getYear());
       int count = res.size();
 
       for (int i = 0; i < count; i++) {
@@ -80,12 +79,6 @@ public class SearchMediaWorker extends Worker<List<UISearchResult>> {
         }
 
         results.add(new UISearchResult(res.get(i), scraper));
-      }
-
-      Settings settings = Settings.getInstance();
-      // Sort search results
-      if (settings.isSearchOrder()) {
-        Sorter.sortAccurate(results, search, media.getYear(), settings.getSearchOrderThreshold());
       }
     }
 

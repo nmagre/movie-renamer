@@ -60,7 +60,7 @@ public class CastingInfo extends Info {
 
   public int getId() {
     try {
-      return Integer.valueOf(get(PersonProperty.id));
+      return Integer.parseInt(get(PersonProperty.id));
     } catch (NumberFormatException e) {
     }
 

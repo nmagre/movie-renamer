@@ -100,7 +100,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearBtnActionPerformed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;resetSettings&quot;, false), ImageUtils.CLEAR_LIST_16)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="UIUtils.createButton(i18n.getLanguageKey(&quot;cancel&quot;, false), ImageUtils.CANCEL_16)"/>
       </AuxValues>
     </Component>
   </SubComponents>

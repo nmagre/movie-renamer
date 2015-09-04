@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2013 Nicolas Magré
+ * Copyright (C) 2012-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.ui.exception;
 
+import fr.free.movierenamer.ui.settings.UISettings;
+
 /**
  * Class SettingsSaveFailedException
  *
@@ -25,14 +27,14 @@ package fr.free.movierenamer.ui.exception;
 public class SettingsSaveFailedException extends Exception {
   private static final long serialVersionUID = 1L;
 
-  private final fr.free.movierenamer.ui.settings.UISettings defaultSettings;
+  private final UISettings defaultSettings;
 
-  public SettingsSaveFailedException(fr.free.movierenamer.ui.settings.UISettings config, String message) {
+  public SettingsSaveFailedException(UISettings config, String message) {
     super(message);
     this.defaultSettings = config;
   }
 
-  public fr.free.movierenamer.ui.settings.UISettings getDefaultSettings() {
+  public UISettings getDefaultSettings() {
     return defaultSettings;
   }
 }

@@ -20,10 +20,18 @@ package fr.free.movierenamer.ui.swing;
 import com.alee.extended.image.DisplayType;
 import com.alee.extended.image.WebImage;
 import com.alee.global.StyleConstants;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.optionpane.WebOptionPane;
+import com.alee.managers.hotkey.Hotkey;
+import com.alee.managers.hotkey.HotkeyData;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.info.MovieInfo;
+import fr.free.movierenamer.scraper.MediaScraper;
+import fr.free.movierenamer.scraper.ScraperManager;
+import fr.free.movierenamer.searchinfo.Media;
+import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsMediaProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
@@ -32,8 +40,9 @@ import fr.free.movierenamer.ui.Main;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaInfo;
-import fr.free.movierenamer.ui.bean.UIMode;
+import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UIRename;
+import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
@@ -64,6 +73,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -90,8 +101,8 @@ public final class UIManager {
     private static final WebCheckBox clearartChk = new WebCheckBox();
     private static final WebCheckBox bannerChk = new WebCheckBox();
     private static final List<JComponent> movieRenameSettingsCmp;
+    public static final ButtonGroupEnable group = new ButtonGroupEnable();
 
-    //private static final List<JComponent> tvshowRenameSettingsCmp;
     static {
         checkboxs = new HashMap<>();
         checkboxs.put(SettingsMediaProperty.mediaNfogenerate, nfoChk);
@@ -102,6 +113,7 @@ public final class UIManager {
         checkboxs.put(UISettingsProperty.downloadClearart, clearartChk);
         checkboxs.put(UISettingsProperty.downloadBanner, bannerChk);
 
+        // Add option needed for movie
         movieRenameSettingsCmp = new ArrayList<>();
         movieRenameSettingsCmp.add(nfoChk);
         movieRenameSettingsCmp.add(thumbChk);
@@ -110,6 +122,136 @@ public final class UIManager {
         movieRenameSettingsCmp.add(cdartChk);
         movieRenameSettingsCmp.add(clearartChk);
         movieRenameSettingsCmp.add(bannerChk);
+
+    }
+
+    public enum UIMode {
+
+        MOVIEMODE(UIUtils.i18n.getLanguageKey("movieMode", "toptb"), MediaType.MOVIE, ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, Hotkey.CTRL_M,
+                MovieInfo.class, UIMovieInfo.class) {
+
+                    @Override
+                    public MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> getModePanel(MovieRenamer mr) {
+                        return new MoviePanel(mr);
+                    }
+
+                };//TVSHOWMODE(UIUtils.i18n.getLanguageKey("tvshowMode", "toptb"), "tvshowMode", MediaType.TVSHOW, ImageUtils.TV_24, ImageUtils.TV_16, Hotkey.CTRL_T, TvShowInfo.class, TvShowInfo.class),
+
+        private final MediaType mediaType;
+        private final String title;
+        private final Icon icon_24;
+        private final Icon icon_16;
+        private final HotkeyData hotkey;
+        private final DefaultComboBoxModel<UIScraper> scraperModel = new DefaultComboBoxModel<>();
+        private final Class<?> infoClazz;
+        private final Class<?> uiInfoClazz;
+        private final IProperty[] renameOptions;
+        private MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> panel;
+        private WebButton modeButton = null;
+        private String fileFormat;
+
+        private UIMode(String title, MediaType mediaType, Icon icon_24, Icon icon_16, HotkeyData hotkey, Class<?> infoClazz, Class<?> uiInfoClazz, IProperty... renameOptions) {
+            this.title = title;
+            this.mediaType = mediaType;
+            this.renameOptions = renameOptions;
+            this.icon_24 = icon_24;
+            this.icon_16 = icon_16;
+            this.hotkey = hotkey;
+            this.infoClazz = infoClazz;
+            this.uiInfoClazz = uiInfoClazz;
+            fileFormat = Settings.getInstance().getMediaFilenameFormat(mediaType);
+
+            List<MediaScraper> mediaScrapers = ScraperManager.getMediaScrapers(mediaType);
+            for (MediaScraper mediaScraper : mediaScrapers) {
+                scraperModel.addElement(new UIScraper(mediaScraper));
+            }
+            scraperModel.setSelectedItem(new UIScraper(ScraperManager.getMediaScraper(mediaType)));
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public Media.MediaType getMediaType() {
+            return mediaType;
+        }
+
+        public Icon getBigIcon() {
+            return icon_24;
+        }
+
+        public Icon getSmallIcon() {
+            return icon_16;
+        }
+
+        public DefaultComboBoxModel<UIScraper> getScraperModel() {
+            return scraperModel;
+        }
+
+        public UIScraper getSelectedScraper() {
+            return (UIScraper) scraperModel.getSelectedItem();
+        }
+
+        public void setUniversalScraper() {
+            UIScraper scraper;
+            for (int i = 0; i < scraperModel.getSize(); i++) {
+                scraper = scraperModel.getElementAt(i);
+                if (scraper.getName().equals("Universal")) {
+                    scraperModel.setSelectedItem(scraper);
+                    break;
+                }
+            }
+        }
+
+        public void setScraper(UIScraper scraper) {
+            if (scraperModel.getIndexOf(scraper) >= 0) {
+                scraperModel.setSelectedItem(scraper);
+            }
+        }
+
+        public String getFileFormat() {
+            return fileFormat;
+        }
+
+        public void setFileformat(String fileFormat) {
+            this.fileFormat = fileFormat;
+        }
+
+        public UIMediaInfo<?> toUIInfo(MediaInfo info) throws Exception {
+            return (UIMediaInfo<?>) uiInfoClazz.getConstructor(infoClazz).newInstance(info);
+        }
+
+        public WebButton getModebutton(final MovieRenamer mr) {
+            if (modeButton != null) {
+                return modeButton;
+            }
+
+            modeButton = UIUtils.createButton(title, icon_24, icon_16, hotkey, mr);
+            group.add(modeButton);
+
+            final UIMode mode = this;
+            modeButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    mr.setMode(mode);
+                    group.setSelected(((WebButton) ae.getSource()).getModel(), true);
+                }
+            });
+
+            return modeButton;
+        }
+
+        public MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> getMediaPanel(MovieRenamer mr) {
+            if (panel != null) {
+                return panel;
+            }
+            panel = getModePanel(mr);
+
+            return panel;
+        }
+
+        protected abstract MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> getModePanel(MovieRenamer mr);
 
     }
 
@@ -148,22 +290,10 @@ public final class UIManager {
         imagePanel.clearPanel();
     }
 
-    public static Map<UIMode, MediaPanel<? extends UIMediaInfo<? extends MediaInfo>, ? extends MediaInfo>> createMediaPanel(MovieRenamer mr) {
-        Map<UIMode, MediaPanel<? extends UIMediaInfo<? extends MediaInfo>, ? extends MediaInfo>> panels = new HashMap<>();
-        MediaPanel<? extends UIMediaInfo<? extends MediaInfo>, ? extends MediaInfo> panel;
+    public static Map<UIMode, MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo>> createMediaPanel(MovieRenamer mr) {
+        Map<UIMode, MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo>> panels = new HashMap<>();
         for (UIMode mode : UIMode.values()) {
-            switch (mode) {
-                case MOVIEMODE:
-                    panel = new MoviePanel(mr);
-                    break;
-    //    case TVSHOWMODE:
-                //      panel = null;// TODO tvshow panel
-                //     break;
-                default:
-                    panel = null;
-            }
-
-            panels.put(mode, panel);
+            panels.put(mode, mode.getMediaPanel(mr));
         }
         return panels;
     }
@@ -293,7 +423,7 @@ public final class UIManager {
                 return movieRenameSettingsCmp;
         }
 
-        return null;
+        return movieRenameSettingsCmp;
     }
 
     public static void startInitTimer(final MovieRenamer mr, final WebLabel mediainfoStatusLbl) {

@@ -252,7 +252,7 @@ public class MovieInfo extends VideoInfo {
 
   public Integer getVotes() {
     try {
-      return Integer.valueOf(get(MovieProperty.votes));
+      return Integer.parseInt(get(MovieProperty.votes));
     } catch (Exception e) {
     }
     return null;
