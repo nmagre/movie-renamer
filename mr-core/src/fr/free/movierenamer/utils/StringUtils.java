@@ -185,9 +185,10 @@ public final class StringUtils {
    *
    * @param str String
    * @param renameCase Case type
+   * @param isRomanUpper Keep uppercase roman number
    * @return String
    */
-  public static String applyCase(String str, CaseConversionType renameCase) {
+  public static String applyCase(String str, CaseConversionType renameCase, boolean isRomanUpper) {
     String res;
     switch (renameCase) {
       case UPPER:
@@ -207,7 +208,7 @@ public final class StringUtils {
         break;
     }
 
-    if (Settings.getInstance().isFilenameRomanUpper()) {
+    if (isRomanUpper) {
       // Make sure that roman numerical are in uppercase
       final Matcher matcher = romanSymbol.matcher(res);
       final StringBuffer sb = new StringBuffer();
@@ -427,8 +428,7 @@ public final class StringUtils {
     return buf.toString();
   }
 
-  public static String humanReadableByteCount(long bytes) {
-    Settings settings = Settings.getInstance();
+  public static String humanReadableByteCount(long bytes, boolean useOctet) {
     boolean si = true;
     int unit = si ? 1000 : 1024;
     if (bytes < unit) {
@@ -438,7 +438,7 @@ public final class StringUtils {
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     String pre = "KMGTPE".charAt(exp - 1) + (si ? "" : "i");
     String format = SizeFormat.BYTE.getFormat();
-    if (settings.getAppLanguage().equals(LocaleUtils.AppLanguages.fr)) {
+    if (useOctet) {
       format = SizeFormat.OCTET.getFormat();
     }
     return String.format("%.1f %s" + format, bytes / Math.pow(unit, exp), pre);

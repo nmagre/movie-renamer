@@ -22,7 +22,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.worker.Worker;
 import java.awt.Dimension;
 import java.util.ArrayList;

@@ -22,7 +22,7 @@ import java.util.List;
 import fr.free.movierenamer.searchinfo.SearchResult;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.Sorter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -38,8 +38,8 @@ public abstract class SearchScraper<SR extends SearchResult> extends Scraper {
   private AvailableLanguages language;
 
   protected SearchScraper(AvailableLanguages... supportedLanguages) {
-    if (supportedLanguages == null || supportedLanguages.length == 0 || supportedLanguages[0] == null) {
-      throw new NullPointerException("defaultLanguage must not be null");
+    if (supportedLanguages == null) {
+      this.supportedLanguages = new ArrayList<>();
     } else {
       this.supportedLanguages = Arrays.asList(supportedLanguages);
     }
@@ -72,16 +72,20 @@ public abstract class SearchScraper<SR extends SearchResult> extends Scraper {
     }
   }
 
-  public final List<SR> search(String query, int year) throws Exception {
+  public final List<SR> search(String query, SearchParam sep) throws Exception {
     Settings settings = Settings.getInstance();
-    List<SR> searchResult = search(query, getLanguage());
-    if(settings.isSearchOrder()) {
-      Sorter.sortMedia(searchResult, query, year, settings.getSearchOrderThreshold());
+    List<SR> searchResult = search(query, sep, getLanguage());
+    if (settings.isSearchOrder()) {
+      sortResult(searchResult, query, sep);
     }
     return searchResult;
   }
+  
+  protected List<SR> sortResult(List<SR> searchResult, String query, SearchParam sep) {
+    return searchResult;
+  }
 
-  protected abstract List<SR> search(String query, AvailableLanguages language) throws Exception;
+  protected abstract List<SR> search(String query, SearchParam sep, AvailableLanguages language) throws Exception;
 
   @Override
   protected final String getCacheName() {

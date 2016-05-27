@@ -43,6 +43,7 @@ import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.info.TvShowInfo.TvShowProperty;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.scraper.TvShowScraper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
@@ -111,13 +112,13 @@ public class TheTVDBScraper extends TvShowScraper {
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<TvShow> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/api/GetSeries.php?seriesname=" + URIRequest.encode(query) + "&language=" + language.getLocale().getLanguage());
-    return searchMedia(searchUrl, language);
+    return searchMedia(searchUrl, sep, language);
   }
 
   @Override
-  protected List<TvShow> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<TvShow> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Data/Series", dom);

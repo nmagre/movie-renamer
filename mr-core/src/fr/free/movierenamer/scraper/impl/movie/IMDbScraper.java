@@ -41,7 +41,9 @@ import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.info.VideoInfo.VideoProperty;
 import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
@@ -72,7 +74,7 @@ public class IMDbScraper extends MovieScraper {
   private static final Pattern imageCropPattern = Pattern.compile("\\._.?V1.?_.?([US])([XY])(\\d+)_CR(\\d+),(\\d+),(\\d+),(\\d+)(.*\\.)");
   private static final Pattern imageXYPattern = Pattern.compile("\\._.?V1.?_.?[US]([XY])(\\d+)_[US]([XY])(\\d+)(.*\\.)");
   private static final Pattern imageXPattern = Pattern.compile("\\._.?V1.?_.?[US]([XY])(\\d+)(_.*\\.)");
-  private static final Pattern imageCRPattern = Pattern.compile("\\._.?V1.?_.?CR\\d+,\\d+,\\d+,\\d+_U");  
+  private static final Pattern imageCRPattern = Pattern.compile("\\._.?V1.?_.?CR\\d+,\\d+,\\d+,\\d+_U");
 
   private enum ImageResize {
 
@@ -150,10 +152,10 @@ public class IMDbScraper extends MovieScraper {
     if (lnk == null || lnk.isEmpty()) {
       return "";
     }
-    
+
     Matcher cr = imageCRPattern.matcher(lnk);
-    if(cr.find()) {
-        lnk = cr.replaceAll("._V1_U");
+    if (cr.find()) {
+      lnk = cr.replaceAll("._V1_U");
     }
 
     Matcher mcrop = imageCropPattern.matcher(lnk);
@@ -212,7 +214,7 @@ public class IMDbScraper extends MovieScraper {
       return strb.toString();
 
     } else {
-      String msg = String.format("No pattern found for image : %s", lnk);
+      String msg = String.format("No pattern found for image : %s \n %s", lnk, ClassUtils.getStackTrace(new Throwable().getStackTrace()));
       System.err.println(msg);
       System.exit(-1);// FIXME remove + logger
     }
@@ -225,16 +227,16 @@ public class IMDbScraper extends MovieScraper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     // http://www.imdb.com/find?s=tt&ref_=fn_tt&q=
     // Only title -> ref_=fn_tt
     // Only movie -> ref_=fn_ft
     URL searchUrl = new URL("http", host, "/find?s=all&q=" + URIRequest.encode(query));
-    return searchMedia(searchUrl, language);
+    return searchMedia(searchUrl, sep, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI(), getRequestProperties(language));
 
     // select movie results
@@ -263,9 +265,9 @@ public class IMDbScraper extends MovieScraper {
         try {
           String imgPath = XPathUtils.getAttribute("src", XPathUtils.selectNode("TD[@class='primary_photo']/A/IMG", node));
           if (!imgPath.contains("nopicture")) {
-              System.out.println(imgPath);
-              System.out.println(getImageLnk(imgPath, ImageResize.THUMB));
-              System.out.println();
+            System.out.println(imgPath);
+            System.out.println(getImageLnk(imgPath, ImageResize.THUMB));
+            System.out.println();
             thumb = new URL(getImageLnk(imgPath, ImageResize.THUMB));
           } else {
             thumb = null;

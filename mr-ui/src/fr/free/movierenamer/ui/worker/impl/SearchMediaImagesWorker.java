@@ -24,14 +24,12 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.UIManager;
 import fr.free.movierenamer.ui.swing.panel.ImagePanel;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Class SearchMediaImagesWorker
@@ -74,7 +72,6 @@ public class SearchMediaImagesWorker extends Worker<List<UIMediaImage>> {
                 int count = infos.size();
                 for (int i = 0; i < count; i++) {
                     if (isCancelled()) {
-                        UISettings.LOGGER.log(Level.INFO, "SearchMediaImagesWorker Cancelled");
                         return new ArrayList<>();
                     }
 

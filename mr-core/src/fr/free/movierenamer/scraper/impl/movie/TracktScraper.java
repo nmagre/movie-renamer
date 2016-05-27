@@ -22,10 +22,10 @@ import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.VideoInfo;
 import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.JSONUtils;
@@ -103,13 +103,13 @@ public class TracktScraper extends MovieScraper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", apiHost, "/search/movies.json/" + apikey + "?&query=" + URIRequest.encode(query));
-    return searchMedia(searchUrl, language);
+    return searchMedia(searchUrl, sep, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     Map<Integer, Movie> resultSet = new LinkedHashMap<>();
 //    JSONArray json = URIRequest.getJsonArrayDocument(searchUrl.toURI());
 //    Iterator<JSONObject> iterator = json.iterator();

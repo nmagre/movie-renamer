@@ -46,7 +46,7 @@ public abstract class NameMatcher {// TODO
   private static final Pattern imdbIdPattern = Pattern.compile("tt(\\d{7})");
 
   public static Map<FileProperty, String> getProperty(final File file, final MediaType type) {
-    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+    Map<FileProperty, String> properties = new EnumMap<>(FileProperty.class);
     switch (type) {
       case MOVIE:
         properties = getMovieFileProperty(file);
@@ -65,7 +65,7 @@ public abstract class NameMatcher {// TODO
   }
 
   private static Map<FileProperty, String> getMovieFileProperty(final File file) {
-    final Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+    final Map<FileProperty, String> properties = new EnumMap<>(FileProperty.class);
     properties.put(FileProperty.name, extractName(file.getName()));
 
     final Integer imdbId = getImdbId(file);
@@ -77,7 +77,7 @@ public abstract class NameMatcher {// TODO
   }
 
   private static Map<FileProperty, String> getTvShowFileProperty(File file) {// TODO
-    Map<FileProperty, String> properties = new EnumMap<FileProperty, String>(FileProperty.class);
+    Map<FileProperty, String> properties = new EnumMap<>(FileProperty.class);
 
     return properties;
   }
@@ -87,8 +87,8 @@ public abstract class NameMatcher {// TODO
     if (extractedName.isEmpty()) {
       extractedName = NameCleaner.extractName(fileName, true);
     }
-    
-    if(extractedName.isEmpty()) {
+
+    if (extractedName.isEmpty()) {
       return FileUtils.getNameWithoutExtension(fileName);
     }
 
@@ -152,7 +152,7 @@ public abstract class NameMatcher {// TODO
       return Integer.parseInt(imdbIdMatch.group(1));
     }
 
-    final List<File> nfoFiles = Arrays.asList(file.getParentFile().listFiles(new FilenameFilter() {
+    File[] files = file.getParentFile().listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
         if (fileName.equalsIgnoreCase(FileUtils.getNameWithoutExtension(name)) || dir.getName().equalsIgnoreCase(name)) {
@@ -164,7 +164,13 @@ public abstract class NameMatcher {// TODO
 
         return false;
       }
-    }));
+    });
+    
+    if (files == null) {
+      return null;
+    }
+
+    final List<File> nfoFiles = Arrays.asList();
 
     String str;
     for (File nfile : nfoFiles) {

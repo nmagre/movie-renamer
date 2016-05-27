@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.renamer.Nfo;
 import fr.free.movierenamer.ui.settings.UISettings.ImageFormat;
 import fr.free.movierenamer.ui.utils.ImageUtils;

@@ -86,12 +86,11 @@ public final class UISettings extends XMLSettings {
     public enum UISettingsProperty implements XMLSettings.ISimpleProperty {
 
         // General
-        selectFirstMedia(Boolean.FALSE, SettingsType.INFORMATION, SettingsSubType.SEARCH),
-        selectFirstResult(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SEARCH),
+        selectFirstMedia(Boolean.FALSE, SettingsType.INFORMATION, SettingsSubType.GENERAL),
+        selectFirstResult(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.GENERAL),
         moveFileOneByOne(Boolean.TRUE/*, SettingsType.GENERAL, SettingsSubType.GENERAL*/),// not a good idea to let user change this for the moment
         mediaInfoWarning(Boolean.TRUE, SettingsType.GENERAL, SettingsSubType.GENERAL),
         debug(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.GENERAL),
-        logLevel(LogLevel.INFO, SettingsType.GENERAL, SettingsSubType.GENERAL),
         scanSubfolder(Subfolder.ASK, SettingsType.GENERAL, SettingsSubType.FOLDER),
         loadFileAtStartup(Boolean.FALSE, SettingsType.GENERAL, SettingsSubType.FOLDER),
         loadFilePath(userFolder, SettingsType.GENERAL, SettingsSubType.FOLDER, loadFileAtStartup, SettingsPropertyType.PATH),
@@ -147,8 +146,10 @@ public final class UISettings extends XMLSettings {
         mainFrameSizeHeight(830, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
         mainFrameState(WebFrame.NORMAL, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
         mainFrameFileDivider(180, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
-        mainFrameMediaDivider(200, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
-        mainFrameScreen(0, SettingsType.ADVANCED, SettingsSubType.INTERFACE);
+        mainFrameInfoDivider(200, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+        mainFrameScreen(0, SettingsType.ADVANCED, SettingsSubType.INTERFACE),
+        logLevel(LogLevel.INFO);
+        
         private final Class<?> vclass;
         private final Object defaultValue;
         private final SettingsType type;
@@ -507,8 +508,8 @@ public final class UISettings extends XMLSettings {
         return Integer.parseInt(get(UISettingsProperty.mainFrameFileDivider));
     }
 
-    public int getMainFrameMediaDivider() {
-        return Integer.parseInt(get(UISettingsProperty.mainFrameMediaDivider));
+    public int getMainFrameInfoDivider() {
+        return Integer.parseInt(get(UISettingsProperty.mainFrameInfoDivider));
     }
 
     private static String getApplicationProperty(String key) {

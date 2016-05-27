@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.MovieInfo;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,7 +33,11 @@ public class UIMovieInfo extends UIVideoInfo<MovieInfo> {
     }
 
     public List<String> get(MovieInfo.MovieMultipleProperty key) {
-        return info.get(key);
+        List<String> values = info.get(key);
+        if (values == null) {
+            values = new ArrayList<>();
+        }
+        return values;
     }
 
     public void set(MovieInfo.MovieMultipleProperty key, List<String> value) {
@@ -40,7 +45,11 @@ public class UIMovieInfo extends UIVideoInfo<MovieInfo> {
     }
 
     public List<String> getCountries() {
-        return info.getCountries();
+        List<String> values = info.getCountries();
+        if (values == null) {
+            values = new ArrayList<>();
+        }
+        return values;
     }
 
 }

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.event.UIEvent;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
@@ -25,7 +26,7 @@ import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MultipleInfoProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
+import fr.free.movierenamer.ui.swing.custom.ContextMenuField;
 import fr.free.movierenamer.ui.swing.dialog.MultipleValueEditorDialog;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;

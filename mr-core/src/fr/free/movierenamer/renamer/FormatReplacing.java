@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Magré
  */
-public class FormatReplacing {
+public class FormatReplacing {//FIXME A tree is overkill, a simple stack should do the trick
 
   private static final Settings settings = Settings.getInstance();
   private static final char optionSeparator = ':';
@@ -83,7 +83,7 @@ public class FormatReplacing {
    * @return Replaced string by values
    */
   public String getReplacedString(String format) {
-    return getReplacedString(format, CaseConversionType.FIRSTLO, ", ", 0);
+    return getReplacedString(format, CaseConversionType.FIRSTLO, ", ", 0, settings.isFilenameRomanUpper());
   }
 
   /**
@@ -93,13 +93,16 @@ public class FormatReplacing {
    * @param caseType Default used case if tag do not have a case option
    * @param separator Separator for multiple value tag
    * @param limit Limit for multiple value tag (limit less than 1 -> all)
+   * @param isRomanUpper Keep roman number uppercase
    * @return Replaced string by values
    */
-  public String getReplacedString(String format, CaseConversionType caseType, String separator, int limit) {
-
+  public String getReplacedString(String format, CaseConversionType caseType, String separator, int limit, boolean isRomanUpper) {
+    
     // Split format
     List<String> list = new ArrayList<>();
     list.addAll(Arrays.asList(format.split("(((?=[" + tokenStart + "])|(?<=" + tokenStart + "))|((?=" + tokenEnd + ")|(?<=" + tokenEnd + ")))")));
+
+    System.out.println(list);
 
     TreeNode charaTree = new TreeNode("root");
     TreeNode currentTree = charaTree;
@@ -156,10 +159,10 @@ public class FormatReplacing {
     System.out.println(charaTree.printTree(0));
     System.out.println("-------------------------------------");
 
-    return getTagString(charaTree, caseType, separator, limit);
+    return getTagString(charaTree, caseType, separator, limit, isRomanUpper);
   }
 
-  private String getTagString(TreeNode tree, CaseConversionType caseType, String separator, int limit) {
+  private String getTagString(TreeNode tree, CaseConversionType caseType, String separator, int limit, boolean isRomanUpper) {
 
     StringBuilder data = new StringBuilder(tree.isRoot() ? "" : tree.getData());
     String childtokenData;
@@ -167,7 +170,7 @@ public class FormatReplacing {
     // If first token (or expression) is empty or null we return nothing
     TreeNode firstTokenChild = tree.getTokenChild();
     if (!tree.isRoot() && firstTokenChild != null) {
-      childtokenData = getTagString(firstTokenChild, caseType, separator, limit);
+      childtokenData = getTagString(firstTokenChild, caseType, separator, limit, isRomanUpper);
       if (childtokenData.isEmpty()) {
         System.out.println("CHILD IS EMPTY return void");
         return "";
@@ -176,7 +179,7 @@ public class FormatReplacing {
 
     // Append all childs values
     for (TreeNode child : tree.getChilds()) {
-      data.append(getTagString(child, caseType, separator, limit));
+      data.append(getTagString(child, caseType, separator, limit, isRomanUpper));
     }
 
     // If it's not a token return value unchanged
@@ -259,7 +262,7 @@ public class FormatReplacing {
       Settings.LOGGER.severe(ex.getMessage());
     }
     System.out.println("TAG : " + tag.toString() + " |" + equalsValue + "| : " + options);
-    String res = getValue(tag.toString(), caseType, separator, limit, equalsValue, equals, options.toArray(new Option[options.size()]));
+    String res = getValue(tag.toString(), caseType, separator, limit, isRomanUpper, equalsValue, equals, options.toArray(new Option[options.size()]));
     System.out.println("VALUE : " + res);
     return res;
   }
@@ -294,7 +297,7 @@ public class FormatReplacing {
    * @param options Tag options
    * @return Value or token if tag is not found
    */
-  private String getValue(String token, CaseConversionType caseType, String separator, int limit, String equalsValue, boolean equals, Option... options) {
+  private String getValue(String token, CaseConversionType caseType, String separator, int limit, boolean isRomanUpper, String equalsValue, boolean equals, Option... options) {
 
     int index = -1;
     final Matcher matcher = valueIndex.matcher(token);
@@ -368,7 +371,7 @@ public class FormatReplacing {
       }
     }
 
-    return StringUtils.applyCase(value, scase != null ? scase : caseType);
+    return StringUtils.applyCase(value, scase != null ? scase : caseType, isRomanUpper);
   }
 
   /**

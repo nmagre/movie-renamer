@@ -94,23 +94,23 @@ public class FileInfo extends Info {
 
   private MediaType getMediaType(File file) {// TODO A refaire , améliorer la detection !!!
 
-    final TvShowEpisodeNumMatcher nmatcher = new TvShowEpisodeNumMatcher(file);
-    final SxE sxe = nmatcher.matchEpisode();
-    if (sxe.isValid()) {
-      int date = (sxe.getSeason() * 100) + sxe.getEpisode();
-      if (date >= 1900 && date <= Calendar.getInstance().get(Calendar.YEAR)) {// It looks like a year
-        if (Settings.MEDIAINFO && mtag != null) {// Check media duration
-          long duration = mtag.getDuration();
-          if (duration > 0L && duration > 3000) {
-            return MediaType.MOVIE;
-          }
-        } else {
-          return MediaType.MOVIE;
-        }
-      }
-
-      return MediaType.TVSHOW;
-    }
+//    final TvShowEpisodeNumMatcher nmatcher = new TvShowEpisodeNumMatcher(file);
+//    final SxE sxe = nmatcher.matchEpisode();
+//    if (sxe.isValid()) {
+//      int date = (sxe.getSeason() * 100) + sxe.getEpisode();
+//      if (date >= 1900 && date <= Calendar.getInstance().get(Calendar.YEAR)) {// It looks like a year
+//        if (Settings.MEDIAINFO && mtag != null) {// Check media duration
+//          long duration = mtag.getDuration();
+//          if (duration > 0L && duration > 3000) {
+//            return MediaType.MOVIE;
+//          }
+//        } else {
+//          return MediaType.MOVIE;
+//        }
+//      }
+//
+//      return MediaType.TVSHOW;
+//    }
 
     return MediaType.MOVIE;
   }

@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2014 Nicolas Magré
+ * Copyright (C) 2014-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UILogHandler;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.LogsTableModel;
+import fr.free.movierenamer.ui.swing.model.LogsTableModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
@@ -42,128 +42,160 @@ import javax.swing.table.TableRowSorter;
  */
 public class LoggerDialog extends AbstractDialog {
 
-  private final LogsTableModel logsModel = new LogsTableModel();
-  private final TableRowSorter<LogsTableModel> sorter;
-  private boolean showInfo = true;
-  UILogHandler handler;
+    private final LogsTableModel logsModel = new LogsTableModel();
+    private final TableRowSorter<LogsTableModel> sorter;
+    private boolean showInfo = true;
+    UILogHandler handler;
 
-  /**
-   * Creates new form LoggerDialog
-   *
-   * @param mr
-   */
-  public LoggerDialog(MovieRenamer mr) {
-    super(mr, "logs", false);// FIXME i18n
-    initComponents();
+    /**
+     * Class LoggerDialog
+     *
+     * @param mr
+     */
+    public LoggerDialog(MovieRenamer mr) {
+        super(mr, "logs", false);// FIXME i18n
+        initComponents();
 
-    logsTable.setModel(logsModel);
-    logsTable.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
-      private static final long serialVersionUID = 1L;
+        logsTable.setModel(logsModel);
+        logsTable.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+            private static final long serialVersionUID = 1L;
 
-      @Override
-      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        Level level = (Level) value;
-        if (level.equals(Level.SEVERE)) {
-          setBackground(Color.red);
-          setForeground(Color.WHITE);
-        } else if (level.equals(Level.WARNING)) {
-          setBackground(Color.YELLOW);
-          setForeground(Color.BLACK);
-        } else {
-          setBackground(Color.WHITE);
-          setForeground(Color.BLACK);
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                Level level = (Level) value;
+                Color back = Color.WHITE;
+                Color forg = Color.BLACK;
+
+                if (level.equals(Level.SEVERE)) {
+                    back = Color.RED;
+                    forg = Color.WHITE;
+                } else if (level.equals(Level.WARNING)) {
+                    back = Color.YELLOW;
+                    forg = Color.BLACK;
+                }
+
+                setBackground(back);
+                setForeground(forg);
+
+                return this;
+            }
+        });
+
+        RowFilter<LogsTableModel, Integer> ageFilter = new RowFilter<LogsTableModel, Integer>() {
+            @Override
+            public boolean include(Entry<? extends LogsTableModel, ? extends Integer> entry) {
+                LogsTableModel obj = entry.getModel();
+                int index = entry.getIdentifier();
+                Level level = (Level) obj.getValueAt(index, 1);
+                return level.equals(Level.SEVERE) || level.equals(Level.WARNING) || showInfo;
+            }
+        };
+
+        sorter = new TableRowSorter<>(logsModel);
+        sorter.setRowFilter(ageFilter);
+
+        logsTable.setRowSorter(sorter);
+        logsTable.setAutoResizeMode(WebTable.AUTO_RESIZE_LAST_COLUMN);
+        for (int i = 0; i < logsModel.getColumnCount() - 1; i++) {
+            logsTable.getColumnModel().getColumn(i).setMaxWidth(i > 3 ? 120 : 60);
         }
 
-        return this;
-      }
-    });
-
-    RowFilter<LogsTableModel, Integer> ageFilter = new RowFilter<LogsTableModel, Integer>() {
-      @Override
-      public boolean include(Entry<? extends LogsTableModel, ? extends Integer> entry) {
-        LogsTableModel obj = entry.getModel();
-        int index = entry.getIdentifier();
-        Level level = (Level) obj.getValueAt(index, 1);
-        return level.equals(Level.SEVERE) || level.equals(Level.WARNING) || showInfo;
-      }
-    };
-
-    sorter = new TableRowSorter<>(logsModel);
-    sorter.setRowFilter(ageFilter);
-
-    logsTable.setRowSorter(sorter);
-    logsTable.setAutoResizeMode(WebTable.AUTO_RESIZE_LAST_COLUMN);
-    for (int i = 0; i < logsModel.getColumnCount() - 1; i++) {
-      logsTable.getColumnModel().getColumn(i).setMaxWidth(i > 3 ? 120 : 60);
+        handler = new UILogHandler(this);
+        Settings.LOGGER.addHandler(handler);
+        UISettings.LOGGER.addHandler(handler);
     }
 
-    handler = new UILogHandler(this);
-    Settings.LOGGER.addHandler(handler);
-    UISettings.LOGGER.addHandler(handler);
-  }
+    public void addLog(LogRecord record) {
+        logsModel.addRecord(record);
+    }
 
-  public void addLog(LogRecord record) {
-    logsModel.addRecord(record);
-  }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-  /**
-   * This method is called from within the constructor to initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is always
-   * regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+        jScrollPane1 = new javax.swing.JScrollPane();
+        logsTable = new com.alee.laf.table.WebTable();
+        okBtn = UIUtils.createButton(i18n.getLanguageKey("ok", false), ImageUtils.OK_16);
+        showInfoChk = new com.alee.laf.checkbox.WebCheckBox();
+        webButton1 = UIUtils.createButton(i18n.getLanguageKey("logDialog.export", false), ImageUtils.EXPORT_16);
 
-    jScrollPane1 = new javax.swing.JScrollPane();
-    logsTable = new com.alee.laf.table.WebTable();
-    okBtn = UIUtils.createButton(i18n.getLanguageKey("ok", false), ImageUtils.OK_16);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        jScrollPane1.setViewportView(logsTable);
 
-    jScrollPane1.setViewportView(logsTable);
+        okBtn.setPreferredSize(UIUtils.buttonSize);
+        okBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okBtnActionPerformed(evt);
+            }
+        });
 
-    okBtn.setPreferredSize(UIUtils.buttonSize);
-    okBtn.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        okBtnActionPerformed(evt);
-      }
-    });
+        showInfoChk.setSelected(true);
+        showInfoChk.setText(UIUtils.i18n.getLanguage("logDialog.showInfo", false)
+        );
+        showInfoChk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showInfoChkActionPerformed(evt);
+            }
+        });
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE)))
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 353, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
-    );
+        webButton1.setPreferredSize(UIUtils.buttonSize);
 
-    pack();
-  }// </editor-fold>//GEN-END:initComponents
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
+                    .addComponent(showInfoChk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(webButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(showInfoChk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
   private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
-    dispose();
+      dispose();
   }//GEN-LAST:event_okBtnActionPerformed
 
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JScrollPane jScrollPane1;
-  private com.alee.laf.table.WebTable logsTable;
-  private com.alee.laf.button.WebButton okBtn;
-  // End of variables declaration//GEN-END:variables
+    private void showInfoChkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showInfoChkActionPerformed
+        showInfo = showInfoChk.isSelected();
+        logsModel.fireTableDataChanged();
+    }//GEN-LAST:event_showInfoChkActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private com.alee.laf.table.WebTable logsTable;
+    private com.alee.laf.button.WebButton okBtn;
+    private com.alee.laf.checkbox.WebCheckBox showInfoChk;
+    private com.alee.laf.button.WebButton webButton1;
+    // End of variables declaration//GEN-END:variables
 }

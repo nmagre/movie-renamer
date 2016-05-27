@@ -24,6 +24,7 @@ import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.scraper.ScraperManager;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.scraper.impl.movie.AdorocinemaScraper;
 import fr.free.movierenamer.scraper.impl.movie.AllocineScraper;
 import fr.free.movierenamer.scraper.impl.movie.BeyazperdeScraper;
@@ -37,6 +38,7 @@ import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
+import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
@@ -162,7 +164,7 @@ public final class ScraperUtils {
     return null;
   }
 
-  public static IdInfo movieIdLookup(AvailableApiIds lookupType, IdInfo id, Movie searchResult) {
+  public static IdInfo movieIdLookup(AvailableApiIds lookupType, IdInfo id, Movie searchResult, AvailableLanguages lng) {
     final List<IdInfo> ids = new ArrayList<>();
     if (searchResult != null) {
       final IdInfo mid = searchResult.getMediaId();
@@ -184,7 +186,7 @@ public final class ScraperUtils {
       case ROTTENTOMATOES:
         return getRottenId(ids, searchResult);
       case ALLOCINE:
-        return getAlloId(ids, searchResult);
+        return getAlloId(ids, searchResult, lng);
       case KINOPOISK:
         return getKinopoiskId(ids, searchResult);
     }
@@ -195,22 +197,30 @@ public final class ScraperUtils {
   private static IdInfo getIdBySearch(MovieScraper scraper, Movie searchResult) {
 
     String search = searchResult.getOriginalName();
+    SearchParam sep = new SearchParam();
+    sep.setProperty("year", Integer.toString(searchResult.getYear()));
+
     if (search != null) {
-      IdInfo id = getIdBySearch(scraper, search, searchResult.getYear());
+      IdInfo id = getIdBySearch(scraper, search, sep);
       if (id != null) {
         return id;
       }
     }
 
     search = searchResult.getName();
-    return getIdBySearch(scraper, search, searchResult.getYear());
+    return getIdBySearch(scraper, search, sep);
   }
 
-  private static IdInfo getIdBySearch(MovieScraper scraper, String search, int year) {
+  private static IdInfo getIdBySearch(MovieScraper scraper, String search, SearchParam sep) {
 
     try {
-      List<Movie> results = scraper.search(search, year);
+      List<Movie> results = scraper.search(search, sep);
       String searchTitle = StringUtils.normaliseClean(search);
+      String syear = sep.getProperty("year");
+      int year = -1;
+      if(NumberUtils.isNumeric(syear)) {
+        year = Integer.parseInt(syear);
+      }
 
       for (Movie result : results) {
         if (searchTitle.equals(StringUtils.normaliseClean(result.getOriginalName())) || searchTitle.equals(StringUtils.normaliseClean(result.getName()))) {
@@ -305,7 +315,7 @@ public final class ScraperUtils {
     return getIdBySearch(new KinopoiskScraper(), searchResult);
   }
 
-  private static IdInfo getAlloId(List<IdInfo> ids, Movie searchResult) {
+  private static IdInfo getAlloId(List<IdInfo> ids, Movie searchResult, AvailableLanguages lng) {
     IdInfo alloId = null;
     for (IdInfo id : ids) {
       switch (id.getIdType()) {
@@ -324,16 +334,16 @@ public final class ScraperUtils {
     }
 
     if (searchResult != null) {
-      alloId = searchAlloId(searchResult);
+      alloId = searchAlloId(searchResult, lng);
     }
 
     return alloId;
   }
 
-  private static IdInfo searchAlloId(Movie searchResult) {
+  private static IdInfo searchAlloId(Movie searchResult, AvailableLanguages lng) {
     IdInfo alloId = null;
     MovieScraper scraper = null;
-    switch (Settings.getInstance().getSearchScraperLang()) {
+    switch (lng) {
       case pt:
         scraper = new AdorocinemaScraper();
         break;

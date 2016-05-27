@@ -56,7 +56,6 @@ public class SearchMediaTrailerWorker extends Worker<List<UISearchTrailerResult>
     title = StringUtils.normaliseClean(title);
 
     for (Trailer trailer : trailersInfo) {
-      System.out.println(trailer);
       trailers.add(new UISearchTrailerResult(trailer, scraper));
     }
 

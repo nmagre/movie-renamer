@@ -17,8 +17,8 @@
 package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.UIEvent;
-import fr.free.movierenamer.ui.bean.UIEvent.Event;
+import fr.free.movierenamer.ui.event.UIEvent;
+import fr.free.movierenamer.ui.event.UIEvent.Event;
 import fr.free.movierenamer.ui.bean.UIUpdate;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.worker.Worker;

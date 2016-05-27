@@ -36,7 +36,7 @@ import fr.free.movierenamer.utils.CacheObject;
 public abstract class ImageScraper<M extends Media> extends Scraper {
 
   public final List<ImageInfo> getImages(M media) throws Exception {
-    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get image list for '%s", getName(), media));
+    Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get images for '%s", getName(), media));
     CacheObject cache = getCache();
 
     IdInfo id = media.getMediaId();

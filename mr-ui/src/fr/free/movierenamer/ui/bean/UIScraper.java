@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.scraper.ScraperOptions;
 import fr.free.movierenamer.scraper.SearchScraper;
 import fr.free.movierenamer.searchinfo.Media;

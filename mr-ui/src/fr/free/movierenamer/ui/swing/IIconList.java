@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2015 Nicolas Magré
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,34 +17,19 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
+import javax.swing.Icon;
 
 /**
- * Class WebTextFieldLimit
+ * Interface IIconList
  *
  * @author Nicolas Magré
  */
-public class WebTextFieldLimit extends PlainDocument {
+public interface IIconList {
 
-  private final int limit;
-  private static final long serialVersionUID = 1L;
-
-  public WebTextFieldLimit(int limit) {
-    super();
-    this.limit = limit;
-  }
+  public Icon getIcon();
 
   @Override
-  public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-    if (str == null) {
-      return;
-    }
+  public String toString();
 
-    if ((getLength() + str.length()) <= limit) {
-      super.insertString(offset, str, attr);
-    }
-  }
-
+  public String getName();
 }

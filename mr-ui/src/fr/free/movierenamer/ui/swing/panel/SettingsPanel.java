@@ -18,13 +18,11 @@
 package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.extended.transition.effects.fade.FadeTransitionEffect;
-import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.list.WebList;
 import com.alee.laf.optionpane.WebOptionPane;
 import com.alee.laf.panel.WebPanel;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.settings.XMLSettings;
 import fr.free.movierenamer.settings.XMLSettings.IMediaProperty;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
@@ -32,21 +30,17 @@ import fr.free.movierenamer.settings.XMLSettings.ISimpleProperty;
 import fr.free.movierenamer.settings.XMLSettings.SettingsSubType;
 import fr.free.movierenamer.settings.XMLSettings.SettingsType;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IImage;
-import fr.free.movierenamer.ui.bean.UIEnum;
-import fr.free.movierenamer.ui.bean.UIEvent;
-import fr.free.movierenamer.ui.bean.UILang;
+import fr.free.movierenamer.ui.bean.settings.UIMovieTestSettings;
+import fr.free.movierenamer.ui.swing.IImage;
 import fr.free.movierenamer.ui.bean.settings.UIPasswordSettings;
 import fr.free.movierenamer.ui.bean.settings.UIPathSettings;
-import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.swing.panel.generator.SettingPanelGen;
 import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -69,7 +63,6 @@ import javax.swing.event.ListSelectionListener;
 public class SettingsPanel extends WebPanel {
 
     private final MovieRenamer mr;
-    private final UISettings settings = UISettings.getInstance();
     private final Map<SettingsTypeIcon, SettingPanelGen> panels;
     private final List<IProperty> properties;
     private final ImageListModel<SettingsTypeIcon> settingsListModel = new ImageListModel<>();
@@ -253,60 +246,8 @@ public class SettingsPanel extends WebPanel {
             tproperties.add(property);
             map.put(property.getSubType(), tproperties);
         }
-
-        // Add specific UI settings
-        //addTest(map, mti);
+        
         return map;
-    }
-
-    /**
-     * Replace all properties with name end with "name" by a "Class<T>" object.
-     *
-     * @param <T> XMLSettings.ISimpleProperty
-     * @param map
-     * @param name
-     * @param clazz
-     */
-    private <T extends ISimpleProperty> void addCustomUI(Map<SettingsSubType, List<ISimpleProperty>> map, String name, Class<T> clazz) {
-        Iterator<Map.Entry<SettingsSubType, List<ISimpleProperty>>> mapit = map.entrySet().iterator();
-        Map.Entry<SettingsSubType, List<ISimpleProperty>> entry;
-        ISimpleProperty property;
-
-        int index;
-        int pos;
-        while (mapit.hasNext()) {
-            entry = mapit.next();
-            List<ISimpleProperty> tproperties = entry.getValue();
-            Iterator<ISimpleProperty> it = tproperties.iterator();
-            List<T> customUI = new ArrayList<>();
-
-            index = -1;
-            pos = 0;
-            while (it.hasNext()) {
-                property = it.next();
-                if (property.name().endsWith(name)) {
-                    it.remove();
-                    if (index == -1) {
-                        index = pos;
-                    }
-
-                    try {
-                        customUI.add(clazz.getConstructor(XMLSettings.ISimpleProperty.class).newInstance(property));
-                    } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                        UISettings.LOGGER.log(Level.SEVERE, null, ex);
-                    }
-                }
-                pos++;
-            }
-
-            // Keep order
-            if (index != -1) {
-                tproperties.addAll(index, customUI);
-            } else {
-                tproperties.addAll(customUI);
-            }
-            map.put(entry.getKey(), tproperties);
-        }
     }
 
     /**

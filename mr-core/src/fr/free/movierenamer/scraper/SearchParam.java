@@ -1,6 +1,6 @@
 /*
- * Movie Renamer
- * Copyright (C) 2012-2014 Nicolas Magré
+ * movie-renamer-core
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.bean;
+package fr.free.movierenamer.scraper;
 
-import java.util.EventListener;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Interface IEventListener
+ * Class SearchParam
  *
  * @author Nicolas Magré
  */
-public interface IEventListener extends EventListener {
+public class SearchParam {
 
-  public void UIEventHandler(UIEvent.Event event, IEventInfo eventInfo, Object object, Object newObject);
+  private final Map<String, String> properties = new HashMap<>();
+
+  public String getProperty(String key) {
+    return properties.get(key);
+  }
+
+  public void setProperty(String key, String value) {
+    properties.put(key, value);
+  }
 }

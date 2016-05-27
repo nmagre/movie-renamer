@@ -18,8 +18,8 @@
 package fr.free.movierenamer.ui.worker.impl;
 
 import fr.free.movierenamer.info.ImageInfo;
-import fr.free.movierenamer.ui.bean.IImage;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.IImage;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.AbstractImageWorker;
 import java.awt.Dimension;

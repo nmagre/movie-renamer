@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scraper;
 
+import fr.free.movierenamer.exception.NoInfoException;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -52,7 +53,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
   }
 
   @Override
-  protected final List<M> search(String query, AvailableLanguages language) throws Exception {
+  protected final List<M> search(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     Locale lang = language.getLocale();
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to search media for '%s' in '%s'", getName(), query, lang.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();
@@ -74,9 +75,9 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
         }
       }
 
-      results = searchMedia(url, language);
+      results = searchMedia(url, sep, language);
     } catch (MalformedURLException ex) {
-      results = searchMedia(query, language);
+      results = searchMedia(query, sep, language);
     }
 
     Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d media for '%s' in '%s'", getName(), results.size(), query, lang.getDisplayLanguage(Locale.ENGLISH)));
@@ -85,9 +86,9 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
     return (cache != null) ? cache.putList(query, lang, genericClazz, results) : results;
   }
 
-  protected abstract List<M> searchMedia(String query, AvailableLanguages language) throws Exception;
+  protected abstract List<M> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception;
 
-  protected abstract List<M> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception;
+  protected abstract List<M> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception;
 
   public boolean hasUrlSupported(URL url) {
     return url.getHost().replace("www.", "").equals(getHost().replace("www.", ""));
@@ -111,7 +112,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
 
     List<? extends Media> results = null;
     try {
-      results = scraper.search(url.toExternalForm(), 0);
+      results = scraper.search(url.toExternalForm(), null);
     } catch (Exception ex) {
 
     }
@@ -151,9 +152,12 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
         search.setOriginalName(origtitle);
       }
 
+      Settings.LOGGER.log(Level.INFO, String.format("'%s' cache returns '%s' as info for '%s' in '%s'", getName(), info, search, lang.getDisplayLanguage(Locale.ENGLISH)));
+System.out.println("isGetOnlyLangDepInfo : " + settings.isGetOnlyLangDepInfo() + " hasSupportedLanguage : " + hasSupportedLanguage(language));
       if (!hasSupportedLanguage(language) && settings.isGetOnlyLangDepInfo()) {
         info.unsetUnsupportedLangInfo();
       }
+
       return info;
     }
 
@@ -162,7 +166,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
     if (id != null && id.getIdType() != getSupportedId()) {
       id = search.getMediaType().idLookup(getSupportedId(), id, search);
       if (id == null) {
-        return info;
+        throw new NoInfoException(String.format("'%s' is unable to get id for '%s'", getName(), search));
       }
     }
 
@@ -170,11 +174,12 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
     info = fetchMediaInfo(search, id, language);
     Settings.LOGGER.log(Level.INFO, String.format("'%s' returns '%s' as info for '%s' in '%s'", getName(), info, search, lang.getDisplayLanguage(Locale.ENGLISH)));
 
-    if (info == null) {
+    if (info == null) {// Should never happen
+      Settings.LOGGER.log(Level.INFO, String.format("'%s' info is null", getName()));
       return info;
     }
 
-    addCutomInfo(info, search, id, language);
+    addCustomInfo(info, search, id, language);
 
     // cache results
     if (cache != null) {
@@ -195,7 +200,7 @@ public abstract class MediaScraper<M extends Media, MI extends MediaInfo> extend
 
   protected abstract MI fetchMediaInfo(M searchResult, IdInfo id, AvailableLanguages language) throws Exception;
 
-  protected void addCutomInfo(MI info, M search, IdInfo id, AvailableLanguages language) {
+  protected void addCustomInfo(MI info, M search, IdInfo id, AvailableLanguages language) {
     // do nothing
   }
 

@@ -8,6 +8,7 @@
 
   <import file="../mr-core/build.xml"/>
   <import file="../mr-updater/build.xml"/>
+  <import file="nbproject/build-impl.xml"/>
 
   <target name="-pre-init" depends="jar-core,jar-updater">
     <property file="src/fr/free/movierenamer/ui/settings/UISettings.properties"/>
@@ -19,8 +20,6 @@
     <echo>Copying Movie Renamer updater</echo>
     <copy file="lib/Mr-updater.jar" tofile="dist/lib/Mr-updater.jar" />
   </target>
-
-  <import file="nbproject/build-impl.xml"/>
 
   <target name="jar-standalone" depends="init,compile,jar">
 
@@ -49,11 +48,11 @@
   <target name="mrInstaller" depends="init,compile,jar">
   <!-- check for java version and fail build if not the correct version -->
     <echo message="Java Version: ${java.version}"/>
-    <fail message="Unsupported Java version: ${java.version}. Make sure that the version of the Java compiler is 1.6">
+    <fail message="Unsupported Java version: ${java.version}. Make sure that the version of the Java compiler is 1.7">
         <condition>
             <not>
                 <or>
-                    <contains string="${java.version}" substring="1.6" casesensitive="false" />
+                    <contains string="${java.version}" substring="1.7" casesensitive="false" />
                 </or>
             </not>
         </condition>

@@ -1,6 +1,6 @@
 /*
- * Movie Renamer
- * Copyright (C) 2012-2014 Nicolas Magré
+ * movie-renamer-core
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,17 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.bean;
+package fr.free.movierenamer.exception;
 
 /**
- * Interface IEventInfo
+ * Class NoInfoException
  *
  * @author Nicolas Magré
  */
-public interface IEventInfo {
+public class NoInfoException extends Exception {
 
-  public Object getEventObject();
-  
-  public String getDisplayName();
+    private static final long serialVersionUID = 1L;
 
+    public NoInfoException(String e) {
+        super(e);
+    }
+
+    public NoInfoException(String msg, Throwable e) {
+        super(msg, e);
+    }
 }

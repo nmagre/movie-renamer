@@ -18,7 +18,7 @@ import org.junit.Test;
 public class FormatReplaceingTest {
 
   private static final Map<String, Object> replace = new HashMap<>();
-  private static final FormatReplacing fr = new FormatReplacing(replace);
+  private static final FormatReplacing fr = new FormatReplacing(replace, "<", ">");
 
   static {
     replace.put("empty", "");
@@ -116,9 +116,12 @@ public class FormatReplaceingTest {
     Assert.assertEquals("Az_$3d.m", fr.getReplacedString("<<str>=|Az_$3d.m|:d>"));
     Assert.assertEquals("Az_$3d.m=|Az_$3d|.m", fr.getReplacedString("<str>=|Az_$3d|.m"));
     Assert.assertEquals("Az_$3d.m=|B,Az,M_|$3d.m", fr.getReplacedString("<str>=|B,Az,M_|$3d.m"));
+    Assert.assertEquals("", fr.getReplacedString("<<str>=|B,Az_,M_|$3d.x>"));
+    Assert.assertEquals("", fr.getReplacedString("<<str>=|B,Az_,M_|$3d.m>"));
     Assert.assertEquals("Az_$3d.m 3 HD", fr.getReplacedString("<<str=Az_$3d.m> <digit> HD>"));
     Assert.assertEquals("Az_$3d.m3 HD", fr.getReplacedString("<<str=Az_$3d.m><digit> HD>"));
     Assert.assertEquals("V23 HD", fr.getReplacedString("<<array2=v2><digit> HD>"));
+    Assert.assertEquals("", fr.getReplacedString("<<empty!=720>p>"));
   }
 
 }

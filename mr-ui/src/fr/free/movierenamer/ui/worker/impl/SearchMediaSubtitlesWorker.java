@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.scraper.SubtitleScraper;
 import fr.free.movierenamer.searchinfo.Subtitle;
 import fr.free.movierenamer.ui.MovieRenamer;
@@ -33,54 +34,57 @@ import java.util.List;
  */
 public class SearchMediaSubtitlesWorker extends Worker<List<Subtitle>> {// TODO
 
-  private final UIFile media;
-  private final SubtitleScraper scraper;
+    private final UIFile media;
+    private final SubtitleScraper scraper;
+    private final SearchParam sep;
 
-  /**
-   * Constructor arguments
-   *
-   * @param mr
-   * @param media
-   * @param scraper
-   */
-  public SearchMediaSubtitlesWorker(MovieRenamer mr, UIFile media, SubtitleScraper scraper) {
-    super(mr);
-    this.media = media;
-    this.scraper = scraper;
-  }
-
-  @Override
-  public List<Subtitle> executeInBackground() throws Exception {
-    List<Subtitle> results = new ArrayList<>();
-
-    if (media != null && scraper != null) {
-      String search = media.getSearch();
-      results = scraper.search(search, 0);
-      int count = results.size();
-      for (int i = 0; i < count; i++) {
-        if (isCancelled()) {
-          return results;
-        }
-        double progress = (i + 1) / (double) count;
-        setProgress((int) (progress * 100));
-      }
+    /**
+     * Constructor arguments
+     *
+     * @param mr
+     * @param media
+     * @param sep
+     * @param scraper
+     */
+    public SearchMediaSubtitlesWorker(MovieRenamer mr, UIFile media, SearchParam sep, SubtitleScraper scraper) {
+        super(mr);
+        this.media = media;
+        this.scraper = scraper;
+        this.sep = sep;
     }
 
-    return results;
-  }
+    @Override
+    public List<Subtitle> executeInBackground() throws Exception {
+        List<Subtitle> results = new ArrayList<>();
 
-  @Override
-  protected void workerDone() throws Exception {
-    // TODO
-  }
+        if (media != null && scraper != null) {
+            String search = media.getSearch();
+            results = scraper.search(search, sep);
+            int count = results.size();
+            for (int i = 0; i < count; i++) {
+                if (isCancelled()) {
+                    return results;
+                }
+                double progress = (i + 1) / (double) count;
+                setProgress((int) (progress * 100));
+            }
+        }
 
-  @Override
-  public String getDisplayName() {
-    return ("worker.searchSubtitle");// FIXME i18n
-  }
+        return results;
+    }
 
-  @Override
-  public WorkerId getWorkerId() {
-    return WorkerId.SEARCH_SUBTITLE;
-  }
+    @Override
+    protected void workerDone() throws Exception {
+        // TODO
+    }
+
+    @Override
+    public String getDisplayName() {
+        return ("worker.searchSubtitle");// FIXME i18n
+    }
+
+    @Override
+    public WorkerId getWorkerId() {
+        return WorkerId.SEARCH_SUBTITLE;
+    }
 }

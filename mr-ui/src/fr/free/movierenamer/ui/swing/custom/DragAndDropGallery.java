@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing;
+package fr.free.movierenamer.ui.swing.custom;
 
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.ui.MovieRenamer;

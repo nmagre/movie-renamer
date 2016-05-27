@@ -284,7 +284,7 @@ public final class LocaleUtils {
           }
         }
       }
-      
+
       if (lang == null) {
         // check enum identifier
         for (String ident : cll.getIdentifier()) {
@@ -294,7 +294,7 @@ public final class LocaleUtils {
           }
         }
       }
-      
+
       if (lang != null) {
         break;
       }
@@ -379,7 +379,7 @@ public final class LocaleUtils {
           }
         }
       }
-      
+
       if (country == null) {
         // check enum identifier
         for (String ident : clc.getIdentifier()) {

@@ -64,7 +64,7 @@ public abstract class SubtitleScraper extends SearchScraper<Subtitle> {
   protected abstract List<SubtitleInfo> fetchSubtitlesInfo(Subtitle subtitle, AvailableLanguages language) throws Exception;
 
   @Override
-  public final List<Subtitle> search(String query, AvailableLanguages language) throws Exception {
+  public final List<Subtitle> search(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     Locale lang = language.getLocale();
     Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to search subtitles for '%s' in '%s'", getName(), query, lang.getDisplayLanguage(Locale.ENGLISH)));
     CacheObject cache = getCache();

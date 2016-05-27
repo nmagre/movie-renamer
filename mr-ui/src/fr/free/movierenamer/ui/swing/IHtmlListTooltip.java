@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2014 Nicolas Magré
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.bean;
-
-import javax.swing.Icon;
+package fr.free.movierenamer.ui.swing;
 
 /**
- * Interface IIconList
- *
+ * Interface IHtmlListTooltip
  * @author Nicolas Magré
  */
-public interface IIconList {
-
-  public Icon getIcon();
-
-  @Override
-  public String toString();
-
-  public String getName();
+public interface IHtmlListTooltip {
+  
+  public String getHtmlTooltip();
 }

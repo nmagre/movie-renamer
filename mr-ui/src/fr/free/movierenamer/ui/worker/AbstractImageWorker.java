@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.info.ImageInfo.ImageSize;
 import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.ui.bean.IImage;
+import fr.free.movierenamer.ui.swing.IImage;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.StringUtils;
@@ -47,133 +47,143 @@ import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
  */
 public abstract class AbstractImageWorker<T extends IImage> extends AbstractWorker<Icon, AbstractImageWorker<T>.ImageChunk> {
 
-  protected final List<T> images;
-  protected final Icon defaultImage;
-  protected final ImageSize size;
-  protected final WorkerId wid;
-  private final boolean downloadImage;
-  private final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images");
-  private final Dimension resize;
-  private static final long delay = 2628000L;
+    private static final long DELAY = 2628000L;
+    private static final int RETRY = 3;
+    private final File imageCacheDir = new File(Settings.APPFOLDER, "cache/images");// FIXME create a "real" cache
 
-  public AbstractImageWorker(WorkerId wid, List<T> images, ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
-    super();
-    this.wid = wid;
-    this.images = images;
-    this.defaultImage = defaultImage;
-    this.size = size;
-    this.downloadImage = downloadImage;
-    this.resize = resize;
-  }
+    private final boolean downloadImage;
+    private final Dimension resize;
+    protected final List<T> images;
+    protected final Icon defaultImage;
+    protected final ImageSize size;
+    protected final WorkerId wid;
 
-  @Override
-  @SuppressWarnings("unchecked")
-  protected Icon executeInBackground() throws Exception {// TODO add a retry
-    Icon res = defaultImage;
-    if (!imageCacheDir.exists()) {
-      if (!imageCacheDir.mkdirs()) {
-        throw new Exception("Unable to create images folder : " + imageCacheDir.toString());
-      }
+    public AbstractImageWorker(WorkerId wid, List<T> images, ImageSize size, Dimension resize, Icon defaultImage, boolean downloadImage) {
+        super();
+        this.wid = wid;
+        this.images = images;
+        this.defaultImage = defaultImage;
+        this.size = size;
+        this.downloadImage = downloadImage;
+        this.resize = resize;
     }
 
-    Calendar cal = Calendar.getInstance();
-    long ctime = cal.getTimeInMillis();
-
-    try {
-
-      InputStream input;
-      File imageFile;
-      ImageIcon img;
-
-      int total = images.size();
-      int count = 0;
-      for (T image : images) {
-        if (isCancelled()) {
-          break;
-        }
-
-        img = null;
-
-        URI uri = image.getUri(size);
-
-        if (downloadImage && uri != null) {
-          // We do not use the cache because there is many issue like high CPU usage, really slow,...
-          try {
-            String filename = new HexBinaryAdapter().marshal(StringUtils.getSha1(uri.toString()));
-            imageFile = new File(imageCacheDir, filename);
-            if (!imageFile.exists() || (ctime - imageFile.lastModified()) > delay) {
-
-              input = URIRequest.getInputStream(uri);
-              Image bimg = ImageIO.read(input);
-              if (resize != null) {
-                bimg = bimg.getScaledInstance(resize.width, resize.height, Image.SCALE_FAST);
-              }
-
-              BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), BufferedImage.TYPE_4BYTE_ABGR);
-              buffered.getGraphics().drawImage(bimg, 0, 0, null);
-
-              ImageIO.write(buffered, "PNG", imageFile);
-              img = new ImageIcon(bimg);
-            } else {
-              img = new ImageIcon(ImageIO.read(imageFile));
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Icon executeInBackground() throws Exception {
+        Icon res = defaultImage;
+        if (!imageCacheDir.exists()) {
+            if (!imageCacheDir.mkdirs()) {
+                throw new Exception("Unable to create images folder : " + imageCacheDir.toString());
             }
-          } catch (Exception ex) {
-            Settings.LOGGER.warning(ex.getMessage());
-            // We don't care about
-            img = null;
-          }
         }
 
-        if (img == null && defaultImage != null) {
-          img = (ImageIcon) defaultImage;
+        Calendar cal = Calendar.getInstance();
+        long ctime = cal.getTimeInMillis();
+
+        try {
+
+            InputStream input;
+            File imageFile;
+            ImageIcon img;
+
+            int total = images.size();
+            int count = 0;
+            for (T image : images) {
+                if (isCancelled()) {
+                    break;
+                }
+
+                img = null;
+
+                URI uri = image.getUri(size);
+
+                if (downloadImage && uri != null) {
+                    int lRetryTime = 0;
+                    for (int i = 0; i < RETRY; i++) {
+                        // We do not use the cache because there is many issue like high CPU usage, really slow,...
+                        try {
+                            String filename = new HexBinaryAdapter().marshal(StringUtils.getSha1(uri.toString()));
+                            imageFile = new File(imageCacheDir, filename);
+                            if (!imageFile.exists() || (ctime - imageFile.lastModified()) > DELAY) {
+
+                                input = URIRequest.getInputStream(uri);
+                                Image bimg = ImageIO.read(input);
+                                if (resize != null) {
+                                    bimg = bimg.getScaledInstance(resize.width, resize.height, Image.SCALE_FAST);
+                                }
+
+                                BufferedImage buffered = new BufferedImage(bimg.getWidth(null), bimg.getHeight(null), BufferedImage.TYPE_4BYTE_ABGR);
+                                buffered.getGraphics().drawImage(bimg, 0, 0, null);
+
+                                ImageIO.write(buffered, "PNG", imageFile);
+                                img = new ImageIcon(bimg);
+                            } else {
+                                img = new ImageIcon(ImageIO.read(imageFile));
+                            }
+
+                            break;
+                        } catch (Exception ex) {
+                            Settings.LOGGER.warning(ex.getMessage());
+                            // We don't care about
+                            img = null;
+                        }
+
+                        lRetryTime += Math.round((Settings.getInstance().getHttpRequestTimeOut()) * 0.08d);
+                        Thread.sleep(lRetryTime * 1000);
+                    }
+                }
+
+                if (img == null && defaultImage != null) {
+                    img = (ImageIcon) defaultImage;
+                }
+
+                publish(new ImageChunk(img, image.getId()));
+                count++;
+
+                setProgress((count * 100) / total);
+            }
+        } catch (Exception ex) {
+            UISettings.LOGGER.log(Level.SEVERE, String.format("%s%n%n%s", getName(), ClassUtils.getStackTrace(ex)));
         }
 
-        publish(new ImageChunk(img, image.getId()));
-        count++;
-
-        setProgress((count * 100) / total);
-      }
-    } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("%s%n%n%s", getName(), ClassUtils.getStackTrace(ex)));
+        return res;
     }
 
-    return res;
-  }
-
-  @Override
-  public Object getEventObject() {
-      return this;
-  }
-  
-  protected abstract String getName();
-
-  @Override
-  protected void workerDone() throws Exception {
-    // Do nothing
-  }
-
-  public class ImageChunk {
-
-    private final int id;
-    private final Icon icon;
-
-    public ImageChunk(Icon icon, int id) {
-      this.icon = icon;
-      this.id = id;
+    @Override
+    public Object getEventObject() {
+        return this;
     }
 
-    public int getId() {
-      return id;
+    protected abstract String getName();
+
+    @Override
+    protected void workerDone() throws Exception {
+        // Do nothing
     }
 
-    public Icon getIcon() {
-      return icon;
-    }
-  }
+    public class ImageChunk {
 
-  @Override
-  public WorkerId getWorkerId() {
-    return wid;
-  }
+        private final int id;
+        private final Icon icon;
+
+        public ImageChunk(Icon icon, int id) {
+            this.icon = icon;
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public Icon getIcon() {
+            return icon;
+        }
+    }
+
+    @Override
+    public WorkerId getWorkerId() {
+        return wid;
+    }
 
 }

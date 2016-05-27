@@ -17,14 +17,18 @@
  */
 package fr.free.movierenamer.ui.swing;
 
-import java.awt.event.ActionListener;
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.text.WebTextField;
+import fr.free.movierenamer.ui.swing.panel.generator.SettingPanelGen;
+import java.util.Map;
 
 /**
  * Interface TestActionListener
  *
  * @author Nicolas Magré
  */
-public interface ITestActionListener extends ActionListener {
+public interface ITestActionListener {
 
-  public String getResult();
+  
 }

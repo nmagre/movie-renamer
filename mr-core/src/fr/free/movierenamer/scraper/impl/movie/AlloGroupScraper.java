@@ -24,13 +24,14 @@ import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.ImageInfo.ImageCategoryProperty;
 import fr.free.movierenamer.info.ImageInfo.ImageProperty;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MotionPictureRating;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
+import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.info.VideoInfo.VideoProperty;
 import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScraperUtils;
@@ -58,426 +59,437 @@ import org.w3c.dom.Node;
  */
 public abstract class AlloGroupScraper extends MovieScraper {
 
-  private static final Pattern yearPattern = Pattern.compile("\\d{4}");
-  private static final Pattern runtimePattern = Pattern.compile("(\\d+)h\\s?(\\d+)min");
-  private static final Pattern castIdPattern = Pattern.compile("fichepersonne_gen_cpersonne=(\\d+)\\.html");
-  private static final String key = "0A12B34C56D78E9FULONYXTIZKJSHVPWQMGR";
-  private static final AvailableApiIds supportedId = AvailableApiIds.ALLOCINE;
-  public static final List<AvailableLanguages> avLangs = Arrays.asList(new AvailableLanguages[]{
-    AvailableLanguages.fr,
-    AvailableLanguages.pt,
-    AvailableLanguages.tr,
-    AvailableLanguages.de,
-    AvailableLanguages.es
-  });
+    private static final Pattern yearPattern = Pattern.compile("\\d{4}");
+    private static final Pattern runtimePattern = Pattern.compile("(\\d+)h\\s?(\\d+)min");
+    private static final Pattern castIdPattern = Pattern.compile("fichepersonne_gen_cpersonne=(\\d+)\\.html");
+    private static final String key = "0A12B34C56D78E9FULONYXTIZKJSHVPWQMGR";
+    private static final AvailableApiIds supportedId = AvailableApiIds.ALLOCINE;
+    public static final List<AvailableLanguages> avLangs = Arrays.asList(new AvailableLanguages[]{
+        AvailableLanguages.fr,
+        AvailableLanguages.pt,
+        AvailableLanguages.tr,
+        AvailableLanguages.de,
+        AvailableLanguages.es
+    });
 
-  protected interface ITag {
+    protected interface ITag {
 
-    public InfoTag getInfoTag(String str);
-  }
-
-  protected enum InfoTag {
-
-    Date_de_sortie,
-    Réalisé_par,
-    Genre,
-    Nationalité,
-    Spectateurs,
-    Titre_original,
-    Budget,
-    Distributeur,
-    unknown
-  }
-
-  private enum JobTag {
-
-    director,
-    actors
-  }
-
-  protected AlloGroupScraper(AvailableLanguages lang) {
-    super(lang);
-  }
-
-  @Override
-  public AvailableApiIds getSupportedId() {
-    return supportedId;
-  }
-
-  protected abstract String getSearchString();
-
-  protected abstract String getMoviePageString(IdInfo id);
-
-  protected abstract String getCastingPageString(IdInfo id);
-
-  protected abstract Pattern getIdPattern();
-
-  protected abstract Pattern getPersonIdPattern();
-
-  protected abstract String getImageHost();
-
-  protected abstract InfoTag getInfoTag(String str);
-
-  protected abstract MotionPictureRating getRatingScale();
-
-  protected String getLongId(String str) {
-    return null;
-  }
-
-  protected int getId(URL url) {
-    Matcher matcher = getIdPattern().matcher(url.toString());
-
-    if (matcher.find()) {
-      return Integer.parseInt(matcher.group(1));
+        public InfoTag getInfoTag(String str);
     }
 
-    throw new IllegalArgumentException(String.format("Cannot find allocine id: %s", url));
-  }
+    protected enum InfoTag {
 
-  protected Pattern getRuntimePattern() {
-    return runtimePattern;
-  }
-
-  @Override
-  public IdInfo getIdfromURL(URL url) {
-    try {
-      return new IdInfo(getId(url), supportedId);
-    } catch (Exception ex) {
+        Date_de_sortie,
+        Réalisé_par,
+        Genre,
+        Nationalité,
+        Spectateurs,
+        Titre_original,
+        Récompenses,
+        Budget,
+        Distributeur,
+        unknown
     }
 
-    return null;
-  }
+    private enum JobTag {
 
-  @Override
-  public URL getURL(IdInfo id) {
-    try {
-      return new URL("http", getHost(), getMoviePageString(id));
-    } catch (MalformedURLException ex) {
+        director,
+        actors
     }
 
-    return null;
-  }
-
-  public static String decodeUrl(String encodedUrl) {
-
-    String res = "";
-
-    for (int i = 0; i < encodedUrl.length(); i += 2) {
-      int ch = key.indexOf(encodedUrl.charAt(i));
-      int cl = key.indexOf(encodedUrl.charAt(i + 1));
-
-      res += Character.toChars((ch * 16) + cl)[0];
-    }
-    return res;
-  }
-
-  @Override
-  protected final List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
-    URL searchUrl = new URL("http", getHost(), "/" + getSearchString() + "/1/?q=" + URIRequest.encode(query));
-    return searchMedia(searchUrl, language);
-  }
-
-  @Override
-  protected final List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
-    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
-
-    // select movie results
-    List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='totalwidth noborder purehtml']//TR", dom);
-    List<Movie> results = new ArrayList<>();
-
-    for (Node node : nodes) {
-      Node retNode = XPathUtils.selectNode("TD/A", node);
-      if (retNode == null) {// Not a movie
-        continue;
-      }
-
-      String href = XPathUtils.getAttribute("href", retNode);
-      String longid = getLongId(href);
-      Matcher m = getIdPattern().matcher(href);
-      if (!m.find()) {
-        continue;
-      }
-
-      int id = Integer.parseInt(m.group(1));
-
-      URL thumb;
-      try {
-        String res = XPathUtils.getAttribute("src", XPathUtils.selectNode("IMG", retNode));
-        if (res.endsWith("gif")) {
-          thumb = null;
-        } else {
-          thumb = new URL(res);
-        }
-      } catch (Exception ex) {
-        thumb = null;
-      }
-
-      Node infoNode = XPathUtils.selectNode("TD[@class='totalwidth']//DIV[@style='margin-top:-5px;']", node);
-      String title = XPathUtils.selectNode("A", infoNode).getTextContent().trim();
-      String originalTitle = XPathUtils.selectNode("A/following-sibling::text()", infoNode).getTextContent().trim();
-      String year = XPathUtils.selectString("SPAN/BR[1]/preceding-sibling::node()", infoNode).trim();
-
-      originalTitle = originalTitle.replace("(", "").replace(")", "");
-      originalTitle = originalTitle.equals("") ? title : originalTitle;
-
-      m = yearPattern.matcher(year);
-      if (!m.find()) {
-        year = "-1";
-      }
-
-      results.add(new Movie(null, new IdInfo(id, longid, AvailableApiIds.ALLOCINE), title, originalTitle, thumb, Integer.parseInt(year)));
+    protected AlloGroupScraper(AvailableLanguages lang) {
+        super(lang);
     }
 
-    // movie page ?
-    if (results.isEmpty()) { // TODO a vérifier
-      try {
-        int alloid = getId(searchUrl);
-        String longid = getLongId(searchUrl.toString());
-        IdInfo id = new IdInfo(alloid, longid, AvailableApiIds.ALLOCINE);
-        MovieInfo info = fetchMediaInfo(new Movie(null, id, null, null, null, -1), id, language);
-        URL thumb;
-        try {
-          thumb = new URL(info.getPosterPath().toURL().toExternalForm());
-        } catch (Exception ex) {
-          thumb = null;
-        }
-        Movie movie = new Movie(null, id, info.getTitle(), info.getOriginalTitle(), thumb, info.getYear());
-
-        results.add(movie);
-
-      } catch (Exception e) {
-        // ignore, can't find movie
-      }
+    @Override
+    public AvailableApiIds getSupportedId() {
+        return supportedId;
     }
 
-    return results;
-  }
+    protected abstract String getSearchString();
 
-  @Override
-  protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
-    URL searchUrl = new URL("http", getHost(), getMoviePageString(id));
-    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+    protected abstract String getMoviePageString(IdInfo id);
 
-    Map<MediaInfo.MediaInfoProperty, String> info = new HashMap<>();
-    Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<>(MovieMultipleProperty.class);
-    List<String> genres = new ArrayList<>();
-    List<String> countries = new ArrayList<>();
-    List<String> studios = new ArrayList<>();
+    protected abstract String getCastingPageString(IdInfo id);
 
-    String title = XPathUtils.selectString("//DIV[@id='title']//SPAN", dom).trim();
-    info.put(MediaProperty.title, title);
+    protected abstract Pattern getIdPattern();
 
-    String certification = XPathUtils.selectString("//SPAN[@class='insist']", dom);
-    if (certification != null && !certification.equals("")) {
-      info.put(MovieInfo.MovieProperty.certification, certification);
-      Matcher matcher = Pattern.compile(".*(\\d{2})").matcher(certification);
+    protected abstract Pattern getPersonIdPattern();
 
-      MotionPictureRating mpr = getRatingScale();
-      if (mpr != null && matcher.find()) {
-        String code = matcher.group(1);
-        switch (mpr) {
-          case GERMANY:
-            code = "FSK " + code;
-            break;
-          case FRANCE:
-            code = "-" + code;
-            break;
-          case PORTUGAL:
-            code = "M/" + code;
-            break;
-        }
+    protected abstract String getImageHost();
 
-        String mpaacode = MotionPictureRating.getMpaaCode(code, mpr);
-        if (mpaacode != null) {
-          info.put(MovieInfo.MovieProperty.certificationCode, mpaacode);
-        }
-      }
+    protected abstract InfoTag getInfoTag(String str);
+
+    protected abstract MotionPictureRating getRatingScale();
+
+    protected String getLongId(String str) {
+        return null;
     }
 
-    List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='content']//TH", dom);
-    for (Node node : nodes) {
-      InfoTag tag = getInfoTag(XPathUtils.selectString("SPAN", node).replace(" ", "_"));
-      switch (tag) {
-        case Date_de_sortie:
-          Node retNode = XPathUtils.selectNode("//SPAN[@itemprop='datePublished']", node);
-          if (retNode != null) {
-            String date = XPathUtils.getAttribute("content", retNode);
-            Pattern pattern = Pattern.compile("(\\d{4})-\\d{2}-\\d{2}");
-            Matcher matcher = pattern.matcher(date);
-            if (matcher.find()) {
-              info.put(MediaProperty.year, matcher.group(1));
-            }
-            info.put(VideoProperty.releasedDate, date);
-          }
+    protected int getId(URL url) {
+        Matcher matcher = getIdPattern().matcher(url.toString());
 
-          retNode = XPathUtils.selectNode("../TD//SPAN[@itemprop='duration']", node);
-          if (retNode != null) {
-            Matcher m = getRuntimePattern().matcher(retNode.getTextContent().trim());
-            if (m.find()) {
-              info.put(VideoProperty.runtime, String.valueOf(Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2))));
-            }
-          }
-          break;
-        case Genre:
-          genres.addAll(Arrays.asList(explodeValue(XPathUtils.selectString("../TD", node))));
-          break;
-        case Nationalité:
-          countries.addAll(parseCountry(XPathUtils.selectNode("../TD", node)));
-          break;
-      }
-    }
-
-    nodes = XPathUtils.selectNodes("//DIV[@class='expendTable']//TABLE//TH", dom);
-    for (Node node : nodes) {
-      InfoTag tag = getInfoTag(node.getTextContent().replace(" ", "_"));
-
-      switch (tag) {
-        case Titre_original:
-          info.put(MediaProperty.originalTitle, XPathUtils.selectString("text()", node.getNextSibling()));
-          break;
-        case Budget:
-          String budget = XPathUtils.selectString("text()", node.getNextSibling());
-          if (!budget.equals("-")) {
-            info.put(MovieInfo.MovieProperty.budget, budget);
-          }
-          break;
-        case Distributeur:
-          studios.add(XPathUtils.selectString("*", node.getNextSibling()));
-          break;
-      }
-    }
-
-    List<Node> retNodes = XPathUtils.selectNodes("//SPAN[@class='note']", dom);
-    if (retNodes != null && !retNodes.isEmpty()) {
-      Node node = retNodes.size() >= 2 ? retNodes.get(1) : retNodes.get(0);
-      Double rating = Double.parseDouble(node.getTextContent().trim().replace(",", "."));
-      rating *= 2;
-      info.put(MediaProperty.rating, "" + rating);
-    }
-
-    Node retNode = XPathUtils.selectNode("//SPAN[@itemprop='ratingCount']", dom);
-    if (retNode != null) {
-      info.put(MovieInfo.MovieProperty.votes, retNode.getTextContent().trim());
-    }
-
-    retNode = XPathUtils.selectNode("//DIV[@class='margin_20b']/P[@itemprop='description']", dom);
-    if (retNode != null) {
-      String overview = retNode.getTextContent().trim();
-      if (overview.length() == 0) {
-        Node node = retNode.getNextSibling();
-        overview = node.getTextContent().trim();
-      }
-      info.put(MovieInfo.MovieProperty.overview, overview);
-    }
-
-    retNode = XPathUtils.selectNode("//DIV[@class='poster']//IMG[@itemprop='image']", dom);
-    if (retNode != null) {
-      String url = XPathUtils.getAttribute("src", retNode);
-      info.put(MovieInfo.MovieProperty.posterPath, url.replaceAll(".*\\/medias", "http://" + getImageHost() + "/medias"));
-    }
-
-    List<String> tags = new ArrayList<>();
-    nodes = XPathUtils.selectNodes("//DIV[@class='box_right_col']/DIV[@class='titlebar_01']/SPAN[contains(., 'Tags')]/parent::node()/parent::node()/UL/LI", dom);
-    for (Node node : nodes) {
-      tags.add(StringUtils.capitalizedLetter(XPathUtils.selectString("SPAN", node), true));
-    }
-
-    List<IdInfo> ids = new ArrayList<>();
-    ids.add(movie.getMediaId());
-    ids.add(id);
-
-    multipleFields.put(MovieMultipleProperty.studios, studios);
-    multipleFields.put(MovieMultipleProperty.tags, tags);
-    multipleFields.put(MovieMultipleProperty.countries, countries);
-    multipleFields.put(MovieMultipleProperty.genres, genres);
-
-    return new MovieInfo(info, multipleFields, ids);
-  }
-
-  @Override
-  protected List<CastingInfo> fetchCastingInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
-
-    URL searchUrl = new URL("http", getHost(), getCastingPageString(id));
-    List<CastingInfo> casting = new ArrayList<CastingInfo>();
-
-    Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
-
-    List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='media_list_02 media_list_hl margin_10b']/UL/LI", dom);
-    for (Node node : nodes) {
-      String job = XPathUtils.getAttribute("itemprop", node);
-
-      JobTag tag;
-      try {
-        tag = JobTag.valueOf(job);
-      } catch (Exception ex) {
-        tag = JobTag.actors;
-
-      }
-
-      Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class
-      );
-      String img = XPathUtils.getAttribute("src", XPathUtils.selectNode("SPAN/IMG", node));
-
-      ImageInfo imginfo = null;
-      if (!img.contains("empty_photo")) {
-        String pid = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A", node));
-        Matcher matcher = castIdPattern.matcher(pid);
-        int cid = pid.hashCode();
         if (matcher.find()) {
-          try {
-            cid = Integer.parseInt(matcher.group(1));
-          } catch (NumberFormatException ex) {
-          }
+            return Integer.parseInt(matcher.group(1));
         }
 
-        Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
-        fields.put(ImageProperty.urlTumb, img);
-        fields.put(ImageProperty.urlMid, img.replace("r_120_160", "r_640_600"));
-        fields.put(ImageProperty.url, img.replace("r_120_160/b_1_d6d6d6/", "").replaceAll("web.img\\d", "web.img6"));
+        throw new IllegalArgumentException(String.format("Cannot find allocine id: %s", url));
+    }
 
-        imginfo = new ImageInfo(cid, fields, ImageCategoryProperty.actor);
-      }
+    protected Pattern getRuntimePattern() {
+        return runtimePattern;
+    }
 
-      personFields.put(PersonProperty.name, XPathUtils.selectString("P/A", node).trim());
-
-      Node pnode = XPathUtils.selectNode("P/A", node);
-      if (pnode != null) {
-        String url = XPathUtils.getAttribute("href", pnode);
-        Matcher m = getPersonIdPattern().matcher(url);
-
-        if (m.find()) {
-          personFields.put(PersonProperty.id, m.group(1));
+    @Override
+    public IdInfo getIdfromURL(URL url) {
+        try {
+            return new IdInfo(getId(url), supportedId);
+        } catch (Exception ex) {
         }
-      }
 
-      switch (tag) {
-        case actors:
-          String character = XPathUtils.selectString("P[@class='fs11 lighten_hl']", node);
-          character = character.replaceAll(".*:", "").trim();
-          personFields.put(PersonProperty.character, character);
-          personFields.put(PersonProperty.job, CastingInfo.ACTOR);
-          break;
-        case director:
-          personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
-          break;
-      }
-      casting.add(new CastingInfo(personFields, imginfo));
+        return null;
     }
 
-    return casting;
-  }
+    @Override
+    public URL getURL(IdInfo id) {
+        try {
+            return new URL("http", getHost(), getMoviePageString(id));
+        } catch (MalformedURLException ex) {
+        }
 
-  @Override
-  protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
-    List<ImageInfo> images = new ArrayList<ImageInfo>();
-    IdInfo imdbId = ScraperUtils.movieIdLookup(AvailableApiIds.IMDB, movie.getMediaId(), movie);
-    if (imdbId != null) {
-      movie.setImdbId(imdbId);
-      return super.fetchImagesInfo(movie);
+        return null;
     }
 
-    // TODO
-    /*
+    public static String decodeUrl(String encodedUrl) {
+
+        String res = "";
+
+        for (int i = 0; i < encodedUrl.length(); i += 2) {
+            int ch = key.indexOf(encodedUrl.charAt(i));
+            int cl = key.indexOf(encodedUrl.charAt(i + 1));
+
+            res += Character.toChars((ch * 16) + cl)[0];
+        }
+        return res;
+    }
+
+    @Override
+    protected final List<Movie> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
+        URL searchUrl = new URL("http", getHost(), "/" + getSearchString() + "/1/?q=" + URIRequest.encode(query));
+        return searchMedia(searchUrl, sep, language);
+    }
+
+    @Override
+    protected final List<Movie> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
+        Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+
+        // select movie results
+        List<Node> nodes = XPathUtils.selectNodes("//TABLE[@class='totalwidth noborder purehtml']//TR", dom);
+        List<Movie> results = new ArrayList<>();
+
+        for (Node node : nodes) {
+            Node retNode = XPathUtils.selectNode("TD/A", node);
+            if (retNode == null) {// Not a movie
+                continue;
+            }
+
+            String href = XPathUtils.getAttribute("href", retNode);
+            String longid = getLongId(href);
+            Matcher m = getIdPattern().matcher(href);
+            if (!m.find()) {
+                continue;
+            }
+
+            int id = Integer.parseInt(m.group(1));
+
+            URL thumb;
+            try {
+                String res = XPathUtils.getAttribute("src", XPathUtils.selectNode("IMG", retNode));
+                if (res.endsWith("gif")) {
+                    thumb = null;
+                } else {
+                    thumb = new URL(res);
+                }
+            } catch (Exception ex) {
+                thumb = null;
+            }
+
+            Node infoNode = XPathUtils.selectNode("TD[@class='totalwidth']//DIV[@style='margin-top:-5px;']", node);
+            String title = XPathUtils.selectNode("A", infoNode).getTextContent().trim();
+            String originalTitle = XPathUtils.selectNode("A/following-sibling::text()", infoNode).getTextContent().trim();
+            String year = XPathUtils.selectString("SPAN/BR[1]/preceding-sibling::node()", infoNode).trim();
+
+            originalTitle = originalTitle.replace("(", "").replace(")", "");
+            originalTitle = originalTitle.equals("") ? title : originalTitle;
+
+            m = yearPattern.matcher(year);
+            if (!m.find()) {
+                year = "-1";
+            }
+
+            results.add(new Movie(null, new IdInfo(id, longid, AvailableApiIds.ALLOCINE), title, originalTitle, thumb, Integer.parseInt(year)));
+        }
+
+        // movie page ?
+        if (results.isEmpty()) { // TODO a vérifier
+            try {
+                int alloid = getId(searchUrl);
+                String longid = getLongId(searchUrl.toString());
+                IdInfo id = new IdInfo(alloid, longid, AvailableApiIds.ALLOCINE);
+                MovieInfo info = fetchMediaInfo(new Movie(null, id, null, null, null, -1), id, language);
+                URL thumb;
+                try {
+                    thumb = new URL(info.getPosterPath().toURL().toExternalForm());
+                } catch (Exception ex) {
+                    thumb = null;
+                }
+                Movie movie = new Movie(null, id, info.getTitle(), info.getOriginalTitle(), thumb, info.getYear());
+
+                results.add(movie);
+
+            } catch (Exception e) {
+                // ignore, can't find movie
+            }
+        }
+
+        return results;
+    }
+
+    @Override
+    protected MovieInfo fetchMediaInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
+        URL searchUrl = new URL("http", getHost(), getMoviePageString(id));
+        Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+
+        Map<MediaInfo.MediaInfoProperty, String> info = new HashMap<>();
+        Map<MovieMultipleProperty, List<String>> multipleFields = new EnumMap<>(MovieMultipleProperty.class);
+        List<String> genres = new ArrayList<>();
+        List<String> countries = new ArrayList<>();
+        List<String> studios = new ArrayList<>();
+
+        // Title
+        String title = XPathUtils.selectString("//DIV[contains(@class,'titlebar-title')]", dom).trim();
+        info.put(MediaProperty.title, title);
+
+        List<Node> nodes = XPathUtils.selectNodes("//DIV[contains(@class, 'card-movie')]//DIV[@class='meta-body-item']", dom);
+        for (Node node : nodes) {
+            InfoTag tag = getInfoTag(XPathUtils.selectString("SPAN", node).replace(" ", "_"));
+
+            switch (tag) {
+                case Date_de_sortie:
+                    Node infoNode = XPathUtils.selectNode("//A", node);
+                    if (infoNode != null) {
+                        String date = XPathUtils.getAttribute("href", infoNode);
+                        Pattern pattern = Pattern.compile("(\\d{4})-\\d{2}-\\d{2}");
+                        Matcher matcher = pattern.matcher(date);
+                        if (matcher.find()) {
+                            info.put(MediaProperty.year, matcher.group(1));
+                        }
+                        info.put(VideoProperty.releasedDate, date);
+                    }
+
+                    infoNode = XPathUtils.selectNode("../following-sibling::text()[1]", infoNode);
+                    if (infoNode != null) {
+                        Matcher m = getRuntimePattern().matcher(infoNode.getTextContent().trim());
+                        if (m.find()) {
+                            info.put(VideoProperty.runtime, String.valueOf(Integer.parseInt(m.group(1)) * 60 + Integer.parseInt(m.group(2))));
+                        }
+                    }
+                    break;
+                case Genre:
+                    List<Node> infoNodes = XPathUtils.selectNodes("//A", node);
+                    for (Node genre : infoNodes) {
+                        genres.add(genre.getTextContent());
+                    }
+                    break;
+                case Nationalité:
+                    infoNodes = XPathUtils.selectNodes("//A", node);
+                    countries.addAll(parseCountry(infoNodes));
+                    break;
+            }
+        }
+
+        Node infoNode = XPathUtils.selectNode("//SECTION[contains(@class , 'ovw-synopsis')]", dom);
+
+        // Mpaa
+        String certification = XPathUtils.selectString("//SPAN[contains(@class, 'ovw-synopsis-certificate')]", infoNode);
+        if (certification != null && !certification.equals("")) {
+            info.put(MovieProperty.certification, certification);
+            Matcher matcher = Pattern.compile(".*(\\d{2})").matcher(certification);
+
+            MotionPictureRating mpr = getRatingScale();
+            if (mpr != null && matcher.find()) {
+                String code = matcher.group(1);
+                switch (mpr) {
+                    case GERMANY:
+                        code = "FSK " + code;
+                        break;
+                    case FRANCE:
+                        code = "-" + code;
+                        break;
+                    case PORTUGAL:
+                        code = "M/" + code;
+                        break;
+                }
+
+                String mpaacode = MotionPictureRating.getMpaaCode(code, mpr);
+                if (mpaacode != null) {
+                    info.put(MovieProperty.certificationCode, mpaacode);
+                }
+            }
+        }
+
+        // Synopsis
+        Node retNode = XPathUtils.selectNode("DIV[@itemprop = 'description']", infoNode);
+        if (retNode != null) {
+            String overview = retNode.getTextContent().trim();
+            info.put(MovieProperty.overview, overview);
+        }
+
+        nodes = XPathUtils.selectNodes("//DIV[@class = 'item']/SPAN", infoNode);
+        for (Node node : nodes) {
+            InfoTag tag = getInfoTag(node.getTextContent().replace(" ", "_"));
+
+            switch (tag) {
+                case Titre_original:
+                    info.put(MediaProperty.originalTitle, XPathUtils.selectString("text()", node.getNextSibling()));
+                    break;
+                case Budget:
+                    String budget = XPathUtils.selectString("text()", node.getNextSibling());
+                    if (!budget.equals("-")) {
+                        info.put(MovieProperty.budget, budget);
+                    }
+                    break;
+                case Récompenses:
+                    info.put(MovieProperty.award, XPathUtils.selectString("text()", node.getNextSibling()));
+                    break;
+                case Distributeur:
+                    studios.add(XPathUtils.selectString("*", node.getNextSibling()));
+                    break;
+            }
+        }
+
+        // votes : //DIV[@class = 'rating-item']//SPAN[@itemprop = 'ratingValue']/..//SPAN[@itemprop = 'ratingCount']
+        // notes : //DIV[@class = 'rating-item']//SPAN[@itemprop = 'ratingValue'] 
+        Node votes = XPathUtils.selectNode("//DIV[@class = 'rating-item']//SPAN[@itemprop = 'ratingValue']", dom);
+        if (votes != null) {
+            try {
+                Node rate = XPathUtils.selectNode("..//SPAN[@itemprop = 'ratingCount']", votes);
+                Double rating = Double.parseDouble(rate.getTextContent().trim().replace(",", "."));
+                rating *= 2;
+                info.put(MovieProperty.votes, votes.getTextContent().trim());
+                info.put(MediaProperty.rating, "" + rating);
+            } catch (Exception ex) {
+            }
+        }
+
+        retNode = XPathUtils.selectNode("//DIV[@class='poster']//IMG[@itemprop='image']", dom);
+        if (retNode != null) {
+            String url = XPathUtils.getAttribute("src", retNode);
+            info.put(MovieProperty.posterPath, url.replaceAll(".*\\/medias", "http://" + getImageHost() + "/medias"));
+        }
+
+        List<String> tags = new ArrayList<>();
+        nodes = XPathUtils.selectNodes("//DIV[@class='box_right_col']/DIV[@class='titlebar_01']/SPAN[contains(., 'Tags')]/parent::node()/parent::node()/UL/LI", dom);
+        for (Node node : nodes) {
+            tags.add(StringUtils.capitalizedLetter(XPathUtils.selectString("SPAN", node), true));
+        }
+
+        List<IdInfo> ids = new ArrayList<>();
+        ids.add(movie.getMediaId());
+        ids.add(id);
+
+        multipleFields.put(MovieMultipleProperty.studios, studios);
+        multipleFields.put(MovieMultipleProperty.tags, tags);
+        multipleFields.put(MovieMultipleProperty.countries, countries);
+        multipleFields.put(MovieMultipleProperty.genres, genres);
+
+        return new MovieInfo(info, multipleFields, ids);
+    }
+
+    @Override
+    protected List<CastingInfo> fetchCastingInfo(Movie movie, IdInfo id, AvailableLanguages language) throws Exception {
+
+        URL searchUrl = new URL("http", getHost(), getCastingPageString(id));
+        List<CastingInfo> casting = new ArrayList<CastingInfo>();
+
+        Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
+
+        List<Node> nodes = XPathUtils.selectNodes("//DIV[@class='media_list_02 media_list_hl margin_10b']/UL/LI", dom);
+        for (Node node : nodes) {
+            String job = XPathUtils.getAttribute("itemprop", node);
+
+            JobTag tag;
+            try {
+                tag = JobTag.valueOf(job);
+            } catch (Exception ex) {
+                tag = JobTag.actors;
+
+            }
+
+            Map<PersonProperty, String> personFields = new EnumMap<PersonProperty, String>(PersonProperty.class
+            );
+            String img = XPathUtils.getAttribute("src", XPathUtils.selectNode("SPAN/IMG", node));
+
+            ImageInfo imginfo = null;
+            if (!img.contains("empty_photo")) {
+                String pid = XPathUtils.getAttribute("href", XPathUtils.selectNode("//A", node));
+                Matcher matcher = castIdPattern.matcher(pid);
+                int cid = pid.hashCode();
+                if (matcher.find()) {
+                    try {
+                        cid = Integer.parseInt(matcher.group(1));
+                    } catch (NumberFormatException ex) {
+                    }
+                }
+
+                Map<ImageInfo.ImageProperty, String> fields = new HashMap<ImageInfo.ImageProperty, String>();
+                fields.put(ImageProperty.urlTumb, img);
+                fields.put(ImageProperty.urlMid, img.replace("r_120_160", "r_640_600"));
+                fields.put(ImageProperty.url, img.replace("r_120_160/b_1_d6d6d6/", "").replaceAll("web.img\\d", "web.img6"));
+
+                imginfo = new ImageInfo(cid, fields, ImageCategoryProperty.actor);
+            }
+
+            personFields.put(PersonProperty.name, XPathUtils.selectString("P/A", node).trim());
+
+            Node pnode = XPathUtils.selectNode("P/A", node);
+            if (pnode != null) {
+                String url = XPathUtils.getAttribute("href", pnode);
+                Matcher m = getPersonIdPattern().matcher(url);
+
+                if (m.find()) {
+                    personFields.put(PersonProperty.id, m.group(1));
+                }
+            }
+
+            switch (tag) {
+                case actors:
+                    String character = XPathUtils.selectString("P[@class='fs11 lighten_hl']", node);
+                    character = character.replaceAll(".*:", "").trim();
+                    personFields.put(PersonProperty.character, character);
+                    personFields.put(PersonProperty.job, CastingInfo.ACTOR);
+                    break;
+                case director:
+                    personFields.put(PersonProperty.job, CastingInfo.DIRECTOR);
+                    break;
+            }
+            casting.add(new CastingInfo(personFields, imginfo));
+        }
+
+        return casting;
+    }
+
+    @Override
+    protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
+        List<ImageInfo> images = new ArrayList<ImageInfo>();
+        IdInfo imdbId = ScraperUtils.movieIdLookup(AvailableApiIds.IMDB, movie.getMediaId(), movie, settings.getSearchScraperLang());
+        if (imdbId != null) {
+            movie.setImdbId(imdbId);
+            return super.fetchImagesInfo(movie);
+        }
+
+        // TODO
+        /*
      //    URL searchUrl = new URL("http", getHost(), "/rest/v" + version + "/movie?partner=" + apikey + "&profile=large&filter=movie&striptags=synopsis,synopsisshort&format=json&code=" + movie.getMediaId());
      URL searchUrl = createUrl("movie", params);
      JSONObject json = URIRequest.getJsonDocument(searchUrl.toURI());
@@ -507,22 +519,21 @@ public abstract class AlloGroupScraper extends MovieScraper {
      }
      }
      }*/
-    return images;
-  }
+        return images;
+    }
 
-  protected List<String> parseCountry(Node node) {
-    return Arrays.asList(explodeValue(XPathUtils.selectString("DIV", node)));
-  }
+    protected List<String> parseCountry(List<Node> nodes) {
+        List<String> countries = new ArrayList<>();
+        for (Node country : nodes) {
+            countries.add(country.getTextContent());
+        }
+        
+        return countries;
+    }
 
-  private String[] explodeValue(String value) {
-    String res = value.replace("\n", "").replaceAll("\\s+", " ");
-    res = res.replace(", ", ",");
-    return res.split(",");
-  }
-
-  @Override
-  public InfoQuality getQuality() {
-    return InfoQuality.POOR;
-  }
+    @Override
+    public InfoQuality getQuality() {
+        return InfoQuality.POOR;
+    }
 
 }

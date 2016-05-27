@@ -17,8 +17,8 @@
  */
 package fr.free.movierenamer.ui.swing.panel.info;
 
-import fr.free.movierenamer.ui.bean.IEventInfo;
-import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.event.IEventInfo;
+import fr.free.movierenamer.ui.event.UIEvent;
 import fr.free.movierenamer.ui.swing.panel.generator.PanelGenerator;
 import javax.swing.Icon;
 

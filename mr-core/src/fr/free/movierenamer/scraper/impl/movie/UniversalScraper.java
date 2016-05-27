@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.scraper.impl.movie;
 
+import fr.free.movierenamer.exception.NoInfoException;
 import fr.free.movierenamer.scraper.ScraperThread;
 import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
@@ -31,12 +32,12 @@ import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.scraper.MovieScraper;
 import fr.free.movierenamer.scraper.ScraperManager;
 import fr.free.movierenamer.scraper.ScraperOptions;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsProperty;
 import fr.free.movierenamer.utils.ClassUtils;
-import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.net.URL;
@@ -47,11 +48,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 /**
  * Class UniversalScraper : Search movie on several scraper
@@ -84,7 +85,7 @@ public class UniversalScraper extends MovieScraper {
   }
 
   public UniversalScraper() {
-    super(LocaleUtils.AvailableLanguages.values());
+    super();// No language to make sure "hasSupportedLanguage" return false
     searchScraper = ScraperManager.getScraper(settings.getUniversalSearchMovieScraper());
   }
 
@@ -124,22 +125,22 @@ public class UniversalScraper extends MovieScraper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     //URL searchUrl = new URL("http", host, "/find?s=tt&ref_=fn_tt&q=" + URIRequest.encode(query));
     this.query = query;
-    return searchMedia((URL) null, language);
+    return searchMedia((URL) null, sep, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     List<Movie> movies;
 
     searchScraper.setLanguage(language);
 
     if (searchUrl != null) {
-      movies = searchScraper.search(searchUrl.toString(), 0);
+      movies = searchScraper.search(searchUrl.toString(), sep);
     } else {
-      movies = searchScraper.search(query, 0);
+      movies = searchScraper.search(query, sep);
     }
 
     if (movies.isEmpty()) {
@@ -151,7 +152,7 @@ public class UniversalScraper extends MovieScraper {
           continue;
         }
 
-        movies = scraper.search(query, 0);
+        movies = scraper.search(query, sep);
         if (!movies.isEmpty()) {
           break;
         }
@@ -200,18 +201,13 @@ public class UniversalScraper extends MovieScraper {
       try {
         Future<MovieInfo> future = pool.take();
         MovieInfo movieInfo = future.get();
-
-        if (movieInfo == null) {// FIXME should not be null
-          Settings.LOGGER.log(Level.SEVERE, String.format("INFO IS NULL : %s", searchScraper.getClass()));
-          continue;
-        }
+        Class<?> provider = futureProvider.get(future);
 
         for (IdInfo idInf : movieInfo.getIdsInfo()) {
           addIdInfo(idsInfo, idInf);
         }
 
         // Store search scraper infos as default values
-        Class<?> provider = futureProvider.get(future);
         boolean asDefault = provider.equals(searchScraper.getClass());
         setInfoValue(defaultInfo, info, movieInfo, provider, asDefault);
         setMultipleFieldsValue(defaultMultipleInfo, multipleInfo, movieInfo, provider, asDefault);
@@ -220,8 +216,16 @@ public class UniversalScraper extends MovieScraper {
         List<CastingInfo> casting = movieInfo.getCasting();
         setCasting(defaultCastings, castings, casting, provider);
 
+      } catch (ExecutionException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof NoInfoException) {
+          Settings.LOGGER.info(cause.getMessage());
+        } else {
+          Settings.LOGGER.severe(ClassUtils.getStackTrace(ex));
+        }
+
       } catch (Exception ex) {
-        Settings.LOGGER.warning(ClassUtils.getStackTrace(ex));
+        Settings.LOGGER.severe(ClassUtils.getStackTrace(ex));
       }
     }
 
@@ -262,7 +266,7 @@ public class UniversalScraper extends MovieScraper {
       nvalue = movieInfo.get(property);
 
       sprop = scraperOptions.get(property);
-      if (sprop != null && (asDefault || settings.getMovieScraperOptionClass(sprop).equals(provider))) {
+      if (sprop != null && nvalue != null && (asDefault || settings.getMovieScraperOptionClass(sprop).equals(provider))) {
         if (asDefault && defaultInfo.get(property) != null) {
           continue;
         }
@@ -287,7 +291,7 @@ public class UniversalScraper extends MovieScraper {
       nvalue = movieInfo.get(property);
 
       sprop = scraperOptions.get(property);
-      if (sprop != null && (asDefault || settings.getMovieScraperOptionClass(sprop).equals(provider))) {
+      if (sprop != null && nvalue != null && (asDefault || settings.getMovieScraperOptionClass(sprop).equals(provider))) {
         if (asDefault && defaultInfo.get(property) != null) {
           continue;
         }

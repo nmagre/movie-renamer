@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.bean;
 
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.info.MediaInfo.InfoProperty;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,47 +28,59 @@ import java.util.List;
  * @author Nicolas Magré
  */
 abstract public class UIMediaInfo<T extends MediaInfo> {
-    
+
     protected T info;
-    
+
     public UIMediaInfo(T info) {
         this.info = info;
     }
-    
+
     public void setInfo(T info) {
         this.info = info;
     }
-    
+
     public void setIdsInfo(List<IdInfo> ids) {
         info.setIdsInfo(ids);
     }
-    
+
     public List<IdInfo> getIds() {
-        return info.getIdsInfo();
+        List<IdInfo> idInfos = info.getIdsInfo();
+        if (idInfos == null) {
+            idInfos = new ArrayList<>();
+        }
+        return idInfos;
     }
-    
+
     public String getTitle() {
-        return info.getTitle();
+        String title = info.getTitle();
+        if (title == null) {
+            title = "";
+        }
+        return title;
     }
-    
+
     public Integer getYear() {
         return info.getYear();
     }
-    
+
     public Double getRating() {
         return info.getRating();
     }
-    
+
     public MediaInfo getInfo() {
         return info;
     }
-    
+
     public String get(MediaInfo.MediaInfoProperty key) {
-        return info.get(key);
+        String value = info.get(key);
+        if (value == null) {
+            value = "";
+        }
+        return value;
     }
-    
+
     public void set(MediaInfo.MediaInfoProperty key, String value) {
         info.set(key, value);
     }
-    
+
 }

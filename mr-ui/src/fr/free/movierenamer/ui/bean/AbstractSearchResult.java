@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.swing.IImage;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.scraper.Scraper;
 import fr.free.movierenamer.searchinfo.Hyperlink;

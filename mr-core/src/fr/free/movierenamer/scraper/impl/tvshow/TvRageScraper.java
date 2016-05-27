@@ -40,6 +40,7 @@ import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.TvShowInfo;
 import fr.free.movierenamer.info.TvShowInfo.TvShowProperty;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.scraper.TvShowScraper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.utils.DateFormat;
@@ -87,13 +88,13 @@ public class TvRageScraper extends TvShowScraper {
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<TvShow> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/feeds/search.php?show=" + URIRequest.encode(query));
-    return searchMedia(searchUrl, language);
+    return searchMedia(searchUrl, sep, language);
   }
 
   @Override
-  protected List<TvShow> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<TvShow> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getXmlDocument(searchUrl.toURI());
 
     List<Node> nodes = XPathUtils.selectNodes("Results/show", dom);

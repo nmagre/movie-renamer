@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.utils.LocaleUtils.Language;
 import java.util.Locale;
 import javax.swing.Icon;

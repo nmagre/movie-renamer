@@ -23,6 +23,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.EpisodeInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.TvShowInfo;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.scraper.TvShowScraper;
 import fr.free.movierenamer.searchinfo.TvShow;
 import fr.free.movierenamer.settings.Settings;
@@ -74,14 +75,14 @@ public class AllocineTvseriesScraper extends TvShowScraper {
   }
 
   @Override
-  protected List<TvShow> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<TvShow> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     // return null;
   }
 
   @Override
-  protected List<TvShow> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<TvShow> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

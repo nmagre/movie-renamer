@@ -19,7 +19,7 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.WebCustomTooltip;
-import fr.free.movierenamer.ui.bean.IHtmlListTooltip;
+import fr.free.movierenamer.ui.swing.IHtmlListTooltip;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
 
 /**

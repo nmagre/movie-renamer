@@ -1,6 +1,6 @@
 /*
- * Movie Renamer
- * Copyright (C) 2014 Nicolas Magré
+ * Movie_Renamer
+ * Copyright (C) 2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,192 +17,115 @@
  */
 package fr.free.movierenamer.ui.swing.dialog;
 
-import com.alee.extended.label.WebLinkLabel;
-import com.alee.extended.panel.GroupPanel;
-import com.alee.laf.label.WebLabel;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.utils.ImageUtils;
-import static fr.free.movierenamer.ui.utils.ImageUtils.getIcon;
-import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
-import java.awt.Dimension;
-import java.net.URL;
-import javax.swing.Icon;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 /**
- * Class AboutDialog
  *
  * @author Nicolas Magré
  */
 public class AboutDialog extends AbstractDialog {
 
-  private static final Icon banner = getIcon((URL) null, new Dimension(505, 130), "ui/mr-ban.png");
+    /**
+     * Creates new form NewJDialog
+     */
+    public AboutDialog(MovieRenamer mr) {
+        super(mr, i18n.getLanguage("toptb.about", true));
+        initComponents();
+        HTMLEditorKit kit = new HTMLEditorKit();
 
-  /**
-   * Creates new form AboutDialog
-   *
-   * @param mr
-   */
-  public AboutDialog(MovieRenamer mr) {
-    super(mr, i18n.getLanguage("toptb.about", true));
-    initComponents();
-    jScrollPane1.setViewportBorder(null);
+        String p = getClass().getResource("/image/ui/mr-ban.png").toString();
 
-    appnameLbl.setBoldFont();
-    versionLbl.setBoldFont();
-    authorLbl.setBoldFont();
-    contributorLbl.setBoldFont();
-    liscenseLbl.setBoldFont();
-    providerLbl.setBoldFont();
+        String html = "<html><body style=\"margin-left: 20px;margin-right: 20px;margin-top: 20px\">"
+                + "<img src=\"" + p + "\" /><br><br>"
+                + "<div style=\"text-align: center\">"
+                + "    <p>" + UISettings.APPNAME + " " + UISettings.VERSION + " (Core : " + UISettings.CORE_VERSION + ")</p>"
+                + "    <p><a href=\"http://www.movie-renamer.fr\">www.movie-renamer.fr</a></p></div><br>"
+                + "<div style=\"text-align: justify;margin-left: 20px\">"
+                + i18n.getLanguage("aboutDialog.author", false, "<ul style=\"list-style-type: none\"><li>" + UISettings.AUTHOR.replace("|", "</li><li>")) + "</li></ul>"
+                + "</div>"
+                + "<div style=\"text-align: justify;\">"
+                + i18n.getLanguage("aboutDialog.provider", false) + "<ul style=\"list-style-type: none\"><li>" + UISettings.PROVIDER.replace("|", "</li><li>") + "</li></ul>"
+                + "</div>"
+                + "</body></html>";
+        System.out.println(html);
 
-    bannerLbl.setIcon(banner);
-    appnameLbl.setLanguage(i18n.getLanguageKey("aboutDialog.appname", false), UISettings.APPNAME);
-    versionLbl.setLanguage(i18n.getLanguageKey("aboutDialog.appversion", false), UISettings.VERSION);
-    authorLbl.setText(i18n.getLanguage("aboutDialog.author", false, "\n-    " + UISettings.AUTHOR.replace("|", "\n-    ")));
-    contributorLbl.setText(i18n.getLanguage("aboutDialog.contributor", false, UISettings.CONTRIB.replace("|", "\n-    ")));
-    liscenseLbl.setLanguage(i18n.getLanguageKey("aboutDialog.license", false), UISettings.LICENSE);
-    copyrightLbl.setLanguage(UISettings.COPYRIGHT);
-    providerLbl.setLanguage(i18n.getLanguageKey("aboutDialog.provider", false));
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("");
+        Document doc = kit.createDefaultDocument();
+        webEditorPane1.setDocument(doc);
+        webEditorPane1.setEditable(false);
+        webEditorPane1.setEditorKit(kit);
+        webEditorPane1.setText(html);
+        webEditorPane1.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (IOException ex) {
+                            Logger.getLogger(AboutDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (URISyntaxException ex) {
+                            Logger.getLogger(AboutDialog.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
+        });
 
-    websiteLbl.setText(i18n.getLanguage("aboutDialog.website", false));
-    websiteLbl.setLink(UISettings.HOST);
-
-    for (String provider : UISettings.PROVIDER.split("\\|")) {
-      WebLinkLabel wll = new WebLinkLabel();
-      String[] vals = provider.split("\\s");
-      if (vals.length != 2) {
-        continue;
-      }
-
-      wll.setLink(vals[1]);
-      webPanel1.add(new GroupPanel(4, new WebLabel(vals[0]), wll));
+        pack();
     }
-    // TODO add contact
 
-    pack();
-  }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-  /**
-   * This method is called from within the constructor to initialize the form.
-   * WARNING: Do NOT modify this code. The content of this method is always
-   * regenerated by the Form Editor.
-   */
-  @SuppressWarnings("unchecked")
-  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-  private void initComponents() {
+        jScrollPane1 = new javax.swing.JScrollPane();
+        webEditorPane1 = new com.alee.laf.text.WebEditorPane();
 
-    bannerLbl = new com.alee.laf.label.WebLabel();
-    appnameLbl = new com.alee.laf.label.WebLabel();
-    versionLbl = new com.alee.laf.label.WebLabel();
-    authorLbl = new com.alee.extended.label.WebMultiLineLabel();
-    contributorLbl = new com.alee.extended.label.WebMultiLineLabel();
-    liscenseLbl = new com.alee.laf.label.WebLabel();
-    copyrightLbl = new com.alee.laf.label.WebLabel();
-    jScrollPane1 = new javax.swing.JScrollPane();
-    webPanel1 = new com.alee.laf.panel.WebPanel();
-    okBtn = UIUtils.createButton(i18n.getLanguageKey("ok", false), ImageUtils.OK_16);
-    providerLbl = new com.alee.laf.label.WebLabel();
-    websiteLbl = new com.alee.extended.label.WebLinkLabel();
-    webLabel1 = new com.alee.laf.label.WebLabel();
-    webLinkLabel1 = new com.alee.extended.label.WebLinkLabel();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-    setResizable(false);
+        jScrollPane1.setViewportView(webEditorPane1);
 
-    webPanel1.setLayout(new javax.swing.BoxLayout(webPanel1, javax.swing.BoxLayout.Y_AXIS));
-    jScrollPane1.setViewportView(webPanel1);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+                .addContainerGap())
+        );
 
-    okBtn.setPreferredSize(UIUtils.buttonSize);
-    okBtn.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        okBtnActionPerformed(evt);
-      }
-    });
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
-    webLabel1.setText("Look and feel :  WebLaF");
-
-    webLinkLabel1.setText("http://weblookandfeel.com/");
-
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(bannerLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
-          .addComponent(appnameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(versionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(authorLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-          .addComponent(contributorLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-          .addComponent(liscenseLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(providerLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(copyrightLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(websiteLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(webLinkLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          .addComponent(jScrollPane1))
-        .addContainerGap())
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(bannerLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(18, 18, 18)
-        .addComponent(appnameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(versionLbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(authorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(contributorLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(liscenseLbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(providerLbl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(18, 18, 18)
-        .addComponent(websiteLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(webLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(webLinkLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
-        .addComponent(copyrightLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(36, 36, 36)
-        .addComponent(okBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
-    );
-
-    pack();
-  }// </editor-fold>//GEN-END:initComponents
-
-  private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
-    dispose();
-  }//GEN-LAST:event_okBtnActionPerformed
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private com.alee.laf.label.WebLabel appnameLbl;
-  private com.alee.extended.label.WebMultiLineLabel authorLbl;
-  private com.alee.laf.label.WebLabel bannerLbl;
-  private com.alee.extended.label.WebMultiLineLabel contributorLbl;
-  private com.alee.laf.label.WebLabel copyrightLbl;
-  private javax.swing.JScrollPane jScrollPane1;
-  private com.alee.laf.label.WebLabel liscenseLbl;
-  private com.alee.laf.button.WebButton okBtn;
-  private com.alee.laf.label.WebLabel providerLbl;
-  private com.alee.laf.label.WebLabel versionLbl;
-  private com.alee.laf.label.WebLabel webLabel1;
-  private com.alee.extended.label.WebLinkLabel webLinkLabel1;
-  private com.alee.laf.panel.WebPanel webPanel1;
-  private com.alee.extended.label.WebLinkLabel websiteLbl;
-  // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private com.alee.laf.text.WebEditorPane webEditorPane1;
+    // End of variables declaration//GEN-END:variables
 }

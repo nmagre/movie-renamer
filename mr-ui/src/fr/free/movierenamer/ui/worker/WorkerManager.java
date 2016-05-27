@@ -22,18 +22,19 @@ import com.alee.laf.list.WebList;
 import com.alee.managers.tooltip.WebCustomTooltip;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IHtmlListTooltip;
-import fr.free.movierenamer.ui.bean.IImage;
-import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.swing.IHtmlListTooltip;
+import fr.free.movierenamer.ui.swing.IImage;
+import fr.free.movierenamer.ui.event.UIEvent;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UIMediaImage;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UIPersonImage;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UISearchResult;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.swing.UIManager.UIMode;
 import fr.free.movierenamer.ui.swing.dialog.GalleryDialog;
 import fr.free.movierenamer.ui.swing.panel.info.movie.MovieIdPanel;
@@ -88,8 +89,8 @@ public final class WorkerManager {
         start(searchWorker);
     }
 
-    public final static void search(MovieRenamer mr, UIFile media) {
-        SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media);
+    public final static void search(MovieRenamer mr, UIFile media, SearchParam sep) {
+        SearchMediaWorker searchWorker = new SearchMediaWorker(mr, media, sep);
         start(searchWorker);
     }
 

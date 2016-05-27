@@ -36,7 +36,7 @@ import static com.alee.managers.popup.PopupWay.upRight;
 import com.alee.managers.popup.WebButtonPopup;
 import com.alee.managers.tooltip.TooltipManager;
 import com.sun.jna.Platform;
-import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.i18n.I18n;
 import fr.free.movierenamer.ui.swing.renderer.IconListRenderer;

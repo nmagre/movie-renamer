@@ -19,6 +19,7 @@ package fr.free.movierenamer.ui;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.language.LanguageManager;
+import com.alee.managers.language.updaters.LanguageUpdaterSettings;
 import com.alee.managers.tooltip.TooltipManager;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
@@ -74,6 +75,7 @@ public class Main {
         Locale locale = setting.coreInstance.getAppLanguage().getLocale();
         Locale.setDefault(locale);
         LanguageManager.setDefaultLanguage(LanguageManager.ENGLISH);
+        LanguageUpdaterSettings.useTabComponentNames = true;
 
         TooltipManager.setDefaultDelay(1500);
 

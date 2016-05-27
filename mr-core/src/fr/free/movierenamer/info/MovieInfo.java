@@ -50,6 +50,7 @@ public class MovieInfo extends VideoInfo {
     certificationCode,// MotionPictureRating can transfrom it
     votes,
     budget,
+    award(true),
     posterPath,
     collection;
     private final boolean languageDepends;

@@ -20,7 +20,7 @@ package fr.free.movierenamer.ui.swing.dialog;
 import com.alee.laf.optionpane.WebOptionPane;
 import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.UIEvent;
+import fr.free.movierenamer.ui.event.UIEvent;
 import fr.free.movierenamer.ui.swing.panel.info.InfoEditorPanel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;

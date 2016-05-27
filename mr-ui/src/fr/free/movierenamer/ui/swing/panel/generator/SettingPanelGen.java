@@ -31,6 +31,7 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.text.WebPasswordField;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.language.LanguageManager;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
 import fr.free.movierenamer.info.ImageInfo;
@@ -45,16 +46,18 @@ import fr.free.movierenamer.settings.XMLSettings.ISimpleProperty;
 import fr.free.movierenamer.settings.XMLSettings.SettingsSubType;
 import fr.free.movierenamer.settings.XMLSettings.SettingsType;
 import fr.free.movierenamer.ui.MovieRenamer;
-import fr.free.movierenamer.ui.bean.IIconList;
-import fr.free.movierenamer.ui.bean.IImage;
+import fr.free.movierenamer.ui.swing.IIconList;
+import fr.free.movierenamer.ui.swing.IImage;
 import fr.free.movierenamer.ui.bean.UIEnum;
-import fr.free.movierenamer.ui.bean.UIEvent;
-import fr.free.movierenamer.ui.bean.UIEventInfo;
+import fr.free.movierenamer.ui.event.UIEvent;
+import fr.free.movierenamer.ui.event.UIEventInfo;
 import fr.free.movierenamer.ui.bean.UILang;
 import fr.free.movierenamer.ui.bean.UIScraper;
+import fr.free.movierenamer.ui.bean.settings.UITestSettings;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
+import fr.free.movierenamer.ui.swing.UIManager;
+import fr.free.movierenamer.ui.swing.custom.ContextMenuField;
 import fr.free.movierenamer.ui.swing.dialog.SettingsHelpDialog;
 import fr.free.movierenamer.ui.swing.renderer.IconComboRenderer;
 import fr.free.movierenamer.ui.utils.ImageUtils;
@@ -329,7 +332,17 @@ public class SettingPanelGen extends PanelGenerator {
                 createTitle = false;
             }
 
+            if (type == UIManager.formatTypeTestLoc) {
+                try {
+                    UIManager.UIMode mode = UIManager.UIMode.valueOf(mediaTypeIcon.getMediaType().name() + "MODE");
+                    addSettings(type, mode.getFormatTest(), cmp, mediaTypeIcon.getMediaType(), new ArrayList<JComponent>(), createTitle, helpBtn);
+                } catch (Exception ex) {
+                }
+            }
+
+            cmp.setName(mediaTypeIcon.name().toLowerCase());
             tabbed.addTab(mediaTypeIcon.getName(), mediaTypeIcon.getIcon(), cmp);
+            LanguageManager.registerComponent(tabbed, "mrui");
         }
 
         return tabbed;
@@ -539,18 +552,15 @@ public class SettingPanelGen extends PanelGenerator {
         button.setIcon(ImageUtils.TEST_16);
         final JComponent component = createComponent(Component.FIELD, null);
         component.addMouseListener(contextMenuField);
-//        button.addActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                UITestSettings testSettings = (UITestSettings) property;
-//                ITestActionListener actionListener = testSettings.getActionListener();
-//                actionListener.actionPerformed(e);
-//                ((WebTextField) component).setText(actionListener.getResult());
-//                ((WebTextField) component).setEditable(false);
-//            }
-//
-//        });
+
+        button.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((WebTextField) component).setText(((UITestSettings) property).getResult(checkboxs, fields, comboboxs));
+                
+            }
+        });
 
         GridBagConstraints ctr = getGroupConstraint(0, false, false, level);
         ctr.insets.top += 25;
@@ -686,7 +696,6 @@ public class SettingPanelGen extends PanelGenerator {
                 value = ((ISimpleProperty) property).getValue();
             }
             slider.setValue((int) (Float.valueOf(value) * 10));
-            System.out.println("SLIDER SET VALUE TO " + ((int) (Float.valueOf(value) * 10)) + " ! " + value);
         }
 
         for (Entry<WebPasswordField, SettingsProperty> entry : passFields.entrySet()) {

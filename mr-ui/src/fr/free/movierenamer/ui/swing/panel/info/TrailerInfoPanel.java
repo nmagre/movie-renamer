@@ -21,7 +21,7 @@ import fr.free.movierenamer.stream.VideoDetective;
 import fr.free.movierenamer.stream.Youtube;
 import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UISearchTrailerResult;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.IWorker.WorkerId;

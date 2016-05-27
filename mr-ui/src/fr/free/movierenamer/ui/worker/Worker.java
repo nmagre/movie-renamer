@@ -18,6 +18,7 @@
 package fr.free.movierenamer.ui.worker;
 
 import fr.free.movierenamer.exception.InvalidUrlException;
+import fr.free.movierenamer.exception.NoInfoException;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.utils.UIUtils;
@@ -36,44 +37,47 @@ import java.util.logging.Level;
  */
 public abstract class Worker<T> extends AbstractWorker<T, String> {
 
-  protected final MovieRenamer mr;
+    protected final MovieRenamer mr;
 
-  public Worker(MovieRenamer mr) {
-    this.mr = mr;
-  }
-
-  @Override
-  protected final T doInBackground() {
-    T result = null;
-    try {
-      result = executeInBackground();
-    } catch (InvalidUrlException ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(String.format("InvalidUrlException %s failed%n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
-    } catch (UnknownHostException ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getMessage()));
-    } catch (SocketTimeoutException ex) {
-      UISettings.LOGGER.log(Level.WARNING, ex.getCause().toString());
-      publish(UIUtils.i18n.getLanguage("error.network.timeout", false));
-    } catch (SocketException ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getLocalizedMessage()));
-    } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-      publish(UIUtils.i18n.getLanguage("error.unknown", false, getClass().getSimpleName(), ex.getLocalizedMessage()));
+    public Worker(MovieRenamer mr) {
+        this.mr = mr;
     }
 
-    return result;
-  }
+    @Override
+    protected final T doInBackground() {
+        T result = null;
+        try {
+            result = executeInBackground();
+        } catch (InvalidUrlException ex) {
+            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+            publish(String.format("InvalidUrlException %s failed%n%s", getClass().getSimpleName(), ex.getLocalizedMessage())); // FIXME i18n
+        } catch (UnknownHostException ex) {
+            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+            publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getMessage()));
+        } catch (SocketTimeoutException ex) {
+            UISettings.LOGGER.log(Level.WARNING, ex.getCause().toString());
+            publish(UIUtils.i18n.getLanguage("error.network.timeout", false));
+        } catch (SocketException ex) {
+            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+            publish(UIUtils.i18n.getLanguage("error.network.connection", false, ex.getLocalizedMessage()));
+//        } catch (NoInfoException ex) {
+//            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+//            publish(UIUtils.i18n.getLanguage("error.noinfo", false, ex.getLocalizedMessage()));
+        } catch (Exception ex) {
+            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+            publish(UIUtils.i18n.getLanguage("error.unknown", false, getClass().getSimpleName(), ex.getLocalizedMessage()));
+        }
 
-  @Override
-  protected void process(List<String> v) {
-    try {
-      UIUtils.showErrorNotification(v.get(0));
-    } catch (Exception ex) {// FIXME issue is solved in WebLaf 1.29+ 
-      // Prevent any bug, sometimes weblaf notification thrown an exception (i hope it will be fixed)
-      UISettings.LOGGER.log(Level.SEVERE, null, ex);
+        return result;
     }
-  }
+
+    @Override
+    protected void process(List<String> v) {
+        try {
+            UIUtils.showErrorNotification(v.get(0));
+        } catch (Exception ex) {// FIXME issue is solved in WebLaf 1.29+ 
+            // Prevent any bug, sometimes weblaf notification thrown an exception (i hope it will be fixed)
+            UISettings.LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
 }

@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.worker.impl;
 
+import fr.free.movierenamer.exception.NoInfoException;
 import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.VideoInfo;
 import fr.free.movierenamer.scraper.MediaScraper;
@@ -81,23 +82,28 @@ public class SearchMediaInfoWorker extends Worker<UIMediaInfo<?>> {
 
     @Override
     protected void workerDone() throws Exception {
-        UIMediaInfo<?> info = get();
 
-        // Search info failed, we let the user try again by clearing selection
-        if (info == null) {
-            mr.getSearchResultList().clearSelection();
-            return;
+        try {
+            UIMediaInfo<?> info = get();
+            @SuppressWarnings("unchecked")
+            MediaPanel<UIMediaInfo<?>, ?> mediaPanel = (MediaPanel<UIMediaInfo<?>, ?>) mr.getMediaPanel();
+            if (mediaPanel != null) {
+                mediaPanel.setInfo(info);
+            }
+
+            mr.updateRenamedTitle();
+            mr.setRenameFieldEnabled();
+            mr.setRenamebuttonEnabled();
+
+        } catch (Exception ex) {
+
+            if (ex instanceof NoInfoException) {
+                // Search info failed, we let the user try again by clearing selection
+                mr.getSearchResultList().clearSelection();
+            }
+            throw ex;
         }
 
-        @SuppressWarnings("unchecked")
-        MediaPanel<UIMediaInfo<?>, ?> mediaPanel = (MediaPanel<UIMediaInfo<?>, ?>) mr.getMediaPanel();
-        if (mediaPanel != null) {
-            mediaPanel.setInfo(info);
-        }
-
-        mr.updateRenamedTitle();
-        mr.setRenameFieldEnabled();
-        mr.setRenamebuttonEnabled();
     }
 
     @Override

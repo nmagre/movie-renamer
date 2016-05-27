@@ -44,7 +44,7 @@ public abstract class Media extends Hyperlink {
     MOVIE(MovieScraper.class, UniversalScraper.class) {
         @Override
         public IdInfo idLookup(ScraperUtils.AvailableApiIds lookupType, IdInfo id, Media searchResult) {
-          return ScraperUtils.movieIdLookup(lookupType, id, (Movie) searchResult);
+          return ScraperUtils.movieIdLookup(lookupType, id, (Movie) searchResult, Settings.getInstance().getSearchScraperLang());
         }
       },
     TVSHOW(TvShowScraper.class, TMDbScraper.class) {

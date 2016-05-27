@@ -130,6 +130,7 @@ public final class ImageUtils {
   public static final Icon CLOSE_16 = getIconFromJar("ui/16/close.png");
   public static final Icon UP_16 = getIconFromJar("ui/16/up.png");
   public static final Icon DOWN_16 = getIconFromJar("ui/16/down.png");
+  public static final Icon EXPORT_16 = getIconFromJar("ui/16/export.png");
 
   // 8 pixel icon
   public static final Icon CANCEL_8 = getIconFromJar("ui/8/cancel.png");

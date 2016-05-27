@@ -18,7 +18,7 @@ package fr.free.movierenamer.ui.swing.renderer;
 
 import com.alee.laf.combobox.WebComboBoxCellRenderer;
 import com.alee.laf.label.WebLabel;
-import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.ui.settings.UISettings;
 import java.awt.Component;
 import java.util.logging.Level;

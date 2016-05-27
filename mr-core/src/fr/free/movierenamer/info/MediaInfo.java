@@ -58,9 +58,9 @@ public abstract class MediaInfo extends Info {
   }
 
   public interface MediaInfoProperty extends InfoProperty {
-    
+
   }
-  
+
   public interface MultipleInfoProperty extends InfoProperty {
 
   }
@@ -239,14 +239,14 @@ public abstract class MediaInfo extends Info {
     final Settings settings = Settings.getInstance();
     return getRenamedTitle(fileInfo, format, settings.getMediaFilenameCase(mediaType), settings.getMediaFilenameSeparator(mediaType),
       settings.getMediaFilenameLimit(mediaType), settings.isReservedCharacter(), settings.isFilenameRmDupSpace(), settings.isFilenameTrim(),
-      settings.isFilenameReplaceSpace(mediaType), settings.getFilenameReplaceSpaceBy(mediaType));
+      settings.isFilenameRomanUpper(), settings.isFilenameReplaceSpace(mediaType), settings.getFilenameReplaceSpaceBy(mediaType));
   }
 
   public final String getRenamedTitle(FileInfo fileInfo, String format, CaseConversionType caseType,
-    String separator, int limit, boolean reservedCharacter, boolean rmDupSpace, boolean trim, boolean replaceSpace, String replaceSpaceBy) {
+    String separator, int limit, boolean reservedCharacter, boolean rmDupSpace, boolean trim, boolean isRomanUpper, boolean replaceSpace, String replaceSpaceBy) {
 
     final FormatReplacing formatReplace = new FormatReplacing(getFormatTokens(fileInfo));
-    String res = formatReplace.getReplacedString(format, caseType, separator, limit);
+    String res = formatReplace.getReplacedString(format, caseType, separator, limit, isRomanUpper);
 
     if (reservedCharacter) {
       for (String c : StringUtils.reservedCharacterList) {

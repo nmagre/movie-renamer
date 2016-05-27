@@ -21,14 +21,15 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.ImageInfo;
 import fr.free.movierenamer.info.MediaInfo;
-import fr.free.movierenamer.info.MediaInfo.InfoProperty;
 import fr.free.movierenamer.info.MediaInfo.MediaProperty;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.info.MovieInfo.MovieMultipleProperty;
 import fr.free.movierenamer.info.MovieInfo.MovieProperty;
 import fr.free.movierenamer.info.VideoInfo.VideoProperty;
 import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Movie;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
 import fr.free.movierenamer.utils.NumberUtils;
 import fr.free.movierenamer.utils.ScraperUtils;
@@ -118,13 +119,13 @@ public class KinopoiskScraper extends MovieScraper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     URL searchUrl = new URL("http", host, "/s/type/film/list/1/find/" + URIRequest.encode(query));
-    return searchMedia(searchUrl, language);
+    return searchMedia(searchUrl, sep, language);
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     Document dom = URIRequest.getHtmlDocument(searchUrl.toURI());
     // select movie results
     List< Node> nodes = XPathUtils.selectNodes("//DIV[@class='search_results search_results_last']//DIV[contains(@class,'element')]", dom);
@@ -333,7 +334,7 @@ public class KinopoiskScraper extends MovieScraper {
 
   @Override
   protected List<ImageInfo> fetchImagesInfo(Movie movie) throws Exception {
-    movie.setImdbId(ScraperUtils.movieIdLookup(AvailableApiIds.IMDB, null, movie));
+    movie.setImdbId(ScraperUtils.movieIdLookup(AvailableApiIds.IMDB, null, movie, settings.getSearchScraperLang()));
     return super.fetchImagesInfo(movie);
   }
 }

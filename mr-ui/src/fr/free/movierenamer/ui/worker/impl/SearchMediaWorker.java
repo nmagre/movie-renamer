@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2012-2014 Nicolas Magré
+ * Copyright (C) 2012-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,15 @@ package fr.free.movierenamer.ui.worker.impl;
 
 import com.alee.laf.list.WebList;
 import fr.free.movierenamer.info.ImageInfo;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.scraper.SearchScraper;
-import fr.free.movierenamer.searchinfo.Hyperlink;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.MovieRenamer;
 import fr.free.movierenamer.ui.bean.UIFile;
 import fr.free.movierenamer.ui.bean.UISearchResult;
 import fr.free.movierenamer.ui.settings.UISettings;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import fr.free.movierenamer.ui.worker.Worker;
@@ -43,93 +43,96 @@ import java.util.List;
  */
 public class SearchMediaWorker extends Worker<List<UISearchResult>> {
 
-  private final UIFile media;
-  private final SearchScraper<? extends Media> scraper;
-  private final WebList searchResultList;
-  private final ImageListModel<UISearchResult> searchResultModel;
+    private final UIFile media;
+    private final SearchScraper<? extends Media> scraper;
+    private final WebList searchResultList;
+    private final ImageListModel<UISearchResult> searchResultModel;
+    private final SearchParam sep;
 
-  /**
-   * Constructor arguments
-   *
-   * @param mr
-   * @param media
-   */
-  public SearchMediaWorker(MovieRenamer mr, UIFile media) {
-    super(mr);
-    this.media = media;
-    this.scraper = mr.getUIScraper().getScraper();
-    this.searchResultList = mr.getSearchResultList();
-    this.searchResultModel = mr.getSearchResultListModel();
-  }
+    /**
+     * Constructor arguments
+     *
+     * @param mr
+     * @param media
+     * @param sep
+     */
+    public SearchMediaWorker(MovieRenamer mr, UIFile media, SearchParam sep) {
+        super(mr);
+        this.media = media;
+        this.scraper = mr.getUIScraper().getScraper();
+        this.searchResultList = mr.getSearchResultList();
+        this.searchResultModel = mr.getSearchResultListModel();
+        this.sep = sep;
+    }
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public List<UISearchResult> executeInBackground() throws Exception {
-    List<UISearchResult> results = new ArrayList<>();
-    List<? extends Media> res;
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<UISearchResult> executeInBackground() throws Exception {
+        List<UISearchResult> results = new ArrayList<>();
+        List<? extends Media> res;
 
-    if (media != null && scraper != null) {
-      String search = media.getSearch();
-      res = scraper.search(search, media.getYear());
-      int count = res.size();
+        if (media != null && scraper != null) {
+            String search = media.getSearch();
+            res = scraper.search(search, sep);
+            int count = res.size();
 
-      for (int i = 0; i < count; i++) {
-        if (isCancelled()) {
-          return new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                if (isCancelled()) {
+                    return new ArrayList<>();
+                }
+
+                results.add(new UISearchResult(res.get(i), scraper));
+            }
         }
 
-        results.add(new UISearchResult(res.get(i), scraper));
-      }
+        int nbres = Settings.getInstance().getSearchNbResult();
+        if (results.size() > nbres) {
+            while (results.size() > nbres) {
+                results.remove(results.size() - 1);
+            }
+        }
+
+        return results;
     }
 
-    int nbres = Settings.getInstance().getSearchNbResult();
-    if (results.size() > nbres) {
-      while (results.size() > nbres) {
-        results.remove(results.size() - 1);
-      }
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void workerDone() throws Exception {
+
+        mr.setSearchEnabled();
+        searchResultList.setModel(searchResultModel);
+
+        List<UISearchResult> results = get();
+
+        if (results == null) {
+            return;
+        }
+
+        searchResultModel.addAll(results);
+
+        if (searchResultModel.isEmpty()) {
+            UIUtils.showNoResultNotification(media.getSearch());
+        } else {
+            if (UISettings.getInstance().isSelectFirstResult()) {
+                searchResultList.setSelectedIndex(0);
+            }
+
+            WorkerManager.fetchImages(WorkerId.IMAGE_SEARCH_RESULT, searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
+        }
     }
 
-    return results;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  protected void workerDone() throws Exception {
-
-    mr.setSearchEnabled();
-    searchResultList.setModel(searchResultModel);
-
-    List<UISearchResult> results = get();
-
-    if (results == null) {
-      return;
+    @Override
+    protected void workerCanceled() {
+        mr.setSearchEnabled();
     }
 
-    searchResultModel.addAll(results);
-
-    if (searchResultModel.isEmpty()) {
-      UIUtils.showNoResultNotification(media.getSearch());
-    } else {
-      if (UISettings.getInstance().isSelectFirstResult()) {
-        searchResultList.setSelectedIndex(0);
-      }
-
-      WorkerManager.fetchImages(WorkerId.IMAGE_SEARCH_RESULT, searchResultModel, ImageInfo.ImageSize.small, UIUtils.listImageSize, ImageUtils.NO_IMAGE, mr.isShowIconResult());
+    @Override
+    public String getDisplayName() {
+        return UIUtils.i18n.getLanguage("main.statusTb.searchmedia", false);
     }
-  }
 
-  @Override
-  protected void workerCanceled() {
-    mr.setSearchEnabled();
-  }
-
-  @Override
-  public String getDisplayName() {
-    return UIUtils.i18n.getLanguage("main.statusTb.searchmedia", false);
-  }
-
-  @Override
-  public WorkerId getWorkerId() {
-    return WorkerId.SEARCH;
-  }
+    @Override
+    public WorkerId getWorkerId() {
+        return WorkerId.SEARCH;
+    }
 }

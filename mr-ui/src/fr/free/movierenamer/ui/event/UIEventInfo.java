@@ -15,13 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.bean;
+package fr.free.movierenamer.ui.event;
 
 /**
- * Interface IHtmlListTooltip
+ * Class UIEventInfo
+ *
  * @author Nicolas Magré
  */
-public interface IHtmlListTooltip {
-  
-  public String getHtmlTooltip();
+public class UIEventInfo implements IEventInfo {
+
+    private final String name;
+    private final Object obj;
+
+    public UIEventInfo(String name, Object obj) {
+        this.name = name;
+        this.obj = obj;
+    }
+
+    @Override
+    public Object getEventObject() {
+        return obj;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return name;
+    }
+
 }

@@ -292,7 +292,7 @@ public class MediaTag implements Serializable {
       return mediaAudio;
     }
 
-    mediaAudio = new ArrayList<MediaAudio>();
+    mediaAudio = new ArrayList<>();
     if (!Settings.MEDIAINFO) {
       return mediaAudio;
     }

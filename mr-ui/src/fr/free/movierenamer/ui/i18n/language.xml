@@ -154,6 +154,17 @@
             <value lang="en">Select all</value>
             <value lang="fr">Tout sélectionner</value>
         </record>
+        
+        <record key="add">
+            <value lang="en">Add</value>
+            <value lang="fr">Ajouter</value>
+        </record>
+        
+        <record key="edit">
+            <value lang="en">Edit</value>
+            <value lang="fr">Editer</value>
+        </record>
+        
     </Dictionary><!-- END rmenu -->
 
     <Dictionary name="Movie Renamer Main Frame" prefix="main">
@@ -933,16 +944,21 @@
             <value lang="fr">Imprécis</value>
         </record>
 
-        <record key="searchmoviescraper">
-            <value lang="en">Movie scraper</value>
-            <value lang="fr">Scraper de film</value>
+        <record key="infoscraper">
+            <value lang="en">Scraper</value>
+            <value lang="fr">Scraper</value>
         </record>
 
-        <record key="searchgettmdbtag">
+        <record key="infogettmdbtag">
             <value lang="en">Get TMDB tags</value>
             <value lang="fr">Récupérer les tags de TMDB</value>
         </record>
-    
+        
+        <record key="infousefileruntime">
+            <value lang="en">Use file runtime</value>
+            <value lang="fr">Utiliser la durée du fichier</value>
+        </record>
+         
         <record key="searchsetorigtitle">
             <value lang="en">Use title as original title if it is empty</value>
             <value lang="fr">Utiliser le titre comme titre original si il est vide</value>
@@ -1178,6 +1194,26 @@
             <value lang="en">Size</value>
             <value lang="fr">Taille</value>
         </record>
+        
+        <record key="logo">
+            <value lang="en">Logo</value>
+            <value lang="fr">Logo</value>
+        </record>
+
+        <record key="cdart">
+            <value lang="en">CDart</value>
+            <value lang="fr">CDart</value>
+        </record>
+
+        <record key="clearart">
+            <value lang="en">Clearart</value>
+            <value lang="fr">Clearart</value>
+        </record>
+
+        <record key="banner">
+            <value lang="en">Banner</value>
+            <value lang="fr">Bannière</value>
+        </record>
 
         <!-- NFO panel -->
 
@@ -1269,6 +1305,93 @@
             <value lang="en">Do not change anything in advanced settings if you don't know what your are doing.%n</value>
             <value lang="fr">Ne changer rien dans les paramètres avancés si vous ne savez pas ce que vous faites.%n</value>
         </record>
+        
+        <!-- Advanced panel -->
+        
+        <record key="filechooserpath">
+            <value lang="en">File chooser path</value>
+            <value lang="fr">Chemin du sélecteur de fichier</value>
+        </record>    
+
+        <record key="matchernfofileext">
+            <value lang="en">NFO file extension</value>
+            <value lang="fr">Extension fichier NFO</value>
+        </record>
+        
+        <record key="filechooserviewtype">
+            <value lang="en">File chooser view type</value>
+            <value lang="fr">Type de vue du sélecteur de fichier</value>
+        </record>
+        
+        <record key="mainframelocationx">
+            <value lang="en">Application location x</value>
+            <value lang="fr">Position application x</value>
+        </record>
+        
+        <record key="mainframelocationy">
+            <value lang="en">Application location y</value>
+            <value lang="fr">Position application y</value>
+        </record>
+        
+        <record key="mainframesizewidth">
+            <value lang="en">Application width</value>
+            <value lang="fr">Largeur de l'application</value>
+        </record>     
+        
+        <record key="mainframesizeheight">
+            <value lang="en">Application height</value>
+            <value lang="fr">Hauteur de l'application</value>
+        </record>         
+        
+        <record key="mainframestate">
+            <value lang="en">Application state</value>
+            <value lang="fr">Etat de l'application</value>
+        </record>
+        
+        <record key="mainframefiledivider">
+            <value lang="en">Media divider location</value>
+            <value lang="fr">Position de la séparation media</value>
+        </record>
+        
+        <record key="mainframeinfodivider">
+            <value lang="en">Info divider location</value>
+            <value lang="fr">Position de la séparation info</value>
+        </record>
+        
+        <record key="mainframescreen">
+            <value lang="en">Screen</value>
+            <value lang="fr">Ecran</value>
+        </record>   
+        
+        <record key="formatparser">
+            <value lang="en">Format parser</value>
+            <value lang="fr">Parseur de format</value>
+        </record>                
+        
+        <record key="formattokenstart">
+            <value lang="en">Token start</value>
+            <value lang="fr">Jeton début</value>
+        </record> 
+        
+        <record key="formattokenend">
+            <value lang="en">Token end</value>
+            <value lang="fr">Jeton fin</value>
+        </record>
+        
+        <record key="icons">
+            <value lang="en">Icons</value>
+            <value lang="fr">Icônes</value>
+        </record>
+        
+        <record key="tiles">
+            <value lang="en">Tiles</value>
+            <value lang="fr">Carreaux</value>
+        </record>
+        
+        <record key="table">
+            <value lang="en">Details</value>
+            <value lang="fr">Détails</value>
+        </record>    
 
     </Dictionary><!-- END settings -->
 
@@ -1315,6 +1438,20 @@
         </record>
 
     </Dictionary><!-- END aboutDialog -->
+    
+    <Dictionary name="Log dialog" prefix="logDialog">
+        
+        <record key="showInfo">
+            <value lang="en">Show info</value>
+            <value lang="fr">Afficher les infos</value>
+        </record>
+        
+        <record key="export">
+            <value lang="en">Export</value>
+            <value lang="fr">Exporter</value>
+        </record>
+        
+    </Dictionary><!-- END logDialog -->    
 
     <Dictionary name="notification (question/information/error)" prefix="notification">
 
@@ -1437,7 +1574,7 @@
 
     </Dictionary><!-- END dialog -->
 
-    <Dictionary name="Movie Renamer Error" prefix="error">
+    <Dictionary name="Movie Renamer Error/warning" prefix="error">
         <record key="error">
             <value lang="en">Error</value>
             <value lang="fr">Erreur</value>
@@ -1463,6 +1600,11 @@
             <value lang="fr">Erreur inconnue: %s\n\n %s</value>
         </record>
 
+        <record key="noMediaFound">
+            <value lang="en">No media found</value>
+            <value lang="fr">Aucun media trouvé</value>
+        </record>
+        
         <record key="nan">
             <value lang="en">The parameter %s must be a number.</value>
             <value lang="fr">Le paramètre %s doit être un chiffre.</value>
@@ -1481,6 +1623,11 @@
         <record key="noWritePermission">
             <value lang="en">Unable to write in :\n%s\nPlease allow Movie Renamer to write in this folder.</value>
             <value lang="fr">Impossible d'écrire dans:\n%s\nS'il vous plaît autoriser Movie Renamer à écrire dans ce dossier.</value>
+        </record>
+        
+        <record key="noinfo">
+            <value lang="en">Unable to get infos.\nPlease try later. If the problem persist then add an issue on github.</value>
+            <value lang="fr">Impossible de récupérer les infos.\nS'il vous plaît réessayer plus tard. Si le problem persiste, ajouter une issue sur github.</value>
         </record>
     
         <Dictionary name="Network Error" prefix="network">

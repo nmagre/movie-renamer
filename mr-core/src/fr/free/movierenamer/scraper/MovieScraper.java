@@ -67,8 +67,10 @@ public abstract class MovieScraper extends VideoScraper<Movie, MovieInfo> {
 
     // If there is no thumb and fanart we use "current" scraper to get image
     if (imagesInfo.isEmpty()) {
+      Settings.LOGGER.log(Level.INFO, String.format("Use '%s' to get images for '%s", getName(), movie));
       tmpImagesInfo = getScraperImages(movie);
       if (tmpImagesInfo != null) {
+        Settings.LOGGER.log(Level.INFO, String.format("'%s' returns %d images for '%s' in", getName(), tmpImagesInfo.size(), movie));
         imagesInfo.addAll(tmpImagesInfo);
       }
     }
@@ -104,5 +106,5 @@ public abstract class MovieScraper extends VideoScraper<Movie, MovieInfo> {
   public MediaType getSupportedMediaType() {
     return MediaType.MOVIE;
   }
-  
+
 }

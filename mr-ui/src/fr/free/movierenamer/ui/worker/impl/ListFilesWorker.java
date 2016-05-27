@@ -45,127 +45,127 @@ import java.util.logging.Level;
  */
 public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
 
-  private final List<File> files;
-  private final EventList<UIFile> eventList;
-  private boolean subFolder;
-  private final UISettings setting;
+    private final List<File> files;
+    private final EventList<UIFile> eventList;
+    private boolean subFolder;
+    private final UISettings setting;
 
-  /**
-   * Constructor arguments
-   *
-   * @param files
-   * @param mr
-   * @param eventList
-   */
-  public ListFilesWorker(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
-    super(mr);
-    this.files = files;
-    this.eventList = eventList;
-    setting = UISettings.getInstance();
-    subFolder = setting.getScanSubfolder().equals(UISettings.Subfolder.BROWSE);
-  }
-
-  /**
-   * Retrieve all media files in a folder and subfolder
-   *
-   * @return List of UIfile
-   * @throws InterruptedException
-   */
-  @Override
-  public List<UIFile> executeInBackground() throws InterruptedException {
-
-    List<UIFile> medias = new ArrayList<>();
-
-    if (files == null || files.isEmpty()) {
-      return medias;
+    /**
+     * Constructor arguments
+     *
+     * @param files
+     * @param mr
+     * @param eventList
+     */
+    public ListFilesWorker(MovieRenamer mr, List<File> files, EventList<UIFile> eventList) {
+        super(mr);
+        this.files = files;
+        this.eventList = eventList;
+        setting = UISettings.getInstance();
+        subFolder = setting.getScanSubfolder().equals(UISettings.Subfolder.BROWSE);
     }
 
-    if (setting.getScanSubfolder().equals(UISettings.Subfolder.ASK) && subFolder(files)) {
-      publishPause("dialog.scanSubFolder");
+    /**
+     * Retrieve all media files in a folder and subfolder
+     *
+     * @return List of UIfile
+     * @throws InterruptedException
+     */
+    @Override
+    public List<UIFile> executeInBackground() throws InterruptedException {
+
+        List<UIFile> medias = new ArrayList<>();
+
+        if (files == null || files.isEmpty()) {
+            return medias;
+        }
+
+        if (setting.getScanSubfolder().equals(UISettings.Subfolder.ASK) && subFolder(files)) {
+            publishPause("dialog.scanSubFolder");
+        }
+
+        try {
+            int total = files.size();
+            int count = 0;
+            for (File file : files) {
+                if (isCancelled()) {
+                    return new ArrayList<>();
+                }
+
+                if (file.isDirectory()) {
+                    addFiles(medias, file);
+                } else {
+                    boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(file);
+                    if (addfiletoUI) {
+                        addUIfile(medias, file);
+                    }
+                }
+            }
+
+            count++;
+            setProgress((count * 100) / total);
+        } catch (Exception ex) {
+            UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
+        }
+
+        Sorter.sort(medias, Sorter.SorterType.ALPHABETIC);
+        return medias;
     }
 
-    try {
-      int total = files.size();
-      int count = 0;
-      for (File file : files) {
+    /**
+     * Check if one directory contains a subdirectory
+     *
+     * @param files
+     * @return true if there is at least one subdirectory, otherwise false
+     */
+    private boolean subFolder(List<File> files) {
+        for (File file : files) {
+            if (file.isDirectory()) {
+                File[] subDir = file.listFiles(new FileUtils.FolderFilter());
+                if (subDir != null && subDir.length > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Scan recursively folders and add media to a list
+     *
+     * @param medias List of movies
+     * @param file File to add or directory to scan
+     */
+    private void addFiles(List<UIFile> medias, File file) {
+
         if (isCancelled()) {
-          return new ArrayList<>();
+            return;
         }
 
-        if (file.isDirectory()) {
-          addFiles(medias, file);
-        } else {
-          boolean addfiletoUI = !setting.isUseExtensionFilter() || FileUtils.checkFileExt(file);
-          if (addfiletoUI) {
-            addUIfile(medias, file);
-          }
+        FileFilter fileFilter = setting.isUseExtensionFilter() ? new FileUtils.ExtensionFileFilter(true, setting.coreInstance.getfileExtension())
+                : new FileUtils.FileAndFolderFilter();
+        File[] listFiles = file.listFiles(fileFilter);
+
+        if (listFiles == null) {
+            UISettings.LOGGER.log(Level.SEVERE, String.format("Directory \"%s\" does not exist or is not a Directory", file.getName()));
+            return;
         }
-      }
 
-      count++;
-      setProgress((count * 100) / total);
-    } catch (Exception ex) {
-      UISettings.LOGGER.log(Level.SEVERE, ClassUtils.getStackTrace(ex));
-    }
+        for (File listFile : listFiles) {
+            if (isCancelled()) {
+                return;
+            }
 
-    Sorter.sort(medias, Sorter.SorterType.ALPHABETIC);
-    return medias;
-  }
-
-  /**
-   * Check if one directory contains a subdirectory
-   *
-   * @param files
-   * @return true if there is at least one subdirectory, otherwise false
-   */
-  private boolean subFolder(List<File> files) {
-    for (File file : files) {
-      if (file.isDirectory()) {
-        File[] subDir = file.listFiles(new FileUtils.FolderFilter());
-        if (subDir != null && subDir.length > 0) {
-          return true;
+            if (listFile.isDirectory() && subFolder) {
+                addFiles(medias, listFile);
+            } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFile)) {
+                addUIfile(medias, listFile);
+            }
         }
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Scan recursively folders and add media to a list
-   *
-   * @param medias List of movies
-   * @param file File to add or directory to scan
-   */
-  private void addFiles(List<UIFile> medias, File file) {
-
-    if (isCancelled()) {
-      return;
     }
 
-    FileFilter fileFilter = setting.isUseExtensionFilter() ? new FileUtils.ExtensionFileFilter(true, setting.coreInstance.getfileExtension())
-            : new FileUtils.FileAndFolderFilter();
-    File[] listFiles = file.listFiles(fileFilter);
-
-    if (listFiles == null) {
-      UISettings.LOGGER.log(Level.SEVERE, String.format("Directory \"%s\" does not exist or is not a Directory", file.getName()));
-      return;
-    }
-
-    for (File listFile : listFiles) {
-      if (isCancelled()) {
-        return;
-      }
-
-      if (listFile.isDirectory() && subFolder) {
-        addFiles(medias, listFile);
-      } else if (!setting.isUseExtensionFilter() || FileUtils.checkFileExt(listFile)) {
-        addUIfile(medias, listFile);
-      }
-    }
-  }
-
-  private void addUIfile(List<UIFile> medias, File file) {
-    String groupName = "";
+    private void addUIfile(List<UIFile> medias, File file) {
+        String groupName = "";
 //    MediaType mtype = FileInfo.getMediaType(file);
 //    switch (mtype) {
 //      case MOVIE:
@@ -176,62 +176,62 @@ public class ListFilesWorker extends ControlWorker<List<UIFile>, String> {
 //        break;
 //    }
 
-    groupName = file.getName().trim().substring(0, 1);
+        groupName = file.getName().trim().substring(0, 1);
 
-    medias.add(new UIFile(file, groupName, MediaType.MOVIE));
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  protected void workerDone() throws Exception {
-    List<UIFile> medias = get();
-
-    WebList list = mr.getMediaList();
-    list.setModel(mr.getMediaFileListModel());
-    eventList.addAll(medias);
-
-    if (eventList.isEmpty()) {
-      WebOptionPane.showMessageDialog(mr, ("warning.noMediaFound"), ("warning"), WebOptionPane.WARNING_MESSAGE);// FIXME i18n + tooltip
-      return;
+        medias.add(new UIFile(file, groupName, MediaType.MOVIE));
     }
 
-    mr.setMediaCount(medias.size());
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void workerDone() throws Exception {
+        List<UIFile> medias = get();
 
-    if (UISettings.getInstance().isSelectFirstMedia()) {
-      int index = 0;
-      if (list.getValueAt(index) instanceof SeparatorList.Separator) {
-        index++;
-      }
-      list.setSelectedIndex(index);
+        WebList list = mr.getMediaList();
+        list.setModel(mr.getMediaFileListModel());
+        eventList.addAll(medias);
+
+        if (eventList.isEmpty()) {
+            UIUtils.showWarningNotification(i18n.getLanguage("error.noMediaFound", false));
+            return;
+        }
+
+        mr.setMediaCount(medias.size());
+
+        if (UISettings.getInstance().isSelectFirstMedia()) {
+            int index = 0;
+            if (list.getValueAt(index) instanceof SeparatorList.Separator) {
+                index++;
+            }
+            list.setSelectedIndex(index);
+        }
+
+        WorkerManager.getFilesInfo(medias);
+
+        mr.setClearMediaFileListBtnEnabled();
     }
 
-    WorkerManager.getFilesInfo(medias);
-
-    mr.setClearMediaFileListBtnEnabled();
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  protected void workerCanceled() {
-    eventList.clear();
-  }
-
-  @Override
-  public final void processPause(String v) {
-    int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v, false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
-
-    if (res == WebOptionPane.YES_OPTION) {
-      subFolder = true;
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void workerCanceled() {
+        eventList.clear();
     }
-  }
 
-  @Override
-  public String getDisplayName() {
-    return UIUtils.i18n.getLanguage("main.statusTb.listfiles", false);
-  }
+    @Override
+    public final void processPause(String v) {
+        int res = WebOptionPane.showConfirmDialog(mr, i18n.getLanguage(v, false), i18n.getLanguage("dialog.question", false), WebOptionPane.YES_NO_OPTION, WebOptionPane.QUESTION_MESSAGE);
 
-  @Override
-  public WorkerId getWorkerId() {
-    return WorkerId.LIST_FILE;
-  }
+        if (res == WebOptionPane.YES_OPTION) {
+            subFolder = true;
+        }
+    }
+
+    @Override
+    public String getDisplayName() {
+        return UIUtils.i18n.getLanguage("main.statusTb.listfiles", false);
+    }
+
+    @Override
+    public WorkerId getWorkerId() {
+        return WorkerId.LIST_FILE;
+    }
 }

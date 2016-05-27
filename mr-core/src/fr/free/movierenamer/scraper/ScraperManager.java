@@ -37,7 +37,6 @@ import fr.free.movierenamer.scraper.impl.movie.FilmstartsScraper;
 import fr.free.movierenamer.scraper.impl.movie.KinopoiskScraper;
 import fr.free.movierenamer.scraper.impl.movie.RottenTomatoesScraper;
 import fr.free.movierenamer.scraper.impl.movie.SensacineScraper;
-import fr.free.movierenamer.scraper.impl.movie.TracktScraper;
 import fr.free.movierenamer.scraper.impl.movie.UniversalScraper;
 import fr.free.movierenamer.scraper.impl.trailer.AllocineTrailerScraper;
 import fr.free.movierenamer.scraper.impl.trailer.ImdbTrailerScraper;
@@ -76,7 +75,7 @@ public class ScraperManager {
     getScraper(UniversalScraper.class);
     getScraper(RottenTomatoesScraper.class);
     getScraper(KinopoiskScraper.class);
-    getScraper(TracktScraper.class);
+    //getScraper(TracktScraper.class);
     // tvshow
     getScraper(TheTVDBScraper.class);
     getScraper(TvRageScraper.class);

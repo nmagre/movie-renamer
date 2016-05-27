@@ -47,8 +47,8 @@ import java.util.Arrays;
 public class NameCleaner {
 
   private static final Pattern yearPattern = Pattern.compile("\\D?(\\d{4})\\D?");
-  private static final Map<Boolean, Pattern[]> mstoplist = new HashMap<Boolean, Pattern[]>(2);
-  private static final Map<Boolean, Pattern[]> mcleanlist = new HashMap<Boolean, Pattern[]>(2);
+  private static final Map<Boolean, Pattern[]> mstoplist = new HashMap<>(2);
+  private static final Map<Boolean, Pattern[]> mcleanlist = new HashMap<>(2);
   private static final List<String> keepLanguages = Arrays.asList(new String[]{
     "lit", "Italian", "be", "English", "it", "mal", "in", "run", "Irish", "sun", "li", "am", "est", "or"
   });
@@ -201,7 +201,7 @@ public class NameCleaner {
   }
 
   private static Collection<String> quote(Collection<String> strings) {
-    List<String> patterns = new ArrayList<String>(strings.size());
+    List<String> patterns = new ArrayList<>(strings.size());
     for (String it : strings) {
       patterns.add(Pattern.quote(it));
     }

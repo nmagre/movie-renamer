@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.mediainfo.MediaAudio;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import javax.swing.Icon;

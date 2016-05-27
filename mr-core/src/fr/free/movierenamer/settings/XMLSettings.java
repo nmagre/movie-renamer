@@ -22,6 +22,7 @@ import com.sun.jna.Platform;
 import fr.free.movierenamer.mediainfo.MediaInfoLibrary;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.utils.FileUtils;
+import fr.free.movierenamer.utils.HTMLFormatter;
 import fr.free.movierenamer.utils.StringUtils;
 import fr.free.movierenamer.utils.URIRequest;
 import fr.free.movierenamer.utils.XPathUtils;
@@ -37,11 +38,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 /**
  * Class XMLSettings , Movie Renamer settings
@@ -64,9 +63,11 @@ public abstract class XMLSettings {
   public static final String COPYRIGHT;
   public static final String PROVIDER;
   public static final String HOST;
+  public static final HTMLFormatter LFORMAT;
   private static final Logger LOGGER;
   private static final String[] SYSPOP;
   private static final String settingNodeName;
+  private static FileHandler prettyLogH;
   private final String configFileName;
   private boolean autosave = true;
   // Settings xml conf instance
@@ -76,6 +77,7 @@ public abstract class XMLSettings {
   static {
     LOGGER = Logger.getLogger(XMLSettings.class.getSimpleName());
     SYSPOP = new String[]{"sun.arch.data.model", "os.arch"};
+    LFORMAT = new HTMLFormatter();
 
     String appName = getApplicationProperty("application.name");
     String appNameNospace = appName.replace(' ', '_');
@@ -95,6 +97,7 @@ public abstract class XMLSettings {
     HOST = getApplicationProperty("application.host");
 
     settingNodeName = "settings";
+    prettyLogH = null;
   }
 
   public interface ISettingsType {
@@ -136,8 +139,7 @@ public abstract class XMLSettings {
     LIST,
     NETWORK,
     FORMATPARSER,
-    INTERFACE,
-    SEARCH
+    INTERFACE
   }
 
   public enum SettingsPropertyType {
@@ -158,11 +160,11 @@ public abstract class XMLSettings {
     public SettingsSubType getSubType();
 
     public boolean isChild();
-    
+
     public IProperty getParent();
-    
+
     public boolean hasChild();
-    
+
     public void setHasChild();
   }
 
@@ -205,6 +207,14 @@ public abstract class XMLSettings {
       }
       FileHandler fh = new FileHandler(logsRoot.getAbsolutePath() + File.separator + logFileName);
       logger.addHandler(fh);
+
+      if (prettyLogH == null) {
+        prettyLogH = new FileHandler(logsRoot.getAbsolutePath() + File.separator + "HTML_log.html");
+        prettyLogH.setFormatter(new HTMLFormatter());
+      }
+      
+      logger.addHandler(prettyLogH);
+
     } catch (SecurityException | IOException e) {
       LOGGER.log(Level.SEVERE, e.getMessage());
     }
@@ -232,7 +242,8 @@ public abstract class XMLSettings {
         savesettings = true;
       }
       settingsNode = XPathUtils.selectNode(settingNodeName, appSettingsNode);
-    } catch (IOException | SAXException | DOMException ex) {
+      if(settingsNode == null) throw new Exception(settingNodeName + " not found");
+    } catch (Exception ex) {
 
       try {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -252,7 +263,7 @@ public abstract class XMLSettings {
         settingsNode = settingsDocument.createElement(settingNodeName);
         rootElement.appendChild(settingsNode);
 
-      } catch (ParserConfigurationException ex1) {
+      } catch (ParserConfigurationException ex1) {// FIXME app will crash if nodes are null
         settingsDocument = null;
         settingsNode = null;
       }

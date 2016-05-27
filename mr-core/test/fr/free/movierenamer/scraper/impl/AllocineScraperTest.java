@@ -26,6 +26,7 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scraper.MovieScraperTest;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.ScraperUtils;
 
@@ -45,7 +46,7 @@ public class AllocineScraperTest extends MovieScraperTest {
 
   @Override
   public void search() throws Exception {
-    List<Movie> results = allocine.search("avatar");
+    List<Movie> results = allocine.search("avatar", new SearchParam());
 
     Movie movie = results.get(0);
     Assert.assertEquals("Avatar", movie.getName());

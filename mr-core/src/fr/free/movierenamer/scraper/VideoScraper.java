@@ -25,6 +25,8 @@ import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.utils.ClassUtils;
 import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
+import fr.free.movierenamer.utils.NumberUtils;
+import fr.free.movierenamer.utils.Sorter;
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public abstract class VideoScraper<M extends Media, MI extends VideoInfo> extend
   }
 
   @Override
-  protected void addCutomInfo(MI info, M search, IdInfo id, LocaleUtils.AvailableLanguages language) {
+  protected void addCustomInfo(MI info, M search, IdInfo id, LocaleUtils.AvailableLanguages language) {
     //let's fetch casting
     List<CastingInfo> casting;
     try {
@@ -52,6 +54,16 @@ public abstract class VideoScraper<M extends Media, MI extends VideoInfo> extend
     if (casting != null) {
       info.setCasting(casting);
     }
+  }
+
+  @Override
+  protected List<M> sortResult(List<M> searchResult, String query, SearchParam sep) {
+    String syear = sep.getProperty("year");
+    if (syear != null && NumberUtils.isNumeric(syear)) {
+      Sorter.sortMedia(searchResult, query, Integer.parseInt(syear), settings.getSearchOrderThreshold());
+    }
+
+    return searchResult;
   }
 
 }

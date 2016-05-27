@@ -17,6 +17,7 @@
  */
 package fr.free.movierenamer.ui.swing;
 
+import fr.free.movierenamer.ui.swing.custom.ButtonGroupEnable;
 import com.alee.extended.image.DisplayType;
 import com.alee.extended.image.WebImage;
 import com.alee.global.StyleConstants;
@@ -30,10 +31,12 @@ import fr.free.movierenamer.info.MediaInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scraper.MediaScraper;
 import fr.free.movierenamer.scraper.ScraperManager;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Media;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.settings.Settings.SettingsMediaProperty;
+import fr.free.movierenamer.settings.XMLSettings;
 import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.settings.XMLSettings.ISimpleProperty;
 import fr.free.movierenamer.ui.Main;
@@ -44,6 +47,7 @@ import fr.free.movierenamer.ui.bean.UIMovieInfo;
 import fr.free.movierenamer.ui.bean.UIRename;
 import fr.free.movierenamer.ui.bean.UIScraper;
 import fr.free.movierenamer.ui.bean.UIUpdate;
+import fr.free.movierenamer.ui.bean.settings.UIMovieTestSettings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
 import fr.free.movierenamer.ui.swing.dialog.AboutDialog;
@@ -102,6 +106,8 @@ public final class UIManager {
     private static final WebCheckBox bannerChk = new WebCheckBox();
     private static final List<JComponent> movieRenameSettingsCmp;
     public static final ButtonGroupEnable group = new ButtonGroupEnable();
+    public static final XMLSettings.SettingsType formatTypeTestLoc = XMLSettings.SettingsType.FILE;// Button test location
+    public static final XMLSettings.SettingsSubType formatSubTypeTestLoc = XMLSettings.SettingsSubType.GENERAL;// Button test location
 
     static {
         checkboxs = new HashMap<>();
@@ -128,11 +134,24 @@ public final class UIManager {
     public enum UIMode {
 
         MOVIEMODE(UIUtils.i18n.getLanguageKey("movieMode", "toptb"), MediaType.MOVIE, ImageUtils.MOVIE_24, ImageUtils.MOVIE_16, Hotkey.CTRL_M,
-                MovieInfo.class, UIMovieInfo.class) {
+                true, true, MovieInfo.class, UIMovieInfo.class) {
 
                     @Override
                     public MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> getModePanel(MovieRenamer mr) {
                         return new MoviePanel(mr);
+                    }
+
+                    @Override
+                    public XMLSettings.IMediaProperty getFormatTest() {
+                        return new UIMovieTestSettings(formatTypeTestLoc, formatSubTypeTestLoc);
+                    }
+
+                    @Override
+                    public SearchParam getSearchExtraParam(UIFile media) {
+                        SearchParam sep = new SearchParam();
+                        sep.setProperty("year", Integer.toString(media.getYear()));
+                        
+                        return sep;
                     }
 
                 };//TVSHOWMODE(UIUtils.i18n.getLanguageKey("tvshowMode", "toptb"), "tvshowMode", MediaType.TVSHOW, ImageUtils.TV_24, ImageUtils.TV_16, Hotkey.CTRL_T, TvShowInfo.class, TvShowInfo.class),
@@ -146,11 +165,15 @@ public final class UIManager {
         private final Class<?> infoClazz;
         private final Class<?> uiInfoClazz;
         private final IProperty[] renameOptions;
+        private final boolean hasImage;
+        private final boolean hasTrailer;
         private MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> panel;
         private WebButton modeButton = null;
         private String fileFormat;
 
-        private UIMode(String title, MediaType mediaType, Icon icon_24, Icon icon_16, HotkeyData hotkey, Class<?> infoClazz, Class<?> uiInfoClazz, IProperty... renameOptions) {
+        private UIMode(String title, MediaType mediaType, Icon icon_24, Icon icon_16, HotkeyData hotkey, boolean hasImage, boolean hasTrailer,
+                Class<?> infoClazz, Class<?> uiInfoClazz, IProperty... renameOptions) {
+
             this.title = title;
             this.mediaType = mediaType;
             this.renameOptions = renameOptions;
@@ -159,6 +182,8 @@ public final class UIManager {
             this.hotkey = hotkey;
             this.infoClazz = infoClazz;
             this.uiInfoClazz = uiInfoClazz;
+            this.hasImage = hasImage;
+            this.hasTrailer = hasTrailer;
             fileFormat = Settings.getInstance().getMediaFilenameFormat(mediaType);
 
             List<MediaScraper> mediaScrapers = ScraperManager.getMediaScrapers(mediaType);
@@ -221,6 +246,14 @@ public final class UIManager {
             return (UIMediaInfo<?>) uiInfoClazz.getConstructor(infoClazz).newInstance(info);
         }
 
+        public boolean hasImage() {
+            return hasImage;
+        }
+
+        public boolean hasTrailer() {
+            return hasTrailer;
+        }
+
         public WebButton getModebutton(final MovieRenamer mr) {
             if (modeButton != null) {
                 return modeButton;
@@ -252,6 +285,10 @@ public final class UIManager {
         }
 
         protected abstract MediaPanel<? extends UIMediaInfo<?>, ? extends MediaInfo> getModePanel(MovieRenamer mr);
+
+        public abstract XMLSettings.IMediaProperty getFormatTest();
+
+        public abstract SearchParam getSearchExtraParam(UIFile media);
 
     }
 

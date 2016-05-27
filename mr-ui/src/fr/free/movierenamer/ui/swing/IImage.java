@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2015 duffy
+ * Movie Renamer
+ * Copyright (C) 2012-2014 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.renderer;
+package fr.free.movierenamer.ui.swing;
 
-import com.alee.laf.slider.WebSliderUI;
-import javax.swing.JSlider;
+import fr.free.movierenamer.ui.swing.IIconList;
+import fr.free.movierenamer.info.ImageInfo;
+import java.net.URI;
+import javax.swing.Icon;
 
 /**
+ * Interface IImage
  *
- * @author duffy
+ * @author Nicolas Magré
  */
-public class VolumeRenderer extends WebSliderUI {
+public interface IImage extends IIconList {
 
-  public VolumeRenderer(JSlider b) {
-    super(b);
-  }
-  
+  public void setIcon(Icon icon);
+
+  public URI getUri(ImageInfo.ImageSize size);
+
+  public int getId();
 }

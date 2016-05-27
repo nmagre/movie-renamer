@@ -18,16 +18,16 @@
 package fr.free.movierenamer.ui.swing.panel;
 
 import com.alee.laf.panel.WebPanel;
-import fr.free.movierenamer.ui.bean.IEventInfo;
-import fr.free.movierenamer.ui.bean.IEventListener;
-import fr.free.movierenamer.ui.bean.UIEvent;
-import fr.free.movierenamer.ui.swing.TaskPopup;
+import fr.free.movierenamer.ui.event.IEventInfo;
+import fr.free.movierenamer.ui.event.IEventListener;
+import fr.free.movierenamer.ui.event.UIEvent;
+import fr.free.movierenamer.ui.swing.custom.TaskPopup;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.worker.AbstractWorker;
-import fr.free.movierenamer.ui.worker.impl.ImageWorker;
 import java.util.LinkedHashMap;
 
 /**
+ * Class StatusPanel
  *
  * @author Nicolas Magré
  */
@@ -77,7 +77,7 @@ public class StatusPanel extends WebPanel implements IEventListener {
                 break;
             case WORKER_RUNNING:
             case WORKER_PROGRESS:
-                worker = (AbstractWorker<?, ?>) eventInfo.getEventObject();                
+                worker = (AbstractWorker<?, ?>) eventInfo.getEventObject();
                 TaskPanel tpanel = task.get(worker);
                 if (tpanel != null) {
                     workerProgress.setVisible(true);
@@ -90,7 +90,7 @@ public class StatusPanel extends WebPanel implements IEventListener {
                         workerProgress.setStringPainted(progress >= 0);
                         workerProgress.setValue(worker.getProgress());
                     }
-                } else if(!worker.isDone()) {
+                } else if (!worker.isDone()) {// FIXME remove
                     System.out.println("ERROR UNKONW PROGRESS");
                     System.out.println(worker.getWorkerId());
                     System.out.println(worker.getDisplayName());

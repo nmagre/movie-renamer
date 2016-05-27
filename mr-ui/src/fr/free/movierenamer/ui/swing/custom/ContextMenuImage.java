@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing.contextmenu;
+package fr.free.movierenamer.ui.swing.custom;
 
 import com.alee.laf.list.WebList;
 import com.alee.laf.menu.WebPopupMenu;
-import fr.free.movierenamer.ui.bean.IImage;
-import fr.free.movierenamer.ui.swing.ImageListModel;
+import fr.free.movierenamer.ui.swing.IImage;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import java.awt.event.ActionEvent;

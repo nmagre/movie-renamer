@@ -28,7 +28,7 @@ import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
-import fr.free.movierenamer.ui.swing.WebTextFieldLimit;
+import fr.free.movierenamer.ui.swing.custom.WebTextFieldLimit;
 import fr.free.movierenamer.ui.utils.UIUtils;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import java.awt.GridBagConstraints;

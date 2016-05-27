@@ -1,6 +1,6 @@
 /*
  * Movie Renamer
- * Copyright (C) 2014 Nicolas Magré
+ * Copyright (C) 2014-2015 Nicolas Magré
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,77 +17,20 @@
  */
 package fr.free.movierenamer.ui.bean.settings;
 
-import fr.free.movierenamer.settings.Settings;
-import fr.free.movierenamer.settings.XMLSettings;
-import java.io.IOException;
+import com.alee.laf.checkbox.WebCheckBox;
+import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.text.WebTextField;
+import fr.free.movierenamer.ui.swing.panel.generator.SettingPanelGen;
+import java.util.Map;
 
 /**
  * Class UITestSettings
  *
  * @author Nicolas Magré
  */
-public abstract class UITestSettings implements XMLSettings.ISimpleProperty {
+public abstract class UITestSettings {
 
-    private final XMLSettings.SettingsType type;
-    private final XMLSettings.SettingsSubType subType;
-
-    public UITestSettings(XMLSettings.SettingsType type, XMLSettings.SettingsSubType subType) {
-        this.type = type;
-        this.subType = subType;
-    }
-
-    @Override
-    public Class<?> getVclass() {
-        return UITestSettings.class;
-    }
-
-    @Override
-    public Object getDefaultValue() {
-        return null;
-    }
-
-    @Override
-    public String getValue() {
-        return null;
-    }
-
-    @Override
-    public String name() {
-        return "test";
-    }
-
-    @Override
-    public Settings.SettingsType getType() {
-        return type;
-    }
-
-    @Override
-    public Settings.SettingsSubType getSubType() {
-        return subType;
-    }
-
-    @Override
-    public boolean isChild() {
-        return false;
-    }
-
-    @Override
-    public XMLSettings.IProperty getParent() {
-        return null;
-    }
-
-    @Override
-    public boolean hasChild() {
-        return false;// Only boolean can have a child 
-    }
-
-    @Override
-    public void setHasChild() {
-        // Only boolean can have a child 
-    }
-
-    @Override
-    public void setValue(Object value) throws IOException {
-    }
-
+    
+    public abstract String getResult(Map<WebCheckBox, SettingPanelGen.SettingsProperty> checkboxs,
+            Map<WebTextField, SettingPanelGen.SettingsProperty> fields, Map<WebComboBox, SettingPanelGen.SettingsProperty> comboboxs);
 }

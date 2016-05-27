@@ -117,9 +117,9 @@ public final class Settings extends XMLSettings {
     stringTimeShowSeconde(Boolean.FALSE, SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
     stringTimeShowMillis(Boolean.FALSE, SettingsType.MISCELLANEOUS, SettingsSubType.TIME),
     // Search
-    searchNbResult(15, SettingsType.INFORMATION, SettingsSubType.SEARCH),
-    searchOrder(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SEARCH),
-    searchOrderThreshold(0.7F, SettingsType.INFORMATION, SettingsSubType.SEARCH, searchOrder),
+    searchNbResult(15, SettingsType.INFORMATION, SettingsSubType.GENERAL),
+    searchOrder(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.GENERAL),
+    searchOrderThreshold(0.7F, SettingsType.INFORMATION, SettingsSubType.GENERAL, searchOrder),
     searchScraperLang(AvailableLanguages.en, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
     searchGetOnlyLangDep(Boolean.TRUE, SettingsType.INFORMATION, SettingsSubType.SCRAPER),
     // Proxy

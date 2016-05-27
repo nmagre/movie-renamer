@@ -23,9 +23,9 @@ import fr.free.movierenamer.info.CastingInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.info.MovieInfo;
 import fr.free.movierenamer.scraper.MovieScraper;
+import fr.free.movierenamer.scraper.SearchParam;
 import fr.free.movierenamer.searchinfo.Movie;
 import fr.free.movierenamer.utils.LocaleUtils.AvailableLanguages;
-import fr.free.movierenamer.utils.ScraperUtils;
 import fr.free.movierenamer.utils.ScraperUtils.AvailableApiIds;
 import java.net.URL;
 import java.util.Arrays;
@@ -75,14 +75,14 @@ public class AnidbScraper extends MovieScraper {
   }
 
   @Override
-  protected List<Movie> searchMedia(String query, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(String query, SearchParam sep, AvailableLanguages language) throws Exception {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Not supported yet.");
     //return null;
   }
 
   @Override
-  protected List<Movie> searchMedia(URL searchUrl, AvailableLanguages language) throws Exception {
+  protected List<Movie> searchMedia(URL searchUrl, SearchParam sep, AvailableLanguages language) throws Exception {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

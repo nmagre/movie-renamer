@@ -17,6 +17,8 @@
  */
 package fr.free.movierenamer.ui.bean;
 
+import fr.free.movierenamer.ui.swing.IIconList;
+import fr.free.movierenamer.ui.swing.IHtmlListTooltip;
 import fr.free.movierenamer.info.FileInfo;
 import fr.free.movierenamer.info.IdInfo;
 import fr.free.movierenamer.mediainfo.MediaAudio;
@@ -26,10 +28,12 @@ import fr.free.movierenamer.mediainfo.MediaVideo;
 import fr.free.movierenamer.renamer.Renamer;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import static fr.free.movierenamer.searchinfo.Media.MediaType.TVSHOW;
+import fr.free.movierenamer.settings.Settings;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.swing.renderer.CompoundIcon;
 import fr.free.movierenamer.ui.utils.FlagUtils;
 import fr.free.movierenamer.ui.utils.ImageUtils;
+import fr.free.movierenamer.utils.LocaleUtils;
 import fr.free.movierenamer.utils.Sorter;
 import fr.free.movierenamer.utils.StringUtils;
 import java.io.File;
@@ -219,7 +223,7 @@ public class UIFile extends Sorter.ISort implements IIconList, IHtmlListTooltip 
     }
 
     str += "<img src =\"" + ImageUtils.getImagePath("ui/16/other.png") + "\">&nbsp;";
-    str += StringUtils.humanReadableByteCount(getLength()) + "<br>";
+    str += StringUtils.humanReadableByteCount(getLength(), Settings.getInstance().getAppLanguage().equals(LocaleUtils.AppLanguages.fr)) + "<br>";
 
     if (tag != null) {
       MediaVideo mvideo = tag.getMediaVideo();

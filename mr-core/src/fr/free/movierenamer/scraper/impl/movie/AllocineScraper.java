@@ -35,160 +35,158 @@ import org.w3c.dom.Node;
  */
 public final class AllocineScraper extends AlloGroupScraper {
 
-  private static final String host = "www.allocine.fr";
-  private static final String imageHost = "images.allocine.fr";
-  private static final String name = "Allocine";
-  private static final String search = "recherche";
-  private final Pattern allocineID = Pattern.compile(".*gen_cfilm=(\\d+).*");
-  private final Pattern allocinePersonID = Pattern.compile(".*cpersonne=(\\d+).*");
-  private final Pattern countryCode = Pattern.compile("pays-(\\d{4})");
+    private static final String host = "www.allocine.fr";
+    private static final String imageHost = "images.allocine.fr";
+    private static final String name = "Allocine";
+    private static final String search = "recherche";
+    private final Pattern allocineID = Pattern.compile(".*gen_cfilm=(\\d+).*");
+    private final Pattern allocinePersonID = Pattern.compile(".*cpersonne=(\\d+).*");
+    private final Pattern countryCode = Pattern.compile("pays-(\\d{4})");
 
-  public AllocineScraper() {
-    super(AvailableLanguages.fr);
-  }
-
-  // Only most common country for video media
-  private static enum Nationality {
-
-    N_5025("Argentine"),
-    N_5029("Australie"),
-    N_5032("Autriche"),
-    N_5014("Belgique"),
-    N_5028("Brésil"),
-    N_5064("Bulgarie"),
-    N_5018("Canada"),
-    N_5027("Chine"),
-    N_5065("Colombie"),
-    N_7270("Costa Rica"),
-    N_5165("République tchèque"),
-    N_5061("Danemark"),
-    N_5069("Finlande"),
-    N_5001("France"),
-    N_5129("Allemagne"),
-    N_5019("Grèce"),
-    N_5142("Hong Kong"),
-    N_5068("Hongrie"),
-    N_5093("Islande"),
-    N_5042("Inde"),
-    N_5086("Iran"),
-    N_5030("Irlande"),
-    N_5020("Italie"),
-    N_5021("Japon"),
-    N_5149("Malaisie"),
-    N_5031("Mexique"),
-    N_5177("Pays-Bas"),
-    N_5005("Nouvelle-Zélande"),
-    N_5155("Pakistan"),
-    N_5023("Pologne"),
-    N_5024("Portugal"),
-    N_5088("Roumanie"),
-    N_5039("Russie"),
-    N_5113("Singapour"),
-    N_5007("Afrique du Sud"),
-    N_5017("Espagne"),
-    N_5067("Suède"),
-    N_5010("Suisse"),
-    N_5127("Thaïlande"),
-    N_5004("Royaume-Uni"),
-    N_5002("USA");
-
-    private final String country;
-
-    private Nationality(String country) {
-      this.country = country;
+    public AllocineScraper() {
+        super(AvailableLanguages.fr);
     }
 
-    public String getCountry() {
-      return country;
-    }
-  }
+    // Only most common country for video media
+    private static enum Nationality {
 
-  @Override
-  public String getName() {
-    return name;
-  }
+        N_5025("Argentine"),
+        N_5029("Australie"),
+        N_5032("Autriche"),
+        N_5014("Belgique"),
+        N_5028("Brésil"),
+        N_5064("Bulgarie"),
+        N_5018("Canada"),
+        N_5027("Chine"),
+        N_5065("Colombie"),
+        N_7270("Costa Rica"),
+        N_5165("République tchèque"),
+        N_5061("Danemark"),
+        N_5069("Finlande"),
+        N_5001("France"),
+        N_5129("Allemagne"),
+        N_5019("Grèce"),
+        N_5142("Hong Kong"),
+        N_5068("Hongrie"),
+        N_5093("Islande"),
+        N_5042("Inde"),
+        N_5086("Iran"),
+        N_5030("Irlande"),
+        N_5020("Italie"),
+        N_5021("Japon"),
+        N_5149("Malaisie"),
+        N_5031("Mexique"),
+        N_5177("Pays-Bas"),
+        N_5005("Nouvelle-Zélande"),
+        N_5155("Pakistan"),
+        N_5023("Pologne"),
+        N_5024("Portugal"),
+        N_5088("Roumanie"),
+        N_5039("Russie"),
+        N_5113("Singapour"),
+        N_5007("Afrique du Sud"),
+        N_5017("Espagne"),
+        N_5067("Suède"),
+        N_5010("Suisse"),
+        N_5127("Thaïlande"),
+        N_5004("Royaume-Uni"),
+        N_5002("USA");
 
-  @Override
-  protected String getHost() {
-    return host;
-  }
+        private final String country;
 
-  @Override
-  protected AvailableLanguages getDefaultLanguage() {
-    return AvailableLanguages.fr;
-  }
-
-  @Override
-  protected String getSearchString() {
-    return search;
-  }
-
-  @Override
-  protected String getMoviePageString(IdInfo id) {
-    return "/film/fichefilm_gen_cfilm=" + id + ".html";
-  }
-
-  @Override
-  protected String getCastingPageString(IdInfo id) {
-    return "/film/fichefilm-" + id + "/casting/";
-  }
-
-  @Override
-  protected Pattern getIdPattern() {
-    return allocineID;
-  }
-
-  @Override
-  protected Pattern getPersonIdPattern() {
-    return allocinePersonID;
-  }
-
-  @Override
-  protected String getImageHost() {
-    return imageHost;
-  }
-
-  @Override
-  protected MotionPictureRating getRatingScale() {
-    return MotionPictureRating.FRANCE;
-  }
-
-  @Override
-  protected InfoTag getInfoTag(String str) {
-    try {
-      return InfoTag.valueOf(str);
-    } catch (Exception ex) {
-    }
-    return InfoTag.unknown;
-  }
-
-  @Override
-  protected List<String> parseCountry(Node node) {
-    List<String> countries = new ArrayList<String>();
-    List<Node> nodes = XPathUtils.selectNodes("SPAN", node);
-    if (nodes != null && !nodes.isEmpty()) {
-      for (Node cnode : nodes) {
-        // Try to replace nationality by country name
-        String clazz = XPathUtils.getAttribute("class", cnode);
-        String url = clazz.replace("acLnk ", "").replace(" underline", "");
-        url = decodeUrl(url);
-
-        Matcher m = countryCode.matcher(url);
-        String country = null;
-        if (m.find()) {
-          try {
-            country = Nationality.valueOf("N_" + m.group(1)).getCountry();
-          } catch (Exception ex) {
-          }
+        private Nationality(String country) {
+            this.country = country;
         }
 
-        if (country == null) {
-          country = XPathUtils.selectString(".", cnode);
+        public String getCountry() {
+            return country;
+        }
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    protected String getHost() {
+        return host;
+    }
+
+    @Override
+    protected AvailableLanguages getDefaultLanguage() {
+        return AvailableLanguages.fr;
+    }
+
+    @Override
+    protected String getSearchString() {
+        return search;
+    }
+
+    @Override
+    protected String getMoviePageString(IdInfo id) {
+        return "/film/fichefilm_gen_cfilm=" + id + ".html";
+    }
+
+    @Override
+    protected String getCastingPageString(IdInfo id) {
+        return "/film/fichefilm-" + id + "/casting/";
+    }
+
+    @Override
+    protected Pattern getIdPattern() {
+        return allocineID;
+    }
+
+    @Override
+    protected Pattern getPersonIdPattern() {
+        return allocinePersonID;
+    }
+
+    @Override
+    protected String getImageHost() {
+        return imageHost;
+    }
+
+    @Override
+    protected MotionPictureRating getRatingScale() {
+        return MotionPictureRating.FRANCE;
+    }
+
+    @Override
+    protected InfoTag getInfoTag(String str) {
+        try {
+            return InfoTag.valueOf(str);
+        } catch (Exception ex) {
+        }
+        return InfoTag.unknown;
+    }
+
+    @Override
+    protected List<String> parseCountry(List<Node> nodes) {
+        List<String> countries = new ArrayList<>();
+        if (nodes != null) {
+            for (Node country : nodes) {
+                String href = XPathUtils.getAttribute("href", country);
+                String url = decodeUrl(href.replace("acLnk ", "").replace(" underline", ""));
+                Matcher m = countryCode.matcher(url);
+                String cnt = null;
+                if (m.find()) {
+                    try {
+                        cnt = Nationality.valueOf("N_" + m.group(1)).getCountry();
+                    } catch (Exception ex) {
+                    }
+                }
+
+                if (cnt == null) {
+                    cnt = country.getTextContent();
+                }
+
+                countries.add(cnt);
+            }
         }
 
-        countries.add(country);
-      }
+        return countries;
+
     }
-    return countries;
-  }
 }

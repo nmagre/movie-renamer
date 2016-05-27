@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.free.movierenamer.ui.swing;
+package fr.free.movierenamer.ui.swing.custom;
 
 import com.alee.laf.list.WebList;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.WebCustomTooltip;
-import fr.free.movierenamer.ui.bean.IHtmlListTooltip;
-import fr.free.movierenamer.ui.bean.IIconList;
+import fr.free.movierenamer.ui.swing.IHtmlListTooltip;
+import fr.free.movierenamer.ui.swing.IIconList;
 import fr.free.movierenamer.ui.bean.UILoader;
 import fr.free.movierenamer.ui.utils.ImageUtils;
 import fr.free.movierenamer.ui.utils.UIUtils;

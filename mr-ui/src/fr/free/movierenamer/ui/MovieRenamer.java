@@ -17,7 +17,13 @@
  */
 package fr.free.movierenamer.ui;
 
-import fr.free.movierenamer.ui.swing.contextmenu.ContextMenuField;
+import fr.free.movierenamer.ui.event.IEventListener;
+import fr.free.movierenamer.ui.event.IEventInfo;
+import fr.free.movierenamer.ui.event.UIEvent;
+import fr.free.movierenamer.ui.swing.custom.ListTooltip;
+import fr.free.movierenamer.ui.swing.model.ImageListModel;
+import fr.free.movierenamer.ui.swing.custom.DragAndDrop;
+import fr.free.movierenamer.ui.swing.custom.ContextMenuField;
 import fr.free.movierenamer.ui.swing.UIManager;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -44,11 +50,9 @@ import com.alee.laf.splitpane.WebSplitPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.hotkey.Hotkey;
-import com.alee.managers.language.LanguageManager;
 import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.popup.PopupWay;
 import com.alee.managers.popup.WebButtonPopup;
-import com.alee.utils.SwingUtils;
 import com.alee.utils.swing.AncestorAdapter;
 import fr.free.movierenamer.searchinfo.Media.MediaType;
 import fr.free.movierenamer.settings.Settings.SettingsMediaProperty;
@@ -57,7 +61,6 @@ import fr.free.movierenamer.settings.XMLSettings.IProperty;
 import fr.free.movierenamer.ui.bean.*;
 import fr.free.movierenamer.ui.settings.UISettings;
 import fr.free.movierenamer.ui.settings.UISettings.UISettingsProperty;
-import fr.free.movierenamer.ui.swing.*;
 import fr.free.movierenamer.ui.swing.UIManager.UIMode;
 import static fr.free.movierenamer.ui.swing.UIManager.group;
 import fr.free.movierenamer.ui.swing.dialog.LoadingDialog;
@@ -88,7 +91,6 @@ import javax.swing.event.ListSelectionListener;
 import static fr.free.movierenamer.ui.utils.UIUtils.i18n;
 import fr.free.movierenamer.ui.worker.impl.CheckUpdateWorker;
 import fr.free.movierenamer.ui.worker.impl.GetFilesInfoWorker;
-import fr.free.movierenamer.utils.Cache;
 import fr.free.movierenamer.utils.FileUtils;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -159,8 +161,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
         mediaFileSeparatorModel = new DefaultEventListModel<>(mediaFileSeparator);
 
-        Cache.clearAllCache();// FIXME remove
-
         // Set Movie Renamer mode
         currentMode = UIMode.MOVIEMODE;
 
@@ -188,7 +188,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
                 setSize(new Dimension(setting.getMainFrameSizeWidth(), setting.getMainFrameSizeHeight()));
                 UIUtils.showOnScreen(this, setting.getMainFrameScreen(), setting.getMainFrameLocationX(), setting.getMainFrameLocationY(), setting.getMainFrameState());
                 listSp.setDividerLocation(setting.getMainFrameFileDivider());
-                mediaSp.setDividerLocation(setting.getMainFrameMediaDivider());
+                mediaSp.setDividerLocation(setting.getMainFrameInfoDivider());
             } else {
                 UIUtils.showOnScreen(this, 0, -1, -1, WebFrame.NORMAL);
             }
@@ -233,13 +233,13 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
         showFormatFieldChk = new WebCheckBox();
         showFormatFieldChk.setLanguage(UIUtils.i18n.getLanguageKey("showFormatField", "renametb.settingspopup"));
+        showFormatFieldChk.setSelected(setting.isShowFormatField());
         showFormatFieldChk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setFormatfield();
             }
         });
-        showFormatFieldChk.setSelected(setting.isShowFormatField());
 
         // List loading model
         loaderModel.addElement(new UILoader());
@@ -257,6 +257,8 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
         scraperCb.setRenderer(new IconComboRenderer<>(scraperCb));
 
+        renameTb.add(renameBtn);
+        renameTb.add(renameField, ToolbarLayout.FILL);
         loadMediaPanel();
 
         mediaFileList.addListSelectionListener(mediaFileListListener);
@@ -350,7 +352,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         }
 
         //setSelected(true);
-        
         // Set panel
         setMediaPanel();
 
@@ -424,97 +425,97 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
                 break;
             case SETTINGS:// TODO
-
-                if (info == null || !(info instanceof UIEventInfo)) {
-                    UISettings.LOGGER.warning("IEventInfo is null or not a UIEventInfo");
-                    return;
-                }
-
-                if (newObj instanceof IProperty) {
-                    applySettings((IProperty) newObj, (MediaType) ((UIEventInfo) info).getEventObject());
-                }
-
-                if (newObj instanceof IProperty) {
-
-                    if (newObj instanceof SettingsMediaProperty) {
-                        SettingsMediaProperty sproperty = (SettingsMediaProperty) newObj;
-
-                        switch (sproperty) {
-                            case mediaFilenameSeparator:
-                                break;
-                        }
-
-                    }
-
-                    if (newObj instanceof SettingsProperty) {
-                        SettingsProperty sproperty = (SettingsProperty) newObj;
-                        System.out.println(sproperty.name() + " changed to " + sproperty.getValue());// FIXME remove
-                        switch (sproperty) {
-                            //case mediaFilenameFormat:
-                            //UIMode.MOVIEMODE.setFileformat(sproperty.getValue());
-                            //case mediaFilenameCase:
-                            //case mediaFilenameLimit:
-                            case filenameRmDupSpace:
-                            case filenameTrim:
-                            case reservedCharacter:
-                                updateRenamedTitle();
-                                break;
-                            case appLanguage:
-                                LanguageManager.setLanguage(sproperty.getValue());
-                                settingsPanel.updateListLanguage();
-                                // FIXME update UI
-                                break;
-                            //case movieNfogenerate:
-//                UIManager.setCheckBox(sproperty);
-                            //              break;
-                            default:
-                                UISettings.LOGGER.warning(String.format("Property %s is not defined in UIEventHandler", sproperty));
-                        }
-                    }
-
-                    if (newObj instanceof UISettingsProperty) {
-                        boolean updatePanel = false;
-                        UISettingsProperty uisproperty = (UISettingsProperty) newObj;
-                        System.out.println(uisproperty.name() + " changed to " + uisproperty.getValue());// FIXME remove
-                        switch (uisproperty) {
-                            case showMediaPanel:
-                                showMediaPanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
-                                updatePanel = true;
-                                break;
-                            case showImagePanel:
-                                showImagePanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
-                                updatePanel = true;
-                                break;
-                            case showFormatField:
-                                showFormatFieldChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
-                                setFormatfield();
-                                break;
-                            case downloadBanner:
-                            case downloadCdart:
-                            case downloadClearart:
-                            case downloadFanart:
-                            case downloadLogo:
-                            case downloadThumb:
-                                UIManager.setCheckBox(uisproperty);
-                                break;
-                            case showIconMediaList:
-                                showIconMediaListChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
-                                showIconMediaListChk.getActionListeners()[0].actionPerformed(null);// FIXME so dirty :(
-                                break;
-                            case groupMediaList:
-                                groupFile = !Boolean.parseBoolean(uisproperty.getValue());// FIXME so dirty :(
-                                toggleGroup.getActionListeners()[0].actionPerformed(null);// FIXME so dirty :(
-                                break;
-                            case logLevel:
-                                UISettings.setAppLogLevel(Level.parse(uisproperty.getValue()));
-                                break;
-                        }
-
-                        if (updatePanel) {
-                            setMediaPanel();
-                        }
-                    }
-                }
+//
+//                if (info == null || !(info instanceof UIEventInfo)) {
+//                    UISettings.LOGGER.warning("IEventInfo is null or not a UIEventInfo");
+//                    return;
+//                }
+//
+//                if (newObj instanceof IProperty) {
+//                    applySettings((IProperty) newObj, (MediaType) ((UIEventInfo) info).getEventObject());
+//                }
+//
+//                if (newObj instanceof IProperty) {
+//
+//                    if (newObj instanceof SettingsMediaProperty) {
+//                        SettingsMediaProperty sproperty = (SettingsMediaProperty) newObj;
+//
+//                        switch (sproperty) {
+//                            case mediaFilenameSeparator:
+//                                break;
+//                        }
+//
+//                    }
+//
+//                    if (newObj instanceof SettingsProperty) {
+//                        SettingsProperty sproperty = (SettingsProperty) newObj;
+//                        System.out.println(sproperty.name() + " changed to " + sproperty.getValue());// FIXME remove
+//                        switch (sproperty) {
+//                            //case mediaFilenameFormat:
+//                            //UIMode.MOVIEMODE.setFileformat(sproperty.getValue());
+//                            //case mediaFilenameCase:
+//                            //case mediaFilenameLimit:
+//                            case filenameRmDupSpace:
+//                            case filenameTrim:
+//                            case reservedCharacter:
+//                                updateRenamedTitle();
+//                                break;
+//                            case appLanguage:
+//                                LanguageManager.setLanguage(sproperty.getValue());
+//                                settingsPanel.updateListLanguage();
+//                                // FIXME update UI
+//                                break;
+//                            //case movieNfogenerate:
+////                UIManager.setCheckBox(sproperty);
+//                            //              break;
+//                            default:
+//                                UISettings.LOGGER.warning(String.format("Property %s is not defined in UIEventHandler", sproperty));
+//                        }
+//                    }
+//
+//                    if (newObj instanceof UISettingsProperty) {
+//                        boolean updatePanel = false;
+//                        UISettingsProperty uisproperty = (UISettingsProperty) newObj;
+//                        System.out.println(uisproperty.name() + " changed to " + uisproperty.getValue());// FIXME remove
+//                        switch (uisproperty) {
+//                            case showMediaPanel:
+//                                showMediaPanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
+//                                updatePanel = true;
+//                                break;
+//                            case showImagePanel:
+//                                showImagePanelChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
+//                                updatePanel = true;
+//                                break;
+//                            case showFormatField:
+//                                showFormatFieldChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
+//                                setFormatfield();
+//                                break;
+//                            case downloadBanner:
+//                            case downloadCdart:
+//                            case downloadClearart:
+//                            case downloadFanart:
+//                            case downloadLogo:
+//                            case downloadThumb:
+//                                UIManager.setCheckBox(uisproperty);
+//                                break;
+//                            case showIconMediaList:
+//                                showIconMediaListChk.setSelected(Boolean.parseBoolean(uisproperty.getValue()));
+//                                showIconMediaListChk.getActionListeners()[0].actionPerformed(null);// FIXME so dirty :(
+//                                break;
+//                            case groupMediaList:
+//                                groupFile = !Boolean.parseBoolean(uisproperty.getValue());// FIXME so dirty :(
+//                                toggleGroup.getActionListeners()[0].actionPerformed(null);// FIXME so dirty :(
+//                                break;
+//                            case logLevel:
+//                                UISettings.setAppLogLevel(Level.parse(uisproperty.getValue()));
+//                                break;
+//                        }
+//
+//                        if (updatePanel) {
+//                            setMediaPanel();
+//                        }
+//                    }
+//                }
                 break;
 
             case UPDATE_AVAILABLE:
@@ -684,20 +685,20 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         scraperCb.setModel(currentMode.getScraperModel());
         fileFormatField.setText(currentMode.getFileFormat());
         containerTransitionMediaPanel.performTransition(mediaPanels.get(currentMode));
-
         setFormatfield();
 
         // Remove setting button
         Component cmp = renameTb.getLastComponent();
-        do {
+
+        if (cmp instanceof WebButton) {
             renameTb.remove(cmp);
-            cmp = renameTb.getLastComponent();
-        } while ((cmp instanceof WebButton));// FIXME find why we need to remove twice
+        }
 
         List<JComponent> components = UIManager.getRenameSettingsComponents(currentMode);
         components.add(showFormatFieldChk);
         // Add settings button in toolbar
         renameTb.addToEnd(UIUtils.createSettingButton(PopupWay.upLeft, components.toArray(new JComponent[components.size()])));
+        renameTb.revalidate();
     }
 
     /**
@@ -727,7 +728,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
         searchResultList.setModel(loaderModel);
         currentMedia.setSearch(search);
-        WorkerManager.search(this, currentMedia);
+        WorkerManager.search(this, currentMedia, currentMode.getSearchExtraParam(currentMedia));
     }
 
     /*
@@ -743,9 +744,15 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         clearInterface(!CLEAR_MEDIALIST, !CLEAR_SEARCHRESULTLIST, ImageWorker.class, UISearchResult.class);
 
         WorkerManager.searchInfo(this, searchResult, currentMode);
+
         if (showMediaPanelChk.isSelected()) {
-            WorkerManager.searchImage(this, searchResult);
-            WorkerManager.searchTrailer(this, searchResult);// FIXME not all media has trailer
+            if (currentMode.hasImage() && showImagePanelChk.isSelected()) {
+                WorkerManager.searchImage(this, searchResult);
+            }
+
+            if (currentMode.hasTrailer()) {
+                // WorkerManager.searchTrailer(this, searchResult);
+            }
         }
     }
 
@@ -795,7 +802,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     public void closeSettings() {
         currentMode.getModebutton(this).doClick();
     }
-    
+
     /**
      * Update renamed title in rename field
      */
@@ -832,7 +839,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
                 UISettings.UISettingsProperty.mainFrameLocationY.setValue(location.y);
                 UISettings.UISettingsProperty.mainFrameScreen.setValue(UIUtils.getScreen(this));
                 UISettings.UISettingsProperty.mainFrameFileDivider.setValue(listSp.getDividerLocation());
-                UISettings.UISettingsProperty.mainFrameMediaDivider.setValue(mediaSp.getDividerLocation());
+                UISettings.UISettingsProperty.mainFrameInfoDivider.setValue(mediaSp.getDividerLocation());
                 Dimension wsize = this.getSize();
                 UISettings.UISettingsProperty.mainFrameSizeWidth.setValue(wsize.width);
                 UISettings.UISettingsProperty.mainFrameSizeHeight.setValue(wsize.height);
@@ -1015,8 +1022,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         if (showMediaPanelChk.isSelected()) {
             searchResultTooltip.setTooltipWay(TooltipWay.right);
             mediaFileTooltip.setTooltipWay(TooltipWay.right);
+
             UISearchResult searchResult = getSelectedSearchResult();
-            if (searchResult != null) {// FIXME check if searchImage was launched before (not important, the cache will be used)
+            if (searchResult != null && currentMode.hasImage() && showImagePanelChk.isSelected()) {// FIXME check if searchImage was launched before (not important, the cache will be used)
                 WorkerManager.searchImage(this, searchResult);
             }
 
@@ -1032,9 +1040,11 @@ public class MovieRenamer extends WebFrame implements IEventListener {
 
     private void setFormatfield() {
         if (showFormatFieldChk.isSelected()) {
-            renameTb.add(fileFormatField);
+            renameTb.add(fileFormatField, 1);
         } else {
-            renameTb.remove(fileFormatField);
+            if (fileFormatField.getParent() == renameTb) {
+                renameTb.remove(fileFormatField);
+            }
         }
         renameTb.revalidate();
     }
@@ -1055,12 +1065,13 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         updateBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.update"), ImageUtils.UPDATE_24, ImageUtils.UPDATE_16);
         settingBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.settings"), ImageUtils.SETTING_24, ImageUtils.SETTING_16, Hotkey.CTRL_S, MovieRenamer.this);
         exitBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.quit"), ImageUtils.APPLICATIONEXIT_24, ImageUtils.APPLICATIONEXIT_16, Hotkey.CTRL_Q, MovieRenamer.this);
-        renameField = new JTextField();
         toggleGroup = new WebButton();
-        fileFormatField = new WebTextField();
         aboutBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.about"), ImageUtils.HELP_24, ImageUtils.HELP_16);
+        renameBtn = new WebButton();
         clearMediaFileListBtn = UIUtils.createButton(i18n.getLanguageKey("mediatb.clear"), ImageUtils.CLEAR_LIST_16, ImageUtils.CLEAR_LIST_16);
         logBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.log"), ImageUtils.INFO_24, ImageUtils.INFO_16);
+        renameField = new WebTextField();
+        fileFormatField = new WebTextField();
         containerTransition = new ComponentTransition();
         mainTb = new WebToolBar();
         openBtn = UIUtils.createButton(i18n.getLanguageKey("toptb.open"), ImageUtils.FOLDERVIDEO_24, ImageUtils.FOLDERVIDEO_16, Hotkey.CTRL_O, MovieRenamer.this);
@@ -1088,7 +1099,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         scraperCb = new WebComboBox();
         renamePnl = new WebPanel();
         renameTb = new WebToolBar();
-        renameBtn = new WebButton();
         statusBar = new WebStatusBar();
 
         updateBtn.addActionListener(new ActionListener() {
@@ -1110,20 +1120,22 @@ public class MovieRenamer extends WebFrame implements IEventListener {
             }
         });
 
-        renameField.setEnabled(false);
-
         toggleGroup.setIcon(ImageUtils.FILEVIEW_16);
-
-        fileFormatField.setPreferredSize(new Dimension(250, 27));
-        fileFormatField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent evt) {
-                fileFormatFieldKeyReleased(evt);
-            }
-        });
 
         aboutBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 aboutBtnActionPerformed(evt);
+            }
+        });
+
+        renameBtn.setLanguage(i18n.getLanguageKey("renametb.rename"));
+
+        renameBtn.setIcon(ImageUtils.OK_16);
+        renameBtn.setEnabled(false);
+        renameBtn.setFocusable(false);
+        renameBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                renameBtnActionPerformed(evt);
             }
         });
 
@@ -1139,6 +1151,13 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         logBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 logBtnActionPerformed(evt);
+            }
+        });
+
+        fileFormatField.setPreferredSize(new Dimension(250, 27));
+        fileFormatField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent evt) {
+                fileFormatFieldKeyReleased(evt);
             }
         });
 
@@ -1197,7 +1216,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
             .addGroup(mediaFilePnlLayout.createSequentialGroup()
                 .addComponent(mediaFileTb, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(ComponentPlacement.RELATED)
-                .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 766, Short.MAX_VALUE))
+                .addComponent(mediaFileScp, GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE))
         );
 
         listSp.setLeftComponent(mediaFilePnl);
@@ -1290,22 +1309,6 @@ public class MovieRenamer extends WebFrame implements IEventListener {
         renameTb.setFloatable(false);
         renameTb.setRollover(true);
         renameTb.setRound(10);
-
-        renameBtn.setLanguage(i18n.getLanguageKey("renametb.rename"));
-
-        renameBtn.setIcon(ImageUtils.OK_16);
-        renameBtn.setEnabled(false);
-        renameBtn.setFocusable(false);
-        renameBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                renameBtnActionPerformed(evt);
-            }
-        });
-        renameTb.add(renameBtn);
-        renameTb.add(fileFormatField);
-        //Add rename text field
-        renameTb.add(renameField, ToolbarLayout.FILL);
-
         renamePnl.add(renameTb, BorderLayout.NORTH);
 
         statusBar.setMargin(new Insets(2, 10, 2, 10));
@@ -1322,7 +1325,9 @@ public class MovieRenamer extends WebFrame implements IEventListener {
       File file = new File(setting.getFileChooserPath());
 
       fileChooser.setCurrentDirectory(file);
+      fileChooser.getWebUI().getFileChooserPanel().setViewType(setting.getFileChooserViewType());
       int r = fileChooser.showOpenDialog(this);
+
       try {
           FileChooserViewType fcvt = fileChooser.getWebUI().getFileChooserPanel().getViewType();
           UISettingsProperty.fileChooserViewType.setValue(fcvt);
@@ -1453,7 +1458,7 @@ public class MovieRenamer extends WebFrame implements IEventListener {
     private WebButton openBtn;
     private Separator openSep;
     private WebButton renameBtn;
-    private JTextField renameField;
+    private WebTextField renameField;
     private WebPanel renamePnl;
     private WebToolBar renameTb;
     private WebComboBox scraperCb;
